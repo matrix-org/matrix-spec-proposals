@@ -9,13 +9,13 @@ Server
 
 Events
 ------
-An event is a collection of data (the `payload`) and metadata associated with
-it to be distributed across servers and is the primary data unit in Matrix.
-Events are extensible so that clients and servers can add extra fields to the
-payload or metadata that are not in this specification.
+An event is a collection of data (the `payload`) and metadata to be distributed
+across servers and is the primary data unit in Matrix.  Events are extensible
+so that clients and servers can add extra arbitrary fields to both the payload
+or metadata.
 
 Events are distributed to interested servers upon creation. Historical events
-may be requested from servers, though servers are not required to produce all
+may be requested from servers; servers are not required to produce all
 or any events requested.
 
 All events have a metadata `type` field that is used by client and servers to
@@ -23,10 +23,12 @@ determine how the payload should be processed and used. There are a number of
 types reserved by the protocol for particular uses, but otherwise types may be
 defined by applications, clients or servers for their own purposes.
 
+.. TODO : Namespacing of new types.
+
 Graph
 ~~~~~
 Each event has a list of zero or more `parent` events. These relations form
-directed acyclic graphs of events, called `event graphs`. Every event graph has
+directed acyclic graphs of events called `event graphs`. Every event graph has
 a single root event.
 
 Event graphs give a partial ordering of events, i.e. given two events one may
@@ -50,7 +52,7 @@ event is distributed and referenced by later events, they effectively become
 immutable].
 
 The payload may also be encrypted by clients, except in the case where the
-payload need to be interpreted by the servers. A list of event types that
+payload needs to be interpreted by the servers. A list of event types that
 cannot have an encrypted payload are given later.
 
 
@@ -58,17 +60,17 @@ State
 -----
 Event graphs may have meta information associated with them, called `state`.
 State can be updated over time by servers or clients, subject to
-authentication.
+authorisation.
 
 The state of a graph is split into `sections` that can be atomically updated
 independently of each other.
 
 State is stored within the graph itself, and can be computed by looking at the
-graph in its entirety. Thus we can define the state at a given event to be the
-state of the sub graph of all events "before" and including that event.
+graph in its entirety. We define the state at a given event to be the state of
+the sub graph of all events "before" and including that event.
 
 Some sections of the state may determine behaviour of the protocol, including
-authorization and distribution. These sections must not be encrypted.
+authorisation and distribution. These sections must not be encrypted.
 
 State Events
 ~~~~~~~~~~~~
@@ -77,9 +79,8 @@ state events hold all the same properties of events, and are part of the event
 graph. The payload of the event is the replacement value for the particular
 section of state being updated.
 
-State events must also include a `state_key` metadata field, which in
-conjunction with the type field defines the section of state that is to be
-updated.
+State events must also include a `state_key` metadata field. The pair of fields
+type and state_key uniquely defines the section of state that is to be updated.
 
 State Resolution
 ~~~~~~~~~~~~~~~~
@@ -87,9 +88,10 @@ A given state section may have multiple state events associated with it in a
 given graph. A consistent method of selecting which state event takes
 precedence is therefore required. 
 
-This is done by taking the latest state events, i.e. the set of events that
-either incomparable or after every other event. A state resolution algorithm is
-then applied to this set to select one.
+This is done by taking the latest state events, i.e. the set of events that are
+either incomparable or after every other event in the graph. A state resolution
+algorithm is then applied to this set to select the single event that takes
+precedence.
 
 The state resolution algorithm must be transitive and not depend on server
 state, as it must consistently select the same event irrespective of the server
@@ -102,9 +104,9 @@ which set the section to its current value.  The state dictionary, like the
 state itself, depends on the events currently in the graph and so is updated
 with each new event received.
 
-Since the sections of the state are defined by a pair of strings that came from
-the type and state_key of the events that update them, the state dictionary can
-be defined as a mapping from the pair (type, state_key) to a state event with
+Since the sections of the state are defined by the pair of strings from the
+type and state_key of the events that update them, the state dictionary can be
+defined as a mapping from the pair (type, state_key) to a state event with
 those values in the graph.
 
 Deleting State
