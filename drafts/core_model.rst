@@ -1,11 +1,21 @@
 Models
 ======
 
-Client
-------
+Architecture
+------------
+Matrix is used to reliably distribute data between sets of `users`.
 
-Server
-------
+Users are associated with one of many matrix `servers`. These distribute,
+receive and store data on behalf of its registered users. Servers can be run on
+any host accessible from the internet.
+
+When a user wishes to send data to users on different servers the local server
+will distribute the data to each remote server. These will in turn distribute
+to their local users involved..
+
+A user sends and receives data using one or more authenticated `clients`
+connected to his server. Clients may persist data locally or request it when
+required from the server.
 
 Events
 ------
