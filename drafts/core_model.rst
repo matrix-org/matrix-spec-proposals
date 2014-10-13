@@ -121,4 +121,10 @@ those values in the graph.
 
 Deleting State
 ~~~~~~~~~~~~~~
-TODO
+State sections may also be deleted, i.e. removed from the state dictionary. The
+state events will still be present in the event graph.
+
+This is done by sending a special state event indicating that the given entry
+should be removed from the dictionary. These events follow the same rules for
+state resolution, with the added requirement that it loses all conflicts.
+[Note: This is required to make the algorithm transitive.]
