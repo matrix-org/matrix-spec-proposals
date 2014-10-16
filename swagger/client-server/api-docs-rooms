@@ -491,7 +491,7 @@
         {
           "method": "POST",
           "summary": "Join a room via a room alias or room ID.",
-          "notes": "Join a room via a room alias or room ID.",
+          "notes": "This endpoint, unlike /rooms/{roomId}/join allows the client to join a room by it's alias. This operation can also be done as a PUT by suffixing /{txnId}.",
           "type": "JoinRoomInfo",
           "nickname": "join",
           "consumes": [
@@ -521,7 +521,7 @@
         {
           "method": "POST",
           "summary": "Create a room.",
-          "notes": "Create a room.",
+          "notes": "Create a room. This operation can also be done as a PUT by suffixing /{txnId}.",
           "type": "RoomInfo",
           "nickname": "create_room",
           "consumes": [
@@ -530,7 +530,7 @@
           "parameters": [
             {
               "name": "body",
-              "description": "The desired configuration for the room. This operation can also be done as a PUT by suffixing /{txnId}.",
+              "description": "The desired configuration for the room.",
               "required": true,
               "type": "RoomConfig",
               "paramType": "body"
