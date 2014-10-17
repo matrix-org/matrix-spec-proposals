@@ -244,8 +244,6 @@ user IDs using 3PIDs.
 
 Presence
 ~~~~~~~~
-.. NOTE::
-  This section is a work in progress.
 
 Each user has the concept of presence information. This encodes the
 "availability" of that user, suitable for display on other user's clients. This
@@ -282,7 +280,7 @@ how to handle new private one-to-one chat message requests. For example, it
 might decide:
 
   - ``free_for_chat`` : accept anything
-  - ``online`` : accept from anyone in my addres book list
+  - ``online`` : accept from anyone in my address book list
   - ``busy`` : accept from anyone in this "important people" group in my
     address book list
 
@@ -291,7 +289,7 @@ Presence List
 Each user's home server stores a "presence list" for that user. This stores a
 list of other user IDs the user has chosen to add to it. To be added to this
 list, the user being added must receive permission from the list owner. Once
-granted, both user's HS(es) store this information. Since such subscriptions
+granted, both user's HSes store this information. Since such subscriptions
 are likely to be bidirectional, HSes may wish to automatically accept requests
 when a reverse subscription already exists.
 
@@ -338,8 +336,6 @@ response to messages.
 
 Profiles
 ~~~~~~~~
-.. NOTE::
-  This section is a work in progress.
 
 .. TODO-spec
   - Metadata extensibility
@@ -610,8 +606,6 @@ In contrast, these are invalid requests::
 
 Glossary
 --------
-.. NOTE::
-  This section is a work in progress.
 
 Backfilling:
   The process of synchronising historic state from one home server to another,
