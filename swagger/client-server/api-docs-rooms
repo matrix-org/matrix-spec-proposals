@@ -771,7 +771,7 @@
       "properties": {
         "visibility": {
           "type": "string",
-          "description": "Enum: The room visibility.",
+          "description": "Enum: The room visibility. The room_alias_name is required if the visibility is public; without it the room will remain private.",
           "required": false,
           "enum": [
             "public",
