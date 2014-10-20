@@ -780,7 +780,7 @@
         },
         "room_alias_name": {
           "type": "string",
-          "description": "The alias to give the new room.",
+          "description": "Localpart of the alias to give the new room. The home server will attach its domain name after this.",
           "required": false
         },
         "name": {
