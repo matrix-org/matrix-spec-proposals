@@ -110,8 +110,9 @@ receiving an "empty" transaction.)
 
 PDUs and EDUs
 -------------
-.. WARNING::
-  This section may be misleading or inaccurate.
+
+Common PDU Fields
+~~~~~~~~~~~~~~~~~
 
 All PDUs have:
  - An ID
@@ -121,97 +122,115 @@ All PDUs have:
    (regardless of which origin sent them)
 
 ``context``
-  Type:
-    String
-  Description:
-    Event context identifier
++++++++++++
+Type:
+  String
+Description:
+  Event context identifier
+
 
 ``origin``
-  Type:
-    String
-  Description:
-    DNS name of homeserver that created this PDU.
+++++++++++
+Type:
+  String
+Description:
+  DNS name of homeserver that created this PDU.
 
 ``pdu_id``
-  Type:
-    String
-  Description:
-    Unique identifier for PDU within the context for the originating homeserver
+++++++++++
+Type:
+  String
+Description:
+  Unique identifier for PDU within the context for the originating homeserver
 
 ``ts``
-  Type:
-    Integer
-  Description:
-    Timestamp in milliseconds on originating homeserver when this PDU was
-    created.
+++++++
+Type:
+  Integer
+Description:
+  Timestamp in milliseconds on originating homeserver when this PDU was
+  created.
 
 ``pdu_type``
-  Type:
-    String
-  Description:
-    PDU event type.
+++++++++++++
+Type:
+  String
+Description:
+  PDU event type.
 
 ``prev_pdus``
-  Type:
-    List of pairs of strings
-  Description:
-    The originating homeserver and PDU ids of the most recent PDUs the
-    homeserver was aware of for this context when it made this PDU.
++++++++++++++
+Type:
+  List of pairs of strings
+Description:
+  The originating homeserver and PDU ids of the most recent PDUs the
+  homeserver was aware of for this context when it made this PDU.
 
 ``depth``
-  Type:
-    Integer
-  Description:
-    The maximum depth of the previous PDUs plus one.
++++++++++
+Type:
+  Integer
+Description:
+  The maximum depth of the previous PDUs plus one.
 
 
 .. TODO-spec paul
   - Update this structure so that 'pdu_id' is a two-element [origin,ref] pair
     like the prev_pdus are
 
+State Update PDU Fields
+~~~~~~~~~~~~~~~~~~~~~~~
+
 For state updates:
 
 ``is_state``
-  Type:
-    Boolean
-  Description:
-    True if this PDU is updating state.
+++++++++++++
+Type:
+  Boolean
+Description:
+  True if this PDU is updating state.
 
 ``state_key``
-  Type:
-    String
-  Description:
-    Optional key identifying the updated state within the context.
++++++++++++++
+Type:
+  String
+Description:
+  Optional key identifying the updated state within the context.
 
 ``power_level``
-  Type:
-    Integer
-  Description:
-    The asserted power level of the user performing the update.
++++++++++++++++
+Type:
+  Integer
+Description:
+  The asserted power level of the user performing the update.
 
 ``required_power_level``
-  Type:
-    Integer
-  Description:
-    The required power level needed to replace this update.
+++++++++++++++++++++++++
+Type:
+  Integer
+Description:
+  The required power level needed to replace this update.
 
 ``prev_state_id``
-  Type:
-    String
-  Description:
-    PDU event type.
++++++++++++++++++
+Type:
+  String
+Description:
+  PDU event type.
 
 ``prev_state_origin``
-  Type:
-    String
-  Description:
-    The PDU id of the update this replaces.
++++++++++++++++++++++
+Type:
+  String
+Description:
+  The PDU id of the update this replaces.
 
 ``user_id``
-  Type:
-    String
-  Description:
-    The user updating the state.
++++++++++++
+Type:
+  String
+Description:
+  The user updating the state.
 
 ::
 
