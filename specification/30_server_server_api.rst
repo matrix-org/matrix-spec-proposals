@@ -56,26 +56,26 @@ Each transaction has:
  - A list of "previous IDs".
  - A list of PDUs and EDUs - the actual message payload that the Transaction
    carries.
- 
+
 ``origin``
-  Type: 
+  Type:
     String
   Description:
     DNS name of homeserver making this transaction.
-    
+
 ``ts``
-  Type: 
+  Type:
     Integer
   Description:
-    Timestamp in milliseconds on originating homeserver when this transaction 
+    Timestamp in milliseconds on originating homeserver when this transaction
     started.
-    
+
 ``previous_ids``
   Type:
     List of strings
   Description:
     List of transactions that were sent immediately prior to this transaction.
-    
+
 ``pdus``
   Type:
     List of Objects.
@@ -125,13 +125,13 @@ All PDUs have:
     String
   Description:
     Event context identifier
-    
+
 ``origin``
   Type:
     String
   Description:
     DNS name of homeserver that created this PDU.
-    
+
 ``pdu_id``
   Type:
     String
@@ -176,19 +176,19 @@ For state updates:
     Boolean
   Description:
     True if this PDU is updating state.
-    
+
 ``state_key``
   Type:
     String
   Description:
     Optional key identifying the updated state within the context.
-    
+
 ``power_level``
   Type:
     Integer
   Description:
     The asserted power level of the user performing the update.
-    
+
 ``required_power_level``
   Type:
     Integer
@@ -200,13 +200,13 @@ For state updates:
     String
   Description:
     PDU event type.
-    
+
 ``prev_state_origin``
   Type:
     String
   Description:
     The PDU id of the update this replaces.
-    
+
 ``user_id``
   Type:
     String
@@ -262,8 +262,8 @@ destination home server names, and the actual nested content.
   "origin":"blue",
   "destination":"orange",
   "content":...}
-  
-  
+
+
 Protocol URLs
 -------------
 .. WARNING::
@@ -291,7 +291,7 @@ To fetch a particular PDU::
 
 Retrieves a given PDU from the server. The response will contain a single new
 Transaction, inside which will be the requested PDU.
-  
+
 
 To fetch all the state of a given context::
 

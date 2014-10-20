@@ -79,7 +79,7 @@ State events have the additional fields:
   Description:
     Optional. Contains the previous ``content`` for this event. If there is no previous content, this
     key will be missing.
-    
+
 .. TODO-spec
   How do "age" and "ts" fit in to all this? Which do we expose?
 
@@ -95,7 +95,7 @@ prefixed with ``m.``
 ``m.room.name``
   Summary:
     Set the human-readable name for the room.
-  Type: 
+  Type:
     State event
   JSON format:
     ``{ "name" : "string" }``
@@ -112,7 +112,7 @@ prefixed with ``m.``
 ``m.room.topic``
   Summary:
     Set a topic for the room.
-  Type: 
+  Type:
     State event
   JSON format:
     ``{ "topic" : "string" }``
@@ -128,7 +128,7 @@ prefixed with ``m.``
 ``m.room.member``
   Summary:
     The current membership state of a user in the room.
-  Type: 
+  Type:
     State event
   JSON format:
     ``{ "membership" : "enum[ invite|join|leave|ban ]" }``
@@ -145,20 +145,20 @@ prefixed with ``m.``
 ``m.room.create``
   Summary:
     The first event in the room.
-  Type: 
+  Type:
     State event
   JSON format:
     ``{ "creator": "string"}``
   Example:
     ``{ "creator": "@user:example.com" }``
   Description:
-    This is the first event in a room and cannot be changed. It acts as the 
+    This is the first event in a room and cannot be changed. It acts as the
     root of all other events.
 
 ``m.room.join_rules``
   Summary:
     Descripes how/if people are allowed to join.
-  Type: 
+  Type:
     State event
   JSON format:
     ``{ "join_rule": "enum [ public|knock|invite|private ]" }``
@@ -166,55 +166,55 @@ prefixed with ``m.``
     ``{ "join_rule": "public" }``
   Description:
     TODO-doc : Use docs/models/rooms.rst
-   
+
 ``m.room.power_levels``
   Summary:
     Defines the power levels of users in the room.
-  Type: 
+  Type:
     State event
   JSON format:
     ``{ "<user_id>": <int>, ..., "default": <int>}``
   Example:
-    ``{ "@user:example.com": 5, "@user2:example.com": 10, "default": 0 }`` 
+    ``{ "@user:example.com": 5, "@user2:example.com": 10, "default": 0 }``
   Description:
-    If a user is in the list, then they have the associated power level. 
+    If a user is in the list, then they have the associated power level.
     Otherwise they have the default level. If not ``default`` key is supplied,
     it is assumed to be 0.
 
 ``m.room.add_state_level``
   Summary:
     Defines the minimum power level a user needs to add state.
-  Type: 
+  Type:
     State event
   JSON format:
     ``{ "level": <int> }``
   Example:
     ``{ "level": 5 }``
   Description:
-    To add a new piece of state to the room a user must have the given power 
+    To add a new piece of state to the room a user must have the given power
     level. This does not apply to updating current state, which is goverened
     by the ``required_power_level`` event key.
-    
+
 ``m.room.send_event_level``
   Summary:
     Defines the minimum power level a user needs to send an event.
-  Type: 
+  Type:
     State event
   JSON format:
     ``{ "level": <int> }``
   Example:
     ``{ "level": 0 }``
   Description:
-    To send a new event into the room a user must have at least this power 
+    To send a new event into the room a user must have at least this power
     level. This allows ops to make the room read only by increasing this level,
     or muting individual users by lowering their power level below this
     threshold.
 
 ``m.room.ops_levels``
   Summary:
-    Defines the minimum power levels that a user must have before they can 
+    Defines the minimum power levels that a user must have before they can
     kick and/or ban other users.
-  Type: 
+  Type:
     State event
   JSON format:
     ``{ "ban_level": <int>, "kick_level": <int>, "redact_level": <int> }``
@@ -222,7 +222,7 @@ prefixed with ``m.``
     ``{ "ban_level": 5, "kick_level": 5 }``
   Description:
     This defines who can ban and/or kick people in the room. Most of the time
-    ``ban_level`` will be greater than or equal to ``kick_level`` since 
+    ``ban_level`` will be greater than or equal to ``kick_level`` since
     banning is more severe than kicking.
 
 ``m.room.aliases``
@@ -266,7 +266,7 @@ prefixed with ``m.``
 ``m.room.message``
   Summary:
     A message.
-  Type: 
+  Type:
     Non-state event
   JSON format:
     ``{ "msgtype": "string" }``
@@ -283,7 +283,7 @@ prefixed with ``m.``
 ``m.room.message.feedback``
   Summary:
     A receipt for a message.
-  Type: 
+  Type:
     Non-state event
   JSON format:
     ``{ "type": "enum [ delivered|read ]", "target_event_id": "string" }``
@@ -294,7 +294,7 @@ prefixed with ``m.``
     are two supported acknowledgements: ``delivered`` (sent when the event has
     been received) and ``read`` (sent when the event has been observed by the
     end-user). The ``target_event_id`` should reference the ``m.room.message``
-    event being acknowledged. 
+    event being acknowledged.
 
 ``m.room.redaction``
   Summary:
@@ -352,10 +352,10 @@ outlined below:
     - ``body`` : "string" - The alt text of the image, or some kind of content
       description for accessibility e.g. "image attachment".
 
-  ImageInfo: 
+  ImageInfo:
     Information about an image::
-    
-      { 
+
+      {
         "size" : integer (size of image in bytes),
         "w" : integer (width of image in pixels),
         "h" : integer (height of image in pixels),
@@ -371,7 +371,7 @@ outlined below:
     - ``body`` : "string" - A description of the audio e.g. "Bee Gees - Stayin'
       Alive", or some kind of content description for accessibility e.g.
       "audio attachment".
-  AudioInfo: 
+  AudioInfo:
     Information about a piece of audio::
 
       {
@@ -390,7 +390,7 @@ outlined below:
       some kind of content description for accessibility e.g. "video
       attachment".
 
-  VideoInfo: 
+  VideoInfo:
     Information about a video::
 
       {
@@ -466,7 +466,7 @@ This event is sent by the caller when they wish to establish a call.
       valid for. Once the invite age exceeds this value, clients should discard
       it. They should also no longer show the call as awaiting an answer in the
       UI.
-      
+
   Optional keys:
     None.
   Example:
@@ -537,7 +537,7 @@ A call is set up with messages exchanged as follows:
                   <------ m.call.answer
                [...]
                   <------ m.call.hangup
-                  
+
 Or a rejected call:
 
 ::

@@ -12,7 +12,7 @@ WARNING
 
   We're publishing it at this point because it's complete enough to be more than
   useful and provide a canonical reference to how Matrix is evolving. Our end
-  goal is to mirror WHATWG's `Living Standard <http://wiki.whatwg.org/wiki/FAQ#What_does_.22Living_Standard.22_mean.3F>`_   
+  goal is to mirror WHATWG's `Living Standard <http://wiki.whatwg.org/wiki/FAQ#What_does_.22Living_Standard.22_mean.3F>`_
   approach except right now Matrix is more in the process of being born than actually being
   living!
 
@@ -153,7 +153,7 @@ domain, it is simply for globally namespacing room IDs. The room does NOT
 reside on the domain specified. Room IDs are not meant to be human readable.
 They ARE case-sensitive.
 
-The following diagram shows an ``m.room.message`` event being sent in the room 
+The following diagram shows an ``m.room.message`` event being sent in the room
 ``!qporfwt:matrix.org``::
 
        { @alice:matrix.org }                             { @bob:domain.com }
@@ -207,7 +207,7 @@ that are in the room that can be used to join via.
 
 ::
 
-          GET    
+          GET
    #matrix:domain.com      !aaabaa:matrix.org
            |                    ^
            |                    |
@@ -218,7 +218,7 @@ that are in the room that can be used to join via.
    | #golf   >> !wfeiofh:sport.com  |
    | #bike   >> !4rguxf:matrix.org  |
    |________________________________|
-       
+
 Identity
 ~~~~~~~~
 
@@ -456,7 +456,7 @@ State Resolution
 ++++++++++++++++
 A given state section may have multiple state events associated with it in a
 given graph. A consistent method of selecting which state event takes
-precedence is therefore required. 
+precedence is therefore required.
 
 This is done by taking the latest state events, i.e. the set of events that are
 either incomparable or after every other event in the graph. A state resolution
@@ -530,7 +530,7 @@ codes should have their namespace first in ALL CAPS, followed by a single _.
 For example, if there was a custom namespace ``com.mydomain.here``, and a
 ``FORBIDDEN`` code, the error code should look like
 ``COM.MYDOMAIN.HERE_FORBIDDEN``. There may be additional keys depending on the
-error, but the keys ``error`` and ``errcode`` MUST always be present. 
+error, but the keys ``error`` and ``errcode`` MUST always be present.
 
 Some standard error codes are below:
 

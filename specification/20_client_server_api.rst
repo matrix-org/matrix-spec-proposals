@@ -89,9 +89,9 @@ This specification defines the following login types:
 
 Password-based
 ~~~~~~~~~~~~~~
-:Type: 
+:Type:
   ``m.login.password``
-:Description: 
+:Description:
   Login is supported via a username and password.
 
 To respond to this type, reply with::
@@ -107,10 +107,10 @@ login process, or a standard error response.
 
 Captcha-based
 ~~~~~~~~~~~~~
-:Type: 
+:Type:
   ``m.login.recaptcha``
-:Description: 
-  Login is supported by responding to a captcha (in the case of the Synapse 
+:Description:
+  Login is supported by responding to a captcha (in the case of the Synapse
   implementation, Google's Recaptcha library is used).
 
 To respond to this type, reply with::
@@ -131,7 +131,7 @@ login process, or a standard error response.
 
 OAuth2-based
 ~~~~~~~~~~~~
-:Type: 
+:Type:
   ``m.login.oauth2``
 :Description:
   Login is supported via OAuth2 URLs. This login consists of multiple requests.
@@ -154,7 +154,7 @@ the uri is a ``sevice selection URI``, it MUST point to a webpage which prompts
 the user to choose which service to authorize with. On selection of a service,
 this MUST link through to an ``Authorization Request URI``. If there is only 1
 service which the home server accepts when logging in, this indirection can be
-skipped and the "uri" key can be the ``Authorization Request URI``. 
+skipped and the "uri" key can be the ``Authorization Request URI``.
 
 The client then visits the ``Authorization Request URI``, which then shows the
 OAuth2 Allow/Deny prompt. Hitting 'Allow' returns the ``redirect URI`` with the
@@ -165,8 +165,8 @@ When the home server gets this access token, it verifies that the cilent has
 authorised with the 3rd party, and can now complete the login. The OAuth2
 ``redirect URI`` (with auth code) MUST respond with either new credentials, the
 next stage of the login process, or a standard error response.
-    
-For example, if a home server accepts OAuth2 from Google, it would return the 
+
+For example, if a home server accepts OAuth2 from Google, it would return the
 Authorization Request URI for Google::
 
   {
@@ -184,10 +184,10 @@ visits the REDIRECT_URI with the auth code= query parameter which returns::
 
 Email-based (code)
 ~~~~~~~~~~~~~~~~~~
-:Type: 
+:Type:
   ``m.login.email.code``
 :Description:
-  Login is supported by typing in a code which is sent in an email. This login 
+  Login is supported by typing in a code which is sent in an email. This login
   consists of multiple requests.
 
 To respond to this type, reply with::
@@ -220,10 +220,10 @@ stage of the login process, or a standard error response.
 
 Email-based (url)
 ~~~~~~~~~~~~~~~~~
-:Type: 
+:Type:
   ``m.login.email.url``
 :Description:
-  Login is supported by clicking on a URL in an email. This login consists of 
+  Login is supported by clicking on a URL in an email. This login consists of
   multiple requests.
 
 To respond to this type, reply with::
@@ -251,7 +251,7 @@ client should perform another request::
   }
 
 The home server MUST respond to this with either new credentials, the next
-stage of the login process, or a standard error response. 
+stage of the login process, or a standard error response.
 
 A common client implementation will be to periodically poll until the link is
 clicked.  If the link has not been visited yet, a standard error response with
@@ -296,7 +296,7 @@ of a previous login stage::
     "next": "<next login type>"
   }
 
-If a home server implements N-factor authentication, it MUST respond with all 
+If a home server implements N-factor authentication, it MUST respond with all
 ``stages`` when initially queried for their login requirements::
 
   {
@@ -311,7 +311,7 @@ This can be represented conceptually as::
   | type: "<login type1>" |
   |  ___________________  |
   | |_Request_1_________| | <-- Returns "session" key which is used throughout.
-  |  ___________________  |     
+  |  ___________________  |
   | |_Request_2_________| | <-- Returns a "next" value of "login type2"
   |_______________________|
             |
@@ -355,9 +355,9 @@ To create a room, a client has to use the |createRoom|_ API. There are various
 options which can be set when creating a room:
 
 ``visibility``
-  Type: 
+  Type:
     String
-  Optional: 
+  Optional:
     Yes
   Value:
     Either ``public`` or ``private``.
@@ -367,9 +367,9 @@ options which can be set when creating a room:
     list. Rooms default to ``private`` visibility if this key is not included.
 
 ``room_alias_name``
-  Type: 
+  Type:
     String
-  Optional: 
+  Optional:
     Yes
   Value:
     The room alias localpart.
@@ -379,9 +379,9 @@ options which can be set when creating a room:
     the room, e.g.  ``!qadnasoi:domain.com >>> #room_alias_name:domain.com``
 
 ``name``
-  Type: 
+  Type:
     String
-  Optional: 
+  Optional:
     Yes
   Value:
     The ``name`` value for the ``m.room.name`` state event.
@@ -391,9 +391,9 @@ options which can be set when creating a room:
     ``m.room.name``.
 
 ``topic``
-  Type: 
+  Type:
     String
-  Optional: 
+  Optional:
     Yes
   Value:
     The ``topic`` value for the ``m.room.topic`` state event.
@@ -416,7 +416,7 @@ options which can be set when creating a room:
 Example::
 
   {
-    "visibility": "public", 
+    "visibility": "public",
     "room_alias_name": "thepub",
     "name": "The Grand Duke Pub",
     "topic": "All about happy hour"
@@ -462,7 +462,7 @@ send update requests to other servers.
 
 Rooms store a *partial* list of room aliases via the ``m.room.aliases`` state
 event. This alias list is partial because it cannot guarantee that the alias
-list is in any way accurate or up-to-date, as room aliases can point to 
+list is in any way accurate or up-to-date, as room aliases can point to
 different room IDs over time. Crucially, the aliases in this event are
 **purely informational** and SHOULD NOT be treated as accurate. They SHOULD
 be checked before they are used or shared with another user. If a room
@@ -470,7 +470,7 @@ appears to have a room alias of ``#alias:example.com``, this SHOULD be checked
 to make sure that the room's ID matches the ``room_id`` returned from the
 request.
 
-Room aliases can be checked in the same way they are resolved; by sending a 
+Room aliases can be checked in the same way they are resolved; by sending a
 ``GET /directory/room/<room alias>``::
 
   {
@@ -489,7 +489,7 @@ Permissions
 
 Permissions for rooms are done via the concept of power levels - to do any
 action in a room a user must have a suitable power level. Power levels are
-stored as state events in a given room. 
+stored as state events in a given room.
 
 Power levels for users are defined in ``m.room.power_levels``, where both a
 default and specific users' power levels can be set::
@@ -503,7 +503,7 @@ default and specific users' power levels can be set::
 By default all users have a power level of 0, other than the room creator whose
 power level defaults to 100. Users can grant other users increased power levels
 up to their own power level. For example, user A with a power level of 50 could
-increase the power level of user B to a maximum of level 50. Power levels for 
+increase the power level of user B to a maximum of level 50. Power levels for
 users are tracked per-room even if the user is not present in the room.
 
 State events may contain a ``required_power_level`` key, which indicates the
@@ -514,11 +514,11 @@ to update state events in that room.
 To perform certain actions there are additional power level requirements
 defined in the following state events:
 
-- ``m.room.send_event_level`` defines the minimum ``level`` for sending 
+- ``m.room.send_event_level`` defines the minimum ``level`` for sending
   non-state events. Defaults to 50.
-- ``m.room.add_state_level`` defines the minimum ``level`` for adding new 
+- ``m.room.add_state_level`` defines the minimum ``level`` for adding new
   state, rather than updating existing state. Defaults to 50.
-- ``m.room.ops_level`` defines the minimum ``ban_level`` and ``kick_level`` to 
+- ``m.room.ops_level`` defines the minimum ``ban_level`` and ``kick_level`` to
   ban and kick other users respectively. This defaults to a kick and ban levels
   of 50 each.
 
@@ -563,7 +563,7 @@ received an invite.
 
 Inviting users
 ~~~~~~~~~~~~~~
-.. TODO-doc Invite-join dance 
+.. TODO-doc Invite-join dance
   - Outline invite join dance. What is it? Why is it required? How does it work?
   - What does the home server have to do?
 
@@ -590,8 +590,8 @@ entire invitation process::
     "user_id": "<user id to invite>"
   }
 
-Alternatively, the membership state for this user in this room can be modified 
-directly by sending the following request to 
+Alternatively, the membership state for this user in this room can be modified
+directly by sending the following request to
 ``/rooms/<room id>/state/m.room.member/<url encoded user id>``::
 
   {
@@ -620,8 +620,8 @@ the room.  To leave a room, a request should be made to
 
   {}
 
-Alternatively, the membership state for this user in this room can be modified 
-directly by sending the following request to 
+Alternatively, the membership state for this user in this room can be modified
+directly by sending the following request to
 ``/rooms/<room id>/state/m.room.member/<url encoded user id>``::
 
   {
@@ -633,7 +633,7 @@ See the `Room events`_ section for more information on ``m.room.member``.
 Once a user has left a room, that room will no longer appear on the
 |initialSync|_ API.
 
-If all members in a room leave, that room becomes eligible for deletion. 
+If all members in a room leave, that room becomes eligible for deletion.
 
 Banning users in a room
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -648,7 +648,7 @@ to |/rooms/<room_id>/ban|_ with::
     "user_id": "<user id to ban"
     "reason": "string: <reason for the ban>"
   }
-  
+
 Banning a user adjusts the banned member's membership state to ``ban`` and
 adjusts the power level of this event to a level higher than the banned person.
 Like with other membership changes, a user can directly adjust the target
@@ -842,7 +842,7 @@ There are several APIs provided to ``GET`` events for a room:
     ``{ "start": "<token>", "end": "<token>" }``
   Example:
     TODO-doc
-    
+
 |/rooms/<room_id>/initialSync|_
   Description:
     Get all relevant events for a room. This includes state events, paginated
