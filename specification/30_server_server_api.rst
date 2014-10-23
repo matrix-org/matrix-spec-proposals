@@ -15,19 +15,19 @@ currently under consideration.
 
 There are three main kinds of communication that occur between home servers:
 
-:Queries:
+Queries:
    These are single request/response interactions between a given pair of
    servers, initiated by one side sending an HTTPS GET request to obtain some
    information, and responded by the other. They are not persisted and contain
    no long-term significant history. They simply request a snapshot state at
    the instant the query is made.
 
-:Ephemeral Data Units (EDUs):
+Ephemeral Data Units (EDUs):
    These are notifications of events that are pushed from one home server to
    another. They are not persisted and contain no long-term significant
    history, nor does the receiving home server have to reply to them.
 
-:Persisted Data Units (PDUs):
+Persisted Data Units (PDUs):
    These are notifications of events that are broadcast from one home server to
    any others that are interested in the same "context" (namely, a Room ID).
    They are persisted to long-term storage and form the record of history for
@@ -57,30 +57,22 @@ Each transaction has:
  - A list of PDUs and EDUs - the actual message payload that the Transaction
    carries.
 
-``origin``
-  Type:
-    String
-  Description:
-    DNS name of homeserver making this transaction.
+Transaction Fields
+~~~~~~~~~~~~~~~~~~
 
-``ts``
-  Type:
-    Integer
-  Description:
-    Timestamp in milliseconds on originating homeserver when this transaction
-    started.
-
-``previous_ids``
-  Type:
-    List of strings
-  Description:
-    List of transactions that were sent immediately prior to this transaction.
-
-``pdus``
-  Type:
-    List of Objects.
-  Description:
-    List of updates contained in this transaction.
+==================== =================== ======================================
+    Key              Type                         Description
+==================== =================== ======================================
+``origin``           String              DNS name of homeserver making this
+                                         transaction.
+``origin_server_ts`` Integer             Timestamp in milliseconds on
+                                         originating homeserver when this
+                                         transaction started.
+``previous_ids``     List of Strings     List of transactions that were sent
+                                         immediately prior to this transaction.
+``pdus``             List of Objects     List of persistent updates to rooms.
+``edus``             List of Objects     List of ephemeral messages.
+==================== =================== ======================================
 
 ::
 
@@ -88,7 +80,6 @@ Each transaction has:
   "transaction_id":"916d630ea616342b42e98a3be0b74113",
   "ts":1404835423000,
   "origin":"red",
-  "destination":"blue",
   "prev_ids":["e1da392e61898be4d2009b9fecce5325"],
   "pdus":[...],
   "edus":[...]
@@ -97,7 +88,7 @@ Each transaction has:
 The ``prev_ids`` field contains a list of previous transaction IDs that the
 ``origin`` server has sent to this ``destination``. Its purpose is to act as a
 sequence checking mechanism - the destination server can check whether it has
-successfully received that Transaction, or ask for a retransmission if not.
+successfully received that Transaction, or ask for a re-transmission if not.
 
 The ``pdus`` field of a transaction is a list, containing zero or more PDUs.[*]
 Each PDU is itself a JSON object containing a number of keys, the exact details
@@ -108,141 +99,63 @@ are no EDUs to transfer.
 (* Normally the PDU list will be non-empty, but the server should cope with
 receiving an "empty" transaction.)
 
-PDUs and EDUs
--------------
-
-Common PDU Fields
-~~~~~~~~~~~~~~~~~
+PDUs
+----
 
 All PDUs have:
- - An ID
- - A context
- - A declaration of their type
- - A list of other PDU IDs that have been seen recently on that context
-   (regardless of which origin sent them)
 
-``context``
-+++++++++++
-Type:
-  String
-Description:
-  Event context identifier
+- An ID
+- A context
+- A declaration of their type
+- A list of other PDU IDs that have been seen recently on that context
+  (regardless of which origin sent them)
 
 
-``origin``
-++++++++++
-Type:
-  String
-Description:
-  DNS name of homeserver that created this PDU.
+Required PDU Fields
+~~~~~~~~~~~~~~~~~~~
 
-``pdu_id``
-++++++++++
-Type:
-  String
-Description:
-  Unique identifier for PDU within the context for the originating homeserver
-
-``ts``
-++++++
-Type:
-  Integer
-Description:
-  Timestamp in milliseconds on originating homeserver when this PDU was
-  created.
-
-``pdu_type``
-++++++++++++
-Type:
-  String
-Description:
-  PDU event type.
-
-``prev_pdus``
-+++++++++++++
-Type:
-  List of pairs of strings
-Description:
-  The originating homeserver and PDU ids of the most recent PDUs the
-  homeserver was aware of for this context when it made this PDU.
-
-``depth``
-+++++++++
-Type:
-  Integer
-Description:
-  The maximum depth of the previous PDUs plus one.
-
-
-.. TODO-spec paul
-  - Update this structure so that 'pdu_id' is a two-element [origin,ref] pair
-    like the prev_pdus are
-
-State Update PDU Fields
-~~~~~~~~~~~~~~~~~~~~~~~
-
-For state updates:
-
-``is_state``
-++++++++++++
-Type:
-  Boolean
-Description:
-  True if this PDU is updating state.
-
-``state_key``
-+++++++++++++
-Type:
-  String
-Description:
-  Optional key identifying the updated state within the context.
-
-``power_level``
-+++++++++++++++
-Type:
-  Integer
-Description:
-  The asserted power level of the user performing the update.
-
-``required_power_level``
-++++++++++++++++++++++++
-Type:
-  Integer
-Description:
-  The required power level needed to replace this update.
-
-``prev_state_id``
-+++++++++++++++++
-Type:
-  String
-Description:
-  PDU event type.
-
-``prev_state_origin``
-+++++++++++++++++++++
-Type:
-  String
-Description:
-  The PDU id of the update this replaces.
-
-``user_id``
-+++++++++++
-Type:
-  String
-Description:
-  The user updating the state.
+==================== ================== =======================================
+ Key                  Type               Description
+==================== ================== =======================================
+``context``          String             Event context identifier
+``user_id``          String             The ID of the user sending the PDU
+``origin``           String             DNS name of homeserver that created
+                                        this PDU
+``pdu_id``           String             Unique identifier for PDU on the
+                                        originating homeserver
+``origin_server_ts`` Integer            Timestamp in milliseconds on origin
+                                        homeserver when this PDU was created.
+``pdu_type``         String             PDU event type
+``content``          Object             The content of the PDU.
+``prev_pdus``        List of (String,   The originating homeserver, PDU ids and
+                     String, Object)    hashes of the most recent PDUs the
+                     Triplets           homeserver was aware of for the context
+                                        when it made this PDU
+``depth``            Integer            The maximum depth of the previous PDUs
+                                        plus one
+``is_state``         Boolean            True if this PDU is updating room state
+==================== ================== =======================================
 
 ::
 
  {
+  "context":"#example:green.example.com",
+  "origin":"green.example.com",
   "pdu_id":"a4ecee13e2accdadf56c1025af232176",
-  "context":"#example.green",
-  "origin":"green",
-  "ts":1404838188000,
-  "pdu_type":"m.text",
-  "prev_pdus":[["blue","99d16afbc857975916f1d73e49e52b65"]],
-  "content":...
-  "is_state":false
+  "origin_server_ts":1404838188000,
+  "pdu_type":"m.room.message",
+  "prev_pdus":[
+    ["blue.example.com","99d16afbc8",
+        {"sha256":"abase64encodedsha256hashshouldbe43byteslong"}]
+  ],
+  "hashes":{"sha256":"thishashcoversallfieldsincasethisisredacted"},
+  "signatures":{
+    "green.example.com":{
+      "ed25519:key_version:":"these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
+    }
+  },
+  "is_state":false,
+  "content": {...}
  }
 
 In contrast to Transactions, it is important to note that the ``prev_pdus``
@@ -258,22 +171,51 @@ relationships to be preserved. A client can then display these messages to the
 end-user in some order consistent with their content and ensure that no message
 that is semantically in reply of an earlier one is ever displayed before it.
 
+State Update PDU Fields
+~~~~~~~~~~~~~~~~~~~~~~~
+
 PDUs fall into two main categories: those that deliver Events, and those that
 synchronise State. For PDUs that relate to State synchronisation, additional
 keys exist to support this:
+
+======================== ============ =========================================
+ Key                      Type         Description
+======================== ============ =========================================
+``state_key``            String       Combined with the ``pdu_type`` this
+                                      identifies the which part of the room
+                                      state is updated
+``required_power_level`` Integer      The required power level needed to
+                                      replace this update.
+``prev_state_id``        String       The homeserver of the update this
+                                      replaces
+``prev_state_origin``    String       The PDU id of the update this replaces.
+``user_id``              String       The user updating the state.
+======================== ============ =========================================
 
 ::
 
  {...,
   "is_state":true,
   "state_key":TODO-doc
-  "power_level":TODO-doc
+  "required_power_level":TODO-doc
   "prev_state_id":TODO-doc
-  "prev_state_origin":TODO-doc}
+  "prev_state_origin":TODO-doc
+ }
+
+
+EDUs
+----
 
 EDUs, by comparison to PDUs, do not have an ID, a context, or a list of
 "previous" IDs. The only mandatory fields for these are the type, origin and
 destination home server names, and the actual nested content.
+
+======================== ============ =========================================
+ Key                      Type          Description
+======================== ============ =========================================
+``edu_type``             String       The type of the ephemeral message.
+``content``              Object       Content of the ephemeral message.
+======================== ============ =========================================
 
 ::
 
@@ -288,7 +230,7 @@ Protocol URLs
 .. WARNING::
   This section may be misleading or inaccurate.
 
-All these URLs are namespaced within a prefix of::
+All these URLs are name-spaced within a prefix of::
 
   /_matrix/federation/v1/...
 
