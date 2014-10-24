@@ -1,40 +1,44 @@
 Federation API
 ===============
 
-Federation is the term used to describe how to communicate between Matrix home
-servers. Federation is a mechanism by which two home servers can exchange
-Matrix event messages, both as a real-time push of current events, and as a
-historic fetching mechanism to synchronise past history for clients to view. It
-uses HTTPS connections between each pair of servers involved as the underlying
-transport. Messages are exchanged between servers in real-time by active
-pushing from each server's HTTP client into the server of the other. Queries to
-fetch historic data for the purpose of back-filling scrollback buffers and the
-like can also be performed. Currently routing of messages between homeservers
-is full mesh (like email) - however, fan-out refinements to this design are
-currently under consideration.
+Matrix home servers use the Federation APIs to communicate with each other.
+Home servers use these APIs to push messages to each other in real-time, to
+request historic messages from each other, and to query profile and presence
+information about users on each other's servers.
+
+The API's are implemented using HTTPS GETs and PUTs between each of the
+servers. These HTTPS requests are strongly authenticated using public key
+signatures at the TLS transport layer and using public key signatures in
+HTTP Authorization headers at the HTTP layer.
 
 There are three main kinds of communication that occur between home servers:
 
-Queries:
-   These are single request/response interactions between a given pair of
-   servers, initiated by one side sending an HTTPS GET request to obtain some
-   information, and responded by the other. They are not persisted and contain
-   no long-term significant history. They simply request a snapshot state at
-   the instant the query is made.
+Persisted Data Units (PDUs):
+    These events are broadcast from one home server to any others that have
+    joined the same "context" (namely, a Room ID). They are persisted in
+    long-term storage and record the history of messages and state for a
+    context.
+
+    Like email, it is the responsibility of the originating server of a PDU
+    to deliver that event to its recepient servers. However PDUs are signed
+    using the originating server's public key so that it is possible to
+    deliver them through third-party servers.
 
 Ephemeral Data Units (EDUs):
-   These are notifications of events that are pushed from one home server to
-   another. They are not persisted and contain no long-term significant
-   history, nor does the receiving home server have to reply to them.
+    These events are pushed between pairs of home servers. They are not
+    persisted and are not part of the history of a "context", nor does the
+    receiving home server have to reply to them.
 
-Persisted Data Units (PDUs):
-   These are notifications of events that are broadcast from one home server to
-   any others that are interested in the same "context" (namely, a Room ID).
-   They are persisted to long-term storage and form the record of history for
-   that context.
+Queries:
+    These are single request/response interactions between a given pair of
+    servers, initiated by one side sending an HTTPS GET request to obtain some
+    information, and responded by the other. They are not persisted and contain
+    no long-term significant history. They simply request a snapshot state at
+    the instant the query is made.
+
 
 EDUs and PDUs are further wrapped in an envelope called a Transaction, which is
-transferred from the origin to the destination home server using an HTTP PUT
+transferred from the origin to the destination home server using an HTTPS PUT
 request.
 
 
