@@ -78,7 +78,7 @@ Transaction Fields
 ``edus``             List of Objects     List of ephemeral messages.
 ==================== =================== ======================================
 
-::
+.. code:: json
 
  {
   "transaction_id":"916d630ea616342b42e98a3be0b74113",
@@ -140,7 +140,7 @@ Required PDU Fields
 ``is_state``         Boolean            True if this PDU is updating room state
 ==================== ================== =======================================
 
-::
+.. code:: json
 
  {
   "context":"#example:green.example.com",
@@ -196,7 +196,7 @@ keys exist to support this:
 ``user_id``              String       The user updating the state.
 ======================== ============ =========================================
 
-::
+.. code:: json
 
  {...,
   "is_state":true,
@@ -221,12 +221,14 @@ destination home server names, and the actual nested content.
 ``content``              Object       Content of the ephemeral message.
 ======================== ============ =========================================
 
-::
+.. code:: json
 
- {"edu_type":"m.presence",
+ {
+  "edu_type":"m.presence",
   "origin":"blue",
   "destination":"orange",
-  "content":...}
+  "content":{...}
+ }
 
 
 Protocol URLs
