@@ -71,15 +71,15 @@ insignificant whitespace, fractions, exponents and redundant character escapes
 Signing JSON
 ------------
 
-We can now sign a JSON object by encoding it as a sequence of bytes. Computing
+We can now sign a JSON object by encoding it as a sequence of bytes, computing
 the signature for that sequence and then adding the signature to the original
 JSON object.
 
 Signing Details
 +++++++++++++++
 
-JSON is signed by encoding the JSON object without ``signatures`` or ``unsigned``
-keys using a canonical encoding. The JSON bytes are then signed using the
+JSON is signed by encoding the JSON object without ``signatures`` or keys grouped
+as ``unsigned``, using the canonical encoding described above. The JSON bytes are then signed using the
 signature algorithm and the signature encoded using base64 with the padding
 stripped. The resulting base64 signature is added to an object under the
 *signing key identifier* which is added to the ``signatures`` object under the
@@ -161,23 +161,29 @@ in the event JSON in a ``hash`` object under a ``sha256`` key.
 .. code:: python
 
     def hash_event(event_json_object):
+    
         # Keys under "unsigned" can be modified by other servers.
         # They are useful for conveying information like the age of an
         # event that will change in transit.
         # Since they can be modifed we need to exclude them from the hash.
         unsigned = event_json_object.pop("unsigned", None)
+        
         # Signatures will depend on the current value of the "hashes" key.
         # We cannot add new hashes without invalidating existing signatures.
         signatures = event_json_object.pop("signatures", None)
+        
         # The "hashes" key might contain multiple algorithms if we decide to
         # migrate away from SHA-2. We don't want to include an existing hash
         # output in our hash so we exclude the "hashes" dict from the hash.
         hashes = event_json_object.pop("hashes", {})
+        
         # Encode the JSON using a canonical encoding so that we get the same
         # bytes on every server for the same JSON object.
         event_json_bytes = encode_canonical_json(event_json_bytes)
+        
         # Add the base64 encoded bytes of the hash to the "hashes" dict.
         hashes["sha256"] = encode_base64(sha256(event_json_bytes).digest())
+        
         # Add the "hashes" dict back the event JSON under a "hashes" key.
         event_json_object["hashes"] = hashes
         if unsigned is not None:
@@ -191,26 +197,31 @@ signing algorithm
 .. code:: python
 
     def sign_event(event_json_object, name, key):
+    
         # Make sure the event has a "hashes" key.
         if "hashes" not in event_json_object:
             event_json_object = hash_event(event_json_object)
+            
         # Strip all the keys that would be removed if the event was redacted.
-        # The hashes are not striped and cover all the keys in the event.
+        # The hashes are not stripped and cover all the keys in the event.
         # This means that we can tell if any of the non-essential keys are
         # modified or removed.
-        striped_json_object = strip_non_essential_keys(event_json_object)
+        stripped_json_object = strip_non_essential_keys(event_json_object)
+        
         # Sign the stripped JSON object. The signature only covers the
         # essential keys and the hashes. This means that we can check the
         # signature even if the event is redacted.
-        signed_json_object = sign_json(striped_json_object)
-        # Copy the signatures from the striped event to the original event.
+        signed_json_object = sign_json(stripped_json_object)
+        
+        # Copy the signatures from the stripped event to the original event.
         event_json_object["signatures"] = signed_json_oject["signatures"]
         return event_json_object
 
 Servers can then transmit the entire event or the event with the non-essential
-keys removed. Receiving servers can then check the entire event if it is
-present by computing the SHA-256 of the event excluding the ``hash`` object, or
-by using the ``hash`` object included in the event if keys have been redacted.
+keys removed. If the entire event is present, receiving servers can then check
+the event by computing the SHA-256 of the event, excluding the ``hash`` object. 
+If the keys have been redacted, then the ``hash`` object is included when
+calculating the SHA-256 instead.
 
 New hash functions can be introduced by adding additional keys to the ``hash``
 object. Since the ``hash`` object cannot be redacted a server shouldn't allow
