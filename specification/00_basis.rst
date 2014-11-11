@@ -1,21 +1,6 @@
 Matrix Specification
 ====================
 
-WARNING
-=======
-
-.. WARNING::
-  The Matrix specification is still very much evolving: the API is not yet frozen
-  and this document is in places incomplete, stale, and may contain security
-  issues. Needless to say, we have made every effort to highlight the problem
-  areas that we're aware of.
-
-  We're publishing it at this point because it's complete enough to be more than
-  useful and provide a canonical reference to how Matrix is evolving. Our end
-  goal is to mirror WHATWG's `Living Standard <http://wiki.whatwg.org/wiki/FAQ#What_does_.22Living_Standard.22_mean.3F>`_
-  approach except right now Matrix is more in the process of being born than actually being
-  living!
-
 Table of Contents
 =================
 
@@ -27,6 +12,16 @@ functionality, designed to create and support a new global real-time
 communication ecosystem on the internet. This specification is the ongoing
 result of standardising the APIs used by the various components of the Matrix
 ecosystem to communicate with one another.
+
+.. WARNING::
+  The Matrix specification is still evolving: the APIs are not yet frozen
+  and this document is in places a work in progress or stale. We have made every 
+  effort to clearly flag areas which are still being finalised.
+
+  We're publishing it at this point because it's complete enough to be more than
+  useful and provide a canonical reference to how Matrix is evolving. Our end
+  goal is to mirror WHATWG's `Living Standard   
+  <http://wiki.whatwg.org/wiki/FAQ#What_does_.22Living_Standard.22_mean.3F>`_.
 
 The principles that Matrix attempts to follow are:
 
