@@ -19,7 +19,7 @@ JSON received from the network is likely to be already encoded using UTF-8.
 We sort the keys to give a consistent ordering. We force integers to be in the
 range where they can be accurately represented using IEEE double precision
 floating point numbers since a number of JSON libraries represent all numbers
-use these to store all numbers.
+using this representation.
 
 .. code:: python
 
@@ -93,7 +93,7 @@ sign the JSON. The currently support value for *signing algorithm* is
 is used to distinguish between different signing keys used by the same entity.
 
 The ``unsigned`` object and the ``signatures`` object are not covered by the
-signature. Therefore intermediate servers can add unsigneddata such as time stamps
+signature. Therefore intermediate servers can add unsigned data such as timestamps
 and additional signatures.
 
 
