@@ -1,0 +1,4 @@
+To get this running:
+  python -m SimpleHTTPServer
+
+Go to http://localhost:8000/swagger.html
