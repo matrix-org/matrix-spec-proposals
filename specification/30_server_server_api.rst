@@ -43,72 +43,6 @@ transferred from the origin to the destination home server using an HTTPS PUT
 request.
 
 
-Authorisation
--------------
-
-Every HTTP request made by a homesever is authenticated using public key
-digital signatures. The request method, target and body are signed by wrapping
-them in a JSON object and signing it using the JSON signing algorithm. The
-resulting signatures are added as an Authorization header with an auth scheme
-of X-Matrix.
-
-Step 1 sign JSON:
-
-.. code::
-
-    {
-        "method": "GET",
-        "uri": "/target",
-        "origin": "origin.hs.example.com",
-        "destintation": "destination.hs.example.com",
-        "content": { JSON content ... },
-        "signatures": {
-            "origin.hs.example.com": {
-                "ed25519:key1": "ABCDEF..."
-            }
-        }
-   }
-
-Step 2 add Authorization header:
-
-.. code::
-
-    GET /target HTTP/1.1
-    Authorization: X-Matrix origin=origin.example.com,key="ed25519:key1",sig="ABCDEF..."
-    Content-Type: application/json
-
-    { JSON content ... }
-
-
-Example python code:
-
-.. code:: python
-
-    def authorization_headers(origin_name, origin_signing_key,
-                              destination_name, request_method, request_target,
-                              content_json=None):
-        request_json = {
-             "method": request_method,
-             "uri": request_target,
-             "origin": origin_name,
-             "destination": destination_name,
-        }
-
-        if content_json is not None:
-            request["content"] = content_json
-
-        signed_json = sign_json(request_json, origin_name, origin_signing_key)
-
-        authorization_headers = []
-
-        for key, sig in signed_json["signatures"][origin_name].items():
-            authorization_headers.append(bytes(
-                "X-Matrix origin=%s,key=\"%s\",sig=\"%s\"" % (
-                    origin_name, key, sig,
-                )
-            ))
-
-        return ("Authorization", authorization_headers)
 
 
 Transactions
@@ -388,14 +322,95 @@ SRV Records
 
 .. TODO-doc
   - Why it is needed
-  
-Server-Server Authentication
-----------------------------
 
-.. TODO-doc
-  - Why is this needed.
-  - High level overview of process.
-  - Transaction signing; Matrix Authentication headers etc
+Authentication
+--------------
+
+Request Authentication
+~~~~~~~~~~~~~~~~~~~~~~
+
+Every HTTP request made by a homesever is authenticated using public key
+digital signatures. The request method, target and body are signed by wrapping
+them in a JSON object and signing it using the JSON signing algorithm. The
+resulting signatures are added as an Authorization header with an auth scheme
+of X-Matrix.
+
+Step 1 sign JSON:
+
+.. code::
+
+    {
+        "method": "GET",
+        "uri": "/target",
+        "origin": "origin.hs.example.com",
+        "destintation": "destination.hs.example.com",
+        "content": { JSON content ... },
+        "signatures": {
+            "origin.hs.example.com": {
+                "ed25519:key1": "ABCDEF..."
+            }
+        }
+   }
+
+Step 2 add Authorization header:
+
+.. code::
+
+    GET /target HTTP/1.1
+    Authorization: X-Matrix origin=origin.example.com,key="ed25519:key1",sig="ABCDEF..."
+    Content-Type: application/json
+
+    { JSON content ... }
+
+
+Example python code:
+
+.. code:: python
+
+    def authorization_headers(origin_name, origin_signing_key,
+                              destination_name, request_method, request_target,
+                              content_json=None):
+        request_json = {
+             "method": request_method,
+             "uri": request_target,
+             "origin": origin_name,
+             "destination": destination_name,
+        }
+
+        if content_json is not None:
+            request["content"] = content_json
+
+        signed_json = sign_json(request_json, origin_name, origin_signing_key)
+
+        authorization_headers = []
+
+        for key, sig in signed_json["signatures"][origin_name].items():
+            authorization_headers.append(bytes(
+                "X-Matrix origin=%s,key=\"%s\",sig=\"%s\"" % (
+                    origin_name, key, sig,
+                )
+            ))
+
+        return ("Authorization", authorization_headers)
+
+Response Authentication
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Responses are authenticated by the TLS server certificate. A homeserver should
+not send a request until it has authenticated the server it is connected to.
+
+
+Client TLS Certificates
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Requests are authenticated at the HTTP layer rather than at the TLS layer
+because HTTP services like Matrix are often deployed behind load balancers that
+handle the TLS and these load balancers make it difficult to check client TLS
+certificates.
+
+A home server may provide a client TLS certficate and the receiving home server
+may check that the client certificate matches the certificate of the origin
+home server.
 
 Server-Server Authorization
 ---------------------------
