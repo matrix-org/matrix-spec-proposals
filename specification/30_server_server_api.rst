@@ -42,8 +42,68 @@ EDUs and PDUs are further wrapped in an envelope called a Transaction, which is
 transferred from the origin to the destination home server using an HTTPS PUT
 request.
 
+Server Discovery
+----------------
 
+Resolving Server Names
+~~~~~~~~~~~~~~~~~~~~~~
 
+Each matrix home server is identified by a server name consisting of a DNS name
+and an optional TLS port.
+
+.. code::
+
+    server_name = dns_name [ ":" tls_port]
+    dns_name = <host, see [RFC 3986], Section 3.2.2>
+    tls_port = *DIGIT
+
+.. **
+
+If the port is present then the server is discovered by looking up an A record
+for the DNS name and connecting to the specified TLS port. If the port is
+absent then the server is discovered by looking up a ``_matrix._tcp``
+SRV record for the DNS name.
+
+Home servers may use SRV records to load balance requests between multiple TLS
+endpoints or to failover to another endpoint if an endpoint fails.
+
+Retrieving Server Keys
+~~~~~~~~~~~~~~~~~~~~~~
+
+Home servers publish their TLS certificates and signing keys in a JSON object
+at ``/_matrix/key/v1``.
+
+==================== =================== ======================================
+    Key                    Type                         Description
+==================== =================== ======================================
+``server_name``      String              DNS name of the home server.
+``verify_keys``      Object              Public keys of the home server for
+                                         verifying digital signatures.
+``signatures``       Object              Digital signatures for this object
+                                         signed using the ``verify_keys``.
+``tls_certificate``  String              The X.509 TLS certificate used by this
+                                         this server encoded as base64.
+==================== =================== ======================================
+
+.. code:: json
+
+    {
+        "server_name": "example.org",
+        "signatures": {
+            "example.org": {
+                "ed25519:auto": "Base+64+Encoded+Signature"
+            }
+        },
+        "tls_certificate": "Base+64+Encoded+DER+Encoded+X509+TLS+Certificate"
+        "verify_keys": {
+            "ed25519:auto": "Base+64+Encoded+Signature+Verification+Key"
+        }
+    }
+
+When fetching the keys for a server the client should check that the TLS
+certificate in the JSON matches the TLS server certificate for the connection
+and should check that the JSON signatures are correct for the supplied
+``verify_keys``
 
 Transactions
 ------------
@@ -315,13 +375,6 @@ Backfilling
 .. TODO-doc
   - What it is, when is it used, how is it done
 
-SRV Records
------------
-.. NOTE::
-  This section is a work in progress.
-
-.. TODO-doc
-  - Why it is needed
 
 Authentication
 --------------
@@ -397,18 +450,18 @@ Response Authentication
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Responses are authenticated by the TLS server certificate. A homeserver should
-not send a request until it has authenticated the server it is connected to.
-
+not send a request until it has authenticated the connected server to avoid
+leaking messages to eavesdroppers.
 
 Client TLS Certificates
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Requests are authenticated at the HTTP layer rather than at the TLS layer
 because HTTP services like Matrix are often deployed behind load balancers that
-handle the TLS and these load balancers make it difficult to check client TLS
+handle the TLS and these load balancers make it difficult to check TLS client
 certificates.
 
-A home server may provide a client TLS certficate and the receiving home server
+A home server may provide a TLS client certficate and the receiving home server
 may check that the client certificate matches the certificate of the origin
 home server.
 
