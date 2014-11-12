@@ -43,6 +43,74 @@ transferred from the origin to the destination home server using an HTTPS PUT
 request.
 
 
+Authorisation
+-------------
+
+Every HTTP request made by a homesever is authenticated using public key
+digital signatures. The request method, target and body are signed by wrapping
+them in a JSON object and signing it using the JSON signing algorithm. The
+resulting signatures are added as an Authorization header with an auth scheme
+of X-Matrix.
+
+Step 1 sign JSON:
+
+.. code::
+
+    {
+        "method": "GET",
+        "uri": "/target",
+        "origin": "origin.hs.example.com",
+        "destintation": "destination.hs.example.com",
+        "content": { JSON content ... },
+        "signatures": {
+            "origin.hs.example.com": {
+                "ed25519:key1": "ABCDEF..."
+            }
+        }
+   }
+
+Step 2 add Authorization header:
+
+.. code::
+
+    GET /target HTTP/1.1
+    Authorization: X-Matrix origin=origin.example.com,key="ed25519:key1",sig="ABCDEF..."
+    Content-Type: application/json
+
+    { JSON content ... }
+
+
+Example python code:
+
+.. code:: python
+
+    def authorization_headers(origin_name, origin_signing_key,
+                              destination_name, request_method, request_target,
+                              content_json=None):
+        request_json = {
+             "method": request_method,
+             "uri": request_target,
+             "origin": origin_name,
+             "destination": destination_name,
+        }
+
+        if content_json is not None:
+            request["content"] = content_json
+
+        signed_json = sign_json(request_json, origin_name, origin_signing_key)
+
+        authorization_headers = []
+
+        for key, sig in signed_json["signatures"][origin_name].items():
+            authorization_headers.append(bytes(
+                "X-Matrix origin=%s,key=\"%s\",sig=\"%s\"" % (
+                    origin_name, key, sig,
+                )
+            ))
+
+        return ("Authorization", authorization_headers)
+
+
 Transactions
 ------------
 .. WARNING::
