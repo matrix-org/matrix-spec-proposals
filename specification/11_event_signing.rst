@@ -105,7 +105,7 @@ and additional signatures.
        "ed25519:1": "XSl0kuyvrXNj6A+7/tkrB9sxSbRi08Of5uRhxOqZtEQ"
      },
      "unsigned": {
-        "retrieved_ts_ms": 922834800000
+        "age_ts": 922834800000
      },
      "signatures": {
         "example.org": {
