@@ -1,28 +1,14 @@
 Events
 ======
 
-Receiving live updates on a client
-----------------------------------
-
-Clients can receive new events by long-polling the home server. This will hold
-open the HTTP connection for a short period of time waiting for new events,
-returning early if an event occurs. This is called the `Event Stream`_. All
-events which are visible to the client will appear in the event stream. When
-the request returns, an ``end`` token is included in the response. This token
-can be used in the next request to continue where the client left off.
+All communication in Matrix is expressed in the form of data objects calle
+Events. These are the fundamental building blocks common to the client-server,
+server-server and application-service APIs, and are described below.
 
 .. TODO-spec
-  How do we filter the event stream?
-  Do we ever return multiple events in a single request?  Don't we get lots of request
-  setup RTT latency if we only do one event per request? Do we ever support streaming
-  requests? Why not websockets?
+  We *HAVE* to clarify the difference between "state events" and "non-state 
+  events" here (or somewhere like it)
 
-When the client first logs in, they will need to initially synchronise with
-their home server. This is achieved via the |initialSync|_ API. This API also
-returns an ``end`` token which can be used with the event stream.
-
-.. TODO-spec
-  We *HAVE* to clarify the difference between "state events" and "non-state events" here (or somewhere like it)
 
 Common event fields
 -------------------
@@ -320,6 +306,13 @@ m.room.message msgtypes
 .. TODO-spec
    How a client should handle unknown message types.
 
+.. TODO-spec
+   We've forgotten m.file...
+
+.. TODO-spec
+   It's really confusing that the m. prefix is used both for event types and
+   for msgtypes.  We should namespace them differently somehow.
+
 Each ``m.room.message`` MUST have a ``msgtype`` key which identifies the type
 of message being sent. Each type has their own required and optional keys, as
 outlined below:
@@ -445,8 +438,8 @@ perform extra roundtrips to query it.
 Voice over IP
 -------------
 Matrix can also be used to set up VoIP calls. This is part of the core
-specification, although is still in a very early stage. Voice (and video) over
-Matrix is based on the WebRTC standards.
+specification, although is at a relatively early stage. Voice (and video) over
+Matrix is built on the WebRTC 1.0 standard.
 
 Call events are sent to a room, like any other event. This means that clients
 must only send call events to rooms with exactly two participants as currently

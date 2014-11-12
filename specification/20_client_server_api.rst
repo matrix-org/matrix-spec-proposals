@@ -345,6 +345,29 @@ it should request a login fallback page::
 
 This MUST return an HTML page which can perform the entire login process.
 
+Events
+------
+
+Receiving live updates on a client
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Clients can receive new events by long-polling the home server. This will hold
+open the HTTP connection for a short period of time waiting for new events,
+returning early if an event occurs. This is called the `Event Stream`_. All
+events which are visible to the client will appear in the event stream. When
+the request returns, an ``end`` token is included in the response. This token
+can be used in the next request to continue where the client left off.
+
+.. TODO-spec
+  How do we filter the event stream?
+  Do we ever return multiple events in a single request?  Don't we get lots of request
+  setup RTT latency if we only do one event per request? Do we ever support streaming
+  requests? Why not websockets?
+
+When the client first logs in, they will need to initially synchronise with
+their home server. This is achieved via the |initialSync|_ API. This API also
+returns an ``end`` token which can be used with the event stream.
+
 
 Rooms
 -----

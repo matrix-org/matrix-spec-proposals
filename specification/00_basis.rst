@@ -7,6 +7,9 @@ Table of Contents
 .. contents:: Table of Contents
 .. sectnum::
 
+Introduction
+============
+
 Matrix is a new set of open APIs for open-federated Instant Messaging and VoIP
 functionality, designed to create and support a new global real-time
 communication ecosystem on the internet. This specification is the ongoing
@@ -78,6 +81,13 @@ instant messages, VoIP call setups, or any other objects that need to be
 reliably and persistently pushed from A to B in an interoperable and federated
 manner.
 
+Version
+=======
+
+The Matrix spec is currently rapidly evolving, and there have been no versioned
+releases as yet.  Versions should be identified by git revision, or failing that
+timestamp.
+
 Basis
 =====
 
@@ -136,8 +146,8 @@ context of a "Room".
 Room structure
 ~~~~~~~~~~~~~~
 
-A room is a conceptual place where users can send and receive events. Rooms can
-be created, joined and left. Events are sent to a room, and all participants in
+A room is a conceptual place where users can send and receive events. 
+Events are sent to a room, and all participants in
 that room with sufficient access will receive the event. Rooms are uniquely
 identified internally via a "Room ID", which look like::
 
@@ -267,7 +277,7 @@ action from the user; either sending a message to a room, or changing presence
 state from a lower to a higher level of availability (thus: changing state from
 ``unavailable`` to ``online`` will count as an action for being active, whereas
 in the other direction will not). This timestamp is presented via a key called
-``last_active_ago``, which gives the relative number of miliseconds since the
+``last_active_ago``, which gives the relative number of milliseconds since the
 message is generated/emitted, that the user was last seen active.
 
 Home servers can also use the user's choice of presence state as a signal for
@@ -439,7 +449,7 @@ authorisation and distribution. These sections must not be encrypted.
 
 State Events
 ++++++++++++
-`State events` are events that update a section of the state of a graph. These
+`State events` are events that update a section of state data for a room. These
 state events hold all the same properties of events, and are part of the event
 graph. The payload of the event is the replacement value for the particular
 section of state being updated.
