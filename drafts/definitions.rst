@@ -1,6 +1,8 @@
 Definitions
 ===========
 
+(a relatively recent (Oct 2014) new list of definitions from Erik)
+
 # *Event* -- A JSON object that represents a piece of information to be
 distributed to the the room. The object includes a payload and metadata,
 including a `type` used to indicate what the payload is for and how to process
