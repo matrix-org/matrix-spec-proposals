@@ -1,3 +1,25 @@
+Failures
+--------
+
+A server may encouter an error when trying to process an event received from a
+remote server. In these cases the server may send a `failure` to the remote.
+
+A `failure` references both the event that it was trying to process and the
+event that triggered the processing. For example, a failure may be emitted if
+one of the parents of the received events was not authorized.
+
+A failure also includes a `severity` field that indicates what action was taken
+by the server. There are three valid values:
+
+  * `Fatal`: The server failed to parse the event. The event is dropped by the
+    server as well as all descendants.
+  * `Error`: The server rejected the event, for example due to authorization.
+    That event is dropped, but descendants may be accepted.
+  * `Warn`: The server accepted all events, but believes the remote did
+    something wrong. For example, references an event the local server believes
+    is unauthorized.
+
+
 Data Flows
 ----------
 
