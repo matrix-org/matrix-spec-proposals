@@ -408,11 +408,32 @@ outlined below:
       London, UK", or some kind of content description for accessibility e.g.
       "location attachment".
 
-The following keys can be attached to any ``m.room.message``:
-
+``m.file``
+  Required keys:
+    - ``url`` : "string" - The URL for the file
+    - ``filename`` : "string" - The original filename of the uploaded file
   Optional keys:
-    - ``sender_ts`` : integer - A timestamp (ms resolution) representing the
-      wall-clock time when the message was sent from the client.
+    - ``info`` : JSON object (FileInfo) - The info for the file
+      referred to in ``url``.
+    - ``thumbnail_url`` : "string" - The URL to a thumnail of the location
+      being represented.
+    - ``thumbnail_info`` : JSON object (ImageInfo) - The image info for the
+      image referred to in ``thumbnail_url``.
+    - ``body`` : "string" - A human-readable description of the file for
+      backwards compatibility. This is recommended to be the filename of the
+      original upload.
+
+  FileInfo:
+    Information about a file::
+
+      {
+        "size" : integer (size of file in bytes),
+        "mimetype" : "string (e.g. image/jpeg)",
+      }
+
+.. TODO-spec::
+    Make the definitions "inherit" from FileInfo where necessary...
+
 
 Events on Change of Profile Information
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
