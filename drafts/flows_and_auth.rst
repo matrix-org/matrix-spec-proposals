@@ -94,3 +94,20 @@ A user may send an event if all the following hold true:
     user must have at least that power level. Otherwise, the user must have a
     power level of at least `events_default` or `state_default`, depending on
     if the event is a message or state event respectively.
+
+
+Unauthorized events
+-------------------
+
+An unauthorized event should not be accepted into the event graph, i.e. new
+events should not reference any unauthorized events. There are situations where
+this can happen and so it is not considered an error to include an unauthorized
+event in the event graph. It is an error for events to refer unauthorized
+events in their `auth_events` section and will in turn be considered
+unauthorized.
+
+A server may choose to store only the redacted form of an unauthorized event if
+it is included in the event graph.
+
+A server may emit a warning to a remote server if it references an event it
+considers unauthorized.
