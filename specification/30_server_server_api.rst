@@ -383,7 +383,7 @@ Authentication
 Request Authentication
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Every HTTP request made by a homesever is authenticated using public key
+Every HTTP request made by a homeserver is authenticated using public key
 digital signatures. The request method, target and body are signed by wrapping
 them in a JSON object and signing it using the JSON signing algorithm. The
 resulting signatures are added as an Authorization header with an auth scheme
