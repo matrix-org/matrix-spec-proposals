@@ -98,7 +98,7 @@ Creation
 A `m.room.create` must be the first event in the room.
 
 
-Ban, kick and redaction
+Ban, Kick and Redaction
 +++++++++++++++++++++++
 
 To ban or kick another user in the room, or to redact an event, then the user
@@ -118,7 +118,7 @@ A user may send an event if all the following hold true:
     if the event is a message or state event respectively.
 
 
-Unauthorized events
+Unauthorized Events
 -------------------
 
 An unauthorized event should not be accepted into the event graph, i.e. new
@@ -133,3 +133,14 @@ it is included in the event graph.
 
 A server may emit a warning to a remote server if it references an event it
 considers unauthorized.
+
+
+State and Authorization Querying
+--------------------------------
+
+A local server may become aware that it and a remote server's view of the
+current state are inconsistent. The local server may then send its current
+state to the remote, which responds with its view of the current state. Both
+servers should then recompute the local state. If they are conforming
+implementations then they will reach the same conclusions.
+
