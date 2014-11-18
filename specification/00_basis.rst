@@ -88,8 +88,8 @@ The Matrix spec is currently rapidly evolving, and there have been no versioned
 releases as yet.  Versions should be identified by git revision, or failing that
 timestamp.
 
-Basis
-=====
+Overview
+========
 
 Architecture
 ------------
@@ -107,9 +107,9 @@ not communicate with each other directly.
            |  events  |                                    |  events  |
            |          V                                    |          V
        +------------------+                            +------------------+
-       |                  |---------( HTTP )---------->|                  |
+       |                  |---------( HTTPS )--------->|                  |
        |   Home Server    |                            |   Home Server    |
-       |                  |<--------( HTTP )-----------|                  |
+       |                  |<--------( HTTPS )----------|                  |
        +------------------+        Federation          +------------------+
 
 A "Client" typically represents a human using a web application or mobile app.
@@ -133,6 +133,9 @@ federate with other HSes.  It is typically responsible for multiple clients.
 "Federation" is the term used to describe the sharing of data between two or
 more home servers.
 
+Events
+++++++
+
 Data in Matrix is encapsulated in an "event". An event is an action within the
 system. Typically each action (e.g. sending a message) correlates with exactly
 one event. Each event has a ``type`` which is used to differentiate different
@@ -140,8 +143,28 @@ kinds of data. ``type`` values MUST be uniquely globally namespaced following
 Java's `package naming conventions
 <http://docs.oracle.com/javase/specs/jls/se5.0/html/packages.html#7.7>`, e.g.
 ``com.example.myapp.event``. The special top-level namespace ``m.`` is reserved
-for events defined in the Matrix specification. Events are usually sent in the
-context of a "Room".
+for events defined in the Matrix specification - for instance ``m.room.message``
+is the event type for instant messages. Events are usually sent in the context
+of a "Room".
+
+Event Graphs
+++++++++++++
+
+Each event has a list of zero or more `parent` events. These relations form
+directed acyclic graphs of events called `event graphs`. Every event graph has a single root event, and each event graph forms the 
+basis of the history of a matrix room.
+
+Event graphs give a partial ordering of events, i.e. given two events one may
+be considered to have come before the other if one is an ancestor of the other.
+Since two events may be on separate branches, not all events can be compared in
+this manner.
+
+Every event has a metadata `depth` field that is a positive integer that is
+strictly greater than the depths of any of its parents. The root event should
+have a depth of 1.
+
+[Note: if one event is before another, then it must have a strictly smaller
+depth]
 
 Room structure
 ~~~~~~~~~~~~~~
@@ -158,8 +181,8 @@ domain, it is simply for globally namespacing room IDs. The room does NOT
 reside on the domain specified. Room IDs are not meant to be human readable.
 They ARE case-sensitive.
 
-The following diagram shows an ``m.room.message`` event being sent in the room
-``!qporfwt:matrix.org``::
+The following conceptual diagram shows an ``m.room.message`` event being sent to 
+the room ``!qporfwt:matrix.org``::
 
        { @alice:matrix.org }                             { @bob:domain.com }
                |                                                 ^
@@ -171,23 +194,57 @@ The following diagram shows an ``m.room.message`` event being sent in the room
                V                                                 |
        +------------------+                          +------------------+
        |   Home Server    |                          |   Home Server    |
-       |   matrix.org     |<-------Federation------->|   domain.com     |
+       |   matrix.org     |                          |   domain.com     |
        +------------------+                          +------------------+
-                |       .................................        |
-                |______|           Shared State          |_______|
-                       | Room ID: !qporfwt:matrix.org    |
-                       | Servers: matrix.org, domain.com |
-                       | Members:                        |
-                       |  - @alice:matrix.org            |
-                       |  - @bob:domain.com              |
-                       |.................................|
+               |                                                 ^
+               |                                                 |
+               |         Room ID: !qporfwt:matrix.org            |
+               |         Event type: m.room.message              |
+               |         Content: { JSON object }                |
+               `-------> Pointer to the preceding message  ------`
+                         PKI signature from matrix.org
+                         Transaction-layer metadata
+                         PKI Authorization header
+                         
+                     ...................................
+                    |           Shared Data             |
+                    | State:                            |
+                    |   Room ID: !qporfwt:matrix.org    |
+                    |   Servers: matrix.org, domain.com |
+                    |   Members:                        |
+                    |    - @alice:matrix.org            |
+                    |    - @bob:domain.com              |
+                    | Messages:                         |
+                    |   - @alice:matrix.org             |
+                    |     Content: { JSON object }      |
+                    |...................................|
 
-Federation maintains shared state between multiple home servers, such that when
-an event is sent to a room, the home server knows where to forward the event on
-to, and how to process the event. State is scoped to a single room, and
-federation ensures that all home servers have the information they need, even
-if that means the home server has to request more information from another home
-server before processing the event.
+Federation maintains shared data structures per-room between multiple home
+servers. The data is split into ``message events`` and ``state events``.
+
+``Message events`` describe transient 'once-off' activity in a room such as an
+instant messages, VoIP call setups, file transfers, etc. They generally describe
+communication activity.
+
+``State events`` describe updates to a given piece of persistent information
+('state') related to a room, such as the room's name, topic, membership,
+participating servers, etc. State is modelled as a lookup table of key/value
+pairs per room, with each key being a tuple of ``state_key`` and ``event type``.
+Each state event updates the value of a given key.
+
+The state of the room at a given point is calculated by considering all events
+preceding and including a given event in the graph. Where events describe the
+same state, a merge conflict algorithm is applied. The state resolution
+algorithm is transitive and does not depend on server state, as it must
+consistently select the same event irrespective of the server or the order the
+events were received in.
+
+Events are signed by the originating server (the signature includes the parent
+relations, type, depth and payload hash) and are pushed over federation to the
+participating servers in a room, currently using full mesh topology. Servers may
+also request backfill of events over federation from the other servers
+participating in a room.
+
 
 Room Aliases
 ~~~~~~~~~~~~
@@ -227,21 +284,19 @@ that are in the room that can be used to join via.
 Identity
 ~~~~~~~~
 
-Users in Matrix are identified via their user ID. However, existing ID
-namespaces can also be used in order to identify Matrix users. A Matrix
-"Identity" describes both the user ID and any other existing IDs from third
-party namespaces *linked* to their account.
+Users in Matrix are identified via their matrix user ID (MXID). However,
+existing 3rd party ID namespaces can also be used in order to identify Matrix
+users. A Matrix "Identity" describes both the user ID and any other existing IDs
+from third party namespaces *linked* to their account.
 
 Matrix users can *link* third-party IDs (3PIDs) such as email addresses, social
 network accounts and phone numbers to their user ID. Linking 3PIDs creates a
-mapping from a 3PID to a user ID. This mapping can then be used by other Matrix
-users in order to discover other users, according to a strict set of privacy
-permissions.
+mapping from a 3PID to a user ID. This mapping can then be used by Matrix
+users in order to discover the MXIDs of their contacts.
 
 In order to ensure that the mapping from 3PID to user ID is genuine, a globally
-federated cluster of trusted "Identity Servers" (IS) are used to perform
-authentication of the 3PID.  Identity servers are also used to preserve the
-mapping indefinitely, by replicating the mappings across multiple ISes.
+federated cluster of trusted "Identity Servers" (IS) are used to verify the 3PID
+and persist and replicate the mappings.
 
 Usage of an IS is not required in order for a client application to be part of
 the Matrix ecosystem. However, without one clients will not be able to look up
@@ -266,45 +321,40 @@ the following:
   - ``hidden`` : Behaves as offline, but allows the user to see the client
     state anyway and generally interact with client features. (Not yet
     implemented in synapse).
+    
+.. TODO-spec
+  This seems like a very constrained list of states - surely presence states 
+  should be extensible, with us providing a baseline, and possibly a scale of 
+  availability?  For instance, do-not-disturb is missing here, as well as a 
+  distinction between 'away' and 'busy'.
 
 This basic ``presence`` field applies to the user as a whole, regardless of how
-many client devices they have connected. The home server should synchronise
-this status choice among multiple devices to ensure the user gets a consistent
-experience.
+many client devices they have connected. The presence state is pushed by the homeserver to all connected clients for a user to ensure a consistent experience for the user.
 
-In addition, the server maintains a timestamp of the last time it saw an active
-action from the user; either sending a message to a room, or changing presence
-state from a lower to a higher level of availability (thus: changing state from
-``unavailable`` to ``online`` will count as an action for being active, whereas
-in the other direction will not). This timestamp is presented via a key called
+.. TODO-spec
+  We need per-device presence in order to handle push notification semantics and similar.
+
+In addition, the server maintains a timestamp of the last time it saw a
+pro-active event from the user; either sending a message to a room, or changing
+presence state from a lower to a higher level of availability (thus: changing
+state from ``unavailable`` to ``online`` counts as a proactive event, whereas in
+the other direction it will not). This timestamp is presented via a key called
 ``last_active_ago``, which gives the relative number of milliseconds since the
-message is generated/emitted, that the user was last seen active.
-
-Home servers can also use the user's choice of presence state as a signal for
-how to handle new private one-to-one chat message requests. For example, it
-might decide:
-
-  - ``free_for_chat`` : accept anything
-  - ``online`` : accept from anyone in my address book list
-  - ``busy`` : accept from anyone in this "important people" group in my
-    address book list
+message is generated/emitted that the user was last seen active.
 
 Presence List
 +++++++++++++
-Each user's home server stores a "presence list" for that user. This stores a
-list of other user IDs the user has chosen to add to it. To be added to this
-list, the user being added must receive permission from the list owner. Once
-granted, both user's HSes store this information. Since such subscriptions
-are likely to be bidirectional, HSes may wish to automatically accept requests
-when a reverse subscription already exists.
 
-As a convenience, presence lists should support the ability to collect users
-into groups, which could allow things like inviting the entire group to a new
-("ad-hoc") chat room, or easy interaction with the profile information ACL
-implementation of the HS.
+Each user's home server stores a "presence list". This stores a list of user IDs
+whose presence the user wants to follow.
+
+To be added to this list, the user being added must be invited by the list owner
+and accept the invitation. Once accepted, both user's HSes track the
+subscription.
 
 Presence and Permissions
 ++++++++++++++++++++++++
+
 For a viewing user to be allowed to see the presence information of a target
 user, either:
 
@@ -314,29 +364,6 @@ user, either:
 
 In the latter case, this allows for clients to display some minimal sense of
 presence information in a user list for a room.
-
-Idle Time
-+++++++++
-.. NOTE::
-  Needs specificity & detail.  Not present in Synapse.
-
-As well as the basic ``presence`` field, the presence information can also show
-a sense of an "idle timer". This should be maintained individually by the
-user's clients, and the home server can take the highest reported time as that
-to report. When a user is offline, the home server can still report when the
-user was last seen online.
-
-Device Type
-+++++++++++
-.. NOTE::
-  Needs specificity & detail.  Not present in Synapse.
-
-Client devices that may limit the user experience somewhat (such as "mobile"
-devices with limited ability to type on a real keyboard or read large amounts of
-text) should report this to the home server, as this is also useful information
-to report as "presence" if the user cannot be expected to provide a good typed
-response to messages.
-
 
 
 Profiles
@@ -355,151 +382,14 @@ A Profile consists of a display name, an avatar picture, and a set of other
 metadata fields that the user may wish to publish (email address, phone
 numbers, website URLs, etc...). This specification puts no requirements on the
 display name other than it being a valid unicode string. Avatar images are not
-stored directly; instead the home server stores an ``http``-scheme URL where
-clients may fetch it from.
-
-Model
------
-
-Overview
-~~~~~~~~
-
-Matrix is used to reliably distribute data between sets of `users`.
-
-Users are associated with one of many matrix `servers`. These distribute,
-receive and store data on behalf of its registered users. Servers can be run on
-any host accessible from the internet.
-
-When a user wishes to send data to users on different servers the local server
-will distribute the data to each remote server. These will in turn distribute
-to their local users involved.
-
-A user sends and receives data using one or more authenticated `clients`
-connected to his server. Clients may persist data locally or request it when
-required from the server.
-
-Events
-~~~~~~
-An event is a collection of data (the `payload`) and metadata to be distributed
-across servers and is the primary data unit in Matrix.  Events are extensible
-so that clients and servers can add extra arbitrary fields to both the payload
-or metadata.
-
-Events are distributed to interested servers upon creation. Historical events
-may be requested from servers; servers are not required to produce all
-or any events requested.
-
-All events have a metadata `type` field that is used by client and servers to
-determine how the payload should be processed and used. There are a number of
-types reserved by the protocol for particular uses, but otherwise types may be
-defined by applications, clients or servers for their own purposes.
-
-.. TODO : Namespacing of new types.
-
-Graph
-+++++
-Each event has a list of zero or more `parent` events. These relations form
-directed acyclic graphs of events called `event graphs`. Every event graph has
-a single root event, and each event graph forms the basis of the history of a
-matrix room.
-
-Event graphs give a partial ordering of events, i.e. given two events one may
-be considered to have come before the other if one is an ancestor of the other.
-Since two events may be on separate branches, not all events can be compared in
-this manner.
-
-Every event has a metadata `depth` field that is a positive integer that is
-strictly greater than the depths of any of its parents. The root event should
-have a depth of 1.
-
-[Note: if one event is before another, then it must have a strictly smaller
-depth]
-
-Integrity
-+++++++++
-
-.. TODO: Specify the precise subset of essential fields
-
-Portions of events will be signed by one or more servers or clients. The parent
-relations, type, depth and payload (as well as other metadata fields that will
-be specified) must be signed by the originating server. [Note: Thus, once an
-event is distributed and referenced by later events, they effectively become
-immutable].
-
-The payload may also be encrypted by clients, except in the case where the
-payload needs to be interpreted by the servers. A list of event types that
-cannot have an encrypted payload are given later.
-
-
-State
-~~~~~
-Event graphs may have meta information associated with them, called `state`.
-State can be updated over time by servers or clients, subject to
-authorisation.
-
-The state of a graph is split into `sections` that can be atomically updated
-independently of each other.
-
-State is stored within the graph itself, and can be computed by looking at the
-graph in its entirety. We define the state at a given event to be the state of
-the sub graph of all events "before" and including that event.
-
-Some sections of the state may determine behaviour of the protocol, including
-authorisation and distribution. These sections must not be encrypted.
-
-State Events
-++++++++++++
-`State events` are events that update a section of state data for a room. These
-state events hold all the same properties of events, and are part of the event
-graph. The payload of the event is the replacement value for the particular
-section of state being updated.
-
-State events must also include a `state_key` metadata field. The pair of fields
-type and state_key uniquely defines the section of state that is to be updated.
-
-State Resolution
-++++++++++++++++
-A given state section may have multiple state events associated with it in a
-given graph. A consistent method of selecting which state event takes
-precedence is therefore required.
-
-This is done by taking the latest state events, i.e. the set of events that are
-either incomparable or after every other event in the graph. A state resolution
-algorithm is then applied to this set to select the single event that takes
-precedence.
-
-The state resolution algorithm must be transitive and not depend on server
-state, as it must consistently select the same event irrespective of the server
-or the order the events were received in.
-
-State Dictionary
-++++++++++++++++
-The state dictionary is the mapping from sections of state to the state events
-which set the section to its current value.  The state dictionary, like the
-state itself, depends on the events currently in the graph and so is updated
-with each new event received.
-
-Since the sections of the state are defined by the pair of strings from the
-type and state_key of the events that update them, the state dictionary can be
-defined as a mapping from the pair (type, state_key) to a state event with
-those values in the graph.
-
-Deleting State
-++++++++++++++
-State sections may also be deleted, i.e. removed from the state dictionary. The
-state events will still be present in the event graph.
-
-This is done by sending a special state event indicating that the given entry
-should be removed from the dictionary. These events follow the same rules for
-state resolution, with the added requirement that it loses all conflicts.
-[Note: This is required to make the algorithm transitive.]
+stored directly; instead the home server stores an ``http``-scheme URL from which clients may fetch the image.
 
 
 API Standards
 -------------
 
 The mandatory baseline for communication in Matrix is exchanging JSON objects
-over RESTful HTTP APIs. HTTPS is mandated as the baseline for server-server
+over HTTP APIs. HTTPS is mandated as the baseline for server-server
 (federation) communication.  HTTPS is recommended for client-server
 communication, although HTTP may be supported as a fallback to support basic
 HTTP clients. More efficient optional transports for client-server
@@ -520,7 +410,7 @@ all requests.
 .. TODO
   Need to specify any HMAC or access_token lifetime/ratcheting tricks
 
-Any errors which occur on the Matrix API level MUST return a "standard error
+Any errors which occur at the Matrix API level MUST return a "standard error
 response". This is a JSON object which looks like::
 
   {

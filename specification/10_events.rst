@@ -1,13 +1,10 @@
 Events
 ======
 
-All communication in Matrix is expressed in the form of data objects calle
+All communication in Matrix is expressed in the form of data objects called
 Events. These are the fundamental building blocks common to the client-server,
 server-server and application-service APIs, and are described below.
 
-.. TODO-spec
-  We *HAVE* to clarify the difference between "state events" and "non-state 
-  events" here (or somewhere like it)
 
 
 Common event fields
