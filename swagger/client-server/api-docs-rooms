@@ -663,7 +663,6 @@
         {
           "method": "GET",
           "summary": "Get all the current information for this room, including messages and state events.",
-          "notes": "NOT YET IMPLEMENTED.",
           "type": "InitialSyncRoomData",
           "nickname": "get_room_sync_data",
           "parameters": [
