@@ -51,6 +51,7 @@ These issues are added features which have not been addressed:
 - How do you delete state?
 - Paginating on global initial sync e.g. 10 most recently active rooms.
 - How do you determine the capabilities of a given HS?
+- Requesting context (read: events around) around an arbitrary event (which may have been 6 months ago)
 
 These issues are federation-related which have not been addressed:
 
