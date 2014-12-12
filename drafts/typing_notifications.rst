@@ -26,7 +26,9 @@ All room members will receive an event on the event stream::
   {
     "type": "m.typing",
     "room_id": "!room-id-here:matrix.org",
-    "typing": ["list of", "every user", "id who", "is currently", "typing"]
+    "content": {
+      "user_ids": ["list of", "every user", "who is", "currently typing"]
+    }
   }
 
 The client must use this list to *REPLACE* its knowledge of every user who is
