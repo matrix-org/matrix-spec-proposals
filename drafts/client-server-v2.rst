@@ -248,13 +248,13 @@ The aim of this is to reproduce the same data as v1, as a sanity check that this
 The aim of this is to leverage the new APIs to fix some bugs.
 
 - Login. POST streaming token (users["*"], rooms["*"]). Store stream token.
-- POST event filter token (["m.room.message"]). Store as Message Event filter token.
+- POST event filter token (["m.room.message", "m.room.topic", "m.room.name", "m.room.member"]). Store as Message Event filter token.
 - POST event filter token (["m.room.name", "m.room.topic", "m.room.member"]). Store as Current State Event filter token.
 - GET /initialSync max=1 with all tokens. Returns all rooms (rooms["*"]), with name/topic/members (NOT all state), with
-  max 1 m.room.message (truly honouring max=1), with presence (users["*"]).
+  max 1 m.room.message/topic/name/member (truly honouring max=1), with presence (users["*"]).
 - GET /eventStream with stream token. Blocks.
 - Click on room !foo:bar. Start infinite scrolling.
-- GET /paginate with Message Event filter token. Returns only m.room.message events.
+- GET /paginate with Message Event filter token. Returns only m.room.message/name/topic/member events.
 
 #3 Mobile client (permanent storage)
 ------------------------------------
