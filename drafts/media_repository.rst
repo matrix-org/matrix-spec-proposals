@@ -17,9 +17,9 @@ the download::
     <= HTTP/1.1 200 OK
        Content-Type: application/json
 
-       { "token": <media-id> }
+       { "content-uri": "mxc://<server-name>/<media-id>" }
 
-    => GET /_matrix/media/v1/download/<server_name>/<media-id> HTTP/1.1
+    => GET /_matrix/media/v1/download/<server-name>/<media-id> HTTP/1.1
 
     <= HTTP/1.1 200 OK
        Content-Type: <media-type>
