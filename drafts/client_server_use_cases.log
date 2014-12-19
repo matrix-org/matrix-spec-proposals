@@ -1,0 +1,303 @@
+#1: Lightweight IM client (no perm storage)
+#2: Mobile IM client (perm storage)
+#3: MIDI client
+#4: Animatrix client
+#5: Unity object trees
+#6: Forum
+#7: Social Network ("Walls", PMs, groups)
+#8: Minecraft-clone
+#9: Bug Tracking Software
+#10: Global 'Like' widget, which links through to a room.
+
+================
+
+#1: Lightweight IM client (no perm storage)
+-------------------------------------------
+Description: 
+  An IM client (think web client) with no way of persisting data beyond
+  a session (the instance a person is using the app).
+Features: 
+  Recent activity, Room screen (member list, etc), User page, just like
+  the web client.
+Actions:
+ - Send a one-to-one message to someone.
+ - Accept an invite.
+ - Populate recent activity (all rooms joined with latest message + room names/aliases, rooms invited to + room names/aliases)
+ - Populate scrollback if click on room
+ - Populate member list if click on room + get presence updates for them
+ - Populate room name / topic if click on room
+ - Create an empty room.
+ - Join a room from an alias.
+ 
+
+---
+
+Action: 
+  Send a one-to-one message to someone.
+How: 
+  Enter their username and hit Message. Taken to room page with invited user.
+  History displays that I've invited someone / joined the room. Enter a message
+  and hit send. Message appears in window.
+
+::
+
+  Client                    Server
+       -- @user:domain -->
+       <--- room ID, ACK--
+       <-historical msgs--
+       -- msg,room ID --->
+       <--- ACK ----------
+
+---
+
+Action: 
+  Accept an invite.
+How: 
+  Get list of invites. Click one of them to 'accept' it. May or may not want
+  room content.
+
+::
+
+  Client                    Server
+       ---- req invites ->
+       <--- [inv,inv] ----
+       ---- accept inv -->
+       <--- ACK ----------
+       <--- room content-- (optional)
+       
+---
+
+Action: 
+  Populate recent activity (all rooms joined with latest message + room names/aliases, rooms invited to + room names/aliases)
+How: 
+  Request joined rooms with latest message and room name. Request rooms invited to. Possibly extra info like # joined members.
+
+::
+
+  Client                    Server
+       ---- req sync ---->
+       <---joined rooms--- {msg,name,alias,#members?}
+       <---invited rooms-- {name,alias}
+       
+---
+
+Action: 
+  Populate scrollback if click on room.
+How: 
+  Request scrollback for room.
+
+::
+
+  Client                    Server
+       ---- room id ----->
+       <--- scrollback ---
+       
+---
+
+Action: 
+  Populate member list if click on room + get presence updates for them.
+How: 
+  Click on room. Member list with names/presence/pics appears. May not want
+  pic.
+
+::
+
+  Client                    Server
+       ---- req mem list ->
+       <--- members ------- {name,pic,presence}
+       - monitor presence->
+              ...
+       <- presence change--
+       <- presence change--
+              ...
+       -- stop presence --->
+       
+---
+
+Action: 
+  Populate room name / topic if click on room.
+How: 
+  Click on room. Room name and topic with aliases appears. May not want topic
+  (eg screen size).
+
+::
+
+  Client                    Server
+       ---- req room info->
+       <--- room info ----- {name,topic,aliases}
+       
+---
+
+Action: 
+  Create an empty room.
+How: 
+  Type in room config (desired name, public/private, etc). Hit Create. Room is
+  created. Possibly get room info.
+
+::
+
+  Client                    Server
+       ---- mkroom{config}->
+       <--ACK{room_id}------
+       <-- room info ------- (optional)
+       
+---
+
+Action: 
+  Join a room from an alias.
+How: 
+  Type in alias. Hit Join. Room is joined. Possibly get room info.
+
+::
+
+  Client                    Server
+       -- join{alias} ----->
+       <--ACK{room_id}------
+       <--room info--------- (optional)
+       
+       
+===========================
+
+#2: Mobile IM client (perm storage)
+-----------------------------------
+Description: 
+  An IM client (think android/ios) which persists data on a database.
+Features: 
+  Recent activity, Room screen (member list, etc), User page, just like
+  the web client.
+Actions:
+ - Send a one-to-one message to someone.
+ - Accept a stored invite.
+ - Populate recent activity (all rooms joined with latest message + room names/aliases, rooms invited to + room names/aliases)
+ - Populate scrollback if click on room
+ - Populate member list if click on room + get presence updates for them
+ - Populate room name / topic if click on room
+ - Create an empty room.
+ - Join a room from an alias.
+ 
+
+---
+
+Action: 
+  Send a one-to-one message to someone (single room).
+How: 
+  Enter their username and hit Message. Taken to room page with invited user if no room exists,
+  else takes to existing room. History displays that I've invited someone or scrollback. Enter 
+  a message and hit send. Message appears in window.
+
+::
+
+  Client                    Server
+       -- @user:domain -->
+       <--- room ID, ACK--
+       <-historical msgs-- (optional; not if existing room)
+       -- msg,room ID ---> 
+       <--- ACK ----------
+
+---
+
+Action: 
+  Accept a stored invite.
+How: 
+  Send invite to server. Get room content (or NO-OP if already joined).
+
+::
+
+  Client                    Server
+       ---- accept inv -->
+       <--- ACK ----------
+       <--- room content-- (optional)
+       
+---
+
+Action: 
+  Populate recent activity (all rooms joined with latest message + room names/aliases, rooms invited to + room names/aliases)
+  incrementally.
+How: 
+  Request recent activity diff. Get updated msg/name/#members for changed values only.
+
+::
+
+  Client                    Server
+       - req sync{token}->
+       <---diff{rooms}---- {msg,name,alias,#members?}
+       
+---
+
+Action: 
+  Populate scrollback if click on room. 
+How: 
+  Request scrollback for room. Either a diff or a page of scrollback
+  depending on cached data.
+
+::
+
+  Client                        Server
+       -room id{latest event}-> {max msgs}
+       <--- scrollback -------- {fresh/incremental flag}
+       
+---
+
+Action: 
+  Populate member list if click on room + get presence updates for them.
+How: 
+  Click on room. Member list with names/presence/pics appears. May not want
+  pic.
+
+::
+
+  Client                    Server
+       ---- req mem list ->
+       <--- members ------- {name,pic,presence}
+       - monitor presence->
+              ...
+       <- presence change--
+       <- presence change--
+              ...
+       -- stop presence --->
+       
+---
+
+Action: 
+  Populate room name / topic if click on room.
+How: 
+  Click on room. Room name and topic with aliases appears. May not want topic
+  (eg screen size). Display cached info until updated.
+
+::
+
+  Client                    Server
+       ---- req room info->
+       <--- room info ----- {name,topic,aliases}
+       
+---
+
+Action: 
+  Create an empty room.
+How: 
+  Type in room config (desired name, public/private, etc). Hit Create. Room is
+  created. Possibly get room info.
+
+::
+
+  Client                    Server
+       ---- mkroom{config}->
+       <--ACK{room_id}------
+       <-- room info ------- (optional)
+
+---
+
+Action: 
+  Join a room from an alias.
+How: 
+  Type in alias. Hit Join. Room is joined. Possibly get room info.
+
+::
+
+  Client                    Server
+       -- join{alias} ----->
+       <--ACK{room_id}------
+       <--room info--------- (optional)
+       
+       
+
