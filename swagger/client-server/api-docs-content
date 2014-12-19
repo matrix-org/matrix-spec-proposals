@@ -50,6 +50,58 @@
           ]
         }
       ]
+    },
+    {
+      "path": "/media/v1/thumbnail/{serverName}/{mediaId}",
+      "operations": [
+        {
+          "method": "GET",
+          "summary": "Get a thumbnail of the content stored at this address.",
+          "type": "file",
+          "nickname": "thumbnail_content",
+          "parameters": [
+            {
+              "name": "serverName",
+              "description": "The serverName from the mxc://<serverName>/<mediaId> URI (the authority component).",
+              "required": true,
+              "type": "string",
+              "paramType": "path"
+            },
+            {
+              "name": "mediaId",
+              "description": "The mediaId from the mxc://<serverName>/<mediaId> URI (the path component).",
+              "required": true,
+              "type": "string",
+              "paramType": "path"
+            },
+            {
+              "name": "width",
+              "description": "The desired width of the thumbnail.",
+              "required": false,
+              "type": "integer",
+              "paramType": "query"
+            },
+            {
+              "name": "height",
+              "description": "The desired height of the thumbnail.",
+              "required": false,
+              "type": "integer",
+              "paramType": "query"
+            },
+            {
+              "name": "method",
+              "description": "The desired resizing method.",
+              "enum": [
+                "crop",
+                "scale"
+              ],
+              "required": false,
+              "type": "string",
+              "paramType": "query"
+            }
+          ]
+        }
+      ]
     }
   ],
   "models": {
