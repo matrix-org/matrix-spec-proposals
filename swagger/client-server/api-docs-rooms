@@ -234,6 +234,37 @@
       ]
     },
     {
+      "path": "/rooms/{roomId}/state/m.room.power_levels",
+      "operations": [
+        {
+          "method": "PUT",
+          "summary": "Set the power levels for this room.",
+          "notes": "This has to be set atomically. The levels set will clobber what was previously there.",
+          "type": "void",
+          "nickname": "set_room_power_levels",
+          "consumes": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "body",
+              "description": "The power levels",
+              "required": true,
+              "type": "RoomPowerLevels",
+              "paramType": "body"
+            },
+            {
+              "name": "roomId",
+              "description": "The room to set the power levels for.",
+              "required": true,
+              "type": "string",
+              "paramType": "path"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "path": "/rooms/{roomId}/send/m.room.message.feedback",
       "operations": [
         {
@@ -729,6 +760,61 @@
         "name": {
           "type": "string",
           "description": "The human-readable name for the room. Can contain spaces."
+        }
+      }
+    },
+    "UserPowerLevels": {
+        "id": "UserPowerLevels",
+        "properties": {
+            "__user_id__": {
+                "type": "integer",
+                "description": "The power level for __user_id__"
+            }
+        }
+    },
+    "EventPowerLevels": {
+        "id": "UserPowerLevels",
+        "properties": {
+            "__event_type__": {
+                "type": "integer",
+                "description": "The power level required in order to send __event_type__ events."
+            }
+        }
+    },
+    "RoomPowerLevels": {
+      "id": "RoomPowerLevels",
+      "properties": {
+        "ban": {
+          "type": "integer",
+          "description": "The minimum level required in order to ban someone."
+        },
+        "kick": {
+          "type": "integer",
+          "description": "The minimum level required in order to kick someone."
+        },
+        "redact": {
+          "type": "integer",
+          "description": "The minimum level required in order to redact a message."
+        },
+        "users_default": {
+          "type": "integer",
+          "description": "The default power level of a user who is not in the 'users' list."
+        },
+        "state_default": {
+          "type": "integer",
+          "description": "The default power level required in order to send state events."
+        },
+        "events_default": {
+          "type": "integer",
+          "description": "The default power level required in order to send non-state events."
+        },
+        "users": {
+          "type": "UserPowerLevels",
+          "description": "Mappings of user ID to power level."
+        },
+        "events": {
+          "type": "EventPowerLevels",
+          "description": "Mappings of event type to power level."
         }
       }
     },
