@@ -791,6 +791,14 @@
           "type": "string",
           "description": "Sets the topic for the room. Send a m.room.topic event after creating the room with the 'topic' key specified.",
           "required": false
+        },
+        "invite": {
+          "type": "array",
+          "description": "The list of user IDs to invite. Sends m.room.member events after creating the room.",
+          "items": {
+            "$ref": "string"
+          },
+          "required": false
         }
       }
     },
