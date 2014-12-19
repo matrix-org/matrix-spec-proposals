@@ -658,6 +658,41 @@
       ]
     },
     {
+      "path": "/rooms/{roomId}/typing/{userId}",
+      "operations": [
+        {
+          "method": "PUT",
+          "summary": "Inform the server that this user is typing.",
+          "notes": "Only the authorised user can send typing notifications.",
+          "type": "void",
+          "nickname": "put_typing",
+          "parameters": [
+            {
+              "name": "roomId",
+              "description": "The room to send the m.typing event into.",
+              "required": true,
+              "type": "string",
+              "paramType": "path"
+            },
+            {
+              "name": "userId",
+              "description": "The user ID of the typer.",
+              "required": true,
+              "type": "string",
+              "paramType": "path"
+            },
+            {
+              "name": "body",
+              "description": "The typing information",
+              "required": true,
+              "type": "Typing",
+              "paramType": "body"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "path": "/rooms/{roomId}/initialSync",
       "operations": [
         {
@@ -762,6 +797,21 @@
           "type": "string",
           "description": "The room ID joined, if joined via a room alias only.",
           "required": true
+        }
+      }
+    },
+    "Typing": {
+      "id": "Typing",
+      "properties": {
+        "typing": {
+          "type": "boolean",
+          "description": "True if the user is currently typing.",
+          "required": true
+        },
+        "timeout": {
+            "type": "integer",
+            "description": "The length of time until the user should be treated as no longer typing, in milliseconds. Can be omitted if they are no longer typing.",
+            "required": true
         }
       }
     },
