@@ -29,6 +29,10 @@
     {
       "path": "-directory",
       "description": "Directory operations"
+    },
+    {
+      "path": "-content",
+      "description": "Content repository operations"
     }
   ],
   "authorizations": {
