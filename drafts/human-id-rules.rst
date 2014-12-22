@@ -138,5 +138,6 @@ capitalisation rules in the CLDR dataset: http://cldr.unicode.org/
 
 This check SHOULD be applied when the user ID is created, in order to prevent
 registration with the same name and different capitalisations, e.g.
-``@foo:bar`` vs ``@Foo:bar`` vs ``@FOO:bar``.
+``@foo:bar`` vs ``@Foo:bar`` vs ``@FOO:bar``. Home servers MAY canonicalise
+the user ID to be completely lower-case if desired.
 
