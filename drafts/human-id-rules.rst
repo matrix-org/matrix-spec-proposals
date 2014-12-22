@@ -2,19 +2,19 @@ This document outlines the format for human-readable IDs within matrix.
 
 Summary
 -------
- - Human-readable IDs are Room Aliases and User IDs.
- - They MUST be Unicode as UTF-8.
- - If spoof checks fail, the user ID in question MUST be rewritten to be punycode
-   with an additional ``@`` prefix.
-   Room aliases cannot be rewritten.
- - Spoof Checks:
-    - MUST NOT contain one of the 107 blacklisted characters on this list: 
-      http://kb.mozillazine.org/Network.IDN.blacklist_chars
-    - MUST NOT contain characters from >1 language, defined by
-      http://cldr.unicode.org/
- - User IDs MUST NOT contain a ``:`` or start with a ``@`` or ``.``
- - Room aliases MUST NOT contain a ``:``
- - User IDs SHOULD be case-insensitive.
+- Human-readable IDs are Room Aliases and User IDs.
+- They MUST be Unicode as UTF-8.
+- If spoof checks fail, the user ID in question MUST be rewritten to be punycode
+  with an additional ``@`` prefix.
+  Room aliases cannot be rewritten.
+- Spoof Checks:
+   - MUST NOT contain one of the 107 blacklisted characters on this list: 
+     http://kb.mozillazine.org/Network.IDN.blacklist_chars
+   - MUST NOT contain characters from >1 language, defined by
+     http://cldr.unicode.org/
+- User IDs MUST NOT contain a ``:`` or start with a ``@`` or ``.``
+- Room aliases MUST NOT contain a ``:``
+- User IDs SHOULD be case-insensitive.
 
 Overview
 --------
@@ -135,4 +135,8 @@ Capitalisation
 ~~~~~~~~~~~~~~
 User IDs SHOULD be case-insensitive. This SHOULD be applied based on the 
 capitalisation rules in the CLDR dataset: http://cldr.unicode.org/
+
+This check SHOULD be applied when the user ID is created, in order to prevent
+registration with the same name and different capitalisations, e.g.
+``@foo:bar`` vs ``@Foo:bar`` vs ``@FOO:bar``.
 
