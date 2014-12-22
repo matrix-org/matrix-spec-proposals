@@ -133,7 +133,7 @@ Additional recommendations
 
 Capitalisation
 ~~~~~~~~~~~~~~
-User IDs SHOULD be case-insensitive. This SHOULD be applied based on the 
+The home server SHOULD NOT allow two user IDs that differ only by case. This SHOULD be applied based on the 
 capitalisation rules in the CLDR dataset: http://cldr.unicode.org/
 
 This check SHOULD be applied when the user ID is created, in order to prevent
