@@ -91,6 +91,36 @@ With storage
 
 Bug Tracking
 ------------
+::
+
+  Landing Page
+    On Load
+     <- Issues assigned to me, Issues I'm watching, Recent activity on other issues includes
+        comments, list of projects
+    
+    Search for an issue (assume text)
+     -> Search string
+     <- List of paginated issues
+       Request page 2:
+        -> Page number requested
+        <- Page of paginated issues
+  
+  Issue Page
+    On Load
+     -> Issue ID and Project ID (equiv to Room)
+     <- Issue contents e.g. priority, resolution state, etc. All comments e.g. user ID, 
+        comment text, timestamp. Entire issue history e.g. changes in priority
+     
+    Post a comment
+     -> Issue ID, comment content, Project ID (equiv to Room)
+     <- actual content sent (if modded), what comment it comes after
+    
+    Set issue priority
+     -> Issue ID, Project ID, desired priority
+     <- What action in the history it came after
+     
+    Someone else sets issue priority
+     <- Issue ID, Project ID, new priority, where in the history
 
 
 Mapping model use cases to matrix models (Room, Message, etc)
