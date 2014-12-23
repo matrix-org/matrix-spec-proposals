@@ -1,3 +1,98 @@
+Data flows for use cases
+========================
+
+::
+
+ <- Data from server to client
+ -> Data from client to server
+
+Instant Messaging
+-----------------
+
+Without storage
+~~~~~~~~~~~~~~~
+
+::
+
+ Home screen
+   Data required on load:
+    <- For each room the user is joined: Name, topic, # members, last message, room ID, aliases
+   Data required when new message arrives for a room:
+    <- Room ID, message content, sender (user ID, display name, avatar url)
+   Data required when someone invites you to a room:
+    <- Room ID, sender (user ID, display name, avatar url), Room Name, Room Topic
+   Data required when you leave a room on another device:
+    <- Room ID
+   Data required when you join a room on another device:
+    <- Name, topic, # members, last message, room ID, aliases
+   Data required when your profile info changes on another device:
+    <- new profile info e.g. avatar, display name, etc.
+    
+   Creating a room
+    -> Invitee list of user IDs, public/private, name of room, alias of room, topic of room
+    <- Room ID
+   
+   Joining a room (and dumped into chat screen on success)
+    -> Room ID / Room alias
+    <- Room ID, Room aliases (plural), Name, topic, member list (f.e. member: user ID, 
+       avatar, presence, display name, power level, whether they are typing), enough 
+       messages to fill screen (and whether there are more)
+      
+ Chat Screen
+   Data required when member name changes:
+    <- new name, room ID, user ID, when in the context of the room did this occur
+   Data required when the room name changes:
+    <- new name, room ID, old room name?
+   Invite a user:
+    -> user ID, room ID
+    <- display name / avatar of user invited (if known)
+   Kick a user:
+    -> user ID, room ID
+    <- what message it came after
+   Leave a room:
+    -> room ID
+    <- what message it came after
+      
+   Send a message
+    -> Message content, room ID, message sequencing (eg sending my 1st, 2nd, 3rd msg)
+    <- actual content sent (if server mods it), what message it comes after (to correctly
+       display the local echo)
+      
+    Place a call (receive a call is just reverse)
+     <- turn servers
+     -> SDP offer
+     -> Ice candidates (1 by 1; trickling)
+     <- SDP answer
+     <- Ice candidates
+    
+    Scrolling back (infinite scrolling)
+     -> Identifier for the earliest message, # requested messages
+     <- requested messages (f.e change in display name, what the old name was), whether
+        there are more.
+
+
+With storage
+~~~~~~~~~~~~
+::
+    
+  Home Screen
+    On Load
+     -> Identifier which tells the server the client's current state (which rooms it is aware
+        of, which messages it has, what display names for users, etc..)
+     <- A delta from the client's current state to the current state on the server (e.g. the
+        new rooms, the *latest* message if different, the changed display names, the new 
+        invites, etc). f.e Room: Whether the cache of the room that you have has been replaced 
+        with this new state.
+        
+    Pre-load optimisation (not essential for this screen)
+      -> Number of desired messages f.e room to cache
+      <- f.e Room: the delta OR the entire state
+     
+
+Bug Tracking
+------------
+
+
 Mapping model use cases to matrix models (Room, Message, etc)
 =============================================================
 
