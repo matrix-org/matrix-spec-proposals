@@ -7,7 +7,10 @@ HTTP API
 --------
 
 Uploads are POSTed to a resource which returns a token which is used to GET
-the download::
+the download.  Uploads are POSTed to the sender's local homeserver, but are
+downloaded from the recipient's local homeserver, which must thus first transfer
+the content from the origin homeserver using the same API (unless the origin
+and destination homeservers are the same).  The upload/download API is::
 
     => POST /_matrix/media/v1/upload HTTP/1.1
        Content-Type: <media-type>
