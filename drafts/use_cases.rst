@@ -8,6 +8,7 @@ General UI/UX requirements:
    * Resolving display names (from user ID)
 - Fast startup times
 - Fast "opening room" times (esp. when clicking through from a notification)
+- Low latency file transfer.
 
 
 #1 Web client UI
@@ -84,6 +85,7 @@ Chat Screen
   - video
   - rich text
   - audio
+  - arbitrary files
   - location
   - vcards (potentially)
  
