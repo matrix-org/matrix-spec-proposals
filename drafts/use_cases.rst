@@ -45,11 +45,12 @@ Home Screen
   - Message a user (with user ID)
   - Leave a recent room
   - Open a room
- 
+  - Open a chat history link.
+
 Chat Screen
  What's visible:
   - Enough scrollback to fill a "screen full" of content.
-  - Each message: timestamp, user ID, display name at the time the message was 
+  - Each message: timestamp, user ID, display name at the time the message was
     sent, avatar URL at the time the message was sent, whether it was a bing message
     or not.
   - User list: for each user: presence, current avatar url in the room, current
@@ -102,7 +103,19 @@ Chat Screen
   - arbitrary files
   - location
   - vcards (potentially)
- 
+
+Chat History Screen
+ What's visible:
+  - The linked message and enough scrollback to fill a "screen full" of content.
+  - Each message: timestamp, user ID, display name at the time the message was
+    sent, avatar URL at the time the message was sent, whether it was a bing message
+    or not.
+  - The historical user list. *TODO: Is this taken at the linked message, or at
+    wherever the user has scrolled to?*
+ What you can do:
+  - Get older messages by scrolling up (scrollback)
+  - Get newer messages by scrolling down
+
 User screen
  What's visible:
   - Display name
@@ -116,7 +129,7 @@ User screen
 ==================
 
 Model::
- 
+
  Projects ----< Issues ---< Comments
  - key        - summary     - user
  - name       - ID          - message
