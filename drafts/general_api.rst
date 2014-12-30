@@ -1,16 +1,25 @@
 Instant Messaging
 =================
-
-TODO:
- - EDU stuff (presence/typing)
- - Concept of a session (for announcing of presence, and scoping of action IDs)
- - The actual filter APIs themselves
- - VoIP
+ 
+Filter API
+----------
+Inputs:
+ - Which event types (incl wildcards)
+ - Which room IDs
+ - Which user IDs (for profile/presence)
+Outputs:
+ - An opaque token which represents the inputs
+Notes:
+ - The token may expire, in which case you would need to request another one.
+ - The token could be as simple as a concatenation of the requested filters with a delimiter between them.
+ - Omitting the token on APIs results in ALL THE THINGS coming down.
+ - Clients should remember which token they need to use for which API.
 
 Global ``/initialSync`` API
 ---------------------------
 Inputs:
  - A way of identifying the user (e.g. access token, user ID, etc)
+ - Filter to apply
 Outputs:
  - For each room the user is joined: Name, topic, # members, last message, room ID, aliases
 What data flows does it address:
@@ -186,6 +195,145 @@ Outputs:
 What data flows does it address:
  - Chat Screen: Send a Message
  
+Sessions
+--------
+A session is a group of requests sent within a short amount of time by the same client. Starting
+a session is known as going "online". Its purpose is to wrap up the expiry of presence and 
+typing notifications into a clearer scope. A session starts when the client makes any request.
+A session ends when the client doesn't make a request for a particular amount of time (times out).
+A session can also end when explicitly hitting a particular endpoint. This is known as going "offline".
+
+When a session starts, a session ID is sent in response to the first request the client makes. This
+session ID should be sent in *all* subsequent requests. If the server expires a session and the client
+uses an old session ID, the server should fail the request with the old session ID and send a new 
+session ID in response for the client to use. If the client receives a new session ID mid-session, 
+it must re-establish its typing status and presence status, as they are linked to the session ID.
+
+Presence
+~~~~~~~~
+When a session starts, the home server can treat the user as "online". When the session ends, the home
+server can treat the user as "offline".
+
+Inputs:
+ - Presence state (online, offline, away, busy, do not disturb, etc)
+Outputs:
+ - None.
+Notes:
+ - TODO: Handle multiple devices.
+
+
+Typing
+~~~~~~
+When in a session, a user can send a request stating that they are typing in a room. They are no longer
+typing when either the session ends or they explicitly send another request to say they are no longer
+typing.
+
+Inputs:
+ - Room ID
+ - Whether you are typing or not.
+Output:
+ - None.
+Notes:
+ - Typing will time out when the session ends.
+ 
+Action IDs
+~~~~~~~~~~
+Action IDs are scoped per session. The first action ID for a session should be 0. For each subsequent
+action request, the ID should be incremented by 1. It should be reset to 0 when a new session starts.
+
+If the client sends an action request with a stale session ID, the home server MUST fail the request
+and start a new session. The request needs to be failed in order to avoid edge cases with incrementing
+action IDs.
+
+Updates (Events)
+----------------
+Events may update other events. This is represented by the ``updates`` key. This is a key which
+contains the event ID for the event it relates to. Events that relate to other events are referred to
+as "Child Events". The event being related to is referred to as "Parent Events". Child events cannot
+stand alone as a separate entity; they require the parent event in order to make sense.
+
+Bundling
+~~~~~~~~
+Events that relate to another event should come down inside that event. That is, the top-level event
+should come down with all the child events at the same time. This is called a "bundle" and it is 
+represented as an array of events inside the top-level event.There are some issues with this however:
+
+- Scrollback: Should you be told about child events for which you do not know the parent event?
+  Conclusion: No you shouldn't be told about child events. You will receive them when you scroll back
+  to the parent event. 
+- Pagination of child events: You don't necessarily want to have 1000000s of child events with the
+  parent event. We can't reasonably paginate child events because we require all the child events
+  in order to display the event correctly. Comments on a message should be done via another technique,
+  such as ``in_reply_to`.
+- Do you allow child events to relate to other child events? There is no technical reason why we
+  cannot nest child events, however we can't think of any use cases for it. The behaviour would be
+  to get the child events recursively from the top-level event. 
+  
+Main use cases for ``updates``:
+ - Call signalling (child events are ICE candidates, answer to the offer, and termination)
+ - *Local* Delivery/Read receipts : "Local" means they are not shared with other users on the same home
+   server or via federation but *are* shared between clients for the same user; useful for push 
+   notifications, read count markers, etc. This is done to avoid the ``n^2`` problem for sending 
+   receipts, where the vast majority of traffic tends towards sending more receipts.
+ - s/foo/bar/ style message edits
+ 
+Clients *always* need to know how to apply the deltas because clients may receive the events separately
+down the event stream. Combining event updates server-side does not make client implementation simpler, 
+as the client still needs to know how to combine the events.
+
+In reply to (Events)
+--------------------
+Events may be in response to other events, e.g. comments. This is represented by the ``in_reply_to`` 
+key. This differs from the ``updates`` key as they *do not update the event itself*, and are *not required* 
+in order to display the parent event. Crucially, the child events can be paginated, whereas ``updates`` child events cannot
+be paginated.
+
+Bundling
+~~~~~~~~
+Child events can be optionally bundled with the parent event, depending on your display mechanism. The
+number of child events which can be bundled should be limited to prevent events becoming too large. This
+limit should be set by the client. If the limit is exceeded, then the bundle should also include a pagination
+token so that the client can request more child events.
+
+Main use cases for ``in_reply_to``:
+ - Comments on a message.
+ - Non-local delivery/read receipts : If doing separate receipt events for each message.
+ - Meeting invite responses : Yes/No/Maybe for a meeting.
+
+Like with ``updates``, clients need to know how to apply the deltas because clients may receive the 
+events separately down the event stream.
+
+TODO:
+ - Can a child event reply to multiple parent events? Use case?
+ - Should a parent event and its children share a thread ID? Does the originating HS set this ID? Is
+   this thread ID exposed through federation? e.g. can a HS retrieve all events for a given thread ID from
+   another HS?
+   
+Example using ``updates`` and ``in_reply_to``
+---------------------------------------------
+- Room with a single message.
+- 10 comments are added to the message via ``in_reply_to``.
+- An edit is made to the original message via ``updates``.
+- An initial sync on this room with a limit of 3 comments, would return the message with the update 
+  event bundled with it and the most recent 3 comments and a pagination token to request earlier comments
+  
+  .. code :: javascript
+  
+    {
+      content: { body: "I am teh winner!" },
+      updated_by: [
+        { content: { body: "I am the winner!" } }
+      ],
+      replies: {
+        start: "some_token",
+        chunk: [
+          { content: { body: "8th comment" } },
+          { content: { body: "9th comment" } },
+          { content: { body: "10th comment" } }
+        ]
+      }
+    }
+
 VoIP
 ----
 WIPWIPWIPWIPWIPWIPWIPWIPWIPWIPWIPWIP
