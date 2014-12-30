@@ -336,23 +336,46 @@ Example using ``updates`` and ``in_reply_to``
 
 VoIP
 ----
-WIPWIPWIPWIPWIPWIPWIPWIPWIPWIPWIPWIP
+This addresses one-to-one calling with multiple devices. This uses the ``updates`` key to
+handle signalling.
 
-Placing a call (initial)
-~~~~~~~~~~~~~~~~~~~~~~~~
-Inputs:
- - WIP
-Outputs:
- - WIP
-What data flows does it address:
- - WIP
- 
-Placing a call (candidates)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Inputs:
- - WIP
-Outputs:
- - WIP
-What data flows does it address:
- - WIP
+Event updates
+~~~~~~~~~~~~~
+- Call is placed by caller. Event generated with offer.
+- 1-N callees may pick up or reject this offer.
+- Callees update the event (with sdp answer if they are accepting the call)
+- Caller acknowledges *one* of the callees (either one which picked up or rejected) by updating the event.
+- Callees who weren't chosen then give up (Answered elsewhere, Rejected elsewhere, etc)
+- Update with ICE candidates as they appear.
+- ... in call ...
+- Send hangup update when hanging up.
+
+Placing a call
+~~~~~~~~~~~~~~
+::
+
+  caller                callee
+   |-----m.call.invite--->|
+   |                      |
+   |<----m.call.answer----|
+   |     device_id=foo    |
+   |                      |
+   |------m.call.ack----->|
+   |     device_id=foo    |
+   |                      |
+   |<--m.call.candidate---|
+   |---m.call.candidate-->|
+   |                      |
+ [...]                  [...]
+   |                      |
+   |<----m.call.hangup----|
+   |     device_id=foo    |
+
+Expiry
+~~~~~~
+- WIP: Of invites
+- WIP: Of calls themselves (as they may never send a ``m.call.hangup``
+
+
+
  
