@@ -12,15 +12,17 @@ General UI/UX requirements:
 
 Use cases
 ---------
-- #1: Lightweight IM client (no perm storage)perm
-- #2: Mobile IM client (perm storage)perm
-- #3: MIDI client
-- #4: Animatrix client
-- #5: Unity object trees
-- #6: Forum
-- #7: Social Network ("Walls", PMs, groups)PMs-#8: Minecraft-clone
-- #9: Bug Tracking Software
-- #10: Global 'Like' widget, which links through to a room.
+- #1: Lightweight IM client (no perm storage) - e.g. Web client
+- #2: Bug tracking software
+- #3: Forum
+- #4: Google + style communities
+- #5: Mobile IM client (perm storage)
+- #6: MIDI client
+- #7: Animatrix client
+- #8: Unity object trees
+- #9: Social Network ("Walls", PMs, groups)
+- #10: Minecraft-clone
+- #11: Global 'Like' widget, which links through to a room.
 
 
 #1 Web client UI
