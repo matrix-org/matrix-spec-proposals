@@ -10,6 +10,18 @@ General UI/UX requirements:
 - Fast "opening room" times (esp. when clicking through from a notification)
 - Low latency file transfer.
 
+Use cases
+---------
+- #1: Lightweight IM client (no perm storage)perm
+- #2: Mobile IM client (perm storage)perm
+- #3: MIDI client
+- #4: Animatrix client
+- #5: Unity object trees
+- #6: Forum
+- #7: Social Network ("Walls", PMs, groups)PMs-#8: Minecraft-clone
+- #9: Bug Tracking Software
+- #10: Global 'Like' widget, which links through to a room.
+
 
 #1 Web client UI
 ================
