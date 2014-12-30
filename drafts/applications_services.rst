@@ -95,8 +95,10 @@ On HS handling events to unknown users:
    the AS, then the HS queries the AS for the profile of that user.  If the AS
    confirms the existence of that user (from its perspective), then the HS
    creates an account to represent the virtual user.
- * The namespace of virtual user accounts could conform to a structure like
-   @.irc.freenode.Arathorn:matrix.org or similar.
+ * The namespace of virtual user accounts should conform to a structure like
+   @.irc.freenode.Arathorn:matrix.org.  This lets Matrix users communicate with
+   foreign users who are not yet mapped into Matrix via 3PID mappings or through
+   an existing non-virtual Matrix user by trying to talk to them via a gateway.
  * The AS can preprovision virtual users using the existing CS API rather than
    lazy-loading them in this manner.
 
