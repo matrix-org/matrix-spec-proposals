@@ -415,7 +415,64 @@ Events (breaking changes; event version 2)
 - Do we want to specify what restrictions apply to the state key in the event type? This would allow HSes
   to enforce this, making life easier for clients when dealing with custom event types. E.g. ``_custom.event``
   would allow anything in the state key, ``_@custom.event`` would only allow user IDs in the state key, etc.
+- s/user_id/sender/g given that home servers can send events, not just users.
 
+Capabilities
+------------
+How does a client know if the server it is using supports a content repository? How does a client know 
+if another client has VoIP support? This section outlines capability publishing for servers,
+clients and federation.
+
+Server
+~~~~~~
+- List of extensions it supports (e.g. content repo, contact repo, turn servers)
+
+Inputs:
+ - User ID (e.g. only @bob can use the content repo)
+Output:
+ - Hash of the capabilities::
+ 
+    {
+      "sha256": "fD876SFrt3sugh23FWEjio3"
+    }
+
+This hash is fed into another API:
+
+Inputs:
+ - The hash of the capabilities
+Output:
+ - A list of capabilities::
+ 
+    {
+      "custom.feature.v1": {},
+      "m.cap.turnserver.v1": {}
+    }
+
+Client
+~~~~~~
+- e.g. Whether this client supports VoIP
+
+When a session is started, the client needs to provide a capability set. The server will take the "union"
+of all the user's connected clients' capability sets and send the hash of the capabilities as part of 
+presence information (not necesarily as a ``m.presence`` event, but it should act like presence events).
+
+On first signup, the client will attempt to send the hash and be most likely refused by the home server as
+it does not know the full capability set for that hash. The client will then have to upload the full capability
+set to the home server. The client will then be able to send the hash as normal.
+
+When a client receives a hash, the client will either recognise the hash or will have to request the capability
+set from their home server:
+
+Inputs:
+ - Hash
+ - User ID
+Output:
+ - A list of capabilities
+
+Federation
+~~~~~~~~~~
+- e.g. Whether you support backfill, hypothetical search/query/threading APIs
+- Same as the server capability API
 
 VoIP
 ----
