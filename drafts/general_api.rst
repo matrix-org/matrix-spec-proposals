@@ -1,5 +1,11 @@
 Instant Messaging
 =================
+
+TODO
+----
+- Pagination: Would be nice to have "and X more". It will probably be Google-style estimates given
+  we can't know the exact number over federation, but as a purely informational display thing it would
+  be nice.
  
 Filter API
 ----------
@@ -7,6 +13,10 @@ Inputs:
  - Which event types (incl wildcards)
  - Which room IDs
  - Which user IDs (for profile/presence)
+ - Whether you want federation-style event JSON
+ - Whether you want coalesced ``updates`` events
+ - Whether you want coalesced ``in_reply_to`` events (and the max # to coalesce)
+ - limit= param?
 Outputs:
  - An opaque token which represents the inputs
 Notes:
@@ -14,16 +24,30 @@ Notes:
  - The token could be as simple as a concatenation of the requested filters with a delimiter between them.
  - Omitting the token on APIs results in ALL THE THINGS coming down.
  - Clients should remember which token they need to use for which API.
+ - HTTP note: If the filter API is a separate endpoint, then you could easily allow APIs which use filtering
+   to ALSO specifiy query parameters to tweak the filter.
 
 Global ``/initialSync`` API
 ---------------------------
 Inputs:
  - A way of identifying the user (e.g. access token, user ID, etc)
+ - Streaming token (optional)
  - Filter to apply
 Outputs:
  - For each room the user is joined: Name, topic, # members, last message, room ID, aliases
+Notes:
+ - If a streaming token is applied, you will get a delta rather than all the rooms.
 What data flows does it address:
  - Home screen: data required on load.
+ 
+TODO:
+ - Will need some form of state event pagination like we have for message events to handle large
+   amounts of state events for a room. Need to think of the consequences of this: you may not get a
+   ``m.room.member`` for someone's message and so cannot display their display name / avatar.
+ - Handle paginating initial sync results themselves (e.g. 10 most recent rooms)
+ - No need for state events under the 'state' key to have a ``prev_content``. Can also apply some
+   optimisations depending on the direction of travel when scrolling back.
+   
  
 Event Stream API
 ----------------
@@ -53,6 +77,12 @@ Message Events Ordering Notes:
    where to insert it so that scrollback remains consistent and doesn't omit messages.
  - Clients can specify an input parameter stating that they wish to receive these out-of-order events.
  - The event, when it comes down the stream, will indicate which event it comes after.
+Rejected events:
+ - A home server may find out via federation that it should not have accepted an event (e.g. to send a
+   message/state event in a room).
+ - If this happen, the home server will send a ``m.room.redaction`` for the event in question.
+ - If the event was a state event, it will synthesise a new state event to correct the client's room state.
+ - In practice, clients don't need any extra special handling for this.
 What data flows does it address:
  - Home Screen: Data required when new message arrives for a room
  - Home Screen: Data required when someone invites you to a room
@@ -119,6 +149,18 @@ Outputs:
 What data flows does it address:
  - Chat Screen: Scrolling back (infinite scrolling)
  
+Contextual messages
+-------------------
+Inputs:
+ - Event ID of the message to get the surrounding context for (this specifies the room to get messages in).
+ - Number of messages before/after this message to obtain.
+ - Filter to apply.
+Outputs:
+ - Chunk of messages
+ - Start / End pagination tokens
+ - Current room state at the end of the chunk as per initial sync.
+
+
 Action APIs
 -----------
 The following APIs are "action APIs". This is defined to be a request which alters the state of
@@ -161,6 +203,25 @@ Outputs:
 What data flows does it address:
  - Chat Screen: Invite a user
  
+Rejecting an invite
+~~~~~~~~~~~~~~~~~~~
+Inputs:
+ - Event ID (to know which invite you're rejecting)
+Outputs:
+ - None.
+Notes:
+ - Giving the event ID rather than user ID/room ID combo because mutliple users can invite the
+   same user into the same room.
+   
+Deleting a state event
+~~~~~~~~~~~~~~~~~~~~~~
+Inputs:
+ - Event type
+ - State key
+ - Room ID
+Outputs:
+ - None.
+ 
 Kicking a user
 ~~~~~~~~~~~~~~
 Inputs:
@@ -194,6 +255,9 @@ Outputs:
  - When in the stream this action happened. (to correctly display local echo)
 What data flows does it address:
  - Chat Screen: Send a Message
+E2E Notes:
+ - For signing: You send the original message to the HS and it will return the full event JSON which will
+   be sent. This full event is then signed and sent to the HS again to send the message.
  
 Sessions
 --------
@@ -333,6 +397,21 @@ Example using ``updates`` and ``in_reply_to``
         ]
       }
     }
+    
+Events (breaking changes; event version 2)
+------------------------------------------
+- Prefix the event ``type`` to say if it is a state event, message event or ephemeral event. Needed
+  because you can't tell the different between message events and ephemeral ROOM events (e.g. typing).
+- State keys need additional restrictions in order to increase flexibility on state event permissions.
+  State keys prefixed with an ``_`` have no specific restrictions. 0-length state keys are now represented
+  by just a single ``_``. State keys prefixed with ``@`` can be modified only by the named user ID *OR* the
+  room ops. They can have an optional path suffixed to it. State keys that start with a server name can only
+  be modified by that server name (e.g. ``some.server.com/some/path`` can only be modified by 
+  ``some.server.com``).
+- Do we want to specify what restrictions apply to the state key in the event type? This would allow HSes
+  to enforce this, making life easier for clients when dealing with custom event types. E.g. ``_custom.event``
+  would allow anything in the state key, ``_@custom.event`` would only allow user IDs in the state key, etc.
+
 
 VoIP
 ----
