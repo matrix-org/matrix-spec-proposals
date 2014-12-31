@@ -58,7 +58,8 @@ Inputs:
  - User ID
  - Device ID
 Outputs:
- - 0-N events the client hasn't seen.
+ - 0-N events the client hasn't seen. NB: Deleted state events will be missing a ``content`` key. Deleted
+   message events are ``m.room.redaction`` events.
  - New position in the stream.
 State Events Ordering Notes:
  - Home servers may receive state events over federation that are superceded by state events previously 
@@ -212,6 +213,7 @@ Outputs:
 Notes:
  - Giving the event ID rather than user ID/room ID combo because mutliple users can invite the
    same user into the same room.
+ - Rejecting an invite results in the ``m.room.member`` state event being DELETEd for that user.
    
 Deleting a state event
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -221,6 +223,9 @@ Inputs:
  - Room ID
 Outputs:
  - None.
+Notes:
+ - This is represented on the event stream as an event lacking a ``content`` key (for symmetry 
+   with ``prev_content``)
  
 Kicking a user
 ~~~~~~~~~~~~~~
