@@ -255,6 +255,10 @@ Outputs:
  - When in the stream this action happened. (to correctly display local echo)
 What data flows does it address:
  - Chat Screen: Send a Message
+Ordering notes:
+ - HTTP: When sending a message with a higher seqnum, it will block the request until it receives 
+   earlier seqnums. The block will expire after a timeout and reject the message stating that it 
+   was missing a seqnum.
 E2E Notes:
  - For signing: You send the original message to the HS and it will return the full event JSON which will
    be sent. This full event is then signed and sent to the HS again to send the message.
