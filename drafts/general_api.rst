@@ -6,6 +6,29 @@ TODO
 - Pagination: Would be nice to have "and X more". It will probably be Google-style estimates given
   we can't know the exact number over federation, but as a purely informational display thing it would
   be nice.
+  
+Summary
+-------
+Included:
+ - Event filtering (type/room/users, federation-style events)
+ - Incremental syncing
+ - Rejecting invites
+ - Deleting state
+ - Contextual messages (view messages around an arbitrary message)
+ - Race conditions on event stream / actions
+ - Out-of-order events
+ - Capabilities
+ - Comments (in_reply_to key)
+ - Editing/updating messages (updates key)
+ 
+Excluded:
+ - Searching messages
+ - State event pagination (see Global /initialSync API)
+ - Initial sync pagination (see Global /initialSync API)
+ - PATCHing power levels
+ - Handling "duplicate" events in state/messages key on initial sync.
+ - Multiple devices (other than VoIP)
+ - Room directory lists (aka public room list, paginating, permissions on editing the list, etc)
  
 Filter API
 ----------
