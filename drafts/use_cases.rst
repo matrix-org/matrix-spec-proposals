@@ -38,7 +38,7 @@ Home Screen
  What's visible:
   - Recent chats ordered by timestamp of latest event (with # users)
   - Your own display name, user ID and avatar url
-  - A list of public rooms (with # users and alias + room name + room topic)
+  - A searchable list of public rooms (with # users and alias + room name + room topic)
  What you can do:
   - Create a room (public/private, with alias)
   - Join a room from alias
@@ -46,6 +46,7 @@ Home Screen
   - Leave a recent room
   - Open a room
   - Open a chat history link.
+  - Search for a public room.
 
 Chat Screen
  What's visible:
@@ -115,6 +116,17 @@ Chat History Screen
  What you can do:
   - Get older messages by scrolling up (scrollback)
   - Get newer messages by scrolling down
+
+Public Room Search Screen
+ What's visible:
+  - The current search text.
+  - The homeserver being searched.
+  - The results of the current search with enough results to fill the screen
+    with # users and alias + room name + room topic.
+ What you can do:
+  - Change what you are searching for.
+  - Change the server that's being searched.
+  - Scroll down to get more search results.
 
 User screen
  What's visible:
