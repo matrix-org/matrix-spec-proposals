@@ -159,11 +159,27 @@ On AS publishing aliases for virtual rooms:
    at least the m.room.create of that room must also be prepopulated.  It seems
    sensible to prepopulate the required initial state and history of the room to
    avoid a two-phase prepopulation process.
-
+   
 On unregistering the AS from the HS:
 
  * An AS must tell the HS when it is going offline in order to stop receiving
    requests from the HS.  It does this by hitting an API on the HS.
+
+AS Visibility:
+
+ * If an AS needs to sniff events in a room in order to operate on them (e.g.
+   to act as a search engine) but not inject traffic into the room, it should
+   do so by subscribing to the relevant events without actually joining the room.
+ * If the AS needs to participate in the room as a virtual user (e.g. an IVR
+   service, or a bot, or a gatewayed virtual user), it should join the room
+   normally.
+ * There are rare instances where an AS may wish to participate in a room
+   (including inserting messages), but be hidden from the room list - e.g. a
+   conferencing server focus bot may wish to join many rooms as the focus and
+   both listen to VoIP setups and inject its own VoIP answers, without ever
+   being physically seen in the room.  In this scenario, the user should set
+   its presence to 'invisible', a state that HSes should only allow AS-authed
+   users to set.
 
 Extensions to CS API
 ====================
