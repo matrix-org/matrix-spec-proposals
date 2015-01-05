@@ -120,7 +120,7 @@ Chat History Screen
 Public Room Search Screen
  What's visible:
   - The current search text.
-  - The homeserver being searched.
+  - The homeserver being searched (defaults to the HS the client is connected to).
   - The results of the current search with enough results to fill the screen
     with # users and alias + room name + room topic.
  What you can do:
