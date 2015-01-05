@@ -59,6 +59,8 @@ Example use cases for application services include:
 
  * Application services:
 
+   * Search engines (e.g. elasticsearch search indices)
+   * Notification systems (e.g. send custom pushes for various hooks)
    * VoIP Conference services
    * Text-to-speech and Speech-to-text services
    * Signal processing
