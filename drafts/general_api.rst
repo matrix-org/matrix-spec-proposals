@@ -256,6 +256,14 @@ Outputs:
  - Start / End pagination tokens
  - Current room state at the end of the chunk as per initial sync.
 
+Room Directory API ``[TODO]``
+-----------------------------
+
+Public room list API ``[TODO]``
+-------------------------------
+
+User Profile API ``[TODO]``
+---------------------------
 
 Action APIs
 -----------
