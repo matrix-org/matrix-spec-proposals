@@ -1,62 +1,11 @@
-Instant Messaging
+Table of Contents
 =================
 
-Legend:
- - ``TODO``: API is not in this document yet.
- - ``ONGOING``: API is proposed but needs more work. There are known issues to be
-   addressed.
- - ``Draft``: API is proposed and has no outstanding issues to be addressed, but
-   needs more feedback.
- - ``Final``:  The API has no outstanding issues.
+.. contents:: Table of Contents
+.. sectnum::
 
-This contains the formal proposal for Matrix Client-Server API v2. This API 
-would completely replace v1. It is a general API, not specific to any particular 
-protocol e.g. HTTP. It contains the following APIs:
-
-- Filtering API ``ONGOING``
-- Global initial sync API ``ONGOING``
-- Event stream API ``Draft``
-- Room creation API ``Draft``
-- Room joining API ``Draft``
-- Scrollback API ``Draft``
-- Contextual windowing API ``Draft``
-- Action APIs:
-   - Inviting ``Final``
-   - Rejecting invites ``Final``
-   - Leaving ``Final``
-   - Kicking ``Final``
-   - Banning ``Final``
-   - Sending message events ``ONGOING``
-   - Sending state events ``Final``
-   - Deleting state events ``Draft``
-   - Read-up-to markers ``Draft``
-- Presence API ``ONGOING``
-- Typing API ``ONGOING``
-- Capabilities API ``ONGOING``
-- Room Directory API ``TODO``
-- Public room list API ``TODO``
-- User Profile API ``TODO``
-
-The following APIs will remain unchanged from v1:
-
-- Registration API
-- Login API
-- Content repository API
-
-It also contains information on changes to events, including:
-
-- Action IDs ``ONGOING``
-- Sessions ``ONGOING``
-- Relates to ``Draft``
-- Updates ``Draft``
-- State key restrictions ``Draft``
-- Event type rule setting ``Draft``
-
-Notes
------
-  
 Summary of changes from v1
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+==========================
 Included:
  - Event filtering (type/room/users, federation-style events)
  - Incremental syncing
@@ -78,11 +27,32 @@ Excluded:
  - Multiple devices (other than VoIP)
  - Room directory lists (aka public room list, paginating, permissions on 
    editing the list, etc)
+
+Version 2 API
+=============
+
+Legend:
+ - ``[TODO]``: API is not in this document yet.
+ - ``[ONGOING]``: API is proposed but needs more work. There are known issues to be
+   addressed.
+ - ``[Draft]``: API is proposed and has no outstanding issues to be addressed, but
+   needs more feedback.
+ - ``[Final]``:  The API has no outstanding issues.
+
+This contains the formal proposal for Matrix Client-Server API v2. This API 
+would completely replace v1. It is a general API, not specific to any particular 
+protocol e.g. HTTP. The following APIs will remain unchanged from v1:
+
+- Registration API
+- Login API
+- Content repository API
+
  
-Filter API
-----------
-``ONGOING`` : Exactly what can be filtered? Which APIs use this? Are we 
-conflating too much?
+Filter API ``[ONGOING]``
+------------------------
+.. NOTE::
+  Exactly what can be filtered? Which APIs use this? Are we 
+  conflating too much?
 
 Inputs:
  - Which event types (incl wildcards)
@@ -109,10 +79,8 @@ TODO:
  - Do we want to specify negative filters (e.g. don't give me 
    ``event.type.here`` events)
 
-Global ``/initialSync`` API
----------------------------
-``ONGOING`` : See TODO section.
-
+Global initial sync API ``[ONGOING]``
+-------------------------------------
 Inputs:
  - A way of identifying the user (e.g. access token, user ID, etc)
  - Streaming token (optional)
@@ -143,10 +111,8 @@ TODO:
    scrolling back.
    
  
-Event Stream API
-----------------
-``Draft``
-
+Event Stream API ``[Draft]``
+----------------------------
 Inputs:
  - Position in the stream
  - Filter to apply: which event types, which room IDs, whether to get 
@@ -206,10 +172,8 @@ What data flows does it address:
  - Chat Screen: Data required when the room name changes
  - Chat Screen: Data required when a new message arrives
  
-Room Creation
--------------
-``Draft``
-
+Room Creation ``[Draft]``
+-------------------------
 Inputs:
   - Invitee list of user IDs, public/private, state events to set on creation 
     e.g. name of room, alias of room, topic of room
@@ -220,10 +184,8 @@ Notes:
 What data flows does it address:
   - Home Screen: Creating a room
  
-Joining a room
---------------
-``Draft``
-
+Joining a room ``[Draft]``
+--------------------------
 Inputs:
  - Room ID (with list of servers to join from) / room alias / invite event ID
  - Optional filter (which events to return, whether the returned events should 
@@ -260,10 +222,8 @@ Mapping messages to the event stream:
 What data flows does it address:
  - Home Screen: Joining a room
  
-Scrolling back (infinite scrolling)
------------------------------------
-``Draft``
-
+Scrollback API ``[Draft]``
+--------------------------
 .. NOTE::
  - Pagination: Would be nice to have "and X more". It will probably be 
    Google-style estimates given we can't know the exact number over federation, 
@@ -281,10 +241,8 @@ Outputs:
 What data flows does it address:
  - Chat Screen: Scrolling back (infinite scrolling)
  
-Contextual windowing
---------------------
-``Draft``
-
+Contextual windowing API ``[Draft]``
+------------------------------------
 This refers to showing a "window" of message events around a given message 
 event. The window provides the "context" for the given message event.
 
@@ -335,10 +293,8 @@ in parallel. An example of a client which may not need the use of action IDs
 includes bots which operate using basic request/responses in a synchronous 
 fashion.
  
-Inviting a user
-~~~~~~~~~~~~~~~
-``Final``
-
+Inviting a user ``[Final]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Inputs:
  - User ID
  - Room ID
@@ -348,10 +304,8 @@ Outputs:
 What data flows does it address:
  - Chat Screen: Invite a user
  
-Rejecting an invite
-~~~~~~~~~~~~~~~~~~~
-``Final``
-
+Rejecting an invite ``[Final]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Inputs:
  - Event ID (to know which invite you're rejecting)
 Outputs:
@@ -362,10 +316,8 @@ Notes:
  - Rejecting an invite results in the ``m.room.member`` state event being 
    DELETEd for that user.
    
-Sending state events
-~~~~~~~~~~~~~~~~~~~~
-``Final``
-
+Sending state events ``[Final]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Inputs:
  - Event type
  - State key
@@ -374,10 +326,8 @@ Inputs:
 Outputs:
  - None.
    
-Deleting state events
-~~~~~~~~~~~~~~~~~~~~~
-``Draft``
-
+Deleting state events ``[Draft]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Inputs:
  - Event type
  - State key
@@ -388,10 +338,8 @@ Notes:
  - This is represented on the event stream as an event lacking a ``content`` 
    key (for symmetry with ``prev_content``)
    
-Read-up-to markers
-~~~~~~~~~~~~~~~~~~
-``Draft``
-
+Read-up-to markers ``[Draft]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Inputs:
  - State Event type (``m.room.marker.delivered`` and ``m.room.marker.read``)
  - Event ID to mark up to. This is inclusive of the event ID specified.
@@ -423,10 +371,8 @@ Notes:
    fall back to the timestamp heuristic. After all, these markers are only ever
    going to be heuristics given they are not acknowledging each message event.
  
-Kicking a user
-~~~~~~~~~~~~~~
-``Final``
-
+Kicking a user ``[Final]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 Inputs:
  - User ID
  - Room ID
@@ -436,10 +382,8 @@ Outputs:
 What data flows does it address:
  - Chat Screen: Kick a user
 
-Leaving a room
-~~~~~~~~~~~~~~
-``Final``
-
+Leaving a room ``[Final]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 Inputs:
  - Room ID
  - A way of identifying the user (user ID, access token)
@@ -449,9 +393,10 @@ Outputs:
 What data flows does it address:
  - Chat Screen: Leave a room
  
-Send a message
-~~~~~~~~~~~~~~
-``ONGOING`` : Semantics for HTTP ordering.
+Send a message ``[ONGOING]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. NOTE::
+  Semantics for HTTP ordering.
 
 Inputs:
  - Room ID
@@ -470,35 +415,9 @@ E2E Notes:
  - For signing: You send the original message to the HS and it will return the 
    full event JSON which will be sent. This full event is then signed and sent 
    to the HS again to send the message.
- 
-Sessions
---------
-``ONGOING``
 
-.. NOTE::
- - Offline mode? How does that work with sessions?
-
-A session is a group of requests sent within a short amount of time by the same 
-client. Sessions time out after a short amount of time without any requests. 
-Starting a session is known as going "online". Its purpose is to wrap up the 
-expiry of presence and typing notifications into a clearer scope. A session 
-starts when the client makes any request. A session ends when the client doesn't
-make a request for a particular amount of time (times out). A session can also 
-end when explicitly hitting a particular endpoint. This is known as going 
-"offline".
-
-When a session starts, a session ID is sent in response to the first request the
-client makes. This session ID should be sent in *all* subsequent requests. If 
-the server expires a session and the client uses an old session ID, the server 
-should fail the request with the old session ID and send a new session ID in 
-response for the client to use. If the client receives a new session ID 
-mid-session, it must re-establish its typing status and presence status, as they
-are linked to the session ID.
-
-Presence API
-------------
-``ONGOING``
-
+Presence API ``[ONGOING]``
+--------------------------
 .. NOTE::
  - Per device presence
  - Presence lists / roster?
@@ -512,10 +431,8 @@ Outputs:
  - None.
 
 
-Typing API
-----------
-``ONGOING``
-
+Typing API ``[ONGOING]``
+------------------------
 .. NOTE::
  - Linking the termination of typing events to the message itself, so you don't 
    need to send two events and don't get flicker.
@@ -532,154 +449,18 @@ Output:
 Notes:
  - Typing will time out when the session ends.
  
-Action IDs
-----------
-``ONGOING``
-
-.. NOTE::
- - HTTP Ordering: Blocking requests with higher seqnums is troublesome if there 
-   is a max # of concurrent connections a client can have open. 
- - Session expiry: Do we really have to fonx the request if it was done with an 
-   old session ID?
-
-Action IDs are scoped per session. The first action ID for a session should be 
-0. For each subsequent action request, the ID should be incremented by 1. It 
-should be reset to 0 when a new session starts.
-
-If the client sends an action request with a stale session ID, the home server 
-MUST fail the request and start a new session. The request needs to be failed 
-in order to avoid edge cases with incrementing action IDs.
-
-Updates (Events)
-----------------
-``Draft``
-
-Events may update other events. This is represented by the ``updates`` key. This
-is a key which contains the event ID for the event it relates to. Events that 
-relate to other events are referred to as "Child Events". The event being 
-related to is referred to as "Parent Events". Child events cannot stand alone as
-a separate entity; they require the parent event in order to make sense.
-
-Bundling
-~~~~~~~~
-Events that relate to another event should come down inside that event. That is,
-the top-level event should come down with all the child events at the same time.
-This is called a "bundle" and it is represented as an array of events inside the
-top-level event.There are some issues with this however:
-
-- Scrollback: Should you be told about child events for which you do not know 
-  the parent event? Conclusion: No you shouldn't be told about child events. 
-  You will receive them when you scroll back to the parent event. 
-- Pagination of child events: You don't necessarily want to have 1000000s of 
-  child events with the parent event. We can't reasonably paginate child events
-  because we require all the child events in order to display the event 
-  correctly. Comments on a message should be done via another technique,
-  such as ``relates_to``.
-- Do you allow child events to relate to other child events? There is no 
-  technical reason why we cannot nest child events, however we can't think of 
-  any use cases for it. The behaviour would be to get the child events 
-  recursively from the top-level event. 
-  
-Main use cases for ``updates``:
- - Call signalling (child events are ICE candidates, answer to the offer, and 
-   termination)
- - *Local* Delivery/Read receipts : "Local" means they are not shared with other
-   users on the same home server or via federation but *are* shared between 
-   clients for the same user; useful for push notifications, read count markers,
-   etc. This is done to avoid the ``n^2`` problem for sending receipts, where 
-   the vast majority of traffic tends towards sending more receipts.
- - s/foo/bar/ style message edits
+Relates-to pagination API ``[Draft]``
+-------------------------------------
+Inputs:
+ - Event ID
+ - Pagination token
+ - limit
+Output:
+ - A chunk of child events
+ - A new pagination token
  
-Clients *always* need to know how to apply the deltas because clients may 
-receive the events separately down the event stream. Combining event updates 
-server-side does not make client implementation simpler, as the client still 
-needs to know how to combine the events.
-
-Relates to (Events)
--------------------
-``Draft``
-
-Events may be in response to other events, e.g. comments. This is represented 
-by the ``relates_to`` key. This differs from the ``updates`` key as they *do 
-not update the event itself*, and are *not required* in order to display the 
-parent event. Crucially, the child events can be paginated, whereas ``updates`` 
-child events cannot be paginated.
-
-Bundling
-~~~~~~~~
-Child events can be optionally bundled with the parent event, depending on your 
-display mechanism. The number of child events which can be bundled should be 
-limited to prevent events becoming too large. This limit should be set by the 
-client. If the limit is exceeded, then the bundle should also include a 
-pagination token so that the client can request more child events.
-
-Main use cases for ``relates_to``:
- - Comments on a message.
- - Non-local delivery/read receipts : If doing separate receipt events for each 
-   message.
- - Meeting invite responses : Yes/No/Maybe for a meeting.
-
-Like with ``updates``, clients need to know how to apply the deltas because 
-clients may receive the events separately down the event stream.
-
-TODO:
- - Can a child event reply to multiple parent events? Use case?
- - Should a parent event and its children share a thread ID? Does the 
-   originating HS set this ID? Is this thread ID exposed through federation? 
-   e.g. can a HS retrieve all events for a given thread ID from another HS?
-   
-Example using ``updates`` and ``relates_to``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- Room with a single message.
-- 10 comments are added to the message via ``relates_to``.
-- An edit is made to the original message via ``updates``.
-- An initial sync on this room with a limit of 3 comments, would return the 
-  message with the update event bundled with it and the most recent 3 comments 
-  and a pagination token to request earlier comments
-  
-  .. code :: javascript
-  
-    {
-      content: { body: "I am teh winner!" },
-      updated_by: [
-        { content: { body: "I am the winner!" }, ... }
-      ],
-      replies: {
-        start: "some_token",
-        chunk: [
-          { content: { body: "8th comment" }, ... },
-          { content: { body: "9th comment" }, ... },
-          { content: { body: "10th comment" }, ... }
-        ]
-      },
-      ...
-    }
-    
-Events (breaking changes; event version 2)
-------------------------------------------
-``Draft``
-
-- Prefix the event ``type`` to say if it is a state event, message event or 
-  ephemeral event. Needed because you can't tell the different between message 
-  events and ephemeral ROOM events (e.g. typing).
-- State keys need additional restrictions in order to increase flexibility on 
-  state event permissions. State keys prefixed with an ``_`` have no specific 
-  restrictions. 0-length state keys are now represented by just a single ``_``.
-  State keys prefixed with ``@`` can be modified only by the named user ID *OR* 
-  the room ops. They can have an optional path suffixed to it. State keys that 
-  start with a server name can only be modified by that server name (e.g. 
-  ``some.server.com/some/path`` can only be modified by ``some.server.com``).
-- Do we want to specify what restrictions apply to the state key in the event 
-  type? This would allow HSes to enforce this, making life easier for clients 
-  when dealing with custom event types. E.g. ``_custom.event`` would allow 
-  anything in the state key, ``_@custom.event`` would only allow user IDs in 
-  the state key, etc.
-- s/user_id/sender/g given that home servers can send events, not just users.
-
-Capabilities API
-----------------
-``ONGOING``
-
+Capabilities API ``[ONGOING]``
+------------------------------
 .. NOTE::
  - Server capabilities: Keep hashing step for consistency or not? Extra request.
  - Client capabilities: List of hashes f.e device vs union of hashes on all 
@@ -792,5 +573,169 @@ Expiry
 - WIP: Of calls themselves (as they may never send a ``m.call.hangup``
 
 
+General client changes
+----------------------
+These are changes which do not introduce new APIs, but are required for the new
+APIs in order to fix certain issues.
+ 
+Sessions ``[ONGOING]``
+~~~~~~~~~~~~~~~~~~~~~~
+.. NOTE::
+ - Offline mode? How does that work with sessions?
+
+A session is a group of requests sent within a short amount of time by the same 
+client. Sessions time out after a short amount of time without any requests. 
+Starting a session is known as going "online". Its purpose is to wrap up the 
+expiry of presence and typing notifications into a clearer scope. A session 
+starts when the client makes any request. A session ends when the client doesn't
+make a request for a particular amount of time (times out). A session can also 
+end when explicitly hitting a particular endpoint. This is known as going 
+"offline".
+
+When a session starts, a session ID is sent in response to the first request the
+client makes. This session ID should be sent in *all* subsequent requests. If 
+the server expires a session and the client uses an old session ID, the server 
+should fail the request with the old session ID and send a new session ID in 
+response for the client to use. If the client receives a new session ID 
+mid-session, it must re-establish its typing status and presence status, as they
+are linked to the session ID.
+ 
+Action IDs ``[ONGOING]``
+~~~~~~~~~~~~~~~~~~~~~~~~
+.. NOTE::
+ - HTTP Ordering: Blocking requests with higher seqnums is troublesome if there 
+   is a max # of concurrent connections a client can have open. 
+ - Session expiry: Do we really have to fonx the request if it was done with an 
+   old session ID?
+
+Action IDs are scoped per session. The first action ID for a session should be 
+0. For each subsequent action request, the ID should be incremented by 1. It 
+should be reset to 0 when a new session starts.
+
+If the client sends an action request with a stale session ID, the home server 
+MUST fail the request and start a new session. The request needs to be failed 
+in order to avoid edge cases with incrementing action IDs.
+
+Updates (Events) ``[Draft]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Events may update other events. This is represented by the ``updates`` key. This
+is a key which contains the event ID for the event it relates to. Events that 
+relate to other events are referred to as "Child Events". The event being 
+related to is referred to as "Parent Events". Child events cannot stand alone as
+a separate entity; they require the parent event in order to make sense.
+
+Bundling
+++++++++
+Events that relate to another event should come down inside that event. That is,
+the top-level event should come down with all the child events at the same time.
+This is called a "bundle" and it is represented as an array of events inside the
+top-level event.There are some issues with this however:
+
+- Scrollback: Should you be told about child events for which you do not know 
+  the parent event? Conclusion: No you shouldn't be told about child events. 
+  You will receive them when you scroll back to the parent event. 
+- Pagination of child events: You don't necessarily want to have 1000000s of 
+  child events with the parent event. We can't reasonably paginate child events
+  because we require all the child events in order to display the event 
+  correctly. Comments on a message should be done via another technique,
+  such as ``relates_to``.
+- Do you allow child events to relate to other child events? There is no 
+  technical reason why we cannot nest child events, however we can't think of 
+  any use cases for it. The behaviour would be to get the child events 
+  recursively from the top-level event. 
+  
+Main use cases for ``updates``:
+ - Call signalling (child events are ICE candidates, answer to the offer, and 
+   termination)
+ - *Local* Delivery/Read receipts : "Local" means they are not shared with other
+   users on the same home server or via federation but *are* shared between 
+   clients for the same user; useful for push notifications, read count markers,
+   etc. This is done to avoid the ``n^2`` problem for sending receipts, where 
+   the vast majority of traffic tends towards sending more receipts.
+ - s/foo/bar/ style message edits
+ 
+Clients *always* need to know how to apply the deltas because clients may 
+receive the events separately down the event stream. Combining event updates 
+server-side does not make client implementation simpler, as the client still 
+needs to know how to combine the events.
+
+Relates to (Events) ``[Draft]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Events may be in response to other events, e.g. comments. This is represented 
+by the ``relates_to`` key. This differs from the ``updates`` key as they *do 
+not update the event itself*, and are *not required* in order to display the 
+parent event. Crucially, the child events can be paginated, whereas ``updates`` 
+child events cannot be paginated.
+
+Bundling
+++++++++
+Child events can be optionally bundled with the parent event, depending on your 
+display mechanism. The number of child events which can be bundled should be 
+limited to prevent events becoming too large. This limit should be set by the 
+client. If the limit is exceeded, then the bundle should also include a 
+pagination token so that the client can request more child events.
+
+Main use cases for ``relates_to``:
+ - Comments on a message.
+ - Non-local delivery/read receipts : If doing separate receipt events for each 
+   message.
+ - Meeting invite responses : Yes/No/Maybe for a meeting.
+
+Like with ``updates``, clients need to know how to apply the deltas because 
+clients may receive the events separately down the event stream.
+
+TODO:
+ - Can a child event reply to multiple parent events? Use case?
+ - Should a parent event and its children share a thread ID? Does the 
+   originating HS set this ID? Is this thread ID exposed through federation? 
+   e.g. can a HS retrieve all events for a given thread ID from another HS?
+
+   
+Example using 'updates' and 'relates_to'
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Room with a single message.
+- 10 comments are added to the message via ``relates_to``.
+- An edit is made to the original message via ``updates``.
+- An initial sync on this room with a limit of 3 comments, would return the 
+  message with the update event bundled with it and the most recent 3 comments 
+  and a pagination token to request earlier comments
+  
+  .. code :: javascript
+  
+    {
+      content: { body: "I am teh winner!" },
+      updated_by: [
+        { content: { body: "I am the winner!" }, ... }
+      ],
+      replies: {
+        start: "some_token",
+        chunk: [
+          { content: { body: "8th comment" }, ... },
+          { content: { body: "9th comment" }, ... },
+          { content: { body: "10th comment" }, ... }
+        ]
+      },
+      ...
+    }
+    
+Events (breaking changes; event version 2) ``[Draft]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Prefix the event ``type`` to say if it is a state event, message event or 
+  ephemeral event. Needed because you can't tell the different between message 
+  events and ephemeral ROOM events (e.g. typing).
+- State keys need additional restrictions in order to increase flexibility on 
+  state event permissions. State keys prefixed with an ``_`` have no specific 
+  restrictions. 0-length state keys are now represented by just a single ``_``.
+  State keys prefixed with ``@`` can be modified only by the named user ID *OR* 
+  the room ops. They can have an optional path suffixed to it. State keys that 
+  start with a server name can only be modified by that server name (e.g. 
+  ``some.server.com/some/path`` can only be modified by ``some.server.com``).
+- Do we want to specify what restrictions apply to the state key in the event 
+  type? This would allow HSes to enforce this, making life easier for clients 
+  when dealing with custom event types. E.g. ``_custom.event`` would allow 
+  anything in the state key, ``_@custom.event`` would only allow user IDs in 
+  the state key, etc.
+- s/user_id/sender/g given that home servers can send events, not just users.
 
  
