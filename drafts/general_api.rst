@@ -149,6 +149,8 @@ TODO:
  
 Event Stream API
 ----------------
+``Draft``
+
 Inputs:
  - Position in the stream
  - Filter to apply: which event types, which room IDs, whether to get 
