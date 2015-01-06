@@ -271,7 +271,8 @@ Chat Screen
     - Initially will only display the timestamp and user ID of the *first*
       message. But can expand to show the entire tree.
     - Tree of messages indicating which message is a reply to which.
-    - Ordered by the timestamp of the most recent message in the thread
+    - Ordered by the arbitrary field (timestamp of oldest message in thread;
+      newest message in thread; sender id; sender display name; etc)
     - Each message: timestamp, user ID, display name at the time of the message
   - Room name
   - Room topic
@@ -279,7 +280,7 @@ Chat Screen
   - Desktop/Push Notifications for messages
  What you can do:
   - Send a message in reply to another message:
-    - Immediate local echo, thread moves to bottom of screen
+    - Immediate local echo, may cause messages to re-order
     - Messages that haven't reached the server are queued.
     - Thread is displayed where it should be in the thread order once the
       message is sent.
@@ -306,4 +307,8 @@ Chat Screen
 
  What you can do:
    - Send a message into a particular thread/column.
-   - Move an *existing* message into a new thread creating a new column.
+   - Move an *existing* message into a new thread creating a new column
+   - Move an existing message into an existing thread, causing the threads to
+     reconverge (i.e. provide a route from the sidebar back into the existing
+     thread).  This does not imply terminating the thread, which can continue
+     independently of the merge.
