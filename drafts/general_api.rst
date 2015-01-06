@@ -29,6 +29,7 @@ protocol e.g. HTTP. It contains the following APIs:
    - Sending message events ``ONGOING``
    - Sending state events ``Final``
    - Deleting state events ``Draft``
+   - Read-up-to markers ``Draft``
 - Presence API ``ONGOING``
 - Typing API ``ONGOING``
 - Capabilities API ``ONGOING``
@@ -53,11 +54,6 @@ It also contains information on changes to events, including:
 
 Notes
 -----
-
-TODO
-~~~~
-- What do read-up-to markers look like?
-- Receiving events for unknown rooms. How do you handle this?
   
 Summary of changes from v1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -193,6 +189,13 @@ Rejected events:
    correct the client's room state. This will be a local server event (not 
    shared with other servers).
  - In practice, clients don't need any extra special handling for this.
+Unknown rooms:
+ - You could receive events for rooms you are unaware of (e.g. you didn't do an
+   initial sync, or your HS lost its database and is told from another HS that 
+   they are in this room). How do you handle this?
+ - The simplest option would be to redo the initial sync with a filter on the
+   room ID you're unaware of. This would retrieve the room state so you can 
+   display the room.
 What data flows does it address:
  - Home Screen: Data required when new message arrives for a room
  - Home Screen: Data required when someone invites you to a room
@@ -384,6 +387,41 @@ Outputs:
 Notes:
  - This is represented on the event stream as an event lacking a ``content`` 
    key (for symmetry with ``prev_content``)
+   
+Read-up-to markers
+~~~~~~~~~~~~~~~~~~
+``Draft``
+
+Inputs:
+ - State Event type (``m.room.marker.delivered`` and ``m.room.marker.read``)
+ - Event ID to mark up to. This is inclusive of the event ID specified.
+Outputs:
+ - None.
+Efficiency notes:
+ - Sending "read up to" markers is preferable to sending receipts for every
+   message due to scaling problems on the client with one receipt per message.
+   This results in an ever increasing amount of bandwidth being devoted to 
+   receipts and not messages.
+ - For individual receipts, each person would need to send at least 1 receipt 
+   for every message, which would give a total number of ``msgs * num_people`` 
+   receipts per room. Assuming that people in a room generally converse at say 
+   a rate of 1 message per unit time, this scales ``n^2`` on the number of 
+   people in the room.
+ - Sending "read up to" markers in contrast allows people to skip some messages
+   entirely. By making them state events, each user would clobber their own 
+   marker, keeping the scaling at ``n``. For scrollback, the event filter would
+   NOT want to retrieve these markers as they will be updated frequently.
+ - This primarily benefits clients when doing an initial sync. Event graphs 
+   will still have a lot of events, most of them from clobbering these state 
+   events. Some gains can be made by skipping receipts, but it is difficult to 
+   judge whether this would be substantial.
+Notes:
+ - What do you do if you get a marker for an event you don't have? Do you fall
+   back to some kind of ordering heuristic e.g. ``if origin_server_ts > 
+   latest message``. Do you request that event ID directly from the HS? How do
+   you fit that in to the message thread if you did so? Would probably have to
+   fall back to the timestamp heuristic. After all, these markers are only ever
+   going to be heuristics given they are not acknowledging each message event.
  
 Kicking a user
 ~~~~~~~~~~~~~~
