@@ -1,30 +1,77 @@
 Instant Messaging
 =================
+This contains the formal proposal for Matrix Client-Server API v2. This API would
+completely replace v1. It is a general API, not specific to any particular 
+protocol e.g. HTTP. It contains the following APIs:
+
+- Filtering API
+- Global initial sync API
+- Event stream API
+- Room creation API
+- Room joining API
+- Scrollback API
+- Contextual windowing API
+- Action APIs:
+   - Inviting
+   - Rejecting invites
+   - Leaving
+   - Kicking
+   - Banning
+   - Sending message events
+   - Sending state events
+   - Deleting state events
+- Presence API
+- Typing API
+- Capabilities API
+- ``TODO`` Room Directory API
+- ``TODO`` Public room list API
+- ``TODO`` User Profile API
+
+The following APIs will remain unchanged from v1:
+
+- Registration API
+- Login API
+- Content repository API
+
+It also contains information on changes to events, including:
+
+- Relates to
+- Updates
+- State key restrictions
+- Event type rule setting
+
+Notes
+-----
 
 TODO
-----
-- Pagination: Would be nice to have "and X more". It will probably be Google-style estimates given
-  we can't know the exact number over federation, but as a purely informational display thing it would
-  be nice.
-- HTTP Ordering: Blocking requests with higher seqnums is troublesome if there is a max # of concurrent
-  connections a client can have open. 
-- Session expiry: Do we really have to fonx the request if it was done with an old session ID?
+~~~~
+- Pagination: Would be nice to have "and X more". It will probably be 
+  Google-style estimates given we can't know the exact number over federation, 
+  but as a purely informational display thing it would be nice.
+- HTTP Ordering: Blocking requests with higher seqnums is troublesome if there 
+  is a max # of concurrent connections a client can have open. 
+- Session expiry: Do we really have to fonx the request if it was done with an 
+  old session ID?
 - Server capabilities: Keep hashing step for consistency or not? Extra request.
-- Client capabilities: List of hashes f.e device vs union of hashes on all devices?
-- Client capabilities: Clients which are offline but can be pushed should have their capabilities visible.
+- Client capabilities: List of hashes f.e device vs union of hashes on all 
+  devices?
+- Client capabilities: Clients which are offline but can be pushed should have 
+  their capabilities visible.
   How to manage unregistering them e.g. if they uninstall the app?
 - What do server-generated events look like?
 - What do read-up-to markers look like?
 - Offline mode? How does that work with sessions?
 - Per device presence
 - Receiving events for unknown rooms. How do you handle this?
-- Linking the termination of typing events to the message itself, so you don't need to send
+- Linking the termination of typing events to the message itself, so you don't 
+  need to send
   two events and don't get flicker.
-- Filtering: Blacklist (negative) filters? E.g. "don't give me ``event.type.here`` events
+- Filtering: Blacklist (negative) filters? E.g. "don't give me 
+  ``event.type.here`` events
 - Public room list API
   
-Summary
--------
+Summary of changes from v1
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 Included:
  - Event filtering (type/room/users, federation-style events)
  - Incremental syncing
@@ -44,7 +91,8 @@ Excluded:
  - PATCHing power levels
  - Handling "duplicate" events in state/messages key on initial sync.
  - Multiple devices (other than VoIP)
- - Room directory lists (aka public room list, paginating, permissions on editing the list, etc)
+ - Room directory lists (aka public room list, paginating, permissions on 
+   editing the list, etc)
  
 Filter API
 ----------
@@ -201,10 +249,14 @@ Outputs:
 What data flows does it address:
  - Chat Screen: Scrolling back (infinite scrolling)
  
-Contextual messages
--------------------
+Contextual windowing
+--------------------
+This refers to showing a "window" of message events around a given message 
+event. The window provides the "context" for the given message event.
+
 Inputs:
- - Event ID of the message to get the surrounding context for (this specifies the room to get messages in).
+ - Event ID of the message to get the surrounding context for (this specifies 
+   the room to get messages in).
  - Number of messages before/after this message to obtain.
  - Filter to apply.
 Outputs:
