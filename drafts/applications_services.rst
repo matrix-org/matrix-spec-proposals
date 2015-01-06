@@ -125,7 +125,7 @@ On HS handling events to unknown rooms:
 
 On HS handling events to existing users and rooms:
 
- * If the HS receives an event for a user or room that already exist (either
+ * If the HS receives an event for a user or room that already exists (either
    provisioned by the AS or by normal client interactions), then the message
    is handled as normal.
  * Events in the namespaces of rooms and users that the AS has subscribed to
