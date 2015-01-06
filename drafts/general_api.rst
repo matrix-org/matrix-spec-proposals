@@ -191,8 +191,8 @@ Notes:
 What data flows does it address:
   - Home Screen: Creating a room
  
-Joining API``[Draft]``
-----------------------
+Joining API ``[Draft]``
+-----------------------
 Inputs:
  - Room ID (with list of servers to join from) / room alias / invite event ID
  - Optional filter (which events to return, whether the returned events should 
