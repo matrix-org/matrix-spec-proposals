@@ -16,13 +16,15 @@ Use cases
 - #2: Bug tracking software
 - #3: Forum
 - #4: Google + style communities
-- #5: Mobile IM client (perm storage)
-- #6: MIDI client
-- #7: Animatrix client
-- #8: Unity object trees
-- #9: Social Network ("Walls", PMs, groups)
-- #10: Minecraft-clone
-- #11: Global 'Like' widget, which links through to a room.
+- #5: Email style threading
+- #6: Multi-column threaded IM
+- #7: Mobile IM client (perm storage)
+- #8: MIDI client
+- #9: Animatrix client
+- #10: Unity object trees
+- #11: Social Network ("Walls", PMs, groups)
+- #12: Minecraft-clone
+- #13: Global 'Like' widget, which links through to a room.
 
 
 #1 Web client UI
@@ -259,3 +261,48 @@ Community Page
   - Share a post
   - +1 a post
 
+#5 Email style threading
+========================
+
+Chat Screen
+ What's visible:
+  - Enough scrollback to fill a "screen full" of content.
+  - Threads:
+    - Initially will only display the timestamp and user ID of the *first* 
+      message. But can expand to show the entire tree.
+    - Tree of messages indicating which message is a reply to which.
+    - Ordered the timestamp of the most recent message in the threads
+    - Each message: timestamp, user ID, display name at the time of the message
+  - Room name
+  - Room topic
+  - Typing notifications
+  - Desktop/Push Notifications for messages
+ What you can do:
+  - Send a message in reply to another message:
+    - Immediate local echo, thread moves to bottom of screen
+    - Messages that haven't reached the server are queued.
+    - Thread is displayed where it should be in the thread order once the
+      message is sent.
+  - Start a new thread by sending a message.
+
+#6 Multi-threaded IM
+====================
+
+Chat Screen
+ What's visible:
+  - A multi-column grid of threads from a number of chatrooms
+    Each concurrent thread is displayed in a different column.
+    The columns start and end as threads split and rejoin the main conversation
+    The messages for each thread are ordered by how recent they are::
+
+    Room #1        Room # 2           Room # 2
+    +------------+ +----------------+ Side thread.
+    | * Message1 | | * Root         | +--------------+
+    | * Message2 | | * A1 -> Root   | | * B1 -> Root |
+    +------------+ | * A2 -> A1     | | * B2 -> B1   |
+                   | * M -> A2, B2  | +--------------+
+                   +----------------+
+
+ What you can do:
+   - Send a message into a particular thread/column.
+   - Move an *existing* message into new thread creating a new column.
