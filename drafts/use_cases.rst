@@ -268,10 +268,10 @@ Chat Screen
  What's visible:
   - Enough scrollback to fill a "screen full" of content.
   - Threads:
-    - Initially will only display the timestamp and user ID of the *first* 
+    - Initially will only display the timestamp and user ID of the *first*
       message. But can expand to show the entire tree.
     - Tree of messages indicating which message is a reply to which.
-    - Ordered the timestamp of the most recent message in the threads
+    - Ordered by the timestamp of the most recent message in the thread
     - Each message: timestamp, user ID, display name at the time of the message
   - Room name
   - Room topic
@@ -302,7 +302,8 @@ Chat Screen
     +------------+ | * A2 -> A1     | | * B2 -> B1   |
                    | * M -> A2, B2  | +--------------+
                    +----------------+
+  - Typing notifications. Displayed within the correct thread/column.
 
  What you can do:
    - Send a message into a particular thread/column.
-   - Move an *existing* message into new thread creating a new column.
+   - Move an *existing* message into a new thread creating a new column.
