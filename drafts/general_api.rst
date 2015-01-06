@@ -57,8 +57,10 @@ home server path prefixes.
 Filter API ``[ONGOING]``
 ------------------------
 .. NOTE::
-  Exactly what can be filtered? Which APIs use this? Are we 
-  conflating too much?
+ - Exactly what can be filtered? Which APIs use this? Are we 
+   conflating too much?
+ - Do we want to specify negative filters (e.g. don't give me 
+   ``event.type.here`` events)
 
 Inputs:
  - Which event types (incl wildcards)
@@ -81,12 +83,22 @@ Notes:
  - HTTP note: If the filter API is a separate endpoint, then you could easily 
    allow APIs which use filtering to ALSO specifiy query parameters to tweak the
    filter.
-TODO:
- - Do we want to specify negative filters (e.g. don't give me 
-   ``event.type.here`` events)
 
 Global initial sync API ``[ONGOING]``
 -------------------------------------
+.. NOTE::
+ - Will need some form of state event pagination like we have for message events
+   to handle large amounts of state events for a room. Need to think of the 
+   consequences of this: you may not get a ``m.room.member`` for someone's 
+   message and so cannot display their display name / avatar. Do we want to 
+   provide pagination on an event type basis?
+ - Handle paginating initial sync results themselves (e.g. 10 most recent rooms)
+ - No need for state events under the 'state' key to have a ``prev_content``. 
+   Can also apply some optimisations depending on the direction of travel when 
+   scrolling back.
+ - Do we want to treat global / specific room initial syncs as separate entities?
+   Aren't they just a filter?
+
 Inputs:
  - A way of identifying the user (e.g. access token, user ID, etc)
  - Streaming token (optional)
@@ -104,17 +116,6 @@ Notes:
    rooms.
 What data flows does it address:
  - Home screen: data required on load.
- 
-TODO:
- - Will need some form of state event pagination like we have for message events
-   to handle large amounts of state events for a room. Need to think of the 
-   consequences of this: you may not get a ``m.room.member`` for someone's 
-   message and so cannot display their display name / avatar. Do we want to 
-   provide pagination on an event type basis?
- - Handle paginating initial sync results themselves (e.g. 10 most recent rooms)
- - No need for state events under the 'state' key to have a ``prev_content``. 
-   Can also apply some optimisations depending on the direction of travel when 
-   scrolling back.
    
  
 Event Stream API ``[Draft]``
@@ -178,8 +179,8 @@ What data flows does it address:
  - Chat Screen: Data required when the room name changes
  - Chat Screen: Data required when a new message arrives
  
-Room Creation ``[Draft]``
--------------------------
+Room Creation API ``[Draft]``
+-----------------------------
 Inputs:
   - Invitee list of user IDs, public/private, state events to set on creation 
     e.g. name of room, alias of room, topic of room
@@ -190,8 +191,8 @@ Notes:
 What data flows does it address:
   - Home Screen: Creating a room
  
-Joining a room ``[Draft]``
---------------------------
+Joining API``[Draft]``
+----------------------
 Inputs:
  - Room ID (with list of servers to join from) / room alias / invite event ID
  - Optional filter (which events to return, whether the returned events should 
