@@ -6,6 +6,22 @@ TODO
 - Pagination: Would be nice to have "and X more". It will probably be Google-style estimates given
   we can't know the exact number over federation, but as a purely informational display thing it would
   be nice.
+- HTTP Ordering: Blocking requests with higher seqnums is troublesome if there is a max # of concurrent
+  connections a client can have open. 
+- Session expiry: Do we really have to fonx the request if it was done with an old session ID?
+- Server capabilities: Keep hashing step for consistency or not? Extra request.
+- Client capabilities: List of hashes f.e device vs union of hashes on all devices?
+- Client capabilities: Clients which are offline but can be pushed should have their capabilities visible.
+  How to manage unregistering them e.g. if they uninstall the app?
+- What do server-generated events look like?
+- What do read-up-to markers look like?
+- Offline mode? How does that work with sessions?
+- Per device presence
+- Receiving events for unknown rooms. How do you handle this?
+- Linking the termination of typing events to the message itself, so you don't need to send
+  two events and don't get flicker.
+- Filtering: Blacklist (negative) filters? E.g. "don't give me ``event.type.here`` events
+- Public room list API
   
 Summary
 -------
@@ -18,7 +34,7 @@ Included:
  - Race conditions on event stream / actions
  - Out-of-order events
  - Capabilities
- - Comments (in_reply_to key)
+ - Comments (relates_to key)
  - Editing/updating messages (updates key)
  
 Excluded:
@@ -38,8 +54,9 @@ Inputs:
  - Which user IDs (for profile/presence)
  - Whether you want federation-style event JSON
  - Whether you want coalesced ``updates`` events
- - Whether you want coalesced ``in_reply_to`` events (and the max # to coalesce)
+ - Whether you want coalesced ``relates_to`` events (and the max # to coalesce)
  - limit= param?
+ - Which keys to return for events? e.g. no ``origin_server_ts`` if you don't show timestamps
 Outputs:
  - An opaque token which represents the inputs
 Notes:
@@ -49,15 +66,22 @@ Notes:
  - Clients should remember which token they need to use for which API.
  - HTTP note: If the filter API is a separate endpoint, then you could easily allow APIs which use filtering
    to ALSO specifiy query parameters to tweak the filter.
+TODO:
+ - Do we want to specify negative filters (e.g. don't give me ``event.type.here`` events)
 
 Global ``/initialSync`` API
 ---------------------------
 Inputs:
  - A way of identifying the user (e.g. access token, user ID, etc)
  - Streaming token (optional)
+ - Which state event types to return (e.g. ``m.room.name`` / ``m.room.topic`` / ``m.room.aliases``)
  - Filter to apply
 Outputs:
- - For each room the user is joined: Name, topic, # members, last message, room ID, aliases
+ - For each room the user is joined:
+    - Requested state events
+    - # members
+    - max of limit= message events
+    - room ID
 Notes:
  - If a streaming token is applied, you will get a delta rather than all the rooms.
 What data flows does it address:
@@ -67,6 +91,7 @@ TODO:
  - Will need some form of state event pagination like we have for message events to handle large
    amounts of state events for a room. Need to think of the consequences of this: you may not get a
    ``m.room.member`` for someone's message and so cannot display their display name / avatar.
+   Do we want to provide pagination on an event type basis?
  - Handle paginating initial sync results themselves (e.g. 10 most recent rooms)
  - No need for state events under the 'state' key to have a ``prev_content``. Can also apply some
    optimisations depending on the direction of travel when scrolling back.
@@ -95,8 +120,8 @@ State Events Ordering Notes:
 Message Events Ordering Notes:
  - Home servers may receive message events over federation that happened a long time ago. The client
    may or may not be interested in these message events.
- - For clients which do not persist scrollback for a room, this is not a problem as they only care
-   about the recent messages.
+ - For clients which do not store scrollback for a room (they discard events after processing them), 
+   this is not a problem as they only care about the recent messages.
  - For clients which do persist scrollback for a room, they need to know about the message event and
    where to insert it so that scrollback remains consistent and doesn't omit messages.
  - Clients can specify an input parameter stating that they wish to receive these out-of-order events.
@@ -104,8 +129,10 @@ Message Events Ordering Notes:
 Rejected events:
  - A home server may find out via federation that it should not have accepted an event (e.g. to send a
    message/state event in a room).
- - If this happen, the home server will send a ``m.room.redaction`` for the event in question.
+ - If this happens, the home server will send a ``m.room.redaction`` for the event in question. This will
+   be a local server event (not shared with other servers).
  - If the event was a state event, it will synthesise a new state event to correct the client's room state.
+   This will be a local server event (not shared with other servers).
  - In practice, clients don't need any extra special handling for this.
 What data flows does it address:
  - Home Screen: Data required when new message arrives for a room
@@ -120,7 +147,8 @@ What data flows does it address:
 Room Creation
 -------------
 Inputs:
-  - Invitee list of user IDs, public/private, name of room, alias of room, topic of room
+  - Invitee list of user IDs, public/private, state events to set on creation e.g.
+    name of room, alias of room, topic of room
 Output:
   - Room ID
 Notes:
@@ -131,13 +159,13 @@ What data flows does it address:
 Joining a room
 --------------
 Inputs:
- - Room ID / alias
+ - Room ID (with list of servers to join from) / room alias / invite event ID
  - Optional filter (which events to return, whether the returned events should come down
    the event stream)
 Outputs:
- - Room ID, Room aliases (plural), Name, topic, member list (f.e. member: user ID,
-   avatar, presence, display name, power level, whether they are typing), enough
-   messages to fill screen (and whether there are more)
+ - Room ID, the returned state events from the filter e.g. Room aliases (plural), Name, 
+   topic, member list (f.e. member: user ID, avatar, presence, display name, power level, 
+   whether they are typing), enough messages to fill screen (and whether there are more)
 Notes:
  - How do you return room information? In response to the join, or from the event stream?
  - The events returned need to be filterable. Different clients for the same user may want
@@ -293,7 +321,8 @@ E2E Notes:
  
 Sessions
 --------
-A session is a group of requests sent within a short amount of time by the same client. Starting
+A session is a group of requests sent within a short amount of time by the same client. 
+Sessions time out after a short amount of time without any requests. Starting
 a session is known as going "online". Its purpose is to wrap up the expiry of presence and 
 typing notifications into a clearer scope. A session starts when the client makes any request.
 A session ends when the client doesn't make a request for a particular amount of time (times out).
@@ -360,7 +389,7 @@ represented as an array of events inside the top-level event.There are some issu
 - Pagination of child events: You don't necessarily want to have 1000000s of child events with the
   parent event. We can't reasonably paginate child events because we require all the child events
   in order to display the event correctly. Comments on a message should be done via another technique,
-  such as ``in_reply_to`.
+  such as ``relates_to`.
 - Do you allow child events to relate to other child events? There is no technical reason why we
   cannot nest child events, however we can't think of any use cases for it. The behaviour would be
   to get the child events recursively from the top-level event. 
@@ -377,9 +406,9 @@ Clients *always* need to know how to apply the deltas because clients may receiv
 down the event stream. Combining event updates server-side does not make client implementation simpler, 
 as the client still needs to know how to combine the events.
 
-In reply to (Events)
---------------------
-Events may be in response to other events, e.g. comments. This is represented by the ``in_reply_to`` 
+Relates to (Events)
+-------------------
+Events may be in response to other events, e.g. comments. This is represented by the ``relates_to`` 
 key. This differs from the ``updates`` key as they *do not update the event itself*, and are *not required* 
 in order to display the parent event. Crucially, the child events can be paginated, whereas ``updates`` child events cannot
 be paginated.
@@ -391,7 +420,7 @@ number of child events which can be bundled should be limited to prevent events 
 limit should be set by the client. If the limit is exceeded, then the bundle should also include a pagination
 token so that the client can request more child events.
 
-Main use cases for ``in_reply_to``:
+Main use cases for ``relates_to``:
  - Comments on a message.
  - Non-local delivery/read receipts : If doing separate receipt events for each message.
  - Meeting invite responses : Yes/No/Maybe for a meeting.
@@ -405,10 +434,10 @@ TODO:
    this thread ID exposed through federation? e.g. can a HS retrieve all events for a given thread ID from
    another HS?
    
-Example using ``updates`` and ``in_reply_to``
+Example using ``updates`` and ``relates_to``
 ---------------------------------------------
 - Room with a single message.
-- 10 comments are added to the message via ``in_reply_to``.
+- 10 comments are added to the message via ``relates_to``.
 - An edit is made to the original message via ``updates``.
 - An initial sync on this room with a limit of 3 comments, would return the message with the update 
   event bundled with it and the most recent 3 comments and a pagination token to request earlier comments
@@ -418,16 +447,17 @@ Example using ``updates`` and ``in_reply_to``
     {
       content: { body: "I am teh winner!" },
       updated_by: [
-        { content: { body: "I am the winner!" } }
+        { content: { body: "I am the winner!" }, ... }
       ],
       replies: {
         start: "some_token",
         chunk: [
-          { content: { body: "8th comment" } },
-          { content: { body: "9th comment" } },
-          { content: { body: "10th comment" } }
+          { content: { body: "8th comment" }, ... },
+          { content: { body: "9th comment" }, ... },
+          { content: { body: "10th comment" }, ... }
         ]
-      }
+      },
+      ...
     }
     
 Events (breaking changes; event version 2)
