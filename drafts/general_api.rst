@@ -444,7 +444,11 @@ What data flows does it address:
 Send a message ``[ONGOING]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. NOTE::
-  Semantics for HTTP ordering.
+  Semantics for HTTP ordering. Do we really want to block requests with higher
+  sequence numbers if the server hasn't received earlier ones? Is this even
+  practical, given clients have a limit on the number of concurrent connections?
+  How can this be done in a way which doesn't suck for clients? Could we just
+  say "it isn't 'Sent' until it comes back down your event stream"?
 
 Inputs:
  - Room ID
@@ -467,8 +471,12 @@ E2E Notes:
 Presence API ``[ONGOING]``
 --------------------------
 .. NOTE::
- - Per device presence
- - Presence lists / roster?
+ - Per device presence: how does this work? Union of devices? Priority order for
+   statuses? E.g. online trumps away trumps offline. So if any device is online,
+   then the user is online, etc.
+ - Presence lists / roster? We probably do want this, but are we happy with the
+   v1 semantics?
+   
 
 When a session starts, the home server can treat the user as "online". When the 
 session ends, the home server can treat the user as "offline".
@@ -483,7 +491,7 @@ Typing API ``[ONGOING]``
 ------------------------
 .. NOTE::
  - Linking the termination of typing events to the message itself, so you don't 
-   need to send two events and don't get flicker.
+   need to send two events and don't get flicker?
 
 When in a session, a user can send a request stating that they are typing in a 
 room. They are no longer typing when either the session ends or they explicitly 
@@ -495,27 +503,29 @@ Inputs:
 Output:
  - None.
 Notes:
- - Typing will time out when the session ends.
+ - Typing will time out when the session ends. If a session is restarted, the 
+   typing notification must be sent again.
  
 Relates-to pagination API ``[Draft]``
 -------------------------------------
+See the "Relates to" section for more info.
+
 Inputs:
  - Event ID
  - Pagination token
  - limit
 Output:
  - A chunk of child events
- - A new pagination token
+ - A new pagination token for earlier child events.
  
 Capabilities API ``[ONGOING]``
 ------------------------------
 .. NOTE::
- - Server capabilities: Keep hashing step for consistency or not? Extra request.
- - Client capabilities: List of hashes f.e device vs union of hashes on all 
-   devices?
+ - Server capabilities: Keep hashing step for consistency or not? Extra request
+   if we do.
  - Client capabilities: Clients which are offline but can be pushed should have 
    their capabilities visible. How to manage unregistering them e.g. if they 
-   uninstall the app?
+   uninstall the app? Have a set of 'offline' capabilities?
   
 
 How does a client know if the server it is using supports a content repository? 
@@ -552,10 +562,16 @@ Client
 - e.g. Whether this client supports VoIP
 
 When a session is started, the client needs to provide a capability set. The 
-server will take the "union" of all the user's connected clients' capability 
-sets and send the hash of the capabilities as part of presence information 
+server will take the hashes of all the user's connected clients' capability 
+sets and send the list of hashes as part of presence information 
 (not necesarily as a ``m.presence`` event, but it should act like presence 
-events).
+events). It is sent as a list instead of a union of hashes because hashes work
+best when they don't change. A union of many devices' hashes will change 
+frequently when devices come on and offline (``max hashes = 2^num_devices``). 
+In contrast, the size of the list would vary, but the hashes themselves 
+would remain the same for a given device (``max hashes = num_devices``). Keeping
+the hashes the same is the best as that means clients do not need to request
+the capabilities for the given hash.
 
 On first signup, the client will attempt to send the hash and be most likely 
 refused by the home server as it does not know the full capability set for that 
@@ -576,8 +592,8 @@ Federation
 - e.g. Whether you support backfill, hypothetical search/query/threading APIs
 - Same as the server capability API
 
-VoIP
-----
+VoIP ``[TODO]``
+---------------
 This addresses one-to-one calling with multiple devices. This uses the 
 ``updates`` key to handle signalling.
 
@@ -629,7 +645,8 @@ APIs in order to fix certain issues.
 Sessions ``[ONGOING]``
 ~~~~~~~~~~~~~~~~~~~~~~
 .. NOTE::
- - Offline mode? How does that work with sessions?
+ - Offline mode? How does that work with sessions? Separate endpoint to say
+   "start a session only"?
 
 A session is a group of requests sent within a short amount of time by the same 
 client. Sessions time out after a short amount of time without any requests. 
