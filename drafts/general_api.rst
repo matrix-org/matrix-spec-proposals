@@ -47,6 +47,12 @@ protocol e.g. HTTP. The following APIs will remain unchanged from v1:
 - Login API
 - Content repository API
 
+This version will change the path prefix for HTTP:
+ - Version 1: ``/_matrix/client/api/v1``
+ - Version 2: ``/_matrix/client/v2``
+ 
+Note the lack of the ``api`` segment. This is for consistency between other 
+home server path prefixes.
  
 Filter API ``[ONGOING]``
 ------------------------
@@ -256,14 +262,48 @@ Outputs:
  - Start / End pagination tokens
  - Current room state at the end of the chunk as per initial sync.
 
-Room Directory API ``[TODO]``
------------------------------
+Room Alias API ``[TODO]``
+-------------------------
+This provides mechanisms for creating and removing room aliases for a room on a
+home server.
 
-Public room list API ``[TODO]``
--------------------------------
+Public room list API ``[Draft]``
+--------------------------------
+This provides mechanisms for searching for public rooms on a home server.
+
+Inputs:
+ - Search text (e.g. room alias/name/topic to search on)
+ - Home server to search on (this may just be the URL hit for HTTP)
+ - Any existing pagination token
+ - Limit for pagination
+Output:
+ - Pagination token
+ - Total number of rooms
+ - Which 'page' of results this response represents
+ - A list of rooms with:
+    - # users
+    - A set of 'public' room state events, presumably ``m.room.name``, 
+      ``m.room.topic`` and ``m.room.aliases``. This cannot be user-configured
+      since the user is not in the room.
+Notes:
+ - This API would be hit again for the next page of results, with the pagination
+   token provided from the previous hit.
+ - We should probably provide "and X more" estimates for the number of 
+   pagination results. This can be calculated by providing the total number of 
+   rooms e.g. '100' and the page e.g. '3' coupled with the limit parameter (aka
+   the number of results per page) specified e.g. '10'. 
+ - In order to prevent the dataset from changing underneath the client whilst
+   they paginate, a request without a pagination token should take a "snapshot"
+   of the underlying data which is then paginated on, rather than the database
+   which is a moving target as other clients add new public rooms.
+
 
 User Profile API ``[TODO]``
 ---------------------------
+Every user on a home server has a profile. This profile is effectively a
+key-value store scoped to a user ID. It can include an ``avatar_url``, 
+``displayname`` and other metadata. Updates to a profile should propagate to
+other interested users.
 
 Action APIs
 -----------
