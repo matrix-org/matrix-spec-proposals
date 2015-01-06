@@ -1,31 +1,40 @@
 Instant Messaging
 =================
+
+Legend:
+ - ``TODO``: API is not in this document yet.
+ - ``ONGOING``: API is proposed but needs more work. There are known issues to be
+   addressed.
+ - ``Draft``: API is proposed and has no outstanding issues to be addressed, but
+   needs more feedback.
+ - ``Final``:  The API has no outstanding issues.
+
 This contains the formal proposal for Matrix Client-Server API v2. This API 
 would completely replace v1. It is a general API, not specific to any particular 
 protocol e.g. HTTP. It contains the following APIs:
 
-- Filtering API
-- Global initial sync API
-- Event stream API
-- Room creation API
-- Room joining API
-- Scrollback API
-- Contextual windowing API
+- Filtering API ``ONGOING``
+- Global initial sync API ``ONGOING``
+- Event stream API ``Draft``
+- Room creation API ``Draft``
+- Room joining API ``Draft``
+- Scrollback API ``Draft``
+- Contextual windowing API ``Draft``
 - Action APIs:
-   - Inviting
-   - Rejecting invites
-   - Leaving
-   - Kicking
-   - Banning
-   - Sending message events
-   - Sending state events
-   - Deleting state events
-- Presence API
-- Typing API
-- Capabilities API
-- ``TODO`` Room Directory API
-- ``TODO`` Public room list API
-- ``TODO`` User Profile API
+   - Inviting ``Final``
+   - Rejecting invites ``Final``
+   - Leaving ``Final``
+   - Kicking ``Final``
+   - Banning ``Final``
+   - Sending message events ``ONGOING``
+   - Sending state events ``Final``
+   - Deleting state events ``Draft``
+- Presence API ``ONGOING``
+- Typing API ``ONGOING``
+- Capabilities API ``ONGOING``
+- Room Directory API ``TODO``
+- Public room list API ``TODO``
+- User Profile API ``TODO``
 
 The following APIs will remain unchanged from v1:
 
@@ -35,40 +44,20 @@ The following APIs will remain unchanged from v1:
 
 It also contains information on changes to events, including:
 
-- Relates to
-- Updates
-- State key restrictions
-- Event type rule setting
+- Action IDs ``ONGOING``
+- Sessions ``ONGOING``
+- Relates to ``Draft``
+- Updates ``Draft``
+- State key restrictions ``Draft``
+- Event type rule setting ``Draft``
 
 Notes
 -----
 
 TODO
 ~~~~
-- Pagination: Would be nice to have "and X more". It will probably be 
-  Google-style estimates given we can't know the exact number over federation, 
-  but as a purely informational display thing it would be nice.
-- HTTP Ordering: Blocking requests with higher seqnums is troublesome if there 
-  is a max # of concurrent connections a client can have open. 
-- Session expiry: Do we really have to fonx the request if it was done with an 
-  old session ID?
-- Server capabilities: Keep hashing step for consistency or not? Extra request.
-- Client capabilities: List of hashes f.e device vs union of hashes on all 
-  devices?
-- Client capabilities: Clients which are offline but can be pushed should have 
-  their capabilities visible.
-  How to manage unregistering them e.g. if they uninstall the app?
-- What do server-generated events look like?
 - What do read-up-to markers look like?
-- Offline mode? How does that work with sessions?
-- Per device presence
 - Receiving events for unknown rooms. How do you handle this?
-- Linking the termination of typing events to the message itself, so you don't 
-  need to send
-  two events and don't get flicker.
-- Filtering: Blacklist (negative) filters? E.g. "don't give me 
-  ``event.type.here`` events
-- Public room list API
   
 Summary of changes from v1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -96,6 +85,9 @@ Excluded:
  
 Filter API
 ----------
+``ONGOING`` : Exactly what can be filtered? Which APIs use this? Are we 
+conflating too much?
+
 Inputs:
  - Which event types (incl wildcards)
  - Which room IDs
@@ -123,6 +115,8 @@ TODO:
 
 Global ``/initialSync`` API
 ---------------------------
+``ONGOING`` : See TODO section.
+
 Inputs:
  - A way of identifying the user (e.g. access token, user ID, etc)
  - Streaming token (optional)
@@ -209,6 +203,8 @@ What data flows does it address:
  
 Room Creation
 -------------
+``Draft``
+
 Inputs:
   - Invitee list of user IDs, public/private, state events to set on creation 
     e.g. name of room, alias of room, topic of room
@@ -221,6 +217,8 @@ What data flows does it address:
  
 Joining a room
 --------------
+``Draft``
+
 Inputs:
  - Room ID (with list of servers to join from) / room alias / invite event ID
  - Optional filter (which events to return, whether the returned events should 
@@ -251,11 +249,21 @@ Mapping messages to the event stream:
    clients, rather than annotating the join event. The server-generated event 
    works nicely for Application Services where an entity subscribes to a room 
    without a join event.
+ - This will look like an event for the room, but have a special 
+   "server-generated" event type e.g. ``m.homeserver.scrollback`` with a 
+   ``token`` containing the start token for the room.
 What data flows does it address:
  - Home Screen: Joining a room
  
 Scrolling back (infinite scrolling)
 -----------------------------------
+``Draft``
+
+.. NOTE::
+ - Pagination: Would be nice to have "and X more". It will probably be 
+   Google-style estimates given we can't know the exact number over federation, 
+   but as a purely informational display thing it would be nice.
+
 Inputs:
  - Identifier for the earliest event
  - # requested events
@@ -270,6 +278,8 @@ What data flows does it address:
  
 Contextual windowing
 --------------------
+``Draft``
+
 This refers to showing a "window" of message events around a given message 
 event. The window provides the "context" for the given message event.
 
@@ -322,6 +332,8 @@ fashion.
  
 Inviting a user
 ~~~~~~~~~~~~~~~
+``Final``
+
 Inputs:
  - User ID
  - Room ID
@@ -333,6 +345,8 @@ What data flows does it address:
  
 Rejecting an invite
 ~~~~~~~~~~~~~~~~~~~
+``Final``
+
 Inputs:
  - Event ID (to know which invite you're rejecting)
 Outputs:
@@ -343,8 +357,22 @@ Notes:
  - Rejecting an invite results in the ``m.room.member`` state event being 
    DELETEd for that user.
    
-Deleting a state event
-~~~~~~~~~~~~~~~~~~~~~~
+Sending state events
+~~~~~~~~~~~~~~~~~~~~
+``Final``
+
+Inputs:
+ - Event type
+ - State key
+ - Room ID
+ - Content
+Outputs:
+ - None.
+   
+Deleting state events
+~~~~~~~~~~~~~~~~~~~~~
+``Draft``
+
 Inputs:
  - Event type
  - State key
@@ -357,6 +385,8 @@ Notes:
  
 Kicking a user
 ~~~~~~~~~~~~~~
+``Final``
+
 Inputs:
  - User ID
  - Room ID
@@ -368,6 +398,8 @@ What data flows does it address:
 
 Leaving a room
 ~~~~~~~~~~~~~~
+``Final``
+
 Inputs:
  - Room ID
  - A way of identifying the user (user ID, access token)
@@ -379,6 +411,8 @@ What data flows does it address:
  
 Send a message
 ~~~~~~~~~~~~~~
+``ONGOING`` : Semantics for HTTP ordering.
+
 Inputs:
  - Room ID
  - Message contents
@@ -399,6 +433,11 @@ E2E Notes:
  
 Sessions
 --------
+``ONGOING``
+
+.. NOTE::
+ - Offline mode? How does that work with sessions?
+
 A session is a group of requests sent within a short amount of time by the same 
 client. Sessions time out after a short amount of time without any requests. 
 Starting a session is known as going "online". Its purpose is to wrap up the 
@@ -416,8 +455,14 @@ response for the client to use. If the client receives a new session ID
 mid-session, it must re-establish its typing status and presence status, as they
 are linked to the session ID.
 
-Presence
-~~~~~~~~
+Presence API
+------------
+``ONGOING``
+
+.. NOTE::
+ - Per device presence
+ - Presence lists / roster?
+
 When a session starts, the home server can treat the user as "online". When the 
 session ends, the home server can treat the user as "offline".
 
@@ -425,12 +470,16 @@ Inputs:
  - Presence state (online, offline, away, busy, do not disturb, etc)
 Outputs:
  - None.
-Notes:
- - TODO: Handle multiple devices.
 
 
-Typing
-~~~~~~
+Typing API
+----------
+``ONGOING``
+
+.. NOTE::
+ - Linking the termination of typing events to the message itself, so you don't 
+   need to send two events and don't get flicker.
+
 When in a session, a user can send a request stating that they are typing in a 
 room. They are no longer typing when either the session ends or they explicitly 
 send another request to say they are no longer typing.
@@ -444,7 +493,15 @@ Notes:
  - Typing will time out when the session ends.
  
 Action IDs
-~~~~~~~~~~
+----------
+``ONGOING``
+
+.. NOTE::
+ - HTTP Ordering: Blocking requests with higher seqnums is troublesome if there 
+   is a max # of concurrent connections a client can have open. 
+ - Session expiry: Do we really have to fonx the request if it was done with an 
+   old session ID?
+
 Action IDs are scoped per session. The first action ID for a session should be 
 0. For each subsequent action request, the ID should be incremented by 1. It 
 should be reset to 0 when a new session starts.
@@ -455,6 +512,8 @@ in order to avoid edge cases with incrementing action IDs.
 
 Updates (Events)
 ----------------
+``Draft``
+
 Events may update other events. This is represented by the ``updates`` key. This
 is a key which contains the event ID for the event it relates to. Events that 
 relate to other events are referred to as "Child Events". The event being 
@@ -498,6 +557,8 @@ needs to know how to combine the events.
 
 Relates to (Events)
 -------------------
+``Draft``
+
 Events may be in response to other events, e.g. comments. This is represented 
 by the ``relates_to`` key. This differs from the ``updates`` key as they *do 
 not update the event itself*, and are *not required* in order to display the 
@@ -528,7 +589,7 @@ TODO:
    e.g. can a HS retrieve all events for a given thread ID from another HS?
    
 Example using ``updates`` and ``relates_to``
----------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 - Room with a single message.
 - 10 comments are added to the message via ``relates_to``.
 - An edit is made to the original message via ``updates``.
@@ -556,6 +617,8 @@ Example using ``updates`` and ``relates_to``
     
 Events (breaking changes; event version 2)
 ------------------------------------------
+``Draft``
+
 - Prefix the event ``type`` to say if it is a state event, message event or 
   ephemeral event. Needed because you can't tell the different between message 
   events and ephemeral ROOM events (e.g. typing).
@@ -573,8 +636,19 @@ Events (breaking changes; event version 2)
   the state key, etc.
 - s/user_id/sender/g given that home servers can send events, not just users.
 
-Capabilities
-------------
+Capabilities API
+----------------
+``ONGOING``
+
+.. NOTE::
+ - Server capabilities: Keep hashing step for consistency or not? Extra request.
+ - Client capabilities: List of hashes f.e device vs union of hashes on all 
+   devices?
+ - Client capabilities: Clients which are offline but can be pushed should have 
+   their capabilities visible. How to manage unregistering them e.g. if they 
+   uninstall the app?
+  
+
 How does a client know if the server it is using supports a content repository? 
 How does a client know if another client has VoIP support? This section outlines
 capability publishing for servers, clients and federation.
