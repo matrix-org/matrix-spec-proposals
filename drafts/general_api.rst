@@ -329,12 +329,63 @@ Notes:
    which is a moving target as other clients add new public rooms.
 
 
-User Profile API ``[TODO]``
+User Profile API ``[Draft]``
 ---------------------------
 Every user on a home server has a profile. This profile is effectively a
 key-value store scoped to a user ID. It can include an ``avatar_url``, 
 ``displayname`` and other metadata. Updates to a profile should propagate to
 other interested users.
+
+Setting display name (strings):
+
+Inputs:
+ - User ID
+ - New display name
+Output:
+ - None.
+Notes:
+ - This is a generic problem, so should probably not be special cased for
+   display names. E.g. having an arbitrary key-value store here.
+ 
+Setting avatar url (blob data):
+ 
+Inputs:
+ - User ID
+ - New avatar url / file blob?
+Output:
+ - None.
+Notes:
+ - We may want to provide file uploading on this API for convenience.
+
+Retrieving profile information:
+
+Inputs:
+ - User ID
+ - Which keys to retrieve
+Output:
+ - The key/values specified.
+
+Propagation
+~~~~~~~~~~~
+The goals of propagation are:
+
+- Profile updates should propagate to all rooms the user is in. 
+- We should support different kinds of profiles for different rooms. 
+
+In v1, users have a single profile. This information is duplicated for
+every room the user is in. This duplication means that things like
+display names *could* change on a room-by-room basis. However, this is
+extremely inefficient when updating the display name, as you have to
+send ``num_joined_rooms`` events to inform everyone of the update.
+
+There's no easy solution to this. The room needs a record of the name
+changes; it's not good enough to send it just to the users (the set of
+all users in all rooms the user changing their display name is in), as
+new users who join later still need to know about these changes. The
+ordering information needs to be preserved as well. 
+
+An improvement would be to allow the client to not automatically share
+updates of their profile information to all rooms.
 
 Action APIs
 -----------
