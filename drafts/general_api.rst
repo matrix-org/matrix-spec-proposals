@@ -263,10 +263,40 @@ Outputs:
  - Start / End pagination tokens
  - Current room state at the end of the chunk as per initial sync.
 
-Room Alias API ``[TODO]``
+Room Alias API ``[Draft]``
 -------------------------
 This provides mechanisms for creating and removing room aliases for a room on a
-home server.
+home server. Typically, any user in a room can make an alias for that room. The
+alias creator (or anyone in the room?) can delete that alias. Server admins can
+also delete any alias on their server.
+
+Mapping a room alias to a room:
+
+Inputs:
+ - Room Alias
+Output:
+ - Room ID
+ - List of home servers to join via.
+
+Mapping a room to an alias:
+ 
+Inputs:
+ - Room ID
+ - Desired room alias localpart
+ - User ID (for auth)
+Output:
+ - Room alias
+Notes:
+ - The home server may add restrictions e.g. the user must be in the room.
+ 
+Deleting a mapping:
+
+Inputs:
+ - Room alias
+ - User ID (for auth)
+Output:
+ - None.
+
 
 Public room list API ``[Draft]``
 --------------------------------
