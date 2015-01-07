@@ -536,9 +536,11 @@ Inputs:
  - Room ID
  - Message contents
  - Action ID (optional)
+ - Whether the full event should be returned, or a compact version (default=full)
 Outputs:
- - Actual content sent (if server modified it)
- - When in the stream this action happened. (to correctly display local echo)
+ - The actual event sent incl content OR:
+ - The extra keys added or keys modified e.g. 'content' from a policy server 
+   (if compact=true)
 What data flows does it address:
  - Chat Screen: Send a Message
 Ordering notes:
@@ -549,6 +551,14 @@ E2E Notes:
  - For signing: You send the original message to the HS and it will return the 
    full event JSON which will be sent. This full event is then signed and sent 
    to the HS again to send the message.
+Compact flag notes:
+ - You need to know information about the event sent, including the event ID,
+   timestamp, etc.
+ - Default behaviour will return the entire event JSON sent to make client
+   implementations simple (just clobber it).
+ - It sucks to have your own messages echoed back to you in response though.
+   As a result, you can ask for a compact version which just sends down the
+   keys which were added, e.g. timestamp and event ID.
 
 Presence API ``[ONGOING]``
 --------------------------
