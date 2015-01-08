@@ -387,6 +387,36 @@ ordering information needs to be preserved as well.
 An improvement would be to allow the client to not automatically share
 updates of their profile information to all rooms.
 
+Account Management API ``[Draft]``
+----------------------------------
+Users may wish to delete their account, revoke access tokens, manage
+their devices, etc. This is achieved using an account management API.
+
+Deleting an account:
+
+Inputs:
+ - User ID to delete
+ - Auth key (e.g. access_token of user, of server admin, etc)
+Output:
+ - None.
+ 
+Viewing access tokens related to this account:
+
+Inputs:
+ - User ID
+ - Auth key (e.g. access_token of user, of server admin, etc)
+Output:
+ - A list of access tokens (+ last used / creation date / device / user-agent?)
+
+Removing an access token:
+
+Inputs:
+ - User ID
+ - Auth key (e.g. access_token of user, of server admin, etc)
+ - Access token to revoke.
+Output:
+ - None.
+
 Action APIs
 -----------
 The following APIs are "action APIs". This is defined to be a request which 
