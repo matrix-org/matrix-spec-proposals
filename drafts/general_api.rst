@@ -498,6 +498,11 @@ Notes:
  - This is represented on the event stream as an event lacking a ``content`` 
    key (for symmetry with ``prev_content``)
    
+Knocking on a room ``[TODO]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If a room has the right ``join_rule`` e.g. ``knock``, then it should be able
+to send a special knock event to ask to join the room.
+   
 Read-up-to markers ``[Draft]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Inputs:
