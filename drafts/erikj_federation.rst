@@ -4,12 +4,18 @@ Federation
 Constructing a new event
 ------------------------
 
-**TODO**
+    **TODO**
+
 
 Signing and Hashes
 ~~~~~~~~~~~~~~~~~~
 
-**TODO**
+    **TODO**
+
+Validation
+----------
+
+    **TODO**
 
 Authorization
 -------------
@@ -19,6 +25,7 @@ must know whether that event is allowed by the authorization rules. These rules
 depend solely on the state at that event. The types of state events that affect
 authorization are:
 
+- ``m.room.create``
 - ``m.room.member``
 - ``m.room.join_rules``
 - ``m.room.power_levels``
@@ -87,8 +94,22 @@ include validation).
    a. **TODO**.
 
 #. Allow.
-   
-   
+
+
+Auth events
+~~~~~~~~~~~
+
+The auth events of an event are the set of events used by the authorization 
+algorithm to accept the event. These should be a subset of the current state.
+
+A server is required to store the complete chain of auth events for all events
+it serves to remote servers.
+
+.. todo
+    We probably should probably give a lower band of how long auth events
+    should be kept around for.
+
+
 Definitions
 ~~~~~~~~~~~
 
@@ -99,7 +120,70 @@ Required Power Level
   ``events_default`` depending on if the event type is a state event or not.
   
 
+State Resolution
+----------------
 
+    **TODO**
 
 Appendix
 ========
+
+    **TODO**
+
+Example event:
+
+.. code::
+
+    {
+        "auth_events": [
+            [
+                "$14187571482fLeia:localhost:8480",
+                {
+                    "sha256": "kiZUclzzPetHfy0rVoYKnYXnIv5VxH8a4996zVl8xbw"
+                }
+            ],
+            [
+                "$14187571480odWTd:localhost:8480",
+                {
+                    "sha256": "GqtndjviW9yPGaZ6EJfzuqVCRg5Lhoyo4YYv1NFP7fw"
+                }
+            ],
+            [
+                "$14205549830rrMar:localhost:8480",
+                {
+                    "sha256": "gZmL23QdWjNOmghEZU6YjqgHHrf2fxarKO2z5ZTbkig"
+                }
+            ]
+        ],
+        "content": {
+            "body": "Test!",
+            "msgtype": "m.text"
+        },
+        "depth": 250,
+        "event_id": "$14207181140uTFlx:localhost:8480",
+        "hashes": {
+            "sha256": "k1nuafFdFvZXzhb5NeTE0Q2Jkqu3E8zkh3uH3mqwIxc"
+        },
+        "origin": "localhost:8480",
+        "origin_server_ts": 1420718114694,
+        "prev_events": [
+            [
+                "$142071809077XNNkP:localhost:8480",
+                {
+                    "sha256": "xOnU1b+4LOVz5qih0dkNFrdMgUcf35fKx9sdl/gqhjY"
+                }
+            ]
+        ],
+        "room_id": "!dwZDafgDEFTtpPKpLy:localhost:8480",
+        "sender": "@bob:localhost:8480",
+        "signatures": {
+            "localhost:8480": {
+                "ed25519:auto": "Nzd3D+emFBJJ4LCTzQEZaKO0Sa3sSTR1fGpu8OWXYn+7XUqke9Q1jYUewrEfxb3lPxlYWm/GztVUJizLz1K5Aw"
+            }
+        },
+        "type": "m.room.message",
+        "unsigned": {
+            "age": 500
+        }
+    }
+
