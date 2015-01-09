@@ -179,7 +179,9 @@ can then process the join event itself.
 Inviting a user
 ---------------
 
-    **TODO**
+To invite a remote user to a room we need their home server to sign the invite
+event. This is done by sending the event to the remote server, which then signs
+the event, before distributing the invite to other servers.
 
 
 Appendix
