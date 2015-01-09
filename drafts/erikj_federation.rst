@@ -17,6 +17,27 @@ Validation
 
     **TODO**
 
+Domain specific string
+    A string of the form ``<prefix><localpart>:<domain>``, where <prefix> is a
+    single character, ``<localpart>`` is an arbitrary string that does not
+    include a colon, and `<domain>` is a valid server name.
+
+``room_id``
+    A domain specific string with prefix ``!`` that is static across all events
+    in a graph and uniquely identifies it. The ``domain`` should be that of the
+    home server that created the room (i.e., the server that generated the
+    first ``m.room.create`` event).
+
+``sender``
+    The entity that logically sent the event. This is usually a user id, but
+    can also be a server name.
+
+User Id
+    A domain specific string with prefix ``@`` representing a user account. The
+    ``domain`` is the home server of the user and is the server used to contact
+    the user.
+
+
 Authorization
 -------------
 
