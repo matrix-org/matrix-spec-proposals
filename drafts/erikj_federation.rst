@@ -69,6 +69,8 @@ Rules
 The following are the rules to determine if an event is authorized (this does
 include validation).
 
+**TODO**: What signatures do we expect?
+
 1. If type is ``m.room.create`` allow.
 #. If type is ``m.room.member``:
   
@@ -145,6 +147,40 @@ State Resolution
 ----------------
 
     **TODO**
+
+Joining a room
+--------------
+
+If a user requests to join a room that the server is already in (i.e. the a
+user on that server has already joined the room) then the server can simply
+generate a join event and send it as normal.
+
+If the server is not already in the room it needs to will need to join via
+another server that is already in the room. This is done as a two step process.
+
+First, the local server requests from the remote server a skeleton of a join
+event. The remote does this as the local server does not have the event graph
+to use to fill out the ``prev_events`` key in the new event. Critically, the
+remote server does not process the event it responded with.
+
+Once the local server has this event, it fills it out with any extra data and
+signs it. Once ready the local server sends this event to a remote server
+(which could be the same or different from the first remote server), this
+remote server then processes the event and distributes to all the other
+participating servers in that room. The local server is told about the
+current state and complete auth chain for the join event. The local server
+can then process the join event itself.
+
+
+.. Note::
+   Finding which server to use to join any particular room is not specified.
+
+
+Inviting a user
+---------------
+
+    **TODO**
+
 
 Appendix
 ========
