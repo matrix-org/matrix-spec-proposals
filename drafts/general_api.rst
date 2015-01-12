@@ -184,7 +184,9 @@ Message Events Ordering Notes:
    after.
 Rejected events:
  - A home server may find out via federation that it should not have accepted 
-   an event (e.g. to send a message/state event in a room).
+   an event (e.g. to send a message/state event in a room). For example, it may
+   send an event to another home server and receive an auth event stating 
+   that the event should not have been sent. 
  - If this happens, the home server will send a ``m.room.redaction`` for the 
    event in question. This will be a local server event (not shared with other 
    servers).
@@ -551,8 +553,8 @@ Notes:
  - This is represented on the event stream as an event lacking a ``content`` 
    key (for symmetry with ``prev_content``)
    
-Patching power levels ``[Draft``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Patching power levels ``[Draft]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Inputs:
  - Room ID
  - Key to update
