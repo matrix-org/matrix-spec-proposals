@@ -6,27 +6,43 @@ Table of Contents
 
 Summary of changes from v1
 ==========================
-Included:
+
+Version 2.0
+-----------
  - Event filtering (type/room/users, federation-style events)
- - Incremental syncing
- - Rejecting invites
+ - Incremental initial syncing
  - Deleting state
- - Contextual messages (view messages around an arbitrary message)
  - Race conditions on event stream / actions
  - Out-of-order events
- - Capabilities
- - Comments (relates_to key)
- - Editing/updating messages (updates key)
  
-Excluded:
- - Searching messages
- - State event pagination (see Global /initialSync API)
- - Initial sync pagination (see Global /initialSync API)
- - PATCHing power levels
+TODO (In scope but needs a bit more work):
+ - Published room API: support searching remote HSes.
+ - Device management (see Account management; s/access token/device ID/g?
+ - Multiple devices
+    - Presence status unioning: is partially specced (needs more eyes).
+    - Syncing data between multiple devices: is specced.  
+    - TODO: Push for offline devices.
  - Handling "duplicate" events in state/messages key on initial sync.
- - Multiple devices (other than VoIP)
- - Room directory lists (aka public room list, paginating, permissions on 
-   editing the list, etc)
+    - Have a compact=true flag.
+    - Have an events = { "event_id": <Event>, ... } per room
+    - messages/state keys just have an array of event IDs.
+ - PATCHing power levels - not over federation; just local HS. Spec that.
+
+Lower priority
+~~~~~~~~~~~~~~
+ - Capabilities
+ - Editing/updating messages (updates key)
+ - Room alias API
+
+Version 2.1
+-----------
+ - Comments (relates_to key)
+ - Contextual messages (view messages around an arbitrary message)
+ - Rejecting invites
+ 
+Out of scope
+------------
+ - Searching messages
 
 Version 2 API
 =============
