@@ -183,6 +183,49 @@ To invite a remote user to a room we need their home server to sign the invite
 event. This is done by sending the event to the remote server, which then signs
 the event, before distributing the invite to other servers.
 
+Failures
+--------
+
+A server can notify a remote server about something it thinks it has done
+wrong using the failures mechanism. For example, the remote accepted an event
+the local think it shouldn't have.
+
+A failure has a severity level depending on the action taken by the local
+server. These levels are:
+
+``FATAL``
+    The local server could not parse the event, for example due to a missing
+    required field.
+
+``ERROR``
+    The local server *could* parse the event, but it was rejected. For example,
+    the event may have failed an authorization check.
+
+``WARN``
+    The local server accepted the event, but something was unexpected about it.
+    For example, the event may have referenced another event the local server
+    thought should be rejected.
+
+A failure also includes several other fields:
+
+``code``
+    A numeric code (to be defined later) indicating a particular type of
+    failure.
+
+``reason``
+    A short string indicating what was wrong, for diagnosis purposes on the
+    remote server.
+
+``affected``
+    The event id of the event this failure is responding to. For example, if
+    an accepted event referenced a rejected event, this would point to the
+    accepted one.
+
+``source``
+    The event id of the event that was the source of this unexpected behaviour.
+    For example, if an accepted event referenced a rejected event, this would
+    point to the rejected one.
+
 
 Appendix
 ========
