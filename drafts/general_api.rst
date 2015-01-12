@@ -9,33 +9,35 @@ Summary of changes from v1
 
 Version 2.0
 -----------
- - Event filtering (type/room/users, federation-style events)
- - Incremental initial syncing
- - Deleting state
- - Race conditions on event stream / actions
- - Out-of-order events
- - Published room API: support searching remote HSes.
- - Account management: specifically the concept of devices so push works.
- - Multiple devices
-    - Presence status unioning: is partially specced (needs more eyes).
-    - Syncing data between multiple devices: is specced.  
-    - TODO: Push for offline devices.
+- Event filtering (type/room/users, federation-style events)
+- Incremental initial syncing
+- Deleting state
+- Race conditions on event stream / actions
+- Out-of-order events
+- Published room API: support searching remote HSes.
+- Account management: specifically the concept of devices so push works.
+- Multiple devices
+   - Presence status unioning: is partially specced (needs more eyes).
+   - Syncing data between multiple devices: is specced.  
+   - TODO: Push for offline devices.
 
 Lower priority
 ~~~~~~~~~~~~~~
- - Capabilities
- - Editing/updating messages (updates key)
- - Room alias API
+- Capabilities
+- Editing/updating messages (updates key)
+- Room alias API
 
 Version 2.1
 -----------
- - Comments (relates_to key)
- - Contextual messages (view messages around an arbitrary message)
- - Rejecting invites
+- Comments (relates_to key)
+- Contextual messages (view messages around an arbitrary message)
+- Rejecting invites
+- State event pagination (e.g. from initial sync)
+- Initial sync pagination (e.g. X most recent rooms)
  
 Out of scope
 ------------
- - Searching messages
+- Searching messages
 
 Version 2 API
 =============
@@ -106,24 +108,21 @@ Notes:
    allow APIs which use filtering to ALSO specifiy query parameters to tweak the
    filter.
 
-Global initial sync API ``[ONGOING]``
+Global initial sync API ``[Draft]``
 -------------------------------------
 .. NOTE::
- - Will need some form of state event pagination like we have for message events
-   to handle large amounts of state events for a room. Need to think of the 
-   consequences of this: you may not get a ``m.room.member`` for someone's 
-   message and so cannot display their display name / avatar. Do we want to 
-   provide pagination on an event type basis?
- - Handle paginating initial sync results themselves (e.g. 10 most recent rooms)
- - No need for state events under the 'state' key to have a ``prev_content``. 
-   Can also apply some optimisations depending on the direction of travel when 
-   scrolling back.
- - Do we want to treat global / specific room initial syncs as separate entities?
-   Aren't they just a filter?
+
+ v2.1:
+   - Will need some form of state event pagination like we have for message events
+     to handle large amounts of state events for a room. Need to think of the 
+     consequences of this: you may not get a ``m.room.member`` for someone's 
+     message and so cannot display their display name / avatar. Do we want to 
+     provide pagination on an event type basis?
+   - Handle paginating initial sync results themselves (e.g. 10 most recent rooms)
 
 Inputs:
  - A way of identifying the user (e.g. access token, user ID, etc)
- - Filter to apply
+ - Filter to apply (e.g. a single room ID for a 'room initial sync')
  - Chunk token (for incremental deltas)
 Outputs:
  - For each room the user is joined:
@@ -143,7 +142,11 @@ Compacting notes:
        messages: [ event_id, event_id, ...],
        state: [ event_id, event_id, ...],
      }
-   
+Duplicate content notes:
+ - For non-compacted state events, duplicate state events in the ``messages`` key need to
+   have a ``prev_content`` to correctly display the state change text. This is not required
+   for ``state`` key events, which just represent the *current* state and as such do not
+   need a ``prev_content``. Compacted state events will need to specify the ``prev_content``.
 What data flows does it address:
  - Home screen: data required on load.
    
