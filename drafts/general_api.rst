@@ -14,19 +14,12 @@ Version 2.0
  - Deleting state
  - Race conditions on event stream / actions
  - Out-of-order events
- 
-TODO (In scope but needs a bit more work):
  - Published room API: support searching remote HSes.
- - Device management (see Account management; s/access token/device ID/g?
+ - Account management: specifically the concept of devices so push works.
  - Multiple devices
     - Presence status unioning: is partially specced (needs more eyes).
     - Syncing data between multiple devices: is specced.  
     - TODO: Push for offline devices.
- - Handling "duplicate" events in state/messages key on initial sync.
-    - Have a compact=true flag.
-    - Have an events = { "event_id": <Event>, ... } per room
-    - messages/state keys just have an array of event IDs.
- - PATCHing power levels - not over federation; just local HS. Spec that.
 
 Lower priority
 ~~~~~~~~~~~~~~
@@ -141,6 +134,16 @@ Outputs:
 Notes:
  - If a chunk token is applied, you will get a delta rather than all the 
    rooms.
+Compacting notes:
+ - Fixes the problem with the same event appearing in both the ``messages`` and
+   ``state`` keys. Represent as something like::
+
+     {
+       events: { event_id: Event, ... },
+       messages: [ event_id, event_id, ...],
+       state: [ event_id, event_id, ...],
+     }
+   
 What data flows does it address:
  - Home screen: data required on load.
    
@@ -148,7 +151,7 @@ What data flows does it address:
 Event Stream API ``[Draft]``
 ----------------------------
 Inputs:
- - Position in the stream
+ - Position in the stream (chunk token)
  - Filter to apply: which event types, which room IDs, whether to get 
    out-of-order events, which users to get presence/profile updates for
  - User ID
@@ -156,7 +159,7 @@ Inputs:
 Outputs:
  - 0-N events the client hasn't seen. NB: Deleted state events will be missing a
    ``content`` key. Deleted message events are ``m.room.redaction`` events.
- - New position in the stream.
+ - New position in the stream. (chunk token)
 State Events Ordering Notes:
  - Home servers may receive state events over federation that are superceded by 
    state events previously sent to the client. The home server *cannot* send 
@@ -298,7 +301,7 @@ Additional Outputs:
  - Current room state at the end of the chunk as per initial sync.
 
 Room Alias API ``[Draft]``
--------------------------
+--------------------------
 This provides mechanisms for creating and removing room aliases for a room on a
 home server. Typically, any user in a room can make an alias for that room. The
 alias creator (or anyone in the room?) can delete that alias. Server admins can
@@ -364,7 +367,7 @@ Notes:
 
 
 User Profile API ``[Draft]``
----------------------------
+----------------------------
 Every user on a home server has a profile. This profile is effectively a
 key-value store scoped to a user ID. It can include an ``avatar_url``, 
 ``displayname`` and other metadata. Updates to a profile should propagate to
@@ -421,8 +424,12 @@ ordering information needs to be preserved as well.
 An improvement would be to allow the client to not automatically share
 updates of their profile information to all rooms.
 
-Account Management API ``[Draft]``
-----------------------------------
+Account Management API ``[ONGOING]``
+------------------------------------
+.. NOTE::
+ - How do device IDs fit into everything else? Namely, where do we tell the HS
+   what device ID we are?
+
 Users may wish to delete their account, revoke access tokens, manage
 their devices, etc. This is achieved using an account management API.
 
@@ -434,13 +441,14 @@ Inputs:
 Output:
  - None.
  
-Viewing access tokens related to this account:
+Viewing devices related to this account:
 
 Inputs:
  - User ID
  - Auth key (e.g. access_token of user, of server admin, etc)
 Output:
- - A list of access tokens (+ last used / creation date / device / user-agent?)
+ - A list of devices (+ last used / access tokens / creation date / device / 
+   user-agent?)
 
 Removing an access token:
 
@@ -450,6 +458,17 @@ Inputs:
  - Access token to revoke.
 Output:
  - None.
+ 
+Removing a device:
+
+Inputs:
+ - User ID
+ - Auth key (e.g. access_token of user, of server admin, etc)
+ - Device ID to remove.
+Output:
+ - None.
+Notes:
+ - This revokes all access tokens linked to this device.
 
 Action APIs
 -----------
@@ -531,6 +550,22 @@ Outputs:
 Notes:
  - This is represented on the event stream as an event lacking a ``content`` 
    key (for symmetry with ``prev_content``)
+   
+Patching power levels ``[Draft``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Inputs:
+ - Room ID
+ - Key to update
+ - New value
+Outputs:
+ - None.
+Notes:
+ - This allows a single key on power levels to be updated e.g. specifying 
+   ``kick`` as the key and ``60`` as the value to change the level required to
+   kick someone.
+ - The local HS will take the current ``m.room.power_levels`` event and set the
+   new key before sending it to other HSes *in its full form*. This means HSes
+   will not need to worry about partial power level events.
    
 Knocking on a room ``[TODO]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
