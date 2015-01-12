@@ -69,6 +69,19 @@ This version will change the path prefix for HTTP:
  
 Note the lack of the ``api`` segment. This is for consistency between other 
 home server path prefixes.
+
+Terminology:
+ - ``Chunk token`` : An opaque string which can be used to return another chunk
+   of results. For example, the initial sync API and scrollback/contextual 
+   windowing APIs. If the total size of the data set is unknown, it should
+   return a chunk token to navigate it.
+ - ``Filter token`` : An opaque string representing the inputs originally given
+   to the filter API.
+ - ``Pagination token`` : An opaque string used for pagination requests. For
+   example, the published room list API. The size of the data set is known (e.g.
+   because a snapshot of it was taken) and you can do "Page X of Y" style 
+   navigation.
+
  
 Filter API ``[ONGOING]``
 ------------------------
@@ -89,7 +102,7 @@ Inputs:
  - Which keys to return for events? e.g. no ``origin_server_ts`` if you don't 
    show timestamps
 Outputs:
- - An opaque token which represents the inputs
+ - An opaque token which represents the inputs, the "filter token".
 Notes:
  - The token may expire, in which case you would need to request another one.
  - The token could be as simple as a concatenation of the requested filters with
@@ -117,10 +130,8 @@ Global initial sync API ``[ONGOING]``
 
 Inputs:
  - A way of identifying the user (e.g. access token, user ID, etc)
- - Streaming token (optional)
- - Which state event types to return (e.g. ``m.room.name`` / ``m.room.topic`` 
-   / ``m.room.aliases``)
  - Filter to apply
+ - Chunk token (for incremental deltas)
 Outputs:
  - For each room the user is joined:
     - Requested state events
@@ -128,7 +139,7 @@ Outputs:
     - max of limit= message events
     - room ID
 Notes:
- - If a streaming token is applied, you will get a delta rather than all the 
+ - If a chunk token is applied, you will get a delta rather than all the 
    rooms.
 What data flows does it address:
  - Home screen: data required on load.
@@ -198,7 +209,7 @@ What data flows does it address:
 Room Creation API ``[Draft]``
 -----------------------------
 Inputs:
-  - Invitee list of user IDs, public/private, state events to set on creation 
+  - Invitee list of user IDs, published/not, state events to set on creation 
     e.g. name of room, alias of room, topic of room
 Output:
   - Room ID
@@ -245,38 +256,45 @@ Mapping messages to the event stream:
 What data flows does it address:
  - Home Screen: Joining a room
  
+Room History
+------------
+This concerns APIs which return historical events for a room. There are several
+common parameters.
+
+Inputs:
+ - Room ID
+ - Max number of events to return
+ - Filter to apply.
+Outputs:
+ - Requested events
+ - Chunk token to use to request more events.
+
+ 
 Scrollback API ``[Draft]``
---------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. NOTE::
  - Pagination: Would be nice to have "and X more". It will probably be 
    Google-style estimates given we can't know the exact number over federation, 
    but as a purely informational display thing it would be nice.
 
-Inputs:
- - Identifier for the earliest event
- - # requested events
- - filter to apply
+Additional Inputs:
  - flag to say if the home server should do a backfill over federation
-Outputs:
- - requested events (f.e change in display name, what the old name was), 
+Additional Outputs:
  - whether there are more events on the local HS / over federation.
- - new identifier for the earliest event
 What data flows does it address:
  - Chat Screen: Scrolling back (infinite scrolling)
  
 Contextual windowing API ``[Draft]``
-------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 This refers to showing a "window" of message events around a given message 
 event. The window provides the "context" for the given message event.
 
-Inputs:
+Additional Inputs:
  - Event ID of the message to get the surrounding context for (this specifies 
    the room to get messages in).
- - Number of messages before/after this message to obtain.
- - Filter to apply.
-Outputs:
- - Chunk of messages
- - Start / End pagination tokens
+ - Whether to get results before / after / around (mid point) this event
+Additional Outputs:
+ - Start / End chunk tokens to go either way (not just one token)
  - Current room state at the end of the chunk as per initial sync.
 
 Room Alias API ``[Draft]``
@@ -314,14 +332,14 @@ Output:
  - None.
 
 
-Public room list API ``[Draft]``
---------------------------------
-This provides mechanisms for searching for public rooms on a home server.
+Published room list API ``[Draft]``
+-----------------------------------
+This provides mechanisms for searching for published rooms on a home server.
 
 Inputs:
  - Search text (e.g. room alias/name/topic to search on)
  - Home server to search on (this may just be the URL hit for HTTP)
- - Any existing pagination token
+ - Any existing pagination token, can be missing if this is the first hit.
  - Limit for pagination
 Output:
  - Pagination token
@@ -329,7 +347,7 @@ Output:
  - Which 'page' of results this response represents
  - A list of rooms with:
     - # users
-    - A set of 'public' room state events, presumably ``m.room.name``, 
+    - A set of 'publishable' room state events, presumably ``m.room.name``, 
       ``m.room.topic`` and ``m.room.aliases``. This cannot be user-configured
       since the user is not in the room.
 Notes:
@@ -342,7 +360,7 @@ Notes:
  - In order to prevent the dataset from changing underneath the client whilst
    they paginate, a request without a pagination token should take a "snapshot"
    of the underlying data which is then paginated on, rather than the database
-   which is a moving target as other clients add new public rooms.
+   which is a moving target as other clients add new published rooms.
 
 
 User Profile API ``[Draft]``
@@ -655,11 +673,11 @@ See the "Relates to" section for more info.
 
 Inputs:
  - Event ID
- - Pagination token
+ - Chunk token
  - limit
 Output:
  - A chunk of child events
- - A new pagination token for earlier child events.
+ - A new chunk token for earlier child events.
  
 Capabilities API ``[ONGOING]``
 ------------------------------
@@ -881,7 +899,7 @@ Child events can be optionally bundled with the parent event, depending on your
 display mechanism. The number of child events which can be bundled should be 
 limited to prevent events becoming too large. This limit should be set by the 
 client. If the limit is exceeded, then the bundle should also include a 
-pagination token so that the client can request more child events.
+chunk token so that the client can request more child events.
 
 Main use cases for ``relates_to``:
  - Comments on a message.
@@ -906,7 +924,7 @@ Example using 'updates' and 'relates_to'
 - An edit is made to the original message via ``updates``.
 - An initial sync on this room with a limit of 3 comments, would return the 
   message with the update event bundled with it and the most recent 3 comments 
-  and a pagination token to request earlier comments
+  and a chunk token to request earlier comments
   
   .. code :: javascript
   
