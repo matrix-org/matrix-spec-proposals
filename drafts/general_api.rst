@@ -513,8 +513,22 @@ in parallel. An example of a client which may not need the use of action IDs
 includes bots which operate using basic request/responses in a synchronous 
 fashion.
  
-Inviting a user ``[Final]``
+Inviting a user ``[ONGOING]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. NOTE::
+  - Clients need to know *why* they are being invited (e.g. a ``reason`` key,
+    just like for kicks/bans). However, this opens up a spam vector where any
+    user can send any other user a string. Do we really want to do that?
+  - It may be useful to send other state information such as the room name,
+    topic, etc. How is this specified in this request? Does the inviter even
+    specify this, or is it a room config option which fields are shared? This
+    has a lot of parallels with the published room API which exposes some state
+    events. How do we prevent spam attacks via the room name/topic?
+  - The spam attack vector may be something we're just going to have to deal 
+    with. Ultimately, we need to expose more data about the room. This data is
+    going to be set by the client. Compromises like "just give the event type"
+    don't really fix the problem "because.my.event.type.could.be.like.this".
+
 Inputs:
  - User ID
  - Room ID
@@ -722,6 +736,42 @@ Output:
  - A chunk of child events
  - A new chunk token for earlier child events.
  
+ 
+Session API ``[Draft]``
+-----------------------
+See the "Session" section in "General client changes" for more information on
+sessions.
+
+Starting a new session:
+
+Inputs:
+ - User ID
+ - Device ID
+ - Some sort of auth (e.g. ``access_token``)
+ - Desired presence status (e.g. "appear offline", "away")
+Output:
+ - Session ID
+Notes:
+ - This is an explicit endpoint for starting a new session. Clients typically
+   will not use this API to create a new session.
+ - Sessions will typically be started implicitly, whenever a session-less client
+   makes a new request to any API.
+ - Another form of identification e.g. ``access_token`` can be used to represent
+   the user ID / device ID combination.
+ - Presence is tied to the creation of a session. This endpoint can be used to
+   configure the starting presence of a new session, allowing the possibility
+   of an offline mode.
+   
+Ending a session:
+
+Inputs:
+ - Session ID
+ - Some sort of auth (e.g. ``access_token``)
+Output:
+ - None.
+Notes:
+ - This is typically done when "going dark", e.g. closing an app.
+ 
 Capabilities API ``[ONGOING]``
 ------------------------------
 .. NOTE::
@@ -846,20 +896,17 @@ General client changes
 These are changes which do not introduce new APIs, but are required for the new
 APIs in order to fix certain issues.
  
-Sessions ``[ONGOING]``
-~~~~~~~~~~~~~~~~~~~~~~
-.. NOTE::
- - Offline mode? How does that work with sessions? Separate endpoint to say
-   "start a session only"?
+Sessions ``[Draft]``
+~~~~~~~~~~~~~~~~~~~~
 
-A session is a group of requests sent within a short amount of time by the same 
-client. Sessions time out after a short amount of time without any requests. 
-Starting a session is known as going "online". Its purpose is to wrap up the 
-expiry of presence and typing notifications into a clearer scope. A session 
-starts when the client makes any request. A session ends when the client doesn't
-make a request for a particular amount of time (times out). A session can also 
-end when explicitly hitting a particular endpoint. This is known as going 
-"offline".
+A session is a group of requests sent by the same client. Sessions time out 
+after a short amount of time without any requests. Starting a session is known 
+as going "online". Its purpose is to wrap up the expiry of presence and typing 
+notifications into a clearer scope. A session starts when the client makes any 
+request. A session ends when the client doesn't make a request for a particular
+amount of time (times out). A session can also end when explicitly hitting a 
+particular endpoint. This is known as going "offline". A session can also be
+created by explicitly hitting a particular endpoint.
 
 When a session starts, a session ID is sent in response to the first request the
 client makes. This session ID should be sent in *all* subsequent requests. If 
@@ -867,7 +914,12 @@ the server expires a session and the client uses an old session ID, the server
 should fail the request with the old session ID and send a new session ID in 
 response for the client to use. If the client receives a new session ID 
 mid-session, it must re-establish its typing status and presence status, as they
-are linked to the session ID.
+are linked to the session ID. 
+
+Lightweight clients who do not wish to manage their session can omit the 
+session ID on their requests. The home server MUST treat these requests as 
+coming from the active session in order to ensure that presence works correctly
+for these simple clients.
  
 Action IDs ``[ONGOING]``
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1006,5 +1058,18 @@ Events (breaking changes; event version 2) ``[Draft]``
   anything in the state key, ``_@custom.event`` would only allow user IDs in 
   the state key, etc.
 - s/user_id/sender/g given that home servers can send events, not just users.
+
+Server-generated events ``[Draft]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Home servers may want to send events to their local clients or to other home
+servers e.g. for server status notifications.
+
+These events look like regular events but have a server domain name as the
+``sender`` and not a user ID. This can be easily detected by clients by the 
+absence of a starting ``@``.
+
+Different types of events (e.g. EDUs, room EDUs) are detected in the same way
+as normal events (as proposed in the ``Events`` section of this document).
+
 
  
