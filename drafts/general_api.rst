@@ -44,10 +44,10 @@ Version 2 API
 
 Legend:
  - ``[TODO]``: API is not in this document yet.
- - ``[ONGOING]``: API is proposed but needs more work. There are known issues to be
-   addressed.
- - ``[Draft]``: API is proposed and has no outstanding issues to be addressed, but
-   needs more feedback.
+ - ``[ONGOING]``: API is proposed but needs more work. There are known issues 
+   to be addressed.
+ - ``[Draft]``: API is proposed and has no outstanding issues to be addressed, 
+   but needs more feedback.
  - ``[Final]``:  The API has no outstanding issues.
 
 This contains the formal proposal for Matrix Client-Server API v2. This API 
@@ -113,12 +113,13 @@ Global initial sync API ``[Draft]``
 .. NOTE::
 
  v2.1:
-   - Will need some form of state event pagination like we have for message events
-     to handle large amounts of state events for a room. Need to think of the 
-     consequences of this: you may not get a ``m.room.member`` for someone's 
+   - Will need some form of state event pagination like we have for message 
+     events to handle large amounts of state events for a room. Need to think of
+     the consequences of this: you may not get a ``m.room.member`` for someone's 
      message and so cannot display their display name / avatar. Do we want to 
      provide pagination on an event type basis?
-   - Handle paginating initial sync results themselves (e.g. 10 most recent rooms)
+   - Handle paginating initial sync results themselves (e.g. 10 most recent 
+     rooms)
 
 Inputs:
  - A way of identifying the user (e.g. access token, user ID, etc)
@@ -143,10 +144,11 @@ Compacting notes:
        state: [ event_id, event_id, ...],
      }
 Duplicate content notes:
- - For non-compacted state events, duplicate state events in the ``messages`` key need to
-   have a ``prev_content`` to correctly display the state change text. This is not required
-   for ``state`` key events, which just represent the *current* state and as such do not
-   need a ``prev_content``. Compacted state events will need to specify the ``prev_content``.
+ - For non-compacted state events, duplicate state events in the ``messages`` 
+   key need to have a ``prev_content`` to correctly display the state change 
+   text. This is not required for ``state`` key events, which just represent 
+   the *current* state and as such do not need a ``prev_content``. Compacted 
+   state events will need to specify the ``prev_content``.
 What data flows does it address:
  - Home screen: data required on load.
    
@@ -645,7 +647,8 @@ Inputs:
  - Room ID
  - Message contents
  - Action ID (optional)
- - Whether the full event should be returned, or a compact version (default=full)
+ - Whether the full event should be returned, or a compact version 
+   (default=full)
 Outputs:
  - The actual event sent incl content OR:
  - The extra keys added or keys modified e.g. 'content' from a policy server 
