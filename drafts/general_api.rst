@@ -93,9 +93,9 @@ Inputs:
  - Whether you want federation-style event JSON
  - Whether you want coalesced ``updates`` events
  - Whether you want coalesced ``relates_to`` events (and the max # to coalesce)
- - limit= param?
+ - limit= param? (XXX: probably not; this should be done in the query itself)
  - Which keys to return for events? e.g. no ``origin_server_ts`` if you don't 
-   show timestamps
+   show timestamps (n.b. encrypted keys can't be filtered out)
 Outputs:
  - An opaque token which represents the inputs, the "filter token".
 Notes:
@@ -132,8 +132,8 @@ Outputs:
     - max of limit= message events
     - room ID
 Notes:
- - If a chunk token is applied, you will get a delta rather than all the 
-   rooms.
+ - If a chunk token is applied, you will get a delta relative to the last request
+    performed with that streaming token rather than all the rooms.
 Compacting notes:
  - Fixes the problem with the same event appearing in both the ``messages`` and
    ``state`` keys. Represent as something like::
@@ -151,8 +151,8 @@ Duplicate content notes:
    state events will need to specify the ``prev_content``.
 What data flows does it address:
  - Home screen: data required on load.
-   
- 
+ - XXX: would this also be used for initially loading room history screens too?
+
 Event Stream API ``[Draft]``
 ----------------------------
 Inputs:
@@ -408,7 +408,7 @@ Inputs:
  - Which keys to retrieve
 Output:
  - The key/values specified.
-
+  
 Propagation
 ~~~~~~~~~~~
 The goals of propagation are:
