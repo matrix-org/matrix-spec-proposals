@@ -6,6 +6,18 @@ Constructing a new event
 
     **TODO**
 
+When constructing a new event, the server should insert the following fields:
+
+- ``prev_events``: The list of event ids of what the server believes are the
+  current leaf nodes of the event graph (i.e., nodes that have been received
+  but are yet to be referenced by another event).
+- ``depth``: An integer one greater than the maximum depth of the event's
+  previous events.
+- ``auth_events``: The list of event ids that authorizes this event. This
+  should be a subset of the current state.
+- ``origin_server_ts``: The time the server created the event.
+- ``origin``: The name of the server.
+
 
 Signing and Hashes
 ~~~~~~~~~~~~~~~~~~
