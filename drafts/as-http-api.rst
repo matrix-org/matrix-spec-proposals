@@ -96,6 +96,10 @@ Notes:
        }
      }
    }
+   
+Unregister API ``[TODO]``
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 
 Home Server -> Application Service
@@ -137,4 +141,35 @@ Notes:
        avatar_url: "mxc://foo/bar"
      }
    }
+   
+Room Query ``[TODO]``
+~~~~~~~~~~~~~~~~~~~~~
+This API is called by the HS to query the existence of a room on the Application Service's namespace.
+
+Pushing ``[TODO]``
+~~~~~~~~~~~~~~~~~~
+This API is called by the HS when the HS wants to push an event (or batch of events) to the AS.
+
+ - Retry semantics
+ - Ordering
+
+
  
+Client -> Application Service
+-----------------------------
+This contains application service APIs which are used by the client.
+
+Linking ``[TODO]``
+~~~~~~~~~~~~~~~~~~
+Clients may want to link their matrix user ID to their 3PID (e.g. IRC nick). This
+API allows the AS to do this, so messages sent from the AS are sent as the client.
+
+- Probably OAuth2
+
+Client-Server v2 API Extensions
+-------------------------------
+
+ - Identity assertion (rather than access token inference)
+ - timestamp massaging (for inserting messages between other messages)
+ - alias mastery over the ASes namespace
+ - user ID mastery over the ASes namespace
