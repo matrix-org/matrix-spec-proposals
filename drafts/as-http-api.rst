@@ -150,8 +150,8 @@ Pushing ``[TODO]``
 ~~~~~~~~~~~~~~~~~~
 This API is called by the HS when the HS wants to push an event (or batch of events) to the AS.
 
- - Retry semantics
- - Ordering
+- Retry semantics
+- Ordering
 
 
  
@@ -169,7 +169,7 @@ API allows the AS to do this, so messages sent from the AS are sent as the clien
 Client-Server v2 API Extensions
 -------------------------------
 
- - Identity assertion (rather than access token inference)
- - timestamp massaging (for inserting messages between other messages)
- - alias mastery over the ASes namespace
- - user ID mastery over the ASes namespace
+- Identity assertion (rather than access token inference)
+- timestamp massaging (for inserting messages between other messages)
+- alias mastery over the ASes namespace
+- user ID mastery over the ASes namespace
