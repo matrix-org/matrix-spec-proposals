@@ -500,18 +500,19 @@ As a result, clients MUST be able to handle all possible orderings::
 
 When a client sends a request, they can include an "action ID" so that they can 
 match up the event in the event stream to the request which they made. This ID 
-is created by the client, and MUST be a monotonically increasing integer for 
-that client. This ID serves as a transaction ID for idempotency as well as a 
-sequence ID for ordering actions performed in parallel by that client. Events 
-for actions performed by a client in that client's event stream will include the
-action ID the client submitted when making the request. The action ID will *not*
-appear in other client's event streams.
+is created by the client. This ID serves as a transaction ID for idempotency 
+as well as a marker to match the response when it appears in the event stream. 
+Events for actions performed by a client in that client's event stream will 
+include the action ID the client submitted when making the request. The 
+action ID will *not* appear in other client's event streams.
 
 Action IDs are optional and are only needed by clients that retransmit their 
-requests, or display local echo, or allow the submission of multiple requests 
-in parallel. An example of a client which may not need the use of action IDs 
-includes bots which operate using basic request/responses in a synchronous 
-fashion.
+requests or display local echo. An example of a client which may not need the 
+use of action IDs includes bots which operate using basic request/responses 
+in a synchronous fashion.
+
+A client may wish to send multiple actions in parallel. The send event APIs
+support sending multiple events in a batch.
  
 Inviting a user ``[ONGOING]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -553,12 +554,14 @@ Notes:
 Sending state events ``[Final]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Inputs:
- - Event type
- - State key
+ - Event type[s]
+ - State key[s]
  - Room ID
- - Content
+ - Content[s]
 Outputs:
  - None.
+Notes:
+ - A batching version of this API needs to be provided.
    
 Deleting state events ``[Draft]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -685,6 +688,8 @@ Compact flag notes:
  - It sucks to have your own messages echoed back to you in response though.
    As a result, you can ask for a compact version which just sends down the
    keys which were added, e.g. timestamp and event ID.
+Notes:
+ - A batching version of this API needs to be provided.
 
 Presence API ``[ONGOING]``
 --------------------------
@@ -705,24 +710,13 @@ Outputs:
  - None.
 
 
-Typing API ``[ONGOING]``
+Typing API ``[Final]``
 ------------------------
 .. NOTE::
  - Linking the termination of typing events to the message itself, so you don't 
    need to send two events and don't get flicker?
 
-When in a session, a user can send a request stating that they are typing in a 
-room. They are no longer typing when either the session ends or they explicitly 
-send another request to say they are no longer typing.
-
-Inputs:
- - Room ID
- - Whether you are typing or not.
-Output:
- - None.
-Notes:
- - Typing will time out when the session ends. If a session is restarted, the 
-   typing notification must be sent again.
+The typing API remains unchanged from v1.
  
 Relates-to pagination API ``[Draft]``
 -------------------------------------
@@ -735,42 +729,6 @@ Inputs:
 Output:
  - A chunk of child events
  - A new chunk token for earlier child events.
- 
- 
-Session API ``[Draft]``
------------------------
-See the "Session" section in "General client changes" for more information on
-sessions.
-
-Starting a new session:
-
-Inputs:
- - User ID
- - Device ID
- - Some sort of auth (e.g. ``access_token``)
- - Desired presence status (e.g. "appear offline", "away")
-Output:
- - Session ID
-Notes:
- - This is an explicit endpoint for starting a new session. Clients typically
-   will not use this API to create a new session.
- - Sessions will typically be started implicitly, whenever a session-less client
-   makes a new request to any API.
- - Another form of identification e.g. ``access_token`` can be used to represent
-   the user ID / device ID combination.
- - Presence is tied to the creation of a session. This endpoint can be used to
-   configure the starting presence of a new session, allowing the possibility
-   of an offline mode.
-   
-Ending a session:
-
-Inputs:
- - Session ID
- - Some sort of auth (e.g. ``access_token``)
-Output:
- - None.
-Notes:
- - This is typically done when "going dark", e.g. closing an app.
  
 Capabilities API ``[ONGOING]``
 ------------------------------
@@ -920,22 +878,6 @@ Lightweight clients who do not wish to manage their session can omit the
 session ID on their requests. The home server MUST treat these requests as 
 coming from the active session in order to ensure that presence works correctly
 for these simple clients.
- 
-Action IDs ``[ONGOING]``
-~~~~~~~~~~~~~~~~~~~~~~~~
-.. NOTE::
- - HTTP Ordering: Blocking requests with higher seqnums is troublesome if there 
-   is a max # of concurrent connections a client can have open. 
- - Session expiry: Do we really have to fonx the request if it was done with an 
-   old session ID?
-
-Action IDs are scoped per session. The first action ID for a session should be 
-0. For each subsequent action request, the ID should be incremented by 1. It 
-should be reset to 0 when a new session starts.
-
-If the client sends an action request with a stale session ID, the home server 
-MUST fail the request and start a new session. The request needs to be failed 
-in order to avoid edge cases with incrementing action IDs.
 
 Updates (Events) ``[Draft]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
