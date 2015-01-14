@@ -284,6 +284,14 @@ pick the one with the greatest:
 #. Hash of event_id.
 
 
+State Conflict Resolution
+-------------------------
+
+If a server discovers that it disagrees with another about the current state,
+it can follow the same process outlined in *Auth chain resolution* to resolve
+these conflicts.
+
+
 Appendix
 ========
 
