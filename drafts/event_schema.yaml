@@ -40,6 +40,7 @@ properties:
     type: string
   unsigned:
     type: object
+
 required:
 - auth_events
 - content
@@ -52,12 +53,12 @@ required:
 - room_id
 - sender
 - type
+
 dependencies:
   state_key:
   - prev_state
   prev_state:
   - state_key
-
 
 definitions:
   server_id:
@@ -107,12 +108,14 @@ definitions:
         $ref: "#/definitions/base64"
   event_reference:
     type: array
+    minItems: 2
+    maxItems: 2
     items:
     - type: string
       description: Event id of the referenced event.
       $ref: "#/definitions/event_id"
     - type: object
-      description: Reference hashes of the reference event.
+      description: Reference hashes of the referenced event.
       $ref: "#/definitions/hashes"
   event_reference_list:
     type: array
