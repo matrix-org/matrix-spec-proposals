@@ -267,6 +267,22 @@ State Resolution
 
     **TODO**
 
+When two branches in the event graph merge, the state of those branches might
+differ, so a *state resolution* algorithm must be used to determine the current
+state of the resultant merge.
+
+The properties of the state resolution algorithm are:
+
+- Must only depend on the event graph, and not local server state.
+- When two state events are comparable, the descendant one should be picked.
+- Must not require the full event graph.
+
+The following algorithm satisfies these requirements; given two or more events,
+pick the one with the greatest:
+
+#. Depth.
+#. Hash of event_id.
+
 
 Appendix
 ========
