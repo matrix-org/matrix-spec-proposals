@@ -96,9 +96,8 @@ XXX: how do we transition between non-coalesced pagination and coalesced paginat
         ],
     }
 
-Returns::
-
-    200 OK
+Returns ``200 OK``::
+    
     {
         "filter_id": "583e98c2d983"
     }
@@ -107,7 +106,7 @@ Returns::
 Global initial sync API
 -----------------------
 
-GET /initialSync
+``GET /initialSync``
 
 GET parameters::
 
@@ -131,11 +130,10 @@ GET parameters::
 
     // FIXME: kegan: how much does the v1 response actually change here?
 
-Returns:
+Returns ``200 OK``:
 
 .. code:: javascript
-
-    200 OK
+    
     // where compact is false:
     {
         "end": "s72595_4483_1934", // the chunk token we pass to from=
@@ -250,7 +248,7 @@ Returns:
 Event Stream API
 ----------------
 
-GET /eventStream
+GET ``/eventStream``
 GET parameters::
 
     from: chunk token to continue streaming from (e.g. "end" given by initialsync)
@@ -262,8 +260,7 @@ GET parameters::
 
     XXX: this needs to be updated from v1.  Presumably s/user_id/sender_id/?
 
-Returns:
-200 OK
+Returns ``200 OK``:
 
 .. code:: javascript
 
@@ -307,14 +304,16 @@ Room History
 Scrollback API
 ~~~~~~~~~~~~~~
 
-GET /rooms/<room_id>/events
+::
+
+    GET /rooms/<room_id>/events
+
 GET parameters::
 
     from: the chunk token to paginate from
     Otherwise same as initialSync, except "compact", "since" and "presence" are not implemented
 
-Returns:
-200 OK
+Returns ``200 OK``:
 
 .. code:: javascript
 
@@ -349,15 +348,16 @@ Returns:
 
 Contextual windowing API
 ~~~~~~~~~~~~~~~~~~~~~~~~
+::
 
-GET /events/<event_id>
+    GET /events/<event_id>
+
 GET parameters::
 
     context: "before", "after" or "around"
     Otherwise same as initialSync, except "since" and "presence" are not implemented
     
-Returns:
-200 OK
+Returns ``200 OK``:
 
 .. code:: javascript
 
