@@ -33,13 +33,17 @@ XXX: how do we transition between non-coalesced pagination and coalesced paginat
     {
         // selectors: (bluntly selecting on the unencrypted fields)
         types: [ "m.*", "net.arasphere.*" ],    // default: all
+        not_types: [ "m.presence" ],            // default: none
         rooms: [ "!83wy7whi:matrix.org" ],      // default: all (may be aliases or IDs. wildcards supported)
-        sender_ids: [ "@matthew:matrix.org" ],  // default: all (e.g. for narrowing down presence, and stalker mode. wildcards supported)
+        not_rooms: [],
+        senders: [ "@matthew:matrix.org" ],  // default: all (e.g. for narrowing down presence, and stalker mode. wildcards supported)
+        not_senders: [],
         
         // XXX: do we want this per-query; is it valid to reuse it?
         // we probably don't need this as querying per-event-ID will be a parameter from a seperate API,
         // with its own seperate filter token & pagination semantics.
         event_ids: [ "$192318719:matrix.org" ], // default: all - useful for selecting relates_to data for a given event
+        not_event_ids: [] // questionable
         
         // parameters
         
@@ -87,7 +91,7 @@ XXX: how do we transition between non-coalesced pagination and coalesced paginat
         sort: [
             // sort by sender, and then by the timeline
             {   
-                type: "sender_id",
+                type: "sender",
                 dir: "asc", // default asc
             },
             {   
@@ -107,24 +111,37 @@ Returns ``200 OK``::
 Global initial sync API
 -----------------------
 
+Epiphany:
+ * Why do we actually need separate /initialSync and /eventStream?
+ * If a client is hibernated (SIGSTOP/SIGCONTed) for 2 weeks and then resumes, why should it get DoSed as it polls /eventStream?
+ * So why not just poll eventStream all the time, with a limit.  Clients need to know if the limit is reached, as it means they may have a hole in the history and will need to throw away the history before the hole.
+
+// initial sync:
+GET /newEventStream&limit=100 (across all rooms)
+// eventStream poll:
+GET /newEventStream&limit=100&timeout=30 (across either everything or a specific room if you're thin)
+
 ``GET /initialSync``
 
 GET parameters::
 
     limit: maximum number of events per room to return
-    sort: fieldname, direction (e.g. "sender_id,asc"). // default: "timeline,asc". may appear multiple times. XXX: can this change after the initial request? should it be in the filter?
+    // the sort order of messages in the room. default: "timeline,asc". may appear multiple times
+    // the chunk tokens are dependent on the sort order and cannot be mixed between different sort orders
+    // so you can't change sort after the first time it's specified.
+    // the use case here is to start paginating a room sorted by not-timeline (e.g. by sender id - e.g. mail client use case)
+    sort: fieldname, direction (e.g. "sender,asc"). 
     since: <chunk token> to request an incremental update (*not* pagination) since the specified chunk token
         We call this 'since' rather than 'from' because it's not for pagination but a delta.
         Typically the specified chunk token would be taken from the most recent eventStream request that completed for this filter
     backfill: true/false (default true): do we want to pull in state from federation if we have less than <limit> events available for a room?
-    presence: true/false (default true): return presence info
     compact: boolean (default false): factor out common events.
              XXX: I *really* think this should be turned on by default --matthew
-    filter: <filter_id> (XXX: allow different filters per room?)
-    # filter overrides:
-    filter_type: wildcard event type match e.g. "m.*": default, all.  may appear multiple times.
+    filter: <filter_id> // filters can change between requests, to allow us to narrow down a global initialsync to a given room or similar use cases.
+    // filter overrides (useful for changing filters between requests)
+    filter_type: wildcard event type match e.g. "m.*", "m.presence": default, all.  may appear multiple times.
     filter_room: wildcard room id/name match e.g. "!83wy7whi:matrix.org": default, all.  may appear multiple times.
-    filter_sender_id: wildcard sender id match e.g. "@matthew:matrix.org": default, all.  may appear multiple times.
+    filter_sender: wildcard sender id match e.g. "@matthew:matrix.org": default, all.  may appear multiple times.
     filter_event_id: event id to match e.g. "$192318719:matrix.org" // default, all: may appear multiple times
     filter_format: "federation" or "events"
     filter_select: event fields to return: default, all.  may appear multiple times
@@ -138,7 +155,7 @@ Returns ``200 OK``:
     
     // where compact is false:
     {
-        "end": "s72595_4483_1934", // the chunk token we pass to from=
+        "next_chunk": "s72595_4483_1934", // the chunk token we pass to /eventStream's from, or /initialSync's since.
         
         // global presence info (if presence=true)
         "presence": [{
@@ -147,14 +164,14 @@ Returns ``200 OK``:
                 "displayname": "Matthew Hodgson",
                 "last_active_ago": 368200528,
                 "presence": "online",
-                "user_id": "@matthew:tp.mu"
+                "sender": "@matthew:tp.mu"
             },
             "type": "m.presence"
         }],
         
         "rooms": [{
-            "membership": "join",
-            "eventStream": { // rename messages to eventstream as this is a list of all events, not just messages (non-state events)
+            // "membership": "join",  // this now gets removed as redundant with state object, likewise invite keys (i.e. "invitee")
+            "events": { // rename messages to eventstream as this is a list of all events, not just messages (non-state events)
                 "chunk": [{
                     "content": {
                         "avatar_url": "https://matrix.org/_matrix/content/QG1hdHRoZXc6bWF0cml4Lm9yZwxaesQWnqdynuXIYaRisFnZdG.aW1hZ2UvanBlZw==.jpeg",
@@ -162,7 +179,7 @@ Returns ``200 OK``:
                         "membership": "join"
                     },
                     "event_id": "$1417731086506PgoVf:matrix.org",
-                    "membership": "join",
+                    // "membership": "join", // this is obsolete and should be nixed from v1 (it's a bug)
                     "origin_server_ts": 1417731086795,
                     "prev_content": {
                         "avatar_url": "https://matrix.org/_matrix/content/QG1hdHRoZXc6bWF0cml4Lm9yZwxaesQWnqdynuXIYaRisFnZdG.aW1hZ2UvanBlZw==.jpeg",
@@ -176,7 +193,7 @@ Returns ``200 OK``:
                     "room_id": "!KrLWMLDnZAyTapqLWW:matrix.org",
                     "state_key": "@matthew:matrix.org",
                     "type": "m.room.member",
-                    "user_id": "@matthew:matrix.org"
+                    "sender": "@matthew:matrix.org"
                 }],
                 "end": "s72595_4483_1934",
                 "start": "t67-41151_4483_1934"
@@ -194,7 +211,7 @@ Returns ``200 OK``:
                 "room_id": "!KrLWMLDnZAyTapqLWW:matrix.org",
                 "state_key": "@matthew:matrix.org",
                 "type": "m.room.member",
-                "user_id": "@matthew:matrix.org"
+                "sender": "@matthew:matrix.org"
             }],
             "visibility": "public"
         }]
@@ -211,12 +228,12 @@ Returns ``200 OK``:
                 "displayname": "Matthew Hodgson",
                 "last_active_ago": 368200528,
                 "presence": "online",
-                "user_id": "@matthew:tp.mu"
+                "sender": "@matthew:tp.mu"
             },
             "type": "m.presence"
         }],
         "rooms": [{
-            "events": {
+            "event_map": {
                 "$1417731086506PgoVf:matrix.org": {
                     "content": {
                         "avatar_url": "https://matrix.org/_matrix/content/QG1hdHRoZXc6bWF0cml4Lm9yZwxaesQWnqdynuXIYaRisFnZdG.aW1hZ2UvanBlZw==.jpeg",
@@ -229,21 +246,21 @@ Returns ``200 OK``:
                         "sha256": "zVzi02R5aeO2HQDnybu1XuuyR6yBG8utLE/i1Sv8eyA"
                     }
                     ]],
-                    "room_id": "!KrLWMLDnZAyTapqLWW:matrix.org",
+                    // "room_id": "!KrLWMLDnZAyTapqLWW:matrix.org", // remove this in compact form as it's redundant
                     "state_key": "@matthew:matrix.org",
                     "type": "m.room.member",
-                    "user_id": "@matthew:matrix.org"    
+                    "sender": "@matthew:matrix.org"    
                 }
             },
             "membership": "join",
-            "eventStream": { // rename messages to eventstream as this is a list of all events, not just messages (non-state events)
+            "events": { // rename messages to eventstream as this is a list of all events, not just messages (non-state events)
                 "chunk": [ "$1417731086506PgoVf:matrix.org" ],
                 "end": "s72595_4483_1934",
                 "start": "t67-41151_4483_1934" // XXX: do we need start?
             },
             "room_id": "!KrLWMLDnZAyTapqLWW:matrix.org",
             "state": [ "$1417731086506PgoVf:matrix.org" ],
-            "visibility": "public"
+            "visibility": "public" // this means it's a published room... but needs to be better represented and not use the word 'public'
         }]
     }
 
@@ -255,18 +272,17 @@ GET parameters::
 
     from: chunk token to continue streaming from (e.g. "end" given by initialsync)
     filter*: as per initialSync (XXX: do we inherit this from the chunk token?)
-    // N.B. there is no limit or sort param here, as we get events in timeline order as fast as they come.
+    // N.B. there is no limit or sort param here, as we get events in timeline order as fast as they come - and only in timeline order.
+    // N.B. this can be mixed with the stream created by a sorted initialSync; it's just up to the client to insert the results in the right order clientside.
     access_token: identifies both user and device
     timeout: maximum time to poll before returning the request
     presence: "offline" // optional parameter to tell the server not to interpret this as coming online
-
-    XXX: this needs to be updated from v1.  Presumably s/user_id/sender_id/?
 
 Returns ``200 OK``:
 
 .. code:: javascript
 
-    // events precisely as per a room's eventStream key as returned by initialSync
+    // events precisely as per a room's events key as returned by initialSync
     // includes non-graph events like presence
     {
         "chunk": [{
@@ -275,7 +291,7 @@ Returns ``200 OK``:
                 "displayname": "Matthew",
                 "last_active_ago": 1241,
                 "presence": "online",
-                "user_id": "@matthew:matrix.org"
+                "sender": "@matthew:matrix.org"
             },
             "type": "m.presence"
         }, {
@@ -288,7 +304,7 @@ Returns ``200 OK``:
             "origin_server_ts": 1421189420147,
             "room_id": "!cURbafjkfsMDVwdRDQ:matrix.org",
             "type": "m.room.message",
-            "user_id": "@matthew:matrix.org"
+            "sender": "@matthew:matrix.org"
         }],
         "end": "s75460_2478_981",
         "start": "s75459_2477_981" // XXX: do we need start here?
@@ -319,10 +335,10 @@ Returns ``200 OK``:
 
 .. code:: javascript
 
-    // events precisely as per a room's eventStream key as returned by initialSync
+    // events precisely as per a room's events key as returned by initialSync
     {
         "chunk": [{
-            "age": 28153452, // XXX: age and origin_server_ts are redundant here surely
+            "age": 28153452, // how long as the destination HS had the message + how long the origin HS had the message
             "content": {
                 "body": "but obviously the XSF believes XMPP is the One True Way",
                 "msgtype": "m.text"
@@ -331,7 +347,7 @@ Returns ``200 OK``:
             "origin_server_ts": 1421165049435,
             "room_id": "!cURbafjkfsMDVwdRDQ:matrix.org",
             "type": "m.room.message",
-            "user_id": "@irc_Arathorn:matrix.org"
+            "sender": "@irc_Arathorn:matrix.org"
         }, {
             "age": 28167245,
             "content": {
@@ -342,7 +358,7 @@ Returns ``200 OK``:
             "origin_server_ts": 1421165035643,
             "room_id": "!cURbafjkfsMDVwdRDQ:matrix.org",
             "type": "m.room.message",
-            "user_id": "@irc_Arathorn:matrix.org"
+            "sender": "@irc_Arathorn:matrix.org"
         }],
         "end": "t9571-74545_2470_979",
         "start": "t9601-75400_2470_979" // XXX: don't we just need end here as we can only paginate one way?
@@ -366,7 +382,7 @@ Returns ``200 OK``:
     // the room in question, formatted exactly as a room entry returned by /initialSync
     // with the event in question present in the list as determined by the context param
     {
-        "events": {
+        "event_map": {
             "$1417731086506PgoVf:matrix.org": {
                 "content": {
                     "avatar_url": "https://matrix.org/_matrix/content/QG1hdHRoZXc6bWF0cml4Lm9yZwxaesQWnqdynuXIYaRisFnZdG.aW1hZ2UvanBlZw==.jpeg",
@@ -382,11 +398,11 @@ Returns ``200 OK``:
                 "room_id": "!KrLWMLDnZAyTapqLWW:matrix.org",
                 "state_key": "@matthew:matrix.org",
                 "type": "m.room.member",
-                "user_id": "@matthew:matrix.org"    
+                "sender": "@matthew:matrix.org"    
             }
         },
         "membership": "join",
-        "eventStream": {
+        "events": {
             "chunk": [ "$1417731086506PgoVf:matrix.org" ],
             "end": "s72595_4483_1934",
             "start": "t67-41151_4483_1934"
