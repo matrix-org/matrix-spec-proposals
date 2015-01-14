@@ -83,6 +83,7 @@ XXX: how do we transition between non-coalesced pagination and coalesced paginat
         // Servers must support the "timeline" ordering - which is linearised logical chronological ordering.
         // XXX: should this be done per-request rather than per-filter?  Given streaming APIs (like eventStream)
         // will be limited to sorting via timeline due to causality...
+        // XXX: conversely, does it make sense to be able to change sort order on a query by query basis for the same pagination stream? surely not...
         sort: [
             // sort by sender, and then by the timeline
             {   
@@ -111,9 +112,10 @@ Global initial sync API
 GET parameters::
 
     limit: maximum number of events per room to return
-    sort: fieldname, direction (e.g. "sender_id,asc"). // default: "timeline,asc". may appear multiple times.
+    sort: fieldname, direction (e.g. "sender_id,asc"). // default: "timeline,asc". may appear multiple times. XXX: can this change after the initial request? should it be in the filter?
     since: <chunk token> to request an incremental update (*not* pagination) since the specified chunk token
-        We call this 'since' rather than 'from' because it's not for pagination,
+        We call this 'since' rather than 'from' because it's not for pagination but a delta.
+        Typically the specified chunk token would be taken from the most recent eventStream request that completed for this filter
     backfill: true/false (default true): do we want to pull in state from federation if we have less than <limit> events available for a room?
     presence: true/false (default true): return presence info
     compact: boolean (default false): factor out common events.
