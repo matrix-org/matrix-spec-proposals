@@ -1,5 +1,7 @@
 Federation
 ==========
+.. sectnum
+.. contents:: Table of Contents
 
 Constructing a new event
 ------------------------
