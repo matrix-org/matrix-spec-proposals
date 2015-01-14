@@ -252,7 +252,13 @@ inform the other with suitable proof.
 The proofs can be:
 
 - An *event chain* that shows an auth event is *not* an ancestor of the event.
+  This can be done by giving the full ancestor chains up to the depth of the
+  invalid auth event.
 - Given an event (and event chain?) showing that authorization had been revoked.
+
+If a server discovers it cannot prove the other side is wrong, then it accepts
+that the other is correct; i.e. we always accept that the other side is correct
+unless we can prove otherwise.
 
 
 
