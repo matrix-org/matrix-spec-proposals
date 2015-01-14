@@ -241,7 +241,20 @@ Auth chain resolution
 **TODO**: If an auth check fails, or if we get told something we accepted
 should have been rejected, we need to try and determine who is right.
 
-  
+Both should inform the other of what they think the current auth chain is. If
+either are missing auth events that they know are valid (through authorization
+and state resolution) they process the missing events as usual.
+
+If either side notice that the other has accepted an auth events we think
+should be rejected (for reasons *not* in their auth chain), that server should
+inform the other with suitable proof.
+
+The proofs can be:
+
+- An *event chain* that shows an auth event is *not* an ancestor of the event.
+- Given an event (and event chain?) showing that authorization had been revoked.
+
+
 
 State Resolution
 ----------------
