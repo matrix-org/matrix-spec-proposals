@@ -175,6 +175,19 @@ Inputs:
 Notes:
  - This will apply on all aspects of the CS API, except for Account Management.
 
+::
+
+ /path?as_token=$token&user_id=$userid
+
+ Query Parameters:
+   as_token: The application service token
+   user_id: The desired user ID to act as.
+   
+ /path?as_token=$token&user_token=$token
+
+ Query Parameters:
+   as_token: The application service token
+   user_token: The token granted to the AS by the real user
 
 Timestamp massaging
 ~~~~~~~~~~~~~~~~~~~
@@ -187,10 +200,19 @@ Inputs:
  - Desired timestamp
 Notes:
  - This will only apply when sending events.
+ 
+::
+
+ /path?as_token=$token&ts=$timestamp
+
+ Query Parameters added to the send event APIs only:
+   as_token: The application service token
+   ts: The desired timestamp
 
 Server admin style permissions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The home server needs to give the application service *full control* over its
 namespace, both for users and for room aliases. This means that the AS should
 be able to create/edit/delete any room alias in its namespace, as well as
-create/delete any user in its namespace.
+create/delete any user in its namespace. This does not require any additional
+public APIs.
