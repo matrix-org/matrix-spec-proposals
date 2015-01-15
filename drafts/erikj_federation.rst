@@ -1,134 +1,7 @@
 Federation
 ==========
-.. sectnum
+.. sectnum::
 .. contents:: Table of Contents
-
-Constructing a new event
-------------------------
-
-    **TODO**
-
-When constructing a new event, the server should insert the following fields:
-
-- ``prev_events``: The list of event ids of what the server believes are the
-  current leaf nodes of the event graph (i.e., nodes that have been received
-  but are yet to be referenced by another event).
-- ``depth``: An integer one greater than the maximum depth of the event's
-  previous events.
-- ``auth_events``: The list of event ids that authorizes this event. This
-  should be a subset of the current state.
-- ``origin_server_ts``: The time the server created the event.
-- ``origin``: The name of the server.
-
-
-Signing and Hashes
-~~~~~~~~~~~~~~~~~~
-
-    **TODO**
-
-Validation
-----------
-
-    **TODO**
-
-Domain specific string
-    A string of the form ``<prefix><localpart>:<domain>``, where <prefix> is a
-    single character, ``<localpart>`` is an arbitrary string that does not
-    include a colon, and `<domain>` is a valid server name.
-
-``room_id``
-    A domain specific string with prefix ``!`` that is static across all events
-    in a graph and uniquely identifies it. The ``domain`` should be that of the
-    home server that created the room (i.e., the server that generated the
-    first ``m.room.create`` event).
-
-``sender``
-    The entity that logically sent the event. This is usually a user id, but
-    can also be a server name.
-
-User Id
-    A domain specific string with prefix ``@`` representing a user account. The
-    ``domain`` is the home server of the user and is the server used to contact
-    the user.
-
-Joining a room
---------------
-
-If a user requests to join a room that the server is already in (i.e. the a
-user on that server has already joined the room) then the server can simply
-generate a join event and send it as normal.
-
-If the server is not already in the room it needs to will need to join via
-another server that is already in the room. This is done as a two step process.
-
-First, the local server requests from the remote server a skeleton of a join
-event. The remote does this as the local server does not have the event graph
-to use to fill out the ``prev_events`` key in the new event. Critically, the
-remote server does not process the event it responded with.
-
-Once the local server has this event, it fills it out with any extra data and
-signs it. Once ready the local server sends this event to a remote server
-(which could be the same or different from the first remote server), this
-remote server then processes the event and distributes to all the other
-participating servers in that room. The local server is told about the
-current state and complete auth chain for the join event. The local server
-can then process the join event itself.
-
-
-.. Note::
-   Finding which server to use to join any particular room is not specified.
-
-
-Inviting a user
----------------
-
-To invite a remote user to a room we need their home server to sign the invite
-event. This is done by sending the event to the remote server, which then signs
-the event, before distributing the invite to other servers.
-
-Failures
---------
-
-A server can notify a remote server about something it thinks it has done
-wrong using the failures mechanism. For example, the remote accepted an event
-the local think it shouldn't have.
-
-A failure has a severity level depending on the action taken by the local
-server. These levels are:
-
-``FATAL``
-    The local server could not parse the event, for example due to a missing
-    required field.
-
-``ERROR``
-    The local server *could* parse the event, but it was rejected. For example,
-    the event may have failed an authorization check.
-
-``WARN``
-    The local server accepted the event, but something was unexpected about it.
-    For example, the event may have referenced another event the local server
-    thought should be rejected.
-
-A failure also includes several other fields:
-
-``code``
-    A numeric code (to be defined later) indicating a particular type of
-    failure.
-
-``reason``
-    A short string indicating what was wrong, for diagnosis purposes on the
-    remote server.
-
-``affected``
-    The event id of the event this failure is responding to. For example, if
-    an accepted event referenced a rejected event, this would point to the
-    accepted one.
-
-``source``
-    The event id of the event that was the source of this unexpected behaviour.
-    For example, if an accepted event referenced a rejected event, this would
-    point to the rejected one.
-
 
 Authorization
 -------------
@@ -304,6 +177,132 @@ State Conflict Resolution
 If a server discovers that it disagrees with another about the current state,
 it can follow the same process outlined in *Auth chain resolution* to resolve
 these conflicts.
+
+Constructing a new event
+------------------------
+
+    **TODO**
+
+When constructing a new event, the server should insert the following fields:
+
+- ``prev_events``: The list of event ids of what the server believes are the
+  current leaf nodes of the event graph (i.e., nodes that have been received
+  but are yet to be referenced by another event).
+- ``depth``: An integer one greater than the maximum depth of the event's
+  previous events.
+- ``auth_events``: The list of event ids that authorizes this event. This
+  should be a subset of the current state.
+- ``origin_server_ts``: The time the server created the event.
+- ``origin``: The name of the server.
+
+
+Signing and Hashes
+~~~~~~~~~~~~~~~~~~
+
+    **TODO**
+
+Validation
+----------
+
+    **TODO**
+
+Domain specific string
+    A string of the form ``<prefix><localpart>:<domain>``, where <prefix> is a
+    single character, ``<localpart>`` is an arbitrary string that does not
+    include a colon, and `<domain>` is a valid server name.
+
+``room_id``
+    A domain specific string with prefix ``!`` that is static across all events
+    in a graph and uniquely identifies it. The ``domain`` should be that of the
+    home server that created the room (i.e., the server that generated the
+    first ``m.room.create`` event).
+
+``sender``
+    The entity that logically sent the event. This is usually a user id, but
+    can also be a server name.
+
+User Id
+    A domain specific string with prefix ``@`` representing a user account. The
+    ``domain`` is the home server of the user and is the server used to contact
+    the user.
+
+Joining a room
+--------------
+
+If a user requests to join a room that the server is already in (i.e. the a
+user on that server has already joined the room) then the server can simply
+generate a join event and send it as normal.
+
+If the server is not already in the room it needs to will need to join via
+another server that is already in the room. This is done as a two step process.
+
+First, the local server requests from the remote server a skeleton of a join
+event. The remote does this as the local server does not have the event graph
+to use to fill out the ``prev_events`` key in the new event. Critically, the
+remote server does not process the event it responded with.
+
+Once the local server has this event, it fills it out with any extra data and
+signs it. Once ready the local server sends this event to a remote server
+(which could be the same or different from the first remote server), this
+remote server then processes the event and distributes to all the other
+participating servers in that room. The local server is told about the
+current state and complete auth chain for the join event. The local server
+can then process the join event itself.
+
+
+.. Note::
+   Finding which server to use to join any particular room is not specified.
+
+
+Inviting a user
+---------------
+
+To invite a remote user to a room we need their home server to sign the invite
+event. This is done by sending the event to the remote server, which then signs
+the event, before distributing the invite to other servers.
+
+Failures
+--------
+
+A server can notify a remote server about something it thinks it has done
+wrong using the failures mechanism. For example, the remote accepted an event
+the local think it shouldn't have.
+
+A failure has a severity level depending on the action taken by the local
+server. These levels are:
+
+``FATAL``
+    The local server could not parse the event, for example due to a missing
+    required field.
+
+``ERROR``
+    The local server *could* parse the event, but it was rejected. For example,
+    the event may have failed an authorization check.
+
+``WARN``
+    The local server accepted the event, but something was unexpected about it.
+    For example, the event may have referenced another event the local server
+    thought should be rejected.
+
+A failure also includes several other fields:
+
+``code``
+    A numeric code (to be defined later) indicating a particular type of
+    failure.
+
+``reason``
+    A short string indicating what was wrong, for diagnosis purposes on the
+    remote server.
+
+``affected``
+    The event id of the event this failure is responding to. For example, if
+    an accepted event referenced a rejected event, this would point to the
+    accepted one.
+
+``source``
+    The event id of the event that was the source of this unexpected behaviour.
+    For example, if an accepted event referenced a rejected event, this would
+    point to the rejected one.
 
 
 Appendix
