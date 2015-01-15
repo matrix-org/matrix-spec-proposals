@@ -115,6 +115,8 @@ Epiphany:
  * Why do we actually need separate /initialSync and /eventStream?
  * If a client is hibernated (SIGSTOP/SIGCONTed) for 2 weeks and then resumes, why should it get DoSed as it polls /eventStream?
  * So why not just poll eventStream all the time, with a limit.  Clients need to know if the limit is reached, as it means they may have a hole in the history and will need to throw away the history before the hole.
+ * What happens if eventStream has more than `limit` events to communicate between polls?  Do we deliberately drop them on the floor?
+ * What format do we return in?  Do we split out presence/rooms/etc?
 
 // initial sync:
 GET /newEventStream&limit=100 (across all rooms)
@@ -122,6 +124,9 @@ GET /newEventStream&limit=100 (across all rooms)
 GET /newEventStream&limit=100&timeout=30 (across either everything or a specific room if you're thin)
 
 ``GET /initialSync``
+
+TODO: https://matrix.org/jira/browse/SYN-168
+    /initialSync should return the actual m.room.member invite, not random keys from it
 
 GET parameters::
 
