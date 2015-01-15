@@ -156,6 +156,8 @@ Linking ``[Draft]``
    user they claim to be? If we force an IS lookup, then this would resolve on its
    own as anyone who wants to talk to the virtual user will do a lookup before trying
    the application service...
+ - In other words, what is preventing ``@bob:matrix.org`` masquerading as 
+   ``@.irc.freenode.alice:matrix.org``?
 
 Clients may want to link their matrix user ID to their virtual user ID. This
 API allows the AS to do this, so messages sent from the AS are sent as the client's
@@ -186,6 +188,21 @@ Notes:
    pushed.
  - The generated access token MUST honour the restrictions laid out by the 
    client.
+   
+::
+
+ PUT /appservices/$virtual_user_id?access_token=$token
+ 
+ Request format
+ {
+   restrictions: {
+     expires_in: 3600,
+     rooms: [
+      "!fl3rwfehw:matrix.org",
+      "!fwet2yugs:matrix.org"
+     ]
+   }
+ }
 
 To revoke permission for an application service to masquerade as a user:
 
@@ -198,6 +215,11 @@ Output:
 Side effects:
  - The home server invalidate all access tokens for this user ID / AS combo
    and push this invalidation to the application service if this response 200s.
+   
+::
+
+ DELETE /appservices/$virtual_user_id?access_token=$token
+
 
 Client-Server v2 API Extensions
 -------------------------------
