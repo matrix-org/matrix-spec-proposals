@@ -10,6 +10,9 @@ This contains home server APIs which are used by the application service.
 
 Registration API ``[Draft]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. NOTE::
+  - Do we really have to use regex for this? Can't we do this a nicer way?
+
 This API registers the application service with its host homeserver to offer its services.
 
 Inputs:
@@ -19,38 +22,18 @@ Inputs:
  - URL base to receive inbound comms
 Output:
  - The credentials the HS will use to query the AS with in return. (e.g. some kind of string token)
- - The complete namespace prefix for each namespace requested.
 Side effects:
  - The HS will start delivering events to the URL base specified if this 200s.
 API called when:
  - The application service wants to register with a brand new home server.
 Notes:
- - Namespaces are represented in JSON, with a well-defined conversion to IDs. This prevents
-   parsing errors and allows the HS to enforce their own namespacing semantics. They look like::
-     users: {
-       irc: ["freenode", "rizon"]
-     }
-   which represents 2 namespaces: ``@.irc.freenode.*`` and ``@.irc.rizon.*``. The leaf nodes
-   must be an array. Intermediate nodes must be JSON objects with the key as the desired string
-   segment. A more complicated example::
-     rooms: {
-       irc: {
-         freenode: ["matrix"],
-         rizon: ["matrixorg"]
-       }
-     }
-   which represents 2 namespaces: ``#.irc.freenode.matrix.*`` and ``#.irc.rizon.matrixorg.*``.
- - By specifying namespaces like this, you allow home servers to namespace application services
-   sensibly, rather than every IRC AS trying to nab all ``@.irc.*`` users. In order for home
-   servers to do this, they need to tell the application service the actual namespaces allocated
-   for them. This is returned in the JSON response, with the same structure as the original request,
-   but with the strings now representing the namespace prefix allocated, e.g::
-     users: {
-       irc: [".applicationservice_146.irc.freenode", ".applicationservice_146.irc.rizon"]
-     }
+ - Namespaces are represented by POSIX extended regular expressions in JSON. 
+   They look like::
+     users: [
+       "irc\.freenode\.net/.*", 
+     ]
    The sigil prefix ``@`` is omitted since it is clear from the ``users`` key that these namespace
    prefixes are for users.
- - This makes the request/response JSON structure deliciously symmetric.
 ::
 
  POST /register
@@ -60,15 +43,12 @@ Notes:
    url: "https://my.application.service.com/matrix/",
    as_token: "some_AS_token",
    namespaces: {
-     users: {
-       irc: ["freenode", "rizon"]
-     },
-     rooms: {
-       irc: {
-         freenode: ["matrix"],
-         rizon: ["matrixorg"]
-       }
-     }
+     users: [
+       "irc\.freenode\.net/.*"
+     ],
+     rooms: [
+       "irc\.freenode\.net/.*"
+     ]
    }
  }
  
@@ -83,18 +63,7 @@ Notes:
    200 OK response format
  
    {
-     hs_token: "foobar",
-     namespaces: {
-       users: {
-         irc: [".applicationservice_146.irc.freenode", ".applicationservice_146.irc.rizon"]
-       },
-       rooms: {
-         irc: {
-           freenode: [".irc.freenode.matrix"],
-           rizon: [".applicationservice_146.this.can.be.any.prefix.you.like"]
-         }
-       }
-     }
+     hs_token: "foobar"
    }
    
 Unregister API ``[TODO]``
@@ -108,6 +77,10 @@ This contains application service APIs which are used by the home server.
 
 User Query ``[Draft]``
 ~~~~~~~~~~~~~~~~~~~~~~
+.. NOTE::
+  - This API may be called a lot by the HS (e.g. incoming events for unknown user IDs, profile
+    requests, etc. Is this okay?
+
 This API is called by the HS to query the existence of a user on the Application Service's namespace.
 
 Inputs:
