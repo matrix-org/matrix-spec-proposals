@@ -46,7 +46,7 @@ Notes:
      users: [
        "irc\.freenode\.net/.*"
      ],
-     rooms: [
+     aliases: [
        "irc\.freenode\.net/.*"
      ]
    }
@@ -63,12 +63,30 @@ Notes:
    200 OK response format
  
    {
-     hs_token: "foobar"
+     hs_token: "string"
    }
    
-Unregister API ``[TODO]``
+Unregister API ``[Draft]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~
+This API unregisters a previously registered AS from the home server.
 
+Inputs:
+ - AS token
+Output:
+ - None.
+Side effects:
+ - The HS will stop delivering events to the URL base specified for this AS if this 200s.
+API called when:
+ - The application service wants to stop receiving all events from the HS.
+ 
+::
+
+  POST /unregister
+
+  Request format
+  {
+    as_token: "string"
+  }
 
 
 Home Server -> Application Service
@@ -77,9 +95,6 @@ This contains application service APIs which are used by the home server.
 
 User Query ``[Draft]``
 ~~~~~~~~~~~~~~~~~~~~~~
-.. NOTE::
-  - This API may be called a lot by the HS (e.g. incoming events for unknown user IDs, profile
-    requests, etc. Is this okay?
 
 This API is called by the HS to query the existence of a user on the Application Service's namespace.
 
@@ -110,8 +125,8 @@ Notes:
  
    {
      profile: {
-       display_name: "Foo"
-       avatar_url: "mxc://foo/bar"
+       display_name: "string"
+       avatar_url: "string(uri)"
      }
    }
    
@@ -142,7 +157,40 @@ API allows the AS to do this, so messages sent from the AS are sent as the clien
 Client-Server v2 API Extensions
 -------------------------------
 
-- Identity assertion (rather than access token inference)
-- timestamp massaging (for inserting messages between other messages)
-- alias mastery over the ASes namespace
-- user ID mastery over the ASes namespace
+Identity assertion
+~~~~~~~~~~~~~~~~~~
+The client-server API infers the user ID from the ``access_token`` provided in every
+request. It would be an annoying amount of book-keeping to maintain tokens for every
+virtual user. It would be preferable if the application service could use the CS API
+with its own ``as_token`` instead, and specify the virtual user they wish to be 
+acting on behalf of. For real users, this would require additional permissions (see
+"C-AS Linking").
+
+Inputs:
+ - Application service token (``as_token``)
+ Either:
+   - User ID in the AS namespace to act as.
+ Or:
+   - OAuth2 token of real user (which may end up being an access token) 
+Notes:
+ - This will apply on all aspects of the CS API, except for Account Management.
+
+
+Timestamp massaging
+~~~~~~~~~~~~~~~~~~~
+The application service may want to inject events at a certain time (reflecting
+the time on the network they are tracking e.g. irc, xmpp). Application services
+need to be able to adjust the ``origin_server_ts`` value to do this.
+
+Inputs:
+ - Application service token (``as_token``)
+ - Desired timestamp
+Notes:
+ - This will only apply when sending events.
+
+Server admin style permissions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The home server needs to give the application service *full control* over its
+namespace, both for users and for room aliases. This means that the AS should
+be able to create/edit/delete any room alias in its namespace, as well as
+create/delete any user in its namespace.
