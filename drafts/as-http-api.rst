@@ -33,7 +33,7 @@ Notes:
        "irc\.freenode\.net/.*", 
      ]
    The sigil prefix ``@`` is omitted since it is clear from the ``users`` key that these namespace
-   prefixes are for users.
+   prefixes are for users. Likewise, ``#`` for ``aliases`` and ``!`` for ``rooms``.
 ::
 
  POST /register
@@ -47,6 +47,9 @@ Notes:
        "irc\.freenode\.net/.*"
      ],
      aliases: [
+       "irc\.freenode\.net/.*"
+     ],
+     rooms: [
        "irc\.freenode\.net/.*"
      ]
    }
@@ -167,23 +170,26 @@ acting on behalf of. For real users, this would require additional permissions (
 "C-AS Linking").
 
 Inputs:
- - Application service token (``as_token``)
+ - Application service token (``access_token``)
  Either:
    - User ID in the AS namespace to act as.
  Or:
    - OAuth2 token of real user (which may end up being an access token) 
 Notes:
  - This will apply on all aspects of the CS API, except for Account Management.
+ - The ``as_token`` is inserted into ``access_token`` which is usually where the client
+   token is. This is done on purpose to allow application services to reuse client
+   SDKs.
 
 ::
 
- /path?as_token=$token&user_id=$userid
+ /path?access_token=$token&user_id=$userid
 
  Query Parameters:
    as_token: The application service token
    user_id: The desired user ID to act as.
    
- /path?as_token=$token&user_token=$token
+ /path?access_token=$token&user_token=$token
 
  Query Parameters:
    as_token: The application service token
