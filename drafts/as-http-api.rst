@@ -157,8 +157,9 @@ Linking ``[Draft]``
    own as anyone who wants to talk to the virtual user will do a lookup before trying
    the application service...
 
-Clients may want to link their matrix user ID to their 3PID (e.g. IRC nick). This
-API allows the AS to do this, so messages sent from the AS are sent as the client.
+Clients may want to link their matrix user ID to their virtual user ID. This
+API allows the AS to do this, so messages sent from the AS are sent as the client's
+user ID, instead of the virtual user ID.
 
 This is not achieved using OAuth2 or similar because the trust relationships are
 different. The application service already has a huge amount of trust from the
@@ -191,7 +192,7 @@ To revoke permission for an application service to masquerade as a user:
 Inputs:
  - Credentials of user (e.g. ``access_token``)
  - The user ID within an application service's namespace to revoke. If blank,
-   revokes all user IDs linked to this matrix user ID.
+   revokes all virtual user IDs linked to this matrix user ID.
 Output:
  - None.
 Side effects:
