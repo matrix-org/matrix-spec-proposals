@@ -30,10 +30,8 @@ Notes:
  - Namespaces are represented by POSIX extended regular expressions in JSON. 
    They look like::
      users: [
-       "irc\.freenode\.net/.*", 
+       "@irc\.freenode\.net/.*", 
      ]
-   The sigil prefix ``@`` is omitted since it is clear from the ``users`` key that these namespace
-   prefixes are for users. Likewise, ``#`` for ``aliases`` and ``!`` for ``rooms``.
 ::
 
  POST /register
@@ -44,13 +42,13 @@ Notes:
    as_token: "some_AS_token",
    namespaces: {
      users: [
-       "irc\.freenode\.net/.*"
+       "@irc\.freenode\.net/.*"
      ],
      aliases: [
-       "irc\.freenode\.net/.*"
+       "#irc\.freenode\.net/.*"
      ],
      rooms: [
-       "irc\.freenode\.net/.*"
+       "!irc\.freenode\.net/.*"
      ]
    }
  }
@@ -146,16 +144,59 @@ This API is called by the HS when the HS wants to push an event (or batch of eve
 
 
  
-Client -> Application Service
------------------------------
-This contains application service APIs which are used by the client.
+Client -> Server -> Application Service
+---------------------------------------
+This contains home server APIs which are used by the client, to communicate with
+the application service.
 
-Linking ``[TODO]``
+Linking ``[Draft]``
 ~~~~~~~~~~~~~~~~~~
+.. NOTE::
+ - How does the application service know that the matrix user really is the virtual
+   user they claim to be? If we force an IS lookup, then this would resolve on its
+   own as anyone who wants to talk to the virtual user will do a lookup before trying
+   the application service...
+
 Clients may want to link their matrix user ID to their 3PID (e.g. IRC nick). This
 API allows the AS to do this, so messages sent from the AS are sent as the client.
 
-- Probably OAuth2
+This is not achieved using OAuth2 or similar because the trust relationships are
+different. The application service already has a huge amount of trust from the
+home server, unlike a random third-party web app. As a result, the data flow is
+different because the third-party (the application service) is trusted by the
+authorisation entity (the home server). Furthermore, it is desirable to not have
+the clients communicate directly with the application service in order to 
+decrease the complexity of AS design.
+
+To grant permission for an application service to masquerade as a user:
+
+Inputs:
+ - Credentials of user (e.g. ``access_token``)
+ - The user ID within an application service's namespace to claim.
+ - Restrictions if any (e.g. only for rooms X,Y,Z. Only for 10 hours. etc)
+Output:
+ - None.
+Side effects:
+ - The home server will generate an ``access_token`` and push it to the 
+   application service along with both user IDs if this response 200s.
+Notes:
+ - Repeated calls to this API should invalidate any existing token for this
+   user ID / application service combo and provision a new token which is then
+   pushed.
+ - The generated access token MUST honour the restrictions laid out by the 
+   client.
+
+To revoke permission for an application service to masquerade as a user:
+
+Inputs:
+ - Credentials of user (e.g. ``access_token``)
+ - The user ID within an application service's namespace to revoke. If blank,
+   revokes all user IDs linked to this matrix user ID.
+Output:
+ - None.
+Side effects:
+ - The home server invalidate all access tokens for this user ID / AS combo
+   and push this invalidation to the application service if this response 200s.
 
 Client-Server v2 API Extensions
 -------------------------------
