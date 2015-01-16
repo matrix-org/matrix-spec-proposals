@@ -31,9 +31,11 @@ API called when:
 Notes:
  - Namespaces are represented by POSIX extended regular expressions in JSON. 
    They look like::
+
      users: [
        "@irc\.freenode\.net/.*", 
      ]
+
 ::
 
  POST /register
@@ -70,7 +72,7 @@ Notes:
    }
    
 Unregister API ``[Draft]``
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 This API unregisters a previously registered AS from the home server.
 
 Inputs:
@@ -111,10 +113,16 @@ Output:
 Side effects:
  - User is created on the HS if this response 200s.
 API called when:
- - HS receives an event for an unknown user ID in the AS's namespace.
+ - HS receives an event for an unknown user ID in the AS's namespace, e.g. an
+   invite event to a room.
 Notes:
  - The created user will have their profile info set based on the output.
- 
+Retry notes:
+ - The home server cannot respond to the client's request until the response to
+   this API is obtained from the AS.
+ - Recommended that home servers try a few times then time out, returning a
+   408 Request Timeout to the client.
+   
 ::
 
  GET /users/$user_id?access_token=$hs_token
@@ -136,7 +144,7 @@ Notes:
    }
    
 Room Alias Query ``[Draft]``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 This API is called by the HS to query the existence of a room alias on the 
 Application Service's namespace.
 
@@ -153,6 +161,11 @@ API called when:
 Notes:
  - This can be thought of as an ``initialSync`` but for a 3P networked room,
    which is lazily loaded when a matrix user tries to join the room.
+Retry notes:
+ - The home server cannot respond to the client's request until the response to
+   this API is obtained from the AS.
+ - Recommended that home servers try a few times then time out, returning a
+   408 Request Timeout to the client.
  
 ::
 
@@ -193,14 +206,61 @@ Notes:
      ]
    }
 
-Pushing ``[TODO]``
-~~~~~~~~~~~~~~~~~~
+Pushing ``[Draft]``
+~~~~~~~~~~~~~~~~~~~
 This API is called by the HS when the HS wants to push an event (or batch of 
 events) to the AS.
 
-- Retry semantics
-- Ordering
+Inputs:
+ - HS Credentials
+ - Event(s) to give to the AS
+ - HS-generated transaction ID
+Output:
+ - None. 
 
+Data flows:
+
+::
+
+ Typical
+ HS ---> AS : Home server sends events with transaction ID T.
+    <---    : AS sends back 200 OK.
+    
+ AS ACK Lost
+ HS ---> AS : Home server sends events with transaction ID T.
+    <-/-    : AS 200 OK is lost.
+ HS ---> AS : Home server retries with the same transaction ID of T.
+    <---    : AS sends back 200 OK. If the AS had processed these events 
+              already, it can NO-OP this request (and it knows if it is the same
+              events based on the transacton ID).
+            
+
+Retry notes:
+ - If the HS fails to pass on the events to the AS, it must retry the request.
+ - Since ASes by definition cannot alter the traffic being passed to it (unlike
+   say, a Policy Server), these requests can be done in parallel to general HS
+   processing; the HS doesn't need to block whilst doing this.
+ - Home servers should use exponential backoff as their retry algorithm.
+ - Home servers MUST NOT alter (e.g. add more) events they were going to 
+   send within that transaction ID on retries, as the AS may have already 
+   processed the events.
+    
+Ordering notes:
+ - The events sent to the AS should be linearised, as they are from the event
+   stream.
+ - The home server will need to maintain a queue of transactions to send to 
+   the AS.
+
+::
+
+  PUT /transactions/$transaction_id?access_token=$hs_token
+ 
+  Request format
+  {
+    events: [
+      ...
+    ]
+  }
 
 Client-Server v2 API Extensions
 -------------------------------
@@ -216,6 +276,7 @@ additional permissions (see "C-AS Linking").
 
 Inputs:
  - Application service token (``access_token``)
+
  Either:
    - User ID in the AS namespace to act as.
  Or:
@@ -269,8 +330,8 @@ create/delete any user in its namespace. This does not require any additional
 public APIs.
 
 
-ID conventions
---------------
+ID conventions ``[TODO]``
+-------------------------
 This concerns the well-defined conventions for mapping 3P network IDs to matrix
 IDs, which we expect clients to be able to do by themselves.
 
@@ -279,3 +340,147 @@ IDs, which we expect clients to be able to do by themselves.
 - What do room aliases look like? Some cases are clear (e.g. IRC) but others
   are a lot more fiddly (e.g. email? You don't want to share a room with
   everyone who has ever sent an email to ``bob@gmail.com``)...
+  
+Examples
+--------
+.. NOTE::
+  - User/Alias namespaces are subject to change depending on ID conventions.
+  - Should home servers by default generate fixed room IDs which match the room
+    alias? Otherwise, you need to tell the AS that room alias X matches room ID
+    Y so when the home server pushes events with room ID Y the AS knows which
+    room that is.
+
+IRC
+~~~
+Pre-conditions:
+  - Server admin stores the AS token "T_a" on the home server.
+  - Home server has a token "T_h".
+  - Home server has the domain "hsdomain.com"
+
+1. Application service registration
+::
+  
+  AS -> HS: Registers itself with the home server
+  POST /register 
+  {
+   url: "https://someapp.com/matrix",
+   as_token: "T_a",
+   namespaces: {
+     users: [
+       "@irc\.freenode\.net/.*"
+     ],
+     aliases: [
+       "#irc\.freenode\.net/.*"
+     ],
+     rooms: [
+       "!irc\.freenode\.net/.*"
+     ]
+   }
+  }
+  
+  Returns 200 OK:
+  {
+    hs_token: "T_h"
+  }
+
+2. IRC user "Bob" says "hello?" on "#matrix" at timestamp 1421416883133:
+::  
+
+  - AS stores message as potential scrollback.
+  - Nothing happens as no Matrix users are in the room.
+ 
+3. Matrix user "@alice:hsdomain.com" wants to join "#matrix":
+::
+
+  User -> HS: Request to join "#irc.freenode.net/#matrix:hsdomain.com"
+  
+  HS -> AS: Room Query "#irc.freenode.net/#matrix:hsdomain.com"
+  GET /rooms/%23irc.freenode.net%2F%23matrix%3Ahsdomain.com?access_token=T_h
+  Returns 200 OK:
+  {
+    events: [
+      {
+        content: {
+          body: "hello?",
+          msgtype: "m.text"
+        }
+        origin_server_ts: 1421416883133,
+        user_id: "@irc.freenode.net/Bob:hsdomain.com"
+        type: "m.room.message"
+      }
+    ],
+    state: [
+      {
+        content: {
+          name: "#matrix"
+        }
+        origin_server_ts: 1421416883133,   // default this to the first msg?
+        user_id: "@irc.freenode.net/Bob:hsdomain.com",  // see above
+        state_key: "",
+        type: "m.room.name"
+      }
+    ]
+  }
+  
+  - HS provisions new room with *FIXED* room ID (see notes section)
+    "!irc.freenode.net/#matrix:hsdomain.com" with normal state events 
+    (e.g. m.room.create). join_rules can be overridden by the AS if supplied in
+    "state".
+  - HS injects messages into room. Finds unknown user ID 
+    "@irc.freenode.net/Bob:hsdomain.com" in AS namespace, so queries AS.
+    
+  HS -> AS: User Query "@irc.freenode.net/Bob:hsdomain.com"
+  GET /users/%40irc.freenode.net%2FBob%3Ahsdomain.com?access_token=T_h
+  Returns 200 OK:
+  {
+    profile: {
+      display_name: "Bob"
+    }
+  }
+  
+  - HS provisions new user with display name "Bob".
+  - HS sends room information back to client.
+  
+4. @alice:hsdomain.com says "hi!" in this room:
+::
+
+  User -> HS: Send message "hi!" in room !irc.freenode.net/#matrix:hsdomain.com
+  
+  - HS sends message.
+  - HS sees the room ID is in the AS namespace and pushes it to the AS.
+    
+  HS -> AS: Push event
+  PUT /transactions/1?access_token=T_h
+  {
+    events: [
+      {
+        content: {
+          body: "hi!",
+          msgtype: "m.text"
+        },
+        origin_server_ts: <generated by hs>,
+        user_id: "@alice:hsdomain.com",
+        room_id: "!irc.freenode.net/#matrix:hsdomain.com",
+        type: "m.room.message"
+      }
+    ]
+  }
+  
+  - AS passes this through to IRC.
+  
+ 
+5. IRC user "Bob" says "what's up?" on "#matrix" at timestamp 1421418084816:
+::
+
+  IRC -> AS: "what's up?"
+  AS -> HS: Send message via CS API extension
+  PUT /rooms/%21irc.freenode.net%2F%23matrix%3Ahsdomain.com/send/m.room.message
+                  ?access_token=T_a
+                  &user_id=%40irc.freenode.net%2FBob%3Ahsdomain.com
+                  &ts=1421418084816
+  {
+    body: "what's up?"
+    msgtype: "m.text"
+  }
+  
+  - HS modifies the user_id and origin_server_ts on the event and sends it.
