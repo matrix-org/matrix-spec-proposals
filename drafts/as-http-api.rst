@@ -131,9 +131,11 @@ Notes:
      }
    }
    
-Room Query ``[TODO]``
-~~~~~~~~~~~~~~~~~~~~~
-This API is called by the HS to query the existence of a room on the Application Service's namespace.
+Room Alias Query ``[TODO]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This API is called by the HS to query the existence of a room alias on the Application 
+Service's namespace.
+
 
 Pushing ``[TODO]``
 ~~~~~~~~~~~~~~~~~~
@@ -250,13 +252,13 @@ Notes:
  /path?access_token=$token&user_id=$userid
 
  Query Parameters:
-   as_token: The application service token
+   access_token: The application service token
    user_id: The desired user ID to act as.
    
  /path?access_token=$token&user_token=$token
 
  Query Parameters:
-   as_token: The application service token
+   access_token: The application service token
    user_token: The token granted to the AS by the real user
 
 Timestamp massaging
@@ -273,10 +275,10 @@ Notes:
  
 ::
 
- /path?as_token=$token&ts=$timestamp
+ /path?access_token=$token&ts=$timestamp
 
  Query Parameters added to the send event APIs only:
-   as_token: The application service token
+   access_token: The application service token
    ts: The desired timestamp
 
 Server admin style permissions
