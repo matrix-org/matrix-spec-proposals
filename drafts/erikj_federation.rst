@@ -103,6 +103,12 @@ algorithm to accept the event. These should be a subset of the current state.
 A server is required to store the complete chain of auth events for all events
 it serves to remote servers.
 
+All auth events have type:
+
+ - ``m.room.create``
+ - ``m.room.power_levels``
+ - ``m.room.member``
+
 .. todo
     We probably should probably give a lower band of how long auth events
     should be kept around for.
