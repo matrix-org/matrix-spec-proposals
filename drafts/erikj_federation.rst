@@ -177,12 +177,12 @@ changes.
 
 We want the following rules to apply:
 
-- If power levels have been changed on two different branches use the rules
-  above, ensuring that the one picked is a valid change from the one not picked.
-- Similarly handle membership changes (e.g. bans, kicks, etc.)
-- If a power level has been changed in a branch, then any state merged from the
-  other branch *must* be allowed by the power level event change. Otherwise,
-  use the current one from the branch where the power level event changed.
+#. If power levels have been changed on two different branches use the rules
+   above, ensuring that the one picked is a valid change from the one not picked.
+#. Similarly handle membership changes (e.g. bans, kicks, etc.)
+#. If a power level has been changed in a branch, then any state merged from the
+   other branch *must* be allowed by the power level event change. Otherwise,
+   use the current one from the branch where the power level event changed.
 
 
 
@@ -275,6 +275,22 @@ Inviting a user
 To invite a remote user to a room we need their home server to sign the invite
 event. This is done by sending the event to the remote server, which then signs
 the event, before distributing the invite to other servers.
+
+
+Handling incoming events
+------------------------
+
+When a server receives an event, it should:
+
+#. Check if it knows about the room. If it doesn't, then it should get the
+   current state and auth events to determine whether the server *should* be in
+   the room. If so continue, if not drop or reject the event
+#. If the server already knew about the room, check the prev events to see if
+   it is missing any events. If it is, request them. Servers should limit how
+   far back they will walk the event graph for missing events.
+#. If the server does not have all the prev events, then it should request the
+   current state and auth events from a server.
+
 
 Failures
 --------
