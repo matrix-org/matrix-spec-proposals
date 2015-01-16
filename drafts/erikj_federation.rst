@@ -36,7 +36,7 @@ include validation).
 
 **TODO**: What signatures do we expect?
 
-1. If type is ``m.room.create`` allow.
+1. If type is ``m.room.create`` allow if and only if it has no prev events.
 #. If type is ``m.room.member``:
   
    a. If ``membership`` is ``join``:
