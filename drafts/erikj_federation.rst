@@ -171,6 +171,21 @@ pick the one with the greatest:
 #. Hash of event_id.
 
 
+This works except in the case of auth events, where we need to mitigate against
+the attack where servers artificially netsplit to avoid bans or power level
+changes.
+
+We want the following rules to apply:
+
+- If power levels have been changed on two different branches use the rules
+  above, ensuring that the one picked is a valid change from the one not picked.
+- Similarly handle membership changes (e.g. bans, kicks, etc.)
+- If a power level has been changed in a branch, then any state merged from the
+  other branch *must* be allowed by the power level event change. Otherwise,
+  use the current one from the branch where the power level event changed.
+
+
+
 State Conflict Resolution
 -------------------------
 
