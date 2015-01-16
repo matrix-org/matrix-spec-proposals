@@ -348,7 +348,10 @@ Examples
   - Should home servers by default generate fixed room IDs which match the room
     alias? Otherwise, you need to tell the AS that room alias X matches room ID
     Y so when the home server pushes events with room ID Y the AS knows which
-    room that is.
+    room that is. Alternatively, do we expect ASes to query the HS via the room
+    alias APIs just like clients do? This doesn't get us the reverse mapping
+    though which is what we really want when events are pushed to the AS. Maybe
+    a special room_id_to_alias event poke is pushed to the AS?
 
 IRC
 ~~~
