@@ -119,11 +119,12 @@ Auth chain
 The *auth chain* for an event is the recursive list of auth events and the auth
 chain for those auth events.
 
-The auth chain for event gives all the information a server needs to accept an
-event. However, being given an auth chain for an event that appears valid does
-not mean that the event might later be rejected. For example if we discover
-that the sender had been banned between the join event listed in the auth
-events and the event being authed.
+.. Note:: The auth chain for an event gives all the information a server needs
+          to accept an event. However, being given an auth chain for an event
+          that appears valid does not mean that the event might not later be
+          rejected. For example if we discover that the sender had been banned
+          between the join event listed in the auth events and the event being
+          authed.
 
 **TODO**: Clean the above explanations up a bit.
 
