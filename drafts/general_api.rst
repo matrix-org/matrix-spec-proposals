@@ -701,8 +701,9 @@ Presence API ``[ONGOING]``
    v1 semantics?
    
 
-When a session starts, the home server can treat the user as "online". When the 
-session ends, the home server can treat the user as "offline".
+When a client hits the event stream, the home server can treat the user as "online"
+(unless they override this). When the client has not hit the event stream for a 
+certain period of time, the home server can treat the user as "offline".
 
 Inputs:
  - Presence state (online, offline, away, busy, do not disturb, etc)
@@ -773,7 +774,7 @@ Client
 ~~~~~~
 - e.g. Whether this client supports VoIP
 
-When a session is started, the client needs to provide a capability set. The 
+When a client app is launched, the client needs to provide a capability set. The 
 server will take the hashes of all the user's connected clients' capability 
 sets and send the list of hashes as part of presence information 
 (not necesarily as a ``m.presence`` event, but it should act like presence 
@@ -853,31 +854,6 @@ General client changes
 ----------------------
 These are changes which do not introduce new APIs, but are required for the new
 APIs in order to fix certain issues.
- 
-Sessions ``[Draft]``
-~~~~~~~~~~~~~~~~~~~~
-
-A session is a group of requests sent by the same client. Sessions time out 
-after a short amount of time without any requests. Starting a session is known 
-as going "online". Its purpose is to wrap up the expiry of presence and typing 
-notifications into a clearer scope. A session starts when the client makes any 
-request. A session ends when the client doesn't make a request for a particular
-amount of time (times out). A session can also end when explicitly hitting a 
-particular endpoint. This is known as going "offline". A session can also be
-created by explicitly hitting a particular endpoint.
-
-When a session starts, a session ID is sent in response to the first request the
-client makes. This session ID should be sent in *all* subsequent requests. If 
-the server expires a session and the client uses an old session ID, the server 
-should fail the request with the old session ID and send a new session ID in 
-response for the client to use. If the client receives a new session ID 
-mid-session, it must re-establish its typing status and presence status, as they
-are linked to the session ID. 
-
-Lightweight clients who do not wish to manage their session can omit the 
-session ID on their requests. The home server MUST treat these requests as 
-coming from the active session in order to ensure that presence works correctly
-for these simple clients.
 
 Updates (Events) ``[Draft]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
