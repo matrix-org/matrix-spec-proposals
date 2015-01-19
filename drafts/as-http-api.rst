@@ -166,6 +166,7 @@ Notes:
    the CS API.
  - It can also set arbitrary information about the room (e.g. name, topic, etc)
    using the CS API.
+ - It can send messages as other users in order to populate scrollback.
  - When this setup is complete, the AS should respond to the HS request. This means the AS 
    blocks the HS until the room is created and configured.
  - This is deemed more flexible than alternative methods (e.g. returning an initial sync
@@ -258,7 +259,7 @@ every request. It would be an annoying amount of book-keeping to maintain tokens
 for every virtual user. It would be preferable if the application service could
 use the CS API with its own ``as_token`` instead, and specify the virtual user
 they wish to be acting on behalf of. For real users, this would require 
-additional permissions (see "C-AS Linking").
+additional permissions granting the AS permission to masquerade as a matrix user.
 
 Inputs:
  - Application service token (``access_token``)
@@ -312,9 +313,26 @@ Server admin style permissions
 The home server needs to give the application service *full control* over its
 namespace, both for users and for room aliases. This means that the AS should
 be able to create/edit/delete any room alias in its namespace, as well as
-create/delete any user in its namespace. This does not require any additional
-public APIs.
+create/delete any user in its namespace. No additional API changes need to be
+made in order for control of room aliases to be granted to the AS. Creation of
+users needs API changes in order to:
 
+- Work around captchas.
+- Have a 'passwordless' user.
+
+This involves bypassing the registration flows entirely. This is achieved by
+including the AS token on a ``/register`` request, along with a login type of
+``m.login.application_service`` to set the desired user ID without a password.
+
+::
+
+  /register?access_token=$as_token
+  
+  Content:
+  {
+    type: "m.login.application_service",
+    user: "<desired user localpart in AS namespace>"
+  }
 
 ID conventions ``[TODO]``
 -------------------------
@@ -394,6 +412,11 @@ Pre-conditions:
       GET /users/%40irc.freenode.net%2FBob%3Ahsdomain.com?access_token=T_h
       [Starts blocking]
         AS -> HS: Creates user using CS API extension.
+          POST /register?access_token=T_a
+          {
+            type: "m.login.application_service",
+            user: "irc.freenode.net/Bob"
+          }
         AS -> HS: Set user display name to "Bob".
       [Finishes blocking]
   [Finished blocking]
