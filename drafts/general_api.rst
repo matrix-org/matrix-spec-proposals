@@ -444,15 +444,17 @@ and membership changes.
 However, this introduces its own set of problems, namely flicker. The
 client would receive the ``m.room.member`` event first, followed by
 the ``m.room.member.profile`` event, which could cause a flicker. In
-addition, federation may not send both event types in a single transaction,
+addition, federation may not send both events in a single transaction,
 resulting in missing information on the receiving home server.
 
 For federation, these problems can be resolved by sending the 
 ``m.room.member`` event as they are in v1 (with ``displayname`` and 
-``avatar_url`` in the ``content``). The receiving home server will then
-extract these keys and create a server-generated ``m.room.member.profile``
-event. To avoid confusion with duplicate information, the ``avatar_url``
-and ``displayname`` keys should be removed by the receiving home server.
+``avatar_url`` in the ``content``). They *have* to be sent in the 
+``content`` as this information needs to be signed. The receiving home 
+server will then extract these keys and create a server-generated 
+``m.room.member.profile`` event. To avoid confusion with duplicate 
+information, the ``avatar_url`` and ``displayname`` keys should be 
+removed from the ``m.room.member`` event by the receiving home server.
 When a client requests these events (either from the event stream
 or from an initial sync), the server will send the generated
 ``m.room.member.profile`` event under the ``unsigned.profile`` key of the
