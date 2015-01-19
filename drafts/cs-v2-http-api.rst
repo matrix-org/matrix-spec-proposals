@@ -195,7 +195,7 @@ Returns ``200 OK``:
         
         // updates about our own user data
         "user": {
-            // XXX: need a way to map user data (presence updates, profile updates, contact updates etc) into here - either as events or something else
+            // XXX: need a way to map *our* user data (presence updates(?), profile updates, contact updates etc) into here - either as events or something else
         },
                 
         // updates about other users' data (that the server thinks we care about - XXX: how do we filter this, beyond turning it bluntly on & off?)
