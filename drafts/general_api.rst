@@ -449,8 +449,8 @@ resulting in missing information on the receiving home server.
 
 For federation, these problems can be resolved by sending the 
 ``m.room.member`` event as they are in v1 (with ``displayname`` and 
-``avatar_url`` in the ``content``). They *have* to be sent in the 
-``content`` as this information needs to be signed. The receiving home 
+``avatar_url`` in the ``content``). These keys need to be signed so
+they cannot be in the ``unsigned`` part of the event. The receiving home 
 server will then extract these keys and create a server-generated 
 ``m.room.member.profile`` event. To avoid confusion with duplicate 
 information, the ``avatar_url`` and ``displayname`` keys should be 
