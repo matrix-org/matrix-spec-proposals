@@ -109,14 +109,21 @@ Inputs:
  - User ID
  - HS Credentials
 Output:
- - Profile info
+ - Whether the user exists.
 Side effects:
- - User is created on the HS if this response 200s.
+ - User is created on the HS by the AS via CS APIs during the processing of this request.
 API called when:
  - HS receives an event for an unknown user ID in the AS's namespace, e.g. an
    invite event to a room.
 Notes:
- - The created user will have their profile info set based on the output.
+ - When the AS receives this request, if the user exists, it must create the user via
+   the CS API.
+ - It can also set arbitrary information about the user (e.g. display name, join rooms, etc)
+   using the CS API.
+ - When this setup is complete, the AS should respond to the HS request. This means the AS 
+   blocks the HS until the user is created.
+ - This is deemed more flexible than alternative methods (e.g. returning a JSON blob with the
+   user's display name and get the HS to provision the user).
 Retry notes:
  - The home server cannot respond to the client's request until the response to
    this API is obtained from the AS.
@@ -136,12 +143,7 @@ Retry notes:
  
    200 OK response format
  
-   {
-     profile: {
-       display_name: "string"
-       avatar_url: "string(uri)"
-     }
-   }
+   {}
    
 Room Alias Query ``[Draft]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -155,12 +157,20 @@ Output:
  - The current state events for the room if any.
  - The message events for the room if any.
 Side effects:
- - A new room will be created with the alias input if this response 200s.
+ - Room is created on the HS by the AS via CS APIs during the processing of 
+   this request.
 API called when:
  - HS receives an event to join a room alias in the AS's namespace.
 Notes:
- - This can be thought of as an ``initialSync`` but for a 3P networked room,
-   which is lazily loaded when a matrix user tries to join the room.
+ - When the AS receives this request, if the room exists, it must create the room via
+   the CS API.
+ - It can also set arbitrary information about the room (e.g. name, topic, etc)
+   using the CS API.
+ - When this setup is complete, the AS should respond to the HS request. This means the AS 
+   blocks the HS until the room is created and configured.
+ - This is deemed more flexible than alternative methods (e.g. returning an initial sync
+   style JSON blob and get the HS to provision the room). It also means that the AS knows
+   the room ID -> alias mapping.
 Retry notes:
  - The home server cannot respond to the client's request until the response to
    this API is obtained from the AS.
@@ -180,31 +190,7 @@ Retry notes:
  
    200 OK response format
  
-   {
-     events: [
-       {
-         content: {
-           ...
-         },
-         user_id: "string",
-         origin_server_ts: integer,  // massaged timestamps
-         type: "string"
-       },
-       ...
-     ],
-     state: [
-       {
-         content: {
-           ...
-         },
-         user_id: "string(virtual user id)",
-         origin_server_ts: integer,
-         state_key: "string",
-         type: "string"  // e.g. m.room.name
-       },
-       ...
-     ]
-   }
+   {}
 
 Pushing ``[Draft]``
 ~~~~~~~~~~~~~~~~~~~
@@ -345,13 +331,6 @@ Examples
 --------
 .. NOTE::
   - User/Alias namespaces are subject to change depending on ID conventions.
-  - Should home servers by default generate fixed room IDs which match the room
-    alias? Otherwise, you need to tell the AS that room alias X matches room ID
-    Y so when the home server pushes events with room ID Y the AS knows which
-    room that is. Alternatively, do we expect ASes to query the HS via the room
-    alias APIs just like clients do? This doesn't get us the reverse mapping
-    though which is what we really want when events are pushed to the AS. Maybe
-    a special room_id_to_alias event poke is pushed to the AS?
 
 IRC
 ~~~
@@ -399,49 +378,26 @@ Pre-conditions:
   
   HS -> AS: Room Query "#irc.freenode.net/#matrix:hsdomain.com"
   GET /rooms/%23irc.freenode.net%2F%23matrix%3Ahsdomain.com?access_token=T_h
-  Returns 200 OK:
-  {
-    events: [
+  [Starts blocking]
+    AS -> HS: Creates room. Gets room ID "!aasaasasa:matrix.org".
+    AS -> HS: Sets room name to "#matrix".
+    AS -> HS: Sends message as ""@irc.freenode.net/Bob:hsdomain.com"
+      PUT /rooms/%21irc.freenode.net%2F%23matrix%3Ahsdomain.com/send/m.room.message
+                      ?access_token=T_a
+                      &user_id=%40irc.freenode.net%2FBob%3Ahsdomain.com
+                      &ts=1421416883133
       {
-        content: {
-          body: "hello?",
-          msgtype: "m.text"
-        }
-        origin_server_ts: 1421416883133,
-        user_id: "@irc.freenode.net/Bob:hsdomain.com"
-        type: "m.room.message"
+        body: "hello?"
+        msgtype: "m.text"
       }
-    ],
-    state: [
-      {
-        content: {
-          name: "#matrix"
-        }
-        origin_server_ts: 1421416883133,   // default this to the first msg?
-        user_id: "@irc.freenode.net/Bob:hsdomain.com",  // see above
-        state_key: "",
-        type: "m.room.name"
-      }
-    ]
-  }
+    HS -> AS: User Query "@irc.freenode.net/Bob:hsdomain.com"
+      GET /users/%40irc.freenode.net%2FBob%3Ahsdomain.com?access_token=T_h
+      [Starts blocking]
+        AS -> HS: Creates user using CS API extension.
+        AS -> HS: Set user display name to "Bob".
+      [Finishes blocking]
+  [Finished blocking]
   
-  - HS provisions new room with *FIXED* room ID (see notes section)
-    "!irc.freenode.net/#matrix:hsdomain.com" with normal state events 
-    (e.g. m.room.create). join_rules can be overridden by the AS if supplied in
-    "state".
-  - HS injects messages into room. Finds unknown user ID 
-    "@irc.freenode.net/Bob:hsdomain.com" in AS namespace, so queries AS.
-    
-  HS -> AS: User Query "@irc.freenode.net/Bob:hsdomain.com"
-  GET /users/%40irc.freenode.net%2FBob%3Ahsdomain.com?access_token=T_h
-  Returns 200 OK:
-  {
-    profile: {
-      display_name: "Bob"
-    }
-  }
-  
-  - HS provisions new user with display name "Bob".
   - HS sends room information back to client.
   
 4. @alice:hsdomain.com says "hi!" in this room:
