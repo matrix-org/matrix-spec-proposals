@@ -409,27 +409,144 @@ Inputs:
 Output:
  - The key/values specified.
   
-Propagation
-~~~~~~~~~~~
+Propagation ``[Draft]``
+~~~~~~~~~~~~~~~~~~~~~~~
 The goals of propagation are:
 
-- Profile updates should propagate to all rooms the user is in. 
+- Profile updates should propagate to all rooms the user is in so
+  rooms can display change events. Due to this, profile propagation
+  HAS to be in the event graph for the room, in order to place it in
+  the right position.
 - We should support different kinds of profiles for different rooms. 
+- Propagation should avoid flicker between joining a room and getting
+  profile information.
 
-In v1, users have a single profile. This information is duplicated for
-every room the user is in. This duplication means that things like
-display names *could* change on a room-by-room basis. However, this is
-extremely inefficient when updating the display name, as you have to
-send ``num_joined_rooms`` events to inform everyone of the update.
+In v1, this was achieved by sending ``displayname`` and ``avatar_url``
+keys inside the ``content`` of an ``m.room.member`` event. This event
+type was chosen in order to prevent flicker on the client, as all the
+information came down in one lump.
 
-There's no easy solution to this. The room needs a record of the name
-changes; it's not good enough to send it just to the users (the set of
-all users in all rooms the user changing their display name is in), as
-new users who join later still need to know about these changes. The
-ordering information needs to be preserved as well. 
+This had a number of problems associated with it:
 
-An improvement would be to allow the client to not automatically share
-updates of their profile information to all rooms.
+- It conflated profile info and membership info, simply to avoid client
+  flicker.
+- Name/avatar changes created more ``m.room.member`` events which meant
+  they needed to be included in the auth chains for federation. This
+  created long auth chains which is suboptimal since home servers need
+  to store the auth chains forever.
+
+These problems can be resolved by creating an ``m.room.member.profile``
+event which contains profile information. This reduces the number of
+``m.room.member`` events over federation, since profile changes are of
+a different event type. This also prevents conflation of profile changes
+and membership changes.
+
+However, this introduces its own set of problems, namely flicker. The
+client would receive the ``m.room.member`` event first, followed by
+the ``m.room.member.profile`` event, which could cause a flicker. In
+addition, federation may not send both event types in a single transaction,
+resulting in missing information on the receiving home server.
+
+For federation, these problems can be resolved by sending the 
+``m.room.member`` event as they are in v1 (with ``displayname`` and 
+``avatar_url`` in the ``content``). The receiving home server will then
+extract these keys and create a server-generated ``m.room.member.profile``
+event. To avoid confusion with duplicate information, the ``avatar_url``
+and ``displayname`` keys should be removed by the receiving home server.
+When a client requests these events (either from the event stream
+or from an initial sync), the server will send the generated
+``m.room.member.profile`` event under the ``unsigned.profile`` key of the
+``m.room.member`` event. Subsequent profile updates are just sent as
+``m.room.member.profile`` events.
+
+For clients, profile information is now *entirely* represented in
+``m.room.member.profile`` events. To avoid flicker, this event is 
+combined with the ``m.room.member`` event under an ``unsigned.profile``
+key.
+
+::
+
+   Case #1: @user:domain "User" joins a room
+
+   HS --> HS:
+   {
+     content: {
+       displayname: "User",
+       membership: "join"
+     },
+     type: "m.room.member",
+     [...]
+   }
+   
+   Receiving HS transformation:
+   {
+     content: {
+       <remove displayname key>
+       membership: "join"
+     },
+     type: "m.room.member",
+     [...]
+   }
+   
+   Receiving HS creates new server-generated event:
+   {
+     content: {
+       displayname: "User"
+     },
+     type: "m.room.member.profile",
+     [...]
+   }
+   
+   Client sees: (e.g. from event stream / initial sync)
+   {
+     content: {
+       membership: "join"
+     },
+     type: "m.room.member",
+     unsigned: {
+       profile: {
+         content: {
+           displayname: "User"
+         },
+         type: "m.room.member.profile",
+         [...]
+       }
+     }
+     [...]
+   }
+   
+::
+
+   Case #2: @user:domain "User" updates their display name to "User2"
+            (they are already in the room)
+            
+   HS --> HS:
+   {
+     content: {
+       displayname: "User2"
+     },
+     prev_content: {
+       displayname: "User"
+     },
+     type: "m.room.member.profile",
+     [...]
+   }
+   
+   Client sees:
+   {
+     content: {
+       displayname: "User2"
+     },
+     prev_content: {
+       displayname: "User"
+     },
+     type: "m.room.member.profile",
+     [...]
+   }
+
+The removal of the ``displayname`` and ``avatar_url`` keys from ``m.room.member``
+can only be done if the client trusts their HS, as it will break the sending HS's
+signature. Requesting the "raw" federation event will have to return these keys.
 
 Account Management API ``[ONGOING]``
 ------------------------------------
