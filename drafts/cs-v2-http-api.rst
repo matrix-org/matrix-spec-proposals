@@ -85,9 +85,7 @@ XXX: how do we transition between non-coalesced pagination and coalesced paginat
         // N.B. subset of things you're allowed to sort by may be arbitrarily
         // restricted by the server impl (XXX: capabilities?)
         // Servers must support the "timeline" ordering - which is linearised logical chronological ordering.
-        // XXX: should this be done per-request rather than per-filter?  Given streaming APIs (like eventStream)
-        // will be limited to sorting via timeline due to causality...
-        // XXX: conversely, does it make sense to be able to change sort order on a query by query basis for the same pagination stream? surely not...
+        // N.B. This only takes effect when paginating, and is ignored for streaming data, and can only be specified once per filter.
         sort: [
             // sort by sender, and then by the timeline
             {   
@@ -108,41 +106,44 @@ Returns ``200 OK``::
     }
 
 
-Global initial sync API
------------------------
+"Sync API" (was Event Stream API / Global initial sync API)
+-----------------------------------------------------------
 
-Epiphany:
- * Why do we actually need separate /initialSync and /eventStream?
- * If a client is hibernated (SIGSTOP/SIGCONTed) for 2 weeks and then resumes, why should it get DoSed as it polls /eventStream?
- * So why not just poll eventStream all the time, with a limit.  Clients need to know if the limit is reached, as it means they may have a hole in the history and will need to throw away the history before the hole.
- * What happens if eventStream has more than `limit` events to communicate between polls?  Do we deliberately drop them on the floor?
- * What format do we return in?  Do we split out presence/rooms/etc?
+There is no difference between an incremental initial sync of events and polling for updates on the eventstream.  They both transfer a delta of events from the server to the client, and both deltas need to be capped to avoid DoSing the client if too much time has elapsed between syncs.  Initial sync is thus a capped incremental delta of events relative to clean client-side state.
 
-// initial sync:
-GET /newEventStream&limit=100 (across all rooms)
-// eventStream poll:
-GET /newEventStream&limit=100&timeout=30 (across either everything or a specific room if you're thin)
+Therefore we propose combining them into a single /sync API.  It's important to note that we should not design out server->client pushed event updates - the data returned by /sync polling should also be suitable for pushing if available (with suitable gapping/capping to avoid DoSing the client).  XXX: do this!
 
-``GET /initialSync``
+``GET /sync``
 
 TODO: https://matrix.org/jira/browse/SYN-168
     /initialSync should return the actual m.room.member invite, not random keys from it
 
 GET parameters::
 
-    limit: maximum number of events per room to return
-    // the sort order of messages in the room. default: "timeline,asc". may appear multiple times
-    // the chunk tokens are dependent on the sort order and cannot be mixed between different sort orders
-    // so you can't change sort after the first time it's specified.
+    limit: maximum number of events per room to return.  If this limit is exceeded:
+           1. the server must flag the gap in the response (to avoid ambiguity between hitting the limit and exceeding the limit)
+           2. the client must either throw away older timeline information or model a 'gap' in the timeline
+           3. the server must include the full delta of state keys since the last sync, but will truncate the timeline delta.
+
+    // the sort order of messages in the room, *only honoured during an initial sync*. default: "timeline,asc". may appear multiple times
+    // subsequent calls to /sync will always return event updates in timeline order (thanks to causality)
+    // the chunk tokens per-room are dependent on the sort order and cannot be mixed between different uses of the same filter.
     // the use case here is to start paginating a room sorted by not-timeline (e.g. by sender id - e.g. mail client use case)
     sort: fieldname, direction (e.g. "sender,asc"). 
-    since: <chunk token> to request an incremental update (*not* pagination) since the specified chunk token
+    
+    since: <chunk token> to request an incremental delta since the specified chunk token
         We call this 'since' rather than 'from' because it's not for pagination but a delta.
-        Typically the specified chunk token would be taken from the most recent eventStream request that completed for this filter
+        The specified chunk token would be taken from the most recent sync request that completed for this filter.
+    timeout: maximum time to poll (in milliseconds) before returning this request. Only meaningful if performing an incremental sync (i.e. `since` is set)
+        
+    set_presence: "offline" // optional parameter to tell the server not to interpret this request as a client as coming online (and as a convenience method for overriding presence state in general)
+    
+    presence: true/false (default true): do we want to show presence updates?
+    userdata: true/false (default true): do we want to include updates to user data?
+    
     backfill: true/false (default true): do we want to pull in state from federation if we have less than <limit> events available for a room?
-    compact: boolean (default false): factor out common events.
-             XXX: I *really* think this should be turned on by default --matthew
-    filter: <filter_id> // filters can change between requests, to allow us to narrow down a global initialsync to a given room or similar use cases.
+             
+    filter: <filter_id> // filters can change between requests, to allow us to narrow down a global initial sync to a given room or similar use cases.
     // filter overrides (useful for changing filters between requests)
     filter_type: wildcard event type match e.g. "m.*", "m.presence": default, all.  may appear multiple times.
     filter_room: wildcard room id/name match e.g. "!83wy7whi:matrix.org": default, all.  may appear multiple times.
@@ -151,8 +152,7 @@ GET parameters::
     filter_format: "federation" or "events"
     filter_select: event fields to return: default, all.  may appear multiple times
     filter_bundle_updates: true/false: default, false. bundle updates in events.
-
-    // FIXME: kegan: how much does the v1 response actually change here?
+    // we deliberately don't specify filter_bundle_relates_to, as it's too hard to serialise into querystring params
 
 Returns ``200 OK``:
 
@@ -160,161 +160,67 @@ Returns ``200 OK``:
     
     // where compact is false:
     {
-        "next_chunk": "s72595_4483_1934", // the chunk token we pass to /eventStream's from, or /initialSync's since.
+        "next_chunk": "s72595_4483_1934", // the chunk token we pass to /sync's since param
         
-        // global presence info (if presence=true)
-        "presence": [{
-            "content": {
-                "avatar_url": "http://matrix.tp.mu:8008/_matrix/content/QG1hdHRoZXc6dHAubXUOeJQMWFMvUdqdeLovZKsyaOT.aW1hZ2UvanBlZw==.jpeg",
-                "displayname": "Matthew Hodgson",
-                "last_active_ago": 368200528,
-                "presence": "online",
-                "sender": "@matthew:tp.mu"
+        "eventMap": {
+            "$14qwtyeufet783:matrix.org": {
+                    "avatar_url": "http://matrix.tp.mu:8008/_matrix/content/QG1hdHRoZXc6dHAubXUOeJQMWFMvUdqdeLovZKsyaOT.aW1hZ2UvanBlZw==.jpeg",
+                    "displayname": "Matthew Hodgson",
+                    "last_active_ago": 368200528,
+                    "presence": "online",
+                    "sender": "@matthew:tp.mu"
+                },
+                "type": "m.presence", 
+                "edu": true, // N.B. explicitly flag EDUs as not to be stored 
             },
-            "type": "m.presence"
-        }],
-        
-        "rooms": [{
-            // "membership": "join",  // this now gets removed as redundant with state object, likewise invite keys (i.e. "invitee")
-            "events": { // rename messages to eventstream as this is a list of all events, not just messages (non-state events)
-                "chunk": [{
-                    "content": {
-                        "avatar_url": "https://matrix.org/_matrix/content/QG1hdHRoZXc6bWF0cml4Lm9yZwxaesQWnqdynuXIYaRisFnZdG.aW1hZ2UvanBlZw==.jpeg",
-                        "displayname": "Matthew",
-                        "membership": "join"
-                    },
-                    "event_id": "$1417731086506PgoVf:matrix.org",
-                    // "membership": "join", // this is obsolete and should be nixed from v1 (it's a bug)
-                    "origin_server_ts": 1417731086795,
-                    "prev_content": {
-                        "avatar_url": "https://matrix.org/_matrix/content/QG1hdHRoZXc6bWF0cml4Lm9yZwxaesQWnqdynuXIYaRisFnZdG.aW1hZ2UvanBlZw==.jpeg",
-                        "displayname": "Ara4n",
-                        "membership": "join"
-                    }
-                    "prev_state": [["$1416420706925RVAWP:matrix.org", {
-                        "sha256": "zVzi02R5aeO2HQDnybu1XuuyR6yBG8utLE/i1Sv8eyA"
-                    }
-                    ]],
-                    "room_id": "!KrLWMLDnZAyTapqLWW:matrix.org",
-                    "state_key": "@matthew:matrix.org",
-                    "type": "m.room.member",
-                    "sender": "@matthew:matrix.org"
-                }],
-                "end": "s72595_4483_1934",
-                "start": "t67-41151_4483_1934"
-            },
-            "room_id": "!KrLWMLDnZAyTapqLWW:matrix.org",
-            "state": [{
+            
+            "$1417731086506PgoVf:matrix.org": {
                 "content": {
                     "avatar_url": "https://matrix.org/_matrix/content/QG1hdHRoZXc6bWF0cml4Lm9yZwxaesQWnqdynuXIYaRisFnZdG.aW1hZ2UvanBlZw==.jpeg",
                     "displayname": "Matthew",
                     "membership": "join"
                 },
-                "event_id": "$1417731086506PgoVf:matrix.org",
                 "membership": "join",
                 "origin_server_ts": 1417731086795,
-                "room_id": "!KrLWMLDnZAyTapqLWW:matrix.org",
+                "prev_state": [["$1416420706925RVAWP:matrix.org", {
+                    "sha256": "zVzi02R5aeO2HQDnybu1XuuyR6yBG8utLE/i1Sv8eyA"
+                }
+                ]],
+                // "room_id": "!KrLWMLDnZAyTapqLWW:matrix.org", // remove this in compact form as it's redundant
                 "state_key": "@matthew:matrix.org",
                 "type": "m.room.member",
-                "sender": "@matthew:matrix.org"
-            }],
-            "visibility": "public"
-        }]
-    }
-    
-    
-    // where compact is true:
-    {
-        "end": "s72595_4483_1934",
-        // global presence info
-        "presence": [{
-            "content": {
-                "avatar_url": "http://matrix.tp.mu:8008/_matrix/content/QG1hdHRoZXc6dHAubXUOeJQMWFMvUdqdeLovZKsyaOT.aW1hZ2UvanBlZw==.jpeg",
-                "displayname": "Matthew Hodgson",
-                "last_active_ago": 368200528,
-                "presence": "online",
-                "sender": "@matthew:tp.mu"
-            },
-            "type": "m.presence"
-        }],
+                "sender": "@matthew:matrix.org"    
+            }
+        }
+        
+        // updates about our own user data
+        "user": {
+            // XXX: need a way to map user data (presence updates, profile updates, contact updates etc) into here - either as events or something else
+        },
+                
+        // updates about other users' data (that the server thinks we care about - XXX: how do we filter this, beyond turning it bluntly on & off?)
+        // XXX: Should this be combined with "user"?
+        "presence": [
+            "$14qwtyeufet783:matrix.org"
+        ],
+        
         "rooms": [{
-            "event_map": {
-                "$1417731086506PgoVf:matrix.org": {
-                    "content": {
-                        "avatar_url": "https://matrix.org/_matrix/content/QG1hdHRoZXc6bWF0cml4Lm9yZwxaesQWnqdynuXIYaRisFnZdG.aW1hZ2UvanBlZw==.jpeg",
-                        "displayname": "Matthew",
-                        "membership": "join"
-                    },
-                    "membership": "join",
-                    "origin_server_ts": 1417731086795,
-                    "prev_state": [["$1416420706925RVAWP:matrix.org", {
-                        "sha256": "zVzi02R5aeO2HQDnybu1XuuyR6yBG8utLE/i1Sv8eyA"
-                    }
-                    ]],
-                    // "room_id": "!KrLWMLDnZAyTapqLWW:matrix.org", // remove this in compact form as it's redundant
-                    "state_key": "@matthew:matrix.org",
-                    "type": "m.room.member",
-                    "sender": "@matthew:matrix.org"    
-                }
-            },
-            "membership": "join",
-            "events": { // rename messages to eventstream as this is a list of all events, not just messages (non-state events)
-                "chunk": [ "$1417731086506PgoVf:matrix.org" ],
-                "end": "s72595_4483_1934",
-                "start": "t67-41151_4483_1934" // XXX: do we need start?
+            // "membership": "join",  // this now gets removed as redundant with state object, likewise invite keys (i.e. "invitee")
+            "events": { // rename messages to events as this is a list of all events, not just messages (non-state events).
+                        // gives a list of events, limited to $limit in length
+                "chunk": [
+                    "$1417731086506PgoVf:matrix.org", ...
+                ],
+                "next_chunk": "s72595_4483_1934",   // for syncing forwards, filtered just to this room? XXX: feels a bit too magical to imply a new filter...
+                "prev_chunk": "t67-41151_4483_1934" // for scrollback
             },
             "room_id": "!KrLWMLDnZAyTapqLWW:matrix.org",
             "state": [ "$1417731086506PgoVf:matrix.org" ],
-            "visibility": "public" // this means it's a published room... but needs to be better represented and not use the word 'public'
+            "limited": true, // has the limit been exceeded for the number of events returned for this room? if so, the client should be aware that there's a gap in the event stream
+            "visibility": "public",  // this means it's a published room... but needs to be better represented and not use the word 'public'
         }]
     }
-
-Event Stream API
-----------------
-
-GET ``/eventStream``
-GET parameters::
-
-    from: chunk token to continue streaming from (e.g. "end" given by initialsync)
-    filter*: as per initialSync (XXX: do we inherit this from the chunk token?)
-    // N.B. there is no limit or sort param here, as we get events in timeline order as fast as they come - and only in timeline order.
-    // N.B. this can be mixed with the stream created by a sorted initialSync; it's just up to the client to insert the results in the right order clientside.
-    access_token: identifies both user and device
-    timeout: maximum time to poll before returning the request
-    presence: "offline" // optional parameter to tell the server not to interpret this as coming online
-
-Returns ``200 OK``:
-
-.. code:: javascript
-
-    // events precisely as per a room's events key as returned by initialSync
-    // includes non-graph events like presence
-    {
-        "chunk": [{
-            "content": {
-                "avatar_url": "https://matrix.org/_matrix/content/QG1hdHRoZXc6bWF0cml4Lm9yZwxaesQWnqdynuXIYaRisFnZdG.aW1hZ2UvanBlZw==.jpeg",
-                "displayname": "Matthew",
-                "last_active_ago": 1241,
-                "presence": "online",
-                "sender": "@matthew:matrix.org"
-            },
-            "type": "m.presence"
-        }, {
-            "age": 2595,
-            "content": {
-                "body": "test",
-                "msgtype": "m.text"
-            },
-            "event_id": "$14211894201675TMbmz:matrix.org",
-            "origin_server_ts": 1421189420147,
-            "room_id": "!cURbafjkfsMDVwdRDQ:matrix.org",
-            "type": "m.room.message",
-            "sender": "@matthew:matrix.org"
-        }],
-        "end": "s75460_2478_981",
-        "start": "s75459_2477_981" // XXX: do we need start here?
-    }
-
+    
 Room Creation API
 -----------------
 
@@ -334,13 +240,13 @@ Scrollback API
 GET parameters::
 
     from: the chunk token to paginate from
-    Otherwise same as initialSync, except "compact", "since" and "presence" are not implemented
+    Otherwise same as /sync, except "since", "timeout", "presence" and "set_presence" are not implemented
 
 Returns ``200 OK``:
 
 .. code:: javascript
 
-    // events precisely as per a room's events key as returned by initialSync
+    // events precisely as per a room's events key as returned by sync, with the events expanded out inline
     {
         "chunk": [{
             "age": 28153452, // how long as the destination HS had the message + how long the origin HS had the message
@@ -365,8 +271,7 @@ Returns ``200 OK``:
             "type": "m.room.message",
             "sender": "@irc_Arathorn:matrix.org"
         }],
-        "end": "t9571-74545_2470_979",
-        "start": "t9601-75400_2470_979" // XXX: don't we just need end here as we can only paginate one way?
+        "prev_chunk": "t9571-74545_2470_979",
     }
 
 Contextual windowing API
@@ -378,13 +283,13 @@ Contextual windowing API
 GET parameters::
 
     context: "before", "after" or "around"
-    Otherwise same as initialSync, except "since" and "presence" are not implemented
+    Otherwise same as sync, without "since", "presence", "timeout" and "set_presence"
     
 Returns ``200 OK``:
 
 .. code:: javascript
 
-    // the room in question, formatted exactly as a room entry returned by /initialSync
+    // the room in question, formatted exactly as a room entry returned by /sync with the events expanded out inline
     // with the event in question present in the list as determined by the context param
     {
         "event_map": {
@@ -409,8 +314,8 @@ Returns ``200 OK``:
         "membership": "join",
         "events": {
             "chunk": [ "$1417731086506PgoVf:matrix.org" ],
-            "end": "s72595_4483_1934",
-            "start": "t67-41151_4483_1934"
+            "next_chunk": "s72595_4483_1934",
+            "prev_chunk": "t67-41151_4483_1934"
         },
         "room_id": "!KrLWMLDnZAyTapqLWW:matrix.org",
         "state": [ "$1417731086506PgoVf:matrix.org" ],
@@ -437,6 +342,22 @@ some of which have specific predefined serverside semantics. Keys must be named
     PUT /user/{userId}/data/m.avatar_url
     PUT /user/{userId}/data/m.contact_vcard
     PUT /user/{userId}/data/net.arasphere.client.preferences
+
+Address Book API
+----------------
+
+FIXME: XXX: Dave - can we do better than this?
+
+Store basic JSON vcards into per-user data.
+
+::
+    PUT /user/{userId}/contacts/{deviceId}?baseVer=???
+    { bulk incremental update of contacts relative to baseVer, keyed by an contactId (as defined by the client) }
+    returns the new 'ver' version of the updated contact datastructure
+
+    GET /user/{userId}/contacts/{deviceId}?baseVer=???
+    returns the delta of contact information for this device since baseVer.
+
 
 Account Management API
 ----------------------
