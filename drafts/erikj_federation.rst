@@ -188,9 +188,9 @@ We want the following rules to apply:
 #. If power levels have been changed on two different branches use the rules
    above, ensuring that the one picked is a valid change from the one not picked.
 #. Similarly handle membership changes (e.g. bans, kicks, etc.)
-#. If a power level has been changed in a branch, then any state merged from the
-   other branch *must* be allowed by the power level event change. Otherwise,
-   use the current one from the branch where the power level event changed.
+#. Any state merged must be allowed by the newly merged auth events. If none of
+   the candidate events for a given state are allowed, we pick the last event
+   given by the ordering above (i.e. we pick one with the least depth).
 
 
 
