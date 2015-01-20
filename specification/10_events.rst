@@ -428,7 +428,7 @@ outlined below:
         "mimetype" : "string (e.g. image/jpeg)",
       }
 
-.. TODO-spec::
+.. TODO-spec
     Make the definitions "inherit" from FileInfo where necessary...
 
 
