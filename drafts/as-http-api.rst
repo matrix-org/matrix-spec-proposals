@@ -333,16 +333,74 @@ including the AS token on a ``/register`` request, along with a login type of
     user: "<desired user localpart in AS namespace>"
   }
 
-ID conventions ``[TODO]``
+ID conventions ``[Draft]``
 -------------------------
+.. NOTE::
+  - Giving HSes the freedom to namespace still feels like the Right Thing here.
+  - Exposing a public API provides the consistency which was the main complaint
+    against namespacing.
+  - This may have knock-on effects for the AS registration API. E.g. why don't
+    we let ASes specify the *URI* regex they want?
+
 This concerns the well-defined conventions for mapping 3P network IDs to matrix
 IDs, which we expect clients to be able to do by themselves.
 
-- What do user IDs look like? Butchered URIs? Can all 3P network IDs be
-  reasonably expressed as URIs? (e.g. tel, email, irc, xmpp, ...)
-- What do room aliases look like? Some cases are clear (e.g. IRC) but others
-  are a lot more fiddly (e.g. email? You don't want to share a room with
-  everyone who has ever sent an email to ``bob@gmail.com``)...
+User IDs
+~~~~~~~~
+Matrix users may wish to directly contact a virtual user, e.g. to send an email.
+The URI format is a well-structured way to represent a number of different ID
+types, including:
+
+- MSISDNs (``tel``)
+- Email addresses (``mailto``)
+- IRC nicks (``irc`` - https://tools.ietf.org/html/draft-butcher-irc-url-04)
+- XMPP (xep-0032)
+- SIP URIs (RFC 3261)
+
+As a result, virtual user IDs SHOULD relate to their URI counterpart. This
+mapping from URI to user ID can be expressed in a number of ways:
+
+- Expose a C-S API on the HS which takes URIs and responds with user IDs.
+- Munge the URI with the user ID.
+
+Exposing an API would allow HSes to internally map user IDs however they like,
+at the cost of an extra round trip (of which the response can be cached).
+Munging the URI would allow clients to apply the mapping locally, but would force
+user X on service Y to always map to the same munged user ID. Considering the
+exposed API could just be applying this munging, there is more flexibility if
+an API is exposed. 
+
+::
+
+  GET /_matrix/app/v1/user?uri=$url_encoded_uri
+  
+  Returns 200 OK:
+  {
+    user_id: <complete user ID on local HS>
+  }
+
+Room Aliases
+~~~~~~~~~~~~
+We may want to expose some 3P network rooms so Matrix users can join them directly,
+e.g. IRC rooms. We don't want to expose every 3P network room though, e.g. mailto,
+tel. Rooms which are publicly accessible (e.g. IRC rooms) can be exposed as an alias by
+the application service. Private rooms (e.g. sending an email to someone) should not
+be exposed in this way, but should instead operate using normal invite/join semantics.
+Therefore, the ID conventions discussed below are only valid for public rooms which 
+expose room aliases.
+
+Matrix users may wish to join XMPP rooms (e.g. using XEP-0045) or IRC rooms. In both
+cases, these rooms can be expressed as URIs. For consistency, these "room" URIs 
+SHOULD be mapped in the same way as "user" URIs.
+
+::
+
+  GET /_matrix/app/v1/alias?uri=$url_encoded_uri
+  
+  Returns 200 OK:
+  {
+    alias: <complete room alias on local HS>
+  }
   
 Examples
 --------
