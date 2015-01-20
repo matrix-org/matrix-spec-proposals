@@ -85,7 +85,8 @@ In the registration process, the AS provides:
 * Details of the namespaces of users and rooms the AS is acting on behalf of and
   "subscribing to"
 * Namespaces are defined as a list of regexps against which to match room aliases,
-  room IDs, and user IDs.
+  room IDs, and user IDs. Regexps give the flexibility to say, sub-domain MSISDN
+  ranges per AS, whereas a blunt prefix string does not.
 * There is overlap between selecting events via the csv2 Filter API and subscribing
   to events here - perhaps subscription involves passing a filter token into the
   registration API.
