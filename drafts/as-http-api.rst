@@ -10,8 +10,6 @@ This contains home server APIs which are used by the application service.
 
 Registration API ``[Draft]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. NOTE::
-  - Do we really have to use regex for this? Can't we do this a nicer way?
 
 This API registers the application service with its host homeserver to offer its
 services.
