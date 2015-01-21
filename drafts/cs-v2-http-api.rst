@@ -42,13 +42,8 @@ XXX: how do we transition between non-coalesced pagination and coalesced paginat
         
         public_user_data: true,  // include events describing public user data (as we might not know their types) - default: true
         private_user_data: true, // include events describing private user data (as we might not know their types) - default: true
-        
-        // XXX: do we want this per-query; is it valid to reuse it?
-        // we probably don't need this as querying per-event-ID will be a parameter from a seperate API,
-        // with its own seperate filter token & pagination semantics.
-        event_ids: [ "$192318719:matrix.org" ], // default: all - useful for selecting relates_to data for a given event
-        not_event_ids: [] // questionable
-        
+        // XXX: How do these interact with specific type/non_type selectors prioritywise?
+                
         // parameters
         
         // 'format' gives the desired shape of the response
@@ -491,6 +486,8 @@ You subscribe to the events namespaces you care about in your filter.
 
 Address Book API
 ----------------
+
+XXX: We probably don't need this any time soon - synchronising addressbooks between devices is hardly core.
 
 FIXME: XXX: Dave - can we do better than this?
 XXX: also, can we extend the generic user data API above.
