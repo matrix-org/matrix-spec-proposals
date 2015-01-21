@@ -332,6 +332,7 @@ Supports bookmarking of specific events allowing you to jump into history and sc
 We don't support reporting on historical user_data (profiles, presence) unless it's in the message graph.
 
 Bookmarks look like::
+
     mx://{homeserver}/{event_id}
         // `homeserver` is the HS of the person who's handing out the link
     e.g. mx://matrix.org/$128397978128aho:arasphere.net
@@ -342,7 +343,8 @@ if the user is not in the room and returns `{ room_id: "!1249y83ty98:matrix.org"
 so that the user can then decide whether to join and view the history.  We have to validate the room_alias to check
 the server isn't lying.
 
-::    
+::  
+  
     GET /events/{event_id}?homeserver={homeserver}
     
 GET parameters::
@@ -425,6 +427,7 @@ some of which have specific predefined serverside semantics. Keys must be named
 (we don't support POSTing to anonymous key names)
 
 ::
+
     PUT /user/{userId}/public/{eventType}
     
     e.g.:
@@ -495,6 +498,7 @@ XXX: also, can we extend the generic user data API above.
 Store basic JSON vcards into per-user data.
 
 ::
+
     PUT /user/{userId}/contacts/{deviceId}?baseVer=???
     { bulk incremental update of contacts relative to baseVer, keyed by an contactId (as defined by the client) }
     returns the new 'ver' version of the updated contact datastructure
@@ -509,25 +513,29 @@ Account Management API
 Actions API
 -----------
 
-// batched PUT  // v2.05
+::
 
-// without batch PUT, clients will need to execute PUTs serially to maintain ordering.
-// Batching will avoid the client falling behind.
+    // batched PUT  // v2.05
 
-// transaction IDs:
-PUT /room/{room_id}/send/{event_type}?txn_id=1234 // arbitrary txn_id token assigned by client per access_token
+    // without batch PUT, clients will need to execute PUTs serially to maintain ordering.
+    // Batching will avoid the client falling behind.
+
+    // transaction IDs:
+    PUT /room/{room_id}/send/{event_type}?txn_id=1234 // arbitrary txn_id token assigned by client per access_token
 
 Presence API
 ------------
 
-// the server observes this in order to detect when the device
-// is overriding its online/idle/offline state.
-// this is what you hit if you don't specify set_presence on /sync
-// or the device wants to declare that it's idle.
-PUT /user/{userId}/private/devices/{deviceId}/m.device.presence
-{
-    presence: "idle"
-}
+::
+
+    // the server observes this in order to detect when the device
+    // is overriding its online/idle/offline state.
+    // this is what you hit if you don't specify set_presence on /sync
+    // or the device wants to declare that it's idle.
+    PUT /user/{userId}/private/devices/{deviceId}/m.device.presence
+    {
+        presence: "idle"
+    }
 
 // see Address Profile API for storing FB-style status    
 
