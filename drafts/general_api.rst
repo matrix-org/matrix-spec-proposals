@@ -126,6 +126,10 @@ Outputs:
     - # members
     - max of limit= message events
     - room ID
+ - For each room the user is invited to:
+    - The invite event
+    - Other state info (e.g. room name, topic)
+    - # members?
 Notes:
  - If a chunk token is applied, you will get a delta relative to the last request
     performed with that streaming token rather than all the rooms.
