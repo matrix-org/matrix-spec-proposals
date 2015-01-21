@@ -78,13 +78,8 @@ Terminology:
    navigation.
 
  
-Filter API ``[ONGOING]``
+Filter API ``[Draft]``
 ------------------------
-.. NOTE::
- - Exactly what can be filtered? Which APIs use this? Are we 
-   conflating too much?
- - Do we want to specify negative filters (e.g. don't give me 
-   ``event.type.here`` events)
 
 Inputs:
  - Which event types (incl wildcards)
@@ -104,6 +99,7 @@ Notes:
    a delimiter between them.
  - Omitting the token on APIs results in ALL THE THINGS coming down.
  - Clients should remember which token they need to use for which API.
+ - It should be possible to define negative filters (e.g. not presence)
  - HTTP note: If the filter API is a separate endpoint, then you could easily 
    allow APIs which use filtering to ALSO specifiy query parameters to tweak the
    filter.
@@ -810,24 +806,73 @@ Compact flag notes:
 Notes:
  - A batching version of this API needs to be provided.
 
-Presence API ``[ONGOING]``
+Presence API ``[Draft]``
 --------------------------
-.. NOTE::
- - Per device presence: how does this work? Union of devices? Priority order for
-   statuses? E.g. online trumps away trumps offline. So if any device is online,
-   then the user is online, etc.
- - Presence lists / roster? We probably do want this, but are we happy with the
-   v1 semantics?
-   
+The goals of presence are to:
 
-When a client hits the event stream, the home server can treat the user as "online"
-(unless they override this). When the client has not hit the event stream for a 
-certain period of time, the home server can treat the user as "offline".
+- Let other users know if someone is "online".
+- Let other users know if someone is likely to respond to any messages.
+- Let other users know specific status information (e.g. "In a Meeting").
+
+"Online" state can be detected by inspecting when the last time the client made
+a request to the server. This could be any request, or a specific kind of request.
+For connection-orientated protocols, detecting "online" state can be determined by
+the state of this connection stream. For HTTP, this can be detected via requests
+to the event stream.
+
+Online state is separate from letting other users know if someone is *likely to
+respond* to messages. This introduces the concept of an "idle" flag, which is
+set when the user has not done any "interaction" with the app. The definition of
+"interaction" varies based on the app, so it is up to the app to set this "idle"
+flag.
+
+Letting users know specific status information can be achieved via the same method
+as v1. Status information should be scoped per *user* and not device as determining
+a union algorithm between statuses is nonsensical. Passing status information per
+device to all other users just redirects the union problem to the client, which
+will commonly be presenting this information as an icon alongside the user.
+
+When a client hits the event stream, the home server can treat the user as 
+"online". This behaviour should be able to be overridden to avoid flicker 
+during connection losses when the client is appear offline (e.g. device is
+appear offline > goes into a tunnel > server times out > device regains 
+connection and hits the event stream forcing the device online before the
+"appear offline" state can be set). When the client has not hit the event 
+stream for a certain period of time, the home server can treat the user as 
+"offline". 
+
+The user should also be able to set their presence via a direct API, without 
+having to hit the event stream. The home server will set a timer when the 
+connection ends, after which it will set that device to offline.
+
+As the idle flag and online state is determined per device, there needs to be a
+union algorithm to merge these into a single state and flag per user, which will
+be sent to other users. The algorithm is:
+
+- If any device is online and not idle, the user is online.
+- Else if all online devices are idle, the user is idle.
+- Else the user is offline (no online devices).
+
+Changing presence status:
 
 Inputs:
- - Presence state (online, offline, away, busy, do not disturb, etc)
+ - User ID
+ - Presence status (online, away, busy, do not disturb, etc)
 Outputs:
  - None.
+ 
+Setting the idle flag:
+
+Inputs:
+ - User ID
+ - Is idle
+Outputs:
+ - None.
+ 
+Extra parameters associated with the event stream:
+
+Inputs:
+ - Presence state (online, appear offline)
 
 
 Typing API ``[Final]``
