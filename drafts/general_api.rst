@@ -87,7 +87,8 @@ Inputs:
  - Which user IDs (for profile/presence)
  - Whether you want federation-style event JSON
  - Whether you want coalesced ``updates`` events
- - Whether you want coalesced ``relates_to`` events (and the max # to coalesce)
+ - Whether you want coalesced ``relates_to`` events (and the max # to coalesce,
+   and the relationship types, and the sort order)
  - limit= param? (XXX: probably not; this should be done in the query itself)
  - Which keys to return for events? e.g. no ``origin_server_ts`` if you don't 
    show timestamps (n.b. encrypted keys can't be filtered out)
@@ -711,8 +712,11 @@ Knocking on a room ``[TODO]``
 If a room has the right ``join_rule`` e.g. ``knock``, then it should be able
 to send a special knock event to ask to join the room.
    
-Read-up-to markers ``[Draft]``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Read-up-to markers ``[ONGOING]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. NOTE::
+  - Convert to EDUs for markers with periodic PDUs to reduce event graph size?
+
 Inputs:
  - State Event type (``m.room.marker.delivered`` and ``m.room.marker.read``)
  - Event ID to mark up to. This is inclusive of the event ID specified.
@@ -743,6 +747,8 @@ Notes:
    you fit that in to the message thread if you did so? Would probably have to
    fall back to the timestamp heuristic. After all, these markers are only ever
    going to be heuristics given they are not acknowledging each message event.
+ - These markers also allow unread message counts to be kept in sync for multiple
+   devices.
  
 Kicking a user ``[Final]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -768,13 +774,6 @@ What data flows does it address:
  
 Send a message ``[ONGOING]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. NOTE::
-  Semantics for HTTP ordering. Do we really want to block requests with higher
-  sequence numbers if the server hasn't received earlier ones? Is this even
-  practical, given clients have a limit on the number of concurrent connections?
-  How can this be done in a way which doesn't suck for clients? Could we just
-  say "it isn't 'Sent' until it comes back down your event stream"?
-
 Inputs:
  - Room ID
  - Message contents
@@ -787,10 +786,6 @@ Outputs:
    (if compact=true)
 What data flows does it address:
  - Chat Screen: Send a Message
-Ordering notes:
- - HTTP: When sending a message with a higher seqnum, it will block the request 
-   until it receives earlier seqnums. The block will expire after a timeout and
-   reject the message stating that it was missing a seqnum.
 E2E Notes:
  - For signing: You send the original message to the HS and it will return the 
    full event JSON which will be sent. This full event is then signed and sent 
@@ -807,7 +802,7 @@ Notes:
  - A batching version of this API needs to be provided.
 
 Presence API ``[Draft]``
---------------------------
+------------------------
 The goals of presence are to:
 
 - Let other users know if someone is "online".
@@ -1062,8 +1057,18 @@ receive the events separately down the event stream. Combining event updates
 server-side does not make client implementation simpler, as the client still 
 needs to know how to combine the events.
 
-Relates to (Events) ``[Draft]``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Relates to (Events) ``[ONGOING]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. NOTE::
+  - Should be able to specify more relationship info other than just the event
+    type. Forcing that m.room.message A "relates_to" another m.room.message B 
+    means that A is a threaded conversation reply to B is needlessly 
+    restrictive. What if A and B relate to each other by some other metric 
+    (e.g. they are part of a group rather than a thread? or we distinguish 
+    mail-style threading from multithreaded-IM threading for the same set of 
+    messages? etc)? E.g. ``"relates_to" : [["in_reply_to", "$event_id1"], 
+    ["another_type_of_relation", "$event_id2"]]``
+
 Events may be in response to other events, e.g. comments. This is represented 
 by the ``relates_to`` key. This differs from the ``updates`` key as they *do 
 not update the event itself*, and are *not required* in order to display the 
