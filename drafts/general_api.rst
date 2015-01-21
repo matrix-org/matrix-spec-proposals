@@ -128,7 +128,7 @@ Outputs:
     - room ID
  - For each room the user is invited to:
     - The invite event
-    - Other state info (e.g. room name, topic)
+    - Other state info (e.g. room name, topic, join_rules to know if pubilc)
     - # members?
 Notes:
  - If a chunk token is applied, you will get a delta relative to the last request
