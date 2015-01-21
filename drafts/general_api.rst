@@ -106,6 +106,13 @@ Notes:
 Global initial sync API ``[Draft]``
 -------------------------------------
 .. NOTE::
+ - The output to this should also have something like:
+    For each room the user is invited to:
+      - The invite event
+      - Other state info (e.g. room name, topic, join_rules to know if pubilc)
+      - # members?
+    so clients know more information about the room other than the user_id of the
+    inviter, timestamp and the room ID.
 
  v2.1:
    - Will need some form of state event pagination like we have for message 
@@ -126,10 +133,6 @@ Outputs:
     - # members
     - max of limit= message events
     - room ID
- - For each room the user is invited to:
-    - The invite event
-    - Other state info (e.g. room name, topic, join_rules to know if pubilc)
-    - # members?
 Notes:
  - If a chunk token is applied, you will get a delta relative to the last request
     performed with that streaming token rather than all the rooms.
