@@ -156,7 +156,6 @@ Returns ``200 OK``:
 
 .. code:: javascript
     
-    // where compact is false:
     {
         "next_batch": "s72595_4483_1934", // the batch token we pass to /sync's since param
         
