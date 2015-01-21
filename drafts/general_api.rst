@@ -54,8 +54,6 @@ This contains the formal proposal for Matrix Client-Server API v2. This API
 would completely replace v1. It is a general API, not specific to any particular 
 protocol e.g. HTTP. The following APIs will remain unchanged from v1:
 
-- Registration API
-- Login API
 - Content repository API
 
 This version will change the path prefix for HTTP:
@@ -547,14 +545,15 @@ The removal of the ``displayname`` and ``avatar_url`` keys from ``m.room.member`
 can only be done if the client trusts their HS, as it will break the sending HS's
 signature. Requesting the "raw" federation event will have to return these keys.
 
-Account Management API ``[ONGOING]``
-------------------------------------
-.. NOTE::
- - How do device IDs fit into everything else? Namely, where do we tell the HS
-   what device ID we are?
+Account Management API ``[Draft]``
+----------------------------------
+The registration and login APIs in v2 do not support specifying device IDs. In v2,
+this will become *mandatory* when sending your initial request. Access tokens will
+be scoped per device, so using the same device ID twice when logging in will 
+clobber the old access token.
 
-Users may wish to delete their account, revoke access tokens, manage
-their devices, etc. This is achieved using an account management API.
+In terms of additional APIs, users may wish to delete their account, revoke access 
+tokens, manage their devices, etc. This is achieved using an account management API.
 
 Deleting an account:
 
@@ -772,8 +771,8 @@ Outputs:
 What data flows does it address:
  - Chat Screen: Leave a room
  
-Send a message ``[ONGOING]``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Send a message ``[Draft]``
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 Inputs:
  - Room ID
  - Message contents
