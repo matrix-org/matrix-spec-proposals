@@ -121,7 +121,7 @@ GET parameters::
     // N.B. This only takes effect when paginating, and is ignored for streaming data, and can only be specified once per filter.
     //
     // the sort order of messages in the room, *only honoured during an initial sync*. default: "timeline,asc". may appear multiple times
-    // subsequent calls to /sync will always return event updates in timeline order (thanks to causality)
+    // subsequent calls to /sync will always return event in the order by which they arrive at the server (thanks to causality)
     // the batch tokens per-room are dependent on the sort order and cannot be mixed between different uses of the same filter.
     // the use case here is to start paginating a room sorted by not-timeline (e.g. by sender id - e.g. mail client use case)
     sort: fieldname, direction (e.g. "sender,asc",).
