@@ -161,33 +161,37 @@ Returns ``200 OK``:
         
         // updates about our own user data
         "private_user_data": {
-            "$15zxhijvwguye:matrix.org": {
+            {
+                "event_id": "$15zxhijvwguye:matrix.org",
                 "sender": "@matthew:tp.mu"
                 type: "net.arasphere.weird.setting",
                 content: {
                     setting1: true,
                     setting2: false,
                 }
-            },
+            }
         },
                 
         // updates about publically published users' data
         "public_user_data": [
-            "$14qwtyeufet783:matrix.org": {
+            {
+                "event_id": "$14qwtyeufet783:matrix.org",
                 "sender": "@matthew:tp.mu"
                 type: "m.profile.avatar_url",
                 content: {
                     avatar_url: "mxc://matrix.org/QG1hdHRoZXc6d",
                 }
             },
-            "$14qwtyeufet784:matrix.org": {
+            {
+                "event_id": "$14qwtyeufet784:matrix.org",
                 "sender": "@matthew:tp.mu"
                 type: "m.profile.display_name",
                 content: {
                     display_name: "Matthew",
                 }
             },
-            "$14qwtyeufet785:matrix.org": {
+            {
+                "event_id": "$14qwtyeufet785:matrix.org",
                 "sender": "@matthew:tp.mu"
                 type: "m.presence", // the global per-user presence as calculated serverside by aggregating the per-device presence data
                 content: {
