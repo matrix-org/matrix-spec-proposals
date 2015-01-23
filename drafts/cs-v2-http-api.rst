@@ -160,7 +160,7 @@ Returns ``200 OK``:
         "next_batch": "s72595_4483_1934", // the batch token we pass to /sync's since param
         
         // updates about our own user data
-        "private_user_data": {
+        "private_user_data": [
             {
                 "event_id": "$15zxhijvwguye:matrix.org",
                 "sender": "@matthew:tp.mu"
@@ -170,7 +170,7 @@ Returns ``200 OK``:
                     setting2: false,
                 }
             }
-        },
+        ],
                 
         // updates about publically published users' data
         "public_user_data": [
