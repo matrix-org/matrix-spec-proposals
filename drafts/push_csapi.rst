@@ -60,7 +60,9 @@ Override Rules
   The highest priority rules are user-configured overrides.
 Content Rules
   These configure behaviour for (unencrypted) messages that match certain
-  patterns.
+  patterns. Content rules take one parameter, 'pattern', that gives the pattern
+  to match against. This is treated in the same way as pattern for event_match
+  conditions, below.
 Room Rules
   These change the behaviour of all messages to a given room. The rule_id of a
   room rule is always the room that it affects.
@@ -99,6 +101,8 @@ the rules are mutually exclusive by definition and therefore an ordering would
 be redundant. Actions for the highest priority rule and only that rule apply
 (for example, a set_sound action in a lower priority rule will not apply if a
 higher priority rule matches, even if that rule does not specify a sound).
+
+Rules also have an identifier, rule_id, which is a string.
 
 Push Rules: Actions:
 --------------------
@@ -154,4 +158,9 @@ room_member_count
      strictly less than the given number and so forth. If no prefix is present,
      this matches rooms where the member count is exactly equal to the given
      number (ie. the same as '==').
+
+Room, Sender, User and Content rules do not have conditions in the same way,
+but instead have predefined conditions, the behaviour of which can be configured
+using parameters named as described above. In the cases of room and sender
+rules, the rule_id of the rule determines its behaviour.
 
