@@ -173,9 +173,8 @@ When adding rules of a type that has an ordering, the client can add parameters
 that define the priority of the rule:
 
 before
-  Use 'before' with a rule_id as its value to make the new rule the next-less
+  Use 'before' with a rule_id as its value to make the new rule the next-more
   important rule with respect to the given rule.
 after
-  This makes the new rule the next-most important rule relative to the given
+  This makes the new rule the next-less important rule relative to the given
   rule.
-
