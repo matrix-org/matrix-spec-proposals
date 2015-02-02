@@ -219,3 +219,101 @@ To add a custom sound for notifications messages containing the word 'beer' in a
 
   curl -X PUT -H "Content-Type: application/json" -d '{ "conditions": [{"kind": "event_match", "key": "content.body", "pattern": "beer" }, {"kind": "room_member_count", "is": "<=10"}], "actions" : ["notify", {"set_sound":"beeroclock.wav"}] }' "http://localhost:8008/_matrix/client/api/v1/pushrules/global/override/U2VlIHlvdSBpbiBUaGUgRHVrZQ?access_token=123456
 
+
+To delete rules, a client would just make a DELETE request to the same URL::
+
+  curl -X DELETE "http://localhost:8008/_matrix/client/api/v1/pushrules/global/room/%23spam%3Amatrix.org?access_token=123456"
+
+
+Retrieving the current ruleset can be done either by fetching individual rules
+using the scheme as specified above. This returns the rule in the same format as
+would be given in the PUT API with the addition of a rule_id::
+
+  curl "http://localhost:8008/_matrix/client/api/v1/pushrules/global/room/%23spam%3Amatrix.org?access_token=123456"
+
+Returns::
+
+  {
+    "actions": [
+        "dont_notify"
+    ],
+    "rule_id": "#spam:matrix.org"
+  }
+
+Clients can also fetch broader sets of rules by removing path components.
+Requesting the root level returns a structure as follows::
+
+  {
+      "device": {
+          "exampledevice": {
+              "content": [],
+              "default": [],
+              "override": [],
+              "room": [
+                  {
+                      "actions": [
+                          "dont_notify"
+                      ],
+                      "rule_id": "#spam:matrix.org"
+                  }
+              ],
+              "sender": [],
+              "underride": []
+          }
+      },
+      "global": {
+          "content": [],
+          "default": [
+              {
+                  "actions": [
+                      "notify",
+                      {
+                          "set_sound": "default"
+                      }
+                  ],
+                  "conditions": [
+                      {
+                          "key": "content.body",
+                          "kind": "event_match",
+                          "pattern": "*@test:steve*"
+                      }
+                  ]
+              },
+              {
+                  "actions": [
+                      "notify",
+                      {
+                          "set_sound": "default"
+                      }
+                  ],
+                  "conditions": [
+                      {
+                          "kind": "contains_display_name"
+                      }
+                  ]
+              },
+              {
+                  "actions": [
+                      "notify",
+                      {
+                          "set_sound": "default"
+                      }
+                  ],
+                  "conditions": [
+                      {
+                          "is": "2",
+                          "kind": "room_member_count"
+                      }
+                  ]
+              }
+          ],
+          "override": [],
+          "room": [],
+          "sender": [],
+          "underride": []
+      }
+  }
+
+Adding patch components to the request drills down into this structure to filter
+to only the requested set of rules.
+
