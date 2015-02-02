@@ -168,6 +168,17 @@ Rules live under a hierarchy in the REST API that resembles::
 
   $PREFIX/pushrules/<scope>/<kind>/<rule_id>
 
+The component parts are as follows:
+
+scope
+  Either 'global' or 'device/<instance_handle>' to specify global rules or
+  device rules for the given instance_handle.
+kind
+  The kind of rule, ie. 'override', 'underride', 'sender', 'room', 'content' or
+  'default'.
+rule_id
+  The identifier for the rule.
+
 To add or change a rule, a client performs a PUT request to the appropriate URL.
 When adding rules of a type that has an ordering, the client can add parameters
 that define the priority of the rule:
@@ -178,3 +189,33 @@ before
 after
   This makes the new rule the next-less important rule relative to the given
   rule.
+
+All requests to the push rules API also require an access_token as a query
+paraemter.
+
+The content of the PUT request is a JSON object with a list of actions under the
+'actions' key and either conditions (under the 'conditions' key) or the
+appropriate parameters for the rule (under the appropriate key name).
+
+Examples:
+
+To create a rule that suppresses notifications for the room '#spam:matrix.org'::
+
+  curl -X PUT -H "Content-Type: application/json" -d '{ "actions" : ["dont_notify"] }' "http://localhost:8008/_matrix/client/api/v1/pushrules/global/room/%23spam%3Amatrix.org?access_token=123456"
+
+To suppress notifications for the user '@spambot:matrix.org'::
+
+  curl -X PUT -H "Content-Type: application/json" -d '{ "actions" : ["dont_notify"] }' "http://localhost:8008/_matrix/client/api/v1/pushrules/sender/room/%40spambot%3Amatrix.org?access_token=123456"
+
+To always notify for messages that contain the work 'cake' and set a specific sound (with a rule_id of 'SSByZWFsbHkgbGlrZSBjYWtl')::
+
+  curl -X PUT -H "Content-Type: application/json" -d '{ "pattern": "cake", "actions" : ["notify", {"set_sound":"cakealarm.wav"}] }' "http://localhost:8008/_matrix/client/api/v1/pushrules/sender/content/SSByZWFsbHkgbGlrZSBjYWtl?access_token=123456"
+
+To add a rule suppressing notifications for messages starting with 'cake' but ending with 'lie', superseeding the previous rule::
+
+  curl -X PUT -H "Content-Type: application/json" -d '{ "pattern": "cake*lie", "actions" : ["notify"] }' "http://localhost:8008/_matrix/client/api/v1/pushrules/sender/content/U3BvbmdlIGNha2UgaXMgYmVzdA?access_token=123456&before=SSByZWFsbHkgbGlrZSBjYWtl"
+
+To add a custom sound for notifications messages containing the word 'beer' in any rooms with 10 members or fewer (with greater importance than the room, sender and content rules)::
+
+  curl -X PUT -H "Content-Type: application/json" -d '{ "conditions": [{"kind": "event_match", "key": "content.body", "pattern": "beer" }, {"kind": "room_member_count", "is": "<=10"}], "actions" : ["notify", {"set_sound":"beeroclock.wav"}] }' "http://localhost:8008/_matrix/client/api/v1/pushrules/global/override/U2VlIHlvdSBpbiBUaGUgRHVrZQ?access_token=123456
+
