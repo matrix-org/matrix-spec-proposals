@@ -7,8 +7,6 @@ To receive any notification pokes at all, it is necessary to configure a
 'pusher' on the Home Server that you wish to receive notifications from. There
 is a single API endpoint for this::
 
-Fetching a user account displayname::
-
 	POST $PREFIX/pushers/set
 
 This takes a JSON object with the following keys:
@@ -163,4 +161,21 @@ Room, Sender, User and Content rules do not have conditions in the same way,
 but instead have predefined conditions, the behaviour of which can be configured
 using parameters named as described above. In the cases of room and sender
 rules, the rule_id of the rule determines its behaviour.
+
+Push Rules: API
+---------------
+Rules live under a hierarchy in the REST API that resembles::
+
+  $PREFIX/pushrules/<scope>/<kind>/<rule_id>
+
+To add or change a rule, a client performs a PUT request to the appropriate URL.
+When adding rules of a type that has an ordering, the client can add parameters
+that define the priority of the rule:
+
+before
+  Use 'before' with a rule_id as its value to make the new rule the next-less
+  important rule with respect to the given rule.
+after
+  This makes the new rule the next-most important rule relative to the given
+  rule.
 
