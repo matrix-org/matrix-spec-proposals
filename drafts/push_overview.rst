@@ -24,7 +24,8 @@ Push Gateway
   A push gateway is a server that receives HTTP event notifications from Home
   Servers and passes them on to a different protocol such as APNS for iOS
   devices or GCM for Android devices. Matrix.org provides a reference push
-  gateway, 'sygnal'.
+  gateway, 'sygnal'. A client app tells a Home Server what push gateway
+  to send notifications to when it sets up a pusher.
 
 For information on the client-server API for setting pushers and push rules, see
 the Client Server API section. For more information on the format of HTTP
