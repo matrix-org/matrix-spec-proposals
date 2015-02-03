@@ -4,7 +4,11 @@ This describes the format used by "http" pushers to send notifications of
 events.
 
 Notifications are sent as HTTP POST requests to the URL configured when the
-pusher is created. The body of the POST request is a JSON dictionary. The format
+pusher is created, but Matrix strongly recommends that the path should be::
+
+  /_matrix/push/v1/notify
+
+The body of the POST request is a JSON dictionary. The format
 is as follows::
 
   {
