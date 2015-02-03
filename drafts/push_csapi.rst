@@ -97,8 +97,8 @@ For some kinds of rule, rules of the same kind also have an ordering with
 respect to one another. The kinds that do not are room and sender rules where
 the rules are mutually exclusive by definition and therefore an ordering would
 be redundant. Actions for the highest priority rule and only that rule apply
-(for example, a set_sound action in a lower priority rule will not apply if a
-higher priority rule matches, even if that rule does not specify a sound).
+(for example, a set_tweak action in a lower priority rule will not apply if a
+higher priority rule matches, even if that rule does not specify any tweaks).
 
 Rules also have an identifier, rule_id, which is a string.
 
@@ -118,14 +118,28 @@ coalesce
   specific behaviour to intelligently coalesce multiple events into a single 
   notification. Not all Home Servers may support this. Those that do not should
   treat it as the 'notify' action.
-set_sound
-  Sets the value 'sound' key that is sent in the notification poke. This has an
-  associated string which is the value to set the 'sound' key to.
+set_tweak
+  Sets an entry in the 'tweaks' dictionary key that is sent in the notification
+  poke. This takes the form of a dictionary with a 'set_tweak' key whose value
+  is the name of the tweak to set.  It must also have a 'value' key which is
+  the value to which it should be set.
 
-Actions that have no parameter are represented as a string. Those with a
-parameter are represented as a dictionary with a single key/value pair where the
-key is the name of the action and the value is the parameter, eg. { "set_sound":
-"ping.wav" }
+Actions that have no parameters are represented as a string. Otherwise, they are
+represented as a dictionary with a key equal to their name and other keys as
+their parameters, eg. { "set_tweak": "sound", "value": "default" }
+
+Push Rule Actions: Tweaks
+-------------------------
+The 'set_tweak' key action is used to add an entry to the 'tweaks' dictionary
+that is sent in the notification poke. The following tweaks are e defined:
+
+sound
+  A sound to be played when this notification arrives. 'default' means to
+  play a default sound.
+
+Tweaks are passed transparently through the Home Server so client applications
+and push gateways may agree on additional tweaks, for example, how to flash the
+notification light on a mobile device.
 
 Push Rules: Conditions:
 -----------------------
