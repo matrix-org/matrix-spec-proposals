@@ -31,17 +31,35 @@ XXX: how do we transition between non-coalesced pagination and coalesced paginat
 .. code:: javascript    
     
     {
-        // selectors: (bluntly selecting on the unencrypted fields)
-        types: [ "m.*", "net.arasphere.*" ],    // default: all
-        // N.B. types can be used to filter out presence and server-generated events (e.g. m.profile), but see *_user_data below
-        not_types: [ "m.presence" ],            // default: none
-        rooms: [ "!83wy7whi:matrix.org" ],      // default: all (may be aliases or IDs. wildcards supported)
-        not_rooms: [],
-        senders: [ "@matthew:matrix.org" ],  // default: all (e.g. for narrowing down presence, and stalker mode. wildcards supported)
-        not_senders: [],
+        room: {
+            state: {
+                // NB: These keys are referred to as a 'Definition' in the implementation.
+                // selectors: (bluntly selecting on the unencrypted fields)
+                types: [ "m.*", "net.arasphere.*" ],    // default: all
+                // N.B. types can be used to filter out presence and server-generated events (e.g. m.profile), but see *_user_data below
+                not_types: [ "m.presence" ],            // default: none
+                rooms: [ "!83wy7whi:matrix.org" ],      // default: all (may be aliases or IDs. wildcards supported)
+                not_rooms: [],
+                senders: [ "@matthew:matrix.org" ],  // default: all (e.g. for narrowing down presence, and stalker mode. wildcards supported)
+                not_senders: []
+            },
+            events: {
+                [... same as state ...]
+            },
+            ephemeral: {
+                [... same as state ...]
+            }
+        },
         
-        public_user_data: true,  // include events describing public user data (as we might not know their types) - default: true
-        private_user_data: true, // include events describing private user data (as we might not know their types) - default: true
+        public_user_data: { // include events describing public user data (as we might not know their types)
+            [... same as room.state ...]
+        },
+        private_user_data: { // include events describing private user data (as we might not know their types)
+            [... same as room.state ...]
+        },
+        server_data: { // include events describing server-generated events not linked to a room.
+            [... same as room.state ...]
+        },
         // XXX: How do these interact with specific type/non_type selectors prioritywise?
                 
         // parameters
