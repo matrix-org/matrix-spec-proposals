@@ -19,15 +19,13 @@ pushkey
 kind
   The kind of pusher to configure. 'http' makes a pusher that sends HTTP pokes.
   null deletes the pusher.
-instance_handle
-  This is an identifier for the device which owns the pusher. It may be up to 32
-  characters long. It must be unique among all the pushers for a given user
-  (therefore the device ID may not be used). It is advised that when an app's
-  data is copied or restored to a different device, this ID remain the same (ie.
-  be shared by multiple pushers for multiple devices). Client apps should be
-  aware that this situation can occur and be able to rectify it (eg. by
-  offerring to reset the instance_hanlde, optionally duplicating all push rules
-  to new instance handle).
+profile_tag
+  This is a string that determines what set of device rules will be matched when
+  evaluating push rules for this pusher. It is an arbitrary string. Multiple
+  devices maybe use the same profile_tag. It is advised that when an app's
+  data is copied or restored to a different device, this value remain the same.
+  Client apps should offer ways to change the profile_tag, optionally copying
+  rules from the old profile tag.
 app_id
   appId is a reverse-DNS style identifier for the application. It is recommended
   that this end with the platform, such that different platform versions get
@@ -77,7 +75,7 @@ Default
 
 In addition, each kind of rule except default may be either global or
 device-specific. Device specific rules only affect delivery of notifications via
-pushers with a matching instance_handle. All device-specific rules are higher
+pushers with a matching profile_tag. All device-specific rules are higher
 priority than all global rules. Thusly, the full list of rule kinds, in
 descending priority order, is as follows:
 
@@ -154,10 +152,10 @@ event_match
    * 'pattern': The glob-style pattern to match against. Patterns with no
                 special glob characters should be treated as having asterisks
                 prepended and appended when testing the condition.
-device
-  Matches the instance_handle of the device that the notification would be
+profile_tag
+  Matches the profile_tag of the device that the notification would be
   delivered to. Parameters:
-   * 'instance_handle': The instance_handle of the device.
+   * 'profile_tag': The profile_tag to match with.
 contains_display_name
   This matches unencrypted messages where content.body contains the owner's
   display name in that room. This is a separate rule because display names may
@@ -185,8 +183,8 @@ Rules live under a hierarchy in the REST API that resembles::
 The component parts are as follows:
 
 scope
-  Either 'global' or 'device/<instance_handle>' to specify global rules or
-  device rules for the given instance_handle.
+  Either 'global' or 'device/<profile_tag>' to specify global rules or
+  device rules for the given profile_tag.
 kind
   The kind of rule, ie. 'override', 'underride', 'sender', 'room', 'content' or
   'default'.
