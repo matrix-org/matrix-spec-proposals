@@ -101,8 +101,8 @@ devices.
 
 A home server may also have server default rules of each kind and in each scope.
 Server default rules are lower priority than user-defined rules in eacgh scope.
-Server defined rules do not have a rule_id. A rule has a rule_id if and only if
-it is a user-defined rule.
+Server defined rules do not have a rule_id except when it is necessary to derive
+the function of the rule (ie. in room and sender rules).
 
 Push Rules: Actions:
 --------------------
