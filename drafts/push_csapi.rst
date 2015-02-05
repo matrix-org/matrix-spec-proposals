@@ -69,15 +69,12 @@ Sender
 Underride
   These are identical to override rules, but have a lower priority than content,
   room and sender rules.
-Default
-  These are rules provided by the home server and cannot be changed by the user.
-  They are the lowest priority rule and establish baseline behaviour.
 
-In addition, each kind of rule except default may be either global or
-device-specific. Device specific rules only affect delivery of notifications via
-pushers with a matching profile_tag. All device-specific rules are higher
-priority than all global rules. Thusly, the full list of rule kinds, in
-descending priority order, is as follows:
+In addition, each kind of rule may be either global or device-specific. Device
+specific rules only affect delivery of notifications via pushers with a matching
+profile_tag. All device-specific rules are higher priority than all global
+rules. Thusly, the full list of rule kinds, in descending priority order, is as
+follows:
 
  * Device-specific Override
  * Device-specific Content
@@ -89,7 +86,6 @@ descending priority order, is as follows:
  * Global Room
  * Global Sender
  * Global Underride
- * Global Default
 
 For some kinds of rule, rules of the same kind also have an ordering with
 respect to one another. The kinds that do not are room and sender rules where
@@ -101,7 +97,12 @@ higher priority rule matches, even if that rule does not specify any tweaks).
 Rules also have an identifier, rule_id, which is a string. The rule_id may
 alphanumeric characters only. The rule_id is unique within the kind of rule and
 scope: rule_ids need not be unique between rules of the same kind on different
-devices.
+devices. 
+
+A home server may also have server default rules of each kind and in each scope.
+Server default rules are lower priority than user-defined rules in eacgh scope.
+Server defined rules do not have a rule_id. A rule has a rule_id if and only if
+it is a user-defined rule.
 
 Push Rules: Actions:
 --------------------
@@ -189,8 +190,7 @@ scope
   Either 'global' or 'device/<profile_tag>' to specify global rules or
   device rules for the given profile_tag.
 kind
-  The kind of rule, ie. 'override', 'underride', 'sender', 'room', 'content' or
-  'default'.
+  The kind of rule, ie. 'override', 'underride', 'sender', 'room', 'content'.
 rule_id
   The identifier for the rule.
 
@@ -262,7 +262,6 @@ Requesting the root level returns a structure as follows::
       "device": {
           "exampledevice": {
               "content": [],
-              "default": [],
               "override": [],
               "room": [
                   {
@@ -278,50 +277,6 @@ Requesting the root level returns a structure as follows::
       },
       "global": {
           "content": [],
-          "default": [
-              {
-                  "actions": [
-                      "notify",
-                      {
-                          "set_sound": "default"
-                      }
-                  ],
-                  "conditions": [
-                      {
-                          "key": "content.body",
-                          "kind": "event_match",
-                          "pattern": "*@test:steve*"
-                      }
-                  ]
-              },
-              {
-                  "actions": [
-                      "notify",
-                      {
-                          "set_sound": "default"
-                      }
-                  ],
-                  "conditions": [
-                      {
-                          "kind": "contains_display_name"
-                      }
-                  ]
-              },
-              {
-                  "actions": [
-                      "notify",
-                      {
-                          "set_sound": "default"
-                      }
-                  ],
-                  "conditions": [
-                      {
-                          "is": "2",
-                          "kind": "room_member_count"
-                      }
-                  ]
-              }
-          ],
           "override": [],
           "room": [],
           "sender": [],
