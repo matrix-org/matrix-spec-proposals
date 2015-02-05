@@ -94,10 +94,9 @@ be redundant. Actions for the highest priority rule and only that rule apply
 (for example, a set_tweak action in a lower priority rule will not apply if a
 higher priority rule matches, even if that rule does not specify any tweaks).
 
-Rules also have an identifier, rule_id, which is a string. The rule_id may
-alphanumeric characters only. The rule_id is unique within the kind of rule and
-scope: rule_ids need not be unique between rules of the same kind on different
-devices. 
+Rules also have an identifier, rule_id, which is a string.  The rule_id is
+unique within the kind of rule and scope: rule_ids need not be unique between
+rules of the same kind on different devices.
 
 A home server may also have server default rules of each kind and in each scope.
 Server default rules are lower priority than user-defined rules in eacgh scope.
