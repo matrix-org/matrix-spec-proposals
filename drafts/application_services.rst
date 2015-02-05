@@ -86,7 +86,13 @@ In the registration process, the AS provides:
   "subscribing to"
 * Namespaces are defined as a list of regexps against which to match room aliases,
   room IDs, and user IDs. Regexps give the flexibility to say, sub-domain MSISDN
-  ranges per AS, whereas a blunt prefix string does not.
+  ranges per AS, whereas a blunt prefix string does not. These namespaces are further
+  configured by setting whether they are ``exclusive`` or not. An exclusive namespace
+  prevents entities other than the aforementioned AS from creating/editing/deleting
+  entries within that namespace. This does not affect the visibility/readability of
+  entries within that namespace (e.g. it doesn't prevent users joining exclusive
+  aliases, or ASes from listening to exclusive aliases, but does prevent both users
+  and ASes from creating/editing/deleting aliases within that namespace).
 * There is overlap between selecting events via the csv2 Filter API and subscribing
   to events here - perhaps subscription involves passing a filter token into the
   registration API.
