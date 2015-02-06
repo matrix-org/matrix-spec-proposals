@@ -330,6 +330,11 @@ including the AS token on a ``/register`` request, along with a login type of
     type: "m.login.application_service",
     user: "<desired user localpart in AS namespace>"
   }
+  
+Application services which attempt to create users or aliases *outside* of
+their defined namespaces will receive an error code ``M_EXCLUSIVE``. Similarly,
+normal users who attempt to create users or alises *inside* an application
+service-defined namespace will receive the same ``M_EXCLUSIVE`` error code.
 
 ID conventions ``[Draft]``
 -------------------------
