@@ -111,6 +111,7 @@ Global initial sync API ``[Draft]``
       - The invite event
       - Other state info (e.g. room name, topic, join_rules to know if pubilc)
       - # members?
+
     so clients know more information about the room other than the user_id of the
     inviter, timestamp and the room ID.
 
@@ -637,7 +638,7 @@ A client may wish to send multiple actions in parallel. The send event APIs
 support sending multiple events in a batch.
  
 Inviting a user ``[ONGOING]``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. NOTE::
   - Clients need to know *why* they are being invited (e.g. a ``reason`` key,
     just like for kicks/bans). However, this opens up a spam vector where any
@@ -1028,8 +1029,8 @@ relate to other events are referred to as "Child Events". The event being
 related to is referred to as "Parent Events". Child events cannot stand alone as
 a separate entity; they require the parent event in order to make sense.
 
-Bundling
-++++++++
+Bundling updates
+++++++++++++++++
 Events that relate to another event should come down inside that event. That is,
 the top-level event should come down with all the child events at the same time.
 This is called a "bundle" and it is represented as an array of events inside the
@@ -1081,8 +1082,8 @@ not update the event itself*, and are *not required* in order to display the
 parent event. Crucially, the child events can be paginated, whereas ``updates`` 
 child events cannot be paginated.
 
-Bundling
-++++++++
+Bundling relations
+++++++++++++++++++
 Child events can be optionally bundled with the parent event, depending on your 
 display mechanism. The number of child events which can be bundled should be 
 limited to prevent events becoming too large. This limit should be set by the 

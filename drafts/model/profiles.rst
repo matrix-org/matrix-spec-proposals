@@ -198,12 +198,11 @@ Requests that a client can make to its Home Server
 
  * get another user's Display Name / Avatar / metadata fields
 
-[[TODO(paul): At some later stage we should consider the API for:
+TODO(paul): At some later stage we should consider the API for:
 
  * get/set ACL permissions on my metadata fields
 
  * manage my ACL tokens
-]]
 
 Server-Server
 -------------
