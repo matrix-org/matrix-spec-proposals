@@ -133,7 +133,7 @@ their parameters, eg. { "set_tweak": "sound", "value": "default" }
 Push Rule Actions: Tweaks
 -------------------------
 The 'set_tweak' key action is used to add an entry to the 'tweaks' dictionary
-that is sent in the notification poke. The following tweaks are e defined:
+that is sent in the notification poke. The following tweaks are defined:
 
 sound
   A sound to be played when this notification arrives. 'default' means to
