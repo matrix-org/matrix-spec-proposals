@@ -127,6 +127,6 @@ gateway). However, Matrix strongly recommends:
  * That the APNS token be base64 encoded and used as the pushkey.
  * That a different app_id be used for apps on the production and sandbox
    APS environments.
- * That PANS push gateways do not attempt to wait for errors from the APNS
+ * That APNS push gateways do not attempt to wait for errors from the APNS
    gateway before returning and instead to store failures and return
    'rejected' responses next time that pushkey is used.
