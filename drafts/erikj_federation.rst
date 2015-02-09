@@ -1,10 +1,222 @@
 Federation
 ==========
+.. sectnum::
+.. contents:: Table of Contents
+
+Authorization
+-------------
+
+When receiving new events from remote servers, or creating new events, a server 
+must know whether that event is allowed by the authorization rules. These rules
+depend solely on the state at that event. The types of state events that affect
+authorization are:
+
+- ``m.room.create``
+- ``m.room.member``
+- ``m.room.join_rules``
+- ``m.room.power_levels``
+
+Servers should not create new events that reference unauthorized events. 
+However, any event that does reference an unauthorized event is not itself
+automatically considered unauthorized. 
+
+Unauthorized events that appear in the event graph do *not* have any effect on 
+the state of the graph. 
+
+.. Note:: This is in contrast to redacted events which can still affect the 
+          state of the graph. For example, a redacted *"join"* event will still
+          result in the user being considered joined.
+          
+
+Rules
+~~~~~
+
+The following are the rules to determine if an event is authorized (this does
+include validation).
+
+**TODO**: What signatures do we expect?
+
+1. If type is ``m.room.create`` allow if and only if it has no prev events.
+#. If type is ``m.room.member``:
+  
+   a. If ``membership`` is ``join``:
+    
+      i. If the previous event is an ``m.room.create``, the depth is 1 and 
+         the ``state_key`` is the creator, then allow.
+      #. If the ``state_key`` does not match ``sender`` key, reject.
+      #. If the current state has ``membership`` set to ``join``.
+      #. If the ``sender`` is in the ``m.room.may_join`` list. [Not currently 
+         implemented]
+      #. If the ``join_rules`` is:
+      
+         - ``public``:  allow.
+         - ``invite``: allow if the current state has ``membership`` set to 
+           ``invite``
+         - ``knock``: **TODO**.
+         - ``private``: Reject.
+         
+      #. Reject
+
+   #. If ``membership`` is ``invite`` then allow if ``sender`` is in room, 
+      otherwise reject.
+   #. If ``membership`` is ``leave``:
+   
+      i. If ``sender`` matches ``state_key`` allow.
+      #. If ``sender``'s power level is greater than the the ``kick_level``
+         given in the current ``m.room.power_levels`` state (defaults to 50),
+         and the ``state_key``'s power level is less than or equal to the
+         ``sender``'s power level, then allow.
+      #. Reject.
+      
+   #. If ``membership`` is ``ban``:
+   
+      i. **TODO**.
+   
+   #. Reject.
+
+#. Reject the event if the event type's required power level is less that the
+   ``sender``'s power level.
+#. If the ``sender`` is not in the room, reject.
+#. If the type is ``m.room.power_levels``:
+
+   a. **TODO**.
+
+#. Allow.
+
+
+Definitions
+~~~~~~~~~~~
+
+Required Power Level
+  A given event type has an associated *required power level*. This is given
+  by the current ``m.room.power_levels`` event, it is either listed explicitly
+  in the ``events`` section or given by either ``state_default`` or 
+  ``events_default`` depending on if the event type is a state event or not.
+
+
+Auth events
+~~~~~~~~~~~
+
+The auth events of an event are the set of events used by the authorization 
+algorithm to accept the event. These should be a subset of the current state.
+
+A server is required to store the complete chain of auth events for all events
+it serves to remote servers.
+
+All auth events have type:
+
+ - ``m.room.create``
+ - ``m.room.power_levels``
+ - ``m.room.member``
+
+.. todo
+    We probably should probably give a lower band of how long auth events
+    should be kept around for.
+
+Auth chain
+~~~~~~~~~~
+
+The *auth chain* for an event is the recursive list of auth events and the auth
+chain for those auth events.
+
+.. Note:: The auth chain for an event gives all the information a server needs
+          to accept an event. However, being given an auth chain for an event
+          that appears valid does not mean that the event might not later be
+          rejected. For example if we discover that the sender had been banned
+          between the join event listed in the auth events and the event being
+          authed.
+
+**TODO**: Clean the above explanations up a bit.
+
+
+Auth chain resolution
+~~~~~~~~~~~~~~~~~~~~~
+
+If an auth check fails, or if we get told something we accepted should have
+been rejected, we need to try and determine who is right.
+
+If two servers disagree about the validity of the auth events, both should
+inform the other of what they think the current auth chain is. If either are
+missing auth events that they know are valid (through authorization and state
+resolution) they process the missing events as usual.
+
+If either side notice that the other has accepted an auth events we think
+should be rejected (for reasons *not* in their auth chain), that server should
+inform the other with suitable proof.
+
+The proofs can be:
+
+- An *event chain* that shows an auth event is *not* an ancestor of the event.
+  This can be done by giving the full ancestor chains up to the depth of the
+  invalid auth event.
+- Given an event (and event chain?) showing that authorization had been revoked.
+
+If a server discovers it cannot prove the other side is wrong, then it accepts
+that the other is correct; i.e. we always accept that the other side is correct
+unless we can prove otherwise.
+
+
+
+State Resolution
+----------------
+
+    **TODO**
+
+When two branches in the event graph merge, the state of those branches might
+differ, so a *state resolution* algorithm must be used to determine the current
+state of the resultant merge.
+
+The properties of the state resolution algorithm are:
+
+- Must only depend on the event graph, and not local server state.
+- When two state events are comparable, the descendant one should be picked.
+- Must not require the full event graph.
+
+The following algorithm satisfies these requirements; given two or more events,
+pick the one with the greatest:
+
+#. Depth.
+#. Hash of event_id.
+
+
+This works except in the case of auth events, where we need to mitigate against
+the attack where servers artificially netsplit to avoid bans or power level
+changes.
+
+We want the following rules to apply:
+
+#. If power levels have been changed on two different branches use the rules
+   above, ensuring that the one picked is a valid change from the one not picked.
+#. Similarly handle membership changes (e.g. bans, kicks, etc.)
+#. Any state merged must be allowed by the newly merged auth events. If none of
+   the candidate events for a given state are allowed, we pick the last event
+   given by the ordering above (i.e. we pick one with the least depth).
+
+
+
+State Conflict Resolution
+-------------------------
+
+If a server discovers that it disagrees with another about the current state,
+it can follow the same process outlined in *Auth chain resolution* to resolve
+these conflicts.
 
 Constructing a new event
 ------------------------
 
     **TODO**
+
+When constructing a new event, the server should insert the following fields:
+
+- ``prev_events``: The list of event ids of what the server believes are the
+  current leaf nodes of the event graph (i.e., nodes that have been received
+  but are yet to be referenced by another event).
+- ``depth``: An integer one greater than the maximum depth of the event's
+  previous events.
+- ``auth_events``: The list of event ids that authorizes this event. This
+  should be a subset of the current state.
+- ``origin_server_ts``: The time the server created the event.
+- ``origin``: The name of the server.
 
 
 Signing and Hashes
@@ -72,6 +284,22 @@ To invite a remote user to a room we need their home server to sign the invite
 event. This is done by sending the event to the remote server, which then signs
 the event, before distributing the invite to other servers.
 
+
+Handling incoming events
+------------------------
+
+When a server receives an event, it should:
+
+#. Check if it knows about the room. If it doesn't, then it should get the
+   current state and auth events to determine whether the server *should* be in
+   the room. If so continue, if not drop or reject the event
+#. If the server already knew about the room, check the prev events to see if
+   it is missing any events. If it is, request them. Servers should limit how
+   far back they will walk the event graph for missing events.
+#. If the server does not have all the prev events, then it should request the
+   current state and auth events from a server.
+
+
 Failures
 --------
 
@@ -114,152 +342,6 @@ A failure also includes several other fields:
     The event id of the event that was the source of this unexpected behaviour.
     For example, if an accepted event referenced a rejected event, this would
     point to the rejected one.
-
-
-Authorization
--------------
-
-When receiving new events from remote servers, or creating new events, a server 
-must know whether that event is allowed by the authorization rules. These rules
-depend solely on the state at that event. The types of state events that affect
-authorization are:
-
-- ``m.room.create``
-- ``m.room.member``
-- ``m.room.join_rules``
-- ``m.room.power_levels``
-
-Servers should not create new events that reference unauthorized events. 
-However, any event that does reference an unauthorized event is not itself
-automatically considered unauthorized. 
-
-Unauthorized events that appear in the event graph do *not* have any effect on 
-the state of the graph. 
-
-.. Note:: This is in contrast to redacted events which can still affect the 
-          state of the graph. For example, a redacted *"join"* event will still
-          result in the user being considered joined.
-          
-
-Rules
-~~~~~
-
-The following are the rules to determine if an event is authorized (this does
-include validation).
-
-**TODO**: What signatures do we expect?
-
-1. If type is ``m.room.create`` allow.
-#. If type is ``m.room.member``:
-  
-   a. If ``membership`` is ``join``:
-    
-      i. If the previous event is an ``m.room.create``, the depth is 1 and 
-         the ``state_key`` is the creator, then allow.
-      #. If the ``state_key`` does not match ``sender`` key, reject.
-      #. If the current state has ``membership`` set to ``join``.
-      #. If the ``sender`` is in the ``m.room.may_join`` list. [Not currently 
-         implemented]
-      #. If the ``join_rules`` is:
-      
-         - ``public``:  allow.
-         - ``invite``: allow if the current state has ``membership`` set to 
-           ``invite``
-         - ``knock``: **TODO**.
-         - ``private``: Reject.
-         
-      #. Reject
-
-   #. If ``membership`` is ``invite`` then allow if ``sender`` is in room, 
-      otherwise reject.
-   #. If ``membership`` is ``leave``:
-   
-      i. If ``sender`` matches ``state_key`` allow.
-      #. If ``sender``'s power level is greater than the the ``kick_level``
-         given in the current ``m.room.power_levels`` state (defaults to 50),
-         and the ``state_key``'s power level is less than or equal to the
-         ``sender``'s power level, then allow.
-      #. Reject.
-      
-   #. If ``membership`` is ``ban``:
-   
-      i. **TODO**.
-   
-   #. Reject.
-
-#. Reject the event if the event type's required power level is less that the
-   ``sender``'s power level.
-#. If the ``sender`` is not in the room, reject.
-#. If the type is ``m.room.power_levels``:
-
-   a. **TODO**.
-
-#. Allow.
-
-
-Definitions
-~~~~~~~~~~~
-
-Required Power Level
-  A given event type has an associated *required power level*. This is given
-  by the current ``m.room.power_levels`` event, it is either listed explicitly
-  in the ``events`` section or given by either ``state_default`` or 
-  ``events_default`` depending on if the event type is a state event or not.
-
-
-Auth events
-~~~~~~~~~~~
-
-The auth events of an event are the set of events used by the authorization 
-algorithm to accept the event. These should be a subset of the current state.
-
-A server is required to store the complete chain of auth events for all events
-it serves to remote servers.
-
-.. todo
-    We probably should probably give a lower band of how long auth events
-    should be kept around for.
-
-Auth chain
-~~~~~~~~~~
-
-The *auth chain* for an event is the recursive list of auth events and the auth
-chain for those auth events.
-
-The auth chain for event gives all the information a server needs to accept an
-event. However, being given an auth chain for an event that appears valid does
-not mean that the event might later be rejected. For example if we discover
-that the sender had been banned between the join event listed in the auth
-events and the event being authed.
-
-**TODO**: Clean the above explanations up a bit.
-
-
-Auth chain resolution
-~~~~~~~~~~~~~~~~~~~~~
-
-**TODO**: If an auth check fails, or if we get told something we accepted
-should have been rejected, we need to try and determine who is right.
-
-Both should inform the other of what they think the current auth chain is. If
-either are missing auth events that they know are valid (through authorization
-and state resolution) they process the missing events as usual.
-
-If either side notice that the other has accepted an auth events we think
-should be rejected (for reasons *not* in their auth chain), that server should
-inform the other with suitable proof.
-
-The proofs can be:
-
-- An *event chain* that shows an auth event is *not* an ancestor of the event.
-- Given an event (and event chain?) showing that authorization had been revoked.
-
-
-
-State Resolution
-----------------
-
-    **TODO**
 
 
 Appendix

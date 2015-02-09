@@ -134,7 +134,7 @@ federate with other HSes.  It is typically responsible for multiple clients.
 more home servers.
 
 Events
-++++++
+~~~~~~
 
 Data in Matrix is encapsulated in an "event". An event is an action within the
 system. Typically each action (e.g. sending a message) correlates with exactly
@@ -148,7 +148,7 @@ is the event type for instant messages. Events are usually sent in the context
 of a "Room".
 
 Event Graphs
-++++++++++++
+~~~~~~~~~~~~
 
 Each event has a list of zero or more `parent` events. These relations form
 directed acyclic graphs of events called `event graphs`. Every event graph has a single root event, and each event graph forms the 
@@ -247,7 +247,7 @@ participating in a room.
 
 
 Room Aliases
-~~~~~~~~~~~~
+++++++++++++
 
 Each room can also have multiple "Room Aliases", which looks like::
 
@@ -282,7 +282,7 @@ that are in the room that can be used to join via.
    |________________________________|
 
 Identity
-~~~~~~~~
+++++++++
 
 Users in Matrix are identified via their matrix user ID (MXID). However,
 existing 3rd party ID namespaces can also be used in order to identify Matrix
@@ -303,7 +303,7 @@ the Matrix ecosystem. However, without one clients will not be able to look up
 user IDs using 3PIDs.
 
 Presence
-~~~~~~~~
+++++++++
 
 Each user has the concept of presence information. This encodes the
 "availability" of that user, suitable for display on other user's clients. This
@@ -343,7 +343,7 @@ the other direction it will not). This timestamp is presented via a key called
 message is generated/emitted that the user was last seen active.
 
 Presence List
-+++++++++++++
+~~~~~~~~~~~~~
 
 Each user's home server stores a "presence list". This stores a list of user IDs
 whose presence the user wants to follow.
@@ -353,7 +353,7 @@ and accept the invitation. Once accepted, both user's HSes track the
 subscription.
 
 Presence and Permissions
-++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 For a viewing user to be allowed to see the presence information of a target
 user, either:
@@ -367,7 +367,7 @@ presence information in a user list for a room.
 
 
 Profiles
-~~~~~~~~
+++++++++
 
 .. TODO-spec
   - Metadata extensibility

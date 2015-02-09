@@ -330,6 +330,22 @@ outlined below:
   Example:
     ``{ "msgtype": "m.emote", "body": "tries to come up with a witty explanation" }``
 
+``m.notice``
+  Required keys:
+    - ``body`` : "string" - The body of the message.
+  Optional keys:
+    None.
+  Example:
+    ``{ "msgype": "m.notice", "body": "some kind of automated announcement" }``
+
+  A ``m.notice`` message should be considered similar to a plain ``m.text``
+  message except that clients should visually distinguish it in some way. It is
+  intended to be used by automated clients, such as bots, bridges, and other
+  entities, rather than humans. Additionally, such automated agents which watch
+  a room for messages and respond to them ought to ignore ``m.notice`` messages.
+  This helps to prevent infinite-loop situations where two automated clients
+  continuously exchange messages, as each responds to the other.
+
 ``m.image``
   Required keys:
     - ``url`` : "string" - The URL to the image.
@@ -428,7 +444,7 @@ outlined below:
         "mimetype" : "string (e.g. image/jpeg)",
       }
 
-.. TODO-spec::
+.. TODO-spec
     Make the definitions "inherit" from FileInfo where necessary...
 
 
