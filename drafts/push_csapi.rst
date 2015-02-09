@@ -159,6 +159,7 @@ event_match
 profile_tag
   Matches the profile_tag of the device that the notification would be
   delivered to. Parameters:
+
    * 'profile_tag': The profile_tag to match with.
 contains_display_name
   This matches unencrypted messages where content.body contains the owner's
