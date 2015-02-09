@@ -3,7 +3,9 @@ Host: ...
 Content-Length: ...
 Content-Type: application/json
 
-{
+.. code :: javascript
+
+  {
     "origin": "localhost:5000",
     "pdus": [
         {
@@ -27,7 +29,7 @@ Content-Type: application/json
         "1404381396852"
     ],
     "ts": 1404381427823
-}
+  }
 
 HTTP/1.1 200 OK
 ...
@@ -42,7 +44,9 @@ HTTP/1.1 200 OK
 Content-Length: ...
 Content-Type: application/json
 
-{
+.. code :: javascript
+
+  {
     origin: ...,
     prev_ids: ...,
     data: [
@@ -59,6 +63,6 @@ Content-Type: application/json
         },
         ...,
     ]
-}
+  }
 
 

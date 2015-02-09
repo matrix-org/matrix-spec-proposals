@@ -38,7 +38,7 @@ using this representation.
      ).encode("UTF-8")
 
 Grammar
-+++++++
+~~~~~~~
 
 Adapted from the grammar in http://tools.ietf.org/html/rfc7159 removing
 insignificant whitespace, fractions, exponents and redundant character escapes
@@ -76,7 +76,7 @@ the signature for that sequence and then adding the signature to the original
 JSON object.
 
 Signing Details
-+++++++++++++++
+~~~~~~~~~~~~~~~
 
 JSON is signed by encoding the JSON object without ``signatures`` or keys grouped
 as ``unsigned``, using the canonical encoding described above. The JSON bytes are then signed using the
@@ -133,7 +133,7 @@ and additional signatures.
       return json_object
 
 Checking for a Signature
-++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 To check if an entity has signed a JSON object a server does the following
 
