@@ -337,7 +337,7 @@ normal users who attempt to create users or alises *inside* an application
 service-defined namespace will receive the same ``M_EXCLUSIVE`` error code.
 
 ID conventions ``[Draft]``
--------------------------
+--------------------------
 .. NOTE::
   - Giving HSes the freedom to namespace still feels like the Right Thing here.
   - Exposing a public API provides the consistency which was the main complaint
@@ -418,6 +418,7 @@ Pre-conditions:
   - Home server has the domain "hsdomain.com"
 
 1. Application service registration
+
 ::
   
   AS -> HS: Registers itself with the home server
@@ -444,12 +445,14 @@ Pre-conditions:
   }
 
 2. IRC user "Bob" says "hello?" on "#matrix" at timestamp 1421416883133:
+
 ::  
 
   - AS stores message as potential scrollback.
   - Nothing happens as no Matrix users are in the room.
  
 3. Matrix user "@alice:hsdomain.com" wants to join "#matrix":
+
 ::
 
   User -> HS: Request to join "#irc.freenode.net/#matrix:hsdomain.com"
@@ -484,6 +487,7 @@ Pre-conditions:
   - HS sends room information back to client.
   
 4. @alice:hsdomain.com says "hi!" in this room:
+
 ::
 
   User -> HS: Send message "hi!" in room !aasaasasa:hsdomain.com
@@ -512,6 +516,7 @@ Pre-conditions:
   
  
 5. IRC user "Bob" says "what's up?" on "#matrix" at timestamp 1421418084816:
+
 ::
 
   IRC -> AS: "what's up?"
