@@ -125,13 +125,14 @@ m.invite_level
 m.join_rules
   Encodes the rules on how non-members can join the room. Has the following
   possibilities:
-    "public" - a non-member can join the room directly
-    "knock" - a non-member cannot join the room, but can post a single "knock"
-        message requesting access, which existing members may approve or deny
-    "invite" - non-members cannot join the room without an invite from an
-        existing member
-    "private" - nobody who is not in the 'may_join' list or already a member
-        may join by any mechanism
+
+    - "public" - a non-member can join the room directly
+    - "knock" - a non-member cannot join the room, but can post a single "knock"
+      message requesting access, which existing members may approve or deny
+    - "invite" - non-members cannot join the room without an invite from an
+      existing member
+    - "private" - nobody who is not in the 'may_join' list or already a member
+      may join by any mechanism
 
   In any of the first three modes, existing members with sufficient permission
   can send invites to non-members if allowed by the "m.invite_level" key. A
@@ -263,10 +264,11 @@ resolve this:
    that duplicate requests can be suppressed. On receipt of a room creation
    request that the HS thinks there already exists a room for, the invitation to
    join can be rejected if:
-      a) the HS believes the sending user is already a member of the room (and
-         maybe their HS has forgotten this fact), or
-      b) the proposed room has a lexicographically-higher ID than the existing
-         room (to resolve true race condition conflicts)
+
+      - a) the HS believes the sending user is already a member of the room (and
+        maybe their HS has forgotten this fact), or
+      - b) the proposed room has a lexicographically-higher ID than the existing
+        room (to resolve true race condition conflicts)
       
  * The room ID for a private 1:1 chat has a special form, determined by
    concatenting the User IDs of both members in a deterministic order, such that
