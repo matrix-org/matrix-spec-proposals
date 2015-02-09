@@ -7,7 +7,7 @@ Client APIs
 To set "I am typing for the next N msec"::
   PUT .../rooms/:room_id/typing/:user_id
   Content:  { "typing": true, "timeout": N }
-    # timeout is in msec; I suggest no more than 20 or 30 seconds
+  # timeout is in msec; I suggest no more than 20 or 30 seconds
 
 This should be re-sent by the client to continue informing the server the user
 is still typing; I suggest a safety margin of 5 seconds before the expected

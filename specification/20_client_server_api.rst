@@ -358,6 +358,9 @@ events which are visible to the client will appear in the event stream. When
 the request returns, an ``end`` token is included in the response. This token
 can be used in the next request to continue where the client left off.
 
+All events must be deduplicated based on their event ID (TODO: is this actually a
+hard requirement in CS v2?)
+
 .. TODO-spec
   How do we filter the event stream?
   Do we ever return multiple events in a single request?  Don't we get lots of request
