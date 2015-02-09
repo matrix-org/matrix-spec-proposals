@@ -27,6 +27,7 @@ all state events eventually.
 Algorithm requirements
 ----------------------
 We want the algorithm to have the following properties:
+
 - Since we aren't guaranteed what order we receive state events in, except that
   we see parents before children, the state resolution algorithm must not depend
   on the order and must always come to the same result. 

@@ -268,6 +268,7 @@ Chat Screen
  What's visible:
   - Enough scrollback to fill a "screen full" of content.
   - Threads:
+
     - Initially will only display the timestamp and user ID of the *first*
       message. But can expand to show the entire tree.
     - Tree of messages indicating which message is a reply to which.
@@ -280,6 +281,7 @@ Chat Screen
   - Desktop/Push Notifications for messages
  What you can do:
   - Send a message in reply to another message:
+
     - Immediate local echo, may cause messages to re-order
     - Messages that haven't reached the server are queued.
     - Thread is displayed where it should be in the thread order once the
@@ -296,13 +298,14 @@ Chat Screen
     The columns start and end as threads split and rejoin the main conversation
     The messages for each thread are ordered by how recent they are::
 
-    Room #1        Room # 2           Room # 2
-    +------------+ +----------------+ Side thread.
-    | * Message1 | | * Root         | +--------------+
-    | * Message2 | | * A1 -> Root   | | * B1 -> Root |
-    +------------+ | * A2 -> A1     | | * B2 -> B1   |
-                   | * M -> A2, B2  | +--------------+
-                   +----------------+
+      Room #1        Room # 2           Room # 2
+      +------------+ +----------------+ Side thread.
+      | * Message1 | | * Root         | +--------------+
+      | * Message2 | | * A1 -> Root   | | * B1 -> Root |
+      +------------+ | * A2 -> A1     | | * B2 -> B1   |
+                     | * M -> A2, B2  | +--------------+
+                     +----------------+
+
   - Typing notifications. Displayed within the correct thread/column.
 
  What you can do:
