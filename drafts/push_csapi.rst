@@ -99,7 +99,7 @@ unique within the kind of rule and scope: rule_ids need not be unique between
 rules of the same kind on different devices.
 
 A home server may also have server default rules of each kind and in each scope.
-Server default rules are lower priority than user-defined rules in eacgh scope.
+Server default rules are lower priority than user-defined rules in each scope.
 Server defined rules do not have a rule_id except when it is necessary to derive
 the function of the rule (ie. in room and sender rules). Server default rules
 have an attribute, "default" set to true.
