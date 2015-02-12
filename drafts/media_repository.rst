@@ -52,7 +52,8 @@ within a given rectangle.
 Homeservers may generate thumbnails for content uploaded to remote
 homeservers themselves or may rely on the remote homeserver to thumbnail
 the content. Homeservers may return thumbnails of a different size to that
-requested. However homeservers should provide extact matches where reasonable.
+requested. However homeservers should provide exact matches where reasonable.
+Homeservers must never upscale images.
 
 Security
 --------
