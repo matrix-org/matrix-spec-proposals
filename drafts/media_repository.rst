@@ -73,4 +73,4 @@ Clients may try to access a large number of remote files through a homeserver.
 Homeservers should restrict the number and size of remote files that it caches.
 
 Clients or remote homeservers may try to upload malicious files targeting
-vunerabilities in either the homeserver thumbnailing or the client decoders.
+vulnerabilities in either the homeserver thumbnailing or the client decoders.
