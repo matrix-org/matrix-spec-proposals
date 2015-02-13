@@ -147,8 +147,9 @@ Push Rules: Conditions:
 -----------------------
 Override, Underride and Default rules have a list of 'conditions'. All
 conditions must hold true for an event in order for a rule to be applied to an
-event. Matrix specifies the following conditions, although if Home Servers wish
-to support others, they are free to do so:
+event. A rule with no conditions always matches. Matrix specifies the following
+conditions, although if Home Servers wish to support others, they are free to
+do so:
 
 event_match
   This is a glob pattern match on a field of the event. Parameters:
