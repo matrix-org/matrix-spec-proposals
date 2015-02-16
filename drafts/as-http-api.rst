@@ -27,11 +27,22 @@ Side effects:
 API called when:
  - The application service wants to register with a brand new home server.
 Notes:
+ - An application service can state whether they should be the only ones who 
+   can manage a specified namespace. This is referred to as an "exclusive" 
+   namespace. An exclusive namespace prevents humans and other application 
+   services from creating/deleting entities in that namespace. Typically,
+   exclusive namespaces are used when the rooms represent real rooms on
+   another service (e.g. IRC). Non-exclusive namespaces are used when the
+   application service is merely augmenting the room itself (e.g. providing
+   logging or searching facilities).
  - Namespaces are represented by POSIX extended regular expressions in JSON. 
    They look like::
 
      users: [
-       "@irc\.freenode\.net/.*", 
+       {
+         "exclusive": true,
+         "regex": "@irc\.freenode\.net/.*"
+       }
      ]
 
 ::
@@ -44,13 +55,22 @@ Notes:
    as_token: "some_AS_token",
    namespaces: {
      users: [
-       "@irc\.freenode\.net/.*"
+       {
+         "exclusive": true,
+         "regex": "@irc\.freenode\.net/.*"
+       }
      ],
      aliases: [
-       "#irc\.freenode\.net/.*"
+       {
+         "exclusive": true,
+         "regex": "#irc\.freenode\.net/.*"
+       }
      ],
      rooms: [
-       "!irc\.freenode\.net/.*"
+       {
+         "exclusive": true,
+         "regex": "!irc\.freenode\.net/.*"
+       }
      ]
    }
  }
@@ -428,13 +448,16 @@ Pre-conditions:
    as_token: "T_a",
    namespaces: {
      users: [
-       "@irc\.freenode\.net/.*"
+       {
+         "exclusive": true,
+         "regex": "@irc\.freenode\.net/.*"
+       }
      ],
      aliases: [
-       "#irc\.freenode\.net/.*"
-     ],
-     rooms: [
-       "!irc\.freenode\.net/.*"
+       {
+         "exclusive": true,
+         "regex": "#irc\.freenode\.net/.*"
+       }
      ]
    }
   }
