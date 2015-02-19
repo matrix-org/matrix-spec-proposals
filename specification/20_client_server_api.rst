@@ -1,5 +1,7 @@
-Client-Server API
-=================
+Client-Server API v1
+====================
+
+This outlines version 1 of the client-server API.
 
 Registration and Login
 ----------------------
