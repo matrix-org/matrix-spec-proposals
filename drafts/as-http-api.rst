@@ -1,3 +1,10 @@
+.. TODO
+  Sometimes application services need to create rooms (e.g. when lazy loading 
+  from room aliases). Created rooms need to have a user that created them, so 
+  federation works (as it relies on an entry existing in m.room.member). We 
+  should be able to add metadata to m.room.member to state that this user is an 
+  application service, a virtual user, etc.
+
 Application Services HTTP API
 =============================
 
