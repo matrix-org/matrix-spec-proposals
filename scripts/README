@@ -7,4 +7,4 @@ To generate the complete specification along with supporting documentation, run:
 The output of this will be inside the "gen" folder.
 
 Matrix.org only ("gen" folder has matrix.org tweaked pages):
-    ./matrix-org-gendoc.sh /includes/nav.html
+    ./matrix-org-gendoc.sh /path/to/matrix.org/includes/nav.html
