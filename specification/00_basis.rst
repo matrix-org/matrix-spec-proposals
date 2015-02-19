@@ -1,5 +1,6 @@
 Matrix Specification
 ====================
+$GIT_VERSION
 
 Table of Contents
 =================
@@ -85,7 +86,7 @@ Version
 =======
 
 The Matrix spec is currently rapidly evolving, and there have been no versioned
-releases as yet.  Versions should be identified by git revision, or failing that
+releases as yet. Versions should be identified by git revision, or failing that
 timestamp.
 
 Overview
