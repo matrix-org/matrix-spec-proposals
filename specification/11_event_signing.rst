@@ -1,8 +1,8 @@
 Signing Events
-==============
+--------------
 
 Canonical JSON
---------------
+~~~~~~~~~~~~~~
 
 Matrix events are represented using JSON objects. If we want to sign JSON
 events we need to encode the JSON as a binary string. Unfortunately the same
@@ -38,7 +38,7 @@ using this representation.
      ).encode("UTF-8")
 
 Grammar
-~~~~~~~
++++++++
 
 Adapted from the grammar in http://tools.ietf.org/html/rfc7159 removing
 insignificant whitespace, fractions, exponents and redundant character escapes
@@ -69,14 +69,14 @@ insignificant whitespace, fractions, exponents and redundant character escapes
            / %x75.30.30.31 (%x30-39 / %x61-66)        ; u001X
 
 Signing JSON
-------------
+~~~~~~~~~~~~
 
 We can now sign a JSON object by encoding it as a sequence of bytes, computing
 the signature for that sequence and then adding the signature to the original
 JSON object.
 
 Signing Details
-~~~~~~~~~~~~~~~
++++++++++++++++
 
 JSON is signed by encoding the JSON object without ``signatures`` or keys grouped
 as ``unsigned``, using the canonical encoding described above. The JSON bytes are then signed using the
@@ -133,7 +133,7 @@ and additional signatures.
       return json_object
 
 Checking for a Signature
-~~~~~~~~~~~~~~~~~~~~~~~~
+++++++++++++++++++++++++
 
 To check if an entity has signed a JSON object a server does the following
 
@@ -151,7 +151,7 @@ To check if an entity has signed a JSON object a server does the following
    the check fails. Otherwise the check succeeds.
 
 Signing Events
---------------
+~~~~~~~~~~~~~~
 
 Signing events is a more complicated process since servers can choose to redact
 non-essential parts of an event. Before signing the event it is encoded as
@@ -229,8 +229,8 @@ too many hashes to be listed, otherwise a server might embed illict data within
 the ``hash`` object. For similar reasons a server shouldn't allow hash values
 that are too long.
 
-[[TODO(markjh): We might want to specify a maximum number of keys for the
-``hash`` and we might want to specify the maximum output size of a hash]]
-
-[[TODO(markjh) We might want to allow the server to omit the output of well
-known hash functions like SHA-256 when none of the keys have been redacted]]
+.. TODO
+  [[TODO(markjh): We might want to specify a maximum number of keys for the
+  ``hash`` and we might want to specify the maximum output size of a hash]]
+  [[TODO(markjh) We might want to allow the server to omit the output of well
+  known hash functions like SHA-256 when none of the keys have been redacted]]
