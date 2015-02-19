@@ -1,43 +1,45 @@
-===================
 Documentation Style
 ===================
 
 A brief single sentence to describe what this file contains; in this case a
 description of the style to write documentation in.
 
+Format
+------
+
+We use restructured text throughout all the documentation. You should NOT use
+markdown (github-flavored or otherwise). This format was chosen partly because
+Sphinx only supports RST.
+
 
 Sections
-========
+--------
 
-Each section should be separated from the others by two blank lines. Headings
-should be underlined using a row of equals signs (===). Paragraphs should be
-separated by a single blank line, and wrap to no further than 80 columns.
+RST support lots of different punctuation characters for underlines on sections.
+Content in the specification MUST use the same characters in order for the
+complete specification to be merged correctly. These characters are:
 
-[[TODO(username): if you want to leave some unanswered questions, notes for
-further consideration, or other kinds of comment, use a TODO section. Make sure
-to notate it with your name so we know who to ask about it!]]
+- ``=`` : Top-level sections
+- ``-`` : Second-level sections
+- ``~`` : Third-level sections
+- ``+`` : Fourth-level sections
+- You should rethink your document layout if you require a fifth level.
 
-Subsections
+TODOs
+-----
+
+Any RST file in this repository may make it onto ``matrix.org``. We do not want
+``TODO`` markers visible there. For internal comments, notes, TODOs, use standard
+RST comments like so::
+
+  .. TODO-Bob
+    There is something to do here. This will not be rendered by something like
+    rst2html.py so it is safe to put internal comments here.
+
+You SHOULD put your username with the TODO so we know who to ask about it.
+
+Line widths
 -----------
 
-If required, subsections can use a row of dashes to underline their header. A
-single blank line between subsections of a single section.
-
-
-Bullet Lists
-============
-
- * Bullet lists can use asterisks with a single space either side.
- 
- * Another blank line between list elements.
-
-
-Definition Lists
-================
-
-Terms:
-  Start in the first column, ending with a colon
-
-Definitions:
-  Take a two space indent, following immediately from the term without a blank
-  line before it, but having a blank line afterwards.
+We use 80 characters for line widths. This is a guideline and can be flouted IF
+AND ONLY IF it makes reading more legible. Use common sense.
