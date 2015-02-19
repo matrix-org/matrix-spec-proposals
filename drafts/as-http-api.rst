@@ -5,10 +5,12 @@
   should be able to add metadata to m.room.member to state that this user is an 
   application service, a virtual user, etc.
 
+
 Application Services HTTP API
 =============================
 
 .. contents:: Table of Contents
+
 .. sectnum::
 
 Application Service -> Home Server
