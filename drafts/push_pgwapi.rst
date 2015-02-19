@@ -14,6 +14,7 @@ is as follows::
   {
     "notification": {
       "id": "$3957tyerfgewrf384",
+      "room_id": "!slw48wfj34rtnrf:example.com",
       "type": "m.room.message",
       "sender": "@exampleuser:matrix.org",
       "sender_display_name": "Major Tom",
@@ -50,6 +51,8 @@ id
   An identifier for this notification that may be used to detect duplicate
   notification requests. This is not necessarily the ID of the event that
   triggered the notification.
+room_id
+  The ID of the room in which this event occurred.
 type
   The type of the event as in the event's 'type' field.
 sender
