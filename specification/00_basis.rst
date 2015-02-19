@@ -1,6 +1,8 @@
 Matrix Specification
 ====================
-$GIT_VERSION
+
+.. NOTE::
+  The git version of this document is ``$GIT_VERSION``
 
 Table of Contents
 =================
