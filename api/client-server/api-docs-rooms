@@ -714,7 +714,7 @@
             },
             {
               "name": "body",
-              "description": "The typing information",
+              "description": "The typing information.",
               "required": true,
               "type": "Typing",
               "paramType": "body"
