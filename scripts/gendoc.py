@@ -108,7 +108,7 @@ def main():
     glob_spec("tmp/full_spec.rst")
     set_git_version("tmp/full_spec.rst")
     rst2html("tmp/full_spec.rst", "gen/specification.html")
-    rst2html("../howtos/client-server.rst", "gen/howtos.html")
+    rst2html("../supporting-docs/howtos/client-server.rst", "gen/howtos.html")
     cleanup_env()
 
 if __name__ == '__main__':

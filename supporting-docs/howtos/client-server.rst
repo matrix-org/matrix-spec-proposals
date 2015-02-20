@@ -22,9 +22,10 @@ Accounts
 Before you can send and receive messages, you must **register** for an account. 
 If you already have an account, you must **login** into it.
 
-`Try out the fiddle`__
+.. NOTE::
+  `Try out the fiddle`__
 
-.. __: http://jsfiddle.net/gh/get/jquery/1.8.3/matrix-org/matrix-doc/tree/master/jsfiddles/register_login
+  .. __: http://jsfiddle.net/gh/get/jquery/1.8.3/matrix-org/matrix-doc/tree/master/supporting-docs/howtos/jsfiddles/register_login
 
 Registration
 ------------
@@ -86,9 +87,10 @@ Communicating
 In order to communicate with another user, you must **create a room** with that 
 user and **send a message** to that room. 
 
-`Try out the fiddle`__
+.. NOTE::
+  `Try out the fiddle`__
 
-.. __: http://jsfiddle.net/gh/get/jquery/1.8.3/matrix-org/matrix-doc/tree/master/jsfiddles/create_room_send_msg
+  .. __: http://jsfiddle.net/gh/get/jquery/1.8.3/matrix-org/matrix-doc/tree/master/supporting-docs/howtos/jsfiddles/create_room_send_msg
 
 Creating a room
 ---------------
@@ -136,9 +138,10 @@ these rules may specify if you require an **invitation** from someone already in
 the room in order to **join the room**. In addition, you may also be able to 
 join a room **via a room alias** if one was set up.
 
-`Try out the fiddle`__
+.. NOTE::
+  `Try out the fiddle`__
 
-.. __: http://jsfiddle.net/gh/get/jquery/1.8.3/matrix-org/matrix-doc/tree/master/jsfiddles/room_memberships
+  .. __: http://jsfiddle.net/gh/get/jquery/1.8.3/matrix-org/matrix-doc/tree/master/supporting-docs/howtos/jsfiddles/room_memberships
 
 Inviting a user to a room
 -------------------------
@@ -182,9 +185,10 @@ An event is some interesting piece of data that a client may be interested in.
 It can be a message in a room, a room invite, etc. There are many different ways
 of getting events, depending on what the client already knows.
 
-`Try out the fiddle`__
+.. NOTE::
+  `Try out the fiddle`__
 
-.. __: http://jsfiddle.net/gh/get/jquery/1.8.3/matrix-org/matrix-doc/tree/master/jsfiddles/event_stream
+  .. __: http://jsfiddle.net/gh/get/jquery/1.8.3/matrix-org/matrix-doc/tree/master/supporting-docs/howtos/jsfiddles/event_stream
 
 Getting all state
 -----------------
@@ -632,6 +636,7 @@ creating and joining rooms, sending messages, getting member lists and getting
 historical messages for a room. This covers most functionality of a messaging
 application.
 
-`Try out the fiddle`__
+.. NOTE::
+  `Try out the fiddle`__
 
-.. __: http://jsfiddle.net/gh/get/jquery/1.8.3/matrix-org/matrix-doc/tree/master/jsfiddles/example_app
+  .. __: http://jsfiddle.net/gh/get/jquery/1.8.3/matrix-org/matrix-doc/tree/master/supporting-docs/howtos/jsfiddles/example_app
