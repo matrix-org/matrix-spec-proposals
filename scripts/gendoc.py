@@ -62,7 +62,7 @@ def get_git_ver_string():
     return "Unknown rev"
 
 
-def glob_spec(out_file_name):
+def glob_spec_to(out_file_name):
     with open(out_file_name, "wb") as outfile:
         for f in sorted(glob.glob("../specification/*.rst")):
             with open(f, "rb") as infile:
@@ -105,10 +105,12 @@ def cleanup_env():
 
 def main():
     prepare_env()
-    glob_spec("tmp/full_spec.rst")
+    glob_spec_to("tmp/full_spec.rst")
+    shutil.copy("../supporting-docs/howtos/client-server.rst", "tmp/howto.rst")
     set_git_version("tmp/full_spec.rst")
+    set_git_version("tmp/howto.rst")
     rst2html("tmp/full_spec.rst", "gen/specification.html")
-    rst2html("../supporting-docs/howtos/client-server.rst", "gen/howtos.html")
+    rst2html("tmp/howto.rst", "gen/howtos.html")
     cleanup_env()
 
 if __name__ == '__main__':

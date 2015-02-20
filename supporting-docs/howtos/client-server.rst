@@ -4,9 +4,11 @@
   would be better if /register used the same technique as /login? /register should
   be "user" not "user_id".
 
-
 How to use the client-server API
 ================================
+
+.. NOTE::
+  The git version of this document is ``$GIT_VERSION``
 
 This guide focuses on how the client-server APIs *provided by the reference 
 home server* can be used. Since this is specific to a home server 
