@@ -104,6 +104,8 @@ Server defined rules do not have a rule_id except when it is necessary to derive
 the function of the rule (ie. in room and sender rules). Server default rules
 have an attribute, "default" set to true.
 
+In addition, all rules may be enabled or disabled. Disabled rules never match.
+
 Push Rules: Actions:
 --------------------
 All rules have an associated list of 'actions'. An action affects if and how a
@@ -254,7 +256,8 @@ Returns::
     "actions": [
         "dont_notify"
     ],
-    "rule_id": "#spam:matrix.org"
+    "rule_id": "#spam:matrix.org",
+    "enabled": true
   }
 
 Clients can also fetch broader sets of rules by removing path components.
@@ -270,7 +273,8 @@ Requesting the root level returns a structure as follows::
                       "actions": [
                           "dont_notify"
                       ],
-                      "rule_id": "#spam:matrix.org"
+                      "rule_id": "#spam:matrix.org",
+                      "enabled", true
                   }
               ],
               "sender": [],
@@ -289,3 +293,9 @@ Requesting the root level returns a structure as follows::
 Adding patch components to the request drills down into this structure to filter
 to only the requested set of rules.
 
+Enabling and Disabling Rules
+----------------------------
+Rules can be enabled or disabled with a PUT operation to the 'enabled' component
+beneath the rule's URI with a content of 'true' or 'false'::
+
+  curl -X PUT -H "Content-Type: application/json" -d 'false' "http://localhost:8008/_matrix/client/api/v1/pushrules/global/sender/%40spambot%3Amatrix.org/enabled?access_token=123456"
