@@ -94,15 +94,14 @@ be redundant. Actions for the highest priority rule and only that rule apply
 (for example, a set_tweak action in a lower priority rule will not apply if a
 higher priority rule matches, even if that rule does not specify any tweaks).
 
-Rules also have an identifier, rule_id, which is a string.  The rule_id is
+Rules also have an identifier, rule_id, which is a string. The rule_id is
 unique within the kind of rule and scope: rule_ids need not be unique between
 rules of the same kind on different devices.
 
 A home server may also have server default rules of each kind and in each scope.
 Server default rules are lower priority than user-defined rules in each scope.
-Server defined rules do not have a rule_id except when it is necessary to derive
-the function of the rule (ie. in room and sender rules). Server default rules
-have an attribute, "default" set to true.
+Server default rules (and only server default rules) begin with a dot ('.')
+character.
 
 In addition, all rules may be enabled or disabled. Disabled rules never match.
 
