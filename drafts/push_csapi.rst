@@ -119,6 +119,7 @@ with these IDs, their semantics should match those given below:
   of the user's Matrix ID, separated by word boundaries.
 
   Definition (as a content rule)::
+
     {
         "rule_id": ".m.rule.contains_user_name"
         "pattern": "[the lcoal part of the user's Matrix ID]",
@@ -136,6 +137,7 @@ with these IDs, their semantics should match those given below:
   current display name in the room in which it was sent.
 
   Definition (this rule can only be an override or underride rule)::
+
     {
         "rule_id": ".m.rule.contains_display_name"
         "conditions": [
@@ -156,6 +158,7 @@ with these IDs, their semantics should match those given below:
   Matches any message sent in a room with exactly two members.
 
   Definition (this rule can only be an override or underride rule)::
+
     {
         "rule_id": ".m.rule.room_two_members"
         "conditions": [
@@ -179,6 +182,7 @@ with these IDs, their semantics should match those given below:
   priority underride rule.
 
   Definition::
+
     {
         "rule_id": ".m.rule.fallback"
         "conditions": [],
