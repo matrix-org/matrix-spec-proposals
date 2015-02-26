@@ -26,7 +26,7 @@
             },
             {
               "name": "timeout",
-              "description": "The maximum time in milliseconds to wait for an event.",
+              "description": "The maximum time in seconds to wait for an event.",
               "required": false,
               "type": "integer",
               "paramType": "query"
