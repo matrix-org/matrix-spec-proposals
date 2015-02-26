@@ -105,6 +105,88 @@ character.
 
 In addition, all rules may be enabled or disabled. Disabled rules never match.
 
+If no rules match an event, the Home Server should not notify for the message
+(that is to say, the default action is "dont-notify").
+
+Predefined Rules
+----------------
+Matrix specifies the following rule IDs for server default rules. Home Servers
+may define rules as follows with the given IDs. If Home Servers provide rules
+with these IDs, their semantics should match those given below:
+
+.m.rule.contains_user_name
+  Matches any message whose content is unencrypted and contains the local part
+  of the user's Matrix ID, separated by word boundaries.
+
+  Definition (as a content rule)::
+    {
+        "rule_id": ".m.rule.contains_user_name"
+        "pattern": "[the lcoal part of the user's Matrix ID]",
+        "actions": [
+            "notify",
+            {
+                "set_tweak": "sound",
+                "value": "default"
+            }
+        ],
+    }
+
+.m.rule.contains_display_name
+  Matches any message whose content is unencrypted and contains the user's
+  current display name in the room in which it was sent.
+
+  Definition (this rule can only be an override or underride rule)::
+    {
+        "rule_id": ".m.rule.contains_display_name"
+        "conditions": [
+            {
+                "kind": "contains_display_name"
+            }
+        ],
+        "actions": [
+            "notify",
+            {
+                "set_tweak": "sound",
+                "value": "default"
+            }
+        ],
+    }
+
+.m.rule.room_two_members
+  Matches any message sent in a room with exactly two members.
+
+  Definition (this rule can only be an override or underride rule)::
+    {
+        "rule_id": ".m.rule.room_two_members"
+        "conditions": [
+            {
+                "is": "2",
+                "kind": "room_member_count"
+            }
+        ],
+        "actions": [
+            "notify",
+            {
+                "set_tweak": "sound",
+                "value": "default"
+            }
+        ],
+    }
+
+.m.rule.fallback
+  Matches any message. Used to define the behaviour of messages that match no
+  other rules. Therefore, if Home Servers define this, it should be the lowest
+  priority underride rule.
+
+  Definition::
+    {
+        "rule_id": ".m.rule.fallback"
+        "conditions": [],
+        "actions": [
+            "notify"
+        ],
+    }
+
 Push Rules: Actions:
 --------------------
 All rules have an associated list of 'actions'. An action affects if and how a
