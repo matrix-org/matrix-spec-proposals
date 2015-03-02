@@ -106,7 +106,8 @@ character.
 In addition, all rules may be enabled or disabled. Disabled rules never match.
 
 If no rules match an event, the Home Server should not notify for the message
-(that is to say, the default action is "dont-notify").
+(that is to say, the default action is "dont-notify"). Events that the user sent
+themself are never alerted for.
 
 Predefined Rules
 ----------------
