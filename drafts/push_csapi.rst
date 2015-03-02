@@ -154,7 +154,7 @@ with these IDs, their semantics should match those given below:
         ],
     }
 
-.m.rule.room_two_members
+.m.rule.room_one_to_one
   Matches any message sent in a room with exactly two members.
 
   Definition (this rule can only be an override or underride rule)::
