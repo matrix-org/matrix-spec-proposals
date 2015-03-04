@@ -182,19 +182,19 @@ with these IDs, their semantics should match those given below:
 
   Definition::
 
-  {
-      'rule_id': '.m.rule.suppress_notices',
-      'conditions': [
-          {
-              'kind': 'event_match',
-              'key': 'content.msgtype',
-              'pattern': 'm.notice',
-          }
-      ],
-      'actions': [
-          'dont-notify',
-      ]
-  }
+    {
+        'rule_id': '.m.rule.suppress_notices',
+        'conditions': [
+            {
+                'kind': 'event_match',
+                'key': 'content.msgtype',
+                'pattern': 'm.notice',
+            }
+        ],
+        'actions': [
+            'dont-notify',
+        ]
+    }
   
 .m.rule.fallback
   Matches any message. Used to define the behaviour of messages that match no
