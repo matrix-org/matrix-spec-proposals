@@ -177,6 +177,25 @@ with these IDs, their semantics should match those given below:
         ],
     }
 
+.m.rule.suppress_notices
+  Matches messages with 'msgtype' of 'notice'.
+
+  Definition::
+
+  {
+      'rule_id': '.m.rule.suppress_notices',
+      'conditions': [
+          {
+              'kind': 'event_match',
+              'key': 'content.msgtype',
+              'pattern': 'm.notice',
+          }
+      ],
+      'actions': [
+          'dont-notify',
+      ]
+  }
+  
 .m.rule.fallback
   Matches any message. Used to define the behaviour of messages that match no
   other rules. Therefore, if Home Servers define this, it should be the lowest
