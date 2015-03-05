@@ -80,6 +80,7 @@ Notes:
  {
    url: "https://my.application.service.com/matrix/",
    as_token: "some_AS_token",
+   filter_id: "some filter id",
    namespaces: {
      users: [
        {
