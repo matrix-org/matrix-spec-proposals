@@ -41,6 +41,7 @@ Inputs:
  - Namespace[users]
  - Namespace[room aliases]
  - URL base to receive inbound comms
+ - Filter ID to apply when receiving inbound comms (optional)
 Output:
  - The credentials the HS will use to query the AS with in return. (e.g. some 
    kind of string token)
@@ -66,6 +67,9 @@ Notes:
          "regex": "@irc\.freenode\.net/.*"
        }
      ]
+ - The filter ID in this request will be applied to push-based inbound
+   communications, in a similar way to how filter IDs are applied to the
+   client-server pull-based sync API.
 
 ::
 
@@ -386,7 +390,7 @@ but only if the application service has defined the namespace as ``exclusive``.
 
 ID conventions
 ~~~~~~~~~~~~~~
-.. NOTE::
+.. NOTE
   - Giving HSes the freedom to namespace still feels like the Right Thing here.
   - Exposing a public API provides the consistency which was the main complaint
     against namespacing.
@@ -408,18 +412,10 @@ types, including:
 - XMPP (xep-0032)
 - SIP URIs (RFC 3261)
 
-As a result, virtual user IDs SHOULD relate to their URI counterpart. This
-mapping from URI to user ID can be expressed in a number of ways:
-
-- Expose a C-S API on the HS which takes URIs and responds with user IDs.
-- Munge the URI with the user ID.
-
-Exposing an API would allow HSes to internally map user IDs however they like,
-at the cost of an extra round trip (of which the response can be cached).
-Munging the URI would allow clients to apply the mapping locally, but would force
-user X on service Y to always map to the same munged user ID. Considering the
-exposed API could just be applying this munging, there is more flexibility if
-an API is exposed. 
+As a result, virtual user IDs SHOULD relate to their URI counterpart. The
+mapping from URI to user ID is expressed as a C-S API on the HS which takes
+URIs and responds with user IDs. Home servers can internally map URIs to 
+user IDs in whatever way they desire.
 
 ::
 
