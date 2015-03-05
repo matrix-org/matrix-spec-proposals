@@ -40,6 +40,7 @@ Inputs:
  - Credentials (e.g. some kind of string token)
  - Namespace[users]
  - Namespace[room aliases]
+ - Namespace[room IDs]
  - URL base to receive inbound comms
  - Filter ID to apply when receiving inbound comms (optional)
 Output:
