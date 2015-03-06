@@ -178,7 +178,8 @@ with these IDs, their semantics should match those given below:
     }
 
 .m.rule.suppress_notices
-  Matches messages with 'msgtype' of 'notice'.
+  Matches messages with 'msgtype' of 'notice'. This should be an override rule
+  such that, when enabled, it takes priority over content / sender / room rules.
 
   Definition::
 
