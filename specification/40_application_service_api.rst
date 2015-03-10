@@ -419,7 +419,7 @@ user IDs in whatever way they desire.
 
 ::
 
-  GET /_matrix/appservice/v1/user?uri=$url_encoded_uri
+  GET /_matrix/appservice/v1/uris/user?uri=$url_encoded_uri
   
   Returns 200 OK:
   {
@@ -445,7 +445,7 @@ expose room aliases.
 
 ::
 
-  GET /_matrix/appservice/v1/alias?uri=$url_encoded_uri
+  GET /_matrix/appservice/v1/uris/alias?uri=$url_encoded_uri
   
   Returns 200 OK:
   {
