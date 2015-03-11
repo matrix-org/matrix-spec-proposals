@@ -38,7 +38,7 @@ is as follows::
          "data" : {
          },
          "tweaks": {
-           "sound": "bing.wav"
+           "sound": "bing"
           }
         }
       ]
