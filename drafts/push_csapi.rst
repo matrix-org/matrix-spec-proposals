@@ -42,7 +42,8 @@ data
   pushers, this must contain a 'url' key which is a string of the URL that
   should be used to send notifications.
 
-If the pusher was created successfully, an empty JSON dictionary is returned.
+If the pusher was created successfully, a JSON dictionary is returned (which may
+be empty).
 
 
 Push Rules
@@ -246,10 +247,19 @@ that is sent in the notification poke. The following tweaks are defined:
 sound
   A sound to be played when this notification arrives. 'default' means to
   play a default sound.
+highlight
+  Whether or not this message should be highlighted in the UI. This will
+  normally take the form of presenting the message in a different colour and/or
+  weight. The UI might also be adjusted to draw particular attention to the room
+  in which the event occurred. The value may be omitted from the highlight
+  tweak, in which case it should be read as if it had a value of true.
 
 Tweaks are passed transparently through the Home Server so client applications
 and push gateways may agree on additional tweaks, for example, how to flash the
 notification light on a mobile device.
+
+If a kind of tweak that a client understands is not specified in an action, the
+client may choose a sensible behaviour for the tweak.
 
 Push Rules: Conditions:
 -----------------------

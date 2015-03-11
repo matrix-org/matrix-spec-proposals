@@ -99,6 +99,13 @@ sound
   Sets the sound file that should be played. 'default' means that a default
   sound should be played.
 
+And additional key is defined but only present on member events:
+
+user_is_target
+  This is true if the user receiving the notification is the subject of a member
+  event (ie. the state_key of the member event is equal to the user's Matrix
+  ID).
+
 The recipient of an HTTP notification should respond with an HTTP 2xx response
 when the notification has been processed. If the endpoint returns an HTTP error
 code, the Home Server should retry for a reasonable amount of time with a
