@@ -1,26 +1,28 @@
 Push Notifications
 ==================
 
-                                  +--------------------+ +-------------------+
-                 Matrix HTTP      |                    | |                   |
-            Notification Protocol |   App Developer    | |   Device Vendor   |
-                                  |                    | |                   |
-          +-------------------+   | +----------------+ | | +---------------+ |
-          |                   |   | |                | | | |               | |
-          | Matrix Home Server+----->  Push Gateway  | +---> Push Provider | |
-          |                   |   | |                | | | |               | |
-          +-^-----------------+   | +----------------+ | | +----+----------+ |
-            |                     |                    | |      |            |
-   Matrix   |                     |                    | |      |            |
-Client/Server API  +              |                    | |      |            |
-            |      |              +--------------------+ +-------------------+
-            |   +--+-+                                          |             
-            |   |    <------------------------------------------+             
-            +---+    |                                                        
-                |    |          Provider Push Protocol                        
-                +----+                                                        
-                                                                              
-        Mobile Device or Client                                               
+::
+
+                                   +--------------------+ +-------------------+
+                  Matrix HTTP      |                    | |                   |
+             Notification Protocol |   App Developer    | |   Device Vendor   |
+                                   |                    | |                   |
+           +-------------------+   | +----------------+ | | +---------------+ |
+           |                   |   | |                | | | |               | |
+           | Matrix Home Server+----->  Push Gateway  | +---> Push Provider | |
+           |                   |   | |                | | | |               | |
+           +-^-----------------+   | +----------------+ | | +----+----------+ |
+             |                     |                    | |      |            |
+    Matrix   |                     |                    | |      |            |
+ Client/Server API  +              |                    | |      |            |
+             |      |              +--------------------+ +-------------------+
+             |   +--+-+                                          |             
+             |   |    <------------------------------------------+             
+             +---+    |                                                        
+                 |    |          Provider Push Protocol                        
+                 +----+                                                        
+                                                                               
+         Mobile Device or Client                                               
 
 
 Matrix supports push notifications as a first class citizen. Home Servers send
