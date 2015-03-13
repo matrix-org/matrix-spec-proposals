@@ -1,11 +1,51 @@
 Push Notifications
 ==================
 
+                                  +--------------------+ +-------------------+
+                 Matrix HTTP      |                    | |                   |
+            Notification Protocol |   App Developer    | |   Device Vendor   |
+                                  |                    | |                   |
+          +-------------------+   | +----------------+ | | +---------------+ |
+          |                   |   | |                | | | |               | |
+          | Matrix Home Server+----->  Push Gateway  | +---> Push Provider | |
+          |                   |   | |                | | | |               | |
+          +-^-----------------+   | +----------------+ | | +----+----------+ |
+            |                     |                    | |      |            |
+   Matrix   |                     |                    | |      |            |
+Client/Server API  +              |                    | |      |            |
+            |      |              +--------------------+ +-------------------+
+            |   +--+-+                                          |             
+            |   |    <------------------------------------------+             
+            +---+    |                                                        
+                |    |          Provider Push Protocol                        
+                +----+                                                        
+                                                                              
+        Mobile Device or Client                                               
+
+
 Matrix supports push notifications as a first class citizen. Home Servers send
 notifications of user events to user-configured HTTP endpoints. User may also
 configure a number of rules that determine what events generate notifications.
 These are all stored and managed by the users home server such that settings can
 be reused between client apps as appropriate.
+
+The above diagram shows the flow of push notifications being sent to a handset
+where push notifications are submitted via the handset vendor, such as Apple's
+APNS or Google's GCM. This happens as follows:
+
+ 1. The client app signs in to a Matrix Home Server
+ 2. The client app registers with its vendor's Push Notification provider and
+    obtains a routing token of some kind.
+ 3. The mobile app, uses the Matrix client/server API to add a 'pusher',
+    providing the URL of a specific Push Gateway which is configured for that
+    application. It also provides the routing token it has acquired from the
+    Push Notification Provider.
+ 4. The Home Server starts sending notification HTTP requests to the Push
+    Gateway using the supplied URL. The Push Gateway relays this notification to
+    the Push Notification Provider, passing the routing token along with any
+    necessary private credentials the provider requires to send push
+    notifications.
+ 5. The Push Notification provider sends the notification to the device.
 
 Nomenclature
 ------------
