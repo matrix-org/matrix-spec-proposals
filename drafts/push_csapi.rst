@@ -25,7 +25,7 @@ profile_tag
   devices maybe use the same profile_tag. It is advised that when an app's
   data is copied or restored to a different device, this value remain the same.
   Client apps should offer ways to change the profile_tag, optionally copying
-  rules from the old profile tag.
+  rules from the old profile tag. Max length, 32 bytes.
 app_id
   appId is a reverse-DNS style identifier for the application. It is recommended
   that this end with the platform, such that different platform versions get
