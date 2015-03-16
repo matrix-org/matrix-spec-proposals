@@ -1,5 +1,5 @@
-Push Notifications
-==================
+Push Notifications Overview
+===========================
 
 ::
 
@@ -72,3 +72,4 @@ Push Gateway
 For information on the client-server API for setting pushers and push rules, see
 the Client Server API section. For more information on the format of HTTP
 notifications, see the HTTP Notification Protocol section.
+

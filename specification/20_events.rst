@@ -250,7 +250,7 @@ prefixed with ``m.``
   Summary:
     A message.
   Type:
-    Non-state event
+    Message event
   JSON format:
     ``{ "msgtype": "string" }``
   Example:
@@ -266,8 +266,9 @@ prefixed with ``m.``
 ``m.room.message.feedback``
   Summary:
     A receipt for a message.
+    N.B. not implemented in Synapse, and superceded in v2 CS API by the 'relates_to' event field.
   Type:
-    Non-state event
+    Message event
   JSON format:
     ``{ "type": "enum [ delivered|read ]", "target_event_id": "string" }``
   Example:
@@ -283,7 +284,7 @@ prefixed with ``m.``
   Summary:
     Indicates a previous event has been redacted.
   Type:
-    Non-state event
+    Message event
   JSON format:
     ``{ "reason": "string" }``
   Description:
@@ -292,7 +293,7 @@ prefixed with ``m.``
     admins to remove offensive or illegal content that may have been attached
     to any event. This cannot be undone, allowing server owners to physically
     delete the offending data.  There is also a concept of a moderator hiding a
-    non-state event, which can be undone, but cannot be applied to state
+    message event, which can be undone, but cannot be applied to state
     events.
     The event that has been redacted is specified in the ``redacts`` event
     level key.
@@ -447,6 +448,48 @@ outlined below:
 .. TODO-spec
     Make the definitions "inherit" from FileInfo where necessary...
 
+Presence Events (v1)
+~~~~~~~~~~~~~~~~~~~~
+
+``m.presence``
+  Summary:
+    Informs you of a user's presence state changes.
+  Type:
+    Presence event
+  JSON format::
+    { "displayname": "utf-8 string",
+      "avatar_url": "url",
+      "presence": "enum [ online|unavailable|offline|free_for_chat|hidden ]",
+      "last_active_ago": "milliseconds" }
+  Example:
+    ``{ "displayname": "Matthew", "avatar_url": "mxc://domain/id", "presence": "online", "last_active_ago": 10000 }``
+  Description:
+    Each user has the concept of presence information. This encodes the
+    "availability" of that user, suitable for display on other user's clients.
+    This is transmitted as an ``m.presence`` event and is one of the few events
+    which are sent *outside the context of a room*. The basic piece of presence
+    information is represented by the ``presence`` key, which is an enum of one
+    of the following:
+
+      - ``online`` : The default state when the user is connected to an event
+        stream.
+      - ``unavailable`` : The user is not reachable at this time.
+      - ``offline`` : The user is not connected to an event stream.
+      - ``free_for_chat`` : The user is generally willing to receive messages
+        moreso than default.
+      - ``hidden`` : Behaves as offline, but allows the user to see the client
+        state anyway and generally interact with client features. (Not yet
+        implemented in synapse).
+
+    In addition, the server maintains a timestamp of the last time it saw a
+    pro-active event from the user; either sending a message to a room, or
+    changing presence state from a lower to a higher level of availability
+    (thus: changing state from ``unavailable`` to ``online`` counts as a
+    proactive event, whereas in the other direction it will not). This timestamp
+    is presented via a key called ``last_active_ago``, which gives the relative
+    number of milliseconds since the message is generated/emitted that the user
+    was last seen active.
+    
 
 Events on Change of Profile Information
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -457,7 +500,7 @@ values. This change is conveyed using two separate mechanisms:
 
  - a ``m.room.member`` event is sent to every room the user is a member of,
    to update the ``displayname`` and ``avatar_url``.
- - a presence status update is sent, again containing the new values of the
+ - a ``m.presence`` presence status update is sent, again containing the new values of the
    ``displayname`` and ``avatar_url`` keys, in addition to the required
    ``presence`` key containing the current presence state of the user.
 

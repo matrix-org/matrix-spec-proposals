@@ -1,5 +1,5 @@
-Push Notifications
-==================
+Push Notifications HTTP API
+===========================
 
 Pushers
 -------
@@ -415,3 +415,5 @@ Rules can be enabled or disabled with a PUT operation to the 'enabled' component
 beneath the rule's URI with a content of 'true' or 'false'::
 
   curl -X PUT -H "Content-Type: application/json" -d 'false' "http://localhost:8008/_matrix/client/api/v1/pushrules/global/sender/%40spambot%3Amatrix.org/enabled?access_token=123456"
+
+
