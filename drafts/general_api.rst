@@ -811,8 +811,9 @@ Notes:
 Presence API ``[Draft]``
 ------------------------
 
-FIXME: this seems to be ignoring activity timers entirely, which were present on
-the planning etherpad and are present in the actual HTTP API. Needs attention.
+.. FIXME
+  this seems to be ignoring activity timers entirely, which were present on
+  the planning etherpad and are present in the actual HTTP API. Needs attention.
 
 The goals of presence are to:
 

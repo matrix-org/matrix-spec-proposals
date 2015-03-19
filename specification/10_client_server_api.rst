@@ -20,10 +20,10 @@ Pagination
 
 Querying large datasets in Matrix always uses the same pagination API pattern to
 to give clients a consistent way of selecting subsets of a potentially changing
-dataset. Requests pass in `from`, `to` and `limit` parameters which describe
-where to read from the stream. `from` and `to` are opaque textual 'stream
+dataset. Requests pass in ``from``, ``to`` and ``limit`` parameters which describe
+where to read from the stream. ``from`` and ``to`` are opaque textual 'stream
 tokens' which describe positions in the dataset. The response returns new
-`start` and `end` stream token values which can then be passed to subsequent
+``start`` and ``end`` stream token values which can then be passed to subsequent
 requests to continue pagination.
 
 Pagination Request Query Parameters
@@ -35,13 +35,13 @@ Query parameters:
   to:
     $streamtoken - The opaque token to end streaming at. Typically,
     clients will not know the item of data to end at, so this will usually be 
-    START or END.
+    omitted.
   limit:
     integer - An integer representing the maximum number of items to 
     return.
 
-'START' and 'END' are magic token values which specify the start and end of the 
-dataset respectively.
+'START' and 'END' are placeholder values used in these examples to describe the
+start and end of the dataset respectively.
 
 Unless specified, the default pagination parameters are from=START, to=END, 
 without a limit set. This allows you to hit an API like
@@ -96,11 +96,6 @@ Where $streamtoken is an opaque token which can be used in another query to
 get the next set of results. The "start" and "end" keys can only be omitted if
 the complete dataset is provided in "chunk".
 
-If the client wants earlier results, they should use from=$start_streamtoken,
-to=START. Likewise, if the client wants later results, they should use
-from=$end_streamtoken, to=END.
-
-
 Events
 ------
 
@@ -120,7 +115,7 @@ Stream`_ and |/rooms/<room_id>/messages|_ APIs.
 
 For reading events, the intended flow of operation is to call
 $PREFIX/initialSync, which returns all of the state and the last N events in the
-event stream for each room, including `start` and `end` values describing the
+event stream for each room, including ``start`` and ``end`` values describing the
 pagination of each room's event stream. For instance,
 $PREFIX/initialSync?limit=5 might return the events for a room in the
 rooms[0].messages.chunk[] array, with tokens describing the start and end of the
@@ -135,8 +130,8 @@ You can visualise the range of events being returned as::
                         start: '1-2-3'                end: 'a-b-c'
                              
 Now, to receive future events in realtime on the eventstream, you simply GET
-$PREFIX/events with a `from` parameter of 'a-b-c': in other words passing in the
-`end` token returned by initialsync. The request blocks until new events are
+$PREFIX/events with a ``from`` parameter of 'a-b-c': in other words passing in the
+``end`` token returned by initialsync. The request blocks until new events are
 available or until your specified timeout elapses, and then returns a
 new paginatable chunk of events alongside new start and end parameters::
 
@@ -146,13 +141,13 @@ new paginatable chunk of events alongside new start and end parameters::
                                                             |  end: 'x-y-z'
                                                       start: 'a-b-c'
 
-To resume polling the events stream, you pass in the new `end` token as the
-`from` parameter of $PREFIX/events and poll again.
+To resume polling the events stream, you pass in the new ``end`` token as the
+``from`` parameter of $PREFIX/events and poll again.
 
 Similarly, to paginate events backwards in order to lazy-load in previous
 history from the room, you simply GET $PREFIX/rooms/<room_id>/messages
-specifying the `from` token to paginate backwards from and a limit of the number
-of messages to retrieve. For instance, calling this API with a `from` parameter
+specifying the ``from`` token to paginate backwards from and a limit of the number
+of messages to retrieve. For instance, calling this API with a ``from`` parameter
 of '1-2-3' and a limit of 5 would return:
 
   [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
@@ -161,7 +156,7 @@ of '1-2-3' and a limit of 5 would return:
   start: 'u-v-w'          end: '1-2-3'
 
 To continue paginating backwards, one calls the /messages API again, supplying
-the new `start` value as the `from` parameter.
+the new ``start`` value as the ``from`` parameter.
 
 
 Receiving live updates on a client
@@ -176,8 +171,10 @@ event stream. When the request returns, an ``end`` token is included in the
 response. This token can be used in the next request to continue where the
 last request left off.
 
-All events must be deduplicated based on their event ID (TODO: is this actually
-a hard requirement in CS v2?)
+All events must be deduplicated based on their event ID.
+
+.. TODO
+  is deduplication actually a hard requirement in CS v2?
 
 .. TODO-spec
   Do we ever return multiple events in a single request?
@@ -364,11 +361,9 @@ There are several APIs provided to ``GET`` events for a room:
 
 |/rooms/<room_id>/messages|_
   Description:
-    Get all ``m.room.message`` and ``m.room.member`` events. This API supports
+    Get all events from the room's timeline. This API supports
     pagination using ``from`` and ``to`` query parameters, coupled with the
     ``start`` and ``end`` tokens from an |initialSync|_ API.
-    
-    XXX: Is this accurate? Doesn't it return all events - not just m.room.message/member?
     
   Response format:
     ``{ "start": "<token>", "end": "<token>" }``
@@ -399,9 +394,10 @@ is the event that caused it to be redacted, which may include a reason.
 Redacting an event cannot be undone, allowing server owners to delete the
 offending content from the databases.
 
-Currently, only room admins can redact events by sending a ``m.room.redaction``
-event, but server admins also need to be able to redact events by a similar
-mechanism.
+.. TODO
+  Currently, only room admins can redact events by sending a ``m.room.redaction``
+  event, but server admins also need to be able to redact events by a similar
+  mechanism.
 
 Upon receipt of a redaction event, the server should strip off any keys not in
 the following list:
@@ -426,6 +422,9 @@ one of the following event types:
  - ``m.room.ops_levels`` allows keys ``kick_level``, ``ban_level``
    and ``redact_level``
  - ``m.room.aliases`` allows key ``aliases``
+
+.. TODO
+  Need to update m.room.power_levels to reflect new power levels formatting
 
 The redaction event should be added under the key ``redacted_because``.
 

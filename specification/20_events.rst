@@ -448,21 +448,34 @@ outlined below:
 .. TODO-spec
     Make the definitions "inherit" from FileInfo where necessary...
 
-Presence Events (v1)
-~~~~~~~~~~~~~~~~~~~~
+Presence Events
+~~~~~~~~~~~~~~~
 
 ``m.presence``
   Summary:
     Informs you of a user's presence state changes.
+    
   Type:
     Presence event
+    
   JSON format::
-    { "displayname": "utf-8 string",
+  
+    { 
+      "displayname": "utf-8 string",
       "avatar_url": "url",
       "presence": "enum [ online|unavailable|offline|free_for_chat|hidden ]",
-      "last_active_ago": "milliseconds" }
-  Example:
-    ``{ "displayname": "Matthew", "avatar_url": "mxc://domain/id", "presence": "online", "last_active_ago": 10000 }``
+      "last_active_ago": "milliseconds"
+    }
+    
+  Example::
+  
+    {
+      "displayname": "Matthew",
+      "avatar_url": "mxc://domain/id",
+      "presence": "online",
+      "last_active_ago": 10000
+    }
+    
   Description:
     Each user has the concept of presence information. This encodes the
     "availability" of that user, suitable for display on other user's clients.
@@ -539,8 +552,17 @@ This event is sent by the caller when they wish to establish a call.
 
   Optional keys:
     None.
-  Example:
-    ``{ "version" : 0, "call_id": "12345", "offer": { "type" : "offer", "sdp" : "v=0\r\no=- 6584580628695956864 2 IN IP4 127.0.0.1[...]" } }``
+    
+  Example::
+
+    {
+      "version" : 0,
+      "call_id": "12345",
+      "offer": {
+        "type" : "offer",
+        "sdp" : "v=0\r\no=- 6584580628695956864 2 IN IP4 127.0.0.1[...]"
+      }
+    }
 
 ``Offer Object``
   Required keys:

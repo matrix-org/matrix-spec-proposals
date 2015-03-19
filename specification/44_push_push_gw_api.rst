@@ -1,5 +1,6 @@
-Push Notifications: HTTP Notification Protocol
-==============================================
+HTTP Notification Protocol
+--------------------------
+
 This describes the format used by "http" pushers to send notifications of
 events.
 

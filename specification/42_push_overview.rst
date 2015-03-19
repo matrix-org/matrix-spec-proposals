@@ -1,5 +1,8 @@
-Push Notifications Overview
-===========================
+Push Notifications
+==================
+
+Overview
+--------
 
 ::
 

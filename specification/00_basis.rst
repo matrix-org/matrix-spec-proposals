@@ -13,11 +13,11 @@ Table of Contents
 Introduction
 ============
 
-Matrix is a set of open APIs for open-federated Instant Messaging, VoIP and
-Internet of Things communication, designed to create and support a new global
-real-time communication ecosystem. The intention is to provide an open
-decentralised pubsub fabric for the internet for securely persisting and
-publishing/subscribing JSON objects.
+Matrix is a set of open APIs for open-federated Instant Messaging (IM), Voice
+over IP (VoIP) and Internet of Things (IoT) communication, designed to create
+and support a new global real-time communication ecosystem. The intention is to
+provide an open decentralised pubsub layer for the internet for securely
+persisting and publishing/subscribing JSON objects.
 
 This specification is the ongoing result of standardising the APIs used by the
 various components of the Matrix ecosystem to communicate with one another.
@@ -101,23 +101,25 @@ Architecture
 ------------
 
 Matrix defines APIs for synchronising extensible JSON objects known as
-`events` between compatible clients, servers and services. Clients are
+``events`` between compatible clients, servers and services. Clients are
 typically messaging/VoIP applications or IoT devices/hubs and communicate by
-synchronising communication history with their `homeserver` using the
-`Client-Server API`. Each homeserver stores the communication history and
+synchronising communication history with their ``homeserver`` using the
+``Client-Server API``. Each homeserver stores the communication history and
 account information for all of its clients, and shares data with the wider
 Matrix ecosystem by synchronising communication history with other homeservers
 and their clients.
 
 Clients typically communicate with each other by emitting events in the
-context of a virtual `room`. Room data is replicated across *all of the
+context of a virtual ``room``. Room data is replicated across *all of the
 homeservers* whose users are participating in a given room. As such, *no
 single homeserver has control or ownership over a given room*. Homeservers
 model communication history as a partially ordered graph of events known as
-the room's `event graph`, which is synchronised with eventual consistency
-between the participating servers using the Server-Server API. Matrix optimises
-for the the Availability and Partitioned properties of CAP theorem at the
-expense of Consistency.
+the room's ``event graph``, which is synchronised with eventual consistency
+between the participating servers using the ``Server-Server API``. This process
+of synchronising shared conversation history between homeservers run by
+different parties is called ``Federation``. Matrix optimises for the the
+Availability and Partitioned properties of CAP theorem at
+the expense of Consistency.
 
 For example, for client A to send a message to client B, client A performs an
 HTTP PUT of the required JSON event on its homeserver (HS) using the
@@ -144,6 +146,7 @@ a long-lived GET request.
        |                  |<--------( HTTPS )----------|                  |
        +------------------+      Server-Server API     +------------------+
                               History Synchronisation
+                                  (Federation)
 
 
 Users
@@ -179,11 +182,11 @@ Event Graphs
 ~~~~~~~~~~~~
 
 Events exchanged in the context of a room are stored in a directed acyclic graph
-(DAG) called an `event graph`. The partial ordering of this graph gives the
+(DAG) called an ``event graph``. The partial ordering of this graph gives the
 chronological ordering of events within the room. Each event in the graph has a
-list of zero or more `parent` events, which refer to any preceeding events which
-have no chronological successor from the perspective of the homeserver which
-created the event.
+list of zero or more ``parent`` events, which refer to any preceeding events
+which have no chronological successor from the perspective of the homeserver
+which created the event.
 
 Typically an event has a single parent: the most recent message in the room at
 the point it was sent. However, homeservers may legitimately race with each
@@ -192,10 +195,10 @@ successors. The next event added to the graph thus will have multiple parents.
 Every event graph has a single root event with no parent.
 
 To order and ease chronological comparison between the events within the graph,
-homeservers maintain a `depth` metadata field on each event. An event's `depth`
-is a positive integer that is strictly greater than the depths of any of its
-parents. The root event should have a depth of 1. Thus if one event is before
-another, then it must have a strictly smaller depth.
+homeservers maintain a ``depth`` metadata field on each event. An event's
+``depth`` is a positive integer that is strictly greater than the depths of any
+of its parents. The root event should have a depth of 1. Thus if one event is
+before another, then it must have a strictly smaller depth.
 
 Room structure
 ~~~~~~~~~~~~~~
@@ -229,7 +232,7 @@ the room ``!qporfwt:matrix.org``::
        |   matrix.org     |                          |   domain.com     |
        +------------------+                          +------------------+
                |                                                 ^
-               |         [HTTP POST]                             |
+               |         [HTTP PUT]                              |
                |         Room ID: !qporfwt:matrix.org            |
                |         Event type: m.room.message              |
                |         Content: { JSON object }                |
@@ -357,9 +360,11 @@ this user's presence through a presence list or by sharing membership of a room.
   The last_active specifics should be moved to the detailed presence event section
   
 Last activity is tracked by the server maintaining a timestamp of the last time
-it saw a pro-active event from the user; either sending a message to a room,
-coming online or back from idle, etc. This timestamp is presented via a key
-called ``last_active_ago``, which gives the relative number of milliseconds
+it saw a pro-active event from the user. Any event which could be triggered by a
+human using the application is considered pro-active (e.g. sending an event to a
+room). An example of a non-proactive client activity would be a client setting
+'idle' presence status, or polling for events. This timestamp is presented via a
+key called ``last_active_ago``, which gives the relative number of milliseconds
 since the message is generated/emitted that the user was last seen active.
 
 N.B. in v1 API, status/online/idle state are muxed into a single 'presence' field on the m.presence event.
@@ -382,10 +387,10 @@ Users may publish arbitrary key/value data associated with their account - such
 as a human readable ``display name``, a profile photo URL, contact information
 (email address, phone nubers, website URLs etc).
 
-Profile data is typed using namespaced keys for interoperability, much like
-events - e.g. ``m.profile.display_name``.
+In Client-Server API v2, profile data is typed using namespaced keys for
+interoperability, much like events - e.g. ``m.profile.display_name``.
 
-..TODO
+.. TODO
   Actually specify the different types of data - e.g. what format are display
   names allowed to be?
 
@@ -396,7 +401,7 @@ Users may also store arbitrary private key/value data in their account - such as
 client preferences, or server configuration settings which lack any other
 dedicated API.  The API is symmetrical to managing Profile data.
 
-..TODO
+.. TODO
   Would it really be overengineered to use the same API for both profile &
   private user data, but with different ACLs?
 
@@ -436,14 +441,12 @@ response". This is a JSON object which looks like::
 The ``error`` string will be a human-readable error message, usually a sentence
 explaining what went wrong. The ``errcode`` string will be a unique string
 which can be used to handle an error message e.g. ``M_FORBIDDEN``. These error
-codes should have their namespace first in ALL CAPS, followed by a single _.
-For example, if there was a custom namespace ``com.mydomain.here``, and a
+codes should have their namespace first in ALL CAPS, followed by a single _ to
+ease seperating the namespace from the error code.. For example, if there was a
+custom namespace ``com.mydomain.here``, and a
 ``FORBIDDEN`` code, the error code should look like
 ``COM.MYDOMAIN.HERE_FORBIDDEN``. There may be additional keys depending on the
 error, but the keys ``error`` and ``errcode`` MUST always be present.
-
-..TODO
-  Why the weird mix of underscore and dots?
 
 Some standard error codes are below:
 
