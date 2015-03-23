@@ -468,3 +468,15 @@ Active Application Services
   API that provides hooks into the server so that you can intercept and
   manipulate events, and/or insert virtual users & rooms into the server.
 
+Policy Servers
+==============
+.. NOTE::
+  This section is a work in progress.
+
+.. TODO-spec
+  We should mention them in the Architecture section at least: how they fit
+  into the picture.
+
+Enforcing policies
+------------------
+

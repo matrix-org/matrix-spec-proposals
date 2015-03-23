@@ -1,5 +1,5 @@
 Signing Events
---------------
+==============
 
 Canonical JSON
 ~~~~~~~~~~~~~~

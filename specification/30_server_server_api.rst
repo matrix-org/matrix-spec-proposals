@@ -576,17 +576,3 @@ If the query contains the optional ``field`` key, it should give the name of a
 result field. If such is present, then the result should contain only a field
 of that name, with no others present. If not, the result should contain as much
 of the user's profile as the home server has available and can make public.
-
-
-Policy Servers
-==============
-.. NOTE::
-  This section is a work in progress.
-
-.. TODO-spec
-  We should mention them in the Architecture section at least: how they fit
-  into the picture.
-
-Enforcing policies
-------------------
-
