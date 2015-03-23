@@ -40,7 +40,9 @@ Inputs:
  - Credentials (e.g. some kind of string token)
  - Namespace[users]
  - Namespace[room aliases]
+ - Namespace[room IDs]
  - URL base to receive inbound comms
+ - Filter ID to apply when receiving inbound comms (optional)
 Output:
  - The credentials the HS will use to query the AS with in return. (e.g. some 
    kind of string token)
@@ -66,6 +68,9 @@ Notes:
          "regex": "@irc\.freenode\.net/.*"
        }
      ]
+ - The filter ID in this request will be applied to push-based inbound
+   communications, in a similar way to how filter IDs are applied to the
+   client-server pull-based sync API.
 
 ::
 
@@ -75,6 +80,7 @@ Notes:
  {
    url: "https://my.application.service.com/matrix/",
    as_token: "some_AS_token",
+   filter_id: "some filter id",
    namespaces: {
      users: [
        {
@@ -299,11 +305,10 @@ home server.
 Identity assertion
 ++++++++++++++++++
 The client-server API infers the user ID from the ``access_token`` provided in 
-every request. It would be an annoying amount of book-keeping to maintain tokens
-for every virtual user. It would be preferable if the application service could
-use the CS API with its own ``as_token`` instead, and specify the virtual user
-they wish to be acting on behalf of. For real users, this would require 
-additional permissions granting the AS permission to masquerade as a matrix user.
+every request. Application services can use their ``as_token`` instead, and 
+specify the virtual user they wish to be acting on behalf of. For real users, 
+this would require additional permissions granting the AS permission to 
+masquerade as a matrix user.
 
 Inputs:
  - Application service token (``access_token``)
@@ -357,9 +362,8 @@ Server admin style permissions
 The home server needs to give the application service *full control* over its
 namespace, both for users and for room aliases. This means that the AS should
 be able to create/edit/delete any room alias in its namespace, as well as
-create/delete any user in its namespace. No additional API changes need to be
-made in order for control of room aliases to be granted to the AS. Creation of
-users needs API changes in order to:
+create/delete any user in its namespace. In order to create virtual users, the
+application service needs to:
 
 - Work around captchas.
 - Have a 'passwordless' user.
@@ -386,7 +390,7 @@ but only if the application service has defined the namespace as ``exclusive``.
 
 ID conventions
 ~~~~~~~~~~~~~~
-.. NOTE::
+.. NOTE
   - Giving HSes the freedom to namespace still feels like the Right Thing here.
   - Exposing a public API provides the consistency which was the main complaint
     against namespacing.
@@ -408,58 +412,59 @@ types, including:
 - XMPP (xep-0032)
 - SIP URIs (RFC 3261)
 
-As a result, virtual user IDs SHOULD relate to their URI counterpart. This
-mapping from URI to user ID can be expressed in a number of ways:
-
-- Expose a C-S API on the HS which takes URIs and responds with user IDs.
-- Munge the URI with the user ID.
-
-Exposing an API would allow HSes to internally map user IDs however they like,
-at the cost of an extra round trip (of which the response can be cached).
-Munging the URI would allow clients to apply the mapping locally, but would force
-user X on service Y to always map to the same munged user ID. Considering the
-exposed API could just be applying this munging, there is more flexibility if
-an API is exposed. 
+As a result, virtual user IDs SHOULD relate to their URI counterpart. The
+mapping from URI to user ID is expressed as a C-S API on the HS which takes
+URIs and responds with user IDs. Home servers can internally map URIs to 
+user IDs in whatever way they desire.
 
 ::
 
-  GET /_matrix/app/v1/user?uri=$url_encoded_uri
+  GET /_matrix/appservice/v1/uris/user?uri=$url_encoded_uri
   
   Returns 200 OK:
   {
     user_id: <complete user ID on local HS>
   }
+  
+  Returns 404:
+  {
+    errcode: "M_NOT_FOUND",
+    error: "URI is not mapped to any application service on this home server."
+  }
 
 Room Aliases
 ++++++++++++
-We may want to expose some 3P network rooms so Matrix users can join them directly,
-e.g. IRC rooms. We don't want to expose every 3P network room though, e.g. mailto,
-tel. Rooms which are publicly accessible (e.g. IRC rooms) can be exposed as an alias by
+Third party rooms which can be expressed as URIs can be exposed so that Matrix users 
+can join them directly, e.g. IRC rooms. It is not desirable to expose every kind of
+URI -> Room mapping though, as some of these rooms may be "private" e.g. mailto, tel. 
+Rooms which are publicly accessible (e.g. IRC rooms) can be exposed as an alias by
 the application service. Private rooms (e.g. sending an email to someone) should not
 be exposed in this way, but should instead operate using normal invite/join semantics.
-Therefore, the ID conventions discussed below are only valid for public rooms which 
+The ID conventions outlined below are only valid for public rooms which 
 expose room aliases.
-
-Matrix users may wish to join XMPP rooms (e.g. using XEP-0045) or IRC rooms. In both
-cases, these rooms can be expressed as URIs. For consistency, these "room" URIs 
-SHOULD be mapped in the same way as "user" URIs.
 
 ::
 
-  GET /_matrix/app/v1/alias?uri=$url_encoded_uri
+  GET /_matrix/appservice/v1/uris/alias?uri=$url_encoded_uri
   
   Returns 200 OK:
   {
     alias: <complete room alias on local HS>
   }
   
+  Returns 404:
+  {
+    errcode: "M_NOT_FOUND",
+    error: "URI is not mapped to any application service on this home server."
+  }
+  
 Event fields
 ++++++++++++
-We recommend that any gatewayed events should include an ``external_url`` field
+We recommend that any gatewayed events should include an ``external_uri`` field
 in their content to provide a way for Matrix clients to link into the 'native'
 client from which the event originated.  For instance, this could contain the
 message-ID for emails/nntp posts, or a link to a blog comment when gatewaying
-blog comment traffic in & out of matrix
+blog comment traffic in & out of Matrix.
 
 Active Application Services
 ----------------------------
