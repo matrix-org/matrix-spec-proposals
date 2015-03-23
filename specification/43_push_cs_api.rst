@@ -1,8 +1,6 @@
-Push Notifications
-==================
+Pushers HTTP API
+----------------
 
-Pushers
--------
 To receive any notification pokes at all, it is necessary to configure a
 'pusher' on the Home Server that you wish to receive notifications from. There
 is a single API endpoint for this::
@@ -240,8 +238,8 @@ Actions that have no parameters are represented as a string. Otherwise, they are
 represented as a dictionary with a key equal to their name and other keys as
 their parameters, eg. { "set_tweak": "sound", "value": "default" }
 
-Push Rule Actions: Tweaks
--------------------------
+Push Rules: Actions: Tweaks
+---------------------------
 The 'set_tweak' key action is used to add an entry to the 'tweaks' dictionary
 that is sent in the notification poke. The following tweaks are defined:
 
@@ -262,8 +260,8 @@ notification light on a mobile device.
 If a kind of tweak that a client understands is not specified in an action, the
 client may choose a sensible behaviour for the tweak.
 
-Push Rules: Conditions:
------------------------
+Push Rules: Conditions
+----------------------
 Override, Underride and Default rules have a list of 'conditions'. All
 conditions must hold true for an event in order for a rule to be applied to an
 event. A rule with no conditions always matches. Matrix specifies the following
@@ -416,3 +414,5 @@ Rules can be enabled or disabled with a PUT operation to the 'enabled' component
 beneath the rule's URI with a content of 'true' or 'false'::
 
   curl -X PUT -H "Content-Type: application/json" -d 'false' "http://localhost:8008/_matrix/client/api/v1/pushrules/global/sender/%40spambot%3Amatrix.org/enabled?access_token=123456"
+
+

@@ -555,7 +555,7 @@ signature. Requesting the "raw" federation event will have to return these keys.
 
 Account Management API ``[Draft]``
 ----------------------------------
-The registration and login APIs in v2 do not support specifying device IDs. In v2,
+The registration and login APIs in v1 do not support specifying device IDs. In v2,
 this will become *mandatory* when sending your initial request. Access tokens will
 be scoped per device, so using the same device ID twice when logging in will 
 clobber the old access token.
@@ -810,6 +810,11 @@ Notes:
 
 Presence API ``[Draft]``
 ------------------------
+
+.. FIXME
+  this seems to be ignoring activity timers entirely, which were present on
+  the planning etherpad and are present in the actual HTTP API. Needs attention.
+
 The goals of presence are to:
 
 - Let other users know if someone is "online".

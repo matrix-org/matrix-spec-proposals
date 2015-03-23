@@ -1,5 +1,6 @@
-Push Notifications: HTTP Notification Protocol
-==============================================
+HTTP Notification Protocol
+--------------------------
+
 This describes the format used by "http" pushers to send notifications of
 events.
 
@@ -140,3 +141,4 @@ gateway). However, Matrix strongly recommends:
  * That APNS push gateways do not attempt to wait for errors from the APNS
    gateway before returning and instead to store failures and return
    'rejected' responses next time that pushkey is used.
+

@@ -55,3 +55,4 @@ originating HSes to ensure they eventually send "stop" notifications.
 
 ((This will eventually need addressing, as part of the wider typing/presence
 timer addition work))
+

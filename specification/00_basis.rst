@@ -1,8 +1,8 @@
 Matrix Specification
 ====================
 
-.. NOTE::
-  The git version of this document is ``$GIT_VERSION``
+Version: ``$GIT_VERSION``
+-------------------------------------------
 
 Table of Contents
 =================
@@ -13,11 +13,14 @@ Table of Contents
 Introduction
 ============
 
-Matrix is a new set of open APIs for open-federated Instant Messaging and VoIP
-functionality, designed to create and support a new global real-time
-communication ecosystem on the internet. This specification is the ongoing
-result of standardising the APIs used by the various components of the Matrix
-ecosystem to communicate with one another.
+Matrix is a set of open APIs for open-federated Instant Messaging (IM), Voice
+over IP (VoIP) and Internet of Things (IoT) communication, designed to create
+and support a new global real-time communication ecosystem. The intention is to
+provide an open decentralised pubsub layer for the internet for securely
+persisting and publishing/subscribing JSON objects.
+
+This specification is the ongoing result of standardising the APIs used by the
+various components of the Matrix ecosystem to communicate with one another.
 
 .. WARNING::
   The Matrix specification is still evolving: the APIs are not yet frozen
@@ -97,8 +100,36 @@ Overview
 Architecture
 ------------
 
-Clients transmit data to other clients through home servers (HSes). Clients do
-not communicate with each other directly.
+Matrix defines APIs for synchronising extensible JSON objects known as
+``events`` between compatible clients, servers and services. Clients are
+typically messaging/VoIP applications or IoT devices/hubs and communicate by
+synchronising communication history with their ``homeserver`` using the
+``Client-Server API``. Each homeserver stores the communication history and
+account information for all of its clients, and shares data with the wider
+Matrix ecosystem by synchronising communication history with other homeservers
+and their clients.
+
+Clients typically communicate with each other by emitting events in the
+context of a virtual ``room``. Room data is replicated across *all of the
+homeservers* whose users are participating in a given room. As such, *no
+single homeserver has control or ownership over a given room*. Homeservers
+model communication history as a partially ordered graph of events known as
+the room's ``event graph``, which is synchronised with eventual consistency
+between the participating servers using the ``Server-Server API``. This process
+of synchronising shared conversation history between homeservers run by
+different parties is called ``Federation``. Matrix optimises for the the
+Availability and Partitioned properties of CAP theorem at
+the expense of Consistency.
+
+For example, for client A to send a message to client B, client A performs an
+HTTP PUT of the required JSON event on its homeserver (HS) using the
+client-server API. A's HS appends this event to its copy of the room's event
+graph, signing the message in the context of the graph for integrity. A's HS
+then replicates the message to B's HS by performing an HTTP PUT using the
+server-server API. B's HS authenticates the request, validates the event's
+signature, authorises the event's contents and then adds it to its copy of the
+room's event graph. Client B then receives the message from his homeserver via
+a long-lived GET request.
 
 ::
 
@@ -107,21 +138,23 @@ not communicate with each other directly.
 
        { Matrix client A }                             { Matrix client B }
            ^          |                                    ^          |
-           |  events  |                                    |  events  |
+           |  events  |  Client-Server API                 |  events  |
            |          V                                    |          V
        +------------------+                            +------------------+
        |                  |---------( HTTPS )--------->|                  |
        |   Home Server    |                            |   Home Server    |
        |                  |<--------( HTTPS )----------|                  |
-       +------------------+        Federation          +------------------+
+       +------------------+      Server-Server API     +------------------+
+                              History Synchronisation
+                                  (Federation)
 
-A "Client" typically represents a human using a web application or mobile app.
-Clients use the "Client-to-Server" (C-S) API to communicate with their home
-server, which stores their profile data and their record of the conversations
-in which they participate. Each client is associated with a user account (and
-may optionally support multiple user accounts). A user account is represented
-by a unique "User ID". This ID is namespaced to the home server which allocated
-the account and looks like::
+
+Users
+~~~~~
+
+Each client is associated with a user account, which is identified in Matrix
+using a unique "User ID". This ID is namespaced to the home server which
+allocated the account and has the form::
 
   @localpart:domain
 
@@ -131,19 +164,14 @@ this user. They are case-insensitive.
 .. TODO-spec
     - Need to specify precise grammar for Matrix IDs
 
-A "Home Server" is a server which provides C-S APIs and has the ability to
-federate with other HSes.  It is typically responsible for multiple clients.
-"Federation" is the term used to describe the sharing of data between two or
-more home servers.
-
 Events
 ~~~~~~
 
-Data in Matrix is encapsulated in an "event". An event is an action within the
-system. Typically each action (e.g. sending a message) correlates with exactly
-one event. Each event has a ``type`` which is used to differentiate different
-kinds of data. ``type`` values MUST be uniquely globally namespaced following
-Java's `package naming conventions
+All data exchanged over Matrix is expressed as an "event". Typically each client
+action (e.g. sending a message) correlates with exactly one event. Each event
+has a ``type`` which is used to differentiate different kinds of data. ``type``
+values MUST be uniquely globally namespaced following Java's `package naming
+conventions
 <http://docs.oracle.com/javase/specs/jls/se5.0/html/packages.html#7.7>`, e.g.
 ``com.example.myapp.event``. The special top-level namespace ``m.`` is reserved
 for events defined in the Matrix specification - for instance ``m.room.message``
@@ -153,36 +181,39 @@ of a "Room".
 Event Graphs
 ~~~~~~~~~~~~
 
-Each event has a list of zero or more `parent` events. These relations form
-directed acyclic graphs of events called `event graphs`. Every event graph has a single root event, and each event graph forms the 
-basis of the history of a matrix room.
+Events exchanged in the context of a room are stored in a directed acyclic graph
+(DAG) called an ``event graph``. The partial ordering of this graph gives the
+chronological ordering of events within the room. Each event in the graph has a
+list of zero or more ``parent`` events, which refer to any preceeding events
+which have no chronological successor from the perspective of the homeserver
+which created the event.
 
-Event graphs give a partial ordering of events, i.e. given two events one may
-be considered to have come before the other if one is an ancestor of the other.
-Since two events may be on separate branches, not all events can be compared in
-this manner.
+Typically an event has a single parent: the most recent message in the room at
+the point it was sent. However, homeservers may legitimately race with each
+other when sending messages, resulting in a single event having multiple
+successors. The next event added to the graph thus will have multiple parents.
+Every event graph has a single root event with no parent.
 
-Every event has a metadata `depth` field that is a positive integer that is
-strictly greater than the depths of any of its parents. The root event should
-have a depth of 1.
-
-[Note: if one event is before another, then it must have a strictly smaller
-depth]
+To order and ease chronological comparison between the events within the graph,
+homeservers maintain a ``depth`` metadata field on each event. An event's
+``depth`` is a positive integer that is strictly greater than the depths of any
+of its parents. The root event should have a depth of 1. Thus if one event is
+before another, then it must have a strictly smaller depth.
 
 Room structure
 ~~~~~~~~~~~~~~
 
-A room is a conceptual place where users can send and receive events. 
-Events are sent to a room, and all participants in
-that room with sufficient access will receive the event. Rooms are uniquely
-identified internally via a "Room ID", which look like::
+A room is a conceptual place where users can send and receive events. Events are
+sent to a room, and all participants in that room with sufficient access will
+receive the event. Rooms are uniquely identified internally via "Room IDs",
+which have the form::
 
   !opaque_id:domain
 
 There is exactly one room ID for each room. Whilst the room ID does contain a
 domain, it is simply for globally namespacing room IDs. The room does NOT
 reside on the domain specified. Room IDs are not meant to be human readable.
-They ARE case-sensitive.
+They are case-sensitive.
 
 The following conceptual diagram shows an ``m.room.message`` event being sent to 
 the room ``!qporfwt:matrix.org``::
@@ -190,6 +221,7 @@ the room ``!qporfwt:matrix.org``::
        { @alice:matrix.org }                             { @bob:domain.com }
                |                                                 ^
                |                                                 |
+      [HTTP POST]                                  [HTTP GET]
       Room ID: !qporfwt:matrix.org                 Room ID: !qporfwt:matrix.org
       Event type: m.room.message                   Event type: m.room.message
       Content: { JSON object }                     Content: { JSON object }
@@ -200,7 +232,7 @@ the room ``!qporfwt:matrix.org``::
        |   matrix.org     |                          |   domain.com     |
        +------------------+                          +------------------+
                |                                                 ^
-               |                                                 |
+               |         [HTTP PUT]                              |
                |         Room ID: !qporfwt:matrix.org            |
                |         Event type: m.room.message              |
                |         Content: { JSON object }                |
@@ -222,7 +254,7 @@ the room ``!qporfwt:matrix.org``::
                     |     Content: { JSON object }      |
                     |...................................|
 
-Federation maintains shared data structures per-room between multiple home
+Federation maintains *shared data structures* per-room between multiple home
 servers. The data is split into ``message events`` and ``state events``.
 
 ``Message events`` describe transient 'once-off' activity in a room such as an
@@ -252,7 +284,7 @@ participating in a room.
 Room Aliases
 ++++++++++++
 
-Each room can also have multiple "Room Aliases", which looks like::
+Each room can also have multiple "Room Aliases", which look like::
 
   #room_alias:domain
 
@@ -272,7 +304,7 @@ that are in the room that can be used to join via.
 
 ::
 
-          GET
+        HTTP GET
    #matrix:domain.com      !aaabaa:matrix.org
            |                    ^
            |                    |
@@ -285,7 +317,7 @@ that are in the room that can be used to join via.
    |________________________________|
 
 Identity
-++++++++
+~~~~~~~~
 
 Users in Matrix are identified via their matrix user ID (MXID). However,
 existing 3rd party ID namespaces can also be used in order to identify Matrix
@@ -306,47 +338,39 @@ the Matrix ecosystem. However, without one clients will not be able to look up
 user IDs using 3PIDs.
 
 Presence
-++++++++
+~~~~~~~~
 
-Each user has the concept of presence information. This encodes the
-"availability" of that user, suitable for display on other user's clients. This
-is transmitted as an ``m.presence`` event and is one of the few events which
-are sent *outside the context of a room*. The basic piece of presence
-information is represented by the ``presence`` key, which is an enum of one of
-the following:
+Each user has the concept of presence information. This encodes:
 
-  - ``online`` : The default state when the user is connected to an event
-    stream.
-  - ``unavailable`` : The user is not reachable at this time.
-  - ``offline`` : The user is not connected to an event stream.
-  - ``free_for_chat`` : The user is generally willing to receive messages
-    moreso than default.
-  - ``hidden`` : Behaves as offline, but allows the user to see the client
-    state anyway and generally interact with client features. (Not yet
-    implemented in synapse).
-    
-.. TODO-spec
-  This seems like a very constrained list of states - surely presence states 
-  should be extensible, with us providing a baseline, and possibly a scale of 
-  availability?  For instance, do-not-disturb is missing here, as well as a 
-  distinction between 'away' and 'busy'.
+ * Whether the user is currently online
+ * How recently the user was last active (as seen by the server)
+ * Whether a given client considers the user to be currently idle
+ * Arbitrary information about the user's current status (e.g. "in a meeting").
 
-This basic ``presence`` field applies to the user as a whole, regardless of how
-many client devices they have connected. The presence state is pushed by the homeserver to all connected clients for a user to ensure a consistent experience for the user.
+This information is collated from both per-device (online; idle; last_active) and
+per-user (status) data, aggregated by the user's homeserver and transmitted as
+an ``m.presence`` event. This is one of the few events which are sent *outside
+the context of a room*. Presence events are sent to all users who subscribe to
+this user's presence through a presence list or by sharing membership of a room.
 
-.. TODO-spec
-  We need per-device presence in order to handle push notification semantics and similar.
+.. TODO
+  How do we let users hide their presence information?
 
-In addition, the server maintains a timestamp of the last time it saw a
-pro-active event from the user; either sending a message to a room, or changing
-presence state from a lower to a higher level of availability (thus: changing
-state from ``unavailable`` to ``online`` counts as a proactive event, whereas in
-the other direction it will not). This timestamp is presented via a key called
-``last_active_ago``, which gives the relative number of milliseconds since the
-message is generated/emitted that the user was last seen active.
+.. TODO
+  The last_active specifics should be moved to the detailed presence event section
+  
+Last activity is tracked by the server maintaining a timestamp of the last time
+it saw a pro-active event from the user. Any event which could be triggered by a
+human using the application is considered pro-active (e.g. sending an event to a
+room). An example of a non-proactive client activity would be a client setting
+'idle' presence status, or polling for events. This timestamp is presented via a
+key called ``last_active_ago``, which gives the relative number of milliseconds
+since the message is generated/emitted that the user was last seen active.
 
-Presence List
-~~~~~~~~~~~~~
+N.B. in v1 API, status/online/idle state are muxed into a single 'presence' field on the m.presence event.
+
+Presence Lists
+~~~~~~~~~~~~~~
 
 Each user's home server stores a "presence list". This stores a list of user IDs
 whose presence the user wants to follow.
@@ -355,38 +379,31 @@ To be added to this list, the user being added must be invited by the list owner
 and accept the invitation. Once accepted, both user's HSes track the
 subscription.
 
-Presence and Permissions
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-For a viewing user to be allowed to see the presence information of a target
-user, either:
-
- - The target user has allowed the viewing user to add them to their presence
-   list, or
- - The two users share at least one room in common
-
-In the latter case, this allows for clients to display some minimal sense of
-presence information in a user list for a room.
-
 
 Profiles
-++++++++
+~~~~~~~~
 
-.. TODO-spec
-  - Metadata extensibility
+Users may publish arbitrary key/value data associated with their account - such
+as a human readable ``display name``, a profile photo URL, contact information
+(email address, phone nubers, website URLs etc).
 
-Internally within Matrix users are referred to by their user ID, which is
-typically a compact unique identifier. Profiles grant users the ability to see
-human-readable names for other users that are in some way meaningful to them.
-Additionally, profiles can publish additional information, such as the user's
-age or location.
+In Client-Server API v2, profile data is typed using namespaced keys for
+interoperability, much like events - e.g. ``m.profile.display_name``.
 
-A Profile consists of a display name, an avatar picture, and a set of other
-metadata fields that the user may wish to publish (email address, phone
-numbers, website URLs, etc...). This specification puts no requirements on the
-display name other than it being a valid unicode string. Avatar images are not
-stored directly; instead the home server stores an ``http``-scheme URL from which clients may fetch the image.
+.. TODO
+  Actually specify the different types of data - e.g. what format are display
+  names allowed to be?
 
+Private User Data
+~~~~~~~~~~~~~~~~~
+
+Users may also store arbitrary private key/value data in their account - such as
+client preferences, or server configuration settings which lack any other
+dedicated API.  The API is symmetrical to managing Profile data.
+
+.. TODO
+  Would it really be overengineered to use the same API for both profile &
+  private user data, but with different ACLs?
 
 API Standards
 -------------
@@ -424,8 +441,9 @@ response". This is a JSON object which looks like::
 The ``error`` string will be a human-readable error message, usually a sentence
 explaining what went wrong. The ``errcode`` string will be a unique string
 which can be used to handle an error message e.g. ``M_FORBIDDEN``. These error
-codes should have their namespace first in ALL CAPS, followed by a single _.
-For example, if there was a custom namespace ``com.mydomain.here``, and a
+codes should have their namespace first in ALL CAPS, followed by a single _ to
+ease seperating the namespace from the error code.. For example, if there was a
+custom namespace ``com.mydomain.here``, and a
 ``FORBIDDEN`` code, the error code should look like
 ``COM.MYDOMAIN.HERE_FORBIDDEN``. There may be additional keys depending on the
 error, but the keys ``error`` and ``errcode`` MUST always be present.
@@ -501,82 +519,4 @@ In contrast, these are invalid requests::
     {
       "key": "This is a put but it is missing a txnId."
     }
-
-Glossary
---------
-
-Backfilling:
-  The process of synchronising historic state from one home server to another,
-  to backfill the event storage so that scrollback can be presented to the
-  client(s). Not to be confused with pagination.
-
-Context:
-  A single human-level entity of interest (currently, a chat room)
-
-EDU (Ephemeral Data Unit):
-  A message that relates directly to a given pair of home servers that are
-  exchanging it. EDUs are short-lived messages that related only to one single
-  pair of servers; they are not persisted for a long time and are not forwarded
-  on to other servers. Because of this, they have no internal ID nor previous
-  EDUs reference chain.
-
-Event:
-  A record of activity that records a single thing that happened on to a context
-  (currently, a chat room). These are the "chat messages" that Synapse makes
-  available.
-
-PDU (Persistent Data Unit):
-  A message that relates to a single context, irrespective of the server that
-  is communicating it. PDUs either encode a single Event, or a single State
-  change. A PDU is referred to by its PDU ID; the pair of its origin server
-  and local reference from that server.
-
-PDU ID:
-  The pair of PDU Origin and PDU Reference, that together globally uniquely
-  refers to a specific PDU.
-
-PDU Origin:
-  The name of the origin server that generated a given PDU. This may not be the
-  server from which it has been received, due to the way they are copied around
-  from server to server. The origin always records the original server that
-  created it.
-
-PDU Reference:
-  A local ID used to refer to a specific PDU from a given origin server. These
-  references are opaque at the protocol level, but may optionally have some
-  structured meaning within a given origin server or implementation.
-
-Presence:
-  The concept of whether a user is currently online, how available they declare
-  they are, and so on. See also: doc/model/presence
-
-Profile:
-  A set of metadata about a user, such as a display name, provided for the
-  benefit of other users. See also: doc/model/profiles
-
-Room ID:
-  An opaque string (of as-yet undecided format) that identifies a particular
-  room and used in PDUs referring to it.
-
-Room Alias:
-  A human-readable string of the form #name:some.domain that users can use as a
-  pointer to identify a room; a Directory Server will map this to its Room ID
-
-State:
-  A set of metadata maintained about a Context, which is replicated among the
-  servers in addition to the history of Events.
-
-User ID:
-  A string of the form @localpart:domain.name that identifies a user for
-  wire-protocol purposes. The localpart is meaningless outside of a particular
-  home server. This takes a human-readable form that end-users can use directly
-  if they so wish, avoiding the 3PIDs.
-
-Transaction:
-  A message which relates to the communication between a given pair of servers.
-  A transaction contains possibly-empty lists of PDUs and EDUs.
-
-.. TODO
-  This glossary contradicts the terms used above - especially on State Events v. "State"
-  and Non-State Events v. "Events".  We need better consistent names.
 

@@ -5,7 +5,7 @@ Definitions
 
 # *Event* -- A JSON object that represents a piece of information to be
 distributed to the the room. The object includes a payload and metadata,
-including a `type` used to indicate what the payload is for and how to process
+including a ``type`` used to indicate what the payload is for and how to process
 them. It also includes one or more references to previous events.
 
 # *Event graph* -- Events and their references to previous events form a
@@ -13,7 +13,7 @@ directed acyclic graph. All events must be a descendant of the first event in a
 room, except for a few special circumstances.
 
 # *State event* -- A state event is an event that has a non-null string valued
-`state_key` field. It may also include a `prev_state` key referencing exactly
+`state_key` field. It may also include a ``prev_state`` key referencing exactly
 one state event with the same type and state key, in the same event graph.
 
 # *State tree* -- A state tree is a tree formed by a collection of state events

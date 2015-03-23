@@ -436,9 +436,9 @@ SHOULD be mapped in the same way as "user" URIs.
   
 Event fields
 ~~~~~~~~~~~~
-We recommend that any gatewayed events should include an `external_url` field in
-their content to provide a way for Matrix clients to link into the 'native'
-client from which the event originated.  For instance, this could contain the
+We recommend that any gatewayed events should include an ``external_url`` field
+in their content to provide a way for Matrix clients to link into the 'native'
+client from which the event originated. For instance, this could contain the
 message-ID for emails/nntp posts, or a link to a blog comment when gatewaying
 blog comment traffic in & out of matrix
 

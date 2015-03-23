@@ -101,6 +101,7 @@ def prepare_env():
         pass
     
 def cleanup_env():
+    #pass
     shutil.rmtree("./tmp")
 
 def main():
