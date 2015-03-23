@@ -13,7 +13,8 @@ pushkey
   This is a unique identifier for this pusher. The value you should use for this
   is the routing or destination address information for the notification, for
   example, the APNS token for APNS or the Registration ID for GCM. If your
-  notification client has no such concept, use any unique identifier.
+  notification client has no such concept, use any unique identifier. Max length,
+  512 bytes.
 kind
   The kind of pusher to configure. 'http' makes a pusher that sends HTTP pokes.
   null deletes the pusher.
