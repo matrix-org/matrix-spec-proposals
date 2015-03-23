@@ -556,6 +556,7 @@ Rejecting a presence invite::
 
 Profiles
 --------
+
 The server API for profiles is based entirely on the following Federation
 Queries. There are no additional EDU or PDU types involved, other than the
 implicit ``m.presence`` and ``m.room.member`` events (see section below).
@@ -576,3 +577,4 @@ If the query contains the optional ``field`` key, it should give the name of a
 result field. If such is present, then the result should contain only a field
 of that name, with no others present. If not, the result should contain as much
 of the user's profile as the home server has available and can make public.
+
