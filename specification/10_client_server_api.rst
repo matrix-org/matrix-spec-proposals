@@ -148,7 +148,7 @@ Similarly, to paginate events backwards in order to lazy-load in previous
 history from the room, you simply GET $PREFIX/rooms/<room_id>/messages
 specifying the ``from`` token to paginate backwards from and a limit of the number
 of messages to retrieve. For instance, calling this API with a ``from`` parameter
-of '1-2-3' and a limit of 5 would return:
+of '1-2-3' and a limit of 5 would return::
 
   [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
   ^                            ^
