@@ -40,6 +40,11 @@ data
   A dictionary of information for the pusher implementation itself. For HTTP
   pushers, this must contain a 'url' key which is a string of the URL that
   should be used to send notifications.
+append
+  If this is set to boolean true, the Home Server should add another pusher
+  with the given pushkey and App ID in addition to any others with different
+  user IDs. Otherwise, the Home Server must remove any other pushers with the
+  same App ID and pushkey for different users. The default is false.
 
 If the pusher was created successfully, a JSON dictionary is returned (which may
 be empty).
