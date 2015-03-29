@@ -190,15 +190,15 @@ Events in a room
 
 Room events are split into two categories:
 
-:Message events:
-  These are events which describe transient "once-off" activity in a room:
-  typically communication such as sending an instant messaage or setting up a
-  VoIP call. These used to be called 'non-state' events.
-
 :State Events:
   These are events which update the metadata state of the room (e.g. room topic,
   room membership etc). State is keyed by a tuple of event ``type`` and a
   ``state_key``. State in the room with the same key-tuple will be overwritten.
+
+:Message events:
+  These are events which describe transient "once-off" activity in a room:
+  typically communication such as sending an instant messaage or setting up a
+  VoIP call. These used to be called 'non-state' events.
 
 This specification outlines several events, all with the event type prefix
 ``m.``. However, applications may wish to add their own type of event, and this
