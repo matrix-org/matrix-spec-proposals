@@ -1098,7 +1098,7 @@ The client API for presence is on the following set of REST calls.
 
 Fetching basic status::
 
-  GET $PREFIX/presence/:user_id/status
+  GET $PREFIX/presence/<user_id>/status
 
   Returned content: JSON object containing the following keys:
     presence: "offline"|"unavailable"|"online"|"free_for_chat"
@@ -1107,7 +1107,7 @@ Fetching basic status::
 
 Setting basic status::
 
-  PUT $PREFIX/presence/:user_id/status
+  PUT $PREFIX/presence/<user_id>/status
 
   Content: JSON object containing the following keys:
     presence and status_msg: as above
@@ -1143,7 +1143,7 @@ The client API for profile management consists of the following REST calls.
 
 Fetching a user account displayname::
 
-  GET $PREFIX/profile/:user_id/displayname
+  GET $PREFIX/profile/<user_id>/displayname
 
   Returned content: JSON object containing the following keys:
     displayname: string of freeform text
@@ -1154,14 +1154,14 @@ servers.
 
 Setting a new displayname::
 
-  PUT $PREFIX/profile/:user_id/displayname
+  PUT $PREFIX/profile/<user_id>/displayname
 
   Content: JSON object containing the following keys:
     displayname: string of freeform text
 
 Fetching a user account avatar URL::
 
-  GET $PREFIX/profile/:user_id/avatar_url
+  GET $PREFIX/profile/<user_id>/avatar_url
 
   Returned content: JSON object containing the following keys:
     avatar_url: string containing an http-scheme URL
@@ -1171,14 +1171,14 @@ other users' avatar URL.
 
 Setting a new avatar URL::
 
-  PUT $PREFIX/profile/:user_id/avatar_url
+  PUT $PREFIX/profile/<user_id>/avatar_url
 
   Content: JSON object containing the following keys:
     avatar_url: string containing an http-scheme URL
 
 Fetching combined account profile information::
 
-  GET $PREFIX/profile/:user_id
+  GET $PREFIX/profile/<user_id>
 
   Returned content: JSON object containing the following keys:
     displayname: string of freeform text

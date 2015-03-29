@@ -308,7 +308,7 @@ All these URLs are name-spaced within a prefix of::
 
 For active pushing of messages representing live activity "as it happens"::
 
-  PUT .../send/:transaction_id/
+  PUT .../send/<transaction_id>/
     Body: JSON encoding of a single Transaction
     Response: TODO-doc
 
@@ -319,7 +319,7 @@ embedded PDU in the transaction body will be processed.
 
 To fetch a particular PDU::
 
-  GET .../pdu/:origin/:pdu_id/
+  GET .../pdu/<origin>/<pdu_id>/
     Response: JSON encoding of a single Transaction containing one PDU
 
 Retrieves a given PDU from the server. The response will contain a single new
@@ -328,7 +328,7 @@ Transaction, inside which will be the requested PDU.
 
 To fetch all the state of a given context::
 
-  GET .../state/:context/
+  GET .../state/<context>/
     Response: JSON encoding of a single Transaction containing multiple PDUs
 
 Retrieves a snapshot of the entire current state of the given context. The
@@ -337,7 +337,7 @@ that encode the state.
 
 To backfill events on a given context::
 
-  GET .../backfill/:context/
+  GET .../backfill/<context>/
     Query args: v, limit
     Response: JSON encoding of a single Transaction containing multiple PDUs
 
@@ -359,7 +359,7 @@ arguments.
 
 To make a query::
 
-  GET .../query/:query_type
+  GET .../query/<query_type>
     Query args: as specified by the individual query types
     Response: JSON encoding of a response object
 

@@ -5,7 +5,7 @@ Client APIs
 -----------
 
 To set "I am typing for the next N msec"::
-  PUT .../rooms/:room_id/typing/:user_id
+  PUT .../rooms/<room_id>/typing/<user_id>
   Content:  { "typing": true, "timeout": N }
   # timeout is in msec; I suggest no more than 20 or 30 seconds
 
@@ -15,7 +15,7 @@ timeout runs out. Just keep declaring a new timeout, it will replace the old
 one.
 
 To set "I am no longer typing"::
-  PUT ../rooms/:room_id/typing/:user_id
+  PUT ../rooms/<room_id>/typing/<user_id>
   Content: { "typing": false }
 
 Client Events
