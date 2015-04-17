@@ -236,7 +236,7 @@ coalesce
 set_tweak
   Sets an entry in the 'tweaks' dictionary key that is sent in the notification
   poke. This takes the form of a dictionary with a 'set_tweak' key whose value
-  is the name of the tweak to set.  It must also have a 'value' key which is
+  is the name of the tweak to set. It may also have a 'value' key which is
   the value to which it should be set.
 
 Actions that have no parameters are represented as a string. Otherwise, they are
