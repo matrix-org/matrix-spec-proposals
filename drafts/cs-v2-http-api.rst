@@ -1,6 +1,237 @@
 Client-Server v2 HTTP API Draft
 ===============================
 
+Authentication
+--------------
+Most API endpoints require the user to identify themselves by presenting
+previously obtained credentials
+
+TODO: Detail access_token or its replacement here.
+
+If credentials are missing or invalid, the HTTP call will return with a status
+of 401 and the error code, ``M_MISSING_TOKEN`` or ``M_UNKNOWN_TOKEN``
+respectively.
+
+User-Interactive Authentication
+-------------------------------
+Some API endpoints such as ``login`` or ``register`` require authentication that
+interacts with the user. The home server may provide many different ways of
+authenticating, such as user/password auth, login via a social network (OAuth2),
+login by confirming a token sent to their email address, etc. This specification
+does not define how home servers should authorise their users but instead
+defines the standard interface which implementations should follow so that ANY
+client can login to ANY home server.
+
+The process takes the form of one or more stages, where at each stage the client
+submits a set of data for a given stage type and awaits a response from the
+server, which will either be a final success or a request to perform an
+additional stage. This exchange continues until the final success.
+
+Authentication works by client and server exchanging dictionaries. This
+specification covers how this is done over JSON HTTP POST.
+
+For each endpoint, a server offers one of more 'flows' that the client can use
+to authenticate itself. Each flow comprises one or more 'stages'. When all
+stages are complete, authentication is complete and the API call succeeds. To
+establish what flows a server supports for an endpoint, a client sends the
+request with no authentication. The home server returns a response with HTTP
+status 401 and a JSON object as folows::
+
+  {
+    "flows": [
+      {
+        "stages": [ "example.type.foo", "example.type.bar" ]
+      },
+      {
+        "stages": [ "example.type.foo", "example.type.baz" ]
+      }
+    ],
+    "params": {
+        "example.type.baz": {
+            "example_key": "foobar"
+        }
+    },
+    "session": "xxxxxx"
+  }
+
+In addition to the ``flows``, this objects alows contains some extra
+information:
+
+params
+  This section contains any information that the client will need to know in
+  order to use a given type of authentication. For each login stage type
+  presented, that type may be present as a key in this dictionary. For example,
+  the public part of an OAuth client ID could be given here.
+session
+  This is a session identifier that the client must pass back to the home
+  server, if one is provided, in subsequent attempts to authenticate in the same
+  API call.
+
+The client then chooses a flow and attempts to complete one of the stages. It
+does this by resubmitting the same request with the the addition of an 'auth'
+key in the object that it submits. This dictionary contains a ``type`` key whose
+value is the name of the stage type that the client is attempting to complete.
+It must also contains a ``session`` key with the value of the session key given
+by the home server, if one was given. It also contains other keys dependent on
+the stage type being attempted. For example, if the client is attempting to
+complete login type ``example.type.foo``, it might submit something like this::
+
+  {
+    "a_request_parameter": "something",
+    "another_request_parameter": "something else",
+    "auth": {
+        "type": "example.type.foo",
+        "session", "xxxxxx",
+        "example_credential": "verypoorsharedsecret"
+    }
+  }
+
+If the home server deems the authentication attempt to be successful but still
+requires more stages to be completed, it returns HTTP status 401 along with the
+same object as when no authentication was attempted, with the addition of the
+``completed`` key which is an array of stage type the client has completed
+successfully::
+
+  {
+    "completed": [ "example.type.foo" ],
+    "flows": [
+      {
+        "stages": [ "example.type.foo", "example.type.bar" ]
+      },
+      {
+        "stages": [ "example.type.foo", "example.type.baz" ]
+      }
+    ],
+    "params": {
+        "example.type.baz": {
+            "example_key": "foobar"
+        }
+    },
+    "session": "xxxxxx"
+  }
+
+If the home server decides the attempt was unsuccessful, it returns an error
+message in the standard format::
+
+  {
+    "errcode": [
+        "M_EXAMPLE_ERROR"
+    ],
+    "error": "Something was wrong"
+  }
+
+If the client has completed all stages of a flow, the home server performs the
+API call and returns the result as normal.
+
+Some authentication types may be completed by means other than through the
+Matrix client, for example, an email confirmation may be completed when the user
+clicks on the link in the email. In this case, the client retries the request
+with an auth dict containing only the session key. The response to this will be
+the same as if the client were attempting to complete an auth state normally,
+ie. the request will either complete or request auth, with the presence or
+absence of that login stage type in the 'completed' array indicating whether
+that stage is complete.
+
+This specification defines the following login types:
+ - ``m.login.password``
+ - ``m.login.oauth2``
+ - ``m.login.email.identity``
+
+Password-based
+~~~~~~~~~~~~~~
+:Type:
+  ``m.login.password``
+:Description:
+  The client submits a username and secret password, both sent in plaintext.
+
+To respond to this type, reply with an auth dict as follows::
+
+  {
+    "type": "m.login.password",
+    "user": "<user_id or user localpart>",
+    "password": "<password>"
+  }
+
+Google ReCaptcha
+~~~~~~~~~~~~~~~~
+:Type:
+  ``m.login.recaptcha``
+:Description:
+  The user completes a Google ReCaptcha 2.0 challenge 
+
+To respond to this type, reply with an auth dict as follows::
+
+  {
+    "type": "m.login.recaptcha",
+    "response": "<captcha response>"
+  }
+
+OAuth2-based
+~~~~~~~~~~~~
+:Type:
+  ``m.login.oauth2``
+:Description:
+  Authentication is supported via OAuth2 URLs. This login consists of multiple
+  requests.
+:Parameters:
+  ``uri``: Authorization Request URI OR service selection URI. Both contain an
+  encoded ``redirect URI``.
+
+The home server acts as a 'confidential' client for the purposes of OAuth2.  If
+the uri is a ``sevice selection URI``, it MUST point to a webpage which prompts
+the user to choose which service to authorize with. On selection of a service,
+this MUST link through to an ``Authorization Request URI``. If there is only 1
+service which the home server accepts when logging in, this indirection can be
+skipped and the "uri" key can be the ``Authorization Request URI``.
+
+The client then visits the ``Authorization Request URI``, which then shows the
+OAuth2 Allow/Deny prompt. Hitting 'Allow' returns the [XXX: redirects to the?]``redirect URI`` with the
+auth code. Home servers can choose any path for the ``redirect URI``. Once the
+OAuth flow has completed, the client retries the request with the session only,
+as above.
+
+Email-based (identity server)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:Type:
+  ``m.login.email.identity``
+:Description:
+  Authentication is supported by authorising an email address with an identity
+  server.
+
+Prior to submitting this, the client should authenticate with an identity
+server. After authenticating, the session information should be submitted to
+the home server.
+
+To respond to this type, reply with an auth dict as follows::
+
+  {
+    "type": "m.login.email.identity",
+    "threepidCreds": [
+      {
+        "sid": "<identity server session id>",
+        "clientSecret": "<identity server client secret>",
+        "idServer": "<url of identity server authed with, e.g. 'matrix.org:8090'>"
+      }
+    ]
+  }
+
+Fallback
+~~~~~~~~
+Clients cannot be expected to be able to know how to process every single login
+type. If a client does not know how to handle a given login type, it can direct
+the user to a web browser with the URL of a fallback page which will allow the
+user to complete that login step out-of-band in their web browser. The URL it
+should open is the Home Server base URL plus prefix, plus::
+
+  /auth/<stage type>/fallback/web?session=<session ID>
+
+Where ``stage type`` is the type name of the stage it is attempting and
+``session id`` is the ID of the session given by the home server.
+
+This MUST return an HTML page which can perform this authentication stage. This
+page must attempt to call the Javascript function ``window.onAuthDone`` when
+the authentication has been completed.
+
 Filter API
 ----------
 
