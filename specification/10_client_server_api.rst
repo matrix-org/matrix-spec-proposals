@@ -71,7 +71,7 @@ status 401 and a JSON object as folows::
     "session": "xxxxxx"
   }
 
-In addition to the ``flows``, this objects alows contains some extra
+In addition to the ``flows``, this object contains some extra
 information:
 
 params
@@ -197,9 +197,9 @@ OAuth2-based
   encoded ``redirect URI``.
 
 The home server acts as a 'confidential' client for the purposes of OAuth2.  If
-the uri is a ``sevice selection URI``, it MUST point to a webpage which prompts
+the uri is a ``service selection URI``, it MUST point to a webpage which prompts
 the user to choose which service to authorize with. On selection of a service,
-this MUST link through to an ``Authorization Request URI``. If there is only 1
+this MUST link through to an ``Authorization Request URI``. If there is only one
 service which the home server accepts when logging in, this indirection can be
 skipped and the "uri" key can be the ``Authorization Request URI``.
 
