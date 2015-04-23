@@ -73,6 +73,14 @@ Retrieving Server Keys
 Version 2
 +++++++++
 
+Each home server publishes its public keys under ``/_matrix/key/v2/server/``.
+Home servers query for keys by either getting ``/_matrix/key/v2/server/``
+directly or by querying an intermediate perspective server using a
+``/_matrix/key/v2/query`` API. Intermediate perspective servers query the
+``/_matrix/key/v2/server/`` API on behalf of another server and sign the
+response with their own key. A server may query multiple perspective servers
+to ensure that they all report the same public keys.
+
 Publishing Keys
 _______________
 
@@ -103,10 +111,10 @@ the key has expired.
 The ``old_verify_keys`` can be used to sign events with an ``origin_server_ts``
 before the ``expired_ts``.
 
-Intermediate servers should cache a response for half of its remaining life
-time to avoid serving a stale response. Servers should avoid querying for
-certificates more frequently than once an hour to avoid flooding a server
-with requests.
+Intermediate perspective servers should cache a response for half of its
+remaining life time to avoid serving a stale response. Servers should avoid
+querying for certificates more frequently than once an hour to avoid flooding
+a server with requests.
 
 ==================== =================== ======================================
     Key                    Type                         Description
