@@ -109,7 +109,8 @@ it should request that ``key_id`` for the originating server to check whether
 the key has expired.
 
 The ``old_verify_keys`` can be used to sign events with an ``origin_server_ts``
-before the ``expired_ts``.
+before the ``expired_ts``. The ``expired_ts`` is a millisecond POSIX timestamp
+of when the originating server stopped using that key.
 
 Intermediate perspective servers should cache a response for half of its
 remaining life time to avoid serving a stale response. Servers should avoid
