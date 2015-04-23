@@ -70,6 +70,140 @@ endpoints or to failover to another endpoint if an endpoint fails.
 Retrieving Server Keys
 ~~~~~~~~~~~~~~~~~~~~~~
 
+Version 2
++++++++++
+
+Publishing Keys
+_______________
+
+Home servers publish the allowed TLS fingerprints and signing keys in a JSON
+object at ``/_matrix/key/v2/server/${key_id}``. The response contains a list of
+``verify_keys`` that are valid for signing federation requests made by the
+server and for signing events. It contains a list of ``old_verify_keys``
+which are only valid for signing events. Finally the response contains a list
+of TLS certificate fingerprints to validate any connection made to the server.
+
+A server may have multiple keys active at a given time. A server may have any
+number of old keys. It is recommended that servers return a single JSON
+response listing all of its keys whenever any ``key_id`` is requested to reduce
+the number of round trips needed to discover the relevant keys for a server.
+However a server may return a different responses for a different ``key_id``.
+
+The ``tls_certificates`` contain a list of hashes of the X.509 TLS certificates
+currently used by the server. The list must include SHA-256 hashes for every
+certificate currently in use by the server. These fingerprints are valid until
+the millisecond POSIX timestamp in ``valid_until_ts``.
+
+The ``verify_keys`` can be used to sign requests and events made by the server
+until the millisecond POSIX timestamp in ``valid_until_ts``. If a Home Server
+receives an event with a ``origin_server_ts`` after the ``valid_until_ts`` then
+it should request that ``key_id`` for the originating server to check whether
+the key has expired.
+
+The ``old_verify_keys`` can be used to sign events with an ``origin_server_ts``
+before the ``expired_ts``.
+
+Intermediate servers should cache a response for half of its remaining life
+time to avoid serving a stale response. Servers should avoid querying for
+certificates more frequently than once an hour to avoid flooding a server
+with requests.
+
+==================== =================== ======================================
+    Key                    Type                         Description
+==================== =================== ======================================
+``server_name``      String              DNS name of the home server.
+``verify_keys``      Object              Public keys of the home server for
+                                         verifying digital signatures.
+``old_verify_keys``  Object              The public keys that the server used
+                                         to use and when it stopped using them.
+``signatures``       Object              Digital signatures for this object
+                                         signed using the ``verify_keys``.
+``tls_fingerprints`` Array of Objects    Hashes of X.509 TLS certificates used
+                                         by this this server encoded as base64.
+``valid_until_ts``   Integer             POSIX timestamp when the list of valid
+                                         keys should be refreshed.
+==================== =================== ======================================
+
+
+.. code:: json
+
+    {
+        "old_verify_keys": {
+            "ed25519:auto1": {
+                "expired_ts": 922834800000,
+                "key": "Base+64+Encoded+Old+Verify+Key"
+            }
+        },
+        "server_name": "example.org",
+        "signatures": {
+            "example.org": {
+                "ed25519:auto2": "Base+64+Encoded+Signature"
+            }
+        },
+        "tls_fingerprints": [
+            {
+                "sha256": "Base+64+Encoded+SHA-256-Fingerprint"
+            }
+        ],
+        "valid_until_ts": 1052262000000,
+        "verify_keys": {
+            "ed25519:auto2": {
+                "key": "Base+64+Encoded+Signature+Verification+Key"
+            }
+        }
+    }
+
+Querying Keys Through Another Server
+____________________________________
+
+Servers may offer a query API ``_matrix/key/v2/query/`` for getting the keys
+for another server. This API can be used to GET at list of JSON objects for a
+given server or to POST a bulk query for a number of keys from a number of
+servers. Either way the response is a list of JSON objects containing the
+JSON published by the server under ``_matrix/key/v2/server/`` signed by
+both the originating server and by this server.
+
+This API can return keys for servers that are offline be using cached responses
+taken from when the server was online. Keys can be queried from multiple
+servers to mitigate against DNS spoofing.
+
+Requests:
+
+.. code::
+
+    GET /_matrix/key/v2/query/${server_name}/${key_id} HTTP/1.1
+
+    POST /_matrix/key/v2/query HTTP/1.1
+    Content-Type: application/json
+
+    {
+        "server_keys": {
+            "$server_name": [
+                "$key_id"
+            ]
+        }
+    }
+
+
+Response:
+
+.. code::
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    {
+        "server_keys": [
+           # List of responses with same format as /_matrix/key/v2/server
+           # signed by both the originating server and this server.
+        ]
+    }
+
+Version 1
++++++++++
+.. WARNING::
+  Version 1 of key distribution is obsolete
+
+
 Home servers publish their TLS certificates and signing keys in a JSON object
 at ``/_matrix/key/v1``.
 
