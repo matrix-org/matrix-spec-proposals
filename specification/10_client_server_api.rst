@@ -10,10 +10,262 @@ support both lightweight clients which store no state and lazy-load data from
 the server as required - as well as heavyweight clients which maintain a full
 local peristent copy of server state.
 
-This describes v1 of the Client-Server API as featured in the original September
-2014 launch of Matrix. Version 2 is currently in development (as of Jan-March
-2015) as an incremental but backwards-incompatible refinement of Version 1 and
-will be released shortly.
+This mostly describes v1 of the Client-Server API as featured in the original September
+2014 launch of Matrix, apart from user-interactive authentication where it is
+encouraged to move to V2, therefore this is the version documented here.
+Version 2 is currently in development (as of Jan-March 2015) as an incremental
+but backwards-incompatible refinement of Version 1 and will be released
+shortly.
+
+Authentication
+--------------
+Most API endpoints require the user to identify themselves by presenting
+previously obtained credentials in the form of an ``access_token`` query
+parameter.
+
+In API version 2, when credentials are missing or invalid, the HTTP call will
+return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
+``M_UNKNOWN_TOKEN`` respectively.
+
+User-Interactive Authentication API
+-----------------------------------
+This section refers to API Version 2.
+
+Some API endpoints such as ``login`` or ``register`` require authentication that
+interacts with the user. The home server may provide many different ways of
+authenticating, such as user/password auth, login via a social network (OAuth2),
+login by confirming a token sent to their email address, etc. This specification
+does not define how home servers should authorise their users but instead
+defines the standard interface which implementations should follow so that ANY
+client can login to ANY home server.
+
+The process takes the form of one or more stages, where at each stage the client
+submits a set of data for a given stage type and awaits a response from the
+server, which will either be a final success or a request to perform an
+additional stage. This exchange continues until the final success.
+
+Authentication works by client and server exchanging dictionaries. This
+specification covers how this is done over JSON HTTP POST.
+
+For each endpoint, a server offers one of more 'flows' that the client can use
+to authenticate itself. Each flow comprises one or more 'stages'. When all
+stages are complete, authentication is complete and the API call succeeds. To
+establish what flows a server supports for an endpoint, a client sends the
+request with no authentication. The home server returns a response with HTTP
+status 401 and a JSON object as folows::
+
+  {
+    "flows": [
+      {
+        "stages": [ "example.type.foo", "example.type.bar" ]
+      },
+      {
+        "stages": [ "example.type.foo", "example.type.baz" ]
+      }
+    ],
+    "params": {
+        "example.type.baz": {
+            "example_key": "foobar"
+        }
+    },
+    "session": "xxxxxx"
+  }
+
+In addition to the ``flows``, this objects alows contains some extra
+information:
+
+params
+  This section contains any information that the client will need to know in
+  order to use a given type of authentication. For each login stage type
+  presented, that type may be present as a key in this dictionary. For example,
+  the public part of an OAuth client ID could be given here.
+session
+  This is a session identifier that the client must pass back to the home
+  server, if one is provided, in subsequent attempts to authenticate in the same
+  API call.
+
+The client then chooses a flow and attempts to complete one of the stages. It
+does this by resubmitting the same request with the the addition of an 'auth'
+key in the object that it submits. This dictionary contains a ``type`` key whose
+value is the name of the stage type that the client is attempting to complete.
+It must also contains a ``session`` key with the value of the session key given
+by the home server, if one was given. It also contains other keys dependent on
+the stage type being attempted. For example, if the client is attempting to
+complete login type ``example.type.foo``, it might submit something like this::
+
+  {
+    "a_request_parameter": "something",
+    "another_request_parameter": "something else",
+    "auth": {
+        "type": "example.type.foo",
+        "session", "xxxxxx",
+        "example_credential": "verypoorsharedsecret"
+    }
+  }
+
+If the home server deems the authentication attempt to be successful but still
+requires more stages to be completed, it returns HTTP status 401 along with the
+same object as when no authentication was attempted, with the addition of the
+``completed`` key which is an array of stage type the client has completed
+successfully::
+
+  {
+    "completed": [ "example.type.foo" ],
+    "flows": [
+      {
+        "stages": [ "example.type.foo", "example.type.bar" ]
+      },
+      {
+        "stages": [ "example.type.foo", "example.type.baz" ]
+      }
+    ],
+    "params": {
+        "example.type.baz": {
+            "example_key": "foobar"
+        }
+    },
+    "session": "xxxxxx"
+  }
+
+If the home server decides the attempt was unsuccessful, it returns an error
+message in the standard format::
+
+  {
+    "errcode": [
+        "M_EXAMPLE_ERROR"
+    ],
+    "error": "Something was wrong"
+  }
+
+If the client has completed all stages of a flow, the home server performs the
+API call and returns the result as normal.
+
+Some authentication types may be completed by means other than through the
+Matrix client, for example, an email confirmation may be completed when the user
+clicks on the link in the email. In this case, the client retries the request
+with an auth dict containing only the session key. The response to this will be
+the same as if the client were attempting to complete an auth state normally,
+ie. the request will either complete or request auth, with the presence or
+absence of that login stage type in the 'completed' array indicating whether
+that stage is complete.
+
+This specification defines the following login types:
+ - ``m.login.password``
+ - ``m.login.oauth2``
+ - ``m.login.email.identity``
+ - ``m.login.dummy``
+
+Password-based
+~~~~~~~~~~~~~~
+:Type:
+  ``m.login.password``
+:Description:
+  The client submits a username and secret password, both sent in plaintext.
+
+To respond to this type, reply with an auth dict as follows::
+
+  {
+    "type": "m.login.password",
+    "user": "<user_id or user localpart>",
+    "password": "<password>"
+  }
+
+Google ReCaptcha
+~~~~~~~~~~~~~~~~
+:Type:
+  ``m.login.recaptcha``
+:Description:
+  The user completes a Google ReCaptcha 2.0 challenge
+
+To respond to this type, reply with an auth dict as follows::
+
+  {
+    "type": "m.login.recaptcha",
+    "response": "<captcha response>"
+  }
+
+OAuth2-based
+~~~~~~~~~~~~
+:Type:
+  ``m.login.oauth2``
+:Description:
+  Authentication is supported via OAuth2 URLs. This login consists of multiple
+  requests.
+:Parameters:
+  ``uri``: Authorization Request URI OR service selection URI. Both contain an
+  encoded ``redirect URI``.
+
+The home server acts as a 'confidential' client for the purposes of OAuth2.  If
+the uri is a ``sevice selection URI``, it MUST point to a webpage which prompts
+the user to choose which service to authorize with. On selection of a service,
+this MUST link through to an ``Authorization Request URI``. If there is only 1
+service which the home server accepts when logging in, this indirection can be
+skipped and the "uri" key can be the ``Authorization Request URI``.
+
+The client then visits the ``Authorization Request URI``, which then shows the
+OAuth2 Allow/Deny prompt. Hitting 'Allow' returns the [XXX: redirects to the?]``redirect URI`` with the
+auth code. Home servers can choose any path for the ``redirect URI``. Once the
+OAuth flow has completed, the client retries the request with the session only,
+as above.
+
+Email-based (identity server)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:Type:
+  ``m.login.email.identity``
+:Description:
+  Authentication is supported by authorising an email address with an identity
+  server.
+
+Prior to submitting this, the client should authenticate with an identity
+server. After authenticating, the session information should be submitted to
+the home server.
+
+To respond to this type, reply with an auth dict as follows::
+
+  {
+    "type": "m.login.email.identity",
+    "threepidCreds": [
+      {
+        "sid": "<identity server session id>",
+        "clientSecret": "<identity server client secret>",
+        "idServer": "<url of identity server authed with, e.g. 'matrix.org:8090'>"
+      }
+    ]
+  }
+
+Dummy Auth
+~~~~~~~~~~
+:Type:
+  ``m.login.dummy``
+:Description:
+  Dummy authentication always succeeds and requires no extra parameters. Its
+  purpose is to allow servers to not require any form of User-Interactive
+  Authentication to perform a request.
+
+To respond to this type, reply with an auth dict with just the type and session,
+if provided::
+
+  {
+    "type": "m.login.dummy",
+  }
+
+
+Fallback
+~~~~~~~~
+Clients cannot be expected to be able to know how to process every single login
+type. If a client does not know how to handle a given login type, it can direct
+the user to a web browser with the URL of a fallback page which will allow the
+user to complete that login step out-of-band in their web browser. The URL it
+should open is the Home Server base URL plus prefix, plus::
+
+  /auth/<stage type>/fallback/web?session=<session ID>
+
+Where ``stage type`` is the type name of the stage it is attempting and
+``session id`` is the ID of the session given by the home server.
+
+This MUST return an HTML page which can perform this authentication stage. This
+page must attempt to call the Javascript function ``window.onAuthDone`` when
+the authentication has been completed.
 
 Pagination
 ----------
@@ -747,350 +999,158 @@ member's state, by making a request to
   }
 
 
-Registration and Login
-----------------------
+Registration
+------------
+This section refers to API Version 2. These API calls currently use the prefix
+``/_matrix/client/v2_alpha``.
 
-Clients must register with a home server in order to use Matrix. After
-registering, the client will be given an access token which must be used in ALL
-requests to that home server as a query parameter 'access_token'.
+Registering for a user account is done using the request::
 
-If the client has already registered, they need to be able to login to their
-account. The home server may provide many different ways of logging in, such as
-user/password auth, login via a social network (OAuth2), login by confirming a
-token sent to their email address, etc. This specification does not define how
-home servers should authorise their users who want to login to their existing
-accounts, but instead defines the standard interface which implementations
-should follow so that ANY client can login to ANY home server. Clients login
-using the |login|_ API. Clients register using the |register|_ API.
-Registration follows the same general procedure as login, but the path requests
-are sent to and the details contained in them are different.
+  POST $PREFIX/register
 
-In both registration and login cases, the process takes the form of one or more
-stages, where at each stage the client submits a set of data for a given stage
-type and awaits a response from the server, which will either be a final
-success or a request to perform an additional stage. This exchange continues
-until the final success.
+This API endpoint uses the User-Interactive Authentication API.
+This API endoint does not require an access token.
 
-In order to determine up-front what the server's requirements are, the client
-can request from the server a complete description of all of its acceptable
-flows of the registration or login process. It can then inspect the list of
-returned flows looking for one for which it believes it can complete all of the
-required stages, and perform it. As each home server may have different ways of
-logging in, the client needs to know how they should login. All distinct login
-stages MUST have a corresponding ``type``. A ``type`` is a namespaced string
-which details the mechanism for logging in.
+The body of the POST request is a JSON object containing:
 
-A client may be able to login via multiple valid login flows, and should choose
-a single flow when logging in. A flow is a series of login stages. The home
-server MUST respond with all the valid login flows when requested by a simple
-``GET`` request directly to the ``/login`` or ``/register`` paths::
+username
+  Optional. This is the local part of the desired Matrix ID. If omitted, the
+  Home Server must generate a Matrix ID local part.
+password
+  Required. The desired password for the account.
 
-  {
-    "flows": [
-      {
-        "type": "<login type1a>",
-        "stages": [ "<login type 1a>", "<login type 1b>" ]
-      },
-      {
-        "type": "<login type2a>",
-        "stages": [ "<login type 2a>", "<login type 2b>" ]
-      },
-      {
-        "type": "<login type3>"
-      }
-    ]
-  }
+On success, this returns a JSON object with keys:
 
-The client can now select which flow it wishes to use, and begin making
-``POST`` requests to the ``/login`` or ``/register`` paths with JSON body
-content containing the name of the stage as the ``type`` key, along with
-whatever additional parameters are required for that login or registration type
-(see below). After the flow is completed, the client's fully-qualified user
-ID and a new access token MUST be returned::
+user_id
+  The fully-qualified Matrix ID that has been registered.
+access_token
+  An access token for the new account.
+home_server
+  The hostname of the Home Server on which the account has been registered.
 
-  {
-    "user_id": "@user:matrix.org",
-    "access_token": "abcdef0123456789"
-  }
+This endpoint may also return the following error codes:
 
-The ``user_id`` key is particularly useful if the home server wishes to support
-localpart entry of usernames (e.g. "user" rather than "@user:matrix.org"), as
-the client may not be able to determine its ``user_id`` in this case.
+M_USER_IN_USE
+  If the Matrix ID is already in use
+M_EXCLUSIVE
+  If the requested Matrix ID is in the exclusive namespace of an application
+  service.
 
-If the flow has multiple stages to it, the home server may wish to create a
-session to store context between requests. If a home server responds with a
-``session`` key to a request, clients MUST submit it in subsequent requests
-until the flow is completed::
+Home Servers MUST perform the relevant checks and return these codes before
+performing User-Interactive Authentication, although they may also return
+them after authentication is completed if, for example, the requested user ID
+was registered whilst the client was performing authentication.
 
-  {
-    "session": "<session id>"
-  }
+Login
+~~~~~
+This section refers to API Version 1.
 
-This specification defines the following login types:
- - ``m.login.password``
- - ``m.login.oauth2``
- - ``m.login.email.code``
- - ``m.login.email.url``
- - ``m.login.email.identity``
+Obtaining an access token for an existing user account is done using the
+request::
 
-Password-based
-~~~~~~~~~~~~~~
-:Type:
-  ``m.login.password``
-:Description:
-  Login is supported via a username and password.
+  POST $PREFIX/login
 
-To respond to this type, reply with::
+The body of the POST request is a JSON object containing:
 
-  {
-    "type": "m.login.password",
-    "user": "<user_id or user localpart>",
-    "password": "<password>"
-  }
+username
+  The full qualified or local part of the Matrix ID to log in with.
+password
+  The password for the account.
 
-The home server MUST respond with either new credentials, the next stage of the
-login process, or a standard error response.
+On success, this returns a JSON object with keys:
 
-Captcha-based
-~~~~~~~~~~~~~
-:Type:
-  ``m.login.recaptcha``
-:Description:
-  Login is supported by responding to a captcha (in the case of the Synapse
-  implementation, Google's Recaptcha library is used).
+user_id
+  The fully-qualified Matrix ID that has been registered.
+access_token
+  An access token for the new account.
+home_server
+  The hostname of the Home Server on which the account has been registered.
 
-To respond to this type, reply with::
-
-  {
-    "type": "m.login.recaptcha",
-    "challenge": "<challenge token>",
-    "response": "<user-entered text>"
-  }
-
-.. NOTE::
-  In Synapse, the Recaptcha parameters can be obtained in Javascript by calling:
-    Recaptcha.get_challenge();
-    Recaptcha.get_response();
-
-The home server MUST respond with either new credentials, the next stage of the
-login process, or a standard error response.
-
-OAuth2-based
-~~~~~~~~~~~~
-:Type:
-  ``m.login.oauth2``
-:Description:
-  Login is supported via OAuth2 URLs. This login consists of multiple requests.
-
-To respond to this type, reply with::
-
-  {
-    "type": "m.login.oauth2",
-    "user": "<user_id or user localpart>"
-  }
-
-The server MUST respond with::
-
-  {
-    "uri": <Authorization Request URI OR service selection URI>
-  }
-
-The home server acts as a 'confidential' client for the purposes of OAuth2.  If
-the uri is a ``sevice selection URI``, it MUST point to a webpage which prompts
-the user to choose which service to authorize with. On selection of a service,
-this MUST link through to an ``Authorization Request URI``. If there is only 1
-service which the home server accepts when logging in, this indirection can be
-skipped and the "uri" key can be the ``Authorization Request URI``.
-
-The client then visits the ``Authorization Request URI``, which then shows the
-OAuth2 Allow/Deny prompt. Hitting 'Allow' returns the ``redirect URI`` with the
-auth code.  Home servers can choose any path for the ``redirect URI``. The
-client should visit the ``redirect URI``, which will then finish the OAuth2
-login process, granting the home server an access token for the chosen service.
-When the home server gets this access token, it verifies that the cilent has
-authorised with the 3rd party, and can now complete the login. The OAuth2
-``redirect URI`` (with auth code) MUST respond with either new credentials, the
-next stage of the login process, or a standard error response.
-
-For example, if a home server accepts OAuth2 from Google, it would return the
-Authorization Request URI for Google::
-
-  {
-    "uri": "https://accounts.google.com/o/oauth2/auth?response_type=code&
-    client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&scope=photos"
-  }
-
-The client then visits this URI and authorizes the home server. The client then
-visits the REDIRECT_URI with the auth code= query parameter which returns::
-
-  {
-    "user_id": "@user:matrix.org",
-    "access_token": "0123456789abcdef"
-  }
-
-Email-based (code)
-~~~~~~~~~~~~~~~~~~
-:Type:
-  ``m.login.email.code``
-:Description:
-  Login is supported by typing in a code which is sent in an email. This login
-  consists of multiple requests.
-
-To respond to this type, reply with::
-
-  {
-    "type": "m.login.email.code",
-    "user": "<user_id or user localpart>",
-    "email": "<email address>"
-  }
-
-After validating the email address, the home server MUST send an email
-containing an authentication code and return::
-
-  {
-    "type": "m.login.email.code",
-    "session": "<session id>"
-  }
-
-The second request in this login stage involves sending this authentication
-code::
-
-  {
-    "type": "m.login.email.code",
-    "session": "<session id>",
-    "code": "<code in email sent>"
-  }
-
-The home server MUST respond to this with either new credentials, the next
-stage of the login process, or a standard error response.
-
-Email-based (url)
+Changing Password
 ~~~~~~~~~~~~~~~~~
-:Type:
-  ``m.login.email.url``
-:Description:
-  Login is supported by clicking on a URL in an email. This login consists of
-  multiple requests.
+This section refers to API Version 2. These API calls currently use the prefix
+``/_matrix/client/v2_alpha``.
 
-To respond to this type, reply with::
+Request::
 
-  {
-    "type": "m.login.email.url",
-    "user": "<user_id or user localpart>",
-    "email": "<email address>"
-  }
+  POST $PREFIX/account/password
 
-After validating the email address, the home server MUST send an email
-containing an authentication URL and return::
+This API endpoint uses the User-Interactive Authentication API. An access token
+should be submitted to this endpoint if the client has an active session. The
+Home Server may change the flows available depending on whether a valid access
+token is provided.
 
-  {
-    "type": "m.login.email.url",
-    "session": "<session id>"
-  }
+The body of the POST request is a JSON object containing:
 
-The email contains a URL which must be clicked. After it has been clicked, the
-client should perform another request::
+new_password
+  The new password for the account.
 
-  {
-    "type": "m.login.email.url",
-    "session": "<session id>"
-  }
+On success, an empty JSON object is returned.
 
-The home server MUST respond to this with either new credentials, the next
-stage of the login process, or a standard error response.
+The error code M_NOT_FOUND is returned if the user authenticated with a third
+party identifier but the Home Server could not find a matching account in its
+database.
 
-A common client implementation will be to periodically poll until the link is
-clicked.  If the link has not been visited yet, a standard error response with
-an errcode of ``M_LOGIN_EMAIL_URL_NOT_YET`` should be returned.
+Adding a Third Party Identifier
+===============================
+This section refers to API Version 2. These API calls currently use the prefix
+``/_matrix/client/v2_alpha``.
 
+Request::
 
-Email-based (identity server)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-:Type:
-  ``m.login.email.identity``
-:Description:
-  Login is supported by authorising an email address with an identity server.
+  POST $PREFIX/account/3pid
 
-Prior to submitting this, the client should authenticate with an identity
-server.  After authenticating, the session information should be submitted to
-the home server.
+Used to add a third party identifier to the user's account.
 
-To respond to this type, reply with::
+The body of the POST request is a JSON object containing:
 
-  {
-    "type": "m.login.email.identity",
-    "threepidCreds": [
-      {
-        "sid": "<identity server session id>",
-        "clientSecret": "<identity server client secret>",
-        "idServer": "<url of identity server authed with, e.g. 'matrix.org:8090'>"
-      }
-    ]
-  }
+threePidCreds
+  An object containing third party identifier credentials.
+bind
+  Optional. A boolean indicating whether the Home Server should also bind this
+  third party identifier to the account's matrix ID with the Identity Server. If
+  supplied and true, the Home Server must bind the 3pid accordingly.
 
+The third party identifier credentials object comprises:
 
+idServer
+  The colon-separated hostname and port of the Identity Server used to
+  authenticate the third party identifer. If the port is the default, it and the
+  colon should be omitted.
+sid
+  The session ID given by the Identity Server
+clientSecret
+  The client secret used in the session with the Identity Server.
 
-N-Factor Authentication
-~~~~~~~~~~~~~~~~~~~~~~~
-Multiple login stages can be combined to create N-factor authentication during
-login.
+On success, the empty JSON object is returned.
 
-This can be achieved by responding with the ``next`` login type on completion
-of a previous login stage::
+May also return error codes:
 
-  {
-    "next": "<next login type>"
-  }
+M_THREEPID_AUTH_FAILED
+  If the credentials provided could not be verified with the ID Server.
 
-If a home server implements N-factor authentication, it MUST respond with all
-``stages`` when initially queried for their login requirements::
+Fetching Currently Associated Third Party Identifiers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This section refers to API Version 2. These API calls currently use the prefix
+``/_matrix/client/v2_alpha``.
 
-  {
-    "type": "<1st login type>",
-    "stages": [ <1st login type>, <2nd login type>, ... , <Nth login type> ]
-  }
+Request::
 
-This can be represented conceptually as::
+  GET $PREFIX/account/3pid
 
-   _______________________
-  |    Login Stage 1      |
-  | type: "<login type1>" |
-  |  ___________________  |
-  | |_Request_1_________| | <-- Returns "session" key which is used throughout.
-  |  ___________________  |
-  | |_Request_2_________| | <-- Returns a "next" value of "login type2"
-  |_______________________|
-            |
-            |
-   _________V_____________
-  |    Login Stage 2      |
-  | type: "<login type2>" |
-  |  ___________________  |
-  | |_Request_1_________| |
-  |  ___________________  |
-  | |_Request_2_________| |
-  |  ___________________  |
-  | |_Request_3_________| | <-- Returns a "next" value of "login type3"
-  |_______________________|
-            |
-            |
-   _________V_____________
-  |    Login Stage 3      |
-  | type: "<login type3>" |
-  |  ___________________  |
-  | |_Request_1_________| | <-- Returns user credentials
-  |_______________________|
+This returns a list of third party identifiers that the Home Server has
+associated with the user's account. This is *not* the same as the list of third
+party identifiers bound to the user's Matrix ID in Identity Servers. Identifiers
+in this list may be used by the Home Server as, for example, identifiers that it
+will accept to reset the user's account password.
 
-Fallback
-~~~~~~~~
-Clients cannot be expected to be able to know how to process every single login
-type. If a client determines it does not know how to handle a given login type,
-it should request a login fallback page::
+Returns a JSON object with the key ``threepids`` whose contents is an array of
+objects with the following keys:
 
-  GET matrix/client/api/v1/login/fallback
-
-This MUST return an HTML page which can perform the entire login process.
-
+medium
+  The medium of the 3pid (eg, ``email``)
+address
+  The textual address of the 3pid, eg. the email address
 
 Presence
 ~~~~~~~~
