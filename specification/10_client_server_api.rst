@@ -1092,7 +1092,7 @@ party identifier but the Home Server could not find a matching account in its
 database.
 
 Adding a Third Party Identifier
-===============================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 This section refers to API Version 2. These API calls currently use the prefix
 ``/_matrix/client/v2_alpha``.
 
