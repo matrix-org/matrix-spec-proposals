@@ -17,8 +17,8 @@ Version 2 is currently in development (as of Jan-March 2015) as an incremental
 but backwards-incompatible refinement of Version 1 and will be released
 shortly.
 
-Authentication
---------------
+Client Authentication
+---------------------
 Most API endpoints require the user to identify themselves by presenting
 previously obtained credentials in the form of an ``access_token`` query
 parameter.
@@ -1041,9 +1041,13 @@ performing User-Interactive Authentication, although they may also return
 them after authentication is completed if, for example, the requested user ID
 was registered whilst the client was performing authentication.
 
+Old V1 API docs: |register|_
+
 Login
 ~~~~~
 This section refers to API Version 1.
+
+API docs: |login|_
 
 Obtaining an access token for an existing user account is done using the
 request::
