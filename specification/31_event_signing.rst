@@ -151,7 +151,7 @@ To check if an entity has signed a JSON object a server does the following
    the check fails. Otherwise the check succeeds.
 
 Signing Events
-==============
+--------------
 
 Signing events is a more complicated process since servers can choose to redact
 non-essential parts of an event. Before signing the event it is encoded as
