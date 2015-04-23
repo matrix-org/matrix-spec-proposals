@@ -1019,6 +1019,9 @@ username
   Home Server must generate a Matrix ID local part.
 password
   Required. The desired password for the account.
+bind_email
+  Optional. If ``true``, the server binds the email used for authentication to
+  the Matrix ID with the ID Server.
 
 On success, this returns a JSON object with keys:
 
