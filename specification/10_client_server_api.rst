@@ -151,6 +151,7 @@ that stage is complete.
 
 This specification defines the following login types:
  - ``m.login.password``
+ - ``m.login.recaptcha``
  - ``m.login.oauth2``
  - ``m.login.email.identity``
  - ``m.login.dummy``
