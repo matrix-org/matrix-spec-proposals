@@ -81,6 +81,13 @@ directly or by querying an intermediate perspective server using a
 response with their own key. A server may query multiple perspective servers
 to ensure that they all report the same public keys.
 
+This approach is borrowed from the Perspectives Project
+(http://perspectives-project.org/), but modified to include the NACL keys and to
+use JSON instead of XML. It has the advantage of avoiding a single trust-root
+since each server is free to pick which perspective servers they trust and can
+corroborate the keys returned by a given perspective server by querying other
+servers.
+
 Publishing Keys
 _______________
 
@@ -116,6 +123,10 @@ Intermediate perspective servers should cache a response for half of its
 remaining life time to avoid serving a stale response. Servers should avoid
 querying for certificates more frequently than once an hour to avoid flooding
 a server with requests.
+
+If a server goes offline intermediate perspective servers should continue to
+return the last response they received from that server so that the signatures
+of old events sent by that server can still be checked.
 
 ==================== =================== ======================================
     Key                    Type                         Description
