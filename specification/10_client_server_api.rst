@@ -1007,7 +1007,7 @@ This section refers to API Version 2. These API calls currently use the prefix
 
 Registering for a user account is done using the request::
 
-  POST $PREFIX/register
+  POST $V2PREFIX/register
 
 This API endpoint uses the User-Interactive Authentication API.
 This API endoint does not require an access token.
@@ -1078,7 +1078,7 @@ This section refers to API Version 2. These API calls currently use the prefix
 
 Request::
 
-  POST $PREFIX/account/password
+  POST $V2PREFIX/account/password
 
 This API endpoint uses the User-Interactive Authentication API. An access token
 should be submitted to this endpoint if the client has an active session. The
@@ -1103,7 +1103,7 @@ This section refers to API Version 2. These API calls currently use the prefix
 
 Request::
 
-  POST $PREFIX/account/3pid
+  POST $V2PREFIX/account/3pid
 
 Used to add a third party identifier to the user's account.
 
@@ -1141,7 +1141,7 @@ This section refers to API Version 2. These API calls currently use the prefix
 
 Request::
 
-  GET $PREFIX/account/3pid
+  GET $V2PREFIX/account/3pid
 
 This returns a list of third party identifiers that the Home Server has
 associated with the user's account. This is *not* the same as the list of third
