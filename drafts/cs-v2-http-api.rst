@@ -36,7 +36,7 @@ XXX: how do we transition between non-coalesced pagination and coalesced paginat
                 // NB: These keys are referred to as a 'Definition' in the implementation.
                 // selectors: (bluntly selecting on the unencrypted fields)
                 types: [ "m.*", "net.arasphere.*" ],    // default: all
-                // N.B. types can be used to filter out presence and server-generated events (e.g. m.profile), but see *_user_data below
+                // N.B. types can be used to filter out presence and server-generated events (e.g. m.profile), but see \*_user_data below
                 not_types: [ "m.presence" ],            // default: none
                 rooms: [ "!83wy7whi:matrix.org" ],      // default: all (may be aliases or IDs. wildcards supported)
                 not_rooms: [],
@@ -468,20 +468,18 @@ some of which have specific predefined serverside semantics. Keys must be named
 
 You subscribe to particular events in your filter if you're not interested in particular info.
 
-/*    
-XXX: Preemie optimisation:
-As per the profile propagation section, we can optimise merging profile
-data into a single logical server-generated event in /sync as a special
-case for specific data fields, e.g:::
+.. XXX: Preemie optimisation:
+   As per the profile propagation section, we can optimise merging profile
+   data into a single logical server-generated event in /sync as a special
+   case for specific data fields, e.g:::
 
-    {
+..  {
         type: "m.profile",
         content: {
             display_name: "Matthew",
             avatar_url: "mxc://...",
         }
     }
-*/
     
 User Data API
 -------------
