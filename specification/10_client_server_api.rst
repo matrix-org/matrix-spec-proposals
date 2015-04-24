@@ -51,8 +51,11 @@ For each endpoint, a server offers one of more 'flows' that the client can use
 to authenticate itself. Each flow comprises one or more 'stages'. When all
 stages are complete, authentication is complete and the API call succeeds. To
 establish what flows a server supports for an endpoint, a client sends the
-request with no authentication. The home server returns a response with HTTP
-status 401 and a JSON object as folows::
+request with no authentication. A request to an endpoint that uses
+User-Interactive Authentication never succeeds without auth. Home Servers may
+allow requests that don't require auth by offering a stage with only the
+``m.login.dummy`` auth type. The home server returns a response with HTTP status
+401 and a JSON object as folows::
 
   {
     "flows": [
