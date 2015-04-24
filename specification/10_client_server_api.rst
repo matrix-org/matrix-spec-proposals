@@ -48,14 +48,15 @@ Authentication works by client and server exchanging dictionaries. This
 specification covers how this is done over JSON HTTP POST.
 
 For each endpoint, a server offers one of more 'flows' that the client can use
-to authenticate itself. Each flow comprises one or more 'stages'. When all
-stages are complete, authentication is complete and the API call succeeds. To
-establish what flows a server supports for an endpoint, a client sends the
-request with no authentication. A request to an endpoint that uses
-User-Interactive Authentication never succeeds without auth. Home Servers may
-allow requests that don't require auth by offering a stage with only the
-``m.login.dummy`` auth type. The home server returns a response with HTTP status
-401 and a JSON object as folows::
+to authenticate itself. Each flow comprises one or more 'stages'. Flows may have
+more than one stage to implement n-factor auth. When all stages are complete,
+authentication is complete and the API call succeeds. To establish what flows a
+server supports for an endpoint, a client sends the request with no
+authentication. A request to an endpoint that uses User-Interactive
+Authentication never succeeds without auth. Home Servers may allow requests that
+don't require auth by offering a stage with only the ``m.login.dummy`` auth
+type. The home server returns a response with HTTP status 401 and a JSON object
+as folows::
 
   {
     "flows": [
@@ -138,6 +139,10 @@ message in the standard format::
     "error": "Something was wrong"
   }
 
+Individual stages may require more than one request to complete, in which case
+the response will be as if the request was unauthenticated with the addition of
+any other keys as defined by the login type.
+
 If the client has completed all stages of a flow, the home server performs the
 API call and returns the result as normal.
 
@@ -149,6 +154,40 @@ the same as if the client were attempting to complete an auth state normally,
 ie. the request will either complete or request auth, with the presence or
 absence of that login stage type in the 'completed' array indicating whether
 that stage is complete.
+
+Example
+~~~~~~~
+At a high level, the requests made for an API call completing an auth flow with
+three stages will resemble the following diagram::
+  
+   _______________________
+  |       Stage 1         |
+  | type: "<stage type1>" |
+  |  ___________________  |
+  | |_Request_1_________| | <-- Returns "session" key which is used throughout.
+  |  ___________________  |
+  | |_Request_2_________| |
+  |_______________________|
+            |
+            |
+   _________V_____________
+  |       Stage 2         |
+  | type: "<stage type2>" |
+  |  ___________________  |
+  | |_Request_1_________| |
+  |  ___________________  |
+  | |_Request_2_________| |
+  |  ___________________  |
+  | |_Request_3_________| |
+  |_______________________|
+            |
+            |
+   _________V_____________
+  |       Stage 3         |
+  | type: "<stage type3>" |
+  |  ___________________  |
+  | |_Request_1_________| | <-- Returns API response
+  |_______________________|
 
 This specification defines the following login types:
  - ``m.login.password``
