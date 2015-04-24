@@ -131,9 +131,7 @@ If the home server decides the attempt was unsuccessful, it returns an error
 message in the standard format::
 
   {
-    "errcode": [
-        "M_EXAMPLE_ERROR"
-    ],
+    "errcode": "M_EXAMPLE_ERROR",
     "error": "Something was wrong"
   }
 
