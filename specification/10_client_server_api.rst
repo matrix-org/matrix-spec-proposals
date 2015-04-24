@@ -229,8 +229,8 @@ To respond to this type, reply with an auth dict as follows::
     "threepidCreds": [
       {
         "sid": "<identity server session id>",
-        "clientSecret": "<identity server client secret>",
-        "idServer": "<url of identity server authed with, e.g. 'matrix.org:8090'>"
+        "client_secret": "<identity server client secret>",
+        "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>"
       }
     ]
   }
@@ -1122,13 +1122,13 @@ bind
 
 The third party identifier credentials object comprises:
 
-idServer
+id_server
   The colon-separated hostname and port of the Identity Server used to
   authenticate the third party identifer. If the port is the default, it and the
   colon should be omitted.
 sid
   The session ID given by the Identity Server
-clientSecret
+client_secret
   The client secret used in the session with the Identity Server.
 
 On success, the empty JSON object is returned.
