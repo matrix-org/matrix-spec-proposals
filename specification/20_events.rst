@@ -597,7 +597,7 @@ try using to communicate.
     - ``call_id`` : "string" - The ID of the call this event relates to
     - ``version`` : "integer" - The version of the VoIP specification this
       messages
-    - ``answer`` : "answer object" - Object giving the SDK answer
+    - ``answer`` : "answer object" - Object giving the SDP answer
 
 ``Answer Object``
 
