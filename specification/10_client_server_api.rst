@@ -18,7 +18,7 @@ but backwards-incompatible refinement of Version 1 and will be released
 shortly.
 
 Documentation for the old `V1 authentication
-<../attic/v1_registration_login.rst>` is still available separately.
+<../attic/v1_registration_login.rst>`_ is still available separately.
 
 Client Authentication
 ---------------------
