@@ -17,6 +17,9 @@ Version 2 is currently in development (as of Jan-March 2015) as an incremental
 but backwards-incompatible refinement of Version 1 and will be released
 shortly.
 
+Documentation for the old `V1 authentication
+<../attic/v1_registration_login.rst>` is still available separately.
+
 Client Authentication
 ---------------------
 Most API endpoints require the user to identify themselves by presenting
