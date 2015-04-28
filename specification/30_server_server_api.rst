@@ -199,7 +199,7 @@ Requests:
 
 .. code::
 
-    GET /_matrix/key/v2/query/${server_name}/${key_id}/${minimum_valid_until_ts} HTTP/1.1
+    GET /_matrix/key/v2/query/${server_name}/${key_id}/?minimum_valid_until_ts={minimum_valid_until_ts} HTTP/1.1
 
     POST /_matrix/key/v2/query HTTP/1.1
     Content-Type: application/json
