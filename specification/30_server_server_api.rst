@@ -120,9 +120,10 @@ before the ``expired_ts``. The ``expired_ts`` is a millisecond POSIX timestamp
 of when the originating server stopped using that key.
 
 Intermediate perspective servers should cache a response for half of its
-remaining life time to avoid serving a stale response. Servers should avoid
-querying for certificates more frequently than once an hour to avoid flooding
-a server with requests.
+remaining life time to avoid serving a stale response. Originating servers should
+avoid returning responses that expire in less than an hour to avoid repeated
+requests for an about to expire certificate. Requesting servers should limit how
+frequently they query for certificates to avoid flooding a server with requests.
 
 If a server goes offline intermediate perspective servers should continue to
 return the last response they received from that server so that the signatures
@@ -183,6 +184,13 @@ servers. Either way the response is a list of JSON objects containing the
 JSON published by the server under ``_matrix/key/v2/server/`` signed by
 both the originating server and by this server.
 
+The ``minimum_valid_until_ts`` is a millisecond POSIX timestamp indicating 
+when the returned certificate will need to be valid until to be useful to the 
+requesting server. This can be set using the maximum ``origin_server_ts`` of 
+an batch of events that a requesting server is trying to validate. This allows
+an intermediate perspectives server to give a prompt cached response even if
+the originating server is offline.
+
 This API can return keys for servers that are offline be using cached responses
 taken from when the server was online. Keys can be queried from multiple
 servers to mitigate against DNS spoofing.
@@ -191,16 +199,18 @@ Requests:
 
 .. code::
 
-    GET /_matrix/key/v2/query/${server_name}/${key_id} HTTP/1.1
+    GET /_matrix/key/v2/query/${server_name}/${key_id}/${minimum_valid_until_ts} HTTP/1.1
 
     POST /_matrix/key/v2/query HTTP/1.1
     Content-Type: application/json
 
     {
         "server_keys": {
-            "$server_name": [
-                "$key_id"
-            ]
+            "$server_name": {
+                "$key_id": {
+                    "minimum_valid_until_ts": $posix_timestamp
+                }
+            }
         }
     }
 
