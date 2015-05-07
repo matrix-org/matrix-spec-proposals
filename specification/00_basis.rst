@@ -424,7 +424,7 @@ For the default HTTP transport, all API calls use a Content-Type of
 ``application/json``.  In addition, all strings MUST be encoded as UTF-8.
 
 Clients are authenticated using opaque ``access_token`` strings (see
-`Registration and Login`_ for details), passed as a query string parameter on
+`Client Authentication`_ for details), passed as a query string parameter on
 all requests.
 
 .. TODO
