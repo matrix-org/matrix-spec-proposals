@@ -28,21 +28,6 @@ to receive. The method for registering new services is dependent on the home
 server, typically it will require adding the new application service
 configuration to the home server configuration.
 
-The format for application service configuration is a json/yaml document that
-looks like::
-
-    url: <base url of AS>
-    as_token: <opaque string>
-    hs_token: <opaque string>
-    sender_localpart: <localpart of AS sender>
-    namespaces:
-      users:
-        - exclusive: <bool>
-          regex: <regex>
-        - ...
-      aliases: []
-      rooms: []
-
 
 Home Server -> Application Service API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
