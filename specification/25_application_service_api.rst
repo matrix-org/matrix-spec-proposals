@@ -29,7 +29,7 @@ server, typically it will require adding the new application service
 configuration to the home server configuration.
 
 The format for application service configuration is a json/yaml document that
-looks like:
+looks like::
 
     url: <base url of AS>
     as_token: <opaque string>
