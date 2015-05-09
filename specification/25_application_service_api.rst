@@ -61,7 +61,7 @@ An example HS configuration required to pass traffic to the AS is:
  - Namespaces are typically represented by POSIX extended regular expressions, 
    e.g.:
 
-.. code-block:: uaml
+.. code-block:: yaml
 
    user:
      - exclusive: true
