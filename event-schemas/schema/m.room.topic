@@ -2,24 +2,25 @@
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "allOf": [{
-        "$ref": "core#/definitions/room_event"
+        "$ref": "core#/definitions/state_event"
     }],
     "properties": {
         "content": {
             "type": "object",
             "properties": {
-                "msgtype": {
-                    "type": "string"
-                },
-                "body": {
+                "topic": {
                     "type": "string"
                 }
             },
-            "required": ["msgtype", "body"]
+            "required": ["topic"]
+        },
+        "state_key": {
+            "type": "string",
+            "pattern": "^$"
         },
         "type": {
             "type": "string",
-            "enum": ["m.room.message"]
+            "enum": ["m.room.topic"]
         }
     }
 }

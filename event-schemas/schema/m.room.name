@@ -17,6 +17,10 @@
         "state_key": {
             "type": "string",
             "pattern": "^$"
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.room.name"]
         }
     }
 }
