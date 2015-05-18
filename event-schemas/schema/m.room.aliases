@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "allOf": [{
+        "$ref": "core#/definitions/state_event"
+    }],
+    "properties": {
+        "content": {
+            "type": "object",
+            "properties": {
+                "aliases": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": ["aliases"]
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.room.aliases"]
+        }
+    }
+}

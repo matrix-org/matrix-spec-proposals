@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "allOf": [{
+        "$ref": "core#/definitions/state_event"
+    }],
+    "properties": {
+        "content": {
+            "type": "object",
+            "properties": {
+                "join_rule": {
+                    "type": "string",
+                    "enum": ["public","knock","invite","private"]
+                }
+            },
+            "required": ["join_rule"]
+        },
+        "state_key": {
+            "type": "string",
+            "pattern": "^$"
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.room.join_rules"]
+        }
+    }
+}
