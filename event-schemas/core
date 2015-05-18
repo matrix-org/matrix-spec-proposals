@@ -30,6 +30,18 @@
             }
         },
         "required": ["room_id"]
+    },
+    "state_event": {
+        "type": "object",
+        "allOf":[{
+            "$ref": "#/definitions/room_event"
+        }],
+        "properties": {
+            "state_key": {
+                "type": "string"
+            }
+        },
+        "required": ["state_key"]
     }
   }
 }
