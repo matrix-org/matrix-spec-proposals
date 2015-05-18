@@ -7,7 +7,7 @@ resolved correctly. For basic CLI testing, we recommend and have verified they
 work with the Node.js package [z-schema](https://github.com/zaggino/z-schema):
 ```
  $ npm install -g z-schema
- $ z-schema m.room.message examples/m.room.message_m.text
+ $ z-schema schema/m.room.message examples/m.room.message_m.text
  schema validation passed
  json #1 validation passed
 ```
