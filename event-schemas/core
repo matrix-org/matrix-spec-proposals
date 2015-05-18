@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "event": {
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "content": {
+          "type": "object"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": ["event_id", "user_id", "content", "type"]
+    },
+    "room_event": {
+        "type": "object",
+        "allOf":[{
+            "$ref": "#/definitions/event"
+        }],
+        "properties": {
+            "room_id": {
+                "type": "string"
+            }
+        },
+        "required": ["room_id"]
+    }
+  }
+}
