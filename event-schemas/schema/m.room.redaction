@@ -2,25 +2,24 @@
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "allOf": [{
-        "$ref": "core#/definitions/state_event"
+        "$ref": "core#/definitions/room_event"
     }],
     "properties": {
         "content": {
             "type": "object",
             "properties": {
-                "membership": {
-                    "type": "string",
-                    "enum": ["invite","join","knock","leave","ban"]
+                "reason": {
+                    "type": "string"
                 }
-            },
-            "required": ["membership"]
+            }
         },
-        "state_key": {
+        "redacts": {
             "type": "string"
         },
         "type": {
             "type": "string",
-            "enum": ["m.room.member"]
+            "enum": ["m.room.redaction"]
         }
-    }
+    },
+    "required": ["redacts"]
 }
