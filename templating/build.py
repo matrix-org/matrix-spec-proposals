@@ -55,6 +55,9 @@ def load_sections(env, units):
 
 def create_from_skeleton(skeleton, sections):
     print "Creating spec from skeleton..."
+    print "Section keys: %s" % (sections.keys())
+    return skeleton.render(sections.data)
+
 
 def check_unaccessed(name, store):
     unaccessed_keys = store.get_unaccessed_set()
@@ -80,12 +83,14 @@ def main():
     sections = load_sections(env, units)
 
     # combine all the RST sections into a coherent spec
-    skeleton = "foo"
+    skeleton = env.get_template("skeleton.rst")
     spec = create_from_skeleton(skeleton, sections)
 
     check_unaccessed("units", units)
     check_unaccessed("sections", sections)
-    print spec
+    
+    with open("spec.rst", "w") as f:
+        f.write(spec)
 
 
 if __name__ == '__main__':

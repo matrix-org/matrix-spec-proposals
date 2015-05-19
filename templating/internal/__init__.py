@@ -9,6 +9,9 @@ class AccessKeyStore(object):
         self.data = {}
         self.accessed_set = Set()
 
+    def keys(self):
+        return self.data.keys()
+
     def add(self, key, unit_dict):
         self.data[key] = unit_dict
 
