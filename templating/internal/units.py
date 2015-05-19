@@ -46,7 +46,6 @@ def _load_schemas():
                 format_for_obj(obj.get("items"))
             ]
 
-
         enum_text = ""
         # add on enum info
         enum = obj.get("enum")
@@ -100,18 +99,13 @@ def _load_schemas():
             schema["required_keys"] = prop(
                 json_schema, "properties/content/required"
             )
-
-
-
             schemata[filename] = schema
     return schemata
-
 
 UNIT_DICT = {
     "event-examples": _load_examples,
     "event-schemas": _load_schemas
 }
-
 
 def load():
     store = AccessKeyStore()
