@@ -1,7 +1,9 @@
 {
   "age": 242352,
   "content": {
-    "membership": "join"
+    "membership": "join",
+    "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF#auto",
+    "displayname": "Alice Margatroid"
   },
   "state_key": "@alice:localhost",
   "origin_server_ts": 1431961217939,

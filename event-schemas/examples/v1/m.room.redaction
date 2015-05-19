@@ -1,6 +1,8 @@
 {
   "age": 242352,
-  "content": {},
+  "content": {
+    "reason": "Spamming"
+  },
   "origin_server_ts": 1431961217939,
   "event_id": "$WLGTSEFSEF:localhost",
   "type": "m.room.redaction",

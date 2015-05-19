@@ -66,8 +66,8 @@ def check_unaccessed(name, store):
 
 def main():
     # add a template filter to produce pretty pretty JSON
-    def jsonify(input, pre_whitespace=0):
-        code = json.dumps(input, indent=4)
+    def jsonify(input, indent=None, pre_whitespace=0):
+        code = json.dumps(input, indent=indent)
         if pre_whitespace:
             code = code.replace("\n", ("\n" +" "*pre_whitespace))
 

@@ -62,14 +62,16 @@ def _load_schemas():
     for filename in os.listdir(path):
         if not filename.startswith("m."):
             continue
+        print "Reading %s" % os.path.join(path, filename)
         with open(os.path.join(path, filename), "r") as f:
-            json_schema = json.loads(f.read())
+            json_schema = json.loads(f.read(), strict=False)
             schema = {
                 "typeof": None,
                 "type": None,
                 "summary": None,
                 "desc": None,
-                "json_format": None
+                "json_format": None,
+                "required_keys": None
             }
 
             # add typeof
@@ -93,6 +95,12 @@ def _load_schemas():
             content_props = prop(json_schema, "properties/content")
             if content_props:
                 schema["json_format"] = format_for_obj(content_props)
+
+            # add required_keys
+            schema["required_keys"] = prop(
+                json_schema, "properties/content/required"
+            )
+
 
 
             schemata[filename] = schema
