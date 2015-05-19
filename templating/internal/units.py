@@ -12,7 +12,7 @@ def prop(obj, path):
     return val
 
 def _load_examples():
-    path = "../event-schemas/examples"
+    path = "../event-schemas/examples/v1"
     examples = {}
     for filename in os.listdir(path):
         if not filename.startswith("m."):
@@ -24,7 +24,7 @@ def _load_examples():
     return examples
 
 def _load_schemas():
-    path = "../event-schemas/schema"
+    path = "../event-schemas/schema/v1"
     schemata = {}
 
     def format_for_obj(obj):
@@ -41,6 +41,12 @@ def _load_schemas():
                         "<%s>" % obj.get("additionalProperties").get("type")
                     )
                 }
+        elif obj_type == "<array>" and obj.get("items"):
+            return [
+                format_for_obj(obj.get("items"))
+            ]
+
+
         enum_text = ""
         # add on enum info
         enum = obj.get("enum")
