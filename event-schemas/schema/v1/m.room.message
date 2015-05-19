@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "allOf": [{
+        "$ref": "core#/definitions/room_event"
+    }],
+    "properties": {
+        "content": {
+            "type": "object",
+            "properties": {
+                "msgtype": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "string"
+                }
+            },
+            "required": ["msgtype", "body"]
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.room.message"]
+        }
+    }
+}
