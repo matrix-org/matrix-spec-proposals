@@ -40,7 +40,7 @@ Checks
 - Any sections made but not used in the skeleton will produce a warning.
 """
 
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, StrictUndefined
 import internal.units
 import internal.sections
 import json
@@ -50,14 +50,13 @@ def load_units():
     return internal.units.load()
 
 def load_sections(env, units):
-    print "Loading sections..."
+    print "\nLoading sections..."
     return internal.sections.load(env, units)
 
 def create_from_skeleton(skeleton, sections):
-    print "Creating spec from skeleton..."
+    print "\nCreating spec from skeleton..."
     print "Section keys: %s" % (sections.keys())
     return skeleton.render(sections.data)
-
 
 def check_unaccessed(name, store):
     unaccessed_keys = store.get_unaccessed_set()
@@ -71,7 +70,10 @@ def main():
         return json.dumps(input, indent=4)
 
     # make Jinja aware of the templates and filters
-    env = Environment(loader=FileSystemLoader("templates"))
+    env = Environment(
+        loader=FileSystemLoader("templates"),
+        undefined=StrictUndefined
+    )
     env.filters["jsonify"] = jsonify
 
     # load up and parse the lowest single units possible: we don't know or care
@@ -87,7 +89,6 @@ def main():
     spec = create_from_skeleton(skeleton, sections)
 
     check_unaccessed("units", units)
-    check_unaccessed("sections", sections)
     
     with open("spec.rst", "w") as f:
         f.write(spec)
