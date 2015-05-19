@@ -1,7 +1,15 @@
-{{event.type}}
---------------
-Summary: {{event.summary}}
-Type: {{event.typeof}}
-Description: {{event.desc}}
-JSON Format: {{event.json_format | jsonify}}
-Example: {{example.content | jsonify}}
+``{{event.type}}``
+  Summary:
+    {{event.summary}}
+  Type:
+    {{event.typeof}}
+  Description:
+    {{event.desc}}
+
+  JSON Format::
+
+    {{event.json_format | jsonify(4)}}
+
+  Example::
+
+    {{example.content | jsonify(4)}}

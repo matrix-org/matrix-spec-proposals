@@ -66,8 +66,12 @@ def check_unaccessed(name, store):
 
 def main():
     # add a template filter to produce pretty pretty JSON
-    def jsonify(input):
-        return json.dumps(input, indent=4)
+    def jsonify(input, pre_whitespace=0):
+        code = json.dumps(input, indent=4)
+        if pre_whitespace:
+            code = code.replace("\n", ("\n" +" "*pre_whitespace))
+
+        return code
 
     # make Jinja aware of the templates and filters
     env = Environment(
