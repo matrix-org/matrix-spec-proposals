@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "allOf": [{
+        "$ref": "core#/definitions/room_event"
+    }],
+    "properties": {
+        "content": {
+            "type": "object",
+            "properties": {
+                "reason": {
+                    "type": "string"
+                }
+            }
+        },
+        "redacts": {
+            "type": "string"
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.room.redaction"]
+        }
+    },
+    "required": ["redacts"]
+}

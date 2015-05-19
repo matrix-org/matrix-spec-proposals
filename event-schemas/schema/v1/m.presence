@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "content": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
+                "displayname": {
+                    "type": "string"
+                },
+                "last_active_ago": {
+                    "type": "number"
+                },
+                "presence": {
+                    "type": "string",
+                    "enum": ["online", "offline", "unavailable", "free_for_chat", "hidden"]
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            },
+            "required": ["presence", "user_id"]
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.presence"]
+        },
+        "event_id": {
+            "type": "string"
+        }
+    },
+    "required": ["event_id", "type", "content"]
+}

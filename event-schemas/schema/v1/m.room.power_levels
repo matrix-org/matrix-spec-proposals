@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "allOf": [{
+        "$ref": "core#/definitions/state_event"
+    }],
+    "properties": {
+        "content": {
+            "type": "object",
+            "properties": {
+                "ban": { "type": "number" },
+                "events_default": { "type": "number" },
+                "kick": { "type": "number" },
+                "redact": { "type": "number" },
+                "state_default": { "type": "number" },
+                "users_default": { "type": "number" },
+                "events": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "users": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                }
+            },
+            "required": ["ban","events","events_default","kick","redact",
+                         "state_default","users","users_default"]
+        },
+        "state_key": {
+            "type": "string",
+            "pattern": "^$"
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.room.power_levels"]
+        }
+    }
+}
