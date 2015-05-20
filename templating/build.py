@@ -78,12 +78,16 @@ def main(file_stream=None, out_dir=None):
 
         return code
 
+    def indent(input, indent):
+        return input.replace("\n", ("\n" + " "*indent))
+
     # make Jinja aware of the templates and filters
     env = Environment(
         loader=FileSystemLoader("templates"),
         undefined=StrictUndefined
     )
     env.filters["jsonify"] = jsonify
+    env.filters["indent"] = indent
 
     # load up and parse the lowest single units possible: we don't know or care
     # which spec section will use it, we just need it there in memory for when

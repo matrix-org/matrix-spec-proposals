@@ -4,7 +4,7 @@
   Type:
     {{event.typeof}}
   Description:
-    {{event.desc}}
+    {{event.desc | indent(4)}}
   Required Keys:
     ``{{event.required_keys | jsonify}}``
 

@@ -2,12 +2,7 @@
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "title": "The current membership state of a user in the room.",
-    "description": "Adjusts the membership state for a user in a room. It is preferable to use
-    the membership APIs (``/rooms/<room id>/invite`` etc) when performing
-    membership actions rather than adjusting the state directly as there are a
-    restricted set of valid transformations. For example, user A cannot force
-    user B to join a room, and trying to force this state change directly will
-    fail.",
+    "description": "Adjusts the membership state for a user in a room. It is preferable to use\nthe membership APIs (``/rooms/<room id>/invite`` etc) when performing\nmembership actions rather than adjusting the state directly as there are a\nrestricted set of valid transformations. For example, user A cannot force\nuser B to join a room, and trying to force this state change directly will\nfail.",
     "allOf": [{
         "$ref": "core#/definitions/state_event"
     }],

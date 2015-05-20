@@ -1,13 +1,8 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
-    "title": "A receipt for a message. N.B. not implemented in Synapse, and superceded in
-    v2 CS API by the ``relates_to`` event field.",
-    "description": "Feedback events are events sent to acknowledge a message in some way. There
-    are two supported acknowledgements: ``delivered`` (sent when the event has
-    been received) and ``read`` (sent when the event has been observed by the
-    end-user). The ``target_event_id`` should reference the ``m.room.message``
-    event being acknowledged.",
+    "title": "A receipt for a message. N.B. not implemented in Synapse, and superceded in\nv2 CS API by the ``relates_to`` event field.",
+    "description": "Feedback events are events sent to acknowledge a message in some way. There\nare two supported acknowledgements: ``delivered`` (sent when the event has\nbeen received) and ``read`` (sent when the event has been observed by the\nend-user). The ``target_event_id`` should reference the ``m.room.message``\nevent being acknowledged.",
     "allOf": [{
         "$ref": "core#/definitions/room_event"
     }],

@@ -63,7 +63,7 @@ def _load_schemas():
             continue
         print "Reading %s" % os.path.join(path, filename)
         with open(os.path.join(path, filename), "r") as f:
-            json_schema = json.loads(f.read(), strict=False)
+            json_schema = json.loads(f.read())
             schema = {
                 "typeof": None,
                 "type": None,
