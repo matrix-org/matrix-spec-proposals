@@ -22,33 +22,34 @@ Passive Application Services
 They cannot prevent events from being sent, nor can they modify the event being
 sent.
 
-In order to observe events from a home server, the application service needs
-to register itself and tell the home server what kinds of events it wants
-to receive.
+In order to observe events from a home server, the home server needs to be
+configured to pass certain types of traffic to the application service.  This
+is currently homeserver-configuration specific and is no longer exposed as an
+API, as associating an AS to a HS should only ever be done *very* deliberately
+by the HS administrator.
 
-Application Service -> Home Server API
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This contains home server APIs which are used by the application service.
+.. TODO
+  Removing the API entirely is probably a mistake - having a standard cross-HS
+  way of doing this stops ASes being coupled to particular HS implementations.
+  A better solution would be to somehow mandate that the API done to avoid
+  abuse.
 
-Registration API
-++++++++++++++++
+An example HS configuration required to pass traffic to the AS is:
 
-This API registers the application service with its host homeserver to offer its
-services.
+.. code-block:: yaml
 
-Inputs:
- - Credentials (e.g. some kind of string token)
- - Namespace[users]
- - Namespace[room aliases]
- - URL base to receive inbound comms
-Output:
- - The credentials the HS will use to query the AS with in return. (e.g. some 
-   kind of string token)
-Side effects:
- - The HS will start delivering events to the URL base specified if this 200s.
-API called when:
- - The application service wants to register with a brand new home server.
-Notes:
+    url: <base url of AS>
+    as_token: <token AS will add to requests to HS>
+    hs_token: <token HS will add to requests to AS>
+    sender_localpart: <localpart of AS user>
+    namespaces:
+      users:  # Namespaces of users which should be delegated to the AS
+        - exclusive: <bool>
+          regex: <regex>
+        - ...
+      aliases: []  # Namespaces of room aliases which should be delegated to the AS
+      rooms: [] # Namespaces of room ids which should be delegated to the AS
+
  - An application service can state whether they should be the only ones who 
    can manage a specified namespace. This is referred to as an "exclusive" 
    namespace. An exclusive namespace prevents humans and other application 
@@ -57,82 +58,14 @@ Notes:
    another service (e.g. IRC). Non-exclusive namespaces are used when the
    application service is merely augmenting the room itself (e.g. providing
    logging or searching facilities).
- - Namespaces are represented by POSIX extended regular expressions in JSON. 
-   They look like::
+ - Namespaces are typically represented by POSIX extended regular expressions, 
+   e.g.:
 
-     users: [
-       {
-         "exclusive": true,
-         "regex": "@irc\.freenode\.net/.*"
-       }
-     ]
+.. code-block:: yaml
 
-::
-
- POST /register
- 
- Request format
- {
-   url: "https://my.application.service.com/matrix/",
-   as_token: "some_AS_token",
-   namespaces: {
-     users: [
-       {
-         "exclusive": true,
-         "regex": "@irc\.freenode\.net/.*"
-       }
-     ],
-     aliases: [
-       {
-         "exclusive": true,
-         "regex": "#irc\.freenode\.net/.*"
-       }
-     ],
-     rooms: [
-       {
-         "exclusive": true,
-         "regex": "!irc\.freenode\.net/.*"
-       }
-     ]
-   }
- }
- 
- 
- Returns:
-   200 : Registration accepted.
-   400 : Namespaces do not conform to regex
-   401 : Credentials need to be supplied.
-   403 : AS credentials rejected.
- 
- 
-   200 OK response format
- 
-   {
-     hs_token: "string"
-   }
-   
-Unregister API
-++++++++++++++
-This API unregisters a previously registered AS from the home server.
-
-Inputs:
- - AS token
-Output:
- - None.
-Side effects:
- - The HS will stop delivering events to the URL base specified for this AS if 
-   this 200s.
-API called when:
- - The application service wants to stop receiving all events from the HS.
- 
-::
-
-  POST /unregister
-
-  Request format
-  {
-    as_token: "string"
-  }
+   user:
+     - exclusive: true
+     - regex: @irc.freenode.net/.*
 
 
 Home Server -> Application Service API

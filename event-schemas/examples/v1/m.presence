@@ -1,0 +1,10 @@
+{
+  "content": {
+    "avatar_url": "mxc://localhost:wefuiwegh8742w",
+    "last_active_ago": 2478593,
+    "presence": "online",
+    "user_id": "@example:localhost"
+  },
+  "event_id": "$WLGTSEFSEF:localhost",
+  "type": "m.presence"
+}

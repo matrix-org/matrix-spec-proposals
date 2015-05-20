@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "event": {
+      "title": "Event",
+      "description": "The basic set of fields all events must have.",
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "description": "The globally unique event identifier."
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "content": {
+          "type": "object",
+          "description": "The fields in this object will vary depending on the type of event."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of event. This SHOULD be namespaced similar to Java package naming conventions e.g. 'com.example.subdomain.event.type'"
+        }
+      },
+      "required": ["event_id", "user_id", "content", "type"]
+    },
+    "room_event": {
+        "type": "object",
+        "title": "Room Event",
+        "description": "The basic set of fields all room events must have.",
+        "allOf":[{
+            "$ref": "#/definitions/event"
+        }],
+        "properties": {
+            "room_id": {
+                "type": "string"
+            }
+        },
+        "required": ["room_id"]
+    },
+    "state_event": {
+        "type": "object",
+        "title": "State Event",
+        "description": "The basic set of fields which define a room state event.",
+        "allOf":[{
+            "$ref": "#/definitions/room_event"
+        }],
+        "properties": {
+            "state_key": {
+                "type": "string",
+                "description": "A unique key which defines the overwriting semantics for this piece of room state. This value is often a 0-length string."
+            },
+            "prev_content": {
+                "type": "object",
+                "description": "The previous content if this event has overwritten another event."
+            }
+        },
+        "required": ["state_key"]
+    }
+  }
+}

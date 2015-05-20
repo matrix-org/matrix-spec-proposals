@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "allOf": [{
+        "$ref": "core#/definitions/room_event"
+    }],
+    "properties": {
+        "content": {
+            "type": "object",
+            "properties": {
+                "call_id": {
+                    "type": "string"
+                },
+                "offer": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": ["offer"]
+                        },
+                        "sdp": {
+                            "type": "string"
+                        }
+                    },
+                    "required": ["type", "sdp"]
+                },
+                "version": {
+                    "type": "number"
+                }
+            },
+            "required": ["call_id", "offer", "version"]
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.call.invite"]
+        }
+    }
+}

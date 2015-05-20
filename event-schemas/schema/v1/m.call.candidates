@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "allOf": [{
+        "$ref": "core#/definitions/room_event"
+    }],
+    "properties": {
+        "content": {
+            "type": "object",
+            "properties": {
+                "call_id": {
+                    "type": "string"
+                },
+                "candidates": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "sdpMid": {
+                                "type": "string"
+                            },
+                            "sdpMLineIndex": {
+                                "type": "number"
+                            },
+                            "candidate": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["candidate", "sdpMLineIndex", "sdpMid"]
+                    }
+                },
+                "version": {
+                    "type": "number"
+                }
+            },
+            "required": ["call_id", "candidates", "version"]
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.call.candidates"]
+        }
+    }
+}
