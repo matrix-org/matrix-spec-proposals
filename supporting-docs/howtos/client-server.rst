@@ -32,31 +32,81 @@ If you already have an account, you must **login** into it.
 Registration
 ------------
 The aim of registration is to get a user ID and access token which you will need
-when accessing other APIs::
+when accessing other APIs. The Matrix specification gives a reuseable way of
+allowing a user to present authentication for API calls. The registration API is
+one such API call that supports this. Let's start by trying the API call, saying
+what username and password we'd like for our new user::
 
-    curl -XPOST -d '{"user":"example", "password":"wordpass", "type":"m.login.password"}' "http://localhost:8008/_matrix/client/api/v1/register"
+    curl -XPOST -d '{"user":"example", "password":"wordpass" }' "http://localhost:8008/_matrix/client/v2_alpha/register"
 
     {
-        "access_token": "QGV4YW1wbGU6bG9jYWxob3N0.AqdSzFmFYrLrTmteXc", 
-        "home_server": "localhost", 
+        "flows": [
+            {
+                "stages": [
+                    "m.login.dummy"
+                ]
+            },
+            {
+                "stages": [
+                    "m.login.email.identity"
+                ]
+            }
+        ],
+        "params": {},
+        "session": "rLxMJHhGSUyWRNJEMvkLMjab"
+    }
+
+In this example, our Home Server supports two ways of authenticating. Both of
+those involve performing a single step. In one case it's ``m.login.dummy`` and in
+the other, ``m.login.email.identity``.
+
+If we wanted to allow the user to sign up with an email address, we could choose
+``m.login.email.identity``, but we're just going to choose ``m.login.dummy``. As
+the name indicates, this is a pretty simple authentication step: it has no
+parameters at all.
+
+So now we're ready to actually try and create our user::
+
+    curl -XPOST -d '{"user":"example", "password": "wordpass", "auth": {"type": "m.login.dummy"}}' "http://localhost:8008/_matrix/client/v2_alpha/register"
+
+    {
+        "access_token": "QGV4YW1wbGU6bG9jYWxob3N0.AqdSzFmFYrLrTmteXc",
+        "home_server": "localhost",
         "user_id": "@example:localhost"
     }
 
-NB: If a ``user`` is not specified, one will be randomly generated for you. 
-If you do not specify a ``password``, you will be unable to login to the account
-if you forget the ``access_token``.
+It worked! Note that the only reason we needed to specify dummy auth here was
+that we can't call an API that uses user-interactive authentication without
+supplying some kind of authentication. In this case, the Home Server let us
+use dummy auth. Most home servers in the real world won't support this: they'll
+require at least a CAPTCHA to be completed before they'll register a user
+account. The Matrix Specification covers how the other (real) types of
+authentication work.
 
-Implementation note: The matrix specification does not enforce how users 
-register with a server. It just specifies the URL path and absolute minimum 
-keys. The reference home server uses a username/password to authenticate user,
-but other home servers may use different methods. This is why you need to
-specify the ``type`` of method.
+Now, if you just tried that against your own local Home Server and got something
+like this::
+
+    {
+        "errcode": "M_UNKNOWN",
+        "error": "Registration has been disabled"
+    }
+
+This, fairly obviously, means your Home Server doesn't allow people to register
+their own accounts. This is the case with Synapse by default: change the config
+option 'enable_registration' to True to chnage this.
+
+You can also register an account without specifying a ``user``. If you do so,
+one will be randomly generated for you. You will need to specify a ``password``
+though.
 
 Login
 -----
-The aim when logging in is to get an access token for your existing user ID::
+The aim when logging in is to get an access token for your existing user ID.
+Login will also require the same type of user-interactive authentication,
+although right now the login API is still in V1. It looks very similar, but is
+subtly different::
 
-    curl -XGET "http://localhost:8008/_matrix/client/api/v1/login"
+    curl -XPOST "http://localhost:8008/_matrix/client/api/v1/login"
 
     {
         "flows": [
@@ -73,15 +123,15 @@ The aim when logging in is to get an access token for your existing user ID::
         "home_server": "localhost", 
         "user_id": "@example:localhost"
     }
-    
-Implementation note: Different home servers may implement different methods for 
-logging in to an existing account. In order to check that you know how to login 
-to this home server, you must perform a ``GET`` first and make sure you 
-recognise the login type. If you do not know how to login, you can 
-``GET /login/fallback`` which will return a basic webpage which you can use to 
-login. The reference home server implementation support username/password login,
-but other home servers may support different login methods (e.g. OAuth2).
 
+Notice that we still start by asking the server what types of auth we can use,
+then perform the call. In V1 the initial query happens with a GET request and
+our authentication information is not in its own 'auth' subdictionary. There are
+some other differences between the V1 and V2 login spec too which you can read
+about in the full spec documentation.
+
+.. TODO: Mention fallback auth once this is all V2.
+    
 
 Communicating
 =============
