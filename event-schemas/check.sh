@@ -10,10 +10,7 @@ do
     find examples/v1 -name $event_type -o -name "$event_type#*" | while read exline
     do
         echo "    against $exline"
-        # run z-schema and dump stdout/err to the terminal (good for Jenkin's Console Output) and grep for fail messages
-        if [[ -n $(z-schema schema/v1/$event_type $exline 2>&1 | tee /dev/tty | grep -Ei "error|failed") ]]; then
-            echo "    Failed."
-            exit 1
-        fi
+        # run z-schema: because of bash -e if this fails we bail with exit code 1
+        z-schema schema/v1/$event_type $exline
     done
 done
