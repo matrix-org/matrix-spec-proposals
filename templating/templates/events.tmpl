@@ -1,0 +1,17 @@
+``{{event.type}}``
+  Summary:
+    {{event.summary | wrap(76) | indent(4)}}
+  Type:
+    {{event.typeof}}
+  Description:
+    {{event.desc | wrap(76) | indent(4)}}
+  Required Keys:
+    ``{{event.required_keys | jsonify}}``
+
+  JSON Format::
+
+    {{event.json_format | jsonify(4, 4)}}
+
+  Example::
+
+    {{example.content | jsonify(4, 4)}}
