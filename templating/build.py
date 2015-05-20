@@ -40,10 +40,14 @@ Checks
 - Any sections made but not used in the skeleton will produce a warning.
 """
 
-from jinja2 import Environment, FileSystemLoader, StrictUndefined
+from jinja2 import Environment, FileSystemLoader, StrictUndefined, Template
+from argparse import ArgumentParser, FileType
+import json
+import os
+import sys
+
 import internal.units
 import internal.sections
-import json
 
 def load_units():
     print "Loading units..."
@@ -53,10 +57,8 @@ def load_sections(env, units):
     print "\nLoading sections..."
     return internal.sections.load(env, units)
 
-def create_from_skeleton(skeleton, sections):
-    print "\nCreating spec from skeleton..."
-    print "Section keys: %s" % (sections.keys())
-    return skeleton.render(sections.data)
+def create_from_template(template, sections):
+    return template.render(sections.data)
 
 def check_unaccessed(name, store):
     unaccessed_keys = store.get_unaccessed_set()
@@ -64,7 +66,10 @@ def check_unaccessed(name, store):
         print "Found %s unused %s keys." % (len(unaccessed_keys), name)
         print unaccessed_keys
 
-def main():
+def main(file_stream=None, out_dir=None):
+    if out_dir and not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+
     # add a template filter to produce pretty pretty JSON
     def jsonify(input, indent=None, pre_whitespace=0):
         code = json.dumps(input, indent=indent)
@@ -88,15 +93,54 @@ def main():
     # use the units to create RST sections
     sections = load_sections(env, units)
 
-    # combine all the RST sections into a coherent spec
-    skeleton = env.get_template("skeleton.rst")
-    spec = create_from_skeleton(skeleton, sections)
+    # print out valid section keys if no file supplied
+    if not file_stream:
+        print "\nValid template variables:"
+        for key in sections.keys():
+            print "  %s" % key
+        return
+
+    # check the input files and substitute in sections where required
+    print "Parsing input template: %s" % file_stream.name
+    temp = Template(file_stream.read())
+    print "Creating output for: %s" % file_stream.name
+    output = create_from_template(temp, sections)
+    with open(os.path.join(out_dir, file_stream.name), "w") as f:
+        f.write(output)
+    print "Output file for: %s" % file_stream.name
 
     check_unaccessed("units", units)
-    
-    with open("spec.rst", "w") as f:
-        f.write(spec)
 
 
 if __name__ == '__main__':
-    main()
+    parser = ArgumentParser(
+        "Process a file (typically .rst) and replace templated areas with spec"+
+        " info. For a list of possible template variables, add"+
+        " --show-template-vars."
+    )
+    parser.add_argument(
+        "file", nargs="?", type=FileType('r'),
+        help="The input file to process."
+    )
+    parser.add_argument(
+        "--out-directory", "-o", help="The directory to output the file to."+
+        " Default: /out",
+        default="out"
+    )
+    parser.add_argument(
+        "--show-template-vars", "-s", action="store_true",
+        help="Show a list of all possible variables you can use in the"+
+        " input file."
+    )
+    args = parser.parse_args()
+
+    if (args.show_template_vars):
+        main()
+        sys.exit(0)
+
+    if not args.file:
+        print "No file supplied."
+        parser.print_help()
+        sys.exit(1)
+
+    main(file_stream=args.file, out_dir=args.out_directory)
