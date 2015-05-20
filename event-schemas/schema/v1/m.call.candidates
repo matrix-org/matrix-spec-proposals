@@ -9,28 +9,34 @@
             "type": "object",
             "properties": {
                 "call_id": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The ID of the call this event relates to."
                 },
                 "candidates": {
                     "type": "array",
+                    "description": "Array of objects describing the candidates.",
                     "items": {
                         "type": "object",
                         "properties": {
                             "sdpMid": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The SDP media type this candidate is intended for."
                             },
                             "sdpMLineIndex": {
-                                "type": "number"
+                                "type": "number",
+                                "description": "The index of the SDP 'm' line this candidate is intended for."
                             },
                             "candidate": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The SDP 'a' line of the candidate."
                             }
                         },
                         "required": ["candidate", "sdpMLineIndex", "sdpMid"]
                     }
                 },
                 "version": {
-                    "type": "number"
+                    "type": "integer",
+                    "description": "The version of the VoIP specification this messages adheres to. This specification is version 0."
                 }
             },
             "required": ["call_id", "candidates", "version"]
