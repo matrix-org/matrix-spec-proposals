@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "title": "Set a topic for the room.",
-    "description": "A topic is a short message detailing what is currently being discussed in\nthe room.  It can also be used as a way to display extra information about\nthe room, which may not be suitable for the room name. The room topic can\nalso be set when creating a room using ``/createRoom`` with the ``topic``\nkey.",
+    "description": "A topic is a short message detailing what is currently being discussed in the room.  It can also be used as a way to display extra information about the room, which may not be suitable for the room name. The room topic can also be set when creating a room using ``/createRoom`` with the ``topic`` key.",
     "allOf": [{
         "$ref": "core#/definitions/state_event"
     }],

@@ -45,6 +45,7 @@ from argparse import ArgumentParser, FileType
 import json
 import os
 import sys
+import textwrap
 
 import internal.units
 import internal.sections
@@ -81,6 +82,9 @@ def main(file_stream=None, out_dir=None):
     def indent(input, indent):
         return input.replace("\n", ("\n" + " "*indent))
 
+    def wrap(input, wrap=80):
+        return '\n'.join(textwrap.wrap(input, wrap))
+
     # make Jinja aware of the templates and filters
     env = Environment(
         loader=FileSystemLoader("templates"),
@@ -88,6 +92,7 @@ def main(file_stream=None, out_dir=None):
     )
     env.filters["jsonify"] = jsonify
     env.filters["indent"] = indent
+    env.filters["wrap"] = wrap
 
     # load up and parse the lowest single units possible: we don't know or care
     # which spec section will use it, we just need it there in memory for when
