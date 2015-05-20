@@ -14,7 +14,7 @@
                 },
                 "answer": {
                     "type": "object",
-                    "description": "",
+                    "description": "The session description object",
                     "properties": {
                         "type": {
                             "type": "string",
