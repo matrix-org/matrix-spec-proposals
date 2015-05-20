@@ -90,6 +90,14 @@ def rst2html(i, o):
                 settings_overrides=stylesheets
             )
 
+def run_through_template(input):
+    null = open(os.devnull, 'w')
+    subprocess.check_output(
+        ['python', 'build.py', "-o", "../scripts/tmp", "../scripts/"+input],
+        stderr=null,
+        cwd="../templating",
+    )
+
 def prepare_env():
     try:
         os.makedirs("./gen")
@@ -101,12 +109,12 @@ def prepare_env():
         pass
     
 def cleanup_env():
-    #pass
     shutil.rmtree("./tmp")
 
 def main():
     prepare_env()
     glob_spec_to("tmp/full_spec.rst")
+    run_through_template("tmp/full_spec.rst")
     shutil.copy("../supporting-docs/howtos/client-server.rst", "tmp/howto.rst")
     set_git_version("tmp/full_spec.rst")
     set_git_version("tmp/howto.rst")

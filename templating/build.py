@@ -114,7 +114,9 @@ def main(file_stream=None, out_dir=None):
     temp = Template(file_stream.read())
     print "Creating output for: %s" % file_stream.name
     output = create_from_template(temp, sections)
-    with open(os.path.join(out_dir, file_stream.name), "w") as f:
+    with open(
+            os.path.join(out_dir, os.path.basename(file_stream.name)), "w"
+            ) as f:
         f.write(output)
     print "Output file for: %s" % file_stream.name
 

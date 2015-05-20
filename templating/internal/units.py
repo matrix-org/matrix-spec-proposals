@@ -19,7 +19,7 @@ def _load_examples():
             continue
         with open(os.path.join(path, filename), "r") as f:
             examples[filename] = json.loads(f.read())
-            if filename == "m.room.message_m.text":
+            if filename == "m.room.message#m.text":
                 examples["m.room.message"] = examples[filename]
     return examples
 
