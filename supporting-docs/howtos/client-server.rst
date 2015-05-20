@@ -32,10 +32,10 @@ If you already have an account, you must **login** into it.
 Registration
 ------------
 The aim of registration is to get a user ID and access token which you will need
-when accessing other APIs. The Matrix specification gives a reuseable way of
-allowing a user to present authentication for API calls. The registration API is
-one such API call that supports this. Let's start by trying the API call, saying
-what username and password we'd like for our new user::
+when accessing other APIs. Matrix specification gives an extensible way of
+allowing users to present authentication for API calls The registration API is
+one such API call that supports this. Let's start by trying the API call,
+saying what username and password we'd like for our new user::
 
     curl -XPOST -d '{"user":"example", "password":"wordpass" }' "http://localhost:8008/_matrix/client/v2_alpha/register"
 
