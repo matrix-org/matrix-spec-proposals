@@ -53,7 +53,7 @@ def _load_schemas():
         for key_name in props:
             value_type = None
             required = key_name in required_keys
-            desc = props[key_name].get("description")
+            desc = props[key_name].get("description", "")
 
             if props[key_name]["type"] == "object":
                 if props[key_name].get("additionalProperties"):
@@ -67,8 +67,19 @@ def _load_schemas():
                         props[key_name], 
                         enforce_title=True
                     )
-                    value_type = nested_object[0]["title"]
+                    value_type = "{%s}" % nested_object[0]["title"]
                     tables += nested_object
+            elif props[key_name]["type"] == "array":
+                # if the items of the array are objects then recurse
+                if props[key_name]["items"]["type"] == "object":
+                    nested_object = get_content_fields(
+                        props[key_name]["items"], 
+                        enforce_title=True
+                    )
+                    value_type = "[%s]" % nested_object[0]["title"]
+                    tables += nested_object
+                else:
+                    value_type = "[%s]" % props[key_name]["type"]
             else:
                 value_type = props[key_name]["type"]
 
@@ -76,7 +87,8 @@ def _load_schemas():
                 "key": key_name,
                 "type": value_type,
                 "required": required,
-                "desc": desc
+                "desc": desc,
+                "req_str": "**Required.** " if required else ""
             })
         return tables
 

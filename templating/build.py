@@ -79,8 +79,11 @@ def main(file_stream=None, out_dir=None):
 
         return code
 
-    def indent(input, indent):
+    def indent_block(input, indent):
         return input.replace("\n", ("\n" + " "*indent))
+
+    def indent(input, indent):
+        return " "*indent + input
 
     def wrap(input, wrap=80):
         return '\n'.join(textwrap.wrap(input, wrap))
@@ -92,6 +95,7 @@ def main(file_stream=None, out_dir=None):
     )
     env.filters["jsonify"] = jsonify
     env.filters["indent"] = indent
+    env.filters["indent_block"] = indent_block
     env.filters["wrap"] = wrap
 
     # load up and parse the lowest single units possible: we don't know or care

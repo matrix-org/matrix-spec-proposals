@@ -1,9 +1,23 @@
 ``{{event.type}}``
 {{(4 + event.type | length) * '-'}}
-{{event.desc}}
+{{event.desc or ""}}
+{% for table in event.content_fields -%}
+{{"``"+table.title+"``" if table.title else ""}}
 
-{{event.content_fields | jsonify(4,4)}}
+================== ================= ===========================================
+      Key               Type                 Description
+================== ================= ===========================================
+{% for row in table.rows -%}
+{# -#}
+{# Row type needs to prepend spaces to line up with the type column (19 ch) -#}
+{# Desc needs to prepend the required text (maybe) and prepend spaces too -#}
+{#      It also needs to then wrap inside the desc col (43 ch width) -#}
+{# -#}
+{{row.key}}{{row.type|indent(19-row.key|length)}}{{row.req_str | indent(18 - (row.type|length))}}{{row.desc|wrap(43)|indent_block(37)}}
+{% endfor -%}
+================== ================= ===========================================
 
+{% endfor %}
 Example::
 
     {{example.content | jsonify(4, 4)}}
