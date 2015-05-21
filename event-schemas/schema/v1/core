@@ -11,11 +11,12 @@
           "description": "The globally unique event identifier."
         },
         "user_id": {
-          "type": "string"
+          "type": "string",
+          "description": "Contains the fully-qualified ID of the user who *sent* this event."
         },
         "content": {
           "type": "object",
-          "description": "The fields in this object will vary depending on the type of event."
+          "description": "The fields in this object will vary depending on the type of event. When interacting with the REST API, this is the HTTP body."
         },
         "type": {
           "type": "string",
@@ -27,13 +28,14 @@
     "room_event": {
         "type": "object",
         "title": "Room Event",
-        "description": "The basic set of fields all room events must have.",
+        "description": "In addition to the Event fields, Room Events MUST have the following additional field.",
         "allOf":[{
             "$ref": "#/definitions/event"
         }],
         "properties": {
             "room_id": {
-                "type": "string"
+                "type": "string",
+                "description": "The ID of the room associated with this event."
             }
         },
         "required": ["room_id"]
@@ -41,18 +43,18 @@
     "state_event": {
         "type": "object",
         "title": "State Event",
-        "description": "The basic set of fields which define a room state event.",
+        "description": "In addition to the Room Event fields, State Events have the following additional fields.",
         "allOf":[{
             "$ref": "#/definitions/room_event"
         }],
         "properties": {
             "state_key": {
                 "type": "string",
-                "description": "A unique key which defines the overwriting semantics for this piece of room state. This value is often a 0-length string."
+                "description": "A unique key which defines the overwriting semantics for this piece of room state. This value is often a 0-length string. The presence of this key makes this event a State Event."
             },
             "prev_content": {
                 "type": "object",
-                "description": "The previous content if this event has overwritten another event."
+                "description": "Optional. The previous ``content`` for this event. If there is no previous content, this key will be missing."
             }
         },
         "required": ["state_key"]

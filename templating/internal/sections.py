@@ -16,8 +16,25 @@ def _render_section_room_events(env, units):
         ))
     return "\n\n".join(sections)
 
+def _render_ce_type(env, units, type):
+    template = env.get_template("common-event-fields.tmpl")
+    ce_types = units.get("common-event-fields")
+    return template.render(common_event=ce_types[type])
+
+def _render_ce_fields(env, units):
+    return _render_ce_type(env, units, "event")
+
+def _render_cre_fields(env, units):
+    return _render_ce_type(env, units, "room_event")
+
+def _render_cse_fields(env, units):
+    return _render_ce_type(env, units, "state_event")
+
 SECTION_DICT = {
-    "room_events": _render_section_room_events
+    "room_events": _render_section_room_events,
+    "common_event_fields": _render_ce_fields,
+    "common_state_event_fields": _render_cse_fields,
+    "common_room_event_fields": _render_cre_fields
 }
 
 def load(env, units):

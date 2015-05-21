@@ -11,6 +11,28 @@ def prop(obj, path):
         val = val.get(key, {})
     return val
 
+def _load_common_event_fields():
+    path = "../event-schemas/schema/v1/core"
+    event_types = {}
+    with open(path, "r") as f:
+        core_json = json.loads(f.read())
+        for event_type in core_json["definitions"]:
+            event_info = core_json["definitions"][event_type]
+            table = {
+                "title": event_info["title"],
+                "desc": event_info["description"],
+                "rows": []
+            }
+            for prop in event_info["properties"]:
+                row = {
+                    "key": prop,
+                    "type": event_info["properties"][prop]["type"],
+                    "desc": event_info["properties"][prop].get("description","")
+                }
+                table["rows"].append(row)
+            event_types[event_type] = table
+    return event_types
+
 def _load_examples():
     path = "../event-schemas/examples/v1"
     examples = {}
@@ -152,7 +174,8 @@ def _load_schemas():
 
 UNIT_DICT = {
     "event-examples": _load_examples,
-    "event-schemas": _load_schemas
+    "event-schemas": _load_schemas,
+    "common-event-fields": _load_common_event_fields
 }
 
 def load():
