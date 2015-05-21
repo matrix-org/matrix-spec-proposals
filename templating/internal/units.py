@@ -27,36 +27,58 @@ def _load_schemas():
     path = "../event-schemas/schema/v1"
     schemata = {}
 
-    def format_for_obj(obj):
-        obj_type = "<%s>" % obj.get("type")
-        if obj_type == "<object>":
-            if obj.get("properties"):
-                format = {}
-                for key in obj.get("properties"):
-                    format[key] = format_for_obj(obj.get("properties")[key])
-                return format
-            elif obj.get("additionalProperties"):
-                return {
-                    "<string>": (
-                        "<%s>" % obj.get("additionalProperties").get("type")
+    def get_content_fields(obj, enforce_title=False):
+        # Algorithm:
+        # f.e. property => add field info (if field is object then recurse)
+        if obj.get("type") != "object":
+            raise Exception(
+                "get_content_fields: Object %s isn't an object." % obj
+            )
+        if enforce_title and not obj.get("title"):
+            raise Exception(
+                "get_content_fields: Nested object %s doesn't have a title." % obj
+            )
+
+        required_keys = obj.get("required")
+        if not required_keys:
+            required_keys = []
+
+        fields = {
+            "title": obj.get("title"),
+            "rows": []
+        }
+        tables = [fields]
+
+        props = obj["properties"]
+        for key_name in props:
+            value_type = None
+            required = key_name in required_keys
+            desc = props[key_name].get("description")
+
+            if props[key_name]["type"] == "object":
+                if props[key_name].get("additionalProperties"):
+                    # not "really" an object, just a KV store
+                    value_type = (
+                        "{string: %s}" %
+                        props[key_name]["additionalProperties"]["type"]
                     )
-                }
-        elif obj_type == "<array>" and obj.get("items"):
-            return [
-                format_for_obj(obj.get("items"))
-            ]
-
-        enum_text = ""
-        # add on enum info
-        enum = obj.get("enum")
-        if enum:
-            if len(enum) > 1:
-                obj_type = "<enum>"
-                enum_text = " (" + "|".join(enum) + ")"
+                else:
+                    nested_object = get_content_fields(
+                        props[key_name], 
+                        enforce_title=True
+                    )
+                    value_type = nested_object[0]["title"]
+                    tables += nested_object
             else:
-                obj_type = enum[0]
+                value_type = props[key_name]["type"]
 
-        return obj_type + enum_text
+            fields["rows"].append({
+                "key": key_name,
+                "type": value_type,
+                "required": required,
+                "desc": desc
+            })
+        return tables
 
     for filename in os.listdir(path):
         if not filename.startswith("m."):
@@ -67,10 +89,17 @@ def _load_schemas():
             schema = {
                 "typeof": None,
                 "type": None,
-                "summary": None,
+                "title": None,
                 "desc": None,
-                "json_format": None,
-                "required_keys": None
+                "content_fields": [
+                # {
+                #   title: "<title> key"
+                #   rows: [
+                #       { key: <key_name>, type: <string>, 
+                #         desc: <desc>, required: <bool> }
+                #   ]
+                # }
+                ]
             }
 
             # add typeof
@@ -87,18 +116,14 @@ def _load_schemas():
             schema["type"] = prop(json_schema, "properties/type/enum")[0]
 
             # add summary and desc
-            schema["summary"] = json_schema.get("title")
+            schema["title"] = json_schema.get("title")
             schema["desc"] = json_schema.get("description")
 
-            # add json_format
-            content_props = prop(json_schema, "properties/content")
-            if content_props:
-                schema["json_format"] = format_for_obj(content_props)
-
-            # add required_keys
-            schema["required_keys"] = prop(
-                json_schema, "properties/content/required"
+            # walk the object for field info
+            schema["content_fields"] = get_content_fields(
+                prop(json_schema, "properties/content")
             )
+
             schemata[filename] = schema
     return schemata
 

@@ -15,6 +15,7 @@
                 },
                 "offer": {
                     "type": "object",
+                    "title": "Offer",
                     "description": "The session description object",
                     "properties": {
                         "type": {

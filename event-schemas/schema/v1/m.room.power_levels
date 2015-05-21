@@ -18,12 +18,14 @@
                 "users_default": { "type": "number" },
                 "events": {
                     "type": "object",
+                    "title": "Event power levels",
                     "additionalProperties": {
                         "type": "number"
                     }
                 },
                 "users": {
                     "type": "object",
+                    "title": "User power levels",
                     "additionalProperties": {
                         "type": "number"
                     }
