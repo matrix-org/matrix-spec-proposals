@@ -73,7 +73,7 @@ def main(file_stream=None, out_dir=None):
 
     # add a template filter to produce pretty pretty JSON
     def jsonify(input, indent=None, pre_whitespace=0):
-        code = json.dumps(input, indent=indent)
+        code = json.dumps(input, indent=indent, sort_keys=True)
         if pre_whitespace:
             code = code.replace("\n", ("\n" +" "*pre_whitespace))
 
