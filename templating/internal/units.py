@@ -79,7 +79,7 @@ def _load_schemas():
                     value_type = "[%s]" % nested_object[0]["title"]
                     tables += nested_object
                 else:
-                    value_type = "[%s]" % props[key_name]["type"]
+                    value_type = "[%s]" % props[key_name]["items"]["type"]
             else:
                 value_type = props[key_name]["type"]
 
@@ -129,7 +129,7 @@ def _load_schemas():
 
             # add summary and desc
             schema["title"] = json_schema.get("title")
-            schema["desc"] = json_schema.get("description")
+            schema["desc"] = json_schema.get("description", "")
 
             # walk the object for field info
             schema["content_fields"] = get_content_fields(

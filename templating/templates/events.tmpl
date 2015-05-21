@@ -1,6 +1,6 @@
 ``{{event.type}}``
 {{(4 + event.type | length) * '-'}}
-{{event.desc or ""}}
+{{event.desc | wrap(80)}}
 {% for table in event.content_fields -%}
 {{"``"+table.title+"``" if table.title else ""}}
 
