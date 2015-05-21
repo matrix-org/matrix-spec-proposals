@@ -5,7 +5,7 @@
 {{"``"+table.title+"``" if table.title else ""}}
 
 ================== ================= ===========================================
-      Key               Type                 Description
+   {{table.title or "Content"}} Key          Type                 Description
 ================== ================= ===========================================
 {% for row in table.rows -%}
 {# -#}
