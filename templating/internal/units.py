@@ -82,6 +82,9 @@ def _load_schemas():
                     value_type = "[%s]" % props[key_name]["items"]["type"]
             else:
                 value_type = props[key_name]["type"]
+                if props[key_name].get("enum"):
+                    value_type = "enum"
+                    desc += " One of: %s" % json.dumps(props[key_name]["enum"])
 
             fields["rows"].append({
                 "key": key_name,
