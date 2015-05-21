@@ -11,7 +11,8 @@
             "type": "object",
             "properties": {
                 "creator": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The ``user_id`` of the room creator. This is set by the homeserver."
                 }
             },
             "required": ["creator"]

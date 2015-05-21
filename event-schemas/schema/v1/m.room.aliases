@@ -12,6 +12,7 @@
             "properties": {
                 "aliases": {
                     "type": "array",
+                    "description": "A list of room aliases.",
                     "items": {
                         "type": "string"
                     }

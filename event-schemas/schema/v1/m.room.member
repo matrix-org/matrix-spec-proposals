@@ -12,13 +12,16 @@
             "properties": {
                 "membership": {
                     "type": "string",
+                    "description": "The membership state of the user.",
                     "enum": ["invite","join","knock","leave","ban"]
                 },
                 "avatar_url": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The avatar URL for this user, if any. This is added by the homeserver."
                 },
                 "displayname": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The display name for this user, if any. This is added by the homeserver."
                 }
             },
             "required": ["membership"]

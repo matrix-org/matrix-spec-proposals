@@ -10,15 +10,34 @@
         "content": {
             "type": "object",
             "properties": {
-                "ban": { "type": "number" },
-                "events_default": { "type": "number" },
-                "kick": { "type": "number" },
-                "redact": { "type": "number" },
-                "state_default": { "type": "number" },
-                "users_default": { "type": "number" },
+                "ban": { 
+                    "type": "number",
+                    "description": "The level required to ban a user."
+                },
+                "events_default": { 
+                    "type": "number",
+                    "description": "The default level required to send message events. Can be overidden by the ``events`` key."
+                },
+                "kick": { 
+                    "type": "number",
+                    "description": "The level required to kick a user."
+                },
+                "redact": { 
+                    "type": "number",
+                    "description": "The level required to redact an event."
+                },
+                "state_default": { 
+                    "type": "number",
+                    "description": "The default level required to send state events. Can be overriden by the ``events`` key."
+                },
+                "users_default": { 
+                    "type": "number",
+                    "description": "The default power level for every user in the room, unless their ``user_id`` is mentioned in the ``users`` key."
+                },
                 "events": {
                     "type": "object",
                     "title": "Event power levels",
+                    "description": "The level required to send specific event types. This is a mapping from event type to power level required.",
                     "additionalProperties": {
                         "type": "number"
                     }
@@ -26,6 +45,7 @@
                 "users": {
                     "type": "object",
                     "title": "User power levels",
+                    "description": "The power levels for specific users. This is a mapping from ``user_id`` to power level for that user.",
                     "additionalProperties": {
                         "type": "number"
                     }

@@ -12,6 +12,7 @@
             "properties": {
                 "join_rule": {
                     "type": "string",
+                    "description": "The type of rules used for users wishing to join this room.",
                     "enum": ["public","knock","invite","private"]
                 }
             },
