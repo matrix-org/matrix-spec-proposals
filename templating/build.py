@@ -45,7 +45,7 @@ from argparse import ArgumentParser, FileType
 import json
 import os
 import sys
-import textwrap
+from textwrap import TextWrapper
 
 import internal.units
 import internal.sections
@@ -85,8 +85,11 @@ def main(file_stream=None, out_dir=None):
     def indent(input, indent):
         return " "*indent + input
 
-    def wrap(input, wrap=80):
-        return '\n'.join(textwrap.wrap(input, wrap))
+    def wrap(input, wrap=80, initial_indent=""):
+        if len(input) == 0:
+            return initial_indent
+        wrapper = TextWrapper(initial_indent=initial_indent, width=wrap)
+        return wrapper.fill(input)
 
     # make Jinja aware of the templates and filters
     env = Environment(
