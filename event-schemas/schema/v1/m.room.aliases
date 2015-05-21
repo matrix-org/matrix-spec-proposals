@@ -20,6 +20,10 @@
             },
             "required": ["aliases"]
         },
+        "state_key": {
+            "type": "string",
+            "description": "The homeserver domain which owns these room aliases."
+        },
         "type": {
             "type": "string",
             "enum": ["m.room.aliases"]

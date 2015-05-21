@@ -27,7 +27,8 @@
             "required": ["membership"]
         },
         "state_key": {
-            "type": "string"
+            "type": "string",
+            "description": "The ``user_id`` this membership event relates to."
         },
         "type": {
             "type": "string",

@@ -100,6 +100,7 @@ def _load_schemas():
             json_schema = json.loads(f.read())
             schema = {
                 "typeof": None,
+                "typeof_info": "",
                 "type": None,
                 "title": None,
                 "desc": None,
@@ -116,7 +117,7 @@ def _load_schemas():
 
             # add typeof
             base_defs = {
-                "core#/definitions/room_event": "Room Event",
+                "core#/definitions/room_event": "Message Event",
                 "core#/definitions/state_event": "State Event"
             }
             if type(json_schema.get("allOf")) == list:
@@ -135,6 +136,13 @@ def _load_schemas():
             schema["content_fields"] = get_content_fields(
                 prop(json_schema, "properties/content")
             )
+
+            # Assign state key info
+            if schema["typeof"] == "State Event":
+                skey_desc = prop(json_schema, "properties/state_key/description")
+                if not skey_desc:
+                    raise Exception("Missing description for state_key")
+                schema["typeof_info"] = "``state_key``: %s" % skey_desc
 
             schemata[filename] = schema
     return schemata

@@ -1,6 +1,9 @@
 ``{{event.type}}``
 {{(4 + event.type | length) * '-'}}
-{{event.desc | wrap(80)}}
+*{{event.typeof}}*
+  {{event.typeof_info}}
+
+  {{event.desc | wrap(80) | indent_block(2)}}
 {% for table in event.content_fields -%}
 {{"``"+table.title+"``" if table.title else ""}}
 

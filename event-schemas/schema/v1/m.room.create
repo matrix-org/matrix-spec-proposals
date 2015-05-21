@@ -19,6 +19,7 @@
         },
         "state_key": {
             "type": "string",
+            "description": "A 0-length string.",
             "pattern": "^$"
         },
         "type": {
