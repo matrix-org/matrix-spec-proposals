@@ -1,8 +1,6 @@
-This folder contains the templates and templating system for creating the spec.
-We use the templating system Jinja2 in Python. This was chosen over other
-systems such as Handlebars.js and Templetor because we already have a Python
-dependency on the spec build system, and Jinja provides a rich set of template
-operations beyond basic control flow.
+This folder contains the templates and a home-brewed templating system called
+Batesian for creating the spec. Batesian uses the templating system Jinja2 in
+Python.
 
 Installation
 ------------
@@ -12,10 +10,65 @@ Installation
 
 Running
 -------
-To build the spec:
+To pass arbitrary files (not limited to RST) through the templating system:
 ```
- $ python build.py
+ $ python build.py -i matrix_templates /random/file/path/here.rst
 ```
 
-This will output ``spec.rst`` which can then be fed into the RST->HTML
-converter located in ``matrix-doc/scripts``.
+The template output can be found at ``out/here.rst``. For a full list of
+options, type ``python build.py --help``.
+
+Developing
+----------
+
+## Sections and Units
+Batesian is built around the concept of Sections and Units. Sections are strings
+which will be inserted into the provided document. Every section has a unique
+key name which is the template variable that it represents. Units are arbitrary
+python data. They are also represented by unique key names.
+
+## Adding template variables
+If you want to add a new template variable e.g. `{{foo_bar}}` which is replaced
+with the text `foobar`, you need to add a new Section:
+
+ - Open `matrix_templates/sections.py`.
+ - Add a new function to `MatrixSections` called `render_foo_bar`. The function
+   name after `render_` determines the template variable name, and the return
+   value of this function determines what will be inserted.
+   ```python
+   def render_foo_bar(self):
+       return "foobar"
+   ```
+ - Run `build.py`!
+
+## Adding data for template variables
+If you want to expose arbitrary data which can be used by `MatrixSections`, you
+need to add a new Unit:
+
+ - Open `matrix_templates/units.py`.
+ - Add a new function to `MatrixUnits` called `load_some_data`. Similar to
+   sections, the function name after `load_` determines the unit name, and the
+   return value of this function determines the value of the unit.
+   ```python
+   def load_some_data(self):
+       return {
+          "data": "this could be JSON from file from json.loads()",
+          "processed_data": "this data may have helper keys added",
+          "types": "it doesn't even need to be a dict. Whatever you want!"
+       }
+   ```
+ - You can now call `self.units.get("some_data")` to retrieve the value you
+   returned.
+   
+## Using Jinja templates
+Sections can use Jinja templates to return text. Batesian will attempt to load
+all templates from `matrix_templates/templates/`. These can be accessed in
+Section code via `template = self.env.get_template("name_of_template.tmpl")`. At
+this point, the `template` is just a standard `jinja2.Template`. In fact,
+`self.env` is just a `jinja2.Environment`.
+
+## Debugging
+If you don't know why your template isn't behaving as you'd expect, or you just
+want to add some informative logging, use `self.log` in either the Sections
+class or Units class. You'll need to add `-v` to `build.py` for these lines to
+show.

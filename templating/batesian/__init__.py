@@ -5,8 +5,10 @@ class AccessKeyStore(object):
     """Storage for arbitrary data. Monitors get calls so we know if they
     were used or not."""
 
-    def __init__(self):
-        self.data = {}
+    def __init__(self, existing_data=None):
+        if not existing_data:
+            existing_data = {}
+        self.data = existing_data
         self.accessed_set = Set()
 
     def keys(self):

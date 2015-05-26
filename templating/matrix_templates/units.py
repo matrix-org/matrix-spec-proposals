@@ -1,41 +1,12 @@
 """Contains all the units for the spec."""
-from . import AccessKeyStore
+from batesian.units import Units
 import inspect
 import json
 import os
 import subprocess
 
-def prop(obj, path):
-    # Helper method to extract nested property values
-    nested_keys = path.split("/")
-    val = obj
-    for key in nested_keys:
-        val = val.get(key, {})
-    return val
 
-class Units(object):
-
-    def __init__(self, debug=False):
-        self.debug = debug
-
-    def log(self, text):
-        if self.debug:
-            print text
-
-    def get_units(self, debug=False):
-        unit_list = inspect.getmembers(self, predicate=inspect.ismethod)
-        unit_dict = {}
-        for (func_name, func) in unit_list:
-            if not func_name.startswith("load_"):
-                continue
-            unit_key = func_name[len("load_"):]
-            unit_dict[unit_key] = func()
-            self.log("Generated unit '%s' : %s" % (
-                unit_key, json.dumps(unit_dict[unit_key])[:50].replace(
-                    "\n",""
-                )
-            ))
-        return unit_dict
+class MatrixUnits(Units):
 
     def load_common_event_fields(self):
         path = "../event-schemas/schema/v1/core"
@@ -177,7 +148,9 @@ class Units(object):
                     )
 
                 # add type
-                schema["type"] = prop(json_schema, "properties/type/enum")[0]
+                schema["type"] = Units.prop(
+                    json_schema, "properties/type/enum"
+                )[0]
 
                 # add summary and desc
                 schema["title"] = json_schema.get("title")
@@ -185,12 +158,14 @@ class Units(object):
 
                 # walk the object for field info
                 schema["content_fields"] = get_content_fields(
-                    prop(json_schema, "properties/content")
+                    Units.prop(json_schema, "properties/content")
                 )
 
                 # Assign state key info
                 if schema["typeof"] == "State Event":
-                    skey_desc = prop(json_schema, "properties/state_key/description")
+                    skey_desc = Units.prop(
+                        json_schema, "properties/state_key/description"
+                    )
                     if not skey_desc:
                         raise Exception("Missing description for state_key")
                     schema["typeof_info"] = "``state_key``: %s" % skey_desc
@@ -245,12 +220,3 @@ class Units(object):
             )
             return git_version.encode("ascii")
         return "Unknown rev"
-
-
-def load():
-    store = AccessKeyStore()
-    units = Units()
-    unit_dict = units.get_units()
-    for unit_key in unit_dict:
-        store.add(unit_key, unit_dict[unit_key])
-    return store

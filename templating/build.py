@@ -39,27 +39,18 @@ Checks
 - Any units made which were not used at least once will produce a warning.
 - Any sections made but not used in the skeleton will produce a warning.
 """
+from batesian import AccessKeyStore
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, Template
 from argparse import ArgumentParser, FileType
+import importlib
 import json
 import os
 import sys
 from textwrap import TextWrapper
 
-import internal.units
-import internal.sections
-
-def load_units():
-    print "Loading units..."
-    return internal.units.load()
-
-def load_sections(env, units):
-    print "\nLoading sections..."
-    return internal.sections.load(env, units)
-
 def create_from_template(template, sections):
-    return template.render(sections.data)
+    return template.render(sections)
 
 def check_unaccessed(name, store):
     unaccessed_keys = store.get_unaccessed_set()
@@ -67,9 +58,11 @@ def check_unaccessed(name, store):
         print "Found %s unused %s keys." % (len(unaccessed_keys), name)
         print unaccessed_keys
 
-def main(file_stream=None, out_dir=None):
+def main(input_module, file_stream=None, out_dir=None, verbose=False):
     if out_dir and not os.path.exists(out_dir):
         os.makedirs(out_dir)
+
+    in_mod = importlib.import_module(input_module)
 
     # add a template filter to produce pretty pretty JSON
     def jsonify(input, indent=None, pre_whitespace=0):
@@ -93,7 +86,7 @@ def main(file_stream=None, out_dir=None):
 
     # make Jinja aware of the templates and filters
     env = Environment(
-        loader=FileSystemLoader("templates"),
+        loader=FileSystemLoader(in_mod.exports["templates"]),
         undefined=StrictUndefined
     )
     env.filters["jsonify"] = jsonify
@@ -104,10 +97,12 @@ def main(file_stream=None, out_dir=None):
     # load up and parse the lowest single units possible: we don't know or care
     # which spec section will use it, we just need it there in memory for when
     # they want it.
-    units = load_units()
+    units = AccessKeyStore(
+        existing_data=in_mod.exports["units"](debug=verbose).get_units()
+    )
 
     # use the units to create RST sections
-    sections = load_sections(env, units)
+    sections = in_mod.exports["sections"](env, units, debug=verbose).get_sections()
 
     # print out valid section keys if no file supplied
     if not file_stream:
@@ -132,13 +127,17 @@ def main(file_stream=None, out_dir=None):
 
 if __name__ == '__main__':
     parser = ArgumentParser(
-        "Process a file (typically .rst) and replace templated areas with spec"+
-        " info. For a list of possible template variables, add"+
-        " --show-template-vars."
+        "Process a file (typically .rst) and replace templated areas with "+
+        "section information from the provided input module. For a list of "+
+        "possible template variables, add --show-template-vars."
     )
     parser.add_argument(
         "file", nargs="?", type=FileType('r'),
         help="The input file to process."
+    )
+    parser.add_argument(
+        "--input", "-i", 
+        help="The python module which contains the sections/units classes."
     )
     parser.add_argument(
         "--out-directory", "-o", help="The directory to output the file to."+
@@ -150,10 +149,17 @@ if __name__ == '__main__':
         help="Show a list of all possible variables you can use in the"+
         " input file."
     )
+    parser.add_argument(
+        "--verbose", "-v", action="store_true",
+        help="Turn on verbose mode."
+    )
     args = parser.parse_args()
 
+    if not args.input:
+        raise Exception("Missing input module")
+
     if (args.show_template_vars):
-        main()
+        main(args.input, verbose=args.verbose)
         sys.exit(0)
 
     if not args.file:
@@ -161,4 +167,7 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
-    main(file_stream=args.file, out_dir=args.out_directory)
+    main(
+        args.input, file_stream=args.file, out_dir=args.out_directory,
+        verbose=args.verbose
+    )
