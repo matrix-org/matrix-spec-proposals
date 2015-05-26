@@ -1,43 +1,40 @@
 #!/usr/bin/env python
 """ 
-Builds the Matrix Specification as restructed text (RST).
+Batesian: A simple templating system using Jinja.
 
 Architecture
 ============
-+-------+                            +----------+
-| units |-+                          | sections |-+
-+-------+ |-+ === used to create ==> +----------- | === used to create ==> SPEC
-  +-------+ |                          +----------+
-   +--------+
-RAW DATA (e.g. json)                  Blobs of RST
+
+                                                         INPUT FILE --------+
++-------+                           +----------+                            |
+| units |-+                         | sections |-+                          V
++-------+ |-+ == used to create ==> +----------- | == provides vars to ==> Jinja
+  +-------+ |                         +----------+                          |
+   +--------+                                                               V
+RAW DATA (e.g. json)                 Blobs of text                   OUTPUT FILE
 
 Units
 =====
 Units are random bits of unprocessed data, e.g. schema JSON files. Anything can
 be done to them, from processing it with Jinja to arbitrary python processing.
-They are dicts.
+They are typically dicts.
 
 Sections
 ========
-Sections are short segments of RST. They will be in the final spec, but they
-are unordered. They typically use a combination of templates + units to
-construct bits of RST.
+Sections are strings, typically short segments of RST. They will be dropped in
+to the provided input file based on their section key name (template var)
+They typically use a combination of templates + units to construct bits of RST.
 
-Skeleton
-========
-The skeleton is a single RST file which is passed through a templating system to
-replace variable names with sections.
+Input File
+==========
+The input file is a text file which is passed through Jinja along with the
+section keys as template variables.
 
 Processing
 ==========
 - Execute all unit functions to load units into memory and process them.
 - Execute all section functions (which can now be done because the units exist)
-- Execute the skeleton function to bring it into a single file.
-
-Checks
-======
-- Any units made which were not used at least once will produce a warning.
-- Any sections made but not used in the skeleton will produce a warning.
+- Process the input file through Jinja, giving it the sections as template vars.
 """
 from batesian import AccessKeyStore
 
@@ -121,23 +118,26 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
             ) as f:
         f.write(output)
     print "Output file for: %s" % file_stream.name
-
     check_unaccessed("units", units)
 
 
 if __name__ == '__main__':
     parser = ArgumentParser(
-        "Process a file (typically .rst) and replace templated areas with "+
-        "section information from the provided input module. For a list of "+
-        "possible template variables, add --show-template-vars."
+        "Processes a file (typically .rst) through Jinja to replace templated "+
+        "areas with section information from the provided input module. For a "+
+        "list of possible template variables, add --show-template-vars."
     )
     parser.add_argument(
         "file", nargs="?", type=FileType('r'),
-        help="The input file to process."
+        help="The input file to process. This will be passed through Jinja "+
+        "then output under the same name to the output directory."
     )
     parser.add_argument(
         "--input", "-i", 
-        help="The python module which contains the sections/units classes."
+        help="The python module (not file) which contains the sections/units "+
+        "classes. This module must have an 'exports' dict which has "+
+        "{ 'units': UnitClass, 'sections': SectionClass, "+
+        "'templates': 'template/dir' }"
     )
     parser.add_argument(
         "--out-directory", "-o", help="The directory to output the file to."+
@@ -146,8 +146,8 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--show-template-vars", "-s", action="store_true",
-        help="Show a list of all possible variables you can use in the"+
-        " input file."
+        help="Show a list of all possible variables (sections) you can use in"+
+        " the input file."
     )
     parser.add_argument(
         "--verbose", "-v", action="store_true",
@@ -156,7 +156,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if not args.input:
-        raise Exception("Missing input module")
+        raise Exception("Missing [i]nput python module.")
 
     if (args.show_template_vars):
         main(args.input, verbose=args.verbose)

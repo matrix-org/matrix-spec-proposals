@@ -25,6 +25,9 @@ class MatrixSections(Sections):
     def render_git_version(self):
         return self.units.get("git_version")
 
+    def render_spec_version(self):
+        return "0.1.0"
+
     def _render_ce_type(self, type):
         template = self.env.get_template("common-event-fields.tmpl")
         ce_types = self.units.get("common_event_fields")

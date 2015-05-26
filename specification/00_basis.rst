@@ -1,8 +1,9 @@
 Matrix Specification
 ====================
 
-Version: ``{{git_version}}``
---------------------------------------------------
+Version: {{spec_version}}
+-----------------------------
+``{{git_version}}``
 
 Table of Contents
 =================
