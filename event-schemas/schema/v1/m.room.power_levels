@@ -16,7 +16,7 @@
                 },
                 "events_default": { 
                     "type": "number",
-                    "description": "The default level required to send message events. Can be overidden by the ``events`` key."
+                    "description": "The default level required to send message events. Can be overridden by the ``events`` key."
                 },
                 "kick": { 
                     "type": "number",
@@ -28,7 +28,7 @@
                 },
                 "state_default": { 
                     "type": "number",
-                    "description": "The default level required to send state events. Can be overriden by the ``events`` key."
+                    "description": "The default level required to send state events. Can be overridden by the ``events`` key."
                 },
                 "users_default": { 
                     "type": "number",
