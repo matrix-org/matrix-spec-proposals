@@ -40,7 +40,8 @@ with the text `foobar`, you need to add a new Section:
    def render_foo_bar(self):
        return "foobar"
    ```
- - Run `build.py` with a file which has `{{foo_bar}}` in it.
+ - Run `build.py` with a file which has `{{foo_bar}}` in it, and it will be
+   replaced with `foobar`.
 
 ### Adding data for template variables
 If you want to expose arbitrary data which can be used by `MatrixSections`, you
@@ -59,8 +60,8 @@ need to add a new Unit:
           "types": "it doesn't even need to be a dict. Whatever you want!"
        }
    ```
- - You can now call `self.units.get("some_data")` to retrieve the value you
-   returned.
+ - In `MatrixSections`, you can now call `self.units.get("some_data")` to
+   retrieve the value you returned.
    
 ### Using Jinja templates
 Sections can use Jinja templates to return text. Batesian will attempt to load
