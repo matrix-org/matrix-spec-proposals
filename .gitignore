@@ -1,2 +1,3 @@
 scripts/gen
+templating/out
 *.pyc
