@@ -7,7 +7,7 @@ def _render_section_room_events(env, units):
     examples = units.get("event-examples")
     schemas = units.get("event-schemas")
     sections = []
-    for event_name in schemas:
+    for event_name in sorted(schemas):
         if not event_name.startswith("m.room"):
             continue
         sections.append(template.render(

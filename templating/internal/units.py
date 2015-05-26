@@ -23,7 +23,7 @@ def _load_common_event_fields():
                 "desc": event_info["description"],
                 "rows": []
             }
-            for prop in event_info["properties"]:
+            for prop in sorted(event_info["properties"]):
                 row = {
                     "key": prop,
                     "type": event_info["properties"][prop]["type"],
@@ -72,7 +72,7 @@ def _load_schemas():
         tables = [fields]
 
         props = obj["properties"]
-        for key_name in props:
+        for key_name in sorted(props):
             value_type = None
             required = key_name in required_keys
             desc = props[key_name].get("description", "")
