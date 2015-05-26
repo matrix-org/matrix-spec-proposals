@@ -8,7 +8,7 @@ How to use the client-server API
 ================================
 
 .. NOTE::
-  The git version of this document is ``$GIT_VERSION``
+  The git version of this document is ``{{git_version}}``
 
 This guide focuses on how the client-server APIs *provided by the reference 
 home server* can be used. Since this is specific to a home server 

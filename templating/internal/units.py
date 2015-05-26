@@ -2,6 +2,7 @@
 from . import AccessKeyStore
 import json
 import os
+import subprocess
 
 def prop(obj, path):
     # Helper method to extract nested property values
@@ -172,10 +173,59 @@ def _load_schemas():
             schemata[filename] = schema
     return schemata
 
+def _load_git_ver():
+    null = open(os.devnull, 'w')
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    try:
+        git_branch = subprocess.check_output(
+            ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
+            stderr=null,
+            cwd=cwd,
+        ).strip()
+    except subprocess.CalledProcessError:
+        git_branch = ""
+    try:
+        git_tag = subprocess.check_output(
+            ['git', 'describe', '--exact-match'],
+            stderr=null,
+            cwd=cwd,
+        ).strip()
+        git_tag = "tag=" + git_tag
+    except subprocess.CalledProcessError:
+        git_tag = ""
+    try:
+        git_commit = subprocess.check_output(
+            ['git', 'rev-parse', '--short', 'HEAD'],
+            stderr=null,
+            cwd=cwd,
+        ).strip()
+    except subprocess.CalledProcessError:
+        git_commit = ""
+    try:
+        dirty_string = "-this_is_a_dirty_checkout"
+        is_dirty = subprocess.check_output(
+            ['git', 'describe', '--dirty=' + dirty_string, "--all"],
+            stderr=null,
+            cwd=cwd,
+        ).strip().endswith(dirty_string)
+        git_dirty = "dirty" if is_dirty else ""
+    except subprocess.CalledProcessError:
+        git_dirty = ""
+
+    if git_branch or git_tag or git_commit or git_dirty:
+        git_version = ",".join(
+            s for s in
+            (git_branch, git_tag, git_commit, git_dirty,)
+            if s
+        )
+        return git_version.encode("ascii")
+    return "Unknown rev"
+
 UNIT_DICT = {
     "event-examples": _load_examples,
     "event-schemas": _load_schemas,
-    "common-event-fields": _load_common_event_fields
+    "common-event-fields": _load_common_event_fields,
+    "git-version": _load_git_ver
 }
 
 def load():

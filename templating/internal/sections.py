@@ -1,46 +1,61 @@
 """Contains all the sections for the spec."""
 from . import AccessKeyStore
+import inspect
 import os
 
-def _render_section_room_events(env, units):
-    template = env.get_template("events.tmpl")
-    examples = units.get("event-examples")
-    schemas = units.get("event-schemas")
-    sections = []
-    for event_name in sorted(schemas):
-        if not event_name.startswith("m.room"):
-            continue
-        sections.append(template.render(
-            example=examples[event_name], 
-            event=schemas[event_name]
-        ))
-    return "\n\n".join(sections)
 
-def _render_ce_type(env, units, type):
-    template = env.get_template("common-event-fields.tmpl")
-    ce_types = units.get("common-event-fields")
-    return template.render(common_event=ce_types[type])
+class Sections(object):
+    """A class which creates sections for each method starting with "render_".
+    The key for the section is the text after "render_"
+    e.g. "render_room_events" has the section key "room_events"
+    """
 
-def _render_ce_fields(env, units):
-    return _render_ce_type(env, units, "event")
+    def __init__(self, env, units):
+        self.env = env
+        self.units = units
 
-def _render_cre_fields(env, units):
-    return _render_ce_type(env, units, "room_event")
+    def render_room_events(self):
+        template = self.env.get_template("events.tmpl")
+        examples = self.units.get("event-examples")
+        schemas = self.units.get("event-schemas")
+        sections = []
+        for event_name in sorted(schemas):
+            if not event_name.startswith("m.room"):
+                continue
+            sections.append(template.render(
+                example=examples[event_name], 
+                event=schemas[event_name]
+            ))
+        return "\n\n".join(sections)
 
-def _render_cse_fields(env, units):
-    return _render_ce_type(env, units, "state_event")
+    # pass through git ver so it'll be dropped in the input file
+    def render_git_version(self):
+        return self.units.get("git-version")
 
-SECTION_DICT = {
-    "room_events": _render_section_room_events,
-    "common_event_fields": _render_ce_fields,
-    "common_state_event_fields": _render_cse_fields,
-    "common_room_event_fields": _render_cre_fields
-}
+    def _render_ce_type(self, type):
+        template = self.env.get_template("common-event-fields.tmpl")
+        ce_types = self.units.get("common-event-fields")
+        return template.render(common_event=ce_types[type])
+
+    def render_common_event_fields(self):
+        return self._render_ce_type("event")
+
+    def render_common_room_event_fields(self):
+        return self._render_ce_type("room_event")
+
+    def render_common_state_event_fields(self):
+        return self._render_ce_type("state_event")
+
 
 def load(env, units):
     store = AccessKeyStore()
-    for section_key in SECTION_DICT:
-        section = SECTION_DICT[section_key](env, units)
+    sections = Sections(env, units)
+    render_list = inspect.getmembers(sections, predicate=inspect.ismethod)
+    for (func_name, func) in render_list:
+        if not func_name.startswith("render_"):
+            continue
+        section_key = func_name[len("render_"):]
+        section = func()
         print "Generated section '%s' : %s" % (
             section_key, section[:60].replace("\n","")
         )
