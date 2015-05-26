@@ -4,8 +4,8 @@
   {{event.typeof_info}}
 
 {{event.desc | wrap(80)}}
-{% for table in event.content_fields %}
-{{"``"+table.title+"``" if table.title else "" -}}
+{% for table in event.content_fields -%}
+{{"``"+table.title+"``" if table.title else "" }}
 
 ================== ================= ===========================================
    {{table.title or "Content"}} Key          Type                 Description

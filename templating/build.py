@@ -105,7 +105,14 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
     if not file_stream:
         print "\nValid template variables:"
         for key in sections.keys():
+            sec_text = "" if (len(sections[key]) > 75) else (
+                "(Value: '%s')" % sections[key]
+            )
+            sec_info = "%s characters" % len(sections[key])
+            if sections[key].count("\n") > 0:
+                sec_info += ", %s lines" % sections[key].count("\n")
             print "  %s" % key
+            print "      %s %s" % (sec_info, sec_text)
         return
 
     # check the input files and substitute in sections where required
