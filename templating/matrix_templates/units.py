@@ -102,8 +102,15 @@ class MatrixUnits(Units):
                 else:
                     value_type = props[key_name]["type"]
                     if props[key_name].get("enum"):
-                        value_type = "enum"
-                        desc += " One of: %s" % json.dumps(props[key_name]["enum"])
+                        if len(props[key_name].get("enum")) > 1:
+                            value_type = "enum"
+                            desc += (
+                                " One of: %s" % json.dumps(props[key_name]["enum"])
+                            )
+                        else:
+                            desc += (
+                                " Must be '%s'." % props[key_name]["enum"][0]
+                            )
 
                 fields["rows"].append({
                     "key": key_name,

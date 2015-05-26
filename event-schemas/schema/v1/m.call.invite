@@ -21,7 +21,7 @@
                         "type": {
                             "type": "string",
                             "enum": ["offer"],
-                            "description": "The type of session description. Must be 'offer'."
+                            "description": "The type of session description."
                         },
                         "sdp": {
                             "type": "string",
