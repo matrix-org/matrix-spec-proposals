@@ -1,10 +1,11 @@
 ``{{event.type}}``
 {{(4 + event.type | length) * '~'}}
-*{{event.typeof}}* {{event.typeof_info}}
+*{{event.typeof}}*
+  {{event.typeof_info}}
 
-  {{event.desc | wrap(80) | indent_block(2)}}
-{% for table in event.content_fields -%}
-{{"``"+table.title+"``" if table.title else ""}}
+{{event.desc | wrap(80)}}
+{% for table in event.content_fields %}
+{{"``"+table.title+"``" if table.title else "" -}}
 
 ================== ================= ===========================================
    {{table.title or "Content"}} Key          Type                 Description
