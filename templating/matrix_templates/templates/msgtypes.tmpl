@@ -1,5 +1,5 @@
 ``{{event.msgtype}}``
-{{(4 + event.msgtype | length) * '~'}}
+{{(4 + event.msgtype | length) * '+'}}
 {{event.desc | wrap(80)}}
 {% for table in event.content_fields -%}
 {{"``"+table.title+"``" if table.title else "" }}
