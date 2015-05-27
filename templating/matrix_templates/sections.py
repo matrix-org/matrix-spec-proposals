@@ -34,7 +34,16 @@ class MatrixSections(Sections):
         examples = self.units.get("event_examples")
         schemas = self.units.get("event_schemas")
         sections = []
-        for event_name in sorted(schemas):
+        msgtype_order = [
+            "m.room.message#m.text", "m.room.message#m.emote",
+            "m.room.message#m.notice", "m.room.message#m.image",
+            "m.room.message#m.file"
+        ]
+        other_msgtypes = [
+            k for k in schemas.keys() if k.startswith("m.room.message#") and
+            k not in msgtype_order
+        ]
+        for event_name in (msgtype_order + other_msgtypes):
             if not event_name.startswith("m.room.message#m."):
                 continue
             sections.append(template.render(
