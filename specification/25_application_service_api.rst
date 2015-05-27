@@ -6,27 +6,34 @@ implement a consistent self-contained federated messaging fabric. However, they
 provide limited means of implementing custom server-side behaviour in Matrix
 (e.g. gateways, filters, extensible hooks etc).
 
-Defining a standard API to allow such extensible functionality to be implemented
-irrespective of the underlying homeserver implementation is key to enabling
-these services.
-
-Client-Server Services
-----------------------
+The Application Service API defines a standard API to allow such extensible 
+functionality to be implemented irrespective of the underlying homeserver
+implementation.
 
 .. TODO-spec
-  Overview of bots
+  Add in Client-Server services? Overview of bots? Seems weird to be in the spec
+  given it is VERY implementation specific.
 
 Passive Application Services
 ----------------------------
 "Passive" application services can only observe events from a given home server.
-They cannot prevent events from being sent, nor can they modify the event being
-sent.
+They cannot prevent events from being sent, nor can they modify the content of
+the event being sent.
 
-In order to observe events from a home server, the home server needs to be
+In order to observe events from a homeserver, the homeserver needs to be
 configured to pass certain types of traffic to the application service.  This
-is currently homeserver-configuration specific and is no longer exposed as an
-API, as associating an AS to a HS should only ever be done *very* deliberately
-by the HS administrator.
+is achieved by manually configuring the homeserver with information about the
+AS..
+
+.. NOTE::
+  Previously, application services could register with a homeserver via HTTP
+  APIs. This was removed as it was seen as a security risk. A compromised
+  application service could re-register for a global ``*`` regex and sniff
+  *all* traffic on the homeserver. To protect against this, application
+  services now have to register via configuration files which are linked to
+  the homeserver configuration file. The addition of configuration files
+  allows homeserver admins to sanity check the registration for suspicious
+  regex strings.
 
 .. TODO
   Removing the API entirely is probably a mistake - having a standard cross-HS
@@ -50,20 +57,20 @@ An example HS configuration required to pass traffic to the AS is:
       aliases: []  # Namespaces of room aliases which should be delegated to the AS
       rooms: [] # Namespaces of room ids which should be delegated to the AS
 
- - An application service can state whether they should be the only ones who 
-   can manage a specified namespace. This is referred to as an "exclusive" 
-   namespace. An exclusive namespace prevents humans and other application 
-   services from creating/deleting entities in that namespace. Typically,
-   exclusive namespaces are used when the rooms represent real rooms on
-   another service (e.g. IRC). Non-exclusive namespaces are used when the
-   application service is merely augmenting the room itself (e.g. providing
-   logging or searching facilities).
- - Namespaces are typically represented by POSIX extended regular expressions, 
-   e.g.:
+- An application service can state whether they should be the only ones who 
+  can manage a specified namespace. This is referred to as an "exclusive" 
+  namespace. An exclusive namespace prevents humans and other application 
+  services from creating/deleting entities in that namespace. Typically,
+  exclusive namespaces are used when the rooms represent real rooms on
+  another service (e.g. IRC). Non-exclusive namespaces are used when the
+  application service is merely augmenting the room itself (e.g. providing
+  logging or searching facilities).
+- Namespaces are represented by POSIX extended regular expressions, 
+  e.g.:
 
 .. code-block:: yaml
 
-   user:
+   users:
      - exclusive: true
      - regex: @irc.freenode.net/.*
 
@@ -412,4 +419,3 @@ Policy Servers
 
 Enforcing policies
 ------------------
-
