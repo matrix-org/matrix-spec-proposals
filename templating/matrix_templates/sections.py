@@ -20,7 +20,22 @@ class MatrixSections(Sections):
         schemas = self.units.get("event_schemas")
         sections = []
         for event_name in sorted(schemas):
-            if not event_name.startswith("m.room"):
+            if (not event_name.startswith("m.room") or 
+                    event_name.startswith("m.room.message#m.")):
+                continue
+            sections.append(template.render(
+                example=examples[event_name], 
+                event=schemas[event_name]
+            ))
+        return "\n\n".join(sections)
+
+    def render_msgtype_events(self):
+        template = self.env.get_template("msgtypes.tmpl")
+        examples = self.units.get("event_examples")
+        schemas = self.units.get("event_schemas")
+        sections = []
+        for event_name in sorted(schemas):
+            if not event_name.startswith("m.room.message#m."):
                 continue
             sections.append(template.render(
                 example=examples[event_name], 

@@ -14,6 +14,8 @@ class MatrixUnits(Units):
         with open(path, "r") as f:
             core_json = json.loads(f.read())
             for event_type in core_json["definitions"]:
+                if "event" not in event_type:
+                    continue  # filter ImageInfo and co
                 event_info = core_json["definitions"][event_type]
                 table = {
                     "title": event_info["title"],
@@ -68,7 +70,19 @@ class MatrixUnits(Units):
             }
             tables = [fields]
 
-            props = obj["properties"]
+            props = obj.get("properties")
+            parents = obj.get("allOf")
+            if not props and not parents:
+                raise Exception(
+                    "Object %s has no properties or parents." % obj
+                )
+            if not props:  # parents only
+                return [{
+                    "title": obj["title"],
+                    "parent": parents[0]["$ref"],
+                    "no-table": True
+                }]
+
             for key_name in sorted(props):
                 value_type = None
                 required = key_name in required_keys
@@ -87,7 +101,9 @@ class MatrixUnits(Units):
                             enforce_title=True
                         )
                         value_type = "{%s}" % nested_object[0]["title"]
-                        tables += nested_object
+
+                        if not nested_object[0].get("no-table"):
+                            tables += nested_object
                 elif props[key_name]["type"] == "array":
                     # if the items of the array are objects then recurse
                     if props[key_name]["items"]["type"] == "object":
@@ -133,6 +149,7 @@ class MatrixUnits(Units):
                     "type": None,
                     "title": None,
                     "desc": None,
+                    "msgtype": None,
                     "content_fields": [
                     # {
                     #   title: "<title> key"
@@ -167,6 +184,13 @@ class MatrixUnits(Units):
                 schema["content_fields"] = get_content_fields(
                     Units.prop(json_schema, "properties/content")
                 )
+
+                # grab msgtype if it is the right kind of event
+                msgtype = Units.prop(
+                    json_schema, "properties/content/properties/msgtype/enum"
+                )
+                if msgtype:
+                    schema["msgtype"] = msgtype[0]  # enum prop
 
                 # Assign state key info
                 if schema["typeof"] == "State Event":

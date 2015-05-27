@@ -28,7 +28,10 @@
                 },
                 "thumbnail_info": {
                     "type": "object",
-                    "title": "ImageInfo"
+                    "title": "ImageInfo",
+                    "allOf": [{
+                        "$ref": "core#/definitions/msgtype_infos/image_info"
+                    }]
                 }
             },
             "required": ["msgtype", "body", "geo_uri"]
