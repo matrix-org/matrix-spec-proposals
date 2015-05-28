@@ -38,38 +38,14 @@ outlined below.
 Presence Events
 ~~~~~~~~~~~~~~~
 
-``m.presence``
-  Summary:
-    Informs you of a user's presence state changes.
-    
-  Type:
-    Presence event
-    
-  JSON format::
-  
-    { 
-      "displayname": "utf-8 string",
-      "avatar_url": "url",
-      "presence": "enum [ online|unavailable|offline|free_for_chat|hidden ]",
-      "last_active_ago": "milliseconds"
-    }
-    
-  Example::
-  
-    {
-      "displayname": "Matthew",
-      "avatar_url": "mxc://domain/id",
-      "presence": "online",
-      "last_active_ago": 10000
-    }
-    
-  Description:
-    Each user has the concept of presence information. This encodes the
-    "availability" of that user, suitable for display on other user's clients.
-    This is transmitted as an ``m.presence`` event and is one of the few events
-    which are sent *outside the context of a room*. The basic piece of presence
-    information is represented by the ``presence`` key, which is an enum of one
-    of the following:
+{{presence_events}}
+ 
+Each user has the concept of presence information. This encodes the
+"availability" of that user, suitable for display on other user's clients.
+This is transmitted as an ``m.presence`` event and is one of the few events
+which are sent *outside the context of a room*. The basic piece of presence
+information is represented by the ``presence`` key, which is an enum of one
+of the following:
 
       - ``online`` : The default state when the user is connected to an event
         stream.
@@ -81,14 +57,14 @@ Presence Events
         state anyway and generally interact with client features. (Not yet
         implemented in synapse).
 
-    In addition, the server maintains a timestamp of the last time it saw a
-    pro-active event from the user; either sending a message to a room, or
-    changing presence state from a lower to a higher level of availability
-    (thus: changing state from ``unavailable`` to ``online`` counts as a
-    proactive event, whereas in the other direction it will not). This timestamp
-    is presented via a key called ``last_active_ago``, which gives the relative
-    number of milliseconds since the message is generated/emitted that the user
-    was last seen active.
+In addition, the server maintains a timestamp of the last time it saw a
+pro-active event from the user; either sending a message to a room, or
+changing presence state from a lower to a higher level of availability
+(thus: changing state from ``unavailable`` to ``online`` counts as a
+proactive event, whereas in the other direction it will not). This timestamp
+is presented via a key called ``last_active_ago``, which gives the relative
+number of milliseconds since the message is generated/emitted that the user
+was last seen active.
     
 
 Events on Change of Profile Information

@@ -14,7 +14,7 @@ class MatrixSections(Sections):
     def render_spec_version(self):
         return "0.1.0"
 
-    def _render_events(self, filterFn, sortFn):
+    def _render_events(self, filterFn, sortFn, title_kind="~"):
         template = self.env.get_template("events.tmpl")
         examples = self.units.get("event_examples")
         schemas = self.units.get("event_schemas")
@@ -24,24 +24,18 @@ class MatrixSections(Sections):
                 continue
             sections.append(template.render(
                 example=examples[event_name], 
-                event=schemas[event_name]
+                event=schemas[event_name],
+                title_kind=title_kind
             ))
         return "\n\n".join(sections)
 
     def render_room_events(self):
-        template = self.env.get_template("events.tmpl")
-        examples = self.units.get("event_examples")
-        schemas = self.units.get("event_schemas")
-        sections = []
-        for event_name in sorted(schemas):
-            if (not event_name.startswith("m.room") or 
-                    event_name.startswith("m.room.message#m.")):
-                continue
-            sections.append(template.render(
-                example=examples[event_name], 
-                event=schemas[event_name]
-            ))
-        return "\n\n".join(sections)
+        def filterFn(eventType):
+            return (
+                eventType.startswith("m.room") and 
+                not eventType.startswith("m.room.message#m.")
+            )
+        return self._render_events(filterFn, sorted)
 
     def render_msgtype_events(self):
         template = self.env.get_template("msgtypes.tmpl")
@@ -67,23 +61,14 @@ class MatrixSections(Sections):
         return "\n\n".join(sections)
 
     def render_voip_events(self):
-        template = self.env.get_template("events.tmpl")
-        examples = self.units.get("event_examples")
-        schemas = self.units.get("event_schemas")
-        sections = []
-        for event_name in sorted(schemas):
-            if not event_name.startswith("m.call"):
-                continue
-            sections.append(template.render(
-                example=examples[event_name], 
-                event=schemas[event_name]
-            ))
-        return "\n\n".join(sections)
+        def filterFn(eventType):
+            return eventType.startswith("m.call")
+        return self._render_events(filterFn, sorted)
 
     def render_presence_events(self):
         def filterFn(eventType):
             return eventType.startswith("m.presence")
-        return self._render_events(filterFn, sorted)
+        return self._render_events(filterFn, sorted, title_kind="+")
 
     def _render_ce_type(self, type):
         template = self.env.get_template("common-event-fields.tmpl")
