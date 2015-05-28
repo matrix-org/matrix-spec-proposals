@@ -1,6 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
+    "description": "This event is sent by the callee when they wish to answer the call.",
     "allOf": [{
         "$ref": "core#/definitions/room_event"
     }],

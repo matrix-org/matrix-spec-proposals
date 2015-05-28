@@ -63,7 +63,16 @@ class MatrixSections(Sections):
     def render_voip_events(self):
         def filterFn(eventType):
             return eventType.startswith("m.call")
-        return self._render_events(filterFn, sorted)
+        def sortFn(eventTypes):
+            ordering = [
+                "m.call.invite", "m.call.candidates", "m.call.answer",
+                "m.call.hangup"
+            ]
+            rest = [
+                k for k in eventTypes if k not in ordering
+            ]
+            return ordering + rest
+        return self._render_events(filterFn, sortFn)
 
     def render_presence_events(self):
         def filterFn(eventType):
