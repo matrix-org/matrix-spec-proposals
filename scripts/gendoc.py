@@ -68,4 +68,15 @@ def main():
     cleanup_env()
 
 if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        # we accept no args, so they don't know what they're doing!
+        print "gendoc.py - Generate the Matrix specification as HTML."
+        print "Usage:"
+        print "  python gendoc.py"
+        print ""
+        print "The specification can then be found in the gen/ folder."
+        print ""
+        print "Requirements:"
+        print " - This script requires Jinja2 and rst2html (docutils)."
+        sys.exit(0)
     main()
