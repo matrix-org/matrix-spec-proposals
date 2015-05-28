@@ -712,18 +712,14 @@ one of the following event types:
  - ``m.room.member`` allows key ``membership``
  - ``m.room.create`` allows key ``creator``
  - ``m.room.join_rules`` allows key ``join_rule``
- - ``m.room.power_levels`` allows keys that are user ids or ``default``
- - ``m.room.add_state_level`` allows key ``level``
- - ``m.room.send_event_level`` allows key ``level``
- - ``m.room.ops_levels`` allows keys ``kick_level``, ``ban_level``
-   and ``redact_level``
+ - ``m.room.power_levels`` allows keys ``ban``, ``events``, ``events_default``,
+   ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
  - ``m.room.aliases`` allows key ``aliases``
 
 .. TODO
   Need to update m.room.power_levels to reflect new power levels formatting
 
 The redaction event should be added under the key ``redacted_because``.
-
 
 When a client receives a redaction event it should change the redacted event
 in the same way a server does.
@@ -811,14 +807,9 @@ which serves as the root of the PDU graph for this room. This event also has a
 generate several other events in order to manage permissions in this room. This
 includes:
 
- - ``m.room.power_levels`` : Sets the power levels of users.
+ - ``m.room.power_levels`` : Sets the power levels of users and required power
+    levels.
  - ``m.room.join_rules`` : Whether the room is "invite-only" or not.
- - ``m.room.add_state_level``: The power level required in order to add new
-   state to the room (as opposed to updating exisiting state)
- - ``m.room.send_event_level`` : The power level required in order to send a
-   message in this room.
- - ``m.room.ops_level`` : The power level required in order to kick or ban a
-   user from the room or redact an event in the room.
 
 See `Room Events`_ for more information on these events.
 
@@ -874,14 +865,9 @@ Permissions for rooms are done via the concept of power levels - to do any
 action in a room a user must have a suitable power level. Power levels are
 stored as state events in a given room.
 
-Power levels for users are defined in ``m.room.power_levels``, where both a
-default and specific users' power levels can be set::
-
-  {
-    "<user id 1>": <power level int>,
-    "<user id 2>": <power level int>,
-    "default": 0
-  }
+The power levels required for operations and the power levels for users are
+defined in ``m.room.power_levels``, where both a default and specific users'
+power levels can be set.
 
 By default all users have a power level of 0, other than the room creator whose
 power level defaults to 100. Users can grant other users increased power levels
@@ -889,21 +875,9 @@ up to their own power level. For example, user A with a power level of 50 could
 increase the power level of user B to a maximum of level 50. Power levels for
 users are tracked per-room even if the user is not present in the room.
 
-State events may contain a ``required_power_level`` key, which indicates the
-minimum power a user must have before they can update that state key. The only
-exception to this is when a user leaves a room, which revokes the user's right
-to update state events in that room.
-
-To perform certain actions there are additional power level requirements
-defined in the following state events:
-
-- ``m.room.send_event_level`` defines the minimum ``level`` for sending
-  non-state events. Defaults to 50.
-- ``m.room.add_state_level`` defines the minimum ``level`` for adding new
-  state, rather than updating existing state. Defaults to 50.
-- ``m.room.ops_level`` defines the minimum ``ban_level`` and ``kick_level`` to
-  ban and kick other users respectively. This defaults to a kick and ban levels
-  of 50 each.
+The keys contained in ``m.room.power_levels`` determine the levels required for
+certain operations such as kicking, banning and sending state events. See
+`m.room.power_levels`_ for more information.
 
 
 Joining rooms
