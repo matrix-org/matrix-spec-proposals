@@ -13,7 +13,7 @@ How to use the client-server API
 This guide focuses on how the client-server APIs *provided by the reference 
 home server* can be used. Since this is specific to a home server 
 implementation, there may be variations in relation to registering/logging in
-which are not covered in `extensive`_ detail in this guide.
+which are not covered in extensive detail in this guide.
 
 If you haven't already, get a home server up and running on 
 ``http://localhost:8008``.
