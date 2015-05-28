@@ -170,6 +170,8 @@ class MatrixUnits(Units):
                     schema["typeof"] = base_defs.get(
                         json_schema["allOf"][0].get("$ref")
                     )
+                elif json_schema.get("title"):
+                    schema["typeof"] = json_schema["title"]
 
                 # add type
                 schema["type"] = Units.prop(

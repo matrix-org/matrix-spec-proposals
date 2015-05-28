@@ -14,6 +14,20 @@ class MatrixSections(Sections):
     def render_spec_version(self):
         return "0.1.0"
 
+    def _render_events(self, filterFn, sortFn):
+        template = self.env.get_template("events.tmpl")
+        examples = self.units.get("event_examples")
+        schemas = self.units.get("event_schemas")
+        sections = []
+        for event_name in sortFn(schemas):
+            if not filterFn(event_name):
+                continue
+            sections.append(template.render(
+                example=examples[event_name], 
+                event=schemas[event_name]
+            ))
+        return "\n\n".join(sections)
+
     def render_room_events(self):
         template = self.env.get_template("events.tmpl")
         examples = self.units.get("event_examples")
@@ -65,6 +79,11 @@ class MatrixSections(Sections):
                 event=schemas[event_name]
             ))
         return "\n\n".join(sections)
+
+    def render_presence_events(self):
+        def filterFn(eventType):
+            return eventType.startswith("m.presence")
+        return self._render_events(filterFn, sorted)
 
     def _render_ce_type(self, type):
         template = self.env.get_template("common-event-fields.tmpl")
