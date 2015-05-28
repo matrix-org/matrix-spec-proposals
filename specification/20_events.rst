@@ -29,7 +29,7 @@ m.room.message msgtypes
    How a client should handle unknown message types.
 
 
-Each ``m.room.message`` MUST have a ``msgtype`` key which identifies the type
+Each `m.room.message`_ MUST have a ``msgtype`` key which identifies the type
 of message being sent. Each type has their own required and optional keys, as
 outlined below.
 

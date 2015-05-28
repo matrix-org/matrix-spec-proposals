@@ -194,7 +194,15 @@ class MatrixUnits(Units):
                 if msgtype:
                     schema["msgtype"] = msgtype[0]  # enum prop
 
-                # Assign state key info
+                # link to msgtypes for m.room.message
+                if schema["type"] == "m.room.message" and not msgtype:
+                    schema["desc"] += (
+                        " For more information on ``msgtypes``, see "+
+                        "`m.room.message msgtypes`_."
+                    )
+
+
+                # Assign state key info if it has some
                 if schema["typeof"] == "State Event":
                     skey_desc = Units.prop(
                         json_schema, "properties/state_key/description"
