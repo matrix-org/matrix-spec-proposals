@@ -44,6 +44,10 @@ paths:
           description: The display name was set.
           schema:
             type: object  # empty json object
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/error.yaml"
     get:
       summary: Get the user's display name.
       parameters:
@@ -89,6 +93,10 @@ paths:
           description: The avatar URL was set.
           schema:
             type: object  # empty json object
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/error.yaml"
     get:
       summary: Get the user's avatar URL.
       parameters:
