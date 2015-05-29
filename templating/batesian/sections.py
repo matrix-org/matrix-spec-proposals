@@ -26,6 +26,10 @@ class Sections(object):
                 continue
             section_key = func_name[len("render_"):]
             section = func()
+            if not isinstance(section, basestring):
+                raise Exception(
+                    "Section function '%s' didn't return a string!" % func_name
+                )
             section_dict[section_key] = section
             self.log("Generated section '%s' : %s" % (
                 section_key, section[:60].replace("\n","")

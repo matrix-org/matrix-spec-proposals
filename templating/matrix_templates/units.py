@@ -4,9 +4,22 @@ import inspect
 import json
 import os
 import subprocess
+import yaml
 
 
 class MatrixUnits(Units):
+
+    def load_swagger_apis(self):
+        path = "../api/client-server/v1"
+        apis = {}
+        for filename in os.listdir(path):
+            if not filename.endswith(".yaml"):
+                continue
+            self.log("Reading swagger API: %s" % filename)
+            with open(os.path.join(path, filename), "r") as f:
+                # strip .yaml
+                apis[filename[:-5]] = yaml.load(f.read())
+        return apis
 
     def load_common_event_fields(self):
         path = "../event-schemas/schema/v1/core"
