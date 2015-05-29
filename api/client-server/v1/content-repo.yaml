@@ -54,6 +54,7 @@ paths:
           description: "The content downloaded."
           schema:
             type: file
+            name: content
   "/thumbnail/{serverName}/{mediaId}":
     get:
       summary: "Download a thumbnail of the content from the content repository."
@@ -89,5 +90,6 @@ paths:
           description: "A thumbnail of the requested content."
           schema:
             type: file
+            name: content
             
 

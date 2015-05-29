@@ -6,6 +6,95 @@ import os
 import subprocess
 import yaml
 
+def get_json_schema_object_fields(obj, enforce_title=False):
+    # Algorithm:
+    # f.e. property => add field info (if field is object then recurse)
+    if obj.get("type") != "object":
+        raise Exception(
+            "get_json_schema_object_fields: Object %s isn't an object." % obj
+        )
+    if enforce_title and not obj.get("title"):
+        raise Exception(
+            "get_json_schema_object_fields: Nested object %s doesn't have a title." % obj
+        )
+
+    required_keys = obj.get("required")
+    if not required_keys:
+        required_keys = []
+
+    fields = {
+        "title": obj.get("title"),
+        "rows": []
+    }
+    tables = [fields]
+
+    props = obj.get("properties")
+    parents = obj.get("allOf")
+    if not props and not parents:
+        raise Exception(
+            "Object %s has no properties or parents." % obj
+        )
+    if not props:  # parents only
+        return [{
+            "title": obj["title"],
+            "parent": parents[0]["$ref"],
+            "no-table": True
+        }]
+
+    for key_name in sorted(props):
+        value_type = None
+        required = key_name in required_keys
+        desc = props[key_name].get("description", "")
+
+        if props[key_name]["type"] == "object":
+            if props[key_name].get("additionalProperties"):
+                # not "really" an object, just a KV store
+                value_type = (
+                    "{string: %s}" %
+                    props[key_name]["additionalProperties"]["type"]
+                )
+            else:
+                nested_object = get_json_schema_object_fields(
+                    props[key_name], 
+                    enforce_title=True
+                )
+                value_type = "{%s}" % nested_object[0]["title"]
+
+                if not nested_object[0].get("no-table"):
+                    tables += nested_object
+        elif props[key_name]["type"] == "array":
+            # if the items of the array are objects then recurse
+            if props[key_name]["items"]["type"] == "object":
+                nested_object = get_json_schema_object_fields(
+                    props[key_name]["items"], 
+                    enforce_title=True
+                )
+                value_type = "[%s]" % nested_object[0]["title"]
+                tables += nested_object
+            else:
+                value_type = "[%s]" % props[key_name]["items"]["type"]
+        else:
+            value_type = props[key_name]["type"]
+            if props[key_name].get("enum"):
+                if len(props[key_name].get("enum")) > 1:
+                    value_type = "enum"
+                    desc += (
+                        " One of: %s" % json.dumps(props[key_name]["enum"])
+                    )
+                else:
+                    desc += (
+                        " Must be '%s'." % props[key_name]["enum"][0]
+                    )
+
+        fields["rows"].append({
+            "key": key_name,
+            "type": value_type,
+            "required": required,
+            "desc": desc,
+            "req_str": "**Required.** " if required else ""
+        })
+    return tables
+
 
 class MatrixUnits(Units):
 
@@ -21,7 +110,10 @@ class MatrixUnits(Units):
                     "path": path,
                     "requires_auth": "security" in single_api,
                     "rate_limited": 429 in single_api.get("responses", {}),
-                    "req_params": []
+                    "req_params": [],
+                    "responses": [
+                    # { code: 200, [ {row_info} ]}
+                    ]
                 }
                 self.log(".o.O.o. Endpoint: %s %s" % (method, path))
                 for param in single_api.get("parameters", []):
@@ -71,7 +163,30 @@ class MatrixUnits(Units):
                             "val_type": json_body[key]["type"],
                             "desc": json_body[key]["description"]
                         })
-                    
+
+                # add main response format first.
+                res200 = single_api["responses"][200]
+                res200params = []
+                if res200["schema"].get("type") != "object":
+                    res200params = [{
+                        "title": "Response",
+                        "rows": [{
+                            "key": res200["schema"]["name"],
+                            "type": res200["schema"]["type"],
+                            "desc": res200["schema"].get("description", "")
+                        }]
+                    }]
+                elif res200["schema"].get("properties"):
+                    res200params = get_json_schema_object_fields(
+                        res200["schema"]
+                    )
+                ok_res = {
+                    "code": 200,
+                    "http": "200 OK",
+                    "desc": res200["description"],
+                    "params": res200params
+                }
+                endpoint["responses"].append(ok_res)
 
                 endpoints.append(endpoint)
         return {
@@ -135,95 +250,6 @@ class MatrixUnits(Units):
         path = "../event-schemas/schema/v1"
         schemata = {}
 
-        def get_content_fields(obj, enforce_title=False):
-            # Algorithm:
-            # f.e. property => add field info (if field is object then recurse)
-            if obj.get("type") != "object":
-                raise Exception(
-                    "get_content_fields: Object %s isn't an object." % obj
-                )
-            if enforce_title and not obj.get("title"):
-                raise Exception(
-                    "get_content_fields: Nested object %s doesn't have a title." % obj
-                )
-
-            required_keys = obj.get("required")
-            if not required_keys:
-                required_keys = []
-
-            fields = {
-                "title": obj.get("title"),
-                "rows": []
-            }
-            tables = [fields]
-
-            props = obj.get("properties")
-            parents = obj.get("allOf")
-            if not props and not parents:
-                raise Exception(
-                    "Object %s has no properties or parents." % obj
-                )
-            if not props:  # parents only
-                return [{
-                    "title": obj["title"],
-                    "parent": parents[0]["$ref"],
-                    "no-table": True
-                }]
-
-            for key_name in sorted(props):
-                value_type = None
-                required = key_name in required_keys
-                desc = props[key_name].get("description", "")
-
-                if props[key_name]["type"] == "object":
-                    if props[key_name].get("additionalProperties"):
-                        # not "really" an object, just a KV store
-                        value_type = (
-                            "{string: %s}" %
-                            props[key_name]["additionalProperties"]["type"]
-                        )
-                    else:
-                        nested_object = get_content_fields(
-                            props[key_name], 
-                            enforce_title=True
-                        )
-                        value_type = "{%s}" % nested_object[0]["title"]
-
-                        if not nested_object[0].get("no-table"):
-                            tables += nested_object
-                elif props[key_name]["type"] == "array":
-                    # if the items of the array are objects then recurse
-                    if props[key_name]["items"]["type"] == "object":
-                        nested_object = get_content_fields(
-                            props[key_name]["items"], 
-                            enforce_title=True
-                        )
-                        value_type = "[%s]" % nested_object[0]["title"]
-                        tables += nested_object
-                    else:
-                        value_type = "[%s]" % props[key_name]["items"]["type"]
-                else:
-                    value_type = props[key_name]["type"]
-                    if props[key_name].get("enum"):
-                        if len(props[key_name].get("enum")) > 1:
-                            value_type = "enum"
-                            desc += (
-                                " One of: %s" % json.dumps(props[key_name]["enum"])
-                            )
-                        else:
-                            desc += (
-                                " Must be '%s'." % props[key_name]["enum"][0]
-                            )
-
-                fields["rows"].append({
-                    "key": key_name,
-                    "type": value_type,
-                    "required": required,
-                    "desc": desc,
-                    "req_str": "**Required.** " if required else ""
-                })
-            return tables
-
         for filename in os.listdir(path):
             if not filename.startswith("m."):
                 continue
@@ -270,7 +296,7 @@ class MatrixUnits(Units):
                 schema["desc"] = json_schema.get("description", "")
 
                 # walk the object for field info
-                schema["content_fields"] = get_content_fields(
+                schema["content_fields"] = get_json_schema_object_fields(
                     Units.prop(json_schema, "properties/content")
                 )
 
