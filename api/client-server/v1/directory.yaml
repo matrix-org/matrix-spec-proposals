@@ -11,10 +11,18 @@ consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  accessToken:
+    type: apiKey
+    description: The user_id or application service access_token
+    name: access_token
+    in: query
 paths:
   "/room/{roomAlias}":
     put:
       summary: Create a new mapping from room alias to room ID.
+      security:
+        - accessToken: []
       parameters:
         - in: path
           type: string
@@ -63,6 +71,8 @@ paths:
           description: There is no mapped room ID for this room alias.
     delete:
       summary: Remove a mapping of room alias to room ID.
+      security:
+        - accessToken: []
       parameters:
         - in: path
           type: string
