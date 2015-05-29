@@ -1,0 +1,77 @@
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server v1 Directory API"
+  version: "1.0.0"
+host: matrix.org
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/api/v1/directory
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  "/room/{roomAlias}":
+    put:
+      summary: Create a new mapping from room alias to room ID.
+      parameters:
+        - in: path
+          type: string
+          name: roomAlias
+          description: The room alias to set.
+          required: true
+        - in: body
+          name: roomInfo
+          description: Information about this room alias.
+          required: true
+          schema:
+            type: object
+            properties:
+              room_id:
+                type: string
+                description: The room ID to set.
+      responses:
+        200:
+          description: The mapping was created.
+          schema:
+            type: object  # empty json object
+    get:
+      summary: Get the room ID corresponding to this room alias.
+      parameters:
+        - in: path
+          type: string
+          name: roomAlias
+          description: The room alias.
+          required: true
+      responses:
+        200:
+          description: The room ID and other information for this alias.
+          schema:
+            type: object
+            properties:
+              room_id:
+                type: string
+                description: The room ID for this room alias.
+              servers:
+                type: array
+                description: A list of servers that are aware of this room ID.
+                items:
+                  type: string
+                  description: A server which is aware of this room ID.
+        404:
+          description: There is no mapped room ID for this room alias.
+    delete:
+      summary: Remove a mapping of room alias to room ID.
+      parameters:
+        - in: path
+          type: string
+          name: roomAlias
+          description: The room alias to remove.
+          required: true
+      responses:
+        200:
+          description: The mapping was removed.
+          schema:
+            type: object  # empty json object
+
