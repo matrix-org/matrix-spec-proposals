@@ -6,7 +6,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v1/profile
+basePath: /_matrix/client/api/v1
 consumes:
   - application/json
 produces:
@@ -18,7 +18,7 @@ securityDefinitions:
     name: access_token
     in: query
 paths:
-  "/{userId}/displayname":
+  "/profile/{userId}/displayname":
     put:
       summary: Set the user's display name.
       security:
@@ -67,7 +67,7 @@ paths:
                 description: The user's display name if they have set one.
         404:
           description: There is no display name for this user or this user does not exist.
-  "/{userId}/avatar_url":
+  "/profile/{userId}/avatar_url":
     put:
       summary: Set the user's avatar URL.
       security:

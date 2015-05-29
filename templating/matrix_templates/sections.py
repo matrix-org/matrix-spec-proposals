@@ -30,6 +30,9 @@ class MatrixSections(Sections):
             ))
         return "\n\n".join(sections)
 
+    def render_foo(self):
+        return json.dumps(self.units.get("swagger_apis")["profile"]["__meta"], indent=2)
+
     def render_room_events(self):
         def filterFn(eventType):
             return (

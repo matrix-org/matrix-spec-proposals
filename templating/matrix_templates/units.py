@@ -9,6 +9,77 @@ import yaml
 
 class MatrixUnits(Units):
 
+    def _load_swagger_meta(self, api, group_name):
+        endpoints = []
+        for path in api["paths"]:
+            for method in api["paths"][path]:
+                single_api = api["paths"][path][method]
+                endpoint = {
+                    "title": single_api.get("summary"),
+                    "desc": single_api.get("description"),
+                    "method": method.upper(),
+                    "path": path,
+                    "requires_auth": "security" in single_api,
+                    "rate_limited": 429 in single_api.get("responses", {}),
+                    "req_params": []
+                }
+                self.log(".o.O.o. Endpoint: %s %s" % (method, path))
+                for param in single_api.get("parameters", []):
+                    # description
+                    desc = param.get("description")
+                    if param.get("required"):
+                        desc = "**Required.** " + desc
+
+                    # assign value expected for this param
+                    val_type = param.get("type") # integer/string
+                    refType = Units.prop(param, "schema/$ref/") # Error,Event
+                    schemaFmt = Units.prop(param, "schema/format") # bytes e.g. uploads
+                    if not val_type and refType:
+                        val_type = refType  # TODO: Resolve to human-readable.
+                    if not val_type and schemaFmt:
+                        val_type = schemaFmt
+                    if val_type:
+                        endpoint["req_params"].append({
+                            "name": param["name"],
+                            "type": param["in"],
+                            "val_type": val_type,
+                            "desc": desc
+                        })
+                        continue
+                    # If we're here, either the param has no value or it is an
+                    # object which we haven't $reffed (so probably just a json
+                    # object with some keys; we'll add entries f.e one)
+                    if "schema" not in param:
+                        raise Exception(
+                            "API endpoint group=%s path=%s method=%s param=%s"+
+                            " has no valid parameter value." % (
+                                group_name, path, method, param
+                            )
+                        )
+                    if Units.prop(param, "schema/type") != "object":
+                        raise Exception(
+                            ("API endpoint group=%s path=%s method=%s defines a"+
+                            " param with a schema which isn't an object. Array?")
+                            % (group_name, path, method)
+                        )
+                    # loop top-level json keys
+                    json_body = Units.prop(param, "schema/properties")
+                    for key in json_body:
+                        endpoint["req_params"].append({
+                            "name": key,
+                            "type": "JSON",
+                            "val_type": json_body[key]["type"],
+                            "desc": json_body[key]["description"]
+                        })
+                    
+
+                endpoints.append(endpoint)
+        return {
+            "base": api.get("basePath"),
+            "group": group_name,
+            "endpoints": endpoints,
+        }
+
     def load_swagger_apis(self):
         path = "../api/client-server/v1"
         apis = {}
@@ -18,7 +89,10 @@ class MatrixUnits(Units):
             self.log("Reading swagger API: %s" % filename)
             with open(os.path.join(path, filename), "r") as f:
                 # strip .yaml
-                apis[filename[:-5]] = yaml.load(f.read())
+                group_name = filename[:-5]
+                api = yaml.load(f.read())
+                api["__meta"] = self._load_swagger_meta(api, group_name)
+                apis[group_name] = api
         return apis
 
     def load_common_event_fields(self):
