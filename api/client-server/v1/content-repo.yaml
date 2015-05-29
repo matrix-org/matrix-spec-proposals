@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   title: "Matrix Client-Server v1 Content Repository API"
   version: "1.0.0"
-host: matrix.org
+host: localhost:8008
 schemes:
   - https
 basePath: /_matrix/media/v1

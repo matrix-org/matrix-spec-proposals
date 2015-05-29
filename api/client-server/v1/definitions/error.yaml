@@ -1,0 +1,7 @@
+type: object
+properties:
+  errcode:
+    type: string
+  error:
+    type: string
+required: ["errcode"]
