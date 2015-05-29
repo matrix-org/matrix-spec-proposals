@@ -1,0 +1,93 @@
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server v1 Content Repository API"
+  version: "1.0.0"
+host: matrix.org
+schemes:
+  - https
+basePath: /_matrix/media/v1
+produces:
+  - application/json
+  - "*/*"
+paths:
+  "/upload":
+    post:
+      summary: Upload some content to the content repository.
+      produces: ["application/json"]
+      parameters:
+        - in: body
+          name: content
+          description: The content to be uploaded.
+          required: true
+          schema:
+            type: string
+            format: byte
+      responses:
+        200:
+          description: Information about the uploaded content.
+          schema:
+            type: object
+            required: ["content_uri"]
+            properties:
+              content_uri:
+                type: string
+                description: "The MXC URI to the uploaded content."
+  "/download/{serverName}/{mediaId}":
+    get:
+      summary: "Download content from the content repository."
+      produces: ["*/*"]
+      parameters:
+        - in: path
+          type: string
+          name: serverName
+          required: true
+          description: |
+            The server name from the ``mxc://`` URI (the authoritory component)
+        - in: path
+          type: string
+          name: mediaId
+          required: true
+          description: |
+            The media ID from the ``mxc://`` URI (the path component)
+      responses:
+        200:
+          description: "The content downloaded."
+          schema:
+            type: file
+  "/thumbnail/{serverName}/{mediaId}":
+    get:
+      summary: "Download a thumbnail of the content from the content repository."
+      produces: ["image/jpeg", "image/png"]
+      parameters:
+        - in: path
+          type: string
+          name: serverName
+          required: true
+          description: |
+            The server name from the ``mxc://`` URI (the authoritory component)
+        - in: path
+          type: string
+          name: mediaId
+          required: true
+          description: |
+            The media ID from the ``mxc://`` URI (the path component)
+        - in: query
+          type: integer
+          name: width
+          description: The desired width of the thumbnail.
+        - in: query
+          type: integer
+          name: height
+          description: The desired height of the thumbnail.
+        - in: query
+          type: string
+          enum: ["crop", "scale"]
+          name: method
+          description: The desired resizing method.
+      responses:
+        200:
+          description: "A thumbnail of the requested content."
+          schema:
+            type: file
+            
+
