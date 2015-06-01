@@ -104,8 +104,8 @@ class MatrixUnits(Units):
             for method in api["paths"][path]:
                 single_api = api["paths"][path][method]
                 endpoint = {
-                    "title": single_api.get("summary"),
-                    "desc": single_api.get("description"),
+                    "title": single_api.get("summary", ""),
+                    "desc": single_api.get("description", ""),
                     "method": method.upper(),
                     "path": path,
                     "requires_auth": "security" in single_api,
@@ -118,7 +118,7 @@ class MatrixUnits(Units):
                 self.log(".o.O.o. Endpoint: %s %s" % (method, path))
                 for param in single_api.get("parameters", []):
                     # description
-                    desc = param.get("description")
+                    desc = param.get("description", "")
                     if param.get("required"):
                         desc = "**Required.** " + desc
 
@@ -133,8 +133,8 @@ class MatrixUnits(Units):
                     if val_type:
                         endpoint["req_params"].append({
                             "name": param["name"],
-                            "type": param["in"],
-                            "val_type": val_type,
+                            "loc": param["in"],
+                            "type": val_type,
                             "desc": desc
                         })
                         continue
@@ -159,8 +159,8 @@ class MatrixUnits(Units):
                     for key in json_body:
                         endpoint["req_params"].append({
                             "name": key,
-                            "type": "JSON",
-                            "val_type": json_body[key]["type"],
+                            "loc": "JSON",
+                            "type": json_body[key]["type"],
                             "desc": json_body[key]["description"]
                         })
 

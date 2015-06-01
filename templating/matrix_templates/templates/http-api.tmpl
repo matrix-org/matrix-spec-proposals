@@ -1,0 +1,19 @@
+``{{endpoint.method}} {{endpoint.path}}``
+{{(5 + (endpoint.path | length) + (endpoint.method | length)) * title_kind}}
+
+{{endpoint.desc | wrap(80)}}
+
+{{":Rate-limited: Yes." if endpoint.rate_limited else ""}}
+{{":Requires auth: Yes." if endpoint.requires_auth else ""}}
+
+Request format:
+
+================== ================= =========== ===============================
+   Parameter         Param Location  Param Type          Description
+================== ================= =========== ===============================
+{% for param in endpoint.req_params -%}
+{{param.name}}{{param.loc|indent(19-param.name|length)}}{{param.type|indent(37-19-
+param.loc|length)}}{{param.desc|indent(12-param.type|length)|wrap(31)|indent_block(49)}}
+{% endfor %}
+================== ================= =========== ===============================
+

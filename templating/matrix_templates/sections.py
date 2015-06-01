@@ -31,7 +31,15 @@ class MatrixSections(Sections):
         return "\n\n".join(sections)
 
     def render_foo(self):
-        return json.dumps(self.units.get("swagger_apis")["profile"]["__meta"], indent=2)
+        template = self.env.get_template("http-api.tmpl")
+        http_api = self.units.get("swagger_apis")["profile"]["__meta"]
+        sections = []
+        for endpoint in http_api["endpoints"]:
+            sections.append(template.render(
+                endpoint=endpoint,
+                title_kind="-"
+            ))
+        return "\n\n".join(sections)
 
     def render_room_events(self):
         def filterFn(eventType):
