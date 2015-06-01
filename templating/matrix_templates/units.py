@@ -184,7 +184,10 @@ class MatrixUnits(Units):
                     "code": 200,
                     "http": "200 OK",
                     "desc": res200["description"],
-                    "params": res200params
+                    "params": res200params,
+                    "example": res200.get("examples", {}).get(
+                        "application/json", ""
+                    )
                 }
                 endpoint["responses"].append(ok_res)
 
