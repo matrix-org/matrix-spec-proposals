@@ -2,10 +2,8 @@
 {{(5 + (endpoint.path | length) + (endpoint.method | length)) * title_kind}}
 
 {{endpoint.desc | wrap(80)}}
-
-{{":Rate-limited: Yes." if endpoint.rate_limited else ""}}
-{{":Requires auth: Yes." if endpoint.requires_auth else ""}}
-
+{{":Rate-limited: Yes." if endpoint.rate_limited else "" }}
+{{":Requires auth: Yes." if endpoint.requires_auth else "" }}
 Request format:
 
 ================== ================= =========== ===============================
@@ -17,3 +15,10 @@ param.loc|length)}}{{param.desc|indent(12-param.type|length)|wrap(31)|indent_blo
 {% endfor %}
 ================== ================= =========== ===============================
 
+Example request::
+
+  {{endpoint.example.req | indent_block(2)}}
+
+Example response::
+
+  {{endpoint.example.res | indent_block(2)}}

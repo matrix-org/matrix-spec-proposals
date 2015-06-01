@@ -29,12 +29,17 @@ paths:
           name: userId
           description: The user whose display name to set.
           required: true
+          x-example: "@alice:example.com"
         - in: body
           name: displayName
           description: The display name info.
           required: true
           schema:
             type: object
+            example: |-
+              {
+                "displayname": "Alice Margatroid"
+              }
             properties:
               displayname:
                 type: string
@@ -59,6 +64,7 @@ paths:
           name: userId
           description: The user whose display name to get.
           required: true
+          x-example: "@alice:example.com"
       responses:
         200:
           description: The display name for this user.
@@ -86,12 +92,17 @@ paths:
           name: userId
           description: The user whose avatar URL to set.
           required: true
+          x-example: "@alice:example.com"
         - in: body
           name: avatar_url
           description: The avatar url info.
           required: true
           schema:
             type: object
+            example: |-
+              {
+                "avatar_url": "mxc:/matrix.org/wefh34uihSDRGhw34"
+              }
             properties:
               avatar_url:
                 type: string
@@ -116,6 +127,7 @@ paths:
           name: userId
           description: The user whose avatar URL to get.
           required: true
+          x-example: "@alice:example.com"
       responses:
         200:
           description: The avatar URL for this user.

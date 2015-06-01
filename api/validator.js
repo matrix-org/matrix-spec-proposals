@@ -27,8 +27,10 @@ if (!opts.schema) {
 parser.parse(opts.schema, function(err, api, metadata) {
     if (!err) {
         console.log("%s is valid.", opts.schema);
+        process.exit(0);
         return;
     }
     console.log(metadata);
     console.error(err);
+    process.exit(1);
 });

@@ -4,6 +4,7 @@ import inspect
 import json
 import os
 import subprocess
+import urllib
 import yaml
 
 def get_json_schema_object_fields(obj, enforce_title=False):
@@ -113,7 +114,11 @@ class MatrixUnits(Units):
                     "req_params": [],
                     "responses": [
                     # { code: 200, [ {row_info} ]}
-                    ]
+                    ],
+                    "example": {
+                        "req": "",
+                        "res": ""
+                    }
                 }
                 self.log(".o.O.o. Endpoint: %s %s" % (method, path))
                 for param in single_api.get("parameters", []):
@@ -184,11 +189,44 @@ class MatrixUnits(Units):
                     "code": 200,
                     "http": "200 OK",
                     "desc": res200["description"],
-                    "params": res200params,
-                    "example": res200.get("examples", {}).get(
-                        "application/json", ""
-                    )
+                    "params": res200params
                 }
+                # add example response if it has one
+                endpoint["example"]["res"] = res200.get("examples", {}).get(
+                    "application/json", ""
+                )
+                # form example request if it has one. It "has one" if all params
+                # have either "x-example" or a "schema" with an "example".
+                params_missing_examples = [
+                    p for p in single_api.get("parameters", []) if (
+                        "x-example" not in p and 
+                        not Units.prop(p, "schema/example")
+                    )
+                ]
+                if len(params_missing_examples) == 0:
+                    path_template = api.get("basePath", "") + path
+                    qps = {}
+                    body = ""
+                    for param in single_api.get("parameters", []):
+                        if param["in"] == "path":
+                            path_template = path_template.replace(
+                                "{%s}" % param["name"], urllib.quote(
+                                    param["x-example"]
+                                )
+                            )
+                        elif param["in"] == "body":
+                            body = param["schema"]["example"]
+                        elif param["in"] == "query":
+                            qps[param["name"]] = qps[param["x-example"]]
+                    query_string = "" if len(qps) == 0 else "?"+urllib.urlencode(qps)
+                    endpoint["example"]["req"] = "%s %s%s\n%s" % (
+                        method.upper(), path_template, query_string, body
+                    )
+                else:
+                    self.log(
+                        "The following parameters are missing examples :( \n %s" %
+                        [ p["name"] for p in params_missing_examples ]
+                    )
                 endpoint["responses"].append(ok_res)
 
                 endpoints.append(endpoint)
