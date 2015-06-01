@@ -8,14 +8,17 @@
 
 Request format:
 
-================== ================= =========== ===============================
-   Parameter         Param Location  Param Type          Description
-================== ================= =========== ===============================
-{% for param in endpoint.req_params -%}
-{{param.name}}{{param.loc|indent(19-param.name|length)}}{{param.type|indent(37-19-
-param.loc|length)}}{{param.desc|indent(12-param.type|length)|wrap(31)|indent_block(49)}}
+================== ================= ===========================================
+   Parameter            Value                        Description
+================== ================= ===========================================
+{% for loc in endpoint.req_param_by_loc -%}
+**{{loc}} parameters**
+--------------------------------------------------------------------------------
+{% for param in endpoint.req_param_by_loc[loc] -%}
+{{param.name}}{{param.type|indent(19-param.name|length)}}{{param.desc|indent(18-param.type|length)|wrap(43)|indent_block(37)}}
 {% endfor %}
-================== ================= =========== ===============================
+{% endfor %}
+================== ================= ===========================================
 
 Example request::
 

@@ -112,9 +112,6 @@ class MatrixUnits(Units):
                     "requires_auth": "security" in single_api,
                     "rate_limited": 429 in single_api.get("responses", {}),
                     "req_params": [],
-                    "responses": [
-                    # { code: 200, [ {row_info} ]}
-                    ],
                     "example": {
                         "req": "",
                         "res": ""
@@ -164,35 +161,24 @@ class MatrixUnits(Units):
                     for key in json_body:
                         endpoint["req_params"].append({
                             "name": key,
-                            "loc": "JSON",
+                            "loc": "JSON body",
                             "type": json_body[key]["type"],
                             "desc": json_body[key]["description"]
                         })
+                # endfor[param]
 
-                # add main response format first.
-                res200 = single_api["responses"][200]
-                res200params = []
-                if res200["schema"].get("type") != "object":
-                    res200params = [{
-                        "title": "Response",
-                        "rows": [{
-                            "key": res200["schema"]["name"],
-                            "type": res200["schema"]["type"],
-                            "desc": res200["schema"].get("description", "")
-                        }]
-                    }]
-                elif res200["schema"].get("properties"):
-                    res200params = get_json_schema_object_fields(
-                        res200["schema"]
-                    )
-                ok_res = {
-                    "code": 200,
-                    "http": "200 OK",
-                    "desc": res200["description"],
-                    "params": res200params
+                # group params by location to ease templating
+                endpoint["req_param_by_loc"] = {
+                    #   path: [...], query: [...], body: [...]
                 }
+                for p in endpoint["req_params"]:
+                    if p["loc"] not in endpoint["req_param_by_loc"]:
+                        endpoint["req_param_by_loc"][p["loc"]] = []
+                    endpoint["req_param_by_loc"][p["loc"]].append(p)
+
                 # add example response if it has one
-                endpoint["example"]["res"] = res200.get("examples", {}).get(
+                res = single_api["responses"][200]  # get the 200 OK response
+                endpoint["example"]["res"] = res.get("examples", {}).get(
                     "application/json", ""
                 )
                 # form example request if it has one. It "has one" if all params
@@ -227,9 +213,8 @@ class MatrixUnits(Units):
                         "The following parameters are missing examples :( \n %s" %
                         [ p["name"] for p in params_missing_examples ]
                     )
-                endpoint["responses"].append(ok_res)
-
                 endpoints.append(endpoint)
+
         return {
             "base": api.get("basePath"),
             "group": group_name,

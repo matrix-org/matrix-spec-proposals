@@ -107,7 +107,7 @@ paths:
             type: object
             example: |-
               {
-                "avatar_url": "mxc:/matrix.org/wefh34uihSDRGhw34"
+                "avatar_url": "mxc://matrix.org/wefh34uihSDRGhw34"
               }
             properties:
               avatar_url:
