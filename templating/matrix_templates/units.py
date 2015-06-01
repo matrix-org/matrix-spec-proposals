@@ -112,6 +112,7 @@ class MatrixUnits(Units):
                     "requires_auth": "security" in single_api,
                     "rate_limited": 429 in single_api.get("responses", {}),
                     "req_params": [],
+                    "res_params": [],
                     "example": {
                         "req": "",
                         "res": ""
@@ -134,7 +135,7 @@ class MatrixUnits(Units):
                         val_type = schemaFmt
                     if val_type:
                         endpoint["req_params"].append({
-                            "name": param["name"],
+                            "key": param["name"],
                             "loc": param["in"],
                             "type": val_type,
                             "desc": desc
@@ -160,13 +161,12 @@ class MatrixUnits(Units):
                     json_body = Units.prop(param, "schema/properties")
                     for key in json_body:
                         endpoint["req_params"].append({
-                            "name": key,
+                            "key": key,
                             "loc": "JSON body",
                             "type": json_body[key]["type"],
                             "desc": json_body[key]["description"]
                         })
                 # endfor[param]
-
                 # group params by location to ease templating
                 endpoint["req_param_by_loc"] = {
                     #   path: [...], query: [...], body: [...]
@@ -213,6 +213,22 @@ class MatrixUnits(Units):
                         "The following parameters are missing examples :( \n %s" %
                         [ p["name"] for p in params_missing_examples ]
                     )
+
+                # add response params if this API has any.
+                res_type = Units.prop(res, "schema/type")
+                if res_type and res_type not in ["object", "array"]:
+                    # response is a raw string or something like that
+                    endpoint["res_params"].append({
+                        "key": res["schema"].get("name", ""),
+                        "type": res_type,
+                        "desc": res.get("description", "")
+                    })
+                elif res_type and Units.prop(res, "schema/properties"):  # object
+                    res_tables = get_json_schema_object_fields(res["schema"])
+                    # TODO: Is this good enough or should we be doing multiple
+                    # tables for HTTP responses?!
+                    endpoint["res_params"] = res_tables[0]["rows"]
+
                 endpoints.append(endpoint)
 
         return {

@@ -15,10 +15,22 @@ Request format:
 **{{loc}} parameters**
 --------------------------------------------------------------------------------
 {% for param in endpoint.req_param_by_loc[loc] -%}
-{{param.name}}{{param.type|indent(19-param.name|length)}}{{param.desc|indent(18-param.type|length)|wrap(43)|indent_block(37)}}
-{% endfor %}
-{% endfor %}
+{{param.key}}{{param.type|indent(19-param.key|length)}}{{param.desc|indent(18-param.type|length)|wrap(43)|indent_block(37)}}
+{% endfor -%}
+{% endfor -%}
 ================== ================= ===========================================
+
+{% if endpoint.res_params|length > 0 -%}
+Response format:
+
+================== ================= ===========================================
+   Parameter            Value                        Description
+================== ================= ===========================================
+{% for param in endpoint.res_params -%}
+{{param.key}}{{param.type|indent(19-param.key|length)}}{{param.desc|indent(18-param.type|length)|wrap(43)|indent_block(37)}}
+{% endfor -%}
+================== ================= ===========================================
+{% endif %}
 
 Example request::
 
