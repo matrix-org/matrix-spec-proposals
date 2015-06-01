@@ -3,6 +3,7 @@ from batesian.units import Units
 import inspect
 import json
 import os
+import re
 import subprocess
 import urllib
 import yaml
@@ -108,7 +109,7 @@ class MatrixUnits(Units):
                     "title": single_api.get("summary", ""),
                     "desc": single_api.get("description", single_api.get("summary", "")),
                     "method": method.upper(),
-                    "path": path,
+                    "path": api.get("basePath", "") + path,
                     "requires_auth": "security" in single_api,
                     "rate_limited": 429 in single_api.get("responses", {}),
                     "req_params": [],
@@ -368,6 +369,49 @@ class MatrixUnits(Units):
 
                 schemata[filename] = schema
         return schemata
+
+    def load_spec_meta(self):
+        path = "../CHANGELOG.rst"
+        title_part = None
+        version = None
+        changelog_lines = []
+        with open(path, "r") as f:
+            prev_line = None
+            for line in f.readlines():
+                if line.strip().startswith(".. "):
+                    continue  # comment
+                if prev_line is None:
+                    prev_line = line
+                    continue
+                if not title_part:
+                    # find the title underline (at least 3 =)
+                    if re.match("^[=]{3,}$", line.strip()):
+                        title_part = prev_line
+                        continue
+                    prev_line = line
+                else:  # have title, get body (stop on next title or EOF)
+                    if re.match("^[=]{3,}$", line.strip()):
+                        # we added the title in the previous iteration, pop it
+                        # then bail out.
+                        changelog_lines.pop()
+                        break
+                    changelog_lines.append(line)
+
+        # parse out version from title
+        for word in title_part.split():
+            if re.match("^v[0-9\.]+$", word):
+                version = word[1:]  # strip the 'v'
+
+        self.log("Version: %s Title part: %s Changelog lines: %s" % (
+            version, title_part, len(changelog_lines)
+        ))
+        if not version or len(changelog_lines) == 0:
+            raise Exception("Failed to parse CHANGELOG.rst")
+
+        return {
+            "version": version,
+            "changelog": "".join(changelog_lines)
+        }
 
     def load_git_version(self):
         null = open(os.devnull, 'w')

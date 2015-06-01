@@ -12,7 +12,7 @@ Request format:
    Parameter            Value                        Description
 ================== ================= ===========================================
 {% for loc in endpoint.req_param_by_loc -%}
-**{{loc}} parameters**
+*{{loc}} parameters*
 --------------------------------------------------------------------------------
 {% for param in endpoint.req_param_by_loc[loc] -%}
 {{param.key}}{{param.type|indent(19-param.key|length)}}{{param.desc|indent(18-param.type|length)|wrap(43)|indent_block(37)}}

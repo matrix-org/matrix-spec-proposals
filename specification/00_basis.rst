@@ -3,7 +3,17 @@ Matrix Specification
 
 Version: {{spec_version}}
 -----------------------------
-``{{git_version}}``
+This specification has been generated from
+https://github.com/matrix-org/matrix-doc using
+https://github.com/matrix-org/matrix-doc/blob/master/scripts/gendoc.py as of
+revision ``{{git_version}}``.
+
+Changelog
+~~~~~~~~~
+{{spec_changelog}}
+
+For a full changelog, see 
+https://github.com/matrix-org/matrix-doc/blob/master/CHANGELOG.rst
 
 Table of Contents
 =================

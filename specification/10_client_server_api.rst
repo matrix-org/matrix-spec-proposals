@@ -1224,56 +1224,8 @@ Maintaining the presence list::
 
 Profiles
 ~~~~~~~~
-The client API for profile management consists of the following REST calls.
 
-Fetching a user account displayname::
-
-  GET $PREFIX/profile/<user_id>/displayname
-
-  Returned content: JSON object containing the following keys:
-    displayname: string of freeform text
-
-This call may be used to fetch the user's own displayname or to query the name
-of other users; either locally or on remote systems hosted on other home
-servers.
-
-Setting a new displayname::
-
-  PUT $PREFIX/profile/<user_id>/displayname
-
-  Content: JSON object containing the following keys:
-    displayname: string of freeform text
-
-Fetching a user account avatar URL::
-
-  GET $PREFIX/profile/<user_id>/avatar_url
-
-  Returned content: JSON object containing the following keys:
-    avatar_url: string containing an http-scheme URL
-
-As with displayname, this call may be used to fetch either the user's own, or
-other users' avatar URL.
-
-Setting a new avatar URL::
-
-  PUT $PREFIX/profile/<user_id>/avatar_url
-
-  Content: JSON object containing the following keys:
-    avatar_url: string containing an http-scheme URL
-
-Fetching combined account profile information::
-
-  GET $PREFIX/profile/<user_id>
-
-  Returned content: JSON object containing the following keys:
-    displayname: string of freeform text
-    avatar_url: string containing an http-scheme URL
-
-At the current time, this API simply returns the displayname and avatar URL
-information, though it is intended to return more fields about the user's
-profile once they are defined. Client implementations should take care not to
-expect that these are the only two keys returned as future versions of this
-specification may yield more keys here.
+{{profile_http_api}}
 
 Security
 --------

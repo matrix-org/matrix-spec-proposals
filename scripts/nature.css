@@ -274,3 +274,11 @@ table {
     border: 0;
     border-collapse: collapse;
 }
+
+td[colspan]:not([colspan="1"]) {
+    background: #eeeeee;
+}
+
+thead {
+    background: #eeeeee;
+}

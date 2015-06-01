@@ -13,7 +13,12 @@ class MatrixSections(Sections):
         return self.units.get("git_version")
 
     def render_spec_version(self):
-        return "0.1.0"
+        spec_meta = self.units.get("spec_meta")
+        return spec_meta["version"]
+
+    def render_spec_changelog(self):
+        spec_meta = self.units.get("spec_meta")
+        return spec_meta["changelog"]
 
     def _render_events(self, filterFn, sortFn, title_kind="~"):
         template = self.env.get_template("events.tmpl")
@@ -52,7 +57,9 @@ class MatrixSections(Sections):
             # dump rest
             rest = [ e for e in endpoints if e not in sorted_endpoints ]
             return sorted_endpoints + rest
-        return self._render_http_api_group("profile", sortFn=sortFn)
+        return self._render_http_api_group(
+            "profile", sortFn=sortFn, title_kind="+"
+        )
 
     def render_room_events(self):
         def filterFn(eventType):
