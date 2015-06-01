@@ -21,6 +21,9 @@ paths:
   "/profile/{userId}/displayname":
     put:
       summary: Set the user's display name.
+      description: |-
+        This API sets the given user's display name. You must have permission to
+        set this user's display name, e.g. you need to have their ``access_token``.
       security:
         - accessToken: []
       parameters:
@@ -84,6 +87,9 @@ paths:
   "/profile/{userId}/avatar_url":
     put:
       summary: Set the user's avatar URL.
+      description: |-
+        This API sets the given user's avatar URL. You must have permission to
+        set this user's avatar URL, e.g. you need to have their ``access_token``.
       security:
         - accessToken: []
       parameters:

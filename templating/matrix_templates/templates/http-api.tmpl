@@ -2,8 +2,10 @@
 {{(5 + (endpoint.path | length) + (endpoint.method | length)) * title_kind}}
 
 {{endpoint.desc | wrap(80)}}
+
 {{":Rate-limited: Yes." if endpoint.rate_limited else "" }}
 {{":Requires auth: Yes." if endpoint.requires_auth else "" }}
+
 Request format:
 
 ================== ================= =========== ===============================

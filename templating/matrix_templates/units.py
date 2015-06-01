@@ -106,7 +106,7 @@ class MatrixUnits(Units):
                 single_api = api["paths"][path][method]
                 endpoint = {
                     "title": single_api.get("summary", ""),
-                    "desc": single_api.get("description", ""),
+                    "desc": single_api.get("description", single_api.get("summary", "")),
                     "method": method.upper(),
                     "path": path,
                     "requires_auth": "security" in single_api,
