@@ -61,6 +61,10 @@ paths:
             "$ref": "definitions/error.yaml"
     get:
       summary: Get the user's display name.
+      description: |-
+        Get the user's display name. This API may be used to fetch the user's
+        own displayname or to query the name of other users; either locally or
+        on remote homeservers.
       parameters:
         - in: path
           type: string
@@ -127,6 +131,10 @@ paths:
             "$ref": "definitions/error.yaml"
     get:
       summary: Get the user's avatar URL.
+      description: |-
+        Get the user's avatar URL. This API may be used to fetch the user's
+        own avatar URL or to query the URL of other users; either locally or
+        on remote homeservers.
       parameters:
         - in: path
           type: string
@@ -150,3 +158,38 @@ paths:
                 description: The user's avatar URL if they have set one.
         404:
           description: There is no avatar URL for this user or this user does not exist.
+  "/profile/{userId}":
+    get:
+      summary: Get this user's profile information.
+      description: |-
+        Get the combined profile information for this user. This API may be used
+        to fetch the user's own profile information or other users; either
+        locally or on remote homeservers. This API may return keys which are not
+        limited to ``displayname`` or ``avatar_url``.
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          description: The user whose avatar URL to get.
+          required: true
+          x-example: "@alice:example.com"
+      responses:
+        200:
+          description: The avatar URL for this user.
+          examples:
+            application/json: |-
+              {
+                "avatar_url": "mxc://matrix.org/SDGdghriugerRg",
+                "displayname": "Alice Margatroid"
+              }
+          schema:
+            type: object
+            properties:
+              avatar_url:
+                type: string
+                description: The user's avatar URL if they have set one.
+              displayname:
+                type: string
+                description: The user's display name if they have set one.
+        404:
+          description: There is no profile information for this user or this user does not exist.

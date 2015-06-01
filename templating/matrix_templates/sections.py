@@ -30,16 +30,29 @@ class MatrixSections(Sections):
             ))
         return "\n\n".join(sections)
 
-    def render_foo(self):
+    def _render_http_api_group(self, group, sortFn=sorted, title_kind="-"):
         template = self.env.get_template("http-api.tmpl")
-        http_api = self.units.get("swagger_apis")["profile"]["__meta"]
+        http_api = self.units.get("swagger_apis")[group]["__meta"]
         sections = []
-        for endpoint in http_api["endpoints"]:
+        for endpoint in sortFn(http_api["endpoints"]):
             sections.append(template.render(
                 endpoint=endpoint,
-                title_kind="-"
+                title_kind=title_kind
             ))
         return "\n\n".join(sections)
+
+    def render_profile_http_api(self):
+        def sortFn(endpoints):
+            ordering = ["displayname", "avatar_url"]
+            sorted_endpoints = []
+            for path_substr in ordering:
+                for e in endpoints:
+                    if path_substr in e["path"]:
+                        sorted_endpoints.append(e)  # could have multiple
+            # dump rest
+            rest = [ e for e in endpoints if e not in sorted_endpoints ]
+            return sorted_endpoints + rest
+        return self._render_http_api_group("profile", sortFn=sortFn)
 
     def render_room_events(self):
         def filterFn(eventType):
