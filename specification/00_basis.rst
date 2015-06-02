@@ -15,24 +15,11 @@ Changelog
 For a full changelog, see 
 https://github.com/matrix-org/matrix-doc/blob/master/CHANGELOG.rst
 
-Table of Contents
-=================
-
 .. contents:: Table of Contents
 .. sectnum::
 
 Introduction
 ============
-
-Matrix is a set of open APIs for open-federated Instant Messaging (IM), Voice
-over IP (VoIP) and Internet of Things (IoT) communication, designed to create
-and support a new global real-time communication ecosystem. The intention is to
-provide an open decentralised pubsub layer for the internet for securely
-persisting and publishing/subscribing JSON objects.
-
-This specification is the ongoing result of standardising the APIs used by the
-various components of the Matrix ecosystem to communicate with one another.
-
 .. WARNING::
   The Matrix specification is still evolving: the APIs are not yet frozen
   and this document is in places a work in progress or stale. We have made every 
@@ -42,6 +29,15 @@ various components of the Matrix ecosystem to communicate with one another.
   useful and provide a canonical reference to how Matrix is evolving. Our end
   goal is to mirror WHATWG's `Living Standard   
   <http://wiki.whatwg.org/wiki/FAQ#What_does_.22Living_Standard.22_mean.3F>`_.
+
+Matrix is a set of open APIs for open-federated Instant Messaging (IM), Voice
+over IP (VoIP) and Internet of Things (IoT) communication, designed to create
+and support a new global real-time communication ecosystem. The intention is to
+provide an open decentralised pubsub layer for the internet for securely
+persisting and publishing/subscribing JSON objects.
+
+This specification is the ongoing result of standardising the APIs used by the
+various components of the Matrix ecosystem to communicate with one another.
 
 The principles that Matrix attempts to follow are:
 

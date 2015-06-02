@@ -75,7 +75,7 @@ class MatrixSections(Sections):
         return self._render_http_api_group(
             "profile", 
             sortFnOrPathList=["displayname", "avatar_url"],
-            title_kind="+"
+            title_kind="~"
         )
 
     def render_sync_http_api(self):
@@ -87,7 +87,7 @@ class MatrixSections(Sections):
         return self._render_http_api_group(
             "presence",
             sortFnOrPathList=["status"],
-            title_kind="+"
+            title_kind="~"
         )
 
     def render_room_events(self):
