@@ -1179,48 +1179,10 @@ address
 
 Presence
 ~~~~~~~~
-The client API for presence is on the following set of REST calls.
-
-Fetching basic status::
-
-  GET $PREFIX/presence/<user_id>/status
-
-  Returned content: JSON object containing the following keys:
-    presence: "offline"|"unavailable"|"online"|"free_for_chat"
-    status_msg: (optional) string of freeform text
-    last_active_ago: miliseconds since the last activity by the user
-
-Setting basic status::
-
-  PUT $PREFIX/presence/<user_id>/status
-
-  Content: JSON object containing the following keys:
-    presence and status_msg: as above
-
-When setting the status, the activity time is updated to reflect that activity;
-the client does not need to specify the ``last_active_ago`` field.
-
-Fetching the presence list::
-
-  GET $PREFIX/presence/list
-
-  Returned content: JSON array containing objects; each object containing the
-    following keys:
-    user_id: observed user ID
-    presence: "offline"|"unavailable"|"online"|"free_for_chat"
-    status_msg: (optional) string of freeform text
-    last_active_ago: miliseconds since the last activity by the user
-
-Maintaining the presence list::
-
-  POST $PREFIX/presence/list
-
-  Content: JSON object containing either or both of the following keys:
-    invite: JSON array of strings giving user IDs to send invites to
-    drop: JSON array of strings giving user IDs to remove from the list
-
 .. TODO-spec
   - Define how users receive presence invites, and how they accept/decline them
+
+{{presence_http_api}}
 
 Profiles
 ~~~~~~~~

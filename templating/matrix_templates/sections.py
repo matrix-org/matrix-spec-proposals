@@ -38,11 +38,33 @@ class MatrixSections(Sections):
             ))
         return "\n\n".join(sections)
 
-    def _render_http_api_group(self, group, sortFn=sorted, title_kind="-"):
+    def _render_http_api_group(self, group, sortFnOrPathList=None, 
+                               title_kind="-"):
         template = self.env.get_template("http-api.tmpl")
         http_api = self.units.get("swagger_apis")[group]["__meta"]
         sections = []
-        for endpoint in sortFn(http_api["endpoints"]):
+        endpoints = []
+        if sortFnOrPathList:
+            if isinstance(sortFnOrPathList, list):
+                # list of substrings to sort by
+                sorted_endpoints = []
+                for path_substr in sortFnOrPathList:
+                    for e in http_api["endpoints"]:
+                        if path_substr in e["path"]:
+                            sorted_endpoints.append(e)  # could have multiple
+                # dump rest
+                rest = [
+                    e for e in http_api["endpoints"] if e not in sorted_endpoints
+                ]
+                endpoints = sorted_endpoints + rest
+            else:
+                # guess it's a func, call it.
+                endpoints = sortFnOrPathList(http_api["endpoints"])
+        else:
+            # sort alphabetically based on path
+            endpoints = sorted(http_api["endpoints"], key=lambda k: k["path"])
+
+        for endpoint in endpoints:
             sections.append(template.render(
                 endpoint=endpoint,
                 title_kind=title_kind
@@ -50,18 +72,10 @@ class MatrixSections(Sections):
         return "\n\n".join(sections)
 
     def render_profile_http_api(self):
-        def sortFn(endpoints):
-            ordering = ["displayname", "avatar_url"]
-            sorted_endpoints = []
-            for path_substr in ordering:
-                for e in endpoints:
-                    if path_substr in e["path"]:
-                        sorted_endpoints.append(e)  # could have multiple
-            # dump rest
-            rest = [ e for e in endpoints if e not in sorted_endpoints ]
-            return sorted_endpoints + rest
         return self._render_http_api_group(
-            "profile", sortFn=sortFn, title_kind="+"
+            "profile", 
+            sortFnOrPathList=["displayname", "avatar_url"],
+            title_kind="+"
         )
 
     def render_sync_http_api(self):
@@ -71,7 +85,7 @@ class MatrixSections(Sections):
 
     def render_presence_http_api(self):
         return self._render_http_api_group(
-            "presence"
+            "presence", title_kind="+"
         )
 
     def render_room_events(self):
