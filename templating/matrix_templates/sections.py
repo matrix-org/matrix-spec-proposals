@@ -69,6 +69,11 @@ class MatrixSections(Sections):
             "sync"
         )
 
+    def render_presence_http_api(self):
+        return self._render_http_api_group(
+            "presence"
+        )
+
     def render_room_events(self):
         def filterFn(eventType):
             return (
