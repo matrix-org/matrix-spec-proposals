@@ -25,6 +25,6 @@ Known issues with the specification are represented as JIRA issues at
 https://matrix.org/jira/browse/SPEC
 
 If you want to ask more about the specification, or have suggestions for
-improvements, join us on ``#matrix-dev:matrix.org``.
+improvements, join us on ``#matrix-dev:matrix.org`` via https://matrix.org/beta.
 
 .. _JSON Schema: http://json-schema.org/
