@@ -25,13 +25,14 @@ class Sections(object):
             if not func_name.startswith("render_"):
                 continue
             section_key = func_name[len("render_"):]
+            self.log("Generating section '%s'" % section_key)
             section = func()
             if not isinstance(section, basestring):
                 raise Exception(
                     "Section function '%s' didn't return a string!" % func_name
                 )
             section_dict[section_key] = section
-            self.log("Generated section '%s' : %s" % (
-                section_key, section[:60].replace("\n","")
-            ))
+            self.log(
+                "  Generated. Snippet => %s" % section[:60].replace("\n","")
+            )
         return section_dict
