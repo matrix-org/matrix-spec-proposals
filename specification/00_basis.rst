@@ -98,13 +98,6 @@ instant messages, VoIP call setups, or any other objects that need to be
 reliably and persistently pushed from A to B in an interoperable and federated
 manner.
 
-Version
-=======
-
-The Matrix spec is currently rapidly evolving, and there have been no versioned
-releases as yet. Versions should be identified by git revision, or failing that
-timestamp.
-
 Overview
 ========
 
