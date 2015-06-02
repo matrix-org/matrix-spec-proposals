@@ -1,4 +1,5 @@
 "use strict";
+var fs = require("fs");
 var nopt = require("nopt");
 var parser = require("swagger-parser");
 var path = require("path");
@@ -15,7 +16,7 @@ if (opts.help) {
     console.log(
         "Use swagger-parser to validate against Swagger 2.0\n"+
         "Usage:\n"+
-        "  node validator.js -s <schema_file>"
+        "  node validator.js -s <schema_file_or_folder>"
     );
     process.exit(0);
 }
@@ -24,13 +25,46 @@ if (!opts.schema) {
     process.exit(1);
 }
 
-parser.parse(opts.schema, function(err, api, metadata) {
+
+var errFn = function(err, api, metadata) {
     if (!err) {
-        console.log("%s is valid.", opts.schema);
-        process.exit(0);
         return;
     }
     console.log(metadata);
     console.error(err);
     process.exit(1);
-});
+};
+
+var isDir = fs.lstatSync(opts.schema).isDirectory()
+if (isDir) {
+    console.log("Checking directory %s for .yaml files...", opts.schema);
+    fs.readdir(opts.schema, function(err, files) {
+        if (err) {
+            console.error(err);
+            process.exit(1);
+        }
+        files.forEach(function(f) {
+            if (f.indexOf(".yaml") > 0) {
+                parser.parse(path.join(opts.schema, f), function(err, api, metadata) {
+                    if (!err) {
+                        console.log("%s is valid.", f);
+                    }
+                    else {
+                        errFn(err, api, metadata);
+                    }
+                });
+            } 
+        });
+    });
+}
+else{
+    parser.parse(opts.schema, function(err, api, metadata) {
+        if (!err) {
+            console.log("%s is valid", opts.schema);
+        }
+        else {
+            errFn(err, api, metadata);
+        }
+    });
+};
+
