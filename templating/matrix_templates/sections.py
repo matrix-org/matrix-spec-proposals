@@ -61,6 +61,11 @@ class MatrixSections(Sections):
             "profile", sortFn=sortFn, title_kind="+"
         )
 
+    def render_sync_http_api(self):
+        return self._render_http_api_group(
+            "sync"
+        )
+
     def render_room_events(self):
         def filterFn(eventType):
             return (

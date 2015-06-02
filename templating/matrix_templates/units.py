@@ -204,7 +204,7 @@ class MatrixUnits(Units):
                         elif param["in"] == "body":
                             body = param["schema"]["example"]
                         elif param["in"] == "query":
-                            qps[param["name"]] = qps[param["x-example"]]
+                            qps[param["name"]] = param["x-example"]
                     query_string = "" if len(qps) == 0 else "?"+urllib.urlencode(qps)
                     endpoint["example"]["req"] = "%s %s%s\n%s" % (
                         method.upper(), path_template, query_string, body
