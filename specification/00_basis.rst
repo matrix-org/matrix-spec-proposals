@@ -6,7 +6,7 @@ Version: {{spec_version}}
 This specification has been generated from
 https://github.com/matrix-org/matrix-doc using
 https://github.com/matrix-org/matrix-doc/blob/master/scripts/gendoc.py as of
-revision ``{{git_version}}``.
+revision ``{{git_version}}`` - https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}
 
 Changelog
 ~~~~~~~~~

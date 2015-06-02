@@ -455,11 +455,14 @@ class MatrixUnits(Units):
         except subprocess.CalledProcessError:
             git_dirty = ""
 
+        git_version = "Unknown"
         if git_branch or git_tag or git_commit or git_dirty:
             git_version = ",".join(
                 s for s in
                 (git_branch, git_tag, git_commit, git_dirty,)
                 if s
-            )
-            return git_version.encode("ascii")
-        return "Unknown rev"
+            ).encode("ascii")
+        return {
+            "string": git_version,
+            "revision": git_commit
+        }

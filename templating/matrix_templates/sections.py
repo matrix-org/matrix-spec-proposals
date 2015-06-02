@@ -10,7 +10,10 @@ class MatrixSections(Sections):
 
     # pass through git ver so it'll be dropped in the input file
     def render_git_version(self):
-        return self.units.get("git_version")
+        return self.units.get("git_version")["string"]
+
+    def render_git_rev(self):
+        return self.units.get("git_version")["revision"]
 
     def render_spec_version(self):
         spec_meta = self.units.get("spec_meta")
