@@ -85,7 +85,9 @@ class MatrixSections(Sections):
 
     def render_presence_http_api(self):
         return self._render_http_api_group(
-            "presence", title_kind="+"
+            "presence",
+            sortFnOrPathList=["status"],
+            title_kind="+"
         )
 
     def render_room_events(self):
