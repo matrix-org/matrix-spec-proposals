@@ -59,7 +59,7 @@ authentication. A request to an endpoint that uses User-Interactive
 Authentication never succeeds without auth. Home Servers may allow requests that
 don't require auth by offering a stage with only the ``m.login.dummy`` auth
 type. The home server returns a response with HTTP status 401 and a JSON object
-as folows::
+as follows::
 
   {
     "flows": [
