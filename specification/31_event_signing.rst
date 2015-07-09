@@ -124,7 +124,7 @@ and additional signatures.
       signature_base64 = encode_base64(signed.signature)
 
       key_id = "%s:%s" % (signing_key.alg, signing_key.version)
-      signatures.setdefault(sigature_name, {})[key_id] = signature_base64
+      signatures.setdefault(signing_name, {})[key_id] = signature_base64
 
       json_object["signatures"] = signatures
       if unsigned is not None:
