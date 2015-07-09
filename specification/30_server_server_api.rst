@@ -553,6 +553,11 @@ them in a JSON object and signing it using the JSON signing algorithm. The
 resulting signatures are added as an Authorization header with an auth scheme
 of X-Matrix.
 
+Note that the target field should include the full path starting with
+``/_matrix/...``, including the ``?`` and any query parameters if present, but
+should not include the leading ``https:``, nor the destination server's
+hostname.
+
 Step 1 sign JSON:
 
 .. code::
