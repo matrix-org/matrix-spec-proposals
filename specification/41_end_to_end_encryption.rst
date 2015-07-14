@@ -66,6 +66,8 @@ Keys are uploaded as a signed JSON object. The JSON object must include an
 ed25519 key and must be signed by that key. A device may only have one ed25519
 signing key. This key is used as the fingerprint for a device by other clients.
 
+The JSON object is signed using the process given by `Signing JSON`_.
+
 
 .. code:: http
 
@@ -90,17 +92,16 @@ signing key. This key is used as the fingerprint for a device by other clients.
       } } },
       "one_time_keys": {
         "<algorithm>:<key_id>": "<key_base64>"
-      },
-    }
+    } }
 
 
 Downloading Keys
 ~~~~~~~~~~~~~~~~
 
 Keys are downloaded as a collection of signed JSON objects. There
-will be JSON object per device per user. If one of the user's
+will be a JSON object per device per user. If one of the user's
 devices doesn't support end-to-end encryption then their
-homeserver will synthesise a JSON object without any device keys
+homeserver must synthesise a JSON object without any device keys
 for that device.
 
 The JSON must be signed by both the homeserver of
@@ -151,7 +152,7 @@ lies about the keys a user owns.
 
 
 Claiming One Time Keys
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 Some algorithms require one-time keys to improve their secrecy and deniability.
 These keys are used once during session establishment, and are then thrown
@@ -228,3 +229,4 @@ Encrypted messages are sent in the form.
                         "type": 0,
                         "body": "<base_64>"
     }   }   }   }   }
+
