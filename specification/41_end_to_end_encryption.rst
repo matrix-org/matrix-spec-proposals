@@ -37,14 +37,14 @@ Overview
              |=================>|==============>|
                /keys/query        <federation>
 
-    3) Alice selects an algorithm takes any one time keys needed.
+    3) Alice selects an algorithm claims any one-time keys needed.
 
       +----------------+  +------------+  +----------+
       | Alice's Device |  | Alice's HS |  | Bob's HS |
       +----------------+  +------------+  +----------+
              |                  |               |
              |=================>|==============>|
-               /keys/take         <federation>
+               /keys/claim         <federation>
 
     4) Alice sends an encrypted message to Bob.
 
@@ -97,7 +97,7 @@ signing key. This key is used as the fingerprint for a device by other clients.
 Downloading Keys
 ~~~~~~~~~~~~~~~~
 
-Keys are downloaded a collection of signed JSON objects. There
+Keys are downloaded as a collection of signed JSON objects. There
 will be JSON object per device per user. If one of the user's
 devices doesn't support end-to-end encryption then their
 homeserver will synthesise a JSON object without any device keys
@@ -150,34 +150,35 @@ lies about the keys a user owns.
     } } } } } }
 
 
-Taking One Time Keys
+Claiming One Time Keys
 ~~~~~~~~~~~~~~~~~~~~
 
-Some algorithms require one time keys to improve their secrecy and deniability.
-Theses keys are used once during session establishment, and are then thrown
+Some algorithms require one-time keys to improve their secrecy and deniability.
+These keys are used once during session establishment, and are then thrown
 away. In order for these keys to be useful for improving deniability they
 must not be signed using the ed25519 key for a device.
 
-A device will generate a number of these keys and publish them onto their
-homeserver. A device will periodically check how many one time keys their
-homeserver still has. If the number has become too small then the device will
-generate new one time keys and upload them to the homeserver.
+A device must generate a number of these keys and publish them onto their
+homeserver. A device must periodically check how many one-time keys their
+homeserver still has. If the number has become too small then the device must
+generate new one-time keys and upload them to the homeserver.
 
-Devices will store the private part of each one time key they upload. They can
-discard the private part of the one time key when they receive a message using
-that key. However one-keys given out by a homeserver may never end up being
-used. Therefore a device may end up trying to store too many private keys. A
-device that is trying to store too many private keys may discard keys starting
-with the oldest.
+Devices must store the private part of each one-time key they upload. They can
+discard the private part of the one-time key when they receive a message using
+that key. However it's possible that a one-time key given out by a homeserver
+will never be used, so the device that generates the key will never know that
+it can discard the key. Therefore a device could end up trying to store too
+many private keys. A device that is trying to store too many private keys may
+discard keys starting with the oldest.
 
-A homeserver should ratelimit the number of one time keys that a given user or
-remote server can take. A homeserver should discard the public part of a one
+A homeserver should ratelimit the number of one-time keys that a given user or
+remote server can claim. A homeserver should discard the public part of a one
 time key once it has given that key to another user.
 
 
 .. code:: http
 
-    POST /keys/take HTTP/1.1
+    POST /keys/claim HTTP/1.1
     Content-Type: application/json
 
     {
@@ -211,8 +212,7 @@ Encrypted messages are sent in the form.
         "content": {}
         "encrypted": {
             "algorithm": "<algorithm_name>"
-        }
-    }
+    } }
 
 
 .. code:: json
