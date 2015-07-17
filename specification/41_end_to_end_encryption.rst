@@ -94,6 +94,17 @@ The JSON object is signed using the process given by `Signing JSON`_.
         "<algorithm>:<key_id>": "<key_base64>"
     } }
 
+.. code:: http
+
+    200 OK
+    Content-Type: application/json
+
+    {
+      "one_time_key_counts": {
+        "<algorithm>": 50
+      }
+    }
+
 
 Downloading Keys
 ~~~~~~~~~~~~~~~~
@@ -209,10 +220,10 @@ Encrypted messages are sent in the form.
 .. code:: json
 
     {
-        "type": "m.room.message"
-        "content": {}
-        "encrypted": {
+        "type": "m.room.encrypted"
+        "content": {
             "algorithm": "<algorithm_name>"
+        }
     } }
 
 
@@ -220,13 +231,18 @@ Encrypted messages are sent in the form.
 
     {
         "type": "m.room.message"
-        "content": {}
-        "encrypted": {
+        "content": {
             "algorithm": "m.olm.v1.curve25519-aes-sha2",
+            "sender_key": <sender_curve25519_key>,
             "ciphertexts": {
-                "<user_id>" {
-                    "<device_id">: {
-                        "type": 0,
-                        "body": "<base_64>"
-    }   }   }   }   }
+                "<device_curve25519_key>: {
+                    "type": 0,
+                    "body": "<base_64>"
+    }   }   }   }
 
+
+The plaintext payload is of the form:
+
+.. code:: json
+
+   TODO: SPEC the JSON plaintext format
