@@ -86,8 +86,8 @@ The JSON object is signed using the process given by `Signing JSON`_.
         "keys": {
           "<algorithm>:<device_id>": "<key_base64>",
         },
-        "signatures:" {
-          "<user_id>" {
+        "signatures": {
+          "<user_id>": {
             "<algorithm>:<device_id>": "<signature_base64>"
       } } },
       "one_time_keys": {
@@ -150,7 +150,7 @@ lies about the keys a user owns.
             "keys": {
               "<algorithm>:<device_id>": "<key_base64>",
             },
-            "signatures:" {
+            "signatures": {
               "<user_id>": {
                 "<algorithm>:<device_id>": "<signature_base64>"
               },
@@ -163,9 +163,10 @@ lies about the keys a user owns.
 
 
 Clients use ``/_matrix/client/v2_alpha/keys/query`` on their own homeservers to
-claim keys for any user they wish to contact. Homeservers will respond with the
+query keys for any user they wish to contact. Homeservers will respond with the
 keys for their local users and forward requests for remote users to
-``/_matrix/federation/v1/user/keys/query``.
+``/_matrix/federation/v1/user/keys/query`` over federation to the remote
+server.
 
 
 Claiming One Time Keys
@@ -221,7 +222,9 @@ time key once it has given that key to another user.
 Clients use ``/_matrix/client/v2_alpha/keys/claim`` on their own homeservers to
 claim keys for any user they wish to contact. Homeservers will respond with the
 keys for their local users and forward requests for remote users to
-``/_matrix/federation/v1/user/keys/claim``.
+``/_matrix/federation/v1/user/keys/claim`` over federation to the remote
+server.
+
 
 Sending a Message
 ~~~~~~~~~~~~~~~~~
@@ -231,7 +234,7 @@ Encrypted messages are sent in the form.
 .. code:: json
 
     {
-      "type": "m.room.encrypted"
+      "type": "m.room.encrypted",
       "content": {
         "algorithm": "<algorithm_name>"
     } }
@@ -243,7 +246,7 @@ Using Olm
 .. code:: json
 
     {
-      "type": "m.room.encrypted"
+      "type": "m.room.encrypted",
       "content": {
         "algorithm": "m.olm.v1.curve25519-aes-sha2",
         "sender_key": "<sender_curve25519_key>",
@@ -273,5 +276,5 @@ be able to change the room a message was sent in. We include a hash of the
 participating keys so that clients can detect if another device is unexpectedly
 included in the conversation.
 
-Clients must confirm that the ``sender_key`` actually belongs to the device
-that sent the message.
+Clients must confirm that the ``sender_key`` belongs to the user that sent the
+message.
