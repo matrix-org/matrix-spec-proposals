@@ -96,7 +96,7 @@ The JSON object is signed using the process given by `Signing JSON`_.
 
 .. code:: http
 
-    200 OK
+    HTTP/1.1 200 OK
     Content-Type: application/json
 
     {
@@ -162,6 +162,12 @@ lies about the keys a user owns.
     } } } } } }
 
 
+Clients use ``/_matrix/client/v2_alpha/keys/query`` on their own homeservers to
+claim keys for any user they wish to contact. Homeservers will respond with the
+keys for their local users and forward requests for remote users to
+``/_matrix/federation/v1/user/keys/query``.
+
+
 Claiming One Time Keys
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -212,6 +218,11 @@ time key once it has given that key to another user.
     } } } }
 
 
+Clients use ``/_matrix/client/v2_alpha/keys/claim`` on their own homeservers to
+claim keys for any user they wish to contact. Homeservers will respond with the
+keys for their local users and forward requests for remote users to
+``/_matrix/federation/v1/user/keys/claim``.
+
 Sending a Message
 ~~~~~~~~~~~~~~~~~
 
@@ -220,24 +231,27 @@ Encrypted messages are sent in the form.
 .. code:: json
 
     {
-        "type": "m.room.encrypted"
-        "content": {
-            "algorithm": "<algorithm_name>"
-    } } }
+      "type": "m.room.encrypted"
+      "content": {
+        "algorithm": "<algorithm_name>"
+    } }
 
+
+Using Olm
+#########
 
 .. code:: json
 
     {
-        "type": "m.room.message"
-        "content": {
-            "algorithm": "m.olm.v1.curve25519-aes-sha2",
-            "sender_key": <sender_curve25519_key>,
-            "ciphertext": {
-                "<device_curve25519_key>: {
-                    "type": 0,
-                    "body": "<base_64>"
-    }   }   }   }
+      "type": "m.room.encrypted"
+      "content": {
+        "algorithm": "m.olm.v1.curve25519-aes-sha2",
+        "sender_key": "<sender_curve25519_key>",
+        "ciphertext": {
+          "<device_curve25519_key>": {
+            "type": 0,
+            "body": "<base_64>"
+    } } } }
 
 
 The plaintext payload is of the form:
@@ -245,4 +259,19 @@ The plaintext payload is of the form:
 .. code:: json
 
    {
+     "type": "<type of the plaintext event>",
+     "content": "<content for the plaintext event>",
+     "room_id": "<the room_id>",
+     "fingerprint": "<sha256 hash of the currently participating keys>"
    }
+
+The type and content of the plaintext message event are given in the payload.
+Encyrpting state events is not supported.
+
+We include the room ID in the payload, because otherwise the homeserver would
+be able to change the room a message was sent in. We include a hash of the
+participating keys so that clients can detect if another device is unexpectedly
+included in the conversation.
+
+Clients must confirm that the ``sender_key`` actually belongs to the device
+that sent the message.
