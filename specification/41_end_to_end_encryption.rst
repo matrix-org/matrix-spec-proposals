@@ -223,8 +223,7 @@ Encrypted messages are sent in the form.
         "type": "m.room.encrypted"
         "content": {
             "algorithm": "<algorithm_name>"
-        }
-    } }
+    } } }
 
 
 .. code:: json
@@ -234,7 +233,7 @@ Encrypted messages are sent in the form.
         "content": {
             "algorithm": "m.olm.v1.curve25519-aes-sha2",
             "sender_key": <sender_curve25519_key>,
-            "ciphertexts": {
+            "ciphertext": {
                 "<device_curve25519_key>: {
                     "type": 0,
                     "body": "<base_64>"
@@ -245,4 +244,5 @@ The plaintext payload is of the form:
 
 .. code:: json
 
-   TODO: SPEC the JSON plaintext format
+   {
+   }
