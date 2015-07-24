@@ -256,6 +256,21 @@ Using Olm
             "body": "<base_64>"
     } } } }
 
+The ciphertext is a mapping from device curve25519 key to an encypted payload
+for that device. The ``body`` is a base64 encoded message body. The type is an
+integer indicating the type of the message body: 0 for the intial pre-key
+message, 1 for ordinary messages.
+
+Olm sessions will generate messages with a type of 0 until they receive a
+message. Once a session has decrypted a message it will produce messages with
+a type of 1.
+
+When a client receives a message with a type of 0 it must first check if it
+already has a matching session. If it does then it will use that session to
+try to decrypt the message. If there is no existing session then the client
+must create a new session and use the new session to decrypt the message. A
+client must not persist a session or remove one-time keys used by a session
+until it has sucessfully decrypted a message using that session.
 
 The plaintext payload is of the form:
 
