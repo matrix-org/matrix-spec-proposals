@@ -258,7 +258,7 @@ Using Olm
 
 The ciphertext is a mapping from device curve25519 key to an encypted payload
 for that device. The ``body`` is a base64 encoded message body. The type is an
-integer indicating the type of the message body: 0 for the intial pre-key
+integer indicating the type of the message body: 0 for the initial pre-key
 message, 1 for ordinary messages.
 
 Olm sessions will generate messages with a type of 0 until they receive a
@@ -270,7 +270,7 @@ already has a matching session. If it does then it will use that session to
 try to decrypt the message. If there is no existing session then the client
 must create a new session and use the new session to decrypt the message. A
 client must not persist a session or remove one-time keys used by a session
-until it has sucessfully decrypted a message using that session.
+until it has successfully decrypted a message using that session.
 
 The plaintext payload is of the form:
 
@@ -284,7 +284,7 @@ The plaintext payload is of the form:
    }
 
 The type and content of the plaintext message event are given in the payload.
-Encyrpting state events is not supported.
+Encrypting state events is not supported.
 
 We include the room ID in the payload, because otherwise the homeserver would
 be able to change the room a message was sent in. We include a hash of the
