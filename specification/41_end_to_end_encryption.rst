@@ -75,12 +75,12 @@ domain to reduce the risk of collisions.
 The name "m.olm.v1.curve25519-aes-sha2" corresponds to version 1 of the Olm
 ratchet using Curve25519 for the initial key agreement, HKDF-SHA-256 for
 ratchet key derivation, Curve25519 for the DH ratchet, HMAC-SHA-256 for the
-hash ratchet, and HKDF-SHA-256, AES-256, and 8 byte truncated HMAC-SHA-256
-for authenticated encryption.
+hash ratchet, and HKDF-SHA-256, AES-256 in CBC mode, and 8 byte truncated
+HMAC-SHA-256 for authenticated encryption.
 
 Algorithm names should be short and meaningful. A name of "m.olm.v1" is too
 short. However a name of
-"m.olm.v1.ecdh-curve25519-hdkfsha256.hmacsha256.hkdfsha256-aes256-hmac64sha256"
+"m.olm.v1.ecdh-curve25519-hdkfsha256.hmacsha256.hkdfsha256-aes256-cbc-hmac64sha256"
 is too long despite giving a more precise description of the algorithm.
 
 Algorithm names should list the primitives used by the algorithm so that it
