@@ -15,7 +15,7 @@ may be found at https://lwn.net/Articles/634144/
 
 
 Overview
-========
+--------
 
 .. code::
 
@@ -37,7 +37,7 @@ Overview
              |=================>|==============>|
                /keys/query        <federation>
 
-    3) Alice selects an algorithm claims any one-time keys needed.
+    3) Alice selects an algorithm and claims any one-time keys needed.
 
       +----------------+  +------------+  +----------+
       | Alice's Device |  | Alice's HS |  | Bob's HS |
@@ -55,6 +55,45 @@ Overview
              |----------------->|-------------->|------------->|
                /send/             <federation>     <events>
 
+
+Algorithms
+----------
+
+There are two kinds of algorithms: messaging algorithms and key algorithms.
+Messaging algorithms are used to securely send messages between devices.
+Key algorithms are used for key agreement and digital signatures.
+
+Messaging Algorithm Names
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Messaging algorithm names use the extensible naming scheme used throughout this
+specification. Algorithm names that start with "m." are reserved for algorithms
+defined by this specification. Implementations wanting to experiment with new
+algorithms are encouraged to pick algorithm names that start with their
+domain to reduce the risk of collisions.
+
+The name "m.olm.v1.curve25519-aes-sha2" corresponds to version 1 of the Olm
+ratchet using Curve25519 for the initial key agreement, HKDF-SHA-256 for
+ratchet key derivation, Curve25519 for the DH ratchet, HMAC-SHA-256 for the
+hash ratchet, and HKDF-SHA-256, AES-256, and 8 byte truncated HMAC-SHA-256
+for authenticated encryption.
+
+Algorithm names should be short and meaningful. A name of "m.olm.v1" is too
+short. However a name of
+"m.olm.v1.ecdh-curve25519-hdkfsha256.hmacsha256.hkdfsha256-aes256-hmac64sha256"
+is too long despite giving a more precise description of the algorithm.
+
+Algorithm names should list the primitives used by the algorithm so that it
+easier to see if the algorithm is using a broken primitive.
+
+Key Algorithms
+~~~~~~~~~~~~~~
+
+The name "ed25519" corresponds to the Ed25519 signature algorithm. The key is
+a Base64 encoded 32-byte Ed25519 public key.
+
+The name "curve25519" corresponds to the Curve25519 ECDH algorithm. The key is
+a Base64 encoded 32-byte Curve25519 public key.
 
 Client Behaviour
 ----------------
@@ -81,17 +120,17 @@ The JSON object is signed using the process given by `Signing JSON`_.
         "valid_after_ts": 1234567890123,
         "valid_until_ts": 2345678901234,
         "algorithms": [
-          "<algorithm-name>",
+          "<chat_algorithm>",
         ],
         "keys": {
-          "<algorithm>:<device_id>": "<key_base64>",
+          "<key_algorithm>:<device_id>": "<key_base64>",
         },
         "signatures": {
           "<user_id>": {
-            "<algorithm>:<device_id>": "<signature_base64>"
+            "<key_algorithm>:<device_id>": "<signature_base64>"
       } } },
       "one_time_keys": {
-        "<algorithm>:<key_id>": "<key_base64>"
+        "<key_algorithm>:<key_id>": "<key_base64>"
     } }
 
 .. code:: http
@@ -101,7 +140,7 @@ The JSON object is signed using the process given by `Signing JSON`_.
 
     {
       "one_time_key_counts": {
-        "<algorithm>": 50
+        "<key_algorithm>": 50
       }
     }
 
@@ -145,20 +184,20 @@ lies about the keys a user owns.
             "valid_after_ts": 1234567890123,
             "valid_until_ts": 2345678901234,
             "algorithms": [
-              "<algorithm_name>",
+              "<chat_algorithm>",
             ],
             "keys": {
               "<algorithm>:<device_id>": "<key_base64>",
             },
             "signatures": {
               "<user_id>": {
-                "<algorithm>:<device_id>": "<signature_base64>"
+                "<key_algorithm>:<device_id>": "<signature_base64>"
               },
               "<local_server_name>": {
-                "<algorithm>:<key_id>": "<signature_base64>"
+                "<key_algorithm>:<key_id>": "<signature_base64>"
               },
               "<remote_server_name>": {
-                "<algorithm>:<key_id>": "<signature_base64>"
+                "<key_algorithm>:<key_id>": "<signature_base64>"
     } } } } } }
 
 
@@ -190,7 +229,7 @@ it can discard the key. Therefore a device could end up trying to store too
 many private keys. A device that is trying to store too many private keys may
 discard keys starting with the oldest.
 
-A homeserver should ratelimit the number of one-time keys that a given user or
+A homeserver should rate-limit the number of one-time keys that a given user or
 remote server can claim. A homeserver should discard the public part of a one
 time key once it has given that key to another user.
 
@@ -203,7 +242,7 @@ time key once it has given that key to another user.
     {
       "one_time_keys": {
         "<user_id>": {
-          "<device_id>": "<algorithm>"
+          "<device_id>": "<key_algorithm>"
     } } }
 
 .. code:: http
@@ -215,7 +254,7 @@ time key once it has given that key to another user.
       "one_time_keys": {
         "<user_id>": {
           "<device_id>": {
-            "<algorithm>:<key_id>": "<key_base64>"
+            "<key_algorithm>:<key_id>": "<key_base64>"
     } } } }
 
 
@@ -224,7 +263,6 @@ claim keys for any user they wish to contact. Homeservers will respond with the
 keys for their local users and forward requests for remote users to
 ``/_matrix/federation/v1/user/keys/claim`` over federation to the remote
 server.
-
 
 Sending a Message
 ~~~~~~~~~~~~~~~~~
@@ -236,12 +274,17 @@ Encrypted messages are sent in the form.
     {
       "type": "m.room.encrypted",
       "content": {
-        "algorithm": "<algorithm_name>"
+        "algorithm": "<chat_algorithm>",
+        "<algorithm_specific_keys>": "<algorithm_specific_data>"
     } }
 
 
 Using Olm
 #########
+
+Devices that support olm must include "m.olm.v1.curve25519-aes-sha2" in their
+list of supported chat algorithms, must list a Curve25519 device key, and
+must publish Curve25519 one-time keys.
 
 .. code:: json
 
@@ -256,7 +299,7 @@ Using Olm
             "body": "<base_64>"
     } } } }
 
-The ciphertext is a mapping from device curve25519 key to an encypted payload
+The ciphertext is a mapping from device curve25519 key to an encrypted payload
 for that device. The ``body`` is a base64 encoded message body. The type is an
 integer indicating the type of the message body: 0 for the initial pre-key
 message, 1 for ordinary messages.
