@@ -72,7 +72,7 @@ An example HS configuration required to pass traffic to the AS is:
 
    users:
      - exclusive: true
-     - regex: @irc.freenode.net/.*
+       regex: @irc.freenode.net/.*
 
 
 Home Server -> Application Service API

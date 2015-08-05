@@ -556,6 +556,11 @@ them in a JSON object and signing it using the JSON signing algorithm. The
 resulting signatures are added as an Authorization header with an auth scheme
 of X-Matrix.
 
+Note that the target field should include the full path starting with
+``/_matrix/...``, including the ``?`` and any query parameters if present, but
+should not include the leading ``https:``, nor the destination server's
+hostname.
+
 Step 1 sign JSON:
 
 .. code::
@@ -745,3 +750,22 @@ result field. If such is present, then the result should contain only a field
 of that name, with no others present. If not, the result should contain as much
 of the user's profile as the home server has available and can make public.
 
+Directory
+---------
+
+The server API for directory queries is also based on Federation Queries.
+
+Querying directory information::
+
+  Query type: directory
+
+  Arguments:
+    room_alias: the room alias to query
+
+  Returns: JSON object containing the following keys:
+    room_id: string giving the underlying room ID the alias maps to
+    servers: list of strings giving the join candidates
+
+The list of join candidates is a list of server names that are likely to hold
+the given room; these are servers that the requesting server may wish to try
+joining with. This list may or may not include the server answering the query.
