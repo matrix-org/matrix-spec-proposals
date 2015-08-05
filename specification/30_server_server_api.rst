@@ -78,17 +78,17 @@ Version 2
 
 Each home server publishes its public keys under ``/_matrix/key/v2/server/``.
 Home servers query for keys by either getting ``/_matrix/key/v2/server/``
-directly or by querying an intermediate perspective server using a
-``/_matrix/key/v2/query`` API. Intermediate perspective servers query the
+directly or by querying an intermediate notary server using a
+``/_matrix/key/v2/query`` API. Intermediate notary servers query the
 ``/_matrix/key/v2/server/`` API on behalf of another server and sign the
-response with their own key. A server may query multiple perspective servers
-to ensure that they all report the same public keys.
+response with their own key. A server may query multiple notary servers to
+ensure that they all report the same public keys.
 
 This approach is borrowed from the Perspectives Project
 (http://perspectives-project.org/), but modified to include the NACL keys and to
 use JSON instead of XML. It has the advantage of avoiding a single trust-root
-since each server is free to pick which perspective servers they trust and can
-corroborate the keys returned by a given perspective server by querying other
+since each server is free to pick which notary servers they trust and can
+corroborate the keys returned by a given notary server by querying other
 servers.
 
 Publishing Keys
@@ -122,15 +122,15 @@ The ``old_verify_keys`` can be used to sign events with an ``origin_server_ts``
 before the ``expired_ts``. The ``expired_ts`` is a millisecond POSIX timestamp
 of when the originating server stopped using that key.
 
-Intermediate perspective servers should cache a response for half of its
-remaining life time to avoid serving a stale response. Originating servers should
-avoid returning responses that expire in less than an hour to avoid repeated
-requests for an about to expire certificate. Requesting servers should limit how
+Intermediate notary servers should cache a response for half of its remaining
+life time to avoid serving a stale response. Originating servers should avoid
+returning responses that expire in less than an hour to avoid repeated requests
+for an about to expire certificate. Requesting servers should limit how
 frequently they query for certificates to avoid flooding a server with requests.
 
-If a server goes offline intermediate perspective servers should continue to
-return the last response they received from that server so that the signatures
-of old events sent by that server can still be checked.
+If a server goes offline intermediate notary servers should continue to return
+the last response they received from that server so that the signatures of old
+events sent by that server can still be checked.
 
 ==================== =================== ======================================
     Key                    Type                         Description
@@ -191,8 +191,8 @@ The ``minimum_valid_until_ts`` is a millisecond POSIX timestamp indicating
 when the returned certificate will need to be valid until to be useful to the 
 requesting server. This can be set using the maximum ``origin_server_ts`` of 
 an batch of events that a requesting server is trying to validate. This allows
-an intermediate perspectives server to give a prompt cached response even if
-the originating server is offline.
+an intermediate notary server to give a prompt cached response even if the
+originating server is offline.
 
 This API can return keys for servers that are offline be using cached responses
 taken from when the server was online. Keys can be queried from multiple
