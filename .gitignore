@@ -1,3 +1,4 @@
 scripts/gen
 templating/out
 *.pyc
+supporting-docs/_site
