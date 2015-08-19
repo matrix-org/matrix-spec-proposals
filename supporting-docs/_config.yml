@@ -2,7 +2,7 @@
 title: Matrix
 email: webmaster@matrix.org
 description: > # this means to ignore newlines until "baseurl:"
-Matrix.org documentation
+  Matrix.org documentation
 baseurl: "/docs/guides" # the subpath of your site, e.g. /blog/
 url: "http://matrix.org" # the base hostname & protocol for your site
 twitter_username: matrixdotorg
