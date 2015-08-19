@@ -1,0 +1,24 @@
+ul
+{
+    padding-left: 30px;
+}
+
+p
+{
+    padding-left: 30px;
+
+}
+
+h4,h5 
+{
+    border-top: 40px solid transparent;
+    margin-top: -40px;
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    background-clip: padding-box;
+    font-style: italic;
+    font-size: 16px;
+    padding-top: 16px;
+}
+
+
