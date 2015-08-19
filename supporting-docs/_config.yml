@@ -12,4 +12,5 @@ github_username:  matrix-org
 markdown: kramdown
 
 #defaults:
-permalink: /:categories/:title.html
+#permalink: /:categories/:title.html # can use this when/if we use jekyll for all docs
+permalink: :title.html
