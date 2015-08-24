@@ -117,4 +117,4 @@ If you are interested in how federation works, please see the [federation API ch
 
 ## Write an Application Service:
 
-One of our core developers, Kegan, wrote an excellent [blogpost about the Application Services API](https://matrix.org/blog/2015/03/02/introduction-to-application-services/), as well as a [blogpost about the Matrix<->IRC Application Service](https://matrix.org/blog/2015/04/22/matrix-irc-application-service/) - these are the best resources to consult if you want to write an Application Service yourself.
+Information about Application services and how they can be used can be found in the [Application services](./application_services.html) document! (This is based on Kegan's excellent blog posts, but now lives here so it can be kept up-to-date!)
