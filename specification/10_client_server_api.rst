@@ -1087,9 +1087,32 @@ On success, this returns a JSON object with keys:
 user_id
   The fully-qualified Matrix ID that has been registered.
 access_token
-  An access token for the new account.
+  An access token for the account. This token may expire at some point, and if
+  so, it MAY come with a refersh_token, described below.
+refresh_token (optional)
+  A refresh token may be exchanged for a new access_token as described in
+  `Refreshing access tokens`.
 home_server
   The hostname of the Home Server on which the account has been registered.
+
+Refreshing access tokens
+~~~~~~~~~~~~~~~~~~~~~~~~
+Exchanging a refresh token for an access token is done using the request::
+
+  POST $PREFIX/tokenrefresh
+
+The body of the POST request is a JSON object containing:
+
+refresh_token
+  The refresh token.
+
+On success, this invalidates the refresh token, so that it cannot be used again,
+and returns a JSON object with keys:
+
+access_token
+  An access token for the account, as is returned from login.
+refresh_token (optional)
+  A refresh token, as is returned from login.
 
 Changing Password
 ~~~~~~~~~~~~~~~~~
