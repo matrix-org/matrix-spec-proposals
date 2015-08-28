@@ -1114,6 +1114,11 @@ access_token
 refresh_token (optional)
   A refresh token, as is returned from login.
 
+There is no specific error message to indicate that a request has failed because
+an access token has expired; instead, if a client has reason to believe its
+access token is valid, and it receives an auth error, they should attempt to
+refresh for a new token on failure, and re-try the request with the new token.
+
 Changing Password
 ~~~~~~~~~~~~~~~~~
 This section refers to API Version 2. These API calls currently use the prefix
