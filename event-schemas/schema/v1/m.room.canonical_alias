@@ -11,7 +11,7 @@
             "type": "object",
             "properties": {
                 "alias": {
-                    "type": "String",
+                    "type": "string",
                     "description": "The canonical alias."
                 }
             },
