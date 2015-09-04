@@ -12,7 +12,7 @@
             "properties": {
                 "alias": {
                     "type": "String",
-                    "description": "The canonical alias.",
+                    "description": "The canonical alias."
                 }
             },
             "required": ["alias"]
