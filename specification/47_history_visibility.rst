@@ -1,20 +1,19 @@
 Room History Visibility
 =======================
 
-The visibility of events to users before they joined can be controlled by the
-``m.room.history_visibility`` state event.
-
-More specifically, the string value of the content key ``history_visibility``
-controls the visibility of events. The valid values are:
+Whether a member of a room can see the events that happened in a room from
+before they joined the room is controlled by the ``history_visibility`` key
+of the ``m.room.history_visibility`` state event. The valid values for
+``history_visibility`` are:
 
 - ``shared``
 - ``invited``
 - ``joined``
 
-By default, ``history_visibility`` is set to ``shared``.
+By default if no ``history_visibility`` is set it is assumed to be ``shared``.
 
 The rules governing whether a user is allowed to see an event depend solely on
-the state at that event:
+the state of the room at that event:
 
 1. If the user was joined, allow.
 2. If the user was invited and the ``history_visibility`` was set to
