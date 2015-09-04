@@ -34,3 +34,24 @@ h1,h2,h3,h4,h5 {
     color: #333;
 }
 
+.page-content {
+    min-height: 100%;
+    height: auto !important; /* This line and the next line are not necessary unless you need IE6 support */
+    height: 100%;
+    margin: 0 auto -33px; /* the bottom margin is the negative value of the footer's height */
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+.push {
+    height: 33px; 
+}
+
+#page {
+    margin-bottom: -33px;
+}
+
+#document {
+    margin-top: 10px; /* We want a little whitespace before the page content starts */
+}
+

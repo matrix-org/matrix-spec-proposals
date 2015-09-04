@@ -5,16 +5,16 @@
 
   </head>
   <body>
-  {% include nav.html %}
-    <br />
     <div class="page-content" id="page">
+      {% include nav.html %}
       <div class="wrapper" id="wrapper">
-        <div class="document_foo" id="foo">
+        <div class="document_foo" id="document">
       {{ content }}
+        </div>
       </div>
+      <div class="push"></div>
     </div>
     {% include footer.html %}
-
   </body>
 
 </html>
