@@ -1,16 +1,30 @@
-ul
-{
+.toc {
+    background: #f9f9f9;
+    border: 1px solid #aaaaaa;
+    display: table;
+    padding-top: 16px;
+    padding-right: 16px;
+    padding-bottom: 16px;
+    list-style: none;
+    color: #2EA3F2;
+}
+
+ul {
     padding-left: 30px;
 }
 
-p
-{
+p {
     padding-left: 30px;
+    color: #666;
 
 }
 
-h4,h5 
-{
+h3 {
+    padding-top: 48px;
+    color: #333;
+}
+
+h4, h5 {
     border-top: 40px solid transparent;
     margin-top: -40px;
     -webkit-background-clip: padding-box;
@@ -19,6 +33,8 @@ h4,h5
     font-style: italic;
     font-size: 16px;
     padding-top: 16px;
+    color: #333;
+
 }
 
 
