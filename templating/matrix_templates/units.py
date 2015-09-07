@@ -177,11 +177,17 @@ class MatrixUnits(Units):
                         endpoint["req_param_by_loc"][p["loc"]] = []
                     endpoint["req_param_by_loc"][p["loc"]].append(p)
 
-                # add example response if it has one
-                res = single_api["responses"][200]  # get the 200 OK response
-                endpoint["example"]["res"] = res.get("examples", {}).get(
-                    "application/json", ""
-                )
+                endpoint["example"]["responses"] = []  # Ordered list of maps
+                for code, res in single_api["responses"].items():
+                    description = res.get("description", "")
+                    example = res.get("examples", {}).get("application/json", "")
+                    if description and example:
+                        endpoint["example"]["responses"].append({
+                            "code": code,
+                            "description": description,
+                            "example": example,
+                        })
+
                 # form example request if it has one. It "has one" if all params
                 # have either "x-example" or a "schema" with an "example".
                 params_missing_examples = [
