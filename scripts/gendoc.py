@@ -32,17 +32,23 @@ def rst2html(i, o):
             )
 
 def run_through_template(input):
-    null = open(os.devnull, 'w')
-    subprocess.check_output(
-        [
-            'python', 'build.py', 
-            "-i", "matrix_templates", 
-            "-o", "../scripts/tmp", 
-            "../scripts/"+input
-        ],
-        stderr=null,
-        cwd="../templating",
-    )
+    tmpfile = './tmp/output'
+    try:
+        with open(tmpfile, 'w') as out:
+            subprocess.check_output(
+                [
+                    'python', 'build.py',
+                    "-i", "matrix_templates",
+                    "-o", "../scripts/tmp",
+                    "../scripts/"+input
+                ],
+                stderr=out,
+                cwd="../templating",
+            )
+    except subprocess.CalledProcessError as e:
+        with open(tmpfile, 'r') as f:
+            print f.read()
+        raise
 
 def prepare_env():
     try:
