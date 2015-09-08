@@ -33,7 +33,7 @@
         },
         "type": {
             "type": "string",
-            "enum": ["m.presence"]
+            "enum": ["m.receipt"]
         },
         "room_id": {
             "type": "string"
