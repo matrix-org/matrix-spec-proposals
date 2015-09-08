@@ -116,7 +116,8 @@ class MatrixUnits(Units):
                     "res_tables": [],
                     "example": {
                         "req": "",
-                        "res": ""
+                        "responses": [],
+                        "good_response": ""
                     }
                 }
                 self.log(".o.O.o. Endpoint: %s %s" % (method, path))
@@ -177,8 +178,10 @@ class MatrixUnits(Units):
                         endpoint["req_param_by_loc"][p["loc"]] = []
                     endpoint["req_param_by_loc"][p["loc"]].append(p)
 
-                endpoint["example"]["responses"] = []  # Ordered list of maps
+                good_response = None
                 for code, res in single_api.get("responses", {}).items():
+                    if not good_response and code == 200:
+                        good_response = res
                     description = res.get("description", "")
                     example = res.get("examples", {}).get("application/json", "")
                     if description and example:
@@ -222,22 +225,25 @@ class MatrixUnits(Units):
                     )
 
                 # add response params if this API has any.
-                res_type = Units.prop(res, "schema/type")
-                if res_type and res_type not in ["object", "array"]:
-                    # response is a raw string or something like that
-                    endpoint["res_tables"].append({
-                        "title": None,
-                        "rows": [{
-                            "key": res["schema"].get("name", ""),
-                            "type": res_type,
-                            "desc": res.get("description", "")
-                        }]
-                    })
-                elif res_type and Units.prop(res, "schema/properties"):  # object
-                    res_tables = get_json_schema_object_fields(res["schema"])
-                    for table in res_tables:
-                        if "no-table" not in table:
-                            endpoint["res_tables"].append(table)
+                if good_response:
+                    res_type = Units.prop(good_response, "schema/type")
+                    if res_type and res_type not in ["object", "array"]:
+                        # response is a raw string or something like that
+                        endpoint["res_tables"].append({
+                            "title": None,
+                            "rows": [{
+                                "key": good_response["schema"].get("name", ""),
+                                "type": res_type,
+                                "desc": res.get("description", "")
+                            }]
+                        })
+                    elif res_type and Units.prop(good_response, "schema/properties"):
+                        # response is an object:
+                        schema = good_response["schema"]
+                        res_tables = get_json_schema_object_fields(schema)
+                        for table in res_tables:
+                            if "no-table" not in table:
+                                endpoint["res_tables"].append(table)
 
                 endpoints.append(endpoint)
 
