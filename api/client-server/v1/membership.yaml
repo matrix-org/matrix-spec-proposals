@@ -62,7 +62,6 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
-  "/join/{roomId}":
-    post:
-      x-alias-for-path: "/room/{roomId}/join"
+      x-aliases:
+        - /join/{roomId}
       x-alias-link: "post-matrix-client-api-v1-room-roomid-join"
