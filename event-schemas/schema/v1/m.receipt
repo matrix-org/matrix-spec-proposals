@@ -8,7 +8,7 @@
             "type": "object",
             "description": "The event ids which the receipts relate to.",
             "patternProperties": {
-                "^\$": {
+                "^\\$": {
                     "type": "object",
                     "description": "The types of the receipts."
                     "additionalProperties": {
