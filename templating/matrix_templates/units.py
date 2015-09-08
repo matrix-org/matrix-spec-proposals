@@ -178,7 +178,7 @@ class MatrixUnits(Units):
                     endpoint["req_param_by_loc"][p["loc"]].append(p)
 
                 endpoint["example"]["responses"] = []  # Ordered list of maps
-                for code, res in single_api["responses"].items():
+                for code, res in single_api.get("responses", {}).items():
                     description = res.get("description", "")
                     example = res.get("examples", {}).get("application/json", "")
                     if description and example:
