@@ -249,8 +249,7 @@ class MatrixUnits(Units):
                 endpoints.append(endpoint)
 
                 for alias in single_api.get("x-aliases", []):
-                    canonical_alias_link = single_api.get("x-alias-link")
-                    alias_link = single_api.get("x-alias-link", "")
+                    alias_link = single_api.get("x-alias-link")
                     endpoints.append({
                         "method": method.upper(),
                         "path": alias,
