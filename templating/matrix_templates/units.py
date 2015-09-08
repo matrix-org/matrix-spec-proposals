@@ -105,19 +105,7 @@ class MatrixUnits(Units):
         for path in api["paths"]:
             for method in api["paths"][path]:
                 single_api = api["paths"][path][method]
-
                 full_path = api.get("basePath", "") + path
-                alias_for_path = single_api.get("x-alias-for-path", "")
-                alias_link = single_api.get("x-alias-link", "")
-                if alias_for_path:
-                    endpoints.append({
-                        "method": method.upper(),
-                        "path": full_path,
-                        "alias_for_path": alias_for_path,
-                        "alias_link": alias_link
-                    })
-                    continue
-
                 endpoint = {
                     "title": single_api.get("summary", ""),
                     "desc": single_api.get("description", single_api.get("summary", "")),
@@ -259,6 +247,16 @@ class MatrixUnits(Units):
                                 endpoint["res_tables"].append(table)
 
                 endpoints.append(endpoint)
+
+                for alias in single_api.get("x-aliases", []):
+                    canonical_alias_link = single_api.get("x-alias-link")
+                    alias_link = single_api.get("x-alias-link", "")
+                    endpoints.append({
+                        "method": method.upper(),
+                        "path": alias,
+                        "alias_for_path": full_path,
+                        "alias_link": alias_link
+                    })
 
         return {
             "base": api.get("basePath"),
