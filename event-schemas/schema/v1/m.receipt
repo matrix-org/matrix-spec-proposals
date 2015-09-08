@@ -10,7 +10,7 @@
             "patternProperties": {
                 "^\\$": {
                     "type": "object",
-                    "description": "The types of the receipts."
+                    "description": "The types of the receipts.",
                     "additionalProperties": {
                         "type": "object",
                         "description": "User ids of the receipts",
