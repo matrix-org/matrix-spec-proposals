@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "title": "Receipt Event",
+    "description": "Informs the client of new receipts.",
+    "properties": {
+        "content": {
+            "type": "object",
+            "description": "The event ids which the receipts relate to.",
+            "patternProperties": {
+                "^\$": {
+                    "type": "object",
+                    "description": "The types of the receipts."
+                    "additionalProperties": {
+                        "type": "object",
+                        "description": "User ids of the receipts",
+                        "patternProperties": {
+                            "^@": {
+                                "type": "object",
+                                "properties": {
+                                    "ts": {
+                                        "type": "number",
+                                        "description": "The timestamp the receipt was sent at"
+                                    }
+                                }
+                            }
+                        },
+                        "additionalProperties": false
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.presence"]
+        },
+        "room_id": {
+            "type": "string"
+        }
+    },
+    "required": ["room_id", "type", "content"]
+}
