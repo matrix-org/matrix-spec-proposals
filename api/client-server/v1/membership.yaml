@@ -48,7 +48,7 @@ paths:
             application/json: |-
               {"room_id": "!d41d8cd:matrix.org"}
           schema:
-            type: object  # empty json object
+            type: object
         403:
           description: |-
             You do not have permission to join the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejection are:
@@ -65,3 +65,65 @@ paths:
         canonical-link: "post-matrix-client-api-v1-rooms-roomid-join"
         aliases:
           - /join/{roomId}
+
+  "/rooms/{roomId}/invite":
+    post:
+      summary: Invite a user to participate in a particular room.
+      # It's a crying shame that I don't know how to force line breaks.
+      description: |-
+        This API invites a user to participate in a particular room.
+        They do not start participating in the room until they actually join the
+        room.
+
+        This serves two purposes; firstly, to notify the user that the room
+        exists (and that their presence is requested). Secondly, some rooms can
+        only be joined if a user is invited to join it; sending the invite gives
+        that user permission to join the room.
+
+        Only users currently in a particular room can invite other users to
+        join that room.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room identifier or room alias to which to invite the user.
+          required: true
+          x-example: "#monkeys:matrix.org"
+        - in: body
+          name: user_id
+          required: true
+          schema:
+            type: object
+            example: |-
+              {
+                "user_id": "@cheeky_monkey:matrix.org"
+              }
+            properties:
+              user_id:
+                type: string
+                description: The fully qualified user ID of the invitee.
+            required: ["user_id"]
+      responses:
+        200:
+          description: The user has been invited to join the room.
+          examples:
+            application/json: |-
+              {}
+          schema:
+            type: object  # empty json object
+        403:
+          description: |-
+            You do not have permission to invite the user to the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejections are:
+              - The invitee has been banned from the room.
+              - The invitee is already a member of the room.
+              - The inviter is not currently in the room.
+              - The inviter's power level is insufficient to invite users to the room.
+          examples:
+            application/json: |-
+              {"errcode": "M_FORBIDDEN", "error": "@cheeky_monkey:matrix.org is banned from the room"}
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/error.yaml"
