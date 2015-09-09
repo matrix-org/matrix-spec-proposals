@@ -43,7 +43,7 @@ paths:
           description: |-
             The room has been joined.
 
-            The joined room ID must be returned in the room_id field.
+            The joined room ID must be returned in the ``room_id`` field.
           examples:
             application/json: |-
               {"room_id": "!d41d8cd:matrix.org"}
