@@ -1,0 +1,67 @@
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server v1 Room Membership API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/api/v1
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  accessToken:
+    type: apiKey
+    description: The user_id or application service access_token
+    name: access_token
+    in: query
+paths:
+  "/rooms/{roomId}/join":
+    post:
+      summary: Start the requesting user participating in a particular room.
+      description: |-
+        This API starts a user participating in a particular room, if that user
+        is allowed to participate in that room. After this call, the client is
+        allowed to see all current state events in the room, and all subsequent
+        events associated with the room until the user leaves the room.
+
+        After a user has joined a room, the room will appear as an entry in the
+        response of the |initialSync| API.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room identifier or room alias to join.
+          required: true
+          x-example: "#monkeys:matrix.org"
+      responses:
+        200:
+          description: |-
+            The room has been joined.
+
+            The joined room ID must be returned in the ``room_id`` field.
+          examples:
+            application/json: |-
+              {"room_id": "!d41d8cd:matrix.org"}
+          schema:
+            type: object  # empty json object
+        403:
+          description: |-
+            You do not have permission to join the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejection are:
+              - The room is invite-only and the user was not invited.
+              - The user has been banned from the room.
+          examples:
+            application/json: |-
+              {"errcode": "M_FORBIDDEN", "error": "You are not invited to this room."}
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/error.yaml"
+      x-alias:
+        canonical-link: "post-matrix-client-api-v1-rooms-roomid-join"
+        aliases:
+          - /join/{roomId}
