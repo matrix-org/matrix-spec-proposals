@@ -879,6 +879,16 @@ The keys contained in ``m.room.power_levels`` determine the levels required for
 certain operations such as kicking, banning and sending state events. See
 `m.room.power_levels`_ for more information.
 
+Joining rooms
+-------------
+Users need to be a member of a room in order to send and receive events in that
+room. There are several states in which a user may be, in relation to a room:
+
+ - Unrelated (the user cannot send or receive events in the room)
+ - Invited (the user has been invited to participate in the room, but is not
+   yet participating)
+ - Joined (the user can send and receive events in the room)
+ - Banned (the user is not allowed to join the room)
 
 {{membership_http_api}}
 

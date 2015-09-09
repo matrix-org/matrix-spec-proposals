@@ -18,7 +18,7 @@ securityDefinitions:
     name: access_token
     in: query
 paths:
-  "/room/{roomId}/join":
+  "/rooms/{roomId}/join":
     post:
       summary: Start the requesting user participating in a particular room.
       description: |-
@@ -26,6 +26,9 @@ paths:
         is allowed to participate in that room. After this call, the client is
         allowed to see all current state events in the room, and all subsequent
         events associated with the room until the user leaves the room.
+
+        After a user has joined a room, the room will appear as an entry in the
+        response of the |initialSync| API.
       security:
         - accessToken: []
       parameters:
@@ -40,19 +43,15 @@ paths:
           description: |-
             The room has been joined.
 
-            If the room was joined with an room alias, rather than a room ID,
-            the room ID must be returned in the room_id field.
-
-            If the room was joined with a room ID, the room_id field must not be
-            present.
+            The joined room ID must be returned in the room_id field.
           examples:
             application/json: |-
-              {"room_id": "!primates:matrix.org"}
+              {"room_id": "!d41d8cd:matrix.org"}
           schema:
             type: object  # empty json object
         403:
           description: |-
-            You do not have permission to join the room. A meaningful errcode and description error text will be returned. Example reasons for rejection are:
+            You do not have permission to join the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejection are:
               - The room is invite-only and the user was not invited.
               - The user has been banned from the room.
           examples:
@@ -62,6 +61,7 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
-      x-aliases:
-        - /join/{roomId}
-      x-alias-link: "post-matrix-client-api-v1-room-roomid-join"
+      x-alias:
+        canonical-link: "post-matrix-client-api-v1-rooms-roomid-join"
+        aliases:
+          - /join/{roomId}
