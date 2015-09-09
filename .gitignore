@@ -3,3 +3,4 @@ templating/out
 *.pyc
 supporting-docs/_site
 supporting-docs/.sass-cache
+api/node_modules
