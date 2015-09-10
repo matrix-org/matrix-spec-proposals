@@ -76,12 +76,14 @@ def main():
 
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1:] != ["--nodelete"]:
-        # we accept no args, so they don't know what they're doing!
+        # we accept almost no args, so they don't know what they're doing!
         print "gendoc.py - Generate the Matrix specification as HTML."
         print "Usage:"
-        print "  python gendoc.py"
+        print "  python gendoc.py [--nodelete]"
         print ""
         print "The specification can then be found in the gen/ folder."
+        print ("If --nodelete was specified, intermediate files will be "
+               "present in the tmp/ folder.")
         print ""
         print "Requirements:"
         print " - This script requires Jinja2 and rst2html (docutils)."
