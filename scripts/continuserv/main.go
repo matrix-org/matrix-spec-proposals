@@ -5,6 +5,7 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -20,11 +21,17 @@ import (
 	fsnotify "gopkg.in/fsnotify.v1"
 )
 
-var toServe atomic.Value // Always contains valid []byte to serve. May be stale unless wg is zero.
-var wg sync.WaitGroup    // Indicates how many updates are pending.
-var mu sync.Mutex        // Prevent multiple updates in parallel.
+var (
+	port = flag.Int("port", 8000, "Port on which to serve HTTP")
+
+	toServe atomic.Value   // Always contains valid []byte to serve. May be stale unless wg is zero.
+	wg      sync.WaitGroup // Indicates how many updates are pending.
+	mu      sync.Mutex     // Prevent multiple updates in parallel.
+)
 
 func main() {
+	flag.Parse()
+
 	w, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatalf("Error making watcher: %v", err)
@@ -48,9 +55,14 @@ func main() {
 	ch := make(chan struct{}, 100) // Buffered to ensure we can multiple-increment wg for pending writes
 	go doPopulate(ch, dir)
 
-	http.HandleFunc("/", serve)
-	go http.ListenAndServe(":8000", nil)
+	go watchFS(ch, w)
 
+	http.HandleFunc("/", serve)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
+
+}
+
+func watchFS(ch chan struct{}, w *fsnotify.Watcher) {
 	for {
 		select {
 		case e := <-w.Events:
