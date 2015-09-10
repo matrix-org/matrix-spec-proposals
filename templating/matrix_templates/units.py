@@ -110,7 +110,7 @@ class MatrixUnits(Units):
                     "title": single_api.get("summary", ""),
                     "desc": single_api.get("description", single_api.get("summary", "")),
                     "method": method.upper(),
-                    "path": full_path,
+                    "path": full_path.strip(),
                     "requires_auth": "security" in single_api,
                     "rate_limited": 429 in single_api.get("responses", {}),
                     "req_params": [],
