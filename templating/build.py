@@ -78,8 +78,10 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
     def wrap(input, wrap=80, initial_indent=""):
         if len(input) == 0:
             return initial_indent
+        input_lines = input.split('\n')
         wrapper = TextWrapper(initial_indent=initial_indent, width=wrap)
-        return wrapper.fill(input)
+        output_lines = [wrapper.fill(line) for line in input_lines]
+        return '\n'.join(output_lines)
 
     # make Jinja aware of the templates and filters
     env = Environment(
