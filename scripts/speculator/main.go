@@ -123,6 +123,8 @@ func serveSpec(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// We're going to run whatever Python is specified in the pull request, which
+	// may do bad things, so only trust people we trust.
 	if !allowedMembers[pr.User.Login] {
 		w.WriteHeader(403)
 		io.WriteString(w, fmt.Sprintf("%q is not a trusted pull requester", pr.User.Login))
@@ -158,6 +160,8 @@ func serveRstDiff(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// We're going to run whatever Python is specified in the pull request, which
+	// may do bad things, so only trust people we trust.
 	if !allowedMembers[pr.User.Login] {
 		w.WriteHeader(403)
 		io.WriteString(w, fmt.Sprintf("%q is not a trusted pull requester", pr.User.Login))
