@@ -71,10 +71,11 @@ def main():
     run_through_template("tmp/howto.rst")
     rst2html("tmp/full_spec.rst", "gen/specification.html")
     rst2html("tmp/howto.rst", "gen/howtos.html")
-    cleanup_env()
+    if "--nodelete" not in sys.argv:
+        cleanup_env()
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 1 and sys.argv[1:] != ["--nodelete"]:
         # we accept no args, so they don't know what they're doing!
         print "gendoc.py - Generate the Matrix specification as HTML."
         print "Usage:"
