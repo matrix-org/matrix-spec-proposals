@@ -68,6 +68,7 @@ func watchFS(ch chan struct{}, w *fsnotify.Watcher) {
 		case e := <-w.Events:
 			if filter(e) {
 				wg.Add(1)
+				fmt.Printf("Noticed change to %s, re-generating spec\n", e.Name)
 				ch <- struct{}{}
 			}
 		}
@@ -79,7 +80,9 @@ func makeWalker(w *fsnotify.Watcher) filepath.WalkFunc {
 		if err != nil {
 			log.Fatalf("Error walking: %v", err)
 		}
-		w.Add(path)
+		if err := w.Add(path); err != nil {
+			log.Fatalf("Failed to add watch: %v", err)
+		}
 		return nil
 	}
 }

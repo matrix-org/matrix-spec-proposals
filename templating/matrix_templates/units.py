@@ -30,7 +30,7 @@ def get_json_schema_object_fields(obj, enforce_title=False):
     }
     tables = [fields]
 
-    props = obj.get("properties")
+    props = obj.get("properties", obj.get("patternProperties"))
     parents = obj.get("allOf")
     if not props and not parents:
         raise Exception(
