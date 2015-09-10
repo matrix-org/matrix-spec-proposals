@@ -88,9 +88,9 @@ paths:
         - in: path
           type: string
           name: roomId
-          description: The room identifier or room alias to which to invite the user.
+          description: The room identifier (not alias) to which to invite the user.
           required: true
-          x-example: "#monkeys:matrix.org"
+          x-example: "!d41d8cd:matrix.org"
         - in: body
           name: user_id
           required: true
