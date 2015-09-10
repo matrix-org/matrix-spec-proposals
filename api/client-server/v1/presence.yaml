@@ -206,4 +206,3 @@ paths:
               title: PresenceEvent
               allOf:
                 - "$ref": "definitions/event.yaml"
-  
