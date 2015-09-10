@@ -68,6 +68,7 @@ func watchFS(ch chan struct{}, w *fsnotify.Watcher) {
 		case e := <-w.Events:
 			if filter(e) {
 				wg.Add(1)
+				fmt.Printf("Noticed change to %s, re-generating spec\n", e.Name)
 				ch <- struct{}{}
 			}
 		}
