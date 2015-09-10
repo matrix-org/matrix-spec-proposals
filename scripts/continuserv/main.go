@@ -80,7 +80,9 @@ func makeWalker(w *fsnotify.Watcher) filepath.WalkFunc {
 		if err != nil {
 			log.Fatalf("Error walking: %v", err)
 		}
-		w.Add(path)
+		if err := w.Add(path); err != nil {
+			log.Fatalf("Failed to add watch: %v", err)
+		}
 		return nil
 	}
 }
