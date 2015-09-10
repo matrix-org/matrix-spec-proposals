@@ -220,5 +220,12 @@ func main() {
 	}
 	http.HandleFunc("/spec/", serveSpec)
 	http.HandleFunc("/diff/rst/", serveRstDiff)
+	http.HandleFunc("/healthz", serveText("ok"))
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
+}
+
+func serveText(s string) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request) {
+		io.WriteString(w, s)
+	}
 }
