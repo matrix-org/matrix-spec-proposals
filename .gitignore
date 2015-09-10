@@ -1,4 +1,5 @@
 scripts/gen
+scripts/continuserv/continuserv
 templating/out
 *.pyc
 supporting-docs/_site
