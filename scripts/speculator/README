@@ -1,0 +1,4 @@
+speculator allows you to preview pull requests to the matrix.org specification.
+
+To run it, you must install the `go` tool, and run:
+ `go run main.go`
