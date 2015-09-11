@@ -1,5 +1,6 @@
 // speculator allows you to preview pull requests to the matrix.org specification.
-// It serves two HTTP endpoints:
+// It serves the following HTTP endpoints:
+//  - / lists open pull requests
 //  - /spec/123 which renders the spec as html at pull request 123.
 //  - /diff/rst/123 which gives a diff of the spec's rst at pull request 123.
 // It is currently woefully inefficient, and there is a lot of low hanging fruit for improvement.
