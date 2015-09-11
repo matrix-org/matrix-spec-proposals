@@ -182,7 +182,7 @@ func serveRstDiff(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	diffCmd := exec.Command("diff", path.Join(base, "scripts", "tmp", "full_spec.rst"), path.Join(head, "scripts", "tmp", "full_spec.rst"))
+	diffCmd := exec.Command("diff", "-u", path.Join(base, "scripts", "tmp", "full_spec.rst"), path.Join(head, "scripts", "tmp", "full_spec.rst"))
 	var diff bytes.Buffer
 	diffCmd.Stdout = &diff
 	if err := ignoreExitCodeOne(diffCmd.Run()); err != nil {
