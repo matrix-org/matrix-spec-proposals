@@ -73,13 +73,18 @@ func gitCheckout(path, sha string) error {
 	return nil
 }
 
-func lookupPullRequest(prNumber string) (PullRequest, error) {
-	resp, _ := http.Get(fmt.Sprintf("%s/%s", pullsPrefix, prNumber))
+func lookupPullRequest(prNumber string) (*PullRequest, error) {
+	resp, err := http.Get(fmt.Sprintf("%s/%s", pullsPrefix, prNumber))
 	defer resp.Body.Close()
+	if err != nil {
+		return nil, fmt.Errorf("error getting pulls: %v", err)
+	}
 	dec := json.NewDecoder(resp.Body)
 	var pr PullRequest
-	_ = dec.Decode(&pr)
-	return pr, nil
+	if err := dec.Decode(&pr); err != nil {
+		return nil, fmt.Errorf("error decoding pulls: %v", err)
+	}
+	return &pr, nil
 }
 
 func generate(dir string) error {
@@ -188,7 +193,7 @@ func serveRstDiff(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	diffCmd := exec.Command("diff", path.Join(base, "scripts", "tmp", "full_spec.rst"), path.Join(head, "scripts", "tmp", "full_spec.rst"))
+	diffCmd := exec.Command("diff", "-u", path.Join(base, "scripts", "tmp", "full_spec.rst"), path.Join(head, "scripts", "tmp", "full_spec.rst"))
 	var diff bytes.Buffer
 	diffCmd.Stdout = &diff
 	if err := ignoreExitCodeOne(diffCmd.Run()); err != nil {
