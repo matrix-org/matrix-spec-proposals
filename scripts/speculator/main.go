@@ -24,9 +24,12 @@ import (
 )
 
 type PullRequest struct {
-	Base Commit
-	Head Commit
-	User User
+	Number  int
+	Base    Commit
+	Head    Commit
+	Title   string
+	User    User
+	HTMLURL string `json:"html_url"`
 }
 
 type Commit struct {
@@ -39,13 +42,16 @@ type RequestRepo struct {
 }
 
 type User struct {
-	Login string
+	Login   string
+	HTMLURL string `json:"html_url"`
 }
 
 var (
 	port           = flag.Int("port", 9000, "Port on which to listen for HTTP")
 	allowedMembers map[string]bool
 )
+
+const pullsPrefix = "https://api.github.com/repos/matrix-org/matrix-doc/pulls"
 
 func gitClone(url string) (string, error) {
 	dst := path.Join("/tmp/matrix-doc", strconv.FormatInt(rand.Int63(), 10))
@@ -68,7 +74,7 @@ func gitCheckout(path, sha string) error {
 }
 
 func lookupPullRequest(prNumber string) (PullRequest, error) {
-	resp, _ := http.Get("https://api.github.com/repos/matrix-org/matrix-doc/pulls/" + prNumber)
+	resp, _ := http.Get(fmt.Sprintf("%s/%s", pullsPrefix, prNumber))
 	defer resp.Body.Close()
 	dec := json.NewDecoder(resp.Body)
 	var pr PullRequest
@@ -192,6 +198,32 @@ func serveRstDiff(w http.ResponseWriter, req *http.Request) {
 	w.Write(diff.Bytes())
 }
 
+func listPulls(w http.ResponseWriter, req *http.Request) {
+	resp, err := http.Get(pullsPrefix)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+	defer resp.Body.Close()
+	dec := json.NewDecoder(resp.Body)
+	var pulls []PullRequest
+	if err := dec.Decode(&pulls); err != nil {
+		writeError(w, err)
+		return
+	}
+	if len(pulls) == 0 {
+		io.WriteString(w, "No pull requests found")
+		return
+	}
+	s := "<body><ul>"
+	for _, pull := range pulls {
+		s += fmt.Sprintf(`<li>%d: <a href="%s">%s</a>: <a href="%s">%s</a>: <a href="spec/%d">spec</a> <a href="diff/rst/%d">rst diff</a></li>`,
+			pull.Number, pull.User.HTMLURL, pull.User.Login, pull.HTMLURL, pull.Title, pull.Number, pull.Number)
+	}
+	s += "</ul></body>"
+	io.WriteString(w, s)
+}
+
 func ignoreExitCodeOne(err error) error {
 	if err == nil {
 		return err
@@ -221,6 +253,7 @@ func main() {
 	http.HandleFunc("/spec/", serveSpec)
 	http.HandleFunc("/diff/rst/", serveRstDiff)
 	http.HandleFunc("/healthz", serveText("ok"))
+	http.HandleFunc("/", listPulls)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
 }
 
