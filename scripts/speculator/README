@@ -1,0 +1,8 @@
+speculator allows you to preview pull requests to the matrix.org specification.
+
+It serves two HTTP endpoints:
+ - /spec/123 which renders the spec as html at pull request 123.
+ - /diff/rst/123 which gives a diff of the spec's rst at pull request 123.
+
+To run it, you must install the `go` tool, and run:
+ `go run main.go`
