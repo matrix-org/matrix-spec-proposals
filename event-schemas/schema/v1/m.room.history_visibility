@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "title": "Controls visibility of history.",
+    "description": "This event controls whether a member of a room can see the events that happened in a room from before they joined.",
+    "allOf": [{
+        "$ref": "core#/definitions/state_event"
+    }],
+    "properties": {
+        "content": {
+            "type": "object",
+            "properties": {
+                "history_visibility": {
+                    "type": "string",
+                    "description": "Who can see the room history.",
+                    "enum": ["invited","joined","shared"]
+                }
+            },
+            "required": ["history_visibility"]
+        },
+        "state_key": {
+            "type": "string",
+            "description": "A zero-length string.",
+            "pattern": "^$"
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.room.history_visibility"]
+        }
+    }
+}

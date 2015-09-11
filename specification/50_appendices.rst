@@ -136,9 +136,3 @@ Identity Servers
 
 .. TODO-doc Dave
   - 3PIDs and identity server, functions
-
-Lawful Interception
--------------------
-
-Key Escrow Servers
-~~~~~~~~~~~~~~~~~~

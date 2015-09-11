@@ -59,16 +59,183 @@ and an optional TLS port.
 
 .. **
 
-If the port is present then the server is discovered by looking up an A record
-for the DNS name and connecting to the specified TLS port. If the port is
-absent then the server is discovered by looking up a ``_matrix._tcp``
-SRV record for the DNS name.
+If the port is present then the server is discovered by looking up an AAAA or
+A record for the DNS name and connecting to the specified TLS port.
+
+If the port is absent then the server is discovered by looking up a
+``_matrix._tcp`` SRV record for the DNS name. If this record does not exist
+then the server is discovered by looking up an AAAA or A record on the DNS
+name and taking the default fallback port number of 8448.
 
 Home servers may use SRV records to load balance requests between multiple TLS
 endpoints or to failover to another endpoint if an endpoint fails.
 
 Retrieving Server Keys
 ~~~~~~~~~~~~~~~~~~~~~~
+
+Version 2
++++++++++
+
+Each home server publishes its public keys under ``/_matrix/key/v2/server/``.
+Home servers query for keys by either getting ``/_matrix/key/v2/server/``
+directly or by querying an intermediate notary server using a
+``/_matrix/key/v2/query`` API. Intermediate notary servers query the
+``/_matrix/key/v2/server/`` API on behalf of another server and sign the
+response with their own key. A server may query multiple notary servers to
+ensure that they all report the same public keys.
+
+This approach is borrowed from the Perspectives Project
+(http://perspectives-project.org/), but modified to include the NACL keys and to
+use JSON instead of XML. It has the advantage of avoiding a single trust-root
+since each server is free to pick which notary servers they trust and can
+corroborate the keys returned by a given notary server by querying other
+servers.
+
+Publishing Keys
+_______________
+
+Home servers publish the allowed TLS fingerprints and signing keys in a JSON
+object at ``/_matrix/key/v2/server/${key_id}``. The response contains a list of
+``verify_keys`` that are valid for signing federation requests made by the
+server and for signing events. It contains a list of ``old_verify_keys``
+which are only valid for signing events. Finally the response contains a list
+of TLS certificate fingerprints to validate any connection made to the server.
+
+A server may have multiple keys active at a given time. A server may have any
+number of old keys. It is recommended that servers return a single JSON
+response listing all of its keys whenever any ``key_id`` is requested to reduce
+the number of round trips needed to discover the relevant keys for a server.
+However a server may return a different responses for a different ``key_id``.
+
+The ``tls_certificates`` contain a list of hashes of the X.509 TLS certificates
+currently used by the server. The list must include SHA-256 hashes for every
+certificate currently in use by the server. These fingerprints are valid until
+the millisecond POSIX timestamp in ``valid_until_ts``.
+
+The ``verify_keys`` can be used to sign requests and events made by the server
+until the millisecond POSIX timestamp in ``valid_until_ts``. If a Home Server
+receives an event with a ``origin_server_ts`` after the ``valid_until_ts`` then
+it should request that ``key_id`` for the originating server to check whether
+the key has expired.
+
+The ``old_verify_keys`` can be used to sign events with an ``origin_server_ts``
+before the ``expired_ts``. The ``expired_ts`` is a millisecond POSIX timestamp
+of when the originating server stopped using that key.
+
+Intermediate notary servers should cache a response for half of its remaining
+life time to avoid serving a stale response. Originating servers should avoid
+returning responses that expire in less than an hour to avoid repeated requests
+for an about to expire certificate. Requesting servers should limit how
+frequently they query for certificates to avoid flooding a server with requests.
+
+If a server goes offline intermediate notary servers should continue to return
+the last response they received from that server so that the signatures of old
+events sent by that server can still be checked.
+
+==================== =================== ======================================
+    Key                    Type                         Description
+==================== =================== ======================================
+``server_name``      String              DNS name of the home server.
+``verify_keys``      Object              Public keys of the home server for
+                                         verifying digital signatures.
+``old_verify_keys``  Object              The public keys that the server used
+                                         to use and when it stopped using them.
+``signatures``       Object              Digital signatures for this object
+                                         signed using the ``verify_keys``.
+``tls_fingerprints`` Array of Objects    Hashes of X.509 TLS certificates used
+                                         by this this server encoded as base64.
+``valid_until_ts``   Integer             POSIX timestamp when the list of valid
+                                         keys should be refreshed.
+==================== =================== ======================================
+
+
+.. code:: json
+
+    {
+        "old_verify_keys": {
+            "ed25519:auto1": {
+                "expired_ts": 922834800000,
+                "key": "Base+64+Encoded+Old+Verify+Key"
+            }
+        },
+        "server_name": "example.org",
+        "signatures": {
+            "example.org": {
+                "ed25519:auto2": "Base+64+Encoded+Signature"
+            }
+        },
+        "tls_fingerprints": [
+            {
+                "sha256": "Base+64+Encoded+SHA-256-Fingerprint"
+            }
+        ],
+        "valid_until_ts": 1052262000000,
+        "verify_keys": {
+            "ed25519:auto2": {
+                "key": "Base+64+Encoded+Signature+Verification+Key"
+            }
+        }
+    }
+
+Querying Keys Through Another Server
+____________________________________
+
+Servers may offer a query API ``_matrix/key/v2/query/`` for getting the keys
+for another server. This API can be used to GET at list of JSON objects for a
+given server or to POST a bulk query for a number of keys from a number of
+servers. Either way the response is a list of JSON objects containing the
+JSON published by the server under ``_matrix/key/v2/server/`` signed by
+both the originating server and by this server.
+
+The ``minimum_valid_until_ts`` is a millisecond POSIX timestamp indicating 
+when the returned certificate will need to be valid until to be useful to the 
+requesting server. This can be set using the maximum ``origin_server_ts`` of 
+an batch of events that a requesting server is trying to validate. This allows
+an intermediate notary server to give a prompt cached response even if the
+originating server is offline.
+
+This API can return keys for servers that are offline be using cached responses
+taken from when the server was online. Keys can be queried from multiple
+servers to mitigate against DNS spoofing.
+
+Requests:
+
+.. code::
+
+    GET /_matrix/key/v2/query/${server_name}/${key_id}/?minimum_valid_until_ts=${minimum_valid_until_ts} HTTP/1.1
+
+    POST /_matrix/key/v2/query HTTP/1.1
+    Content-Type: application/json
+
+    {
+        "server_keys": {
+            "$server_name": {
+                "$key_id": {
+                    "minimum_valid_until_ts": $posix_timestamp
+                }
+            }
+        }
+    }
+
+
+Response:
+
+.. code::
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    {
+        "server_keys": [
+           # List of responses with same format as /_matrix/key/v2/server
+           # signed by both the originating server and this server.
+        ]
+    }
+
+Version 1
++++++++++
+.. WARNING::
+  Version 1 of key distribution is obsolete
+
 
 Home servers publish their TLS certificates and signing keys in a JSON object
 at ``/_matrix/key/v1``.
@@ -308,7 +475,7 @@ All these URLs are name-spaced within a prefix of::
 
 For active pushing of messages representing live activity "as it happens"::
 
-  PUT .../send/:transaction_id/
+  PUT .../send/<transaction_id>/
     Body: JSON encoding of a single Transaction
     Response: TODO-doc
 
@@ -319,7 +486,7 @@ embedded PDU in the transaction body will be processed.
 
 To fetch a particular PDU::
 
-  GET .../pdu/:origin/:pdu_id/
+  GET .../pdu/<origin>/<pdu_id>/
     Response: JSON encoding of a single Transaction containing one PDU
 
 Retrieves a given PDU from the server. The response will contain a single new
@@ -328,7 +495,7 @@ Transaction, inside which will be the requested PDU.
 
 To fetch all the state of a given context::
 
-  GET .../state/:context/
+  GET .../state/<context>/
     Response: JSON encoding of a single Transaction containing multiple PDUs
 
 Retrieves a snapshot of the entire current state of the given context. The
@@ -337,7 +504,7 @@ that encode the state.
 
 To backfill events on a given context::
 
-  GET .../backfill/:context/
+  GET .../backfill/<context>/
     Query args: v, limit
     Response: JSON encoding of a single Transaction containing multiple PDUs
 
@@ -359,7 +526,7 @@ arguments.
 
 To make a query::
 
-  GET .../query/:query_type
+  GET .../query/<query_type>
     Query args: as specified by the individual query types
     Response: JSON encoding of a response object
 
@@ -388,6 +555,11 @@ digital signatures. The request method, target and body are signed by wrapping
 them in a JSON object and signing it using the JSON signing algorithm. The
 resulting signatures are added as an Authorization header with an auth scheme
 of X-Matrix.
+
+Note that the target field should include the full path starting with
+``/_matrix/...``, including the ``?`` and any query parameters if present, but
+should not include the leading ``https:``, nor the destination server's
+hostname.
 
 Step 1 sign JSON:
 
@@ -556,6 +728,7 @@ Rejecting a presence invite::
 
 Profiles
 --------
+
 The server API for profiles is based entirely on the following Federation
 Queries. There are no additional EDU or PDU types involved, other than the
 implicit ``m.presence`` and ``m.room.member`` events (see section below).
@@ -577,16 +750,22 @@ result field. If such is present, then the result should contain only a field
 of that name, with no others present. If not, the result should contain as much
 of the user's profile as the home server has available and can make public.
 
+Directory
+---------
 
-Policy Servers
-==============
-.. NOTE::
-  This section is a work in progress.
+The server API for directory queries is also based on Federation Queries.
 
-.. TODO-spec
-  We should mention them in the Architecture section at least: how they fit
-  into the picture.
+Querying directory information::
 
-Enforcing policies
-------------------
+  Query type: directory
 
+  Arguments:
+    room_alias: the room alias to query
+
+  Returns: JSON object containing the following keys:
+    room_id: string giving the underlying room ID the alias maps to
+    servers: list of strings giving the join candidates
+
+The list of join candidates is a list of server names that are likely to hold
+the given room; these are servers that the requesting server may wish to try
+joining with. This list may or may not include the server answering the query.

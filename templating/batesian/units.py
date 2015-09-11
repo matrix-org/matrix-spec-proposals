@@ -1,0 +1,40 @@
+"""Parent class for writing units."""
+from . import AccessKeyStore
+import inspect
+import json
+import os
+import subprocess
+
+class Units(object):
+
+    @staticmethod
+    def prop(obj, path):
+        # Helper method to extract nested property values
+        nested_keys = path.split("/")
+        val = obj
+        for key in nested_keys:
+            val = val.get(key, {})
+        return val
+
+
+    def __init__(self, debug=False):
+        self.debug = debug
+
+    def log(self, text):
+        if self.debug:
+            print text
+
+    def get_units(self, debug=False):
+        unit_list = inspect.getmembers(self, predicate=inspect.ismethod)
+        unit_dict = {}
+        for (func_name, func) in unit_list:
+            if not func_name.startswith("load_"):
+                continue
+            unit_key = func_name[len("load_"):]
+            unit_dict[unit_key] = func()
+            self.log("Generated unit '%s' : %s" % (
+                unit_key, json.dumps(unit_dict[unit_key])[:50].replace(
+                    "\n",""
+                )
+            ))
+        return unit_dict

@@ -1,0 +1,5 @@
+scripts/gen
+templating/out
+*.pyc
+supporting-docs/_site
+supporting-docs/.sass-cache

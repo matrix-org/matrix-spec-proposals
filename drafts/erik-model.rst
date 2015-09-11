@@ -1,4 +1,7 @@
-This is a standalone description of the data architecture of Synapse.  There is a lot of overlap with the currennt specification, so it has been split out here for posterity.  Hopefully all the important bits have been merged into the relevant places in the main spec.
+This is a standalone description of the data architecture of Synapse. There is a
+lot of overlap with the current specification, so it has been split out here for
+posterity. Hopefully all the important bits have been merged into the relevant
+places in the main spec.
 
 
 Model
