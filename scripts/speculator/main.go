@@ -67,13 +67,18 @@ func gitCheckout(path, sha string) error {
 	return nil
 }
 
-func lookupPullRequest(prNumber string) (PullRequest, error) {
-	resp, _ := http.Get("https://api.github.com/repos/matrix-org/matrix-doc/pulls/" + prNumber)
+func lookupPullRequest(prNumber string) (*PullRequest, error) {
+	resp, err := http.Get("https://api.github.com/repos/matrix-org/matrix-doc/pulls/" + prNumber)
 	defer resp.Body.Close()
+	if err != nil {
+		return nil, fmt.Errorf("error getting pulls: %v", err)
+	}
 	dec := json.NewDecoder(resp.Body)
 	var pr PullRequest
-	_ = dec.Decode(&pr)
-	return pr, nil
+	if err := dec.Decode(&pr); err != nil {
+		return nil, fmt.Errorf("error decoding pulls: %v", err)
+	}
+	return &pr, nil
 }
 
 func generate(dir string) error {
