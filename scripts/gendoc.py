@@ -32,17 +32,23 @@ def rst2html(i, o):
             )
 
 def run_through_template(input):
-    null = open(os.devnull, 'w')
-    subprocess.check_output(
-        [
-            'python', 'build.py', 
-            "-i", "matrix_templates", 
-            "-o", "../scripts/tmp", 
-            "../scripts/"+input
-        ],
-        stderr=null,
-        cwd="../templating",
-    )
+    tmpfile = './tmp/output'
+    try:
+        with open(tmpfile, 'w') as out:
+            subprocess.check_output(
+                [
+                    'python', 'build.py',
+                    "-i", "matrix_templates",
+                    "-o", "../scripts/tmp",
+                    "../scripts/"+input
+                ],
+                stderr=out,
+                cwd="../templating",
+            )
+    except subprocess.CalledProcessError as e:
+        with open(tmpfile, 'r') as f:
+            print f.read()
+        raise
 
 def prepare_env():
     try:
@@ -65,16 +71,19 @@ def main():
     run_through_template("tmp/howto.rst")
     rst2html("tmp/full_spec.rst", "gen/specification.html")
     rst2html("tmp/howto.rst", "gen/howtos.html")
-    cleanup_env()
+    if "--nodelete" not in sys.argv:
+        cleanup_env()
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        # we accept no args, so they don't know what they're doing!
+    if len(sys.argv) > 1 and sys.argv[1:] != ["--nodelete"]:
+        # we accept almost no args, so they don't know what they're doing!
         print "gendoc.py - Generate the Matrix specification as HTML."
         print "Usage:"
-        print "  python gendoc.py"
+        print "  python gendoc.py [--nodelete]"
         print ""
         print "The specification can then be found in the gen/ folder."
+        print ("If --nodelete was specified, intermediate files will be "
+               "present in the tmp/ folder.")
         print ""
         print "Requirements:"
         print " - This script requires Jinja2 and rst2html (docutils)."

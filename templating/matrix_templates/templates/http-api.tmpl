@@ -1,5 +1,10 @@
 ``{{endpoint.method}} {{endpoint.path}}``
 {{(5 + (endpoint.path | length) + (endpoint.method | length)) * title_kind}}
+{% if "alias_for_path" in endpoint -%}
+``{{endpoint.path}}`` is an alias for `{{endpoint.alias_for_path}}`_.
+
+.. _`{{endpoint.alias_for_path}}`: #{{endpoint.alias_link}}
+{% else -%}
 
 {{endpoint.desc | wrap(80)}}
 
@@ -46,6 +51,20 @@ Example request::
 
   {{endpoint.example.req | indent_block(2)}}
 
-Example response::
+{% if endpoint.example.responses|length > 0 -%}
+Response{{"s" if endpoint.example.responses|length > 1 else "" }}:
 
-  {{endpoint.example.res | indent_block(2)}}
+{% endif -%}
+
+{% for res in endpoint.example.responses -%}
+
+**Status code {{res["code"]}}:**
+
+{{res["description"]}}
+
+Example::
+
+  {{res["example"] | indent_block(2)}}
+
+{% endfor %}
+{% endif -%}

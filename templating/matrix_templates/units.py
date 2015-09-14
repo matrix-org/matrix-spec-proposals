@@ -30,7 +30,7 @@ def get_json_schema_object_fields(obj, enforce_title=False):
     }
     tables = [fields]
 
-    props = obj.get("properties")
+    props = obj.get("properties", obj.get("patternProperties"))
     parents = obj.get("allOf")
     if not props and not parents:
         raise Exception(
@@ -105,18 +105,20 @@ class MatrixUnits(Units):
         for path in api["paths"]:
             for method in api["paths"][path]:
                 single_api = api["paths"][path][method]
+                full_path = api.get("basePath", "") + path
                 endpoint = {
                     "title": single_api.get("summary", ""),
                     "desc": single_api.get("description", single_api.get("summary", "")),
                     "method": method.upper(),
-                    "path": api.get("basePath", "") + path,
+                    "path": full_path,
                     "requires_auth": "security" in single_api,
                     "rate_limited": 429 in single_api.get("responses", {}),
                     "req_params": [],
                     "res_tables": [],
                     "example": {
                         "req": "",
-                        "res": ""
+                        "responses": [],
+                        "good_response": ""
                     }
                 }
                 self.log(".o.O.o. Endpoint: %s %s" % (method, path))
@@ -177,11 +179,19 @@ class MatrixUnits(Units):
                         endpoint["req_param_by_loc"][p["loc"]] = []
                     endpoint["req_param_by_loc"][p["loc"]].append(p)
 
-                # add example response if it has one
-                res = single_api["responses"][200]  # get the 200 OK response
-                endpoint["example"]["res"] = res.get("examples", {}).get(
-                    "application/json", ""
-                )
+                good_response = None
+                for code, res in single_api.get("responses", {}).items():
+                    if not good_response and code == 200:
+                        good_response = res
+                    description = res.get("description", "")
+                    example = res.get("examples", {}).get("application/json", "")
+                    if description and example:
+                        endpoint["example"]["responses"].append({
+                            "code": code,
+                            "description": description,
+                            "example": example,
+                        })
+
                 # form example request if it has one. It "has one" if all params
                 # have either "x-example" or a "schema" with an "example".
                 params_missing_examples = [
@@ -216,24 +226,38 @@ class MatrixUnits(Units):
                     )
 
                 # add response params if this API has any.
-                res_type = Units.prop(res, "schema/type")
-                if res_type and res_type not in ["object", "array"]:
-                    # response is a raw string or something like that
-                    endpoint["res_tables"].append({
-                        "title": None,
-                        "rows": [{
-                            "key": res["schema"].get("name", ""),
-                            "type": res_type,
-                            "desc": res.get("description", "")
-                        }]
-                    })
-                elif res_type and Units.prop(res, "schema/properties"):  # object
-                    res_tables = get_json_schema_object_fields(res["schema"])
-                    for table in res_tables:
-                        if "no-table" not in table:
-                            endpoint["res_tables"].append(table)
+                if good_response:
+                    res_type = Units.prop(good_response, "schema/type")
+                    if res_type and res_type not in ["object", "array"]:
+                        # response is a raw string or something like that
+                        endpoint["res_tables"].append({
+                            "title": None,
+                            "rows": [{
+                                "key": good_response["schema"].get("name", ""),
+                                "type": res_type,
+                                "desc": res.get("description", "")
+                            }]
+                        })
+                    elif res_type and Units.prop(good_response, "schema/properties"):
+                        # response is an object:
+                        schema = good_response["schema"]
+                        res_tables = get_json_schema_object_fields(schema)
+                        for table in res_tables:
+                            if "no-table" not in table:
+                                endpoint["res_tables"].append(table)
 
                 endpoints.append(endpoint)
+
+                aliases = single_api.get("x-alias", None)
+                if aliases:
+                    alias_link = aliases["canonical-link"]
+                    for alias in aliases["aliases"]:
+                        endpoints.append({
+                            "method": method.upper(),
+                            "path": alias,
+                            "alias_for_path": full_path,
+                            "alias_link": alias_link
+                        })
 
         return {
             "base": api.get("basePath"),

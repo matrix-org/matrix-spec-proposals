@@ -879,54 +879,20 @@ The keys contained in ``m.room.power_levels`` determine the levels required for
 certain operations such as kicking, banning and sending state events. See
 `m.room.power_levels`_ for more information.
 
-
 Joining rooms
-~~~~~~~~~~~~~
-.. TODO-doc What does the home server have to do to join a user to a room?
-   -  See SPEC-30.
+-------------
+Users need to be a member of a room in order to send and receive events in that
+room. There are several states in which a user may be, in relation to a room:
 
-Users need to join a room in order to send and receive events in that room. A
-user can join a room by making a request to |/join/<room_alias_or_id>|_ with::
+ - Unrelated (the user cannot send or receive events in the room)
+ - Invited (the user has been invited to participate in the room, but is not
+   yet participating)
+ - Joined (the user can send and receive events in the room)
+ - Banned (the user is not allowed to join the room)
 
-  {}
+Some rooms require that users be invited to it before they can join; others
+allow anyone to join.
 
-Alternatively, a user can make a request to |/rooms/<room_id>/join|_ with the
-same request content.  This is only provided for symmetry with the other
-membership APIs: ``/rooms/<room id>/invite`` and ``/rooms/<room id>/leave``. If
-a room alias was specified, it will be automatically resolved to a room ID,
-which will then be joined. The room ID that was joined will be returned in
-response::
-
-  {
-    "room_id": "!roomid:domain"
-  }
-
-The membership state for the joining user can also be modified directly to be
-``join`` by sending the following request to
-``/rooms/<room id>/state/m.room.member/<url encoded user id>``::
-
-  {
-    "membership": "join"
-  }
-
-See the `Room events`_ section for more information on ``m.room.member``.
-
-After the user has joined a room, they will receive subsequent events in that
-room. This room will now appear as an entry in the |initialSync|_ API.
-
-Some rooms enforce that a user is *invited* to a room before they can join that
-room. Other rooms will allow anyone to join the room even if they have not
-received an invite.
-
-Inviting users
-~~~~~~~~~~~~~~
-.. TODO-doc Invite-join dance
-  - Outline invite join dance. What is it? Why is it required? How does it work?
-  - What does the home server have to do?
-
-The purpose of inviting users to a room is to notify them that the room exists
-so they can choose to become a member of that room. Some rooms require that all
-users who join a room are previously invited to it (an "invite-only" room).
 Whether a given room is an "invite-only" room is determined by the room config
 key ``m.room.join_rules``. It can have one of the following values:
 
@@ -936,26 +902,7 @@ key ``m.room.join_rules``. It can have one of the following values:
 ``invite``
   This room can only be joined if you were invited.
 
-Only users who have a membership state of ``join`` in a room can invite new
-users to said room. The person being invited must not be in the ``join`` state
-in the room. The fully-qualified user ID must be specified when inviting a
-user, as the user may reside on a different home server. To invite a user, send
-the following request to |/rooms/<room_id>/invite|_, which will manage the
-entire invitation process::
-
-  {
-    "user_id": "<user id to invite>"
-  }
-
-Alternatively, the membership state for this user in this room can be modified
-directly by sending the following request to
-``/rooms/<room id>/state/m.room.member/<url encoded user id>``::
-
-  {
-    "membership": "invite"
-  }
-
-See the `Room events`_ section for more information on ``m.room.member``.
+{{membership_http_api}}
 
 Leaving rooms
 ~~~~~~~~~~~~~

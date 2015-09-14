@@ -1,0 +1,6 @@
+continuserv proactively re-generates the spec on filesystem changes, and serves it over HTTP.
+
+To run it, you must install the `go` tool. You will also need to install fsnotify by running:
+ `go get gopkg.in/fsnotify.v1`
+You can then run continuserv by running:
+ `go run main.go`
