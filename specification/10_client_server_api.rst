@@ -1011,32 +1011,7 @@ was registered whilst the client was performing authentication.
 
 Old V1 API docs: |register|_
 
-Login
-~~~~~
-This section refers to API Version 1.
-
-API docs: |login|_
-
-Obtaining an access token for an existing user account is done using the
-request::
-
-  POST $PREFIX/login
-
-The body of the POST request is a JSON object containing:
-
-username
-  The full qualified or local part of the Matrix ID to log in with.
-password
-  The password for the account.
-
-On success, this returns a JSON object with keys:
-
-user_id
-  The fully-qualified Matrix ID that has been registered.
-access_token
-  An access token for the new account.
-home_server
-  The hostname of the Home Server on which the account has been registered.
+{{login_http_api}}
 
 Changing Password
 ~~~~~~~~~~~~~~~~~
