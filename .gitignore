@@ -1,5 +1,6 @@
 scripts/gen
 scripts/continuserv/continuserv
+scripts/speculator/speculator
 templating/out
 *.pyc
 supporting-docs/_site
