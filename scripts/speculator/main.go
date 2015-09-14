@@ -259,7 +259,7 @@ func findHTMLDiffer() (string, error) {
 		return "", err
 	}
 	differ := path.Join(wd, "htmldiff.pl")
-	if _, err := os.Stat(differ); err != nil {
+	if _, err := os.Stat(differ); err == nil {
 		return differ, nil
 	}
 	return "", fmt.Errorf("unable to find htmldiff.pl")
