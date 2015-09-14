@@ -1035,7 +1035,7 @@ user_id
   The fully-qualified Matrix ID that has been registered.
 access_token
   An access token for the account. This token may expire at some point, and if
-  so, it MAY come with a refersh_token, described below.
+  so, it MAY come with a refresh_token, described below.
 refresh_token (optional)
   A refresh token may be exchanged for a new access_token as described in
   `Refreshing access tokens`.
@@ -1064,7 +1064,7 @@ refresh_token (optional)
 There is no specific error message to indicate that a request has failed because
 an access token has expired; instead, if a client has reason to believe its
 access token is valid, and it receives an auth error, they should attempt to
-refresh for a new token on failure, and re-try the request with the new token.
+refresh for a new token on failure, and retry the request with the new token.
 
 Changing Password
 ~~~~~~~~~~~~~~~~~
