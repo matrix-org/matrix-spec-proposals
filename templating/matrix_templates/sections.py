@@ -96,9 +96,9 @@ class MatrixSections(Sections):
             title_kind="~"
         )
 
-    def render_registration_http_api(self):
+    def render_login_http_api(self):
         return self._render_http_api_group(
-            "registration",
+            "login",
             title_kind="~"
         )
 

@@ -1011,7 +1011,7 @@ was registered whilst the client was performing authentication.
 
 Old V1 API docs: |register|_
 
-{{registration_http_api}}
+{{login_http_api}}
 
 Changing Password
 ~~~~~~~~~~~~~~~~~
