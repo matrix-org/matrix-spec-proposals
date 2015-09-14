@@ -168,7 +168,8 @@ paths:
 
           - The digest given to the homeserver
 
-          - A secret which, when appended to the nonce, digests to the above digest
+          - A secret which, when appended to the nonce, digests to the above digest,
+            i.e. digest = sha256(nonce + secret)
 
         The digest algorithm to be used is SHA256.
 
