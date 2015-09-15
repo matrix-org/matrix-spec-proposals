@@ -149,8 +149,8 @@ class MatrixUnits(Units):
                     # object with some keys; we'll add entries f.e one)
                     if "schema" not in param:
                         raise Exception(
-                            "API endpoint group=%s path=%s method=%s param=%s"+
-                            " has no valid parameter value." % (
+                            ("API endpoint group=%s path=%s method=%s param=%s"+
+                            " has no valid parameter value.") % (
                                 group_name, path, method, param
                             )
                         )

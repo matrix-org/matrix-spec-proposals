@@ -631,49 +631,7 @@ Getting events for a room
 
 There are several APIs provided to ``GET`` events for a room:
 
-``/rooms/<room id>/state/<event type>/<state key>``
-  Description:
-    Get the state event identified.
-  Response format:
-    A JSON object representing the state event **content**.
-  Example:
-    ``/rooms/!room:domain.com/state/m.room.name`` returns ``{ "name": "Room name" }``
-
-|/rooms/<room_id>/state|_
-  Description:
-    Get all state events for a room.
-  Response format:
-    ``[ { state event }, { state event }, ... ]``
-  Example:
-    TODO-doc
-
-|/rooms/<room_id>/members|_
-  Description:
-    Get all ``m.room.member`` state events.
-  Response format:
-    ``{ "start": "<token>", "end": "<token>", "chunk": [ { m.room.member event }, ... ] }``
-  Example:
-    TODO-doc
-
-|/rooms/<room_id>/messages|_
-  Description:
-    Get all events from the room's timeline. This API supports
-    pagination using ``from`` and ``to`` query parameters, coupled with the
-    ``start`` and ``end`` tokens from an |initialSync|_ API.
-    
-  Response format:
-    ``{ "start": "<token>", "end": "<token>" }``
-  Example:
-    TODO-doc
-
-|/rooms/<room_id>/initialSync|_
-  Description:
-    Get all relevant events for a room. This includes state events, paginated
-    non-state events and presence events.
-  Response format:
-    `` { TODO-doc } ``
-  Example:
-    TODO-doc
+{{rooms_http_api}}
 
 Redactions
 ~~~~~~~~~~
