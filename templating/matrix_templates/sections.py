@@ -96,6 +96,12 @@ class MatrixSections(Sections):
             title_kind="~"
         )
 
+    def render_login_http_api(self):
+        return self._render_http_api_group(
+            "login",
+            title_kind="~"
+        )
+
     def render_room_events(self):
         def filterFn(eventType):
             return (
