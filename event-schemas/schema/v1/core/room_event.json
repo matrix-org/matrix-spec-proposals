@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Room Event",
+  "description": "In addition to the Event fields, Room Events MUST have the following additional field.",
+  "allOf":[{
+    "$ref": "core/event.json"
+  }],
+  "properties": {
+    "room_id": {
+      "type": "string",
+      "description": "The ID of the room associated with this event."
+    }
+  },
+  "required": ["room_id"]
+}
