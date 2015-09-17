@@ -283,17 +283,25 @@ class MatrixUnits(Units):
     def load_common_event_fields(self):
         path = "../event-schemas/schema/v1/core"
         event_types = {}
-        with open(path, "r") as f:
-            core_json = json.loads(f.read())
-            for event_type in core_json["definitions"]:
+
+        for (root, dirs, files) in os.walk(path):
+            for filename in files:
+                if not filename.endswith(".json"):
+                    continue
+
+                event_type = filename[:-5]  # strip the ".json"
+                with open(os.path.join(root, filename)) as f:
+                    event_info = json.loads(f.read())
+
                 if "event" not in event_type:
                     continue  # filter ImageInfo and co
-                event_info = core_json["definitions"][event_type]
+
                 table = {
                     "title": event_info["title"],
                     "desc": event_info["description"],
                     "rows": []
                 }
+
                 for prop in sorted(event_info["properties"]):
                     row = {
                         "key": prop,
@@ -301,6 +309,7 @@ class MatrixUnits(Units):
                         "desc": event_info["properties"][prop].get("description","")
                     }
                     table["rows"].append(row)
+
                 event_types[event_type] = table
         return event_types
 
