@@ -17,7 +17,7 @@
     "user_id": {
       "type": "string",
       "description": "Contains the fully-qualified ID of the user who *sent* this event."
-    },
+    }
   },
   "required": ["room_id"]
 }
