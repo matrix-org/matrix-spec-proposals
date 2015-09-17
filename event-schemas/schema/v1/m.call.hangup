@@ -3,7 +3,7 @@
     "type": "object",
     "description": "Sent by either party to signal their termination of the call. This can be sent either once the call has has been established or before to abort the call.",
     "allOf": [{
-        "$ref": "core#/definitions/room_event"
+        "$ref": "core/room_event.json"
     }],
     "properties": {
         "content": {
