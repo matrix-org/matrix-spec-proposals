@@ -56,7 +56,7 @@ func main() {
 	go doPopulate(ch, dir)
 
 	go watchFS(ch, w)
-
+    fmt.Printf("Listening on port %d\n", *port)
 	http.HandleFunc("/", serve)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
 
