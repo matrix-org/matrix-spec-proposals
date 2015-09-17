@@ -8,7 +8,7 @@ import shutil
 import subprocess
 import sys
 
-os.chdir(os.path.dirname(__file__))
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 stylesheets = {
     "stylesheet_path": ["basic.css", "nature.css"]

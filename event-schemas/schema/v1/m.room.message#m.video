@@ -4,7 +4,7 @@
     "title": "VideoMessage",
     "description": "This message represents a single video clip.",
     "allOf": [{
-        "$ref": "core#/definitions/room_event"
+        "$ref": "core/room_event.json"
     }],
     "properties": {
         "content": {
@@ -55,7 +55,7 @@
                             "type": "object",
                             "title": "ImageInfo",
                             "allOf": [{
-                                "$ref": "core#/definitions/msgtype_infos/image_info"
+                                "$ref": "core/msgtype_infos/image_info.json"
                             }]
                         }
                     }

@@ -82,7 +82,7 @@ paths:
                   type: object
                   title: RoomEvent
                   allOf:
-                   - "$ref": "definitions/room_event.yaml"
+                   - "$ref": "events/core/room_event.json"
         400:
           description: "Bad pagination ``from`` parameter."
   "/initialSync":
@@ -253,7 +253,7 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                   - "$ref": "definitions/event.yaml"
+                   - "$ref": "events/core/event.json"
               rooms:
                 type: array
                 items:
@@ -294,7 +294,7 @@ paths:
                             type: object
                             title: RoomEvent
                             allOf:
-                              - "$ref": "definitions/room_event.yaml"
+                              - "$ref": "events/core/room_event.json"
                       required: ["start", "end", "chunk"]
                     state:
                       type: array
@@ -307,7 +307,7 @@ paths:
                         title: StateEvent
                         type: object
                         allOf:
-                          - "$ref": "definitions/state_event.yaml"
+                          - "$ref": "events/core/state_event.json"
                     visibility:
                       type: string
                       enum: ["private", "public"]
@@ -350,6 +350,6 @@ paths:
               }
           schema:
             allOf:
-              - "$ref": "definitions/event.yaml"
+              - "$ref": "events/core/event.json"
         404:
           description: The event was not found or you do not have permission to read this event.
