@@ -92,11 +92,10 @@ Voice over IP
 -------------
 Matrix can also be used to set up VoIP calls. This is part of the core
 specification, although is at a relatively early stage. Voice (and video) over
-Matrix is built on the WebRTC 1.0 standard.
-
-Call events are sent to a room, like any other event. This means that clients
-must only send call events to rooms with exactly two participants as currently
-the WebRTC standard is based around two-party communication.
+Matrix is built on the WebRTC 1.0 standard. Call events are sent to a room, like
+any other event. This means that clients must only send call events to rooms
+with exactly two participants as currently the WebRTC standard is based around
+two-party communication.
 
 {{voip_events}}
 
@@ -106,25 +105,26 @@ A call is set up with messages exchanged as follows:
 
 ::
 
-   Caller                   Callee
+   Caller                    Callee
+ [Place Call]
  m.call.invite ----------->
  m.call.candidate -------->
- [more candidates events]
-                         User answers call
-                  <------ m.call.answer
-               [...]
-                  <------ m.call.hangup
+ [..candidates..] -------->
+                           [Answers call]
+          <--------------- m.call.answer
+    [Call is active and ongoing]
+          <--------------- m.call.hangup
 
 Or a rejected call:
 
 ::
 
-   Caller                   Callee
- m.call.invite ----------->
- m.call.candidate -------->
- [more candidates events]
-                        User rejects call
-                 <------- m.call.hangup
+   Caller                      Callee
+ m.call.invite ------------>
+ m.call.candidate --------->
+ [..candidates..] --------->
+                            [Rejects call]
+            <-------------- m.call.hangup
 
 Calls are negotiated according to the WebRTC specification.
 
@@ -137,9 +137,8 @@ better experience for the users if their calls are connected if it is clear
 that their intention is to set up a call with one another.
 
 In Matrix, calls are to rooms rather than users (even if those rooms may only
-contain one other user) so we consider calls which are to the same room.
-
-The rules for dealing with such a situation are as follows:
+contain one other user) so we consider calls which are to the same room. The
+rules for dealing with such a situation are as follows:
 
  - If an invite to a room is received whilst the client is preparing to send an
    invite to the same room, the client should cancel its outgoing call and

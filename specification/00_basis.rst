@@ -171,12 +171,13 @@ All data exchanged over Matrix is expressed as an "event". Typically each client
 action (e.g. sending a message) correlates with exactly one event. Each event
 has a ``type`` which is used to differentiate different kinds of data. ``type``
 values MUST be uniquely globally namespaced following Java's `package naming
-conventions
-<http://docs.oracle.com/javase/specs/jls/se5.0/html/packages.html#7.7>`, e.g.
+conventions`_, e.g.
 ``com.example.myapp.event``. The special top-level namespace ``m.`` is reserved
 for events defined in the Matrix specification - for instance ``m.room.message``
 is the event type for instant messages. Events are usually sent in the context
 of a "Room".
+
+.. _package naming conventions: https://en.wikipedia.org/wiki/Java_package#Package_naming_conventions
 
 Event Graphs
 ~~~~~~~~~~~~

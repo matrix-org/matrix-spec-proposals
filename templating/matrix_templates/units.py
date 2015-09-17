@@ -361,8 +361,8 @@ class MatrixUnits(Units):
 
                 # add typeof
                 base_defs = {
-                    "core#/definitions/room_event": "Message Event",
-                    "core#/definitions/state_event": "State Event"
+                    "core/room_event.json": "Message Event",
+                    "core/state_event.json": "State Event"
                 }
                 if type(json_schema.get("allOf")) == list:
                     schema["typeof"] = base_defs.get(
@@ -398,7 +398,6 @@ class MatrixUnits(Units):
                         " For more information on ``msgtypes``, see "+
                         "`m.room.message msgtypes`_."
                     )
-
 
                 # Assign state key info if it has some
                 if schema["typeof"] == "State Event":

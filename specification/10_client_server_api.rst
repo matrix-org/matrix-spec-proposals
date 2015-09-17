@@ -932,11 +932,8 @@ directly by sending the following request to
     "membership": "leave"
   }
 
-See the `Room events`_ section for more information on ``m.room.member``.
-
-Once a user has left a room, that room will no longer appear on the
-|initialSync|_ API.
-
+See the `Room events`_ section for more information on ``m.room.member``. Once a
+user has left a room, that room will no longer appear on the |initialSync|_ API.
 If all members in a room leave, that room becomes eligible for deletion.
 
 Banning users in a room
