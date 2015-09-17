@@ -63,3 +63,4 @@ The call setup should appear seamless to the user as if they had simply placed
 a call and the other party had accepted. Thusly, any media stream that had been
 setup for use on a call should be transferred and used for the call that
 replaces it.
+
