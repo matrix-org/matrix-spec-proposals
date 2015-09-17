@@ -1,5 +1,4 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "description": "This event is sent by the caller when they wish to establish a call.",
     "allOf": [{

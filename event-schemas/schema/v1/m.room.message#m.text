@@ -1,5 +1,4 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "title": "TextMessage",
     "description": "This message is the most basic message and is used to represent text.",

@@ -1,5 +1,4 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "description": "Sent by either party to signal their termination of the call. This can be sent either once the call has has been established or before to abort the call.",
     "allOf": [{
