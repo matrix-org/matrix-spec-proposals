@@ -290,8 +290,14 @@ class MatrixUnits(Units):
                     continue
 
                 event_type = filename[:-5]  # strip the ".json"
-                with open(os.path.join(root, filename)) as f:
-                    event_info = json.loads(f.read())
+                filepath = os.path.join(root, filename)
+                with open(filepath) as f:
+                    try:
+                        event_info = json.load(f)
+                    except Exception as e:
+                        raise ValueError(
+                            "Error reading file %r" % (filepath,), e
+                        )
 
                 if "event" not in event_type:
                     continue  # filter ImageInfo and co
