@@ -43,9 +43,8 @@ paths:
         - in: path
           type: string
           name: stateKey
-          description: |-
-            The key of the state to look up. Defaults to the empty string.
-          required: false
+          description: The key of the state to look up. Defaults to the empty string.
+          required: true
           x-example: ""
       responses:
         200:
@@ -159,17 +158,17 @@ paths:
                     "user_id": "@alice:example.com"
                 }
               ]
-            schema:
-              type: array
-              title: RoomState
-              description: |-
-                If the user is a member of the room this will be the
-                current state of the room as a list of events.
-              items:
-                title: StateEvent
-                type: object
-                allOf:
-                  - "$ref": "definitions/state_event.yaml"
+          schema:
+            type: array
+            title: RoomState
+            description: |-
+              If the user is a member of the room this will be the
+              current state of the room as a list of events.
+            items:
+              title: StateEvent
+              type: object
+              allOf:
+                - "$ref": "events/core/state_event.json"
         403:
           description: You are not joined to the room.
 
@@ -345,7 +344,7 @@ paths:
                       type: object
                       title: RoomEvent
                       allOf:
-                        - "$ref": "definitions/room_event.yaml"
+                        - "$ref": "events/core/room_event.json"
                 required: ["start", "end", "chunk"]
               state:
                 type: array
@@ -358,7 +357,7 @@ paths:
                   title: StateEvent
                   type: object
                   allOf:
-                    - "$ref": "definitions/state_event.yaml"
+                    - "$ref": "events/core/state_event.json"
               visibility:
                 type: string
                 enum: ["private", "public"]
@@ -377,7 +376,7 @@ paths:
           type: string
           name: roomId
           description: The room to get the member events for.
-          required: true,
+          required: true
           x-example: "!room:example.com"
       responses:
         200:
@@ -419,15 +418,13 @@ paths:
                 ]
               }
           schema:
-            object:
-            properities:
+            type: object
+            properties:
               chunk:
                 type: array
                 items:
                   title: MemberEvent
                   type: object
                   allOf:
-                    - "$ref": "../../event-schemas/schema/v1/m.room.member"
-              visibility:
-                type: string
+                    - "$ref": "events/m.room.member"
 
