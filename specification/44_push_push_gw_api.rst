@@ -1,7 +1,7 @@
 HTTP Notification Protocol
 --------------------------
 
-This describes the format used by "http" pushers to send notifications of
+This describes the format used by "HTTP" pushers to send notifications of
 events.
 
 Notifications are sent as HTTP POST requests to the URL configured when the
