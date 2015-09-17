@@ -1,17 +1,8 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "title": "Event",
   "description": "The basic set of fields all events must have.",
   "properties": {
-    "event_id": {
-      "type": "string",
-      "description": "The globally unique event identifier."
-    },
-    "user_id": {
-      "type": "string",
-      "description": "Contains the fully-qualified ID of the user who *sent* this event."
-    },
     "content": {
       "type": "object",
       "description": "The fields in this object will vary depending on the type of event. When interacting with the REST API, this is the HTTP body."

@@ -205,4 +205,4 @@ paths:
               type: object
               title: PresenceEvent
               allOf:
-                - "$ref": "definitions/event.yaml"
+                - "$ref": "events/core/event.json"
