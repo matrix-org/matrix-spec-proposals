@@ -27,13 +27,13 @@ FILE_FORMAT_MATCHER = re.compile("^[0-9]+_[0-9]{2}[a-z]*_.*\.rst$")
 def check_valid_section(filename, section):
     if not re.match(FILE_FORMAT_MATCHER, filename):
         raise Exception(
-            "The filename of " + filename +" does not match the expected format " +
+            "The filename of " + filename + " does not match the expected format " +
             "of '##_##_words-go-here.rst'"
         )
 
     # we need TWO new lines else the next file's title gets merged
     # the last paragraph *WITHOUT RST PRODUCING A WARNING*
-    if not section[-2:] == '\n\n':
+    if not section[-2:] == "\n\n":
         raise Exception(
             "The file " + filename + " does not end with 2 new lines."
         )
@@ -72,7 +72,7 @@ def cat_spec_sections_to(out_file_name):
         for f in sorted(glob.glob("../specification/*.rst")):
             with open(f, "rb") as infile:
                 section = infile.read()
-                check_valid_section(f.split("/")[-1], section)
+                check_valid_section(os.path.basename(f), section)
                 outfile.write(section)
 
 
