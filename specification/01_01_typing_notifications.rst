@@ -1,8 +1,8 @@
 Typing Notifications
-====================
+--------------------
 
 Client APIs
------------
+~~~~~~~~~~~
 
 To set "I am typing for the next N msec"::
 
@@ -21,7 +21,7 @@ To set "I am no longer typing"::
   Content: { "typing": false }
 
 Client Events
--------------
+~~~~~~~~~~~~~
 
 All room members will receive an event on the event stream::
 
@@ -39,7 +39,7 @@ users who are not currently typing, as that list gets big quickly. The client
 should mark as not typing, any user ID who is not in that list.
 
 Server APIs
------------
+~~~~~~~~~~~
 
 Servers will emit EDUs in the following form::
 

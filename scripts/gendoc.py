@@ -21,7 +21,7 @@ title_style_matchers = {
 }
 TOP_LEVEL = "="
 SECOND_LEVEL = "-"
-FILE_FORMAT_MATCHER = re.compile("^[0-9]+_[0-9]{2}_.*\.rst$")
+FILE_FORMAT_MATCHER = re.compile("^[0-9]+_[0-9]{2}[a-z]*_.*\.rst$")
 
 
 def check_valid_section(filename, section):
@@ -55,14 +55,16 @@ def check_valid_section(filename, section):
                 "style: expected '" + TOP_LEVEL + "' but got '" +
                 title_line[0] + "'"
             )
-    # anything marked as xx_x0_ is the start of a sub-section
-    elif re.match("^[0-9]+_0[0-9]{1}_", filename):
+    # anything marked as xx_xx_ is the start of a sub-section
+    elif re.match("^[0-9]+_[0-9]{2}_", filename):
         if not title_style_matchers[SECOND_LEVEL].match(title_line):
             raise Exception(
                 "The file " + filename + " is a 2nd-level section because it matches " +
-                "the filename format ##_#0_something.rst but has the wrong title " +
+                "the filename format ##_##_something.rst but has the wrong title " +
                 "style: expected '" + SECOND_LEVEL + "' but got '" +
-                title_line[0] + "'"
+                title_line[0] + "' - If this is meant to be a 3rd/4th/5th-level section " +
+                "then use the form '##_##b_something.rst' which will not apply this " +
+                "check."
             )
 
 def cat_spec_sections_to(out_file_name):
