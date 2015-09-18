@@ -4,6 +4,7 @@ from docutils.core import publish_file
 import fileinput
 import glob
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -14,17 +15,55 @@ stylesheets = {
     "stylesheet_path": ["basic.css", "nature.css"]
 }
 
-def glob_spec_to(out_file_name):
+title_style_matchers = {
+    "=": re.compile("^=+$"),
+    "-": re.compile("^-+$")
+}
+TOP_LEVEL = "="
+SECOND_LEVEL = "-"
+
+
+def check_valid_section(filename, section):
+    # we need TWO new lines else the next file's title gets merged
+    # the last paragraph *WITHOUT RST PRODUCING A WARNING*
+    if not section[-2:] == '\n\n':
+        raise Exception(
+            "The file " + filename + " does not end with 2 new lines."
+        )
+
+    # Enforce some rules to reduce the risk of having mismatched title
+    # styles.
+    title_line = section.split("\n")[1]
+    if title_line != (len(title_line) * title_line[0]):
+        raise Exception(
+            "The file " + filename + " doesn't have a title style line on line 2"
+        )
+
+    # anything marked as x0_ is the start of a new top-level section
+    if re.match("^[0-9]+0_", filename):
+        if not title_style_matchers[TOP_LEVEL].match(title_line):
+            raise Exception(
+                "The file " + filename + " is a top-level section because it matches " +
+                "the filename format x0_something.rst but has the wrong title " +
+                "style: expected '" + TOP_LEVEL + "' but got '" +
+                title_line[0] + "'"
+            )
+    # anything marked as xx_ is the start of a sub-section
+    elif re.match("^[0-9]+_", filename):
+        if not title_style_matchers[SECOND_LEVEL].match(title_line):
+            raise Exception(
+                "The file " + filename + " is a 2nd-level section because it matches " +
+                "the filename format xx_something.rst but has the wrong title " +
+                "style: expected '" + SECOND_LEVEL + "' but got '" +
+                title_line[0] + "'"
+            )
+
+def cat_spec_sections_to(out_file_name):
     with open(out_file_name, "wb") as outfile:
         for f in sorted(glob.glob("../specification/*.rst")):
             with open(f, "rb") as infile:
                 section = infile.read()
-                # we need TWO new lines else the next file's title gets merged
-                # the last paragraph *WITHOUT RST PRODUCING A WARNING*
-                if not section[-2:] == '\n\n':
-                    raise Exception(
-                        "The file " + f + " does not end with 2 new lines."
-                    )
+                check_valid_section(f.split("/")[-1], section)
                 outfile.write(section)
 
 
@@ -74,7 +113,7 @@ def cleanup_env():
 
 def main():
     prepare_env()
-    glob_spec_to("tmp/full_spec.rst")
+    cat_spec_sections_to("tmp/full_spec.rst")
     run_through_template("tmp/full_spec.rst")
     shutil.copy("../supporting-docs/howtos/client-server.rst", "tmp/howto.rst")
     run_through_template("tmp/howto.rst")
