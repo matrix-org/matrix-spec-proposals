@@ -281,7 +281,7 @@ class MatrixUnits(Units):
         return apis
 
     def load_common_event_fields(self):
-        path = "../event-schemas/schema/v1/core"
+        path = "../event-schemas/schema/v1/core-event-schema"
         event_types = {}
 
         for (root, dirs, files) in os.walk(path):

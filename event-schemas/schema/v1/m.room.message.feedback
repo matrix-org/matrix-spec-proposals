@@ -4,7 +4,7 @@
     "title": "MessageFeedback",
     "description": "Feedback events are events sent to acknowledge a message in some way. There are two supported acknowledgements: ``delivered`` (sent when the event has been received) and ``read`` (sent when the event has been observed by the end-user). The ``target_event_id`` should reference the ``m.room.message`` event being acknowledged. N.B. not implemented in Synapse, and superceded in v2 CS API by the ``relates_to`` event field.",
     "allOf": [{
-        "$ref": "core/room_event.json"
+        "$ref": "core-event-schema/room_event.json"
     }],
     "properties": {
         "content": {
