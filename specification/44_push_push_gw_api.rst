@@ -77,10 +77,10 @@ counts
   This is a dictionary of the current number of unacknowledged communications
   for the recipient user. Counts whose value is zero are omitted.
 unread
-  The number of unread messages a user has accross all of the rooms they are a
+  The number of unread messages a user has across all of the rooms they are a
   member of.
 missed_calls
-  The number of unacknowledged missed calls a user has accross all rooms of
+  The number of unacknowledged missed calls a user has across all rooms of
   which they are a member.
 device
   This is an array of devices that the notification should be sent to.
@@ -104,13 +104,13 @@ And additional key is defined but only present on member events:
 
 user_is_target
   This is true if the user receiving the notification is the subject of a member
-  event (ie. the state_key of the member event is equal to the user's Matrix
+  event (i.e. the state_key of the member event is equal to the user's Matrix
   ID).
 
 The recipient of an HTTP notification should respond with an HTTP 2xx response
 when the notification has been processed. If the endpoint returns an HTTP error
 code, the Home Server should retry for a reasonable amount of time with a
-reasonable backoff scheme.
+reasonable back-off scheme.
 
 The endpoint should return a JSON dictionary as follows::
 
