@@ -11,9 +11,9 @@ To set "I am typing for the next N msec"::
   # timeout is in milliseconds; suggested no more than 20 or 30 seconds
 
 This should be re-sent by the client to continue informing the server the user
-is still typing; I suggest a safety margin of 5 seconds before the expected
-timeout runs out. Just keep declaring a new timeout, it will replace the old
-one.
+is still typing; a safety margin of 5 seconds before the expected
+timeout runs out is recommended. Just keep declaring a new timeout, it will
+replace the old one.
 
 To set "I am no longer typing"::
 
