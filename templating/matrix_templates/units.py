@@ -97,6 +97,8 @@ def get_json_schema_object_fields(obj, enforce_title=False):
                     desc += (
                         " Must be '%s'." % props[key_name]["enum"][0]
                     )
+            if isinstance(value_type, list):
+                value_type = " or ".join(value_type)
 
         fields["rows"].append({
             "key": key_name,
