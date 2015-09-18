@@ -1,6 +1,9 @@
 #! /usr/bin/env python
 
 import sys
+import json
+import os
+
 
 def import_error(module, package, debian, error):
     sys.stderr.write((
@@ -10,7 +13,7 @@ def import_error(module, package, debian, error):
         "or on Debian run:\n"
         "  sudo apt-get install python-%(debian)s\n"
     ) % locals())
-    if __name__=='__main__':
+    if __name__ == '__main__':
         sys.exit(1)
 
 try:
@@ -25,8 +28,6 @@ except ImportError as e:
     import_error("yaml", "PyYAML", "yaml", e)
     raise
 
-import json
-import os
 
 def check_response(filepath, request, code, response):
     try:
@@ -47,7 +48,7 @@ def check_response(filepath, request, code, response):
             schema['id'] = fileurl
             jsonschema.validate(example, schema)
         except Exception as e:
-            raise ValueError("Error validating JSON schema for %r %r" %(
+            raise ValueError("Error validating JSON schema for %r %r" % (
                 request, code
             ), e)
 
@@ -56,7 +57,7 @@ def check_swagger_file(filepath):
     with open(filepath) as f:
         swagger = yaml.load(f)
 
-    for path, path_api in swagger['paths'].items():
+    for path, path_api in swagger.get('paths', {}).items():
         for method, request_api in path_api.items():
             request = "%s %s" % (method.upper(), path)
             try:
@@ -67,8 +68,15 @@ def check_swagger_file(filepath):
                 check_response(filepath, request, code, response)
 
 
-if __name__=='__main__':
-    for path in sys.argv[1:]:
+if __name__ == '__main__':
+    paths = sys.argv[1:]
+    if not paths:
+        paths = []
+        for (root, dirs, files) in os.walk(os.curdir):
+            for filename in files:
+                if filename.endswith(".yaml"):
+                    paths.append(os.path.join(root, filename))
+    for path in paths:
         try:
             check_swagger_file(path)
         except Exception as e:
