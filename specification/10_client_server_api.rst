@@ -8,11 +8,11 @@ The client-server API provides a simple lightweight API to let clients send
 messages, control rooms and synchronise conversation history. It is designed to
 support both lightweight clients which store no state and lazy-load data from
 the server as required - as well as heavyweight clients which maintain a full
-local peristent copy of server state.
+local persistent copy of server state.
 
 This mostly describes v1 of the Client-Server API as featured in the original September
 2014 launch of Matrix, apart from user-interactive authentication where it is
-encouraged to move to V2, therefore this is the version documented here.
+encouraged to move to v2, therefore this is the version documented here.
 Version 2 is currently in development (as of Jan-March 2015) as an incremental
 but backwards-incompatible refinement of Version 1 and will be released
 shortly.
@@ -154,7 +154,7 @@ Matrix client, for example, an email confirmation may be completed when the user
 clicks on the link in the email. In this case, the client retries the request
 with an auth dict containing only the session key. The response to this will be
 the same as if the client were attempting to complete an auth state normally,
-ie. the request will either complete or request auth, with the presence or
+i.e. the request will either complete or request auth, with the presence or
 absence of that login stage type in the 'completed' array indicating whether
 that stage is complete.
 
@@ -204,7 +204,7 @@ Password-based
 :Type:
   ``m.login.password``
 :Description:
-  The client submits a username and secret password, both sent in plaintext.
+  The client submits a username and secret password, both sent in plain-text.
 
 To respond to this type, reply with an auth dict as follows::
 
@@ -247,10 +247,10 @@ service which the home server accepts when logging in, this indirection can be
 skipped and the "uri" key can be the ``Authorization Request URI``.
 
 The client then visits the ``Authorization Request URI``, which then shows the
-OAuth2 Allow/Deny prompt. Hitting 'Allow' returns the [XXX: redirects to the?]``redirect URI`` with the
-auth code. Home servers can choose any path for the ``redirect URI``. Once the
-OAuth flow has completed, the client retries the request with the session only,
-as above.
+OAuth2 Allow/Deny prompt. Hitting 'Allow' redirects to the ``redirect URI`` with
+the auth code. Home servers can choose any path for the ``redirect URI``. Once
+the OAuth flow has completed, the client retries the request with the session
+only, as above.
 
 Email-based (identity server)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -308,7 +308,7 @@ Where ``stage type`` is the type name of the stage it is attempting and
 ``session id`` is the ID of the session given by the home server.
 
 This MUST return an HTML page which can perform this authentication stage. This
-page must attempt to call the Javascript function ``window.onAuthDone`` when
+page must attempt to call the JavaScript function ``window.onAuthDone`` when
 the authentication has been completed.
 
 Pagination
@@ -373,7 +373,7 @@ now show page 3 (rooms R11 -> 15)::
                              Returns: R11,R12,R13,R14,R15
                          
 Note that tokens are treated in an *exclusive*, not inclusive, manner. The end 
-token from the intial request was '9' which corresponded to R10. When the 2nd
+token from the initial request was '9' which corresponded to R10. When the 2nd
 request was made, R10 did not appear again, even though from=9 was specified. If
 you know the token, you already have the data.
 
@@ -425,9 +425,9 @@ You can visualise the range of events being returned as::
                               |                             |
                         start: '1-2-3'                end: 'a-b-c'
                              
-Now, to receive future events in realtime on the eventstream, you simply GET
+Now, to receive future events in real-time on the eventstream, you simply GET
 $PREFIX/events with a ``from`` parameter of 'a-b-c': in other words passing in the
-``end`` token returned by initialsync. The request blocks until new events are
+``end`` token returned by initial sync. The request blocks until new events are
 available or until your specified timeout elapses, and then returns a
 new paginatable chunk of events alongside new start and end parameters::
 
@@ -467,7 +467,7 @@ event stream. When the request returns, an ``end`` token is included in the
 response. This token can be used in the next request to continue where the
 last request left off.
 
-All events must be deduplicated based on their event ID.
+All events must be de-duplicated based on their event ID.
 
 .. TODO
   is deduplication actually a hard requirement in CS v2?
@@ -493,7 +493,7 @@ Room events are split into two categories:
 
 :Message events:
   These are events which describe transient "once-off" activity in a room:
-  typically communication such as sending an instant messaage or setting up a
+  typically communication such as sending an instant message or setting up a
   VoIP call. These used to be called 'non-state' events.
 
 This specification outlines several events, all with the event type prefix
@@ -971,7 +971,7 @@ Registering for a user account is done using the request::
   POST $V2PREFIX/register
 
 This API endpoint uses the User-Interactive Authentication API.
-This API endoint does not require an access token.
+This API endpoint does not require an access token.
 
 The body of the POST request is a JSON object containing:
 
@@ -1059,7 +1059,7 @@ The third party identifier credentials object comprises:
 
 id_server
   The colon-separated hostname and port of the Identity Server used to
-  authenticate the third party identifer. If the port is the default, it and the
+  authenticate the third party identifier. If the port is the default, it and the
   colon should be omitted.
 sid
   The session ID given by the Identity Server
