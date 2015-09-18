@@ -30,10 +30,11 @@ except ImportError as e:
 
 
 def check_response(filepath, request, code, response):
+    example = None
     try:
-        example = json.loads(
-            response.get('examples', {}).get('application/json', "null")
-        )
+        example_json = response.get('examples', {}).get('application/json')
+        if example_json:
+            example = json.loads(example_json)
     except Exception as e:
         raise ValueError("Error parsing JSON example response for %r %r" % (
             request, code
