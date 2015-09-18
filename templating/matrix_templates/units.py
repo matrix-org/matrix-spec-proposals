@@ -8,6 +8,16 @@ import subprocess
 import urllib
 import yaml
 
+V1_CLIENT_API = "../api/client-server/v1"
+V1_EVENT_EXAMPLES = "../event-schemas/examples/v1"
+V1_EVENT_SCHEMA = "../event-schemas/schema/v1"
+CORE_EVENT_SCHEMA = "../event-schemas/schema/v1/core-event-schema"
+CHANGELOG = "../CHANGELOG.rst"
+
+ROOM_EVENT = "core-event-schema/room_event.json"
+STATE_EVENT = "core-event-schema/state_event.json"
+
+
 def get_json_schema_object_fields(obj, enforce_title=False):
     # Algorithm:
     # f.e. property => add field info (if field is object then recurse)
@@ -266,7 +276,7 @@ class MatrixUnits(Units):
         }
 
     def load_swagger_apis(self):
-        path = "../api/client-server/v1"
+        path = V1_CLIENT_API
         apis = {}
         for filename in os.listdir(path):
             if not filename.endswith(".yaml"):
@@ -281,7 +291,7 @@ class MatrixUnits(Units):
         return apis
 
     def load_common_event_fields(self):
-        path = "../event-schemas/schema/v1/core"
+        path = CORE_EVENT_SCHEMA
         event_types = {}
 
         for (root, dirs, files) in os.walk(path):
@@ -320,7 +330,7 @@ class MatrixUnits(Units):
         return event_types
 
     def load_event_examples(self):
-        path = "../event-schemas/examples/v1"
+        path = V1_EVENT_EXAMPLES
         examples = {}
         for filename in os.listdir(path):
             if not filename.startswith("m."):
@@ -332,7 +342,7 @@ class MatrixUnits(Units):
         return examples
 
     def load_event_schemas(self):
-        path = "../event-schemas/schema/v1"
+        path = V1_EVENT_SCHEMA
         schemata = {}
 
         for filename in os.listdir(path):
@@ -361,8 +371,8 @@ class MatrixUnits(Units):
 
                 # add typeof
                 base_defs = {
-                    "core#/definitions/room_event": "Message Event",
-                    "core#/definitions/state_event": "State Event"
+                    ROOM_EVENT: "Message Event",
+                    STATE_EVENT: "State Event"
                 }
                 if type(json_schema.get("allOf")) == list:
                     schema["typeof"] = base_defs.get(
@@ -413,7 +423,7 @@ class MatrixUnits(Units):
         return schemata
 
     def load_spec_meta(self):
-        path = "../CHANGELOG.rst"
+        path = CHANGELOG
         title_part = None
         version = None
         changelog_lines = []
