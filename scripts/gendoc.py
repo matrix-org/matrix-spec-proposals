@@ -21,9 +21,16 @@ title_style_matchers = {
 }
 TOP_LEVEL = "="
 SECOND_LEVEL = "-"
+FILE_FORMAT_MATCHER = re.compile("^[0-9]+_[0-9]{2}_.*\.rst$")
 
 
 def check_valid_section(filename, section):
+    if not re.match(FILE_FORMAT_MATCHER, filename):
+        raise Exception(
+            "The filename of " + filename +" does not match the expected format " +
+            "of '##_##_words-go-here.rst'"
+        )
+
     # we need TWO new lines else the next file's title gets merged
     # the last paragraph *WITHOUT RST PRODUCING A WARNING*
     if not section[-2:] == '\n\n':
@@ -39,21 +46,21 @@ def check_valid_section(filename, section):
             "The file " + filename + " doesn't have a title style line on line 2"
         )
 
-    # anything marked as x0_ is the start of a new top-level section
-    if re.match("^[0-9]+0_", filename):
+    # anything marked as xx_00_ is the start of a new top-level section
+    if re.match("^[0-9]+_00_", filename):
         if not title_style_matchers[TOP_LEVEL].match(title_line):
             raise Exception(
                 "The file " + filename + " is a top-level section because it matches " +
-                "the filename format x0_something.rst but has the wrong title " +
+                "the filename format ##_00_something.rst but has the wrong title " +
                 "style: expected '" + TOP_LEVEL + "' but got '" +
                 title_line[0] + "'"
             )
-    # anything marked as xx_ is the start of a sub-section
-    elif re.match("^[0-9]+_", filename):
+    # anything marked as xx_x0_ is the start of a sub-section
+    elif re.match("^[0-9]+_0[0-9]{1}_", filename):
         if not title_style_matchers[SECOND_LEVEL].match(title_line):
             raise Exception(
                 "The file " + filename + " is a 2nd-level section because it matches " +
-                "the filename format xx_something.rst but has the wrong title " +
+                "the filename format ##_#0_something.rst but has the wrong title " +
                 "style: expected '" + SECOND_LEVEL + "' but got '" +
                 title_line[0] + "'"
             )
