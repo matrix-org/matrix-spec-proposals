@@ -19,7 +19,7 @@
                     "description": "The avatar URL for this user, if any. This is added by the homeserver."
                 },
                 "displayname": {
-                    "type": "string",
+                    "type": ["string", "null"],
                     "description": "The display name for this user, if any. This is added by the homeserver."
                 }
             },

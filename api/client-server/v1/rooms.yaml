@@ -168,7 +168,7 @@ paths:
               title: StateEvent
               type: object
               allOf:
-                - "$ref": "events/core/state_event.json"
+                - "$ref": "core-event-schema/state_event.json"
         403:
           description: You are not joined to the room.
 
@@ -344,7 +344,7 @@ paths:
                       type: object
                       title: RoomEvent
                       allOf:
-                        - "$ref": "events/core/room_event.json"
+                        - "$ref": "core-event-schema/room_event.json"
                 required: ["start", "end", "chunk"]
               state:
                 type: array
@@ -357,7 +357,7 @@ paths:
                   title: StateEvent
                   type: object
                   allOf:
-                    - "$ref": "events/core/state_event.json"
+                    - "$ref": "core-event-schema/state_event.json"
               visibility:
                 type: string
                 enum: ["private", "public"]
@@ -414,7 +414,7 @@ paths:
                     "state_key": "@bob:example.com",
                     "type": "m.room.member",
                     "user_id": "@bob:example.com"
-                  },
+                  }
                 ]
               }
           schema:
@@ -426,5 +426,5 @@ paths:
                   title: MemberEvent
                   type: object
                   allOf:
-                    - "$ref": "events/m.room.member"
+                    - "$ref": "v1-event-schema/m.room.member"
 
