@@ -128,11 +128,3 @@ Threat: Disclosure to Servers Within Chatroom
 An attacker could take control of a server within a chatroom to expose message
 contents or metadata for messages in that room.
 
-
-Identity Servers
-================
-.. NOTE::
-  This section is a work in progress.
-
-.. TODO-doc Dave
-  - 3PIDs and identity server, functions

@@ -409,7 +409,6 @@ class MatrixUnits(Units):
                         "`m.room.message msgtypes`_."
                     )
 
-
                 # Assign state key info if it has some
                 if schema["typeof"] == "State Event":
                     skey_desc = Units.prop(
