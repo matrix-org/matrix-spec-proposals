@@ -1,5 +1,5 @@
 Room History Visibility
-=======================
+-----------------------
 
 Whether a member of a room can see the events that happened in a room from
 before they joined the room is controlled by the ``history_visibility`` key

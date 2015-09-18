@@ -3,7 +3,7 @@
     "title": "FileMessage",
     "description": "This message represents a generic file.",
     "allOf": [{
-        "$ref": "core/room_event.json"
+        "$ref": "core-event-schema/room_event.json"
     }],
     "properties": {
         "content": {
@@ -49,7 +49,7 @@
                     "title": "ImageInfo",
                     "description": "Metadata about the image referred to in ``thumbnail_url``.",
                     "allOf": [{
-                        "$ref": "core/msgtype_infos/image_info.json"
+                        "$ref": "core-event-schema/msgtype_infos/image_info.json"
                     }]
                 }
             },

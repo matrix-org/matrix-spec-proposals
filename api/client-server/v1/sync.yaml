@@ -82,7 +82,7 @@ paths:
                   type: object
                   title: RoomEvent
                   allOf:
-                   - "$ref": "events/core/room_event.json"
+                   - "$ref": "core-event-schema/room_event.json"
         400:
           description: "Bad pagination ``from`` parameter."
   "/initialSync":
@@ -253,7 +253,7 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                   - "$ref": "events/core/event.json"
+                   - "$ref": "core-event-schema/event.json"
               rooms:
                 type: array
                 items:
@@ -294,7 +294,7 @@ paths:
                             type: object
                             title: RoomEvent
                             allOf:
-                              - "$ref": "events/core/room_event.json"
+                              - "$ref": "core-event-schema/room_event.json"
                       required: ["start", "end", "chunk"]
                     state:
                       type: array
@@ -307,7 +307,7 @@ paths:
                         title: StateEvent
                         type: object
                         allOf:
-                          - "$ref": "events/core/state_event.json"
+                          - "$ref": "core-event-schema/state_event.json"
                     visibility:
                       type: string
                       enum: ["private", "public"]
@@ -343,13 +343,13 @@ paths:
                   "body": "Hello world!",
                   "msgtype": "m.text"
                 },
-                "room_id:" "!wfgy43Sg4a:matrix.org",
+                "room_id:": "!wfgy43Sg4a:matrix.org",
                 "user_id": "@bob:matrix.org",
                 "event_id": "$asfDuShaf7Gafaw:matrix.org",
                 "type": "m.room.message"
               }
           schema:
             allOf:
-              - "$ref": "events/core/event.json"
+              - "$ref": "core-event-schema/event.json"
         404:
           description: The event was not found or you do not have permission to read this event.
