@@ -18,7 +18,14 @@ def glob_spec_to(out_file_name):
     with open(out_file_name, "wb") as outfile:
         for f in sorted(glob.glob("../specification/*.rst")):
             with open(f, "rb") as infile:
-                outfile.write(infile.read())
+                section = infile.read()
+                # we need TWO new lines else the next file's title gets merged
+                # the last paragraph *WITHOUT RST PRODUCING A WARNING*
+                if not section[-2:] == '\n\n':
+                    raise Exception(
+                        "The file " + f + " does not end with 2 new lines."
+                    )
+                outfile.write(section)
 
 
 def rst2html(i, o):
