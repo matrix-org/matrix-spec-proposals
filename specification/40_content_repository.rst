@@ -39,10 +39,10 @@ thumbnailing method::
 
        <thumbnail>
 
-The thumbnail methods are "crop" and "scale". "scale" trys to return an
+The thumbnail methods are "crop" and "scale". "scale" tries to return an
 image where either the width or the height is smaller than the requested
 size. The client should then scale and letterbox the image if it needs to
-fit within a given rectangle. "crop" trys to return an image where the
+fit within a given rectangle. "crop" tries to return an image where the
 width and height are close to the requested size and the aspect matches
 the requested size. The client should scale the image if it needs to fit
 within a given rectangle.
@@ -53,8 +53,8 @@ the content. Homeservers may return thumbnails of a different size to that
 requested. However homeservers should provide exact matches where reasonable.
 Homeservers must never upscale images.
 
-Security
---------
+Security considerations
+-----------------------
 
 Clients may try to upload very large files. Homeservers should not store files
 that are too large and should not serve them to clients.

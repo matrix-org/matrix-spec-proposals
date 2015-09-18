@@ -30,7 +30,7 @@ using this representation.
          value,
          # Encode code-points outside of ASCII as UTF-8 rather than \u escapes
          ensure_ascii=False,
-         # Remove unecessary white space.
+         # Remove unnecessary white space.
          separators=(',',':'),
          # Sort the keys of dictionaries.
          sort_keys=True,

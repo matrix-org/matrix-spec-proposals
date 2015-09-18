@@ -79,7 +79,7 @@ The functionality that Matrix provides includes:
 - Extensible user management (inviting, joining, leaving, kicking, banning)
   mediated by a power-level based user privilege system.
 - Extensible room state management (room naming, aliasing, topics, bans)
-- Extensible user profile management (avatars, displaynames, etc)
+- Extensible user profile management (avatars, display names, etc)
 - Managing user accounts (registration, login, logout)
 - Use of 3rd Party IDs (3PIDs) such as email addresses, phone numbers,
   Facebook accounts to authenticate, identify and discover users on Matrix.
@@ -91,7 +91,7 @@ The functionality that Matrix provides includes:
 The end goal of Matrix is to be a ubiquitous messaging layer for synchronising
 arbitrary data between sets of people, devices and services - be that for
 instant messages, VoIP call setups, or any other objects that need to be
-reliably and persistently pushed from A to B in an interoperable and federated
+reliably and persistently pushed from A to B in an inter-operable and federated
 manner.
 
 Overview
@@ -171,12 +171,13 @@ All data exchanged over Matrix is expressed as an "event". Typically each client
 action (e.g. sending a message) correlates with exactly one event. Each event
 has a ``type`` which is used to differentiate different kinds of data. ``type``
 values MUST be uniquely globally namespaced following Java's `package naming
-conventions
-<http://docs.oracle.com/javase/specs/jls/se5.0/html/packages.html#7.7>`, e.g.
+conventions`_, e.g.
 ``com.example.myapp.event``. The special top-level namespace ``m.`` is reserved
 for events defined in the Matrix specification - for instance ``m.room.message``
 is the event type for instant messages. Events are usually sent in the context
 of a "Room".
+
+.. _package naming conventions: https://en.wikipedia.org/wiki/Java_package#Package_naming_conventions
 
 Event Graphs
 ~~~~~~~~~~~~
@@ -184,7 +185,7 @@ Event Graphs
 Events exchanged in the context of a room are stored in a directed acyclic graph
 (DAG) called an ``event graph``. The partial ordering of this graph gives the
 chronological ordering of events within the room. Each event in the graph has a
-list of zero or more ``parent`` events, which refer to any preceeding events
+list of zero or more ``parent`` events, which refer to any preceding events
 which have no chronological successor from the perspective of the homeserver
 which created the event.
 
@@ -367,7 +368,8 @@ room). An example of a non-proactive client activity would be a client setting
 key called ``last_active_ago``, which gives the relative number of milliseconds
 since the message is generated/emitted that the user was last seen active.
 
-N.B. in v1 API, status/online/idle state are muxed into a single 'presence' field on the m.presence event.
+N.B. in v1 API, status/online/idle state are muxed into a single 'presence'
+field on the ``m.presence`` event.
 
 Presence Lists
 ~~~~~~~~~~~~~~
@@ -385,7 +387,7 @@ Profiles
 
 Users may publish arbitrary key/value data associated with their account - such
 as a human readable ``display name``, a profile photo URL, contact information
-(email address, phone nubers, website URLs etc).
+(email address, phone numbers, website URLs etc).
 
 In Client-Server API v2, profile data is typed using namespaced keys for
 interoperability, much like events - e.g. ``m.profile.display_name``.
@@ -442,7 +444,7 @@ The ``error`` string will be a human-readable error message, usually a sentence
 explaining what went wrong. The ``errcode`` string will be a unique string
 which can be used to handle an error message e.g. ``M_FORBIDDEN``. These error
 codes should have their namespace first in ALL CAPS, followed by a single _ to
-ease seperating the namespace from the error code.. For example, if there was a
+ease separating the namespace from the error code. For example, if there was a
 custom namespace ``com.mydomain.here``, and a
 ``FORBIDDEN`` code, the error code should look like
 ``COM.MYDOMAIN.HERE_FORBIDDEN``. There may be additional keys depending on the
