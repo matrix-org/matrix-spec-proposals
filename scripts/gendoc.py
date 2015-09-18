@@ -49,7 +49,7 @@ def run_through_template(input):
             )
     except subprocess.CalledProcessError as e:
         with open(tmpfile, 'r') as f:
-            print f.read()
+            sys.stderr.write(f.read() + "\n")
         raise
 
 def prepare_env():
