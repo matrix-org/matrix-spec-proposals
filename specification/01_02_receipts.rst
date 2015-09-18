@@ -1,5 +1,5 @@
 Receipts
-========
+--------
 
 Receipts are used to publish which events in a room the user or their devices
 have interacted with. For example, which events the user has read. For
@@ -7,7 +7,7 @@ efficiency this is done as "up to" markers, i.e. marking a particular event
 as, say, ``read`` indicates the user has read all events *up to* that event.
 
 Client-Server API
------------------
+~~~~~~~~~~~~~~~~~
 
 Clients will receive receipts in the following format::
 
@@ -58,7 +58,7 @@ other users. The server will automatically set the ``ts`` field.
 
 
 Server-Server API
------------------
+~~~~~~~~~~~~~~~~~
 
 Receipts are sent across federation as EDUs with type ``m.receipt``. The
 format of the EDUs are::
@@ -73,5 +73,5 @@ format of the EDUs are::
         ...
     }
 
-These are always sent as deltas to previously sent reciepts.
+These are always sent as deltas to previously sent receipts.
 
