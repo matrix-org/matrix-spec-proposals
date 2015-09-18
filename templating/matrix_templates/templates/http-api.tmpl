@@ -62,7 +62,9 @@ Response{{"s" if endpoint.example.responses|length > 1 else "" }}:
 
 {{res["description"]}}
 
-Example::
+Example
+
+.. code:: json
 
   {{res["example"] | indent_block(2)}}
 
