@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import sys
+import yaml
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -24,7 +25,7 @@ SECOND_LEVEL = "-"
 FILE_FORMAT_MATCHER = re.compile("^[0-9]+_[0-9]{2}[a-z]*_.*\.rst$")
 
 
-def check_valid_section(filename, section):
+def check_valid_section_old(filename, section):
     if not re.match(FILE_FORMAT_MATCHER, filename):
         raise Exception(
             "The filename of " + filename + " does not match the expected format " +
@@ -67,13 +68,19 @@ def check_valid_section(filename, section):
                 "check."
             )
 
-def cat_spec_sections_to(out_file_name):
-    with open(out_file_name, "wb") as outfile:
-        for f in sorted(glob.glob("../specification/*.rst")):
-            with open(f, "rb") as infile:
-                section = infile.read()
-                check_valid_section(os.path.basename(f), section)
-                outfile.write(section)
+def check_valid_section(section):
+    pass
+
+
+def get_rst(file_info, target):
+    pass
+
+def build_spec(target, out_filename):
+    with open(out_filename, "wb") as outfile:
+        for file_info in target["files"]:
+            section = get_rst(file_info, target)
+            check_valid_section(section)
+            outfile.write(section)
 
 
 def rst2html(i, o):
@@ -87,6 +94,7 @@ def rst2html(i, o):
                 writer_name="html",
                 settings_overrides=stylesheets
             )
+
 
 def run_through_template(input):
     tmpfile = './tmp/output'
@@ -107,6 +115,43 @@ def run_through_template(input):
             sys.stderr.write(f.read() + "\n")
         raise
 
+
+def get_build_target(targets_listing, target_name):
+    build_target = {
+        "title_styles": [],
+        "files": []
+    }
+    with open(targets_listing, "r") as targ_file:
+        all_targets = yaml.load(targ_file.read())
+        build_target["title_styles"] = all_targets["title_styles"]
+        target = all_targets["targets"].get(target_name)
+        if not target:
+            raise Exception(
+                "No target by the name '" + target_name + "' exists in '" +
+                targets_listing + "'."
+            )
+        if not isinstance(target.get("files"), list):
+            raise Exception(
+                "Found target but 'files' key is not a list."
+            )
+        resolved_files = []
+        for f in target["files"]:
+            if isinstance(f, basestring) and f.startswith("group:"):
+                # copy across the group of files specified
+                group_name = f[len("group:"):]
+                group = all_targets.get("groups", {}).get(group_name)
+                if not isinstance(group, list):
+                    raise Exception(
+                        "Tried to find group '" + group_name + "' but either " +
+                        "it doesn't exist or it isn't a list of files."
+                    )
+                resolved_files.extend(group)
+            else:
+                resolved_files.append(f)
+        build_target["files"] = resolved_files
+    return build_target
+
+
 def prepare_env():
     try:
         os.makedirs("./gen")
@@ -116,13 +161,17 @@ def prepare_env():
         os.makedirs("./tmp")
     except OSError:
         pass
-    
+
+
 def cleanup_env():
     shutil.rmtree("./tmp")
 
-def main():
+
+def main(target_name):
     prepare_env()
-    cat_spec_sections_to("tmp/full_spec.rst")
+    target = get_build_target("../specification/targets.yaml", target_name)
+    print target
+    build_spec(target=target, out_filename="tmp/full_spec.rst")
     run_through_template("tmp/full_spec.rst")
     shutil.copy("../supporting-docs/howtos/client-server.rst", "tmp/howto.rst")
     run_through_template("tmp/howto.rst")
@@ -130,6 +179,7 @@ def main():
     rst2html("tmp/howto.rst", "gen/howtos.html")
     if "--nodelete" not in sys.argv:
         cleanup_env()
+
 
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1:] != ["--nodelete"]:
@@ -145,4 +195,4 @@ if __name__ == '__main__':
         print "Requirements:"
         print " - This script requires Jinja2 and rst2html (docutils)."
         sys.exit(0)
-    main()
+    main("main")
