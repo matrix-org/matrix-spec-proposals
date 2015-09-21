@@ -13,7 +13,7 @@ import yaml
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 stylesheets = {
-    "stylesheet_path": ["basic.css", "nature.css"]
+    "stylesheet_path": ["basic.css", "nature.css", "codehighlight.css"]
 }
 
 
