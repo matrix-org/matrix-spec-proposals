@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   title: "Matrix Client-Server v1 Rooms API"
   version: "1.0.0"
-host: example.com:8008
+host: localhost:8008
 schemes:
   - https
   - http
