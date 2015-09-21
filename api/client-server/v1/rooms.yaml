@@ -57,7 +57,9 @@ paths:
         404:
           description: The room has no state with the given type or key.
         403:
-          description: You are not joined to the room.
+          description: >
+            You aren't a member of the room and weren't previously a
+            member of the room.
 
   "/rooms/{roomId}/state":
     get:
@@ -170,7 +172,9 @@ paths:
               allOf:
                 - "$ref": "core-event-schema/state_event.json"
         403:
-          description: You are not joined to the room.
+          description: >
+            You aren't a member of the room and weren't previously a
+            member of the room.
 
   "/rooms/{roomId}/initialSync":
     get:
@@ -365,6 +369,10 @@ paths:
                   Whether this room is visible to the ``/publicRooms`` API
                   or not."
             required: ["room_id", "membership"]
+        403:
+          description: >
+            You aren't a member of the room and weren't previously a
+            member of the room.
 
   "/rooms/{roomId}/members":
     get:
@@ -427,4 +435,8 @@ paths:
                   type: object
                   allOf:
                     - "$ref": "v1-event-schema/m.room.member"
+        403:
+          description: >
+            You aren't a member of the room and weren't previously a
+            member of the room.
 
