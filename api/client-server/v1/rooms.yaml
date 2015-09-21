@@ -24,7 +24,8 @@ paths:
       description: |-
         Looks up the contents of a state event in a room. If the user is
         joined to the room then the state is taken from the current
-        state of the room.
+        state of the room. If the user has left the room then the state is
+        taken from the state of the room when they left.
       security:
         - accessToken: []
       parameters:
@@ -165,7 +166,9 @@ paths:
             title: RoomState
             description: |-
               If the user is a member of the room this will be the
-              current state of the room as a list of events.
+              current state of the room as a list of events. If the user
+              has left the room then this will be the state of the room
+              when they left as a list of events.
             items:
               title: StateEvent
               type: object
@@ -378,7 +381,7 @@ paths:
     get:
       summary: Get the m.room.member events for the room.
       description:
-        Get the list of members of the room.
+        Get the list of members for this room.
       parameters:
         - in: path
           type: string
