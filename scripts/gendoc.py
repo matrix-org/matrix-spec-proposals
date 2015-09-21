@@ -50,13 +50,13 @@ def load_with_adjusted_titles(filename, file_stream, title_level, title_styles):
     return "".join(rst_lines)
 
 
-
 def get_rst(file_info, title_level, title_styles, spec_dir):
     # string are file paths to RST blobs
     if isinstance(file_info, basestring):
+        print "%s %s" % (">" * (1 + title_level), file_info)
         with open(spec_dir + file_info, "r") as f:
             return load_with_adjusted_titles(file_info, f, title_level, title_styles)
-    # dicts look like {1: filepath, 2: filepath} where the key is the title level
+    # dicts look like {0: filepath, 1: filepath} where the key is the title level
     elif isinstance(file_info, dict):
         levels = sorted(file_info.keys())
         rst = []
@@ -144,12 +144,15 @@ def get_build_target(targets_listing, target_name):
                 # copy across the group of files specified
                 group_name = f[len("group:"):]
                 group = all_targets.get("groups", {}).get(group_name)
-                if not isinstance(group, list):
+                if not group:
                     raise Exception(
-                        "Tried to find group '" + group_name + "' but either " +
-                        "it doesn't exist or it isn't a list of files."
+                        "Tried to find group '" + group_name + "' but it " +
+                        "doesn't exist."
                     )
-                resolved_files.extend(group)
+                if isinstance(group, list):
+                    resolved_files.extend(group)
+                else:
+                    resolved_files.append(group)
             else:
                 resolved_files.append(f)
         build_target["files"] = resolved_files
@@ -173,6 +176,7 @@ def cleanup_env():
 
 def main(target_name):
     prepare_env()
+    print "Building spec [target=%s]" % target_name
     target = get_build_target("../specification/targets.yaml", target_name)
     build_spec(target=target, out_filename="tmp/full_spec.rst")
     run_through_template("tmp/full_spec.rst")
