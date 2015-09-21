@@ -55,6 +55,9 @@ def check_example_dir(exampledir, schemadir):
     errors = []
     for root, dirs, files in os.walk(exampledir):
         for filename in files:
+            if filename.startswith("."):
+                # Skip over any vim .swp files.
+                continue
             examplepath = os.path.join(root, filename)
             schemapath = examplepath.replace(exampledir, schemadir)
             try:
