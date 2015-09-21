@@ -34,7 +34,7 @@ paths:
           name: roomId
           description: The room to look up the state in.
           required: true
-          x-example: "!room:example.com"
+          x-example: "!636q39766251:example.com"
         - in: path
           type: string
           name: eventType
@@ -75,7 +75,7 @@ paths:
           name: roomId
           description: The room to look up the state for.
           required: true
-          x-example: "!room:example.com"
+          x-example: "!636q39766251:example.com"
       responses:
         200:
           description: The current state of the room
@@ -89,7 +89,7 @@ paths:
                     },
                     "event_id": "$14259997323TLwtb:example.com",
                     "origin_server_ts": 1425999732392,
-                    "room_id": "!room:example.com",
+                    "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.join_rules",
                     "user_id": "@alice:example.com"
@@ -104,7 +104,7 @@ paths:
                     "event_id": "$1426600438280zExKY:example.com",
                     "membership": "join",
                     "origin_server_ts": 1426600438277,
-                    "room_id": "!room:example.com",
+                    "room_id": "!636q39766251:example.com",
                     "state_key": "@alice:example.com",
                     "type": "m.room.member",
                     "user_id": "@alice:example.com"
@@ -116,7 +116,7 @@ paths:
                     },
                     "event_id": "$14259997320KhbwJ:example.com",
                     "origin_server_ts": 1425999732089,
-                    "room_id": "!room:example.com",
+                    "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.create",
                     "user_id": "@alice:example.com"
@@ -131,7 +131,7 @@ paths:
                     "event_id": "$1431525430134MxlLX:example.com",
                     "origin_server_ts": 1431525430569,
                     "replaces_state": "$142652023736BSXcM:example.com",
-                    "room_id": "!room:example.com",
+                    "room_id": "!636q39766251:example.com",
                     "state_key": "@bob:example.com",
                     "type": "m.room.member",
                     "user_id": "@bob:example.com"
@@ -155,7 +155,7 @@ paths:
                     },
                     "event_id": "$14259997322mqfaq:example.com",
                     "origin_server_ts": 1425999732285,
-                    "room_id": "!room:example.com",
+                    "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.power_levels",
                     "user_id": "@alice:example.com"
@@ -192,7 +192,7 @@ paths:
           name: roomId
           description: The room to get the data.
           required: true
-          x-example: "!room:example.com"
+          x-example: "!636q39766251:example.com"
       responses:
         200:
           description: The current state of the room
@@ -210,7 +210,7 @@ paths:
                       },
                       "event_id": "$14328044851tzTJS:example.com",
                       "origin_server_ts": 1432804485886,
-                      "room_id": "!room:example.com",
+                      "room_id": "!636q39766251:example.com",
                       "type": "m.room.message",
                       "user_id": "@alice:example.com"
                     },
@@ -222,7 +222,7 @@ paths:
                       },
                       "event_id": "$14328044872spjFg:example.com",
                       "origin_server_ts": 1432804487480,
-                      "room_id": "!room:example.com",
+                      "room_id": "!636q39766251:example.com",
                       "type": "m.room.message",
                       "user_id": "@bob:example.com"
                     }
@@ -230,7 +230,7 @@ paths:
                   "end": "s3456_9_0",
                   "start": "t44-3453_9_0"
                 },
-                "room_id": "!room:example.com",
+                "room_id": "!636q39766251:example.com",
                 "state": [
                   {
                     "age": 7148266897,
@@ -239,7 +239,7 @@ paths:
                     },
                     "event_id": "$14259997323TLwtb:example.com",
                     "origin_server_ts": 1425999732392,
-                    "room_id": "!room:example.com",
+                    "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.join_rules",
                     "user_id": "@alice:example.com"
@@ -254,7 +254,7 @@ paths:
                     "event_id": "$1426600438280zExKY:example.com",
                     "membership": "join",
                     "origin_server_ts": 1426600438277,
-                    "room_id": "!room:example.com",
+                    "room_id": "!636q39766251:example.com",
                     "state_key": "@alice:example.com",
                     "type": "m.room.member",
                     "user_id": "@alice:example.com"
@@ -266,7 +266,7 @@ paths:
                     },
                     "event_id": "$14259997320KhbwJ:example.com",
                     "origin_server_ts": 1425999732089,
-                    "room_id": "!room:example.com",
+                    "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.create",
                     "user_id": "@alice:example.com"
@@ -281,7 +281,7 @@ paths:
                     "event_id": "$1431525430134MxlLX:example.com",
                     "origin_server_ts": 1431525430569,
                     "replaces_state": "$142652023736BSXcM:example.com",
-                    "room_id": "!room:example.com",
+                    "room_id": "!636q39766251:example.com",
                     "state_key": "@bob:example.com",
                     "type": "m.room.member",
                     "user_id": "@bob:example.com"
@@ -305,7 +305,7 @@ paths:
                     },
                     "event_id": "$14259997322mqfaq:example.com",
                     "origin_server_ts": 1425999732285,
-                    "room_id": "!room:example.com",
+                    "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.power_levels",
                     "user_id": "@alice:example.com"
@@ -388,7 +388,7 @@ paths:
           name: roomId
           description: The room to get the member events for.
           required: true
-          x-example: "!room:example.com"
+          x-example: "!636q39766251:example.com"
       responses:
         200:
           description: |-
@@ -409,7 +409,7 @@ paths:
                     "event_id": "$1426600438280zExKY:example.com",
                     "membership": "join",
                     "origin_server_ts": 1426600438277,
-                    "room_id": "!room:example.com",
+                    "room_id": "!636q39766251:example.com",
                     "state_key": "@alice:example.com",
                     "type": "m.room.member",
                     "user_id": "@alice:example.com"
@@ -424,7 +424,7 @@ paths:
                     "event_id": "$1431525430134MxlLX:example.com",
                     "origin_server_ts": 1431525430569,
                     "replaces_state": "$142652023736BSXcM:example.com",
-                    "room_id": "!room:example.com",
+                    "room_id": "!636q39766251:example.com",
                     "state_key": "@bob:example.com",
                     "type": "m.room.member",
                     "user_id": "@bob:example.com"
