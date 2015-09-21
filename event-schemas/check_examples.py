@@ -3,6 +3,7 @@
 import sys
 import json
 import os
+import traceback
 
 
 def import_error(module, package, debian, error):
@@ -44,19 +45,29 @@ def check_example_file(examplepath, schemapath):
     schema['id'] = fileurl
     try:
         jsonschema.validate(example, schema)
-    except:
+    except Exception as e:
         raise ValueError("Error validating JSON schema for %r %r" % (
             examplepath, schemapath
         ), e)
 
 
 def check_example_dir(exampledir, schemadir):
+    errors = []
     for root, dirs, files in os.walk(exampledir):
         for filename in files:
             examplepath = os.path.join(root, filename)
             schemapath = examplepath.replace(exampledir, schemadir)
-            check_example_file(examplepath, schemapath)
-
+            try:
+                check_example_file(examplepath, schemapath)
+            except Exception as e:
+                errors.append(sys.exc_info())
+    for (exc_type, exc_value, exc_trace) in errors:
+        traceback.print_exception(exc_type, exc_value, exc_trace)
+    if errors:
+        raise ValueError("Error validating examples")
 
 if __name__ == '__main__':
-    check_example_dir("examples", "schema")
+    try:
+        check_example_dir("examples", "schema")
+    except:
+        sys.exit(1)
