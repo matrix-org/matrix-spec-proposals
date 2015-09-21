@@ -391,7 +391,10 @@ paths:
           x-example: "!room:example.com"
       responses:
         200:
-          description: The members of the room.
+          description: |-
+            A list of members of the room. If you are joined to the room then
+            this will be the current members of the room. If you have left te
+            room then this will be the members of the room when you left.
           examples:
             application/json: |-
               {
