@@ -1,0 +1,25 @@
+targets:
+  main:
+    files:
+      - 00_00_intro.rst
+      - 00_01_feature_profiles.rst
+      - 00_02a_events.rst
+      - 00_02b_event_signing.rst
+      - 01_00_client_server_api.rst
+      - 02_00_modules.rst
+      - "group:module"
+      - 03_00_application_service_api.rst
+      - 04_00_server_server_api.rst
+      - 05_00_identity_servers.rst
+      - 06_00_appendices.rst
+groups:
+  modules:
+    - modules/01_00_voip_events.rst
+    - modules/02_00_typing_notifications.rst
+    - modules/03_00_receipts.rst
+    - modules/04_00_content_repo.rst
+    - modules/05_00_end_to_end_encryption.rst
+    - modules/06_00_history_visibility.rst
+    - modules/07_00_push_overview.rst
+    - modules/07_01_push_cs_api.rst
+    - modules/07_02_push_push_gw_api.rst
