@@ -16,70 +16,74 @@ stylesheets = {
     "stylesheet_path": ["basic.css", "nature.css"]
 }
 
-title_style_matchers = {
-    "=": re.compile("^=+$"),
-    "-": re.compile("^-+$")
-}
-TOP_LEVEL = "="
-SECOND_LEVEL = "-"
-FILE_FORMAT_MATCHER = re.compile("^[0-9]+_[0-9]{2}[a-z]*_.*\.rst$")
+
+def _list_get(l, index, default=None):
+    try:
+        return l[index]
+    except IndexError:
+        return default
 
 
-def check_valid_section_old(filename, section):
-    if not re.match(FILE_FORMAT_MATCHER, filename):
-        raise Exception(
-            "The filename of " + filename + " does not match the expected format " +
-            "of '##_##_words-go-here.rst'"
-        )
+def load_with_adjusted_titles(filename, file_stream, title_level, title_styles):
+    rst_lines = []
+    title_chars = "".join(title_styles)
+    title_regex = re.compile("^[" + re.escape(title_chars) + "]+$")
 
-    # we need TWO new lines else the next file's title gets merged
-    # the last paragraph *WITHOUT RST PRODUCING A WARNING*
-    if not section[-2:] == "\n\n":
-        raise Exception(
-            "The file " + filename + " does not end with 2 new lines."
-        )
-
-    # Enforce some rules to reduce the risk of having mismatched title
-    # styles.
-    title_line = section.split("\n")[1]
-    if title_line != (len(title_line) * title_line[0]):
-        raise Exception(
-            "The file " + filename + " doesn't have a title style line on line 2"
-        )
-
-    # anything marked as xx_00_ is the start of a new top-level section
-    if re.match("^[0-9]+_00_", filename):
-        if not title_style_matchers[TOP_LEVEL].match(title_line):
-            raise Exception(
-                "The file " + filename + " is a top-level section because it matches " +
-                "the filename format ##_00_something.rst but has the wrong title " +
-                "style: expected '" + TOP_LEVEL + "' but got '" +
-                title_line[0] + "'"
-            )
-    # anything marked as xx_xx_ is the start of a sub-section
-    elif re.match("^[0-9]+_[0-9]{2}_", filename):
-        if not title_style_matchers[SECOND_LEVEL].match(title_line):
-            raise Exception(
-                "The file " + filename + " is a 2nd-level section because it matches " +
-                "the filename format ##_##_something.rst but has the wrong title " +
-                "style: expected '" + SECOND_LEVEL + "' but got '" +
-                title_line[0] + "' - If this is meant to be a 3rd/4th/5th-level section " +
-                "then use the form '##_##b_something.rst' which will not apply this " +
-                "check."
-            )
-
-def check_valid_section(section):
-    pass
+    curr_title_level = title_level
+    for i, line in enumerate(file_stream, 1):
+        if title_regex.match(line):
+            line_title_level = title_styles.index(line[0])
+            # Allowed to go 1 deeper or any number shallower
+            if curr_title_level - line_title_level < -1:
+                raise Exception(
+                    ("File '%s' line '%s' has a title " +
+                    "style '%s' which doesn't match one of the " +
+                    "allowed title styles of %s because the " +
+                    "title level before this line was '%s'") %
+                    (filename, (i + 1), line[0], title_styles,
+                    title_styles[curr_title_level])
+                )
+            curr_title_level = line_title_level
+            rst_lines.append(line)
+        else:
+            rst_lines.append(line)
+    return "".join(rst_lines)
 
 
-def get_rst(file_info, target):
-    pass
+
+def get_rst(file_info, title_level, title_styles, spec_dir):
+    # string are file paths to RST blobs
+    if isinstance(file_info, basestring):
+        with open(spec_dir + file_info, "r") as f:
+            return load_with_adjusted_titles(file_info, f, title_level, title_styles)
+    # dicts look like {1: filepath, 2: filepath} where the key is the title level
+    elif isinstance(file_info, dict):
+        levels = sorted(file_info.keys())
+        rst = []
+        for l in levels:
+            rst.append(get_rst(file_info[l], l, title_styles, spec_dir))
+        return "".join(rst)
+    # lists are multiple file paths e.g. [filepath, filepath]
+    elif isinstance(file_info, list):
+        rst = []
+        for f in file_info:
+            rst.append(get_rst(f, title_level, title_styles, spec_dir))
+        return "".join(rst)
+    raise Exception(
+        "The following 'file' entry in this target isn't a string, list or dict. " +
+        "It really really should be. Entry: %s" % (file_info,)
+    )
+
 
 def build_spec(target, out_filename):
     with open(out_filename, "wb") as outfile:
         for file_info in target["files"]:
-            section = get_rst(file_info, target)
-            check_valid_section(section)
+            section = get_rst(
+                file_info=file_info,
+                title_level=0,
+                title_styles=target["title_styles"],
+                spec_dir="../specification/"
+            )
             outfile.write(section)
 
 
@@ -170,7 +174,6 @@ def cleanup_env():
 def main(target_name):
     prepare_env()
     target = get_build_target("../specification/targets.yaml", target_name)
-    print target
     build_spec(target=target, out_filename="tmp/full_spec.rst")
     run_through_template("tmp/full_spec.rst")
     shutil.copy("../supporting-docs/howtos/client-server.rst", "tmp/howto.rst")
