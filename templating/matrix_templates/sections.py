@@ -160,7 +160,12 @@ class MatrixSections(Sections):
     def _render_ce_type(self, type):
         template = self.env.get_template("common-event-fields.tmpl")
         ce_types = self.units.get("common_event_fields")
-        return template.render(common_event=ce_types[type])
+        subtitle_title_char = self.units.get("spec_targets")[
+            "relative_title_styles"
+        ]["subtitle"]
+        return template.render(
+            common_event=ce_types[type], title_kind=subtitle_title_char
+        )
 
     def render_common_event_fields(self):
         return self._render_ce_type("event")
