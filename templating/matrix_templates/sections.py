@@ -105,8 +105,7 @@ class MatrixSections(Sections):
 
     def render_rooms_http_api(self):
         return self._render_http_api_group(
-            "rooms",
-            title_kind="+"
+            "rooms"
         )
 
     def render_room_events(self):
