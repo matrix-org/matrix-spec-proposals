@@ -118,7 +118,7 @@ def get_rst(file_info, title_level, title_styles, spec_dir, adjust_titles):
     # string are file paths to RST blobs
     if isinstance(file_info, basestring):
         print "%s %s" % (">" * (1 + title_level), file_info)
-        with open(spec_dir + file_info, "r") as f:
+        with open(os.path.join(spec_dir, file_info), "r") as f:
             rst = None
             if adjust_titles:
                 rst = load_with_adjusted_titles(
@@ -175,8 +175,8 @@ This function replaces these relative titles with actual title styles from the
 array in targets.yaml.
 """
 def fix_relative_titles(target, filename, out_filename):
-    title_styles = target["title_styles"] # ["=", "-", "~", "+"]
-    relative_title_chars = [ # ["<", "/", ">"]
+    title_styles = target["title_styles"]
+    relative_title_chars = [
         target["relative_title_styles"]["subtitle"],
         target["relative_title_styles"]["sametitle"],
         target["relative_title_styles"]["supertitle"]
@@ -259,6 +259,17 @@ def run_through_template(input):
         raise
 
 
+"""
+Extract and resolve groups for the given target in the given targets listing.
+Args:
+    targets_listing (str): The path to a YAML file containing a list of targets
+    target_name (str): The name of the target to extract from the listings.
+Returns:
+    dict: Containing "filees" (a list of file paths), "relative_title_styles"
+          (a dict of relative style keyword to title character) and "title_styles"
+          (a list of characters which represent the global title style to follow,
+           with the top section title first, the second section second, and so on.)
+"""
 def get_build_target(targets_listing, target_name):
     build_target = {
         "title_styles": [],
@@ -267,49 +278,57 @@ def get_build_target(targets_listing, target_name):
     }
     with open(targets_listing, "r") as targ_file:
         all_targets = yaml.load(targ_file.read())
-        build_target["title_styles"] = all_targets["title_styles"]
-        build_target["relative_title_styles"] = all_targets["relative_title_styles"]
-        target = all_targets["targets"].get(target_name)
-        if not target:
+
+    build_target["title_styles"] = all_targets["title_styles"]
+    build_target["relative_title_styles"] = all_targets["relative_title_styles"]
+    target = all_targets["targets"].get(target_name)
+    if not target:
+        raise Exception(
+            "No target by the name '" + target_name + "' exists in '" +
+            targets_listing + "'."
+        )
+    if not isinstance(target.get("files"), list):
+        raise Exception(
+            "Found target but 'files' key is not a list."
+        )
+
+    def get_group(group_id):
+        group_name = group_id[len("group:"):]
+        group = all_targets.get("groups", {}).get(group_name)
+        if not group:
             raise Exception(
-                "No target by the name '" + target_name + "' exists in '" +
-                targets_listing + "'."
+                "Tried to find group '" + group_name + "' but it " +
+                "doesn't exist."
             )
-        if not isinstance(target.get("files"), list):
-            raise Exception(
-                "Found target but 'files' key is not a list."
-            )
+        return group
 
-        def get_group(group_id):
-            group_name = group_id[len("group:"):]
-            group = all_targets.get("groups", {}).get(group_name)
-            if not group:
-                raise Exception(
-                    "Tried to find group '" + group_name + "' but it " +
-                    "doesn't exist."
-                )
-            return group
-
-        resolved_files = []
-        for f in target["files"]:
-            group = None
-            if isinstance(f, basestring) and f.startswith("group:"):
-                group = get_group(f)
-            elif isinstance(f, dict):
-                for (k, v) in f.iteritems():
-                    if isinstance(v, basestring) and v.startswith("group:"):
-                        f[k] = get_group(v)
-                resolved_files.append(f)
-                continue
-
-            if group:
-                if isinstance(group, list):
-                    resolved_files.extend(group)
-                else:
-                    resolved_files.append(group)
+    resolved_files = []
+    for file_entry in target["files"]:
+        # file_entry is a group id
+        if isinstance(file_entry, basestring) and file_entry.startswith("group:"):
+            group = get_group(file_entry)
+            # The group may be resolved to a list of file entries, in which case
+            # we want to extend the array to insert each of them rather than
+            # insert the entire list as a single element (which is what append does)
+            if isinstance(group, list):
+                resolved_files.extend(group)
             else:
-                resolved_files.append(f)
-        build_target["files"] = resolved_files
+                resolved_files.append(group)
+        # file_entry is a dict which has more file entries as values
+        elif isinstance(file_entry, dict):
+            resolved_entry = {}
+            for (k, v) in file_entry.iteritems():
+                if isinstance(v, basestring) and v.startswith("group:"):
+                    resolved_entry[k] = get_group(v)
+                else:
+                    # map across without editing (e.g. normal file path)
+                    resolved_entry[k] = v
+            resolved_files.append(resolved_entry)
+            continue
+        # file_entry is just a plain ol' file path
+        else:
+            resolved_files.append(file_entry)
+    build_target["files"] = resolved_files
     return build_target
 
 

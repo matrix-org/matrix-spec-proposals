@@ -1,5 +1,3 @@
 Modules
 =======
 
-Modules intro here.
-
