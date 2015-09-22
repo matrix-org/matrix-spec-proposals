@@ -23,10 +23,13 @@ class MatrixSections(Sections):
         spec_meta = self.units.get("spec_meta")
         return spec_meta["changelog"]
 
-    def _render_events(self, filterFn, sortFn, title_kind="~"):
+    def _render_events(self, filterFn, sortFn):
         template = self.env.get_template("events.tmpl")
         examples = self.units.get("event_examples")
         schemas = self.units.get("event_schemas")
+        subtitle_title_char = self.units.get("spec_targets")[
+            "relative_title_styles"
+        ]["subtitle"]
         sections = []
         for event_name in sortFn(schemas):
             if not filterFn(event_name):
@@ -34,14 +37,16 @@ class MatrixSections(Sections):
             sections.append(template.render(
                 example=examples[event_name], 
                 event=schemas[event_name],
-                title_kind=title_kind
+                title_kind=subtitle_title_char
             ))
         return "\n\n".join(sections)
 
-    def _render_http_api_group(self, group, sortFnOrPathList=None, 
-                               title_kind="-"):
+    def _render_http_api_group(self, group, sortFnOrPathList=None):
         template = self.env.get_template("http-api.tmpl")
         http_api = self.units.get("swagger_apis")[group]["__meta"]
+        subtitle_title_char = self.units.get("spec_targets")[
+            "relative_title_styles"
+        ]["subtitle"]
         sections = []
         endpoints = []
         if sortFnOrPathList:
@@ -67,15 +72,14 @@ class MatrixSections(Sections):
         for endpoint in endpoints:
             sections.append(template.render(
                 endpoint=endpoint,
-                title_kind=title_kind
+                title_kind=subtitle_title_char
             ))
         return "\n\n".join(sections)
 
     def render_profile_http_api(self):
         return self._render_http_api_group(
             "profile", 
-            sortFnOrPathList=["displayname", "avatar_url"],
-            title_kind="~"
+            sortFnOrPathList=["displayname", "avatar_url"]
         )
 
     def render_sync_http_api(self):
@@ -86,20 +90,17 @@ class MatrixSections(Sections):
     def render_presence_http_api(self):
         return self._render_http_api_group(
             "presence",
-            sortFnOrPathList=["status"],
-            title_kind="~"
+            sortFnOrPathList=["status"]
         )
 
     def render_membership_http_api(self):
         return self._render_http_api_group(
-            "membership",
-            title_kind="~"
+            "membership"
         )
 
     def render_login_http_api(self):
         return self._render_http_api_group(
-            "login",
-            title_kind="~"
+            "login"
         )
 
     def render_room_events(self):
@@ -114,6 +115,9 @@ class MatrixSections(Sections):
         template = self.env.get_template("msgtypes.tmpl")
         examples = self.units.get("event_examples")
         schemas = self.units.get("event_schemas")
+        subtitle_title_char = self.units.get("spec_targets")[
+            "relative_title_styles"
+        ]["subtitle"]
         sections = []
         msgtype_order = [
             "m.room.message#m.text", "m.room.message#m.emote",
@@ -129,7 +133,8 @@ class MatrixSections(Sections):
                 continue
             sections.append(template.render(
                 example=examples[event_name], 
-                event=schemas[event_name]
+                event=schemas[event_name],
+                title_kind=subtitle_title_char
             ))
         return "\n\n".join(sections)
 
@@ -150,7 +155,7 @@ class MatrixSections(Sections):
     def render_presence_events(self):
         def filterFn(eventType):
             return eventType.startswith("m.presence")
-        return self._render_events(filterFn, sorted, title_kind="+")
+        return self._render_events(filterFn, sorted)
 
     def _render_ce_type(self, type):
         template = self.env.get_template("common-event-fields.tmpl")

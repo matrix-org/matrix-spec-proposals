@@ -92,7 +92,7 @@ server by querying other servers.
 .. _Perspectives Project: http://perspectives-project.org/
 
 Publishing Keys
-_______________
+^^^^^^^^^^^^^^^
 
 Home servers publish the allowed TLS fingerprints and signing keys in a JSON
 object at ``/_matrix/key/v2/server/{key_id}``. The response contains a list of
@@ -178,7 +178,7 @@ events sent by that server can still be checked.
     }
 
 Querying Keys Through Another Server
-____________________________________
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Servers may offer a query API ``_matrix/key/v2/query/`` for getting the keys
 for another server. This API can be used to GET at list of JSON objects for a

@@ -13,6 +13,7 @@ V1_EVENT_EXAMPLES = "../event-schemas/examples/v1"
 V1_EVENT_SCHEMA = "../event-schemas/schema/v1"
 CORE_EVENT_SCHEMA = "../event-schemas/schema/v1/core-event-schema"
 CHANGELOG = "../CHANGELOG.rst"
+TARGETS = "../specification/targets.yaml"
 
 ROOM_EVENT = "core-event-schema/room_event.json"
 STATE_EVENT = "core-event-schema/state_event.json"
@@ -465,6 +466,12 @@ class MatrixUnits(Units):
             "version": version,
             "changelog": "".join(changelog_lines)
         }
+
+
+    def load_spec_targets(self):
+        with open(TARGETS, "r") as f:
+            return yaml.load(f.read())
+
 
     def load_git_version(self):
         null = open(os.devnull, 'w')

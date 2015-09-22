@@ -2,26 +2,37 @@ targets:
   main:  # arbitrary name to identify this build target
     files:  # the sort order of files to cat
       - 00_00_intro.rst
-      - 00_01_feature_profiles.rst
-      - 00_02a_events.rst
-      - 00_02b_event_signing.rst
+      - { 1: 00_01_feature_profiles.rst }
+      - { 1: 00_02a_events.rst }
+      - { 1: 00_02b_event_signing.rst }
       - 01_00_client_server_api.rst
       - 02_00_modules.rst
-      - "group:modules"  # reference a group of files
+      - { 1: "group:modules" }  # reference a group of files
       - 03_00_application_service_api.rst
       - 04_00_server_server_api.rst
       - 05_00_identity_servers.rst
       - 06_00_appendices.rst
 groups:  # reusable blobs of files when prefixed with 'group:'
   modules:
-      0: modules/00_modules_intro.rst
-      1:
-         - modules/01_00_voip_events.rst
-         - modules/02_00_typing_notifications.rst
-         - modules/03_00_receipts.rst
-         - modules/04_00_content_repo.rst
-         - modules/05_00_end_to_end_encryption.rst
-         - modules/06_00_history_visibility.rst
-         - 1: modules/07_00_push_overview.rst # Mark a nested file dependency
-           2: [modules/07_01_push_cs_api.rst , modules/07_02_push_push_gw_api.rst]
-title_styles: ["=", "-", "~", "+"]
+    - modules/00_modules_intro.rst
+    - modules/01_00_voip_events.rst
+    - modules/02_00_typing_notifications.rst
+    - modules/03_00_receipts.rst
+    - modules/04_00_content_repo.rst
+    - modules/05_00_end_to_end_encryption.rst
+    - modules/06_00_history_visibility.rst
+    - modules/07_00_push_overview.rst
+    - { 2: [modules/07_01_push_cs_api.rst , modules/07_02_push_push_gw_api.rst] }
+
+title_styles: ["=", "-", "~", "+", "^"]
+
+# The templating system doesn't know the right title style to use when generating
+# RST. These symbols are 'relative' to say "make a sub-title" (-1), "make a title
+# at the same level (0)", or "make a title one above (+1)". The gendoc script
+# will inspect this file and replace these relative styles with actual title
+# styles. The templating system will also inspect this file to know which symbols
+# to inject.
+relative_title_styles:
+  subtitle: "<"
+  sametitle: "/"
+  supertitle: ">"
