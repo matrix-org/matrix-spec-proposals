@@ -161,8 +161,8 @@ class MatrixUnits(Units):
                     # object with some keys; we'll add entries f.e one)
                     if "schema" not in param:
                         raise Exception(
-                            "API endpoint group=%s path=%s method=%s param=%s"+
-                            " has no valid parameter value." % (
+                            ("API endpoint group=%s path=%s method=%s param=%s"+
+                            " has no valid parameter value.") % (
                                 group_name, path, method, param
                             )
                         )
@@ -247,7 +247,8 @@ class MatrixUnits(Units):
                             "rows": [{
                                 "key": good_response["schema"].get("name", ""),
                                 "type": res_type,
-                                "desc": res.get("description", "")
+                                "desc": res.get("description", ""),
+                                "req_str": ""
                             }]
                         })
                     elif res_type and Units.prop(good_response, "schema/properties"):
@@ -257,6 +258,24 @@ class MatrixUnits(Units):
                         for table in res_tables:
                             if "no-table" not in table:
                                 endpoint["res_tables"].append(table)
+                    elif res_type and Units.prop(good_response, "schema/items"):
+                        # response is an array:
+                        # FIXME: Doesn't recurse at all.
+                        schema = good_response["schema"]
+                        array_type = Units.prop(schema, "items/type")
+                        if Units.prop(schema, "items/allOf"):
+                            array_type = (
+                                Units.prop(schema, "items/title")
+                            )
+                        endpoint["res_tables"].append({
+                            "title": schema.get("title", ""),
+                            "rows": [{
+                                "key": "N/A",
+                                "type": ("[%s]" % array_type),
+                                "desc": schema.get("description", ""),
+                                "req_str": ""
+                            }]
+                        })
 
                 endpoints.append(endpoint)
 
