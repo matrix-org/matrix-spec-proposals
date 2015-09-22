@@ -1,5 +1,4 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "title": "The current membership state of a user in the room.",
     "description": "Adjusts the membership state for a user in a room. It is preferable to use the membership APIs (``/rooms/<room id>/invite`` etc) when performing membership actions rather than adjusting the state directly as there are a restricted set of valid transformations. For example, user A cannot force user B to join a room, and trying to force this state change directly will fail.",
@@ -20,7 +19,7 @@
                     "description": "The avatar URL for this user, if any. This is added by the homeserver."
                 },
                 "displayname": {
-                    "type": "string",
+                    "type": ["string", "null"],
                     "description": "The display name for this user, if any. This is added by the homeserver."
                 }
             },

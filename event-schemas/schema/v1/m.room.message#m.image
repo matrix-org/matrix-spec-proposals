@@ -1,5 +1,4 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "title": "ImageMessage",
     "description": "This message represents a single image and an optional thumbnail.",
