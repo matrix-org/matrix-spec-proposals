@@ -243,9 +243,9 @@ def run_through_template(input):
     tmpfile = './tmp/output'
     try:
         with open(tmpfile, 'w') as out:
-            subprocess.check_output(
+            print subprocess.check_output(
                 [
-                    'python', 'build.py',
+                    'python', 'build.py', "-v",
                     "-i", "matrix_templates",
                     "-o", "../scripts/tmp",
                     "../scripts/"+input
