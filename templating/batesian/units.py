@@ -22,7 +22,7 @@ class Units(object):
 
     def log(self, text):
         if self.debug:
-            print text
+            print "batesian:units: %s" % text
 
     def get_units(self, debug=False):
         unit_list = inspect.getmembers(self, predicate=inspect.ismethod)

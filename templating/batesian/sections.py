@@ -16,7 +16,7 @@ class Sections(object):
 
     def log(self, text):
         if self.debug:
-            print text
+            print "batesian:sections: %s" % text
 
     def get_sections(self):
         render_list = inspect.getmembers(self, predicate=inspect.ismethod)

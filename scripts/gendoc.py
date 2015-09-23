@@ -253,13 +253,12 @@ def run_through_template(input):
             ]
             if VERBOSE:
                 args.insert(2, "-v")
+            log("EXEC: %s" % " ".join(args))
             log(" ==== build.py output ==== ")
-            log(
-                subprocess.check_output(
-                    args,
-                    stderr=out,
-                    cwd="../templating"
-                )
+            print subprocess.check_output(
+                args,
+                stderr=out,
+                cwd="../templating"
             )
     except subprocess.CalledProcessError as e:
         with open(tmpfile, 'r') as f:

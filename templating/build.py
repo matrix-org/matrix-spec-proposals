@@ -52,8 +52,8 @@ def create_from_template(template, sections):
 def check_unaccessed(name, store):
     unaccessed_keys = store.get_unaccessed_set()
     if len(unaccessed_keys) > 0:
-        print "Found %s unused %s keys." % (len(unaccessed_keys), name)
-        print unaccessed_keys
+        log("Found %s unused %s keys." % (len(unaccessed_keys), name))
+        log(unaccessed_keys)
 
 def main(input_module, file_stream=None, out_dir=None, verbose=False):
     if out_dir and not os.path.exists(out_dir):
@@ -121,17 +121,19 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
         return
 
     # check the input files and substitute in sections where required
-    print "Parsing input template: %s" % file_stream.name
+    log("Parsing input template: %s" % file_stream.name)
     temp = Template(file_stream.read())
-    print "Creating output for: %s" % file_stream.name
+    log("Creating output for: %s" % file_stream.name)
     output = create_from_template(temp, sections)
     with open(
             os.path.join(out_dir, os.path.basename(file_stream.name)), "w"
             ) as f:
         f.write(output)
-    print "Output file for: %s" % file_stream.name
+    log("Output file for: %s" % file_stream.name)
     check_unaccessed("units", units)
 
+def log(line):
+    print "batesian: %s" % line
 
 if __name__ == '__main__':
     parser = ArgumentParser(
@@ -175,7 +177,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if not args.file:
-        print "No file supplied."
+        log("No file supplied.")
         parser.print_help()
         sys.exit(1)
 
