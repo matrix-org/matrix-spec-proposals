@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+from argparse import ArgumentParser
 from docutils.core import publish_file
 import copy
 import fileinput
@@ -17,6 +18,7 @@ stylesheets = {
     "stylesheet_path": ["basic.css", "nature.css", "codehighlight.css"]
 }
 
+VERBOSE = False
 
 """
 Read a RST file and replace titles with a different title level if required.
@@ -64,8 +66,8 @@ def load_with_adjusted_titles(filename, file_stream, title_level, title_styles):
         if file_offset is None:
             file_offset = line_title_level
             if file_offset != 0:
-                print ("     WARNING: %s starts with a title style of '%s' but '%s' " +
-                    "is preferable.") % (filename, line_title_style, title_styles[0])
+                logv(("     WARNING: %s starts with a title style of '%s' but '%s' " +
+                    "is preferable.") % (filename, line_title_style, title_styles[0]))
 
         # Sanity checks: Make sure that this file is obeying the title levels
         # specified and bail if it isn't.
@@ -101,12 +103,11 @@ def load_with_adjusted_titles(filename, file_stream, title_level, title_styles):
             continue
 
         # Adjusting line levels
-        # print (
-        #     "File: %s Adjusting %s to %s because file_offset=%s title_offset=%s" %
-        #     (filename, line_title_style,
-        #         title_styles[adjusted_level],
-        #         file_offset, title_level)
-        # )
+        logv(
+            "File: %s Adjusting %s to %s because file_offset=%s title_offset=%s" %
+            (filename, line_title_style, title_styles[adjusted_level],
+                file_offset, title_level)
+        )
         rst_lines.append(line.replace(
             line_title_style,
             title_styles[adjusted_level]
@@ -118,7 +119,7 @@ def load_with_adjusted_titles(filename, file_stream, title_level, title_styles):
 def get_rst(file_info, title_level, title_styles, spec_dir, adjust_titles):
     # string are file paths to RST blobs
     if isinstance(file_info, basestring):
-        print "%s %s" % (">" * (1 + title_level), file_info)
+        log("%s %s" % (">" * (1 + title_level), file_info))
         with open(os.path.join(spec_dir, file_info), "r") as f:
             rst = None
             if adjust_titles:
@@ -240,19 +241,24 @@ def rst2html(i, o):
             )
 
 
-def run_through_template(input):
+def run_through_template(input, set_verbose):
     tmpfile = './tmp/output'
     try:
         with open(tmpfile, 'w') as out:
+            args = [
+                'python', 'build.py',
+                "-i", "matrix_templates",
+                "-o", "../scripts/tmp",
+                "../scripts/"+input
+            ]
+            if set_verbose:
+                args.insert(2, "-v")
+            log("EXEC: %s" % " ".join(args))
+            log(" ==== build.py output ==== ")
             print subprocess.check_output(
-                [
-                    'python', 'build.py', "-v",
-                    "-i", "matrix_templates",
-                    "-o", "../scripts/tmp",
-                    "../scripts/"+input
-                ],
+                args,
                 stderr=out,
-                cwd="../templating",
+                cwd="../templating"
             )
     except subprocess.CalledProcessError as e:
         with open(tmpfile, 'r') as f:
@@ -347,6 +353,13 @@ def get_build_target(targets_listing, target_name):
     build_target["files"] = resolved_files
     return build_target
 
+def log(line):
+    print "gendoc: %s" % line
+
+def logv(line):
+    if VERBOSE:
+        print "gendoc:V: %s" % line
+
 
 def prepare_env():
     try:
@@ -363,36 +376,43 @@ def cleanup_env():
     shutil.rmtree("./tmp")
 
 
-def main(target_name):
+def main(target_name, keep_intermediates):
     prepare_env()
-    print "Building spec [target=%s]" % target_name
+    log("Building spec [target=%s]" % target_name)
     target = get_build_target("../specification/targets.yaml", target_name)
     build_spec(target=target, out_filename="tmp/templated_spec.rst")
-    run_through_template("tmp/templated_spec.rst")
+    run_through_template("tmp/templated_spec.rst", VERBOSE)
     fix_relative_titles(
         target=target, filename="tmp/templated_spec.rst",
         out_filename="tmp/full_spec.rst"
     )
     shutil.copy("../supporting-docs/howtos/client-server.rst", "tmp/howto.rst")
-    run_through_template("tmp/howto.rst")
+    run_through_template("tmp/howto.rst", False)  # too spammy to mark -v on this
     rst2html("tmp/full_spec.rst", "gen/specification.html")
     rst2html("tmp/howto.rst", "gen/howtos.html")
-    if "--nodelete" not in sys.argv:
+    if not keep_intermediates:
         cleanup_env()
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1 and sys.argv[1:] != ["--nodelete"]:
-        # we accept almost no args, so they don't know what they're doing!
-        print "gendoc.py - Generate the Matrix specification as HTML."
-        print "Usage:"
-        print "  python gendoc.py [--nodelete]"
-        print ""
-        print "The specification can then be found in the gen/ folder."
-        print ("If --nodelete was specified, intermediate files will be "
-               "present in the tmp/ folder.")
-        print ""
-        print "Requirements:"
-        print " - This script requires Jinja2 and rst2html (docutils)."
-        sys.exit(0)
-    main("main")
+    parser = ArgumentParser(
+        "gendoc.py - Generate the Matrix specification as HTML to the gen/ folder."
+    )
+    parser.add_argument(
+        "--nodelete", "-n", action="store_true",
+        help="Do not delete intermediate files. They will be found in tmp/"
+    )
+    parser.add_argument(
+        "--target", "-t", default="main",
+        help="Specify the build target to build from specification/targets.yaml"
+    )
+    parser.add_argument(
+        "--verbose", "-v", action="store_true",
+        help="Turn on verbose mode."
+    )
+    args = parser.parse_args()
+    if not args.target:
+        parser.print_help()
+        sys.exit(1)
+    VERBOSE = args.verbose
+    main(args.target, args.nodelete)

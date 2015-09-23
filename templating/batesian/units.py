@@ -22,7 +22,11 @@ class Units(object):
 
     def log(self, text):
         if self.debug:
-            print text
+            func_name = ""
+            trace = inspect.stack()
+            if len(trace) > 1 and len(trace[1]) > 2:
+                func_name = trace[1][3] + ":"
+            print "batesian:units:%s %s" % (func_name, text)
 
     def get_units(self, debug=False):
         unit_list = inspect.getmembers(self, predicate=inspect.ismethod)
