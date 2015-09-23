@@ -22,7 +22,7 @@ prefixed with ``m.``
 
 {{m_room_aliases_event}}
 
-{{m_room_canonical_aliases_event}}
+{{m_room_canonical_alias_event}}
 
 {{m_room_create_event}}
 
