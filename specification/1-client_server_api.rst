@@ -1054,12 +1054,6 @@ medium
 address
   The textual address of the 3pid, eg. the email address
 
-Presence
---------
-.. TODO-spec
-  - Define how users receive presence invites, and how they accept/decline them
-
-{{presence_http_api}}
 
 Profiles
 --------
