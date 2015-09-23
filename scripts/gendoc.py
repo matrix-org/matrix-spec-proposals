@@ -241,7 +241,7 @@ def rst2html(i, o):
             )
 
 
-def run_through_template(input):
+def run_through_template(input, set_verbose):
     tmpfile = './tmp/output'
     try:
         with open(tmpfile, 'w') as out:
@@ -251,7 +251,7 @@ def run_through_template(input):
                 "-o", "../scripts/tmp",
                 "../scripts/"+input
             ]
-            if VERBOSE:
+            if set_verbose:
                 args.insert(2, "-v")
             log("EXEC: %s" % " ".join(args))
             log(" ==== build.py output ==== ")
@@ -381,13 +381,13 @@ def main(target_name, keep_intermediates):
     log("Building spec [target=%s]" % target_name)
     target = get_build_target("../specification/targets.yaml", target_name)
     build_spec(target=target, out_filename="tmp/templated_spec.rst")
-    run_through_template("tmp/templated_spec.rst")
+    run_through_template("tmp/templated_spec.rst", VERBOSE)
     fix_relative_titles(
         target=target, filename="tmp/templated_spec.rst",
         out_filename="tmp/full_spec.rst"
     )
     shutil.copy("../supporting-docs/howtos/client-server.rst", "tmp/howto.rst")
-    run_through_template("tmp/howto.rst")
+    run_through_template("tmp/howto.rst", False)  # too spammy to mark -v on this
     rst2html("tmp/full_spec.rst", "gen/specification.html")
     rst2html("tmp/howto.rst", "gen/howtos.html")
     if not keep_intermediates:

@@ -1,4 +1,12 @@
-"""Contains all the units for the spec."""
+"""
+Contains all the units for the spec.
+
+This file loads swagger and JSON schema files and parses out the useful bits
+and returns them as Units for use in Batesian.
+
+For the actual conversion of data -> RST (including templates), see the sections
+file instead.
+"""
 from batesian.units import Units
 import inspect
 import json
@@ -134,7 +142,7 @@ class MatrixUnits(Units):
                         "good_response": ""
                     }
                 }
-                self.log(".o.O.o. Endpoint: %s %s" % (method, path))
+                self.log(" ------- Endpoint: %s %s ------- " % (method, path))
                 for param in single_api.get("parameters", []):
                     # description
                     desc = param.get("description", "")
@@ -183,6 +191,9 @@ class MatrixUnits(Units):
                             "desc": json_body[key]["description"]
                         })
                 # endfor[param]
+                for row in endpoint["req_params"]:
+                    self.log("Request parameter: %s" % row)
+
                 # group params by location to ease templating
                 endpoint["req_param_by_loc"] = {
                     #   path: [...], query: [...], body: [...]
@@ -240,6 +251,7 @@ class MatrixUnits(Units):
 
                 # add response params if this API has any.
                 if good_response:
+                    self.log("Found a 200 response for this API")
                     res_type = Units.prop(good_response, "schema/type")
                     if res_type and res_type not in ["object", "array"]:
                         # response is a raw string or something like that
@@ -277,6 +289,16 @@ class MatrixUnits(Units):
                                 "req_str": ""
                             }]
                         })
+
+                for response_table in endpoint["res_tables"]:
+                    self.log("Response: %s" % response_table["title"])
+                    for r in response_table["rows"]:
+                        self.log("Row: %s" % r)
+                if len(endpoint["res_tables"]) == 0:
+                    self.log(
+                        "This API appears to have no response table. Are you " +
+                        "sure this API returns no parameters?"
+                    )
 
                 endpoints.append(endpoint)
 
@@ -475,7 +497,7 @@ class MatrixUnits(Units):
             if re.match("^v[0-9\.]+$", word):
                 version = word[1:]  # strip the 'v'
 
-        self.log("Version: %s Title part: %s Changelog lines: %s" % (
+        self.log("Version: %s Title part: %s Changelog line count: %s" % (
             version, title_part, len(changelog_lines)
         ))
         if not version or len(changelog_lines) == 0:
