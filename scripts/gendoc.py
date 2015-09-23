@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 from docutils.core import publish_file
+import copy
 import fileinput
 import glob
 import os
@@ -292,21 +293,32 @@ def get_build_target(targets_listing, target_name):
             "Found target but 'files' key is not a list."
         )
 
-    def get_group(group_id):
+    def get_group(group_id, depth):
         group_name = group_id[len("group:"):]
         group = all_targets.get("groups", {}).get(group_name)
         if not group:
             raise Exception(
-                "Tried to find group '" + group_name + "' but it " +
-                "doesn't exist."
+                "Tried to find group '%s' but it doesn't exist." % group_name
             )
+        if not isinstance(group, list):
+            raise Exception(
+                "Expected group '%s' to be a list but it isn't." % group_name
+            )
+        # deep copy so changes to depths don't contaminate multiple uses of this group
+        group = copy.deepcopy(group)
+        # swap relative depths for absolute ones
+        for i, entry in enumerate(group):
+            if isinstance(entry, dict):
+                group[i] = {
+                    (rel_depth + depth): v for (rel_depth, v) in entry.items()
+                }
         return group
 
     resolved_files = []
     for file_entry in target["files"]:
         # file_entry is a group id
         if isinstance(file_entry, basestring) and file_entry.startswith("group:"):
-            group = get_group(file_entry)
+            group = get_group(file_entry, 0)
             # The group may be resolved to a list of file entries, in which case
             # we want to extend the array to insert each of them rather than
             # insert the entire list as a single element (which is what append does)
@@ -317,12 +329,16 @@ def get_build_target(targets_listing, target_name):
         # file_entry is a dict which has more file entries as values
         elif isinstance(file_entry, dict):
             resolved_entry = {}
-            for (k, v) in file_entry.iteritems():
-                if isinstance(v, basestring) and v.startswith("group:"):
-                    resolved_entry[k] = get_group(v)
+            for (depth, entry) in file_entry.iteritems():
+                if not isinstance(entry, basestring):
+                    raise Exception(
+                        "Double-nested depths are not supported. Entry: %s" % (file_entry,)
+                    )
+                if entry.startswith("group:"):
+                    resolved_entry[depth] = get_group(entry, depth)
                 else:
                     # map across without editing (e.g. normal file path)
-                    resolved_entry[k] = v
+                    resolved_entry[depth] = entry
             resolved_files.append(resolved_entry)
             continue
         # file_entry is just a plain ol' file path
