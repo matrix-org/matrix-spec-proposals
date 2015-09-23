@@ -1,44 +1,5 @@
-Events
-======
-
-All communication in Matrix is expressed in the form of data objects called
-Events. These are the fundamental building blocks common to the client-server,
-server-server and application-service APIs, and are described below.
-
-{{common_event_fields}}
-
-{{common_room_event_fields}}
-
-{{common_state_event_fields}}
-
-
-Room Events
------------
-.. NOTE::
-  This section is a work in progress.
-
-This specification outlines several standard event types, all of which are
-prefixed with ``m.``
-
-{{room_events}}
-
-m.room.message msgtypes
-~~~~~~~~~~~~~~~~~~~~~~~
-
-.. TODO-spec
-   How a client should handle unknown message types.
-
-
-Each `m.room.message`_ MUST have a ``msgtype`` key which identifies the type
-of message being sent. Each type has their own required and optional keys, as
-outlined below.
-
-{{msgtype_events}}
-
-Presence Events
-~~~~~~~~~~~~~~~
-
-{{presence_events}}
+Presence
+========
  
 Each user has the concept of presence information. This encodes the
 "availability" of that user, suitable for display on other user's clients.
@@ -65,10 +26,22 @@ proactive event, whereas in the other direction it will not). This timestamp
 is presented via a key called ``last_active_ago``, which gives the relative
 number of milliseconds since the message is generated/emitted that the user
 was last seen active.
+
+Events
+------
+
+{{presence_events}}
+
+Presence HTTP API
+-----------------
+.. TODO-spec
+  - Define how users receive presence invites, and how they accept/decline them
+
+{{presence_http_api}}
     
 
 Events on Change of Profile Information
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------
 Because the profile displayname and avatar information are likely to be used in
 many places of a client's display, changes to these fields cause an automatic
 propagation event to occur, informing likely-interested parties of the new

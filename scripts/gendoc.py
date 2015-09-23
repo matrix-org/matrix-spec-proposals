@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 from docutils.core import publish_file
+import copy
 import fileinput
 import glob
 import os
@@ -8,6 +9,7 @@ import re
 import shutil
 import subprocess
 import sys
+import yaml
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -15,65 +17,214 @@ stylesheets = {
     "stylesheet_path": ["basic.css", "nature.css", "codehighlight.css"]
 }
 
-title_style_matchers = {
-    "=": re.compile("^=+$"),
-    "-": re.compile("^-+$")
-}
-TOP_LEVEL = "="
-SECOND_LEVEL = "-"
-FILE_FORMAT_MATCHER = re.compile("^[0-9]+_[0-9]{2}[a-z]*_.*\.rst$")
 
+"""
+Read a RST file and replace titles with a different title level if required.
+Args:
+    filename: The name of the file being read (for debugging)
+    file_stream: The open file stream to read from.
+    title_level: The integer which determines the offset to *start* from.
+    title_styles: An array of characters detailing the right title styles to use
+                  e.g. ["=", "-", "~", "+"]
+Returns:
+    string: The file contents with titles adjusted.
+Example:
+    Assume title_styles = ["=", "-", "~", "+"], title_level = 1, and the file
+    when read line-by-line encounters the titles "===", "---", "---", "===", "---".
+    This function will bump every title encountered down a sub-heading e.g.
+    "=" to "-" and "-" to "~" because title_level = 1, so the output would be
+    "---", "~~~", "~~~", "---", "~~~". There is no bumping "up" a title level.
+"""
+def load_with_adjusted_titles(filename, file_stream, title_level, title_styles):
+    rst_lines = []
+    title_chars = "".join(title_styles)
+    title_regex = re.compile("^[" + re.escape(title_chars) + "]{3,}$")
 
-def check_valid_section(filename, section):
-    if not re.match(FILE_FORMAT_MATCHER, filename):
-        raise Exception(
-            "The filename of " + filename + " does not match the expected format " +
-            "of '##_##_words-go-here.rst'"
-        )
+    prev_line_title_level = 0 # We expect the file to start with '=' titles
+    file_offset = None
+    prev_non_title_line = None
+    for i, line in enumerate(file_stream, 1):
+        # ignore anything which isn't a title (e.g. '===============')
+        if not title_regex.match(line):
+            rst_lines.append(line)
+            prev_non_title_line = line
+            continue
+        # The title underline must match at a minimum the length of the title
+        if len(prev_non_title_line) > len(line):
+            rst_lines.append(line)
+            prev_non_title_line = line
+            continue
 
-    # we need TWO new lines else the next file's title gets merged
-    # the last paragraph *WITHOUT RST PRODUCING A WARNING*
-    if not section[-2:] == "\n\n":
-        raise Exception(
-            "The file " + filename + " does not end with 2 new lines."
-        )
+        line_title_style = line[0]
+        line_title_level = title_styles.index(line_title_style)
 
-    # Enforce some rules to reduce the risk of having mismatched title
-    # styles.
-    title_line = section.split("\n")[1]
-    if title_line != (len(title_line) * title_line[0]):
-        raise Exception(
-            "The file " + filename + " doesn't have a title style line on line 2"
-        )
+        # Not all files will start with "===" and we should be flexible enough
+        # to allow that. The first title we encounter sets the "file offset"
+        # which is added to the title_level desired.
+        if file_offset is None:
+            file_offset = line_title_level
+            if file_offset != 0:
+                print ("     WARNING: %s starts with a title style of '%s' but '%s' " +
+                    "is preferable.") % (filename, line_title_style, title_styles[0])
 
-    # anything marked as xx_00_ is the start of a new top-level section
-    if re.match("^[0-9]+_00_", filename):
-        if not title_style_matchers[TOP_LEVEL].match(title_line):
+        # Sanity checks: Make sure that this file is obeying the title levels
+        # specified and bail if it isn't.
+        # The file is allowed to go 1 deeper or any number shallower
+        if prev_line_title_level - line_title_level < -1:
             raise Exception(
-                "The file " + filename + " is a top-level section because it matches " +
-                "the filename format ##_00_something.rst but has the wrong title " +
-                "style: expected '" + TOP_LEVEL + "' but got '" +
-                title_line[0] + "'"
+                ("File '%s' line '%s' has a title " +
+                "style '%s' which doesn't match one of the " +
+                "allowed title styles of %s because the " +
+                "title level before this line was '%s'") %
+                (filename, (i + 1), line_title_style, title_styles,
+                title_styles[prev_line_title_level])
             )
-    # anything marked as xx_xx_ is the start of a sub-section
-    elif re.match("^[0-9]+_[0-9]{2}_", filename):
-        if not title_style_matchers[SECOND_LEVEL].match(title_line):
+        prev_line_title_level = line_title_level
+
+        adjusted_level = (
+            title_level + line_title_level - file_offset
+        )
+
+        # Sanity check: Make sure we can bump down the title and we aren't at the
+        # lowest level already
+        if adjusted_level >= len(title_styles):
             raise Exception(
-                "The file " + filename + " is a 2nd-level section because it matches " +
-                "the filename format ##_##_something.rst but has the wrong title " +
-                "style: expected '" + SECOND_LEVEL + "' but got '" +
-                title_line[0] + "' - If this is meant to be a 3rd/4th/5th-level section " +
-                "then use the form '##_##b_something.rst' which will not apply this " +
-                "check."
+                ("Files '%s' line '%s' has a sub-title level too low and it " +
+                "cannot be adjusted to fit. You can add another level to the " +
+                "'title_styles' key in targets.yaml to fix this.") %
+                (filename, (i + 1))
             )
 
-def cat_spec_sections_to(out_file_name):
-    with open(out_file_name, "wb") as outfile:
-        for f in sorted(glob.glob("../specification/*.rst")):
-            with open(f, "rb") as infile:
-                section = infile.read()
-                check_valid_section(os.path.basename(f), section)
-                outfile.write(section)
+        if adjusted_level == line_title_level:
+            # no changes required
+            rst_lines.append(line)
+            continue
+
+        # Adjusting line levels
+        # print (
+        #     "File: %s Adjusting %s to %s because file_offset=%s title_offset=%s" %
+        #     (filename, line_title_style,
+        #         title_styles[adjusted_level],
+        #         file_offset, title_level)
+        # )
+        rst_lines.append(line.replace(
+            line_title_style,
+            title_styles[adjusted_level]
+        ))
+            
+    return "".join(rst_lines)
+
+
+def get_rst(file_info, title_level, title_styles, spec_dir, adjust_titles):
+    # string are file paths to RST blobs
+    if isinstance(file_info, basestring):
+        print "%s %s" % (">" * (1 + title_level), file_info)
+        with open(os.path.join(spec_dir, file_info), "r") as f:
+            rst = None
+            if adjust_titles:
+                rst = load_with_adjusted_titles(
+                    file_info, f, title_level, title_styles
+                )
+            else:
+                rst = f.read()
+            if rst[-2:] != "\n\n":
+                raise Exception(
+                    ("File %s should end with TWO new-line characters to ensure " +
+                    "file concatenation works correctly.") % (file_info,)
+                )
+            return rst
+    # dicts look like {0: filepath, 1: filepath} where the key is the title level
+    elif isinstance(file_info, dict):
+        levels = sorted(file_info.keys())
+        rst = []
+        for l in levels:
+            rst.append(get_rst(file_info[l], l, title_styles, spec_dir, adjust_titles))
+        return "".join(rst)
+    # lists are multiple file paths e.g. [filepath, filepath]
+    elif isinstance(file_info, list):
+        rst = []
+        for f in file_info:
+            rst.append(get_rst(f, title_level, title_styles, spec_dir, adjust_titles))
+        return "".join(rst)
+    raise Exception(
+        "The following 'file' entry in this target isn't a string, list or dict. " +
+        "It really really should be. Entry: %s" % (file_info,)
+    )
+
+
+def build_spec(target, out_filename):
+    with open(out_filename, "wb") as outfile:
+        for file_info in target["files"]:
+            section = get_rst(
+                file_info=file_info,
+                title_level=0,
+                title_styles=target["title_styles"],
+                spec_dir="../specification/",
+                adjust_titles=True
+            )
+            outfile.write(section)
+
+
+"""
+Replaces relative title styles with actual title styles.
+
+The templating system has no idea what the right title style is when it produces
+RST because it depends on the build target. As a result, it uses relative title
+styles defined in targets.yaml to say "down a level, up a level, same level".
+
+This function replaces these relative titles with actual title styles from the
+array in targets.yaml.
+"""
+def fix_relative_titles(target, filename, out_filename):
+    title_styles = target["title_styles"]
+    relative_title_chars = [
+        target["relative_title_styles"]["subtitle"],
+        target["relative_title_styles"]["sametitle"],
+        target["relative_title_styles"]["supertitle"]
+    ]
+    relative_title_matcher = re.compile(
+        "^[" + re.escape("".join(relative_title_chars)) + "]{3,}$"
+    )
+    title_matcher = re.compile(
+        "^[" + re.escape("".join(title_styles)) + "]{3,}$"
+    )
+    current_title_style = None
+    with open(filename, "r") as infile:
+        with open(out_filename, "w") as outfile:
+            for line in infile.readlines():
+                if not relative_title_matcher.match(line):
+                    if title_matcher.match(line):
+                        current_title_style = line[0]
+                    outfile.write(line)
+                    continue
+                line_char = line[0]
+                replacement_char = None
+                current_title_level = title_styles.index(current_title_style)
+                if line_char == target["relative_title_styles"]["subtitle"]:
+                    if (current_title_level + 1) == len(title_styles):
+                        raise Exception(
+                            "Encountered sub-title line style but we can't go " +
+                            "any lower."
+                        )
+                    replacement_char = title_styles[current_title_level + 1]
+                elif line_char == target["relative_title_styles"]["sametitle"]:
+                    replacement_char = title_styles[current_title_level]
+                elif line_char == target["relative_title_styles"]["supertitle"]:
+                    if (current_title_level - 1) < 0:
+                        raise Exception(
+                            "Encountered super-title line style but we can't go " +
+                            "any higher."
+                        )
+                    replacement_char = title_styles[current_title_level - 1]
+                else:
+                    raise Exception(
+                        "Unknown relative line char %s" % (line_char,)
+                    )
+
+                outfile.write(
+                    line.replace(line_char, replacement_char)
+                )
+
 
 
 def rst2html(i, o):
@@ -88,13 +239,14 @@ def rst2html(i, o):
                 settings_overrides=stylesheets
             )
 
+
 def run_through_template(input):
     tmpfile = './tmp/output'
     try:
         with open(tmpfile, 'w') as out:
-            subprocess.check_output(
+            print subprocess.check_output(
                 [
-                    'python', 'build.py',
+                    'python', 'build.py', "-v",
                     "-i", "matrix_templates",
                     "-o", "../scripts/tmp",
                     "../scripts/"+input
@@ -107,6 +259,95 @@ def run_through_template(input):
             sys.stderr.write(f.read() + "\n")
         raise
 
+
+"""
+Extract and resolve groups for the given target in the given targets listing.
+Args:
+    targets_listing (str): The path to a YAML file containing a list of targets
+    target_name (str): The name of the target to extract from the listings.
+Returns:
+    dict: Containing "filees" (a list of file paths), "relative_title_styles"
+          (a dict of relative style keyword to title character) and "title_styles"
+          (a list of characters which represent the global title style to follow,
+           with the top section title first, the second section second, and so on.)
+"""
+def get_build_target(targets_listing, target_name):
+    build_target = {
+        "title_styles": [],
+        "relative_title_styles": {},
+        "files": []
+    }
+    with open(targets_listing, "r") as targ_file:
+        all_targets = yaml.load(targ_file.read())
+
+    build_target["title_styles"] = all_targets["title_styles"]
+    build_target["relative_title_styles"] = all_targets["relative_title_styles"]
+    target = all_targets["targets"].get(target_name)
+    if not target:
+        raise Exception(
+            "No target by the name '" + target_name + "' exists in '" +
+            targets_listing + "'."
+        )
+    if not isinstance(target.get("files"), list):
+        raise Exception(
+            "Found target but 'files' key is not a list."
+        )
+
+    def get_group(group_id, depth):
+        group_name = group_id[len("group:"):]
+        group = all_targets.get("groups", {}).get(group_name)
+        if not group:
+            raise Exception(
+                "Tried to find group '%s' but it doesn't exist." % group_name
+            )
+        if not isinstance(group, list):
+            raise Exception(
+                "Expected group '%s' to be a list but it isn't." % group_name
+            )
+        # deep copy so changes to depths don't contaminate multiple uses of this group
+        group = copy.deepcopy(group)
+        # swap relative depths for absolute ones
+        for i, entry in enumerate(group):
+            if isinstance(entry, dict):
+                group[i] = {
+                    (rel_depth + depth): v for (rel_depth, v) in entry.items()
+                }
+        return group
+
+    resolved_files = []
+    for file_entry in target["files"]:
+        # file_entry is a group id
+        if isinstance(file_entry, basestring) and file_entry.startswith("group:"):
+            group = get_group(file_entry, 0)
+            # The group may be resolved to a list of file entries, in which case
+            # we want to extend the array to insert each of them rather than
+            # insert the entire list as a single element (which is what append does)
+            if isinstance(group, list):
+                resolved_files.extend(group)
+            else:
+                resolved_files.append(group)
+        # file_entry is a dict which has more file entries as values
+        elif isinstance(file_entry, dict):
+            resolved_entry = {}
+            for (depth, entry) in file_entry.iteritems():
+                if not isinstance(entry, basestring):
+                    raise Exception(
+                        "Double-nested depths are not supported. Entry: %s" % (file_entry,)
+                    )
+                if entry.startswith("group:"):
+                    resolved_entry[depth] = get_group(entry, depth)
+                else:
+                    # map across without editing (e.g. normal file path)
+                    resolved_entry[depth] = entry
+            resolved_files.append(resolved_entry)
+            continue
+        # file_entry is just a plain ol' file path
+        else:
+            resolved_files.append(file_entry)
+    build_target["files"] = resolved_files
+    return build_target
+
+
 def prepare_env():
     try:
         os.makedirs("./gen")
@@ -116,20 +357,29 @@ def prepare_env():
         os.makedirs("./tmp")
     except OSError:
         pass
-    
+
+
 def cleanup_env():
     shutil.rmtree("./tmp")
 
-def main():
+
+def main(target_name):
     prepare_env()
-    cat_spec_sections_to("tmp/full_spec.rst")
-    run_through_template("tmp/full_spec.rst")
+    print "Building spec [target=%s]" % target_name
+    target = get_build_target("../specification/targets.yaml", target_name)
+    build_spec(target=target, out_filename="tmp/templated_spec.rst")
+    run_through_template("tmp/templated_spec.rst")
+    fix_relative_titles(
+        target=target, filename="tmp/templated_spec.rst",
+        out_filename="tmp/full_spec.rst"
+    )
     shutil.copy("../supporting-docs/howtos/client-server.rst", "tmp/howto.rst")
     run_through_template("tmp/howto.rst")
     rst2html("tmp/full_spec.rst", "gen/specification.html")
     rst2html("tmp/howto.rst", "gen/howtos.html")
     if "--nodelete" not in sys.argv:
         cleanup_env()
+
 
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1:] != ["--nodelete"]:
@@ -145,4 +395,4 @@ if __name__ == '__main__':
         print "Requirements:"
         print " - This script requires Jinja2 and rst2html (docutils)."
         sys.exit(0)
-    main()
+    main("main")
