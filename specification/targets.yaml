@@ -14,6 +14,7 @@ targets:
       - 6-appendices.rst
 groups:  # reusable blobs of files when prefixed with 'group:'
   modules:
+    - modules/instant_messaging.rst
     - modules/voip_events.rst
     - modules/typing_notifications.rst
     - modules/receipts.rst

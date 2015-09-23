@@ -76,37 +76,36 @@ class MatrixSections(Sections):
             ))
         return "\n\n".join(sections)
 
-    def render_profile_http_api(self):
-        return self._render_http_api_group(
-            "profile", 
-            sortFnOrPathList=["displayname", "avatar_url"]
-        )
 
-    def render_sync_http_api(self):
-        return self._render_http_api_group(
-            "sync"
-        )
+    # Special function: Returning a dict will specify multiple sections where
+    # the key is the section name and the value is the value of the section
+    def render_group_http_apis(self):
+        # map all swagger_apis to the form $GROUP_http_api
+        swagger_groups = self.units.get("swagger_apis").keys()
+        renders = {}
+        for group in swagger_groups:
+            sortFnOrPathList = None
+            if group == "presence":
+                sortFnOrPathList = ["status"]
+            elif group == "profile":
+                sortFnOrPathList=["displayname", "avatar_url"]
+            renders[group + "_http_api"] = self._render_http_api_group(
+                group, sortFnOrPathList
+            )
+        return renders
 
-    def render_presence_http_api(self):
-        return self._render_http_api_group(
-            "presence",
-            sortFnOrPathList=["status"]
-        )
-
-    def render_membership_http_api(self):
-        return self._render_http_api_group(
-            "membership"
-        )
-
-    def render_login_http_api(self):
-        return self._render_http_api_group(
-            "login"
-        )
-
-    def render_rooms_http_api(self):
-        return self._render_http_api_group(
-            "rooms"
-        )
+    # Special function: Returning a dict will specify multiple sections where
+    # the key is the section name and the value is the value of the section
+    def render_group_events(self):
+        # map all event schemata to the form $EVENTTYPE_event with s/./_/g
+        # e.g. m_room_topic_event
+        schemas = self.units.get("event_schemas")
+        renders = {}
+        for event_type in schemas:
+            renders[event_type.replace(".", "_") + "_event"] = self._render_events(
+                lambda x: x == event_type, sorted
+            )
+        return renders
 
     def render_room_events(self):
         def filterFn(eventType):
@@ -180,3 +179,4 @@ class MatrixSections(Sections):
 
     def render_common_state_event_fields(self):
         return self._render_ce_type("state_event")
+

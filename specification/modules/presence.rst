@@ -1,7 +1,5 @@
-Presence Events
-===============
-
-{{presence_events}}
+Presence
+========
  
 Each user has the concept of presence information. This encodes the
 "availability" of that user, suitable for display on other user's clients.
@@ -28,6 +26,11 @@ proactive event, whereas in the other direction it will not). This timestamp
 is presented via a key called ``last_active_ago``, which gives the relative
 number of milliseconds since the message is generated/emitted that the user
 was last seen active.
+
+Events
+------
+
+{{presence_events}}
 
 Presence HTTP API
 -----------------
