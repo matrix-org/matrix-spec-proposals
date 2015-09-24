@@ -43,38 +43,36 @@ paths:
             type: object
             allOf:
               - $ref: "definitions/sync_filter.json"
-            example:
-              type: object
-              example: |-
-                {
-                  "room": {
-                    "state": {
-                      "types": ["m.room.*"],
-                      "not_rooms": ["!726s6s6q:example.com"],
-                    },
-                    "events": {
-                      "types": ["m.room.message"],
-                      "not_rooms": ["!726s6s6q:example.com"],
-                      "not_senders": ["@spam:example.com"]
-                    },
-                    "emphemeral": {
-                      "types": ["m.receipt", "m.typing"],
-                      "not_rooms": ["!726s6s6q:example.com"],
-                      "not_senders": ["@spam:example.com"]
-                    }
+            example: |-
+              {
+                "room": {
+                  "state": {
+                    "types": ["m.room.*"],
+                    "not_rooms": ["!726s6s6q:example.com"]
                   },
-                  "public_user_data": {
-                    "types": ["m.presence"]
+                  "events": {
+                    "types": ["m.room.message"],
+                    "not_rooms": ["!726s6s6q:example.com"],
+                    "not_senders": ["@spam:example.com"]
                   },
-                  "private_user_data": {
-                    "types": []
-                  },
-                  "server_data": {
-                    "types": []
-                  },
-                  "event_format": "client",
-                  "event_fields": ["type", "content", "sender"]
-                }
+                  "emphemeral": {
+                    "types": ["m.receipt", "m.typing"],
+                    "not_rooms": ["!726s6s6q:example.com"],
+                    "not_senders": ["@spam:example.com"]
+                  }
+                },
+                "public_user_data": {
+                  "types": ["m.presence"]
+                },
+                "private_user_data": {
+                  "types": []
+                },
+                "server_data": {
+                  "types": []
+                },
+                "event_format": "client",
+                "event_fields": ["type", "content", "sender"]
+              }
       responses:
         200:
           description: The filter was created.
