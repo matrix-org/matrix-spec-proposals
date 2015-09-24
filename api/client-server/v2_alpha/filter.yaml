@@ -100,13 +100,18 @@ paths:
           description: |-
             The user ID to download a filter for.
           x-example: "@alice:example.com"
+          required: true
         - in: path
           name: filterId
+          type: string
           description: |-
             The filter ID to download.
           x-example: "66696p746572"
+          required: true
       responses:
         200:
+          description: |-
+            "The filter defintion"
           examples:
             application/json: |-
               {
