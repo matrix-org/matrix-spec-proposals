@@ -1,0 +1,48 @@
+{
+  "type": "object",
+  "properties": {
+    "room": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "description":
+            "The state events to include for rooms.",
+          "allOf": [{"$ref": "definitions/event_filter.json"}]
+        },
+        "events": {
+          "description":
+            "The message and state update events to include for rooms.",
+          "allOf": [{"$ref": "definitions/event_filter.json"}]
+        },
+        "ephemeral": {
+          "description":
+            "The events that aren't recorded in the room history, e.g. typing and receipts, to include for rooms.",
+          "allOf": [{"$ref": "definitions/event_filter.json"}]
+        }
+      }
+    },
+    "public_user_data": {
+      "description":
+        "The public user data, e.g. profile and presence, to include.",
+      "allOf": [{"$ref": "definitions/event_filter.json"}]
+    },
+    "private_user_data": {
+      "description":
+        "Events that are private to a user but shared amoungst their devices, e.g. notification settings, to include.",
+      "allOf": [{"$ref": "definitions/event_filter.json"}]
+    },
+    "event_format": {
+      "description":
+        "The format to use for events. 'client' will return the events in a format suitable for clients. 'federation' will return the raw event as receieved over federation. The default is 'client'.",
+      "type": "string"
+    },
+    "event_fields": {
+      "type": "array",
+      "description":
+        "List of event fields to include. If this list is absent then all fields are included. The entries may include '.' charaters to indicate sub-fields. So ['content.body'] will include the 'body' field of the 'content' object. A server may include more fields than were requested.",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
