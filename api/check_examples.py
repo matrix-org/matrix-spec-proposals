@@ -29,6 +29,33 @@ except ImportError as e:
     raise
 
 
+def check_parameter(filepath, request, parameter):
+    schema = parameter.get("schema")
+    example = None
+    try:
+        example_json = schema.get('example')
+        if example_json:
+            example = json.loads(example_json)
+    except Exception as e:
+        raise ValueError("Error parsing JSON example request for %r" % (
+            request
+        ), e)
+    fileurl = "file://" + os.path.abspath(filepath)
+    if example and schema:
+        try:
+            print ("Checking request schema for: %r %r" % (
+                filepath, request
+            ))
+            # Setting the 'id' tells jsonschema where the file is so that it
+            # can correctly resolve relative $ref references in the schema
+            schema['id'] = fileurl
+            jsonschema.validate(example, schema)
+        except Exception as e:
+            raise ValueError("Error validating JSON schema for %r %r" % (
+                request, code
+            ), e)
+
+
 def check_response(filepath, request, code, response):
     example = None
     try:
@@ -43,7 +70,9 @@ def check_response(filepath, request, code, response):
     fileurl = "file://" + os.path.abspath(filepath)
     if example and schema:
         try:
-            print ("Checking schema for: %r %r %r" % (filepath, request, code))
+            print ("Checking response schema for: %r %r %r" % (
+                filepath, request, code
+            ))
             # Setting the 'id' tells jsonschema where the file is so that it
             # can correctly resolve relative $ref references in the schema
             schema['id'] = fileurl
@@ -59,8 +88,13 @@ def check_swagger_file(filepath):
         swagger = yaml.load(f)
 
     for path, path_api in swagger.get('paths', {}).items():
+
         for method, request_api in path_api.items():
             request = "%s %s" % (method.upper(), path)
+            for parameter in request_api.get('parameters', ()):
+                if parameter['in'] == 'body':
+                    check_parameter(filepath, request, parameter)
+
             try:
                 responses = request_api['responses']
             except KeyError:
