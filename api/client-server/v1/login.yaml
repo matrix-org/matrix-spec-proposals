@@ -115,7 +115,8 @@ paths:
           description: |-
             The refresh token was accepted, and a new access token has been issued.
             The passed refresh token is no longer valid and cannot be used.
-            A new refresh token may have been returned.
+            A new refresh token will have been returned unless some policy does
+            not allow the user to continue to renew their session.
           examples:
             application/json: |-
               {
