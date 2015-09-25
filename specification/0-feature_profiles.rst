@@ -1,6 +1,8 @@
 Feature Profiles
 ================
 
+.. sect:feature-profiles:
+
 Matrix supports many different kinds of clients: from embedded IoT devices to
 desktop clients. Not all clients can provide the same feature sets as other
 clients e.g. due to lack of physical hardware such as not having a screen.
@@ -39,42 +41,42 @@ Summary
 Clients
 -------
 
-Stand-alone web client (``Web``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Stand-alone web (``Web``)
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is a web page which heavily uses Matrix for communication. Single-page web
 apps would be classified as a stand-alone web client, as would multi-page web
 apps which use Matrix on nearly every page.
 
-Embedded web client (``EmbedWeb``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Embedded web (``EmbedWeb``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is a Matrix client which is embedded in another website, e.g. using
 iframes. These embedded clients are typically for a single purpose
 related to the website in question, and are not intended to be fully-fledged
 communication apps.
 
-Mobile client (``Mobile``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Mobile (``Mobile``)
+~~~~~~~~~~~~~~~~~~~
 
 This is a Matrix client specifically designed for consumption on mobile devices.
 This is typically a mobile app but need not be so provided the feature set can
 be reached (e.g. if a mobile site could display push notifications it could be
 classified as a mobile client).
 
-Desktop client (``Desktop``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Desktop (``Desktop``)
+~~~~~~~~~~~~~~~~~~~~~
 
 This is a native application which can run in its own environment outside a
 browser.
 
-Command Line Interface client (``CLI``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Command Line Interface (``CLI``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is a client which is used via a text-based terminal.
 
-Internet of Things client (``IoT``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Internet of Things (``IoT``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is a client which is typically running on an embedded device such as a
 kettle, fridge or car.
