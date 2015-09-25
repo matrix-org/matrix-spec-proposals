@@ -69,7 +69,6 @@ paths:
   "/rooms/{roomId}/invite":
     post:
       summary: Invite a user to participate in a particular room.
-      # It's a crying shame that I don't know how to force line breaks.
       description: |-
         This API invites a user to participate in a particular room.
         They do not start participating in the room until they actually join the
