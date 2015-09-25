@@ -1,6 +1,11 @@
 {
   "type": "object",
   "properties": {
+    "limit": {
+      "type": "integer",
+      "description":
+        "The maximum number of events to return."
+    },
     "types": {
       "type": "array",
       "description":
