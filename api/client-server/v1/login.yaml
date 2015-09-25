@@ -29,7 +29,6 @@ paths:
       parameters:
         - in: body
           name: body
-          required: true
           schema:
             type: object
             example: |-
@@ -100,7 +99,6 @@ paths:
       parameters:
         - in: body
           name: body
-          required: true
           schema:
             type: object
             example: |-
