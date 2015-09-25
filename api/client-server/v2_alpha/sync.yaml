@@ -39,6 +39,11 @@ paths:
           description: |-
             A point in time to continue a sync from.
         - in: query
+          name: set_presence
+          type: string
+          description: |-
+            Set the presence status of this client.
+        - in: query
           name: timeout
           type: integer
           description: |-
