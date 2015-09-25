@@ -38,7 +38,7 @@ Processing
 """
 from batesian import AccessKeyStore
 
-from jinja2 import Environment, FileSystemLoader, StrictUndefined, Template
+from jinja2 import Environment, FileSystemLoader, StrictUndefined, Template, meta
 from argparse import ArgumentParser, FileType
 import importlib
 import json
@@ -122,7 +122,19 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
 
     # check the input files and substitute in sections where required
     log("Parsing input template: %s" % file_stream.name)
-    temp = Template(file_stream.read())
+    temp_str = file_stream.read()
+    # do sanity checking on the template to make sure they aren't reffing things
+    # which will never be replaced with a section.
+    ast = env.parse(temp_str)
+    template_vars = meta.find_undeclared_variables(ast)
+    unused_vars = [var for var in template_vars if var not in sections]
+    if len(unused_vars) > 0:
+        raise Exception(
+            "You have {{ variables }} which are not found in sections: %s" %
+            (unused_vars,)
+        )
+    # process the template
+    temp = Template(temp_str)
     log("Creating output for: %s" % file_stream.name)
     output = create_from_template(temp, sections)
     with open(
