@@ -66,7 +66,7 @@ paths:
                 description: |-
                   An access token for the account.
                   This access token can then be used to authorize other requests.
-                  The access token may expire at some point, and if so, it SHOULD come with a refresh_token.
+                  The access token may expire at some point, and if so, it SHOULD come with a ``refresh_token``.
                   There is no specific error message to indicate that a request has failed because
                   an access token has expired; instead, if a client has reason to believe its
                   access token is valid, and it receives an auth error, they should attempt to
@@ -132,7 +132,7 @@ paths:
                 description: |-
                   An access token for the account.
                   This access token can then be used to authorize other requests.
-                  The access token may expire at some point, and if so, it SHOULD come with a refresh_token.
+                  The access token may expire at some point, and if so, it SHOULD come with a ``refresh_token``.
               refresh_token:
                 type: string
                 description: (optional) A ``refresh_token`` may be exchanged for a new ``access_token`` using the TODO Linkify /tokenrefresh API endpoint.
