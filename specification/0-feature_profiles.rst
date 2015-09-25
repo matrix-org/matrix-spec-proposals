@@ -36,3 +36,46 @@ Summary
 .. _VoIP: `module:voip`_
 .. _Content Repository: `module:content`_
 
+Clients
+-------
+
+Stand-alone web client (``Web``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is a web page which heavily uses Matrix for communication. Single-page web
+apps would be classified as a stand-alone web client, as would multi-page web
+apps which use Matrix on nearly every page.
+
+Embedded web client (``EmbedWeb``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is a Matrix client which is embedded in another website, e.g. using
+iframes. These embedded clients are typically for a single purpose
+related to the website in question, and are not intended to be fully-fledged
+communication apps.
+
+Mobile client (``Mobile``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is a Matrix client specifically designed for consumption on mobile devices.
+This is typically a mobile app but need not be so provided the feature set can
+be reached (e.g. if a mobile site could display push notifications it could be
+classified as a mobile client).
+
+Desktop client (``Desktop``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is a native application which can run in its own environment outside a
+browser.
+
+Command Line Interface client (``CLI``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is a client which is used via a text-based terminal.
+
+Internet of Things client (``IoT``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is a client which is typically running on an embedded device such as a
+kettle, fridge or car.
+
