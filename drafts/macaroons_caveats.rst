@@ -3,7 +3,7 @@ Macaroon Caveats
 
 `Macaroons`_ are issued by Matrix servers as authorization tokens. Macaroons may be restricted by adding caveats to them.
 
-.. _Macaroons: http://theory.stanford.edu/~ataly/Papers/macaroons.pdf)
+.. _Macaroons: http://theory.stanford.edu/~ataly/Papers/macaroons.pdf
 
 Caveats can only be used for reducing the scope of a token, never for increasing it. Servers are required to reject any macroon with a caveat that they do not understand.
 
