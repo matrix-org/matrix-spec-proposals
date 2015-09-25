@@ -1,0 +1,167 @@
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server v2 sync API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+basePath: /_matrix/client/api/v2_alpha
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  accessToken:
+    type: apiKey
+    description: The user_id or application service access_token
+    name: access_token
+    in: query
+paths:
+  "/sync":
+    get:
+      summary: Synchronise the client's state and receive new messages.
+      description: |-
+        Synchronise the client's state with the latest state on the server.
+        Client's use this API when they first log in to get an initial snapshot
+        of the state on the server, and then continue to call this API to get
+        incremental deltas to the state, and to receive new messages.
+      security:
+        - accessToken: []
+      parameters:
+        - in: query
+          name: filter
+          type: string
+          description: |-
+            The ID of a filter created using the filter API.
+        - in: query
+          name: since
+          type: string
+          description: |-
+            A point in time to continue a sync from.
+        - in: query
+          name: timeout
+          type: integer
+          description: |-
+            The maximum time to poll in milliseconds before returning this
+            request.
+      responses:
+        200:
+          description:
+            The initial snapshot or delta for the client to use to update their
+            state.
+          schema:
+            type: object
+            properties:
+              next_batch:
+                type: string
+                description: |-
+                  The batch token to supply in the ``since`` param of the next
+                  ``/sync`` request.
+              events:
+                type: array
+                description: |-
+                  A list of event objects that are referred to by index in the
+                  rest of the ``sync`` response.
+                items:
+                  type: object
+              rooms:
+                type: array
+                description: |-
+                  A list of rooms that the client needs to update.
+                items:
+                  type: object
+                  properties:
+                    room_id:
+                      type: string
+                      description: |-
+                        The ID of the room.
+                    state:
+                      description: |-
+                        The state updates for the room.
+                      allOf:
+                        - $ref: "definitions/event_batch.json"
+                    timeline:
+                      description: |-
+                        The timeline of messages and state changes in the room.
+                      allOf:
+                        - $ref: "definitions/timeline_batch.json"
+                    ephemeral:
+                      description: |-
+                        The ephemeral events in the room that aren't recorded
+                        in the timeline or state of the room. E.g. typing.
+                      allOf:
+                        - $ref: "definitions/event_batch.json"
+              public_user_data:
+                description: |-
+                  The updates to publically visible user data.
+                allOf:
+                  - $ref: "definitions/event_batch.json"
+              private_user_data:
+                description: |-
+                  Updates to the data which is private to the user but shared
+                  amoungst their devices.
+                allOf:
+                  - $ref: "definitions/event_batch.json"
+          examples:
+            application/json: |-
+              {
+                "next_batch": "s72595_4483_1934",
+                "events": [
+                  {
+                    "sender": "@bob:example.com",
+                    "type": "com.example.weird.setting",
+                    "content": {"setting1": true, "setting2": false}
+                  },
+                  {
+                    "sender": "@alice:example.com",
+                    "type": "m.profile.display_name",
+                    "content": {"display_name": "Alice"}
+                  },
+                  {
+                    "sender": "@alice:example.com",
+                    "type": "m.presence",
+                    "content": {"presence": "online"}
+                  },
+                  {
+                    "room_id": "!726s6s6q:example.com",
+                    "type": "m.typing",
+                    "content": {"user_ids": ["@alice:example.com"]}
+                  },
+                  {
+                    "sender": "@alice:example.com",
+                    "room_id": "!726s6s6q:example.com",
+                    "type": "m.room.member",
+                    "state_key": "@alice:example.com",
+                    "content": {"membership": "join"},
+                    "origin_server_ts": 1417731086795
+                  },
+                  {
+                    "sender": "@bob:example.com",
+                    "room_id": "!726s6s6q:example.com",
+                    "type": "m.room.member",
+                    "state_key": "@bob:example.com",
+                    "content": {"membership": "join"},
+                    "origin_server_ts": 1417731086795
+                  },
+                  {
+                    "sender": "@alice:example.com",
+                    "room_id": "!726s6s6q:example.com",
+                    "type": "m.room.message",
+                    "unsigned": {"age": "124524", "txn_id": "1234"},
+                    "content": {"body": "I am a fish", "msgtype": "m.text"},
+                    "origin_server_ts": 1417731086797
+                  }
+                ],
+                "private_user_data": {"events": [0]},
+                "public_user_data": {"events": [1, 2]},
+                "rooms": [{
+                  "room_id": "!726s6s6q:example.com",
+                  "ephemeral": {"events": [3]},
+                  "state": {"events": [4, 5]},
+                  "timeline": {
+                    "events": [5,6],
+                    "limited": true,
+                    "prev_batch": "t34-23535_0_0"
+                  }
+                }]
+              }

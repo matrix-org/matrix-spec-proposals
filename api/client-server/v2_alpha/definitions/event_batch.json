@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "events": {
+      "type": "array",
+      "description": "List of indicies into an events array",
+      "items": {
+        "type": "integer"
+      }
+    }
+  }
+}
