@@ -781,6 +781,9 @@ options which can be set when creating a room:
     The expected format of the state events are an object with ``type``,
     ``state_key`` and ``content`` keys set.
 
+    Takes precedence over events set by ``presets``, but gets overriden by
+    ``name`` and ``topic`` keys.
+
 Example::
 
   {
