@@ -122,13 +122,13 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
 
     # check the input files and substitute in sections where required
     log("Parsing input template: %s" % file_stream.name)
-    temp = Template(file_stream.read())
+    temp = Template(file_stream.read().decode("utf-8"))
     log("Creating output for: %s" % file_stream.name)
     output = create_from_template(temp, sections)
     with open(
             os.path.join(out_dir, os.path.basename(file_stream.name)), "w"
             ) as f:
-        f.write(output)
+        f.write(output.encode("utf-8"))
     log("Output file for: %s" % file_stream.name)
     check_unaccessed("units", units)
 

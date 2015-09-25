@@ -1,6 +1,8 @@
 Content repository
 ==================
 
+.. _module:content:
+
 HTTP API
 --------
 
