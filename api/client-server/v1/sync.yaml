@@ -267,6 +267,11 @@ paths:
                       type: string
                       description: "The user's membership state in this room."
                       enum: ["invite", "join", "leave", "ban"]
+                    invite:
+                        type: object
+                        description: "The invite event if `membership` is `invite`"
+                        allOf:
+                          - "$ref": "room.room.member"
                     messages:
                       type: object
                       title: PaginationChunk
