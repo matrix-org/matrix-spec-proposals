@@ -1,4 +1,12 @@
-"""Contains all the units for the spec."""
+"""
+Contains all the units for the spec.
+
+This file loads swagger and JSON schema files and parses out the useful bits
+and returns them as Units for use in Batesian.
+
+For the actual conversion of data -> RST (including templates), see the sections
+file instead.
+"""
 from batesian.units import Units
 import inspect
 import json
@@ -7,6 +15,17 @@ import re
 import subprocess
 import urllib
 import yaml
+
+V1_CLIENT_API = "../api/client-server/v1"
+V1_EVENT_EXAMPLES = "../event-schemas/examples/v1"
+V1_EVENT_SCHEMA = "../event-schemas/schema/v1"
+CORE_EVENT_SCHEMA = "../event-schemas/schema/v1/core-event-schema"
+CHANGELOG = "../CHANGELOG.rst"
+TARGETS = "../specification/targets.yaml"
+
+ROOM_EVENT = "core-event-schema/room_event.json"
+STATE_EVENT = "core-event-schema/state_event.json"
+
 
 def get_json_schema_object_fields(obj, enforce_title=False):
     # Algorithm:
@@ -87,6 +106,8 @@ def get_json_schema_object_fields(obj, enforce_title=False):
                     desc += (
                         " Must be '%s'." % props[key_name]["enum"][0]
                     )
+            if isinstance(value_type, list):
+                value_type = " or ".join(value_type)
 
         fields["rows"].append({
             "key": key_name,
@@ -121,7 +142,7 @@ class MatrixUnits(Units):
                         "good_response": ""
                     }
                 }
-                self.log(".o.O.o. Endpoint: %s %s" % (method, path))
+                self.log(" ------- Endpoint: %s %s ------- " % (method, path))
                 for param in single_api.get("parameters", []):
                     # description
                     desc = param.get("description", "")
@@ -149,8 +170,8 @@ class MatrixUnits(Units):
                     # object with some keys; we'll add entries f.e one)
                     if "schema" not in param:
                         raise Exception(
-                            "API endpoint group=%s path=%s method=%s param=%s"+
-                            " has no valid parameter value." % (
+                            ("API endpoint group=%s path=%s method=%s param=%s"+
+                            " has no valid parameter value.") % (
                                 group_name, path, method, param
                             )
                         )
@@ -170,6 +191,9 @@ class MatrixUnits(Units):
                             "desc": json_body[key]["description"]
                         })
                 # endfor[param]
+                for row in endpoint["req_params"]:
+                    self.log("Request parameter: %s" % row)
+
                 # group params by location to ease templating
                 endpoint["req_param_by_loc"] = {
                     #   path: [...], query: [...], body: [...]
@@ -227,6 +251,7 @@ class MatrixUnits(Units):
 
                 # add response params if this API has any.
                 if good_response:
+                    self.log("Found a 200 response for this API")
                     res_type = Units.prop(good_response, "schema/type")
                     if res_type and res_type not in ["object", "array"]:
                         # response is a raw string or something like that
@@ -235,7 +260,8 @@ class MatrixUnits(Units):
                             "rows": [{
                                 "key": good_response["schema"].get("name", ""),
                                 "type": res_type,
-                                "desc": res.get("description", "")
+                                "desc": res.get("description", ""),
+                                "req_str": ""
                             }]
                         })
                     elif res_type and Units.prop(good_response, "schema/properties"):
@@ -245,6 +271,34 @@ class MatrixUnits(Units):
                         for table in res_tables:
                             if "no-table" not in table:
                                 endpoint["res_tables"].append(table)
+                    elif res_type and Units.prop(good_response, "schema/items"):
+                        # response is an array:
+                        # FIXME: Doesn't recurse at all.
+                        schema = good_response["schema"]
+                        array_type = Units.prop(schema, "items/type")
+                        if Units.prop(schema, "items/allOf"):
+                            array_type = (
+                                Units.prop(schema, "items/title")
+                            )
+                        endpoint["res_tables"].append({
+                            "title": schema.get("title", ""),
+                            "rows": [{
+                                "key": "N/A",
+                                "type": ("[%s]" % array_type),
+                                "desc": schema.get("description", ""),
+                                "req_str": ""
+                            }]
+                        })
+
+                for response_table in endpoint["res_tables"]:
+                    self.log("Response: %s" % response_table["title"])
+                    for r in response_table["rows"]:
+                        self.log("Row: %s" % r)
+                if len(endpoint["res_tables"]) == 0:
+                    self.log(
+                        "This API appears to have no response table. Are you " +
+                        "sure this API returns no parameters?"
+                    )
 
                 endpoints.append(endpoint)
 
@@ -266,7 +320,7 @@ class MatrixUnits(Units):
         }
 
     def load_swagger_apis(self):
-        path = "../api/client-server/v1"
+        path = V1_CLIENT_API
         apis = {}
         for filename in os.listdir(path):
             if not filename.endswith(".yaml"):
@@ -281,19 +335,33 @@ class MatrixUnits(Units):
         return apis
 
     def load_common_event_fields(self):
-        path = "../event-schemas/schema/v1/core"
+        path = CORE_EVENT_SCHEMA
         event_types = {}
-        with open(path, "r") as f:
-            core_json = json.loads(f.read())
-            for event_type in core_json["definitions"]:
+
+        for (root, dirs, files) in os.walk(path):
+            for filename in files:
+                if not filename.endswith(".json"):
+                    continue
+
+                event_type = filename[:-5]  # strip the ".json"
+                filepath = os.path.join(root, filename)
+                with open(filepath) as f:
+                    try:
+                        event_info = json.load(f)
+                    except Exception as e:
+                        raise ValueError(
+                            "Error reading file %r" % (filepath,), e
+                        )
+
                 if "event" not in event_type:
                     continue  # filter ImageInfo and co
-                event_info = core_json["definitions"][event_type]
+
                 table = {
                     "title": event_info["title"],
                     "desc": event_info["description"],
                     "rows": []
                 }
+
                 for prop in sorted(event_info["properties"]):
                     row = {
                         "key": prop,
@@ -301,11 +369,12 @@ class MatrixUnits(Units):
                         "desc": event_info["properties"][prop].get("description","")
                     }
                     table["rows"].append(row)
+
                 event_types[event_type] = table
         return event_types
 
     def load_event_examples(self):
-        path = "../event-schemas/examples/v1"
+        path = V1_EVENT_EXAMPLES
         examples = {}
         for filename in os.listdir(path):
             if not filename.startswith("m."):
@@ -317,7 +386,7 @@ class MatrixUnits(Units):
         return examples
 
     def load_event_schemas(self):
-        path = "../event-schemas/schema/v1"
+        path = V1_EVENT_SCHEMA
         schemata = {}
 
         for filename in os.listdir(path):
@@ -346,8 +415,8 @@ class MatrixUnits(Units):
 
                 # add typeof
                 base_defs = {
-                    "core#/definitions/room_event": "Message Event",
-                    "core#/definitions/state_event": "State Event"
+                    ROOM_EVENT: "Message Event",
+                    STATE_EVENT: "State Event"
                 }
                 if type(json_schema.get("allOf")) == list:
                     schema["typeof"] = base_defs.get(
@@ -384,7 +453,6 @@ class MatrixUnits(Units):
                         "`m.room.message msgtypes`_."
                     )
 
-
                 # Assign state key info if it has some
                 if schema["typeof"] == "State Event":
                     skey_desc = Units.prop(
@@ -398,7 +466,7 @@ class MatrixUnits(Units):
         return schemata
 
     def load_spec_meta(self):
-        path = "../CHANGELOG.rst"
+        path = CHANGELOG
         title_part = None
         version = None
         changelog_lines = []
@@ -429,7 +497,7 @@ class MatrixUnits(Units):
             if re.match("^v[0-9\.]+$", word):
                 version = word[1:]  # strip the 'v'
 
-        self.log("Version: %s Title part: %s Changelog lines: %s" % (
+        self.log("Version: %s Title part: %s Changelog line count: %s" % (
             version, title_part, len(changelog_lines)
         ))
         if not version or len(changelog_lines) == 0:
@@ -439,6 +507,12 @@ class MatrixUnits(Units):
             "version": version,
             "changelog": "".join(changelog_lines)
         }
+
+
+    def load_spec_targets(self):
+        with open(TARGETS, "r") as f:
+            return yaml.load(f.read())
+
 
     def load_git_version(self):
         null = open(os.devnull, 'w')

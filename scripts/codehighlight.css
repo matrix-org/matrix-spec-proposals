@@ -1,0 +1,6 @@
+pre.code .comment, code .comment { color: green }
+pre.code .keyword, code .keyword { color: darkred; font-weight: bold }
+pre.code .name.builtin, code .name.builtin { color: darkred; font-weight: bold }
+pre.code .literal.number, code .literal.number { color: blue }
+pre.code .name.tag, code .name.tag { color: darkgreen }
+pre.code .literal.string, code .literal.string { color: darkblue }

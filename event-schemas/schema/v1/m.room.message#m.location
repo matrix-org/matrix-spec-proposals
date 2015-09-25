@@ -1,10 +1,9 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "title": "LocationMessage",
     "description": "This message represents a real-world location.",
     "allOf": [{
-        "$ref": "core#/definitions/room_event"
+        "$ref": "core-event-schema/room_event.json"
     }],
     "properties": {
         "content": {
@@ -30,7 +29,7 @@
                     "type": "object",
                     "title": "ImageInfo",
                     "allOf": [{
-                        "$ref": "core#/definitions/msgtype_infos/image_info"
+                        "$ref": "core-event-schema/msgtype_infos/image_info.json"
                     }]
                 }
             },

@@ -1,10 +1,9 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "title": "Informs the room as to which alias is the canonical one.",
     "description": "This event is used to inform the room about which alias should be considered the canonical one. This could be for display purposes or as suggestion to users which alias to use to advertise the room.",
     "allOf": [{
-        "$ref": "core#/definitions/state_event"
+        "$ref": "core-event-schema/state_event.json"
     }],
     "properties": {
         "content": {

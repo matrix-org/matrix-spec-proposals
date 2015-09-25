@@ -1,10 +1,9 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "title": "TextMessage",
     "description": "This message is the most basic message and is used to represent text.",
     "allOf": [{
-        "$ref": "core#/definitions/room_event"
+        "$ref": "core-event-schema/room_event.json"
     }],
     "properties": {
         "content": {
