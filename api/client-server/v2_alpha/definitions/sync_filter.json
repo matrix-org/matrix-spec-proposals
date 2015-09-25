@@ -9,7 +9,7 @@
             "The state events to include for rooms.",
           "allOf": [{"$ref": "definitions/event_filter.json"}]
         },
-        "events": {
+        "timeline": {
           "description":
             "The message and state update events to include for rooms.",
           "allOf": [{"$ref": "definitions/event_filter.json"}]

@@ -50,7 +50,7 @@ paths:
                     "types": ["m.room.*"],
                     "not_rooms": ["!726s6s6q:example.com"]
                   },
-                  "events": {
+                  "timeline": {
                     "types": ["m.room.message"],
                     "not_rooms": ["!726s6s6q:example.com"],
                     "not_senders": ["@spam:example.com"]
@@ -118,7 +118,7 @@ paths:
                     "types": ["m.room.*"],
                     "not_rooms": ["!726s6s6q:example.com"]
                   },
-                  "events": {
+                  "timeline": {
                     "types": ["m.room.message"],
                     "not_rooms": ["!726s6s6q:example.com"],
                     "not_senders": ["@spam:example.com"]
