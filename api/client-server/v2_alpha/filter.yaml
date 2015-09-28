@@ -51,6 +51,7 @@ paths:
                     "not_rooms": ["!726s6s6q:example.com"]
                   },
                   "timeline": {
+                    "limit": 10,
                     "types": ["m.room.message"],
                     "not_rooms": ["!726s6s6q:example.com"],
                     "not_senders": ["@spam:example.com"]
@@ -119,6 +120,7 @@ paths:
                     "not_rooms": ["!726s6s6q:example.com"]
                   },
                   "timeline": {
+                    "limit": 10,
                     "types": ["m.room.message"],
                     "not_rooms": ["!726s6s6q:example.com"],
                     "not_senders": ["@spam:example.com"]
