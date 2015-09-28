@@ -750,6 +750,16 @@ options which can be set when creating a room:
     This will tell the server to invite everyone in the list to the newly
     created room.
 
+``creation_content``
+  Type:
+    Object
+  Optional:
+    Yes
+  Value:
+    Extra keys to be added to the content of the ``m.room.create``
+  Description:
+    Allows clients to add keys to the content of ``m.room.create``.
+
 Example::
 
   {
