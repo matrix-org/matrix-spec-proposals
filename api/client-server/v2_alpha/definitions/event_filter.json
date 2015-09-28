@@ -17,7 +17,7 @@
     "not_types": {
       "type": "array",
       "description":
-        "A list of event types to exclude. If this list is absent then no event types are excluded.",
+        "A list of event types to exclude. If this list is absent then no event types are excluded. A matching type will be excluded even if it is listed in the 'types' filter",
       "items": {
         "type": "string"
       }
@@ -33,7 +33,7 @@
     "not_senders": {
       "type": "array",
       "description":
-        "A list of sender IDs to exclude. If this list is absent then no senders are excluded.",
+        "A list of sender IDs to exclude. If this list is absent then no senders are excluded. A matching sender will be excluded even if it is listed in the 'senders' filter",
       "items": {
         "type": "string"
       }
