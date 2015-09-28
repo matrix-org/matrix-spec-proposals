@@ -12,6 +12,10 @@
                 "creator": {
                     "type": "string",
                     "description": "The ``user_id`` of the room creator. This is set by the homeserver."
+                },
+                "m.federate": {
+                    "type": "boolean",
+                    "description": "Whether users on other servers can join this room."
                 }
             },
             "required": ["creator"]
