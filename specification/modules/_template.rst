@@ -15,12 +15,12 @@ Events
 ------
 List the new event types introduced by this module, if any. If there are no
 new events, this section can be omitted. Event types should be done as
-subsections. The section is intended to document the "common shared event
+subsections. This section is intended to document the "common shared event
 structure" between client and server. Deviations from this shared structure
 should be documented in the relevant behaviour section.
 
-m.example.event.type
-~~~~~~~~~~~~~~~~~~~~
+``m.example.event.type``
+~~~~~~~~~~~~~~~~~~~~~~~~
 There should be JSON Schema docs for this event. Once there is JSON schema,
 there will be a template variable with dots in the event type replaced with
 underscores and the suffix ``_event``. You can insert a template like so:
@@ -29,7 +29,7 @@ underscores and the suffix ``_event``. You can insert a template like so:
 
 Client behaviour
 ----------------
-List any new HTTP endpoints. These endpoints should be docced using Swagger.
+List any new HTTP endpoints. These endpoints should be documented using Swagger.
 Once there is Swagger, there will be a template variable based on the name of
 the YAML file with the suffix ``_http_api``. You can insert a template for
 swagger docs like so:
@@ -37,14 +37,15 @@ swagger docs like so:
 {{name-of-yaml-file-without-file-ext_http_api}}
 
 List the steps the client needs to take to
-correctly process this module. Listing what data structures the client should be
-storing to aid implementation is recommended.
+correctly process this module. List what data structures the client should be
+storing in order to aid implementation.
 
 Server behaviour
 ----------------
 Does the server need to handle any of the new events in a special way (e.g.
 typing timeouts, presence). Advice on how to persist events and/or requests are
-recommended to aid implementation.
+recommended to aid implementation. Federation-specific logic should be included
+here.
 
 Security considerations
 -----------------------
