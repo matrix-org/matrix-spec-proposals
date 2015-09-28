@@ -108,7 +108,7 @@ paths:
               private_user_data:
                 description: |-
                   Updates to the data which is private to the user but shared
-                  amoungst their devices.
+                  amongst their devices.
                 allOf:
                   - $ref: "definitions/event_batch.json"
           examples:
