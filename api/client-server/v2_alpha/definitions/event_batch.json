@@ -3,7 +3,7 @@
   "properties": {
     "events": {
       "type": "array",
-      "description": "List of indicies into an events array",
+      "description": "List of indices into an events array",
       "items": {
         "type": "integer"
       }
