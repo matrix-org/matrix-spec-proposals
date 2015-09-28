@@ -43,9 +43,14 @@ paths:
         - in: query
           name: set_presence
           type: string
+          enum: ["offline"]
           description: |-
-            Set the presence status of this client.
-          x-example: "online"
+            Controls whether the client is automatically marked as online by
+            polling this API. If this parameter is omitted then the client is
+            automatically marked as online when it uses this API. Otherwise if
+            the parameter is set to "offline" then the client is not marked as
+            being online when it uses this API.
+          x-example: "offline"
         - in: query
           name: timeout
           type: integer
