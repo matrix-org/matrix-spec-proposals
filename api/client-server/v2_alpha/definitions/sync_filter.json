@@ -34,7 +34,8 @@
     "event_format": {
       "description":
         "The format to use for events. 'client' will return the events in a format suitable for clients. 'federation' will return the raw event as receieved over federation. The default is 'client'.",
-      "type": "string"
+      "type": "string",
+      "enum": ["client", "federation"]
     },
     "event_fields": {
       "type": "array",
