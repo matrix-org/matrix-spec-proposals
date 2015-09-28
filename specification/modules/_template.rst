@@ -23,14 +23,16 @@ m.example.event.type
 ~~~~~~~~~~~~~~~~~~~~
 There should be JSON Schema docs for this event. Once there is JSON schema,
 there will be a template variable with dots in the event type replaced with
-underscores. You can insert a template like so:
+underscores and the suffix ``_event``. You can insert a template like so:
 
 {{m_example_event_type_event}}
 
 Client behaviour
 ----------------
-List any new HTTP endpoints. These endpoints should be docced using Swagger. You
-can insert a template for swagger docs like so:
+List any new HTTP endpoints. These endpoints should be docced using Swagger.
+Once there is Swagger, there will be a template variable based on the name of
+the YAML file with the suffix ``_http_api``. You can insert a template for
+swagger docs like so:
 
 {{name-of-yaml-file-without-file-ext_http_api}}
 
