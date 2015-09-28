@@ -251,6 +251,13 @@ request. The same ``nonce`` should be used if retrying the request.
 There are many ways a client may receive a ``token``, including via an email or
 from an existing logged in device.
 
+The ``txn_id`` may be used by the server to disallow other devices from using
+the token, thus providing "single use" tokens while still allowing the device
+to retry the request. This would be done by tying the token to the ``txn_id``
+server side, as well as potentially invalidating the token completely once the
+device has successfully logged in (e.g. when we receive a request from the
+newly provisioned access_token).
+
 OAuth2-based
 ~~~~~~~~~~~~
 :Type:
