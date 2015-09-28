@@ -258,6 +258,8 @@ server side, as well as potentially invalidating the token completely once the
 device has successfully logged in (e.g. when we receive a request from the
 newly provisioned access_token).
 
+The ``token`` must be a macaroon.
+
 OAuth2-based
 ~~~~~~~~~~~~
 :Type:
