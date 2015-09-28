@@ -19,18 +19,24 @@ subsections. The section is intended to document the "common shared event
 structure" between client and server. Deviations from this shared structure
 should be documented in the relevant behaviour section.
 
-example.event.type
-~~~~~~~~~~~~~~~~~~
-There should be JSON Schema docs for this event. You can insert a template like
-so:
+m.example.event.type
+~~~~~~~~~~~~~~~~~~~~
+There should be JSON Schema docs for this event. Once there is JSON schema,
+there will be a template variable with dots in the event type replaced with
+underscores. You can insert a template like so:
 
-{{example_event_type_event}}
+{{m_example_event_type_event}}
 
 Client behaviour
 ----------------
-List any new HTTP endpoints. List the steps the client needs to take to
+List any new HTTP endpoints. These endpoints should be docced using Swagger. You
+can insert a template for swagger docs like so:
+
+{{name-of-yaml-file-without-file-ext_http_api}}
+
+List the steps the client needs to take to
 correctly process this module. Listing what data structures the client should be
-storing to aid implementation is recommended. 
+storing to aid implementation is recommended.
 
 Server behaviour
 ----------------
