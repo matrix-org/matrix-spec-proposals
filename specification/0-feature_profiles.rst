@@ -67,7 +67,7 @@ classified as a mobile client).
 Desktop (``Desktop``)
 ~~~~~~~~~~~~~~~~~~~~~
 
-This is a native application which can run in its own environment outside a
+This is a native GUI application which can run in its own environment outside a
 browser.
 
 Command Line Interface (``CLI``)
