@@ -33,22 +33,26 @@ paths:
           type: string
           description: |-
             The ID of a filter created using the filter API.
+          x-example: "66696p746572"
         - in: query
           name: since
           type: string
           description: |-
             A point in time to continue a sync from.
+          x-example: "s72594_4483_1934"
         - in: query
           name: set_presence
           type: string
           description: |-
             Set the presence status of this client.
+          x-example: "online"
         - in: query
           name: timeout
           type: integer
           description: |-
             The maximum time to poll in milliseconds before returning this
             request.
+          x-example: 30000
       responses:
         200:
           description:
