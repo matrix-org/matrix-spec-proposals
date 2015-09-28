@@ -269,6 +269,7 @@ paths:
                       enum: ["invite", "join", "leave", "ban"]
                     invite:
                         type: object
+                        title: "InviteEvent"
                         description: "The invite event if `membership` is `invite`"
                         allOf:
                           - "$ref": "m.room.member"
