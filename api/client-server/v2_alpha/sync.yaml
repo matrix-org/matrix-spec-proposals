@@ -102,7 +102,7 @@ paths:
                         - $ref: "definitions/event_batch.json"
               public_user_data:
                 description: |-
-                  The updates to publically visible user data.
+                  The updates to publicly visible user data.
                 allOf:
                   - $ref: "definitions/event_batch.json"
               private_user_data:
