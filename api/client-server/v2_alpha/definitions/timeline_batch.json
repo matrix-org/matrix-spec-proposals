@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "allOf": [{"$ref":"definitions/event_batch.json"}],
+  "allOf": [{"$ref":"definitions/room_event_batch.json"}],
   "properties": {
     "limited": {
       "type": "boolean",

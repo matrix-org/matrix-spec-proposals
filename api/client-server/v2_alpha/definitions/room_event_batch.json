@@ -3,9 +3,9 @@
   "properties": {
     "events": {
       "type": "array",
-      "description": "List of events",
+      "description": "List of event ids",
       "items": {
-        "type": "object"
+        "type": "string"
       }
     }
   }

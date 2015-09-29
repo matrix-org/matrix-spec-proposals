@@ -71,13 +71,6 @@ paths:
                 description: |-
                   The batch token to supply in the ``since`` param of the next
                   ``/sync`` request.
-              events:
-                type: array
-                description: |-
-                  A list of event objects that are referred to by index in the
-                  rest of the ``sync`` response.
-                items:
-                  type: object
               rooms:
                 type: array
                 description: |-
@@ -89,11 +82,20 @@ paths:
                       type: string
                       description: |-
                         The ID of the room.
+                    event_map:
+                      type: object
+                      description: |-
+                        A map from event ID to events for this room. The events
+                        are referenced from the ``timeline`` and ``state`` keys
+                        for this room.
+                      additionalProperties:
+                        description: An event object.
+                        type: object
                     state:
                       description: |-
                         The state updates for the room.
                       allOf:
-                        - $ref: "definitions/event_batch.json"
+                        - $ref: "definitions/room_event_batch.json"
                     timeline:
                       description: |-
                         The timeline of messages and state changes in the room.
@@ -120,62 +122,76 @@ paths:
             application/json: |-
               {
                 "next_batch": "s72595_4483_1934",
-                "events": [
-                  {
-                    "sender": "@bob:example.com",
-                    "type": "com.example.weird.setting",
-                    "content": {"setting1": true, "setting2": false}
-                  },
-                  {
-                    "sender": "@alice:example.com",
-                    "type": "m.profile.display_name",
-                    "content": {"display_name": "Alice"}
-                  },
-                  {
-                    "sender": "@alice:example.com",
-                    "type": "m.presence",
-                    "content": {"presence": "online"}
-                  },
-                  {
-                    "room_id": "!726s6s6q:example.com",
-                    "type": "m.typing",
-                    "content": {"user_ids": ["@alice:example.com"]}
-                  },
-                  {
-                    "sender": "@alice:example.com",
-                    "room_id": "!726s6s6q:example.com",
-                    "type": "m.room.member",
-                    "state_key": "@alice:example.com",
-                    "content": {"membership": "join"},
-                    "origin_server_ts": 1417731086795
-                  },
-                  {
-                    "sender": "@bob:example.com",
-                    "room_id": "!726s6s6q:example.com",
-                    "type": "m.room.member",
-                    "state_key": "@bob:example.com",
-                    "content": {"membership": "join"},
-                    "origin_server_ts": 1417731086795
-                  },
-                  {
-                    "sender": "@alice:example.com",
-                    "room_id": "!726s6s6q:example.com",
-                    "type": "m.room.message",
-                    "unsigned": {"age": "124524", "txn_id": "1234"},
-                    "content": {"body": "I am a fish", "msgtype": "m.text"},
-                    "origin_server_ts": 1417731086797
-                  }
-                ],
-                "private_user_data": {"events": [0]},
-                "public_user_data": {"events": [1, 2]},
+                "private_user_data": {
+                  "events": [
+                    {
+                      "sender": "@bob:example.com",
+                      "type": "com.example.weird.setting",
+                      "content": {"setting1": true, "setting2": false}
+                    }
+                  ]
+                },
+                "public_user_data": {
+                  "events": [
+                    {
+                      "sender": "@alice:example.com",
+                      "type": "m.profile.display_name",
+                      "content": {"display_name": "Alice"}
+                    },
+                    {
+                      "sender": "@alice:example.com",
+                      "type": "m.presence",
+                      "content": {"presence": "online"}
+                    }
+                  ]
+                },
                 "rooms": [{
                   "room_id": "!726s6s6q:example.com",
-                  "ephemeral": {"events": [3]},
-                  "state": {"events": [4, 5]},
+                  "event_map": {
+                    "$66697273743031:example.com": {
+                      "sender": "@alice:example.com",
+                      "type": "m.room.member",
+                      "state_key": "@alice:example.com",
+                      "content": {"membership": "join"},
+                      "origin_server_ts": 1417731086795
+                    },
+                    "$7365636s6r6432:example.com": {
+                      "sender": "@bob:example.com",
+                      "type": "m.room.member",
+                      "state_key": "@bob:example.com",
+                      "content": {"membership": "join"},
+                      "origin_server_ts": 1417731086795
+                    },
+                    "$74686972643033:example.com": {
+                      "sender": "@alice:example.com",
+                      "type": "m.room.message",
+                      "unsigned": {"age": "124524", "txn_id": "1234"},
+                      "content": {"body": "I am a fish", "msgtype": "m.text"},
+                      "origin_server_ts": 1417731086797
+                    }
+                  },
+                  "state": {
+                    "events": [
+                      "$66697273743031:example.com",
+                      "$7365636s6r6432:example.com"
+                    ]
+                  },
                   "timeline": {
-                    "events": [5,6],
+                    "events": [
+                      "$7365636s6r6432:example.com",
+                      "$74686972643033:example.com"
+                    ],
                     "limited": true,
                     "prev_batch": "t34-23535_0_0"
+                  },
+                  "ephemeral": {
+                    "events": [
+                      {
+                        "room_id": "!726s6s6q:example.com",
+                        "type": "m.typing",
+                        "content": {"user_ids": ["@alice:example.com"]}
+                      }
+                    ]
                   }
                 }]
               }
