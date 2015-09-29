@@ -17,7 +17,7 @@ Summary
 ============================ ===== =========== ======== ========= ===== =====
   Module / Profile            Web   Embed-Web   Mobile   Desktop   CLI   IoT
 ============================ ===== =========== ======== ========= ===== =====
- `End-to-End Encryption`_     YES                YES       YES     YES
+ `End-to-End Encryption`_                                             
  `Instant Messaging`_         YES    YES         YES       YES     YES   YES
  `Presence`_                  YES                YES       YES     YES
  `Push Notifications`_                           YES
