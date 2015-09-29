@@ -25,6 +25,7 @@ Summary
  `Typing Notifications`_      YES                YES       YES     YES
  `VoIP`_                      YES                YES       YES
  `Content Repository`_        YES                YES       YES     YES
+ `History Visibility`_        YES                YES       YES     YES
 ============================ ===== =========== ======== ========= ===== =====
 
 *Please see each module for more details on what clients need to implement.*
@@ -37,6 +38,7 @@ Summary
 .. _Typing Notifications: `module:typing`_
 .. _VoIP: `module:voip`_
 .. _Content Repository: `module:content`_
+.. _History Visibility: `module:history-visibility`_
 
 Clients
 -------

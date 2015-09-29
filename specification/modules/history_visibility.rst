@@ -1,6 +1,8 @@
 Room History Visibility
 -----------------------
 
+.. _module:history-visibility:
+
 Whether a member of a room can see the events that happened in a room from
 before they joined the room is controlled by the ``history_visibility`` key
 of the ``m.room.history_visibility`` state event. The valid values for
