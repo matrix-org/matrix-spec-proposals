@@ -72,41 +72,44 @@ paths:
                   The batch token to supply in the ``since`` param of the next
                   ``/sync`` request.
               rooms:
-                type: array
-                description: |-
-                  A list of rooms that the client needs to update.
-                items:
-                  type: object
-                  properties:
-                    room_id:
-                      type: string
-                      description: |-
-                        The ID of the room.
-                    event_map:
+                type: object
+                properties:
+                  roomlist:
+                    type: array
+                    description: |-
+                      A list of rooms that the client needs to update.
+                    items:
                       type: object
-                      description: |-
-                        A map from event ID to events for this room. The events
-                        are referenced from the ``timeline`` and ``state`` keys
-                        for this room.
-                      additionalProperties:
-                        description: An event object.
-                        type: object
-                    state:
-                      description: |-
-                        The state updates for the room.
-                      allOf:
-                        - $ref: "definitions/room_event_batch.json"
-                    timeline:
-                      description: |-
-                        The timeline of messages and state changes in the room.
-                      allOf:
-                        - $ref: "definitions/timeline_batch.json"
-                    ephemeral:
-                      description: |-
-                        The ephemeral events in the room that aren't recorded
-                        in the timeline or state of the room. E.g. typing.
-                      allOf:
-                        - $ref: "definitions/event_batch.json"
+                      properties:
+                        room_id:
+                          type: string
+                          description: |-
+                            The ID of the room.
+                        event_map:
+                          type: object
+                          description: |-
+                            A map from event ID to events for this room. The events
+                            are referenced from the ``timeline`` and ``state`` keys
+                            for this room.
+                          additionalProperties:
+                            description: An event object.
+                            type: object
+                        state:
+                          description: |-
+                            The state updates for the room.
+                          allOf:
+                            - $ref: "definitions/room_event_batch.json"
+                        timeline:
+                          description: |-
+                            The timeline of messages and state changes in the room.
+                          allOf:
+                            - $ref: "definitions/timeline_batch.json"
+                        ephemeral:
+                          description: |-
+                            The ephemeral events in the room that aren't recorded
+                            in the timeline or state of the room. E.g. typing.
+                          allOf:
+                            - $ref: "definitions/event_batch.json"
               public_user_data:
                 description: |-
                   The updates to publicly visible user data.
@@ -145,53 +148,55 @@ paths:
                     }
                   ]
                 },
-                "rooms": [{
-                  "room_id": "!726s6s6q:example.com",
-                  "event_map": {
-                    "$66697273743031:example.com": {
-                      "sender": "@alice:example.com",
-                      "type": "m.room.member",
-                      "state_key": "@alice:example.com",
-                      "content": {"membership": "join"},
-                      "origin_server_ts": 1417731086795
-                    },
-                    "$7365636s6r6432:example.com": {
-                      "sender": "@bob:example.com",
-                      "type": "m.room.member",
-                      "state_key": "@bob:example.com",
-                      "content": {"membership": "join"},
-                      "origin_server_ts": 1417731086795
-                    },
-                    "$74686972643033:example.com": {
-                      "sender": "@alice:example.com",
-                      "type": "m.room.message",
-                      "unsigned": {"age": "124524", "txn_id": "1234"},
-                      "content": {"body": "I am a fish", "msgtype": "m.text"},
-                      "origin_server_ts": 1417731086797
-                    }
-                  },
-                  "state": {
-                    "events": [
-                      "$66697273743031:example.com",
-                      "$7365636s6r6432:example.com"
-                    ]
-                  },
-                  "timeline": {
-                    "events": [
-                      "$7365636s6r6432:example.com",
-                      "$74686972643033:example.com"
-                    ],
-                    "limited": true,
-                    "prev_batch": "t34-23535_0_0"
-                  },
-                  "ephemeral": {
-                    "events": [
-                      {
-                        "room_id": "!726s6s6q:example.com",
-                        "type": "m.typing",
-                        "content": {"user_ids": ["@alice:example.com"]}
+                "rooms": {
+                  "roomlist": [{
+                    "room_id": "!726s6s6q:example.com",
+                    "event_map": {
+                      "$66697273743031:example.com": {
+                        "sender": "@alice:example.com",
+                        "type": "m.room.member",
+                        "state_key": "@alice:example.com",
+                        "content": {"membership": "join"},
+                        "origin_server_ts": 1417731086795
+                      },
+                      "$7365636s6r6432:example.com": {
+                        "sender": "@bob:example.com",
+                        "type": "m.room.member",
+                        "state_key": "@bob:example.com",
+                        "content": {"membership": "join"},
+                        "origin_server_ts": 1417731086795
+                      },
+                      "$74686972643033:example.com": {
+                        "sender": "@alice:example.com",
+                        "type": "m.room.message",
+                        "unsigned": {"age": "124524", "txn_id": "1234"},
+                        "content": {"body": "I am a fish", "msgtype": "m.text"},
+                        "origin_server_ts": 1417731086797
                       }
-                    ]
-                  }
-                }]
+                    },
+                    "state": {
+                      "events": [
+                        "$66697273743031:example.com",
+                        "$7365636s6r6432:example.com"
+                      ]
+                    },
+                    "timeline": {
+                      "events": [
+                        "$7365636s6r6432:example.com",
+                        "$74686972643033:example.com"
+                      ],
+                      "limited": true,
+                      "prev_batch": "t34-23535_0_0"
+                    },
+                    "ephemeral": {
+                      "events": [
+                        {
+                          "room_id": "!726s6s6q:example.com",
+                          "type": "m.typing",
+                          "content": {"user_ids": ["@alice:example.com"]}
+                        }
+                      ]
+                    }
+                  }]
+                }
               }
