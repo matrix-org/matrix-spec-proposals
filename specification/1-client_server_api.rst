@@ -1092,6 +1092,27 @@ Profiles
 
 {{profile_http_api}}
 
+Events on Change of Profile Information
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Because the profile display name and avatar information are likely to be used in
+many places of a client's display, changes to these fields cause an automatic
+propagation event to occur, informing likely-interested parties of the new
+values. This change is conveyed using two separate mechanisms:
+
+ - a ``m.room.member`` event is sent to every room the user is a member of,
+   to update the ``displayname`` and ``avatar_url``.
+ - a ``m.presence`` presence status update is sent, again containing the new
+   values of the ``displayname`` and ``avatar_url`` keys, in addition to the
+   required ``presence`` key containing the current presence state of the user.
+
+Both of these should be done automatically by the home server when a user
+successfully changes their display name or avatar URL fields.
+
+Additionally, when home servers emit room membership events for their own
+users, they should include the display name and avatar URL fields in these
+events so that clients already have these details to hand, and do not have to
+perform extra round trips to query it.
+
 Security
 --------
 
