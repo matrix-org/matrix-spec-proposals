@@ -756,7 +756,8 @@ options which can be set when creating a room:
   Optional:
     Yes
   Value:
-    Extra keys to be added to the content of the ``m.room.create``
+    Extra keys to be added to the content of the ``m.room.create``. The server
+    will clober certain keys, e.g. ``creator``.
   Description:
     Allows clients to add keys to the content of ``m.room.create``.
 
@@ -766,7 +767,10 @@ Example::
     "visibility": "public",
     "room_alias_name": "thepub",
     "name": "The Grand Duke Pub",
-    "topic": "All about happy hour"
+    "topic": "All about happy hour",
+    "creation_content": {
+        "m.federate": false
+    }
   }
 
 The home server will create a ``m.room.create`` event when the room is created,
