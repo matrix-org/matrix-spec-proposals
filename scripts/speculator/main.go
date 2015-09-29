@@ -136,20 +136,30 @@ func generateAt(repo, sha string) (dst string, err error) {
 }
 
 func serveSpec(w http.ResponseWriter, req *http.Request) {
-	pr, err := lookupPullRequest(*req.URL, "/spec")
-	if err != nil {
-		writeError(w, 400, err)
-		return
+	var cloneURL string
+	var sha string
+
+	if strings.ToLower(req.URL.Path) == "/spec/head" {
+		cloneURL = "https://github.com/matrix-org/matrix-doc.git"
+		sha = "HEAD"
+	} else {
+		pr, err := lookupPullRequest(*req.URL, "/spec")
+		if err != nil {
+			writeError(w, 400, err)
+			return
+		}
+
+		// We're going to run whatever Python is specified in the pull request, which
+		// may do bad things, so only trust people we trust.
+		if err := checkAuth(pr); err != nil {
+			writeError(w, 403, err)
+			return
+		}
+		cloneURL = pr.Head.Repo.CloneURL
+		sha = pr.Head.SHA
 	}
 
-	// We're going to run whatever Python is specified in the pull request, which
-	// may do bad things, so only trust people we trust.
-	if err := checkAuth(pr); err != nil {
-		writeError(w, 403, err)
-		return
-	}
-
-	dst, err := generateAt(pr.Head.Repo.CloneURL, pr.Head.SHA)
+	dst, err := generateAt(cloneURL, sha)
 	defer os.RemoveAll(dst)
 	if err != nil {
 		writeError(w, 500, err)
@@ -287,7 +297,7 @@ func listPulls(w http.ResponseWriter, req *http.Request) {
 		s += fmt.Sprintf(`<li>%d: <a href="%s">%s</a>: <a href="%s">%s</a>: <a href="spec/%d">spec</a> <a href="diff/html/%d">spec diff</a> <a href="diff/rst/%d">rst diff</a></li>`,
 			pull.Number, pull.User.HTMLURL, pull.User.Login, pull.HTMLURL, pull.Title, pull.Number, pull.Number, pull.Number)
 	}
-	s += "</ul></body>"
+	s += `</ul><div><a href="spec/head">View the spec at head</a></div></body>`
 	io.WriteString(w, s)
 }
 
