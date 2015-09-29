@@ -15,7 +15,7 @@
                 },
                 "m.federate": {
                     "type": "boolean",
-                    "description": "Whether users on other servers can join this room."
+                    "description": "Whether users on other servers can join this room. Defaults to ``true`` if key does not exist."
                 }
             },
             "required": ["creator"]
