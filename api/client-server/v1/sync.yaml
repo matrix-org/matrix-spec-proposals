@@ -270,9 +270,9 @@ paths:
                     invite:
                         type: object
                         title: "InviteEvent"
-                        description: "The invite event if `membership` is `invite`"
+                        description: "The invite event if ``membership`` is ``invite``"
                         allOf:
-                          - "$ref": "m.room.member"
+                          - "$ref": "v1-event-schema/m.room.member"
                     messages:
                       type: object
                       title: PaginationChunk
