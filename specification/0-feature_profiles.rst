@@ -25,7 +25,7 @@ Summary
  `VoIP`_                      Required   Required   Required   Optional   Optional
  `Content Repository`_        Required   Required   Required   Optional   Optional
  `History Visibility`_        Required   Required   Required   Required   Optional
- `End-to-End Encryption`_     Optional   Optional   Optional   Optional   Optional 
+ `End-to-End Encryption`_     Optional   Optional   Optional   Optional   Optional
 ============================ ========== ========== ========== ========== ==========
 
 *Please see each module for more details on what clients need to implement.*
