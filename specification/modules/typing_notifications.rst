@@ -1,10 +1,10 @@
 Typing Notifications
 ====================
 
-Users often desire to see when another user is typing. This can be achieved
-using typing notifications. These are ephemeral events scoped to a ``room_id``.
-This means they do not form part of the `Event Graph`_ but still have a
-``room_id`` key.
+Users may wish to be informed when another user is typing in a room. This can be
+achieved using typing notifications. These are ephemeral events scoped to a
+``room_id``. This means they do not form part of the `Event Graph`_ but still
+have a ``room_id`` key.
 
 .. _Event Graph: `sect:event-graph`_
 
@@ -37,7 +37,8 @@ to inform the server that the user has stopped typing.
 Server behaviour
 ----------------
 
-Servers MUST emit typing EDUs in the following form::
+Servers MUST emit typing EDUs in a different form to ``m.typing`` events which
+are shown to clients. This form looks like::
 
   {
     "type": "m.typing",
