@@ -672,13 +672,10 @@ to add keys that are, for example offensive or illegal. Since some events
 cannot be simply deleted, e.g. membership events, we instead 'redact' events.
 This involves removing all keys from an event that are not required by the
 protocol. This stripped down event is thereafter returned anytime a client or
-remote server requests it.
-
-Events that have been redacted include a ``redacted_because`` key whose value
-is the event that caused it to be redacted, which may include a reason.
-
-Redacting an event cannot be undone, allowing server owners to delete the
-offending content from the databases.
+remote server requests it. Redacting an event cannot be undone, allowing server
+owners to delete the offending content from the databases. Events that have been
+redacted include a ``redacted_because`` key whose value is the event that caused
+it to be redacted, which may include a reason.
 
 .. TODO
   Currently, only room admins can redact events by sending a ``m.room.redaction``
@@ -709,11 +706,9 @@ one of the following event types:
 .. TODO
   Need to update m.room.power_levels to reflect new power levels formatting
 
-The redaction event should be added under the key ``redacted_because``.
-
-When a client receives a redaction event it should change the redacted event
+The redaction event should be added under the key ``redacted_because``. When a
+client receives a redaction event it should change the redacted event
 in the same way a server does.
-
 
 Rooms
 -----
@@ -853,18 +848,14 @@ Permissions
 
 Permissions for rooms are done via the concept of power levels - to do any
 action in a room a user must have a suitable power level. Power levels are
-stored as state events in a given room.
-
-The power levels required for operations and the power levels for users are
-defined in ``m.room.power_levels``, where both a default and specific users'
-power levels can be set.
-
+stored as state events in a given room. The power levels required for operations
+and the power levels for users are defined in ``m.room.power_levels``, where
+both a default and specific users' power levels can be set.
 By default all users have a power level of 0, other than the room creator whose
 power level defaults to 100. Users can grant other users increased power levels
 up to their own power level. For example, user A with a power level of 50 could
 increase the power level of user B to a maximum of level 50. Power levels for
 users are tracked per-room even if the user is not present in the room.
-
 The keys contained in ``m.room.power_levels`` determine the levels required for
 certain operations such as kicking, banning and sending state events. See
 `m.room.power_levels`_ for more information.
@@ -881,10 +872,9 @@ room. There are several states in which a user may be, in relation to a room:
  - Banned (the user is not allowed to join the room)
 
 Some rooms require that users be invited to it before they can join; others
-allow anyone to join.
-
-Whether a given room is an "invite-only" room is determined by the room config
-key ``m.room.join_rules``. It can have one of the following values:
+allow anyone to join. Whether a given room is an "invite-only" room is
+determined by the room config key ``m.room.join_rules``. It can have one of the
+following values:
 
 ``public``
   This room is free for anyone to join without an invite.

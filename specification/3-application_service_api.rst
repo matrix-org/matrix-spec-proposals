@@ -4,11 +4,9 @@ Application Service API
 The Matrix client-server API and server-server APIs provide the means to
 implement a consistent self-contained federated messaging fabric. However, they
 provide limited means of implementing custom server-side behaviour in Matrix
-(e.g. gateways, filters, extensible hooks etc).
-
-The Application Service API defines a standard API to allow such extensible 
-functionality to be implemented irrespective of the underlying homeserver
-implementation.
+(e.g. gateways, filters, extensible hooks etc). The Application Service API
+defines a standard API to allow such extensible functionality to be implemented
+irrespective of the underlying homeserver implementation.
 
 .. TODO-spec
   Add in Client-Server services? Overview of bots? Seems weird to be in the spec
@@ -18,12 +16,10 @@ Passive Application Services
 ----------------------------
 "Passive" application services can only observe events from a given home server.
 They cannot prevent events from being sent, nor can they modify the content of
-the event being sent.
-
-In order to observe events from a homeserver, the homeserver needs to be
-configured to pass certain types of traffic to the application service.  This
-is achieved by manually configuring the homeserver with information about the
-AS..
+the event being sent. In order to observe events from a homeserver, the
+homeserver needs to be configured to pass certain types of traffic to the
+application service.  This is achieved by manually configuring the homeserver
+with information about the AS.
 
 .. NOTE::
   Previously, application services could register with a homeserver via HTTP

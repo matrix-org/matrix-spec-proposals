@@ -245,7 +245,7 @@ div.viewcode-block:target {
 }
 
 p {
-	margin: 0;
+	/* margin: 0;  - setting this leads to no spacing between paragraphs which looks ugly */
 }
 
 ul li dd {

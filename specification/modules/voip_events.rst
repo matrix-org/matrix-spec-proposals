@@ -44,11 +44,10 @@ Glare
 This specification aims to address the problem of two users calling each other
 at roughly the same time and their invites crossing on the wire. It is a far
 better experience for the users if their calls are connected if it is clear
-that their intention is to set up a call with one another.
-
-In Matrix, calls are to rooms rather than users (even if those rooms may only
-contain one other user) so we consider calls which are to the same room. The
-rules for dealing with such a situation are as follows:
+that their intention is to set up a call with one another. In Matrix, calls are
+to rooms rather than users (even if those rooms may only contain one other user)
+so we consider calls which are to the same room. The rules for dealing with such
+a situation are as follows:
 
  - If an invite to a room is received whilst the client is preparing to send an
    invite to the same room, the client should cancel its outgoing call and
