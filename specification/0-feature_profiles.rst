@@ -14,19 +14,19 @@ in order for it to be classified as that profile.
 Summary
 -------
 
-============================ ===== =========== ======== ========= ===== =====
-  Module / Profile            Web   Embed-Web   Mobile   Desktop   CLI   IoT
-============================ ===== =========== ======== ========= ===== =====
- `End-to-End Encryption`_                                             
- `Instant Messaging`_         YES    YES         YES       YES     YES   YES
- `Presence`_                  YES                YES       YES     YES
- `Push Notifications`_                           YES
- `Receipts`_                  YES                YES       YES     YES
- `Typing Notifications`_      YES                YES       YES     YES
- `VoIP`_                      YES                YES       YES
- `Content Repository`_        YES                YES       YES     YES
- `History Visibility`_        YES                YES       YES     YES
-============================ ===== =========== ======== ========= ===== =====
+============================ ========== ========== ========== ========== ==========
+  Module / Profile              Web       Mobile    Desktop       CLI     Embedded
+============================ ========== ========== ========== ========== ==========
+ `Instant Messaging`_         Required   Required   Required   Required   Optional
+ `Presence`_                  Required   Required   Required   Required   Optional
+ `Push Notifications`_        Optional   Required   Optional   Optional   Optional
+ `Receipts`_                  Required   Required   Required   Required   Optional
+ `Typing Notifications`_      Required   Required   Required   Required   Optional
+ `VoIP`_                      Required   Required   Required   Optional   Optional
+ `Content Repository`_        Required   Required   Required   Optional   Optional
+ `History Visibility`_        Required   Required   Required   Required   Optional
+ `End-to-End Encryption`_     Optional   Optional   Optional   Optional   Optional 
+============================ ========== ========== ========== ========== ==========
 
 *Please see each module for more details on what clients need to implement.*
 
