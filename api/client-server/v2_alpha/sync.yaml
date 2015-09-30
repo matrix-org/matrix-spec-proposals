@@ -110,37 +110,17 @@ paths:
                             in the timeline or state of the room. E.g. typing.
                           allOf:
                             - $ref: "definitions/event_batch.json"
-              public_user_data:
+              presence:
                 description: |-
-                  The updates to publicly visible user data.
-                allOf:
-                  - $ref: "definitions/event_batch.json"
-              private_user_data:
-                description: |-
-                  Updates to the data which is private to the user but shared
-                  amongst their devices.
+                  The updates to the presence status of other users.
                 allOf:
                   - $ref: "definitions/event_batch.json"
           examples:
             application/json: |-
               {
                 "next_batch": "s72595_4483_1934",
-                "private_user_data": {
+                "presence": {
                   "events": [
-                    {
-                      "sender": "@bob:example.com",
-                      "type": "com.example.weird.setting",
-                      "content": {"setting1": true, "setting2": false}
-                    }
-                  ]
-                },
-                "public_user_data": {
-                  "events": [
-                    {
-                      "sender": "@alice:example.com",
-                      "type": "m.profile.display_name",
-                      "content": {"display_name": "Alice"}
-                    },
                     {
                       "sender": "@alice:example.com",
                       "type": "m.presence",

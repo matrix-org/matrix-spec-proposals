@@ -62,14 +62,9 @@ paths:
                     "not_senders": ["@spam:example.com"]
                   }
                 },
-                "public_user_data": {
-                  "types": ["m.presence"]
-                },
-                "private_user_data": {
-                  "types": []
-                },
-                "server_data": {
-                  "types": []
+                "presence": {
+                  "types": ["m.presence"],
+                  "not_senders": ["@alice:example.com"]
                 },
                 "event_format": "client",
                 "event_fields": ["type", "content", "sender"]
@@ -131,14 +126,9 @@ paths:
                     "not_senders": ["@spam:example.com"]
                   }
                 },
-                "public_user_data": {
-                  "types": ["m.presence"]
-                },
-                "private_user_data": {
-                  "types": []
-                },
-                "server_data": {
-                  "types": []
+                "presence": {
+                  "types": ["m.presence"],
+                  "not_senders": ["@alice:example.com"]
                 },
                 "event_format": "client",
                 "event_fields": ["type", "content", "sender"]

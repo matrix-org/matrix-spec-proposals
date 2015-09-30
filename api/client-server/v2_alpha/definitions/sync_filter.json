@@ -21,14 +21,9 @@
         }
       }
     },
-    "public_user_data": {
+    "presence": {
       "description":
-        "The public user data, e.g. profile and presence, to include.",
-      "allOf": [{"$ref": "definitions/event_filter.json"}]
-    },
-    "private_user_data": {
-      "description":
-        "Events that are private to a user but shared amoungst their devices, e.g. notification settings, to include.",
+        "The presence updates to include.",
       "allOf": [{"$ref": "definitions/event_filter.json"}]
     },
     "event_format": {
