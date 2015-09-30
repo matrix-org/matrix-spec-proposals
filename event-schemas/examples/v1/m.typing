@@ -1,0 +1,7 @@
+{
+    "type": "m.typing",
+    "room_id": "!z0mnsuiwhifuhwwfw:matrix.org",
+    "content": {
+        "user_ids": ["@alice:matrix.org", "@bob:example.com"]
+    }
+}
