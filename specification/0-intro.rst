@@ -24,7 +24,6 @@ Introduction
   The Matrix specification is still evolving: the APIs are not yet frozen
   and this document is in places a work in progress or stale. We have made every 
   effort to clearly flag areas which are still being finalised.
-
   We're publishing it at this point because it's complete enough to be more than
   useful and provide a canonical reference to how Matrix is evolving. Our end
   goal is to mirror WHATWG's `Living Standard   
@@ -34,10 +33,9 @@ Matrix is a set of open APIs for open-federated Instant Messaging (IM), Voice
 over IP (VoIP) and Internet of Things (IoT) communication, designed to create
 and support a new global real-time communication ecosystem. The intention is to
 provide an open decentralised pubsub layer for the internet for securely
-persisting and publishing/subscribing JSON objects.
-
-This specification is the ongoing result of standardising the APIs used by the
-various components of the Matrix ecosystem to communicate with one another.
+persisting and publishing/subscribing JSON objects. This specification is the
+ongoing result of standardising the APIs used by the various components of the
+Matrix ecosystem to communicate with one another.
 
 The principles that Matrix attempts to follow are:
 
@@ -214,10 +212,8 @@ which have the form::
 There is exactly one room ID for each room. Whilst the room ID does contain a
 domain, it is simply for globally namespacing room IDs. The room does NOT
 reside on the domain specified. Room IDs are not meant to be human readable.
-They are case-sensitive.
-
-The following conceptual diagram shows an ``m.room.message`` event being sent to 
-the room ``!qporfwt:matrix.org``::
+They are case-sensitive. The following conceptual diagram shows an
+``m.room.message`` event being sent to the room ``!qporfwt:matrix.org``::
 
        { @alice:matrix.org }                             { @bob:domain.com }
                |                                                 ^
@@ -258,28 +254,28 @@ the room ``!qporfwt:matrix.org``::
 Federation maintains *shared data structures* per-room between multiple home
 servers. The data is split into ``message events`` and ``state events``.
 
-``Message events`` describe transient 'once-off' activity in a room such as an
-instant messages, VoIP call setups, file transfers, etc. They generally describe
-communication activity.
+Message events: 
+  These describe transient 'once-off' activity in a room such as an
+  instant messages, VoIP call setups, file transfers, etc. They generally
+  describe communication activity.
 
-``State events`` describe updates to a given piece of persistent information
-('state') related to a room, such as the room's name, topic, membership,
-participating servers, etc. State is modelled as a lookup table of key/value
-pairs per room, with each key being a tuple of ``state_key`` and ``event type``.
-Each state event updates the value of a given key.
+State events:
+  These describe updates to a given piece of persistent information
+  ('state') related to a room, such as the room's name, topic, membership,
+  participating servers, etc. State is modelled as a lookup table of key/value
+  pairs per room, with each key being a tuple of ``state_key`` and ``event type``.
+  Each state event updates the value of a given key.
 
 The state of the room at a given point is calculated by considering all events
 preceding and including a given event in the graph. Where events describe the
 same state, a merge conflict algorithm is applied. The state resolution
 algorithm is transitive and does not depend on server state, as it must
 consistently select the same event irrespective of the server or the order the
-events were received in.
-
-Events are signed by the originating server (the signature includes the parent
-relations, type, depth and payload hash) and are pushed over federation to the
-participating servers in a room, currently using full mesh topology. Servers may
-also request backfill of events over federation from the other servers
-participating in a room.
+events were received in. Events are signed by the originating server (the
+signature includes the parent relations, type, depth and payload hash) and are
+pushed over federation to the participating servers in a room, currently using
+full mesh topology. Servers may also request backfill of events over federation
+from the other servers participating in a room.
 
 
 Room Aliases
@@ -324,12 +320,10 @@ Users in Matrix are identified via their matrix user ID (MXID). However,
 existing 3rd party ID namespaces can also be used in order to identify Matrix
 users. A Matrix "Identity" describes both the user ID and any other existing IDs
 from third party namespaces *linked* to their account.
-
 Matrix users can *link* third-party IDs (3PIDs) such as email addresses, social
 network accounts and phone numbers to their user ID. Linking 3PIDs creates a
 mapping from a 3PID to a user ID. This mapping can then be used by Matrix
 users in order to discover the MXIDs of their contacts.
-
 In order to ensure that the mapping from 3PID to user ID is genuine, a globally
 federated cluster of trusted "Identity Servers" (IS) are used to verify the 3PID
 and persist and replicate the mappings.
@@ -410,6 +404,10 @@ dedicated API.  The API is symmetrical to managing Profile data.
 API Standards
 -------------
 
+.. TODO
+  Need to specify any HMAC or access_token lifetime/ratcheting tricks
+  We need to specify capability negotiation for extensible transports
+
 The mandatory baseline for communication in Matrix is exchanging JSON objects
 over HTTP APIs. HTTPS is mandated as the baseline for server-server
 (federation) communication.  HTTPS is recommended for client-server
@@ -417,20 +415,11 @@ communication, although HTTP may be supported as a fallback to support basic
 HTTP clients. More efficient optional transports for client-server
 communication will in future be supported as optional extensions - e.g. a
 packed binary encoding over stream-cipher encrypted TCP socket for
-low-bandwidth/low-roundtrip mobile usage.
-
-.. TODO
-  We need to specify capability negotiation for extensible transports
-
-For the default HTTP transport, all API calls use a Content-Type of
-``application/json``.  In addition, all strings MUST be encoded as UTF-8.
-
-Clients are authenticated using opaque ``access_token`` strings (see
-`Client Authentication`_ for details), passed as a query string parameter on
-all requests.
-
-.. TODO
-  Need to specify any HMAC or access_token lifetime/ratcheting tricks
+low-bandwidth/low-roundtrip mobile usage. For the default HTTP transport, all
+API calls use a Content-Type of ``application/json``.  In addition, all strings
+MUST be encoded as UTF-8. Clients are authenticated using opaque
+``access_token`` strings (see `Client Authentication`_ for details), passed as a
+query string parameter on all requests.
 
 Any errors which occur at the Matrix API level MUST return a "standard error
 response". This is a JSON object which looks like::
