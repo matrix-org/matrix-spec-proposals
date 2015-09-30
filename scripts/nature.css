@@ -244,10 +244,6 @@ div.viewcode-block:target {
     border-bottom: 1px solid #ac9;
 }
 
-p {
-	/* margin: 0;  - setting this leads to no spacing between paragraphs which looks ugly */
-}
-
 ul li dd {
 	margin-top: 0;
 }
