@@ -1,45 +1,30 @@
 Typing Notifications
---------------------
+====================
 
-Client APIs
-~~~~~~~~~~~
+Events
+------
 
-To set "I am typing for the next N msec"::
+{{m_typing_event}}
 
-  PUT .../rooms/<room_id>/typing/<user_id>
-  Content:  { "typing": true, "timeout": N }
-  # timeout is in milliseconds; suggested no more than 20 or 30 seconds
+Client behaviour
+----------------
+
+ - suggested no more than 20-30 seconds
 
 This should be re-sent by the client to continue informing the server the user
 is still typing; a safety margin of 5 seconds before the expected
 timeout runs out is recommended. Just keep declaring a new timeout, it will
 replace the old one.
 
-To set "I am no longer typing"::
-
-  PUT ../rooms/<room_id>/typing/<user_id>
-  Content: { "typing": false }
-
-Client Events
-~~~~~~~~~~~~~
-
-All room members will receive an event on the event stream::
-
-  {
-    "type": "m.typing",
-    "room_id": "!room-id-here:matrix.org",
-    "content": {
-      "user_ids": ["list of", "every user", "who is", "currently typing"]
-    }
-  }
-
-The client must use this list to *REPLACE* its knowledge of every user who is
+Event: The client must use this list to *REPLACE* its knowledge of every user who is
 currently typing. The reason for this is that the server DOES NOT remember
 users who are not currently typing, as that list gets big quickly. The client
 should mark as not typing, any user ID who is not in that list.
 
-Server APIs
-~~~~~~~~~~~
+{{typing_http_api}}
+
+Server behaviour
+----------------
 
 Servers will emit EDUs in the following form::
 
@@ -58,4 +43,10 @@ originating HSes to ensure they eventually send "stop" notifications.
 .. TODO
   ((This will eventually need addressing, as part of the wider typing/presence
   timer addition work))
+
+Security considerations
+-----------------------
+
+Clients may not wish to inform everyone in a room that they are typing and
+instead only specific users in the room.
 
