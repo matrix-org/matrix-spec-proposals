@@ -1,6 +1,13 @@
 Typing Notifications
 ====================
 
+Users often desire to see when another user is typing. This can be achieved
+using typing notifications. These are ephemeral events scoped to a ``room_id``.
+This means they do not form part of the `Event Graph`_ but still have a
+``room_id`` key.
+
+.. _Event Graph: `sect:event-graph`_
+
 Events
 ------
 
@@ -9,24 +16,28 @@ Events
 Client behaviour
 ----------------
 
- - suggested no more than 20-30 seconds
+When a client receives an ``m.typing`` event, it MUST use the user ID list to
+**REPLACE** its knowledge of every user who is currently typing. The reason for
+this is that the server *does not remember* users who are not currently typing
+as that list gets big quickly. The client should mark as not typing any user ID
+who is not in that list.
 
-This should be re-sent by the client to continue informing the server the user
-is still typing; a safety margin of 5 seconds before the expected
-timeout runs out is recommended. Just keep declaring a new timeout, it will
-replace the old one.
-
-Event: The client must use this list to *REPLACE* its knowledge of every user who is
-currently typing. The reason for this is that the server DOES NOT remember
-users who are not currently typing, as that list gets big quickly. The client
-should mark as not typing, any user ID who is not in that list.
+It is recommended that clients store a ``boolean`` indicating whether the user
+is typing or not. Whilst this value is ``true`` a timer should fire periodically
+every N seconds to send a typing HTTP request. The value of N is recommended to
+be no more than 20-30 seconds. This request should be re-sent by the client to
+continue informing the server the user is still typing. As subsequent
+requests will replace older requests, a safety margin of 5 seconds before the
+expected timeout runs out is recommended. When the user stops typing, the
+state change of the ``boolean`` to ``false`` should trigger another HTTP request
+to inform the server that the user has stopped typing.
 
 {{typing_http_api}}
 
 Server behaviour
 ----------------
 
-Servers will emit EDUs in the following form::
+Servers MUST emit typing EDUs in the following form::
 
   {
     "type": "m.typing",
@@ -37,8 +48,8 @@ Servers will emit EDUs in the following form::
     }
   }
 
-Server EDUs don't (currently) contain timing information; it is up to
-originating HSes to ensure they eventually send "stop" notifications.
+This does not contain timing information so it is up to originating homeservers
+to ensure they eventually send "stop" notifications.
 
 .. TODO
   ((This will eventually need addressing, as part of the wider typing/presence

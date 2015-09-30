@@ -180,6 +180,8 @@ of a "Room".
 Event Graphs
 ~~~~~~~~~~~~
 
+.. _sect:event-graph:
+
 Events exchanged in the context of a room are stored in a directed acyclic graph
 (DAG) called an ``event graph``. The partial ordering of this graph gives the
 chronological ordering of events within the room. Each event in the graph has a
