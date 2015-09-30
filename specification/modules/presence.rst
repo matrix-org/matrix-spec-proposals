@@ -1,5 +1,23 @@
 Presence
 ========
+
+Each user has the concept of presence information. This encodes:
+
+ * Whether the user is currently online
+ * How recently the user was last active (as seen by the server)
+ * Whether a given client considers the user to be currently idle
+ * Arbitrary information about the user's current status (e.g. "in a meeting").
+
+This information is collated from both per-device (``online``, ``idle``,
+``last_active``) and per-user (status) data, aggregated by the user's homeserver
+and transmitted as an ``m.presence`` event. This is one of the few events which
+are sent *outside the context of a room*. Presence events are sent to all users
+who subscribe to this user's presence through a presence list or by sharing
+membership of a room.
+
+A presence list is a list of user IDs whose presence the user wants to follow.
+To be added to this list, the user being added must be invited by the list owner
+who must accept the invitation.
  
 Each user has presence information associated with them. This encodes the
 "availability" of that user, suitable for display on other clients.
@@ -15,6 +33,7 @@ represented by the ``presence`` key, which is an enum of one of the following:
         explicitly suppressing their profile information from being sent.
       - ``free_for_chat`` : The user is generally willing to receive messages
         moreso than default.
+ 
 
 Events
 ------
@@ -24,7 +43,8 @@ Events
 Client behaviour
 ----------------
 
-Clients can manually set/get their presence using the HTTP APIs listed below.
+Clients can manually set/get their presence/presence list using the HTTP APIs
+listed below.
 
 {{presence_http_api}}
 
@@ -43,6 +63,9 @@ recommended.
 Server behaviour
 ----------------
 
+Each user's home server stores a "presence list" per user. Once a user accepts
+a presence list, both user's HSes must track the subscription.
+
 Propagating profile information
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -58,10 +81,12 @@ home server when a user successfully changes their display name or avatar URL.
 
   The intention for sending this information in ``m.presence`` is so that any
   "user list" can display the *current* name/presence for a user ID outside the
-  scope of a room (e.g. a user page which has a "start conversation" button).
-  This is bundled into a single event to avoid "flickering" on this page which
-  can occur if you received presence first and then display name later (the
-  user's name would flicker from their user ID to the display name).
+  scope of a room e.g. for a user page. This is bundled into a single event for
+  several reasons. The user's display name can change per room. This
+  event provides the "canonical" name for the user. In addition, the name is
+  bundled into a single event for the ease of client implementations. If this
+  was not done, the client would need to search all rooms for their own
+  membership event to pull out the display name.
 
 
 Last active ago
