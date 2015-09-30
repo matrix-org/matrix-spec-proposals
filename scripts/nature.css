@@ -244,10 +244,6 @@ div.viewcode-block:target {
     border-bottom: 1px solid #ac9;
 }
 
-p {
-	margin: 0;
-}
-
 ul li dd {
 	margin-top: 0;
 }

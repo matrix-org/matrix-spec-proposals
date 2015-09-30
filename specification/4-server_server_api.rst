@@ -59,13 +59,11 @@ and an optional TLS port.
 .. **
 
 If the port is present then the server is discovered by looking up an AAAA or
-A record for the DNS name and connecting to the specified TLS port.
-
-If the port is absent then the server is discovered by looking up a
-``_matrix._tcp`` SRV record for the DNS name. If this record does not exist
-then the server is discovered by looking up an AAAA or A record on the DNS
-name and taking the default fallback port number of 8448.
-
+A record for the DNS name and connecting to the specified TLS port. If the port
+is absent then the server is discovered by looking up a ``_matrix._tcp`` SRV
+record for the DNS name. If this record does not exist then the server is
+discovered by looking up an AAAA or A record on the DNS name and taking the
+default fallback port number of 8448.
 Home servers may use SRV records to load balance requests between multiple TLS
 endpoints or to failover to another endpoint if an endpoint fails.
 
