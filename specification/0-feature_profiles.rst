@@ -50,14 +50,6 @@ This is a web page which heavily uses Matrix for communication. Single-page web
 apps would be classified as a stand-alone web client, as would multi-page web
 apps which use Matrix on nearly every page.
 
-Embedded web (``EmbedWeb``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This is a Matrix client which is embedded in another website, e.g. using
-iframes. These embedded clients are typically for a single purpose
-related to the website in question, and are not intended to be fully-fledged
-communication apps.
-
 Mobile (``Mobile``)
 ~~~~~~~~~~~~~~~~~~~
 
@@ -77,9 +69,25 @@ Command Line Interface (``CLI``)
 
 This is a client which is used via a text-based terminal.
 
-Internet of Things (``IoT``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Embedded (``Embedded``)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This is a client which is embedded into another application or an embedded
+device.
+
+Application
++++++++++++
+
+This is a Matrix client which is embedded in another website, e.g. using
+iframes. These embedded clients are typically for a single purpose
+related to the website in question, and are not intended to be fully-fledged
+communication apps.
+
+Device
+++++++
 
 This is a client which is typically running on an embedded device such as a
-kettle, fridge or car.
+kettle, fridge or car. These clients tend to perform a few operations and run
+in a resource constrained environment. Like embedded applications, they are
+not intended to be fully-fledged communication systems.
 
