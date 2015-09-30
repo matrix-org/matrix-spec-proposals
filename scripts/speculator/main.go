@@ -24,6 +24,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 )
 
 type PullRequest struct {
@@ -58,16 +59,24 @@ func (u *User) IsTrusted() bool {
 	return allowedMembers[u.Login]
 }
 
-const pullsPrefix = "https://api.github.com/repos/matrix-org/matrix-doc/pulls"
+const (
+	pullsPrefix = "https://api.github.com/repos/matrix-org/matrix-doc/pulls"
+	matrixDocCloneURL = "https://github.com/matrix-org/matrix-doc.git"
+)
 
-func gitClone(url string) (string, error) {
-	dst := path.Join("/tmp/matrix-doc", strconv.FormatInt(rand.Int63(), 10))
-	cmd := exec.Command("git", "clone", url, dst)
+
+func gitClone(url string, shared bool) (string, error) {
+	directory := path.Join("/tmp/matrix-doc", strconv.FormatInt(rand.Int63(), 10))
+	cmd := exec.Command("git", "clone", url, directory)
+	if shared {
+		cmd.Args = append(cmd.Args, "--shared")
+	}
+
 	err := cmd.Run()
 	if err != nil {
 		return "", fmt.Errorf("error cloning repo: %v", err)
 	}
-	return dst, nil
+	return directory, nil
 }
 
 func gitCheckout(path, sha string) error {
@@ -76,6 +85,16 @@ func gitCheckout(path, sha string) error {
 	err := cmd.Run()
 	if err != nil {
 		return fmt.Errorf("error checking out repo: %v", err)
+	}
+	return nil
+}
+
+func gitFetch(path string) error {
+	cmd := exec.Command("git", "fetch")
+	cmd.Dir = path
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("error fetching repo: %v", err)
 	}
 	return nil
 }
@@ -119,10 +138,18 @@ func writeError(w http.ResponseWriter, code int, err error) {
 	io.WriteString(w, fmt.Sprintf("%v\n", err))
 }
 
+type server struct {
+	matrixDocCloneURL string
+}
+
 // generateAt generates spec from repo at sha.
 // Returns the path where the generation was done.
-func generateAt(repo, sha string) (dst string, err error) {
-	dst, err = gitClone(repo)
+func (s *server) generateAt(sha string) (dst string, err error) {
+	err = gitFetch(s.matrixDocCloneURL)
+	if err != nil {
+		return
+	}
+	dst, err = gitClone(s.matrixDocCloneURL, true)
 	if err != nil {
 		return
 	}
@@ -135,12 +162,10 @@ func generateAt(repo, sha string) (dst string, err error) {
 	return
 }
 
-func serveSpec(w http.ResponseWriter, req *http.Request) {
-	var cloneURL string
+func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 	var sha string
 
 	if strings.ToLower(req.URL.Path) == "/spec/head" {
-		cloneURL = "https://github.com/matrix-org/matrix-doc.git"
 		sha = "HEAD"
 	} else {
 		pr, err := lookupPullRequest(*req.URL, "/spec")
@@ -155,11 +180,10 @@ func serveSpec(w http.ResponseWriter, req *http.Request) {
 			writeError(w, 403, err)
 			return
 		}
-		cloneURL = pr.Head.Repo.CloneURL
 		sha = pr.Head.SHA
 	}
 
-	dst, err := generateAt(cloneURL, sha)
+	dst, err := s.generateAt(sha)
 	defer os.RemoveAll(dst)
 	if err != nil {
 		writeError(w, 500, err)
@@ -181,7 +205,7 @@ func checkAuth(pr *PullRequest) error {
 	return nil
 }
 
-func serveRSTDiff(w http.ResponseWriter, req *http.Request) {
+func (s *server) serveRSTDiff(w http.ResponseWriter, req *http.Request) {
 	pr, err := lookupPullRequest(*req.URL, "/diff/rst")
 	if err != nil {
 		writeError(w, 400, err)
@@ -195,14 +219,14 @@ func serveRSTDiff(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	base, err := generateAt(pr.Base.Repo.CloneURL, pr.Base.SHA)
+	base, err := s.generateAt(pr.Base.SHA)
 	defer os.RemoveAll(base)
 	if err != nil {
 		writeError(w, 500, err)
 		return
 	}
 
-	head, err := generateAt(pr.Head.Repo.CloneURL, pr.Head.SHA)
+	head, err := s.generateAt(pr.Head.SHA)
 	defer os.RemoveAll(head)
 	if err != nil {
 		writeError(w, 500, err)
@@ -219,7 +243,7 @@ func serveRSTDiff(w http.ResponseWriter, req *http.Request) {
 	w.Write(diff.Bytes())
 }
 
-func serveHTMLDiff(w http.ResponseWriter, req *http.Request) {
+func (s *server) serveHTMLDiff(w http.ResponseWriter, req *http.Request) {
 	pr, err := lookupPullRequest(*req.URL, "/diff/html")
 	if err != nil {
 		writeError(w, 400, err)
@@ -233,14 +257,14 @@ func serveHTMLDiff(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	base, err := generateAt(pr.Base.Repo.CloneURL, pr.Base.SHA)
+	base, err := s.generateAt(pr.Base.SHA)
 	defer os.RemoveAll(base)
 	if err != nil {
 		writeError(w, 500, err)
 		return
 	}
 
-	head, err := generateAt(pr.Head.Repo.CloneURL, pr.Head.SHA)
+	head, err := s.generateAt(pr.Head.SHA)
 	defer os.RemoveAll(head)
 	if err != nil {
 		writeError(w, 500, err)
@@ -327,9 +351,15 @@ func main() {
 		"Kegsay":        true,
 		"NegativeMjark": true,
 	}
-	http.HandleFunc("/spec/", serveSpec)
-	http.HandleFunc("/diff/rst/", serveRSTDiff)
-	http.HandleFunc("/diff/html/", serveHTMLDiff)
+	rand.Seed(time.Now().Unix())
+	masterCloneDir, err := gitClone(matrixDocCloneURL, false)
+	if err != nil {
+		log.Fatal(err)
+	}
+	s := server{masterCloneDir}
+	http.HandleFunc("/spec/", s.serveSpec)
+	http.HandleFunc("/diff/rst/", s.serveRSTDiff)
+	http.HandleFunc("/diff/html/", s.serveHTMLDiff)
 	http.HandleFunc("/healthz", serveText("ok"))
 	http.HandleFunc("/", listPulls)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
