@@ -39,6 +39,7 @@
             "items": {
                 "type": "object",
                 "title": "StateEvent",
+                "description": "A stripped down state event, with only the ``type``, ``state_key`` and ``content`` keys.",
                 "properties": {
                     "type": {
                         "type": "string"
