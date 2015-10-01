@@ -19,6 +19,7 @@ import yaml
 V1_CLIENT_API = "../api/client-server/v1"
 V1_EVENT_EXAMPLES = "../event-schemas/examples/v1"
 V1_EVENT_SCHEMA = "../event-schemas/schema/v1"
+V2_CLIENT_API = "../api/client-server/v2_alpha"
 CORE_EVENT_SCHEMA = "../event-schemas/schema/v1/core-event-schema"
 CHANGELOG = "../CHANGELOG.rst"
 TARGETS = "../specification/targets.yaml"
@@ -336,18 +337,27 @@ class MatrixUnits(Units):
         }
 
     def load_swagger_apis(self):
-        path = V1_CLIENT_API
+        paths = [
+            V1_CLIENT_API, V2_CLIENT_API
+        ]
         apis = {}
-        for filename in os.listdir(path):
-            if not filename.endswith(".yaml"):
+        for path in paths:
+            is_v2 = (path == V2_CLIENT_API)
+            if not os.path.exists(V2_CLIENT_API):
+                self.log("Skipping v2 apis: %s does not exist.", V2_CLIENT_API)
                 continue
-            self.log("Reading swagger API: %s" % filename)
-            with open(os.path.join(path, filename), "r") as f:
-                # strip .yaml
-                group_name = filename[:-5]
-                api = yaml.load(f.read())
-                api["__meta"] = self._load_swagger_meta(api, group_name)
-                apis[group_name] = api
+            for filename in os.listdir(path):
+                if not filename.endswith(".yaml"):
+                    continue
+                self.log("Reading swagger API: %s" % filename)
+                with open(os.path.join(path, filename), "r") as f:
+                    # strip .yaml
+                    group_name = filename[:-5]
+                    if is_v2:
+                        group_name = "v2_" + group_name
+                    api = yaml.load(f.read())
+                    api["__meta"] = self._load_swagger_meta(api, group_name)
+                    apis[group_name] = api
         return apis
 
     def load_common_event_fields(self):

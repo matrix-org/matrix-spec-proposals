@@ -9,25 +9,28 @@
                 "^\\$": {
                     "type": "object",
                     "x-pattern": "$EVENT_ID",
-                    "description": "The mapping of event ID to receipt type. The event ID is the ID which the receipts relate to and *not* an ID for the receipt itself. The key in the object is an enum which must be ``read``.",
-                    "additionalProperties": {
-                        "type": "object",
-                        "title": "Users",
-                        "patternProperties": {
-                            "^@": {
-                                "type": "object",
-                                "title": "Receipt",
-                                "description": "The mapping of user ID to receipt. The user ID is the entity who sent this receipt.",
-                                "x-pattern": "$USER_ID",
-                                "properties": {
-                                    "ts": {
-                                        "type": "number",
-                                        "description": "The timestamp the receipt was sent at"
+                    "title": "Receipts",
+                    "description": "The mapping of event ID to a collection of receipts for this event ID. The event ID is the ID of the event being acknowledged and *not* an ID for the receipt itself.",
+                    "properties": {
+                        "m.read": {
+                            "type": "object",
+                            "title": "Users",
+                            "description": "A collection of users who have sent ``m.read`` receipts for this event.",
+                            "patternProperties": {
+                                "^@": {
+                                    "type": "object",
+                                    "title": "Receipt",
+                                    "description": "The mapping of user ID to receipt. The user ID is the entity who sent this receipt.",
+                                    "x-pattern": "$USER_ID",
+                                    "properties": {
+                                        "ts": {
+                                            "type": "number",
+                                            "description": "The timestamp the receipt was sent at."
+                                        }
                                     }
                                 }
                             }
-                        },
-                        "additionalProperties": false
+                        }
                     }
                 }
             },
