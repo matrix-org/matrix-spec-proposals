@@ -344,7 +344,7 @@ class MatrixUnits(Units):
         for path in paths:
             is_v2 = (path == V2_CLIENT_API)
             if not os.path.exists(V2_CLIENT_API):
-                self.log("Skipping v2 apis: %s does not exist.", V2_CLIENT_API)
+                self.log("Skipping v2 apis: %s does not exist." % V2_CLIENT_API)
                 continue
             for filename in os.listdir(path):
                 if not filename.endswith(".yaml"):
