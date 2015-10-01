@@ -10,8 +10,14 @@ communication.
 
 .. _message events: `sect:events`_
 
-Message Exchange
+Events
+------
+
+{{voip_events}}
+
+Client behaviour
 ----------------
+
 A call is set up with message events exchanged as follows:
 
 ::
@@ -39,14 +45,6 @@ Or a rejected call:
 
 Calls are negotiated according to the WebRTC specification.
 
-Events
-------
-
-{{voip_events}}
-
-Client behaviour
-----------------
-
 Glare
 ~~~~~
 
@@ -72,7 +70,7 @@ algorithm is as follows:
    the same room and is waiting for a response:
 
     * the client should perform a lexicographical comparison of the call IDs of
-      the two calls and use the **lesser** of the two calls, aborting the
+      the two calls and use the *lesser* of the two calls, aborting the
       greater. If the incoming call is the lesser, the client should accept
       this call on behalf of the user.
 
@@ -85,11 +83,17 @@ replaces it.
 Server behaviour
 ----------------
 
-TURN Servers
-~~~~~~~~~~~~
+The server MAY provide a TURN server which clients can use to contact the
+remote party. This server should be accessible via the HTTP endpoint listed
+below.
+
+{{voip_http_api}}
+
 
 Security considerations
 -----------------------
 
-
+Calls should only be placed to rooms with one other user in them. If they are
+placed to group chat rooms it is possible that another user will intercept and
+answer the call.
 
