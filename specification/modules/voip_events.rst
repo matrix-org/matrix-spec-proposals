@@ -60,14 +60,14 @@ As calls are "placed" to rooms rather than users, the glare resolution algorithm
 outlined below is only considered for calls which are to the same room. The
 algorithm is as follows:
 
- - If an invite to a room is received whilst the client is **preparing to send**
-   an invite to the same room:
+ - If an ``m.call.invite`` to a room is received whilst the client is
+   **preparing to send** an ``m.call.invite`` to the same room:
 
     * the client should cancel its outgoing call and instead
       automatically accept the incoming call on behalf of the user.
 
- - If an invite to a room is received **after the client has sent** an invite to
-   the same room and is waiting for a response:
+ - If an ``m.call.invite`` to a room is received **after the client has sent**
+   an ``m.call.invite`` to the same room and is waiting for a response:
 
     * the client should perform a lexicographical comparison of the call IDs of
       the two calls and use the *lesser* of the two calls, aborting the
@@ -83,9 +83,9 @@ replaces it.
 Server behaviour
 ----------------
 
-The server MAY provide a TURN server which clients can use to contact the
-remote party. This server should be accessible via the HTTP endpoint listed
-below.
+The homeserver MAY provide a TURN server which clients can use to contact the
+remote party. The following HTTP API endpoints will be used by clients in order
+to get information about the TURN server.
 
 {{voip_http_api}}
 
