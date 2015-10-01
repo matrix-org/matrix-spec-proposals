@@ -5,17 +5,20 @@
     "properties": {
         "content": {
             "type": "object",
-            "description": "The event ids which the receipts relate to.",
             "patternProperties": {
                 "^\\$": {
                     "type": "object",
-                    "description": "The types of the receipts.",
+                    "x-pattern": "$EVENT_ID",
+                    "description": "The mapping of event ID to receipt type. The event ID is the ID which the receipts relate to and *not* an ID for the receipt itself. The key in the object is an enum which must be ``read``.",
                     "additionalProperties": {
                         "type": "object",
-                        "description": "User ids of the receipts",
+                        "title": "Users",
                         "patternProperties": {
                             "^@": {
                                 "type": "object",
+                                "title": "Receipt",
+                                "description": "The mapping of user ID to receipt. The user ID is the entity who sent this receipt.",
+                                "x-pattern": "$USER_ID",
                                 "properties": {
                                     "ts": {
                                         "type": "number",

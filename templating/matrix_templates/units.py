@@ -49,8 +49,17 @@ def get_json_schema_object_fields(obj, enforce_title=False):
     }
     tables = [fields]
 
-    props = obj.get("properties", obj.get("patternProperties"))
     parents = obj.get("allOf")
+    props = obj.get("properties")
+    if not props:
+        props = obj.get("patternProperties")
+        if props:
+            # try to replace horrible regex key names with pretty x-pattern ones
+            for key_name in props.keys():
+                pretty_key = props[key_name].get("x-pattern")
+                if pretty_key:
+                    props[pretty_key] = props[key_name]
+                    del props[key_name]
     if not props and not parents:
         raise Exception(
             "Object %s has no properties or parents." % obj
@@ -70,10 +79,17 @@ def get_json_schema_object_fields(obj, enforce_title=False):
         if props[key_name]["type"] == "object":
             if props[key_name].get("additionalProperties"):
                 # not "really" an object, just a KV store
-                value_type = (
-                    "{string: %s}" %
-                    props[key_name]["additionalProperties"]["type"]
-                )
+                prop_val = props[key_name]["additionalProperties"]["type"]
+                if prop_val == "object":
+                    nested_object = get_json_schema_object_fields(
+                        props[key_name]["additionalProperties"],
+                        enforce_title=True
+                    )
+                    value_type = "{string: %s}" % nested_object[0]["title"]
+                    if not nested_object[0].get("no-table"):
+                        tables += nested_object
+                else:
+                    value_type = "{string: %s}" % prop_val
             else:
                 nested_object = get_json_schema_object_fields(
                     props[key_name], 
