@@ -1,6 +1,8 @@
 Receipts
 --------
 
+.. _module:receipts:
+
 Receipts are used to publish which events in a room the user or their devices
 have interacted with. For example, which events the user has read. For
 efficiency this is done as "up to" markers, i.e. marking a particular event
