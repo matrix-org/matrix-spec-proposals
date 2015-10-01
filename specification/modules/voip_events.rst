@@ -1,6 +1,8 @@
 Voice over IP
 =============
 
+.. _module:voip:
+
 This module outlines how two users in a room can set up a Voice over IP (VoIP)
 call to each other. Voice and video calls are built upon the WebRTC 1.0 standard.
 Call signalling is achieved by sending `message events`_ to the room. As a result,
