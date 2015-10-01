@@ -34,7 +34,7 @@ def check_parameter(filepath, request, parameter):
     example = None
     try:
         example_json = schema.get('example')
-        if example_json:
+        if example_json and not schema.get("format") == "byte":
             example = json.loads(example_json)
     except Exception as e:
         raise ValueError("Error parsing JSON example request for %r" % (
