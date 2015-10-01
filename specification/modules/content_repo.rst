@@ -3,8 +3,23 @@ Content repository
 
 .. _module:content:
 
-HTTP API
---------
+This module allows users to upload content to their homeserver which is
+retrievable from other homeservers. Its' purpose is to allow users to share
+attachments in a room. Content locations are represented as Matrix Content (MXC)
+URIs. They look like::
+
+  mxc://<server-name>/<media-id>
+
+  <server-name> : The name of the homeserver where this content can be found, e.g. matrix.org
+  <media-id> : An opaque ID which identifies the content.
+
+Client behaviour
+----------------
+
+Clients can upload and download content using the following HTTP APIs.
+
+{{content_repo_http_api}}
+
 
 Uploads are POSTed to a resource which returns a token which is used to GET
 the download.  Uploads are POSTed to the sender's local homeserver, but are
@@ -49,6 +64,9 @@ width and height are close to the requested size and the aspect matches
 the requested size. The client should scale the image if it needs to fit
 within a given rectangle.
 
+Server behaviour
+----------------
+
 Homeservers may generate thumbnails for content uploaded to remote
 homeservers themselves or may rely on the remote homeserver to thumbnail
 the content. Homeservers may return thumbnails of a different size to that
@@ -58,13 +76,19 @@ Homeservers must never upscale images.
 Security considerations
 -----------------------
 
+The HTTP GET endpoint does not require any authentication. Knowing the URL of
+the content is sufficient to retrieve the content, even if the entity isn't in
+the room.
+
+Homeservers have additional concerns:
+
  - Clients may try to upload very large files. Homeservers should not store files
    that are too large and should not serve them to clients.
 
  - Clients may try to upload very large images. Homeservers should not attempt to
    generate thumbnails for images that are too large.
 
- - Remote homeservers may host very large files or images. Homeserver should not
+ - Remote homeservers may host very large files or images. Homeservers should not
    proxy or thumbnail large files or images from remote homeservers.
 
  - Clients may try to upload a large number of files. Homeservers should limit the
