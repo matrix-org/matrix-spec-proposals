@@ -427,6 +427,8 @@ the complete dataset is provided in "chunk".
 Events
 ------
 
+.. _sect:events:
+
 Overview
 ~~~~~~~~
 
