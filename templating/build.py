@@ -122,7 +122,7 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
 
     # check the input files and substitute in sections where required
     log("Parsing input template: %s" % file_stream.name)
-    temp_str = file_stream.read()
+    temp_str = file_stream.read().decode("utf-8")
     # do sanity checking on the template to make sure they aren't reffing things
     # which will never be replaced with a section.
     ast = env.parse(temp_str)
@@ -140,7 +140,7 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
     with open(
             os.path.join(out_dir, os.path.basename(file_stream.name)), "w"
             ) as f:
-        f.write(output)
+        f.write(output.encode("utf-8"))
     log("Output file for: %s" % file_stream.name)
     check_unaccessed("units", units)
 

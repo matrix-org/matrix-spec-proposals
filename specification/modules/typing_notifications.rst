@@ -1,6 +1,8 @@
 Typing Notifications
 --------------------
 
+.. _module:typing:
+
 Client APIs
 ~~~~~~~~~~~
 

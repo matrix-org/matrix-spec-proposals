@@ -1,6 +1,8 @@
 Presence
 ========
 
+.. _module:presence:
+
 Each user has the concept of presence information. This encodes:
 
  * Whether the user is currently online
