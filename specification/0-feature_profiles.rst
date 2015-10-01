@@ -14,19 +14,19 @@ in order for it to be classified as that profile.
 Summary
 -------
 
-============================ ========== ========== ========== ========== ==========
-  Module / Profile              Web       Mobile    Desktop       CLI     Embedded
-============================ ========== ========== ========== ========== ==========
- `Instant Messaging`_         Required   Required   Required   Required   Optional
- `Presence`_                  Required   Required   Required   Required   Optional
- `Push Notifications`_        Optional   Required   Optional   Optional   Optional
- `Receipts`_                  Required   Required   Required   Required   Optional
- `Typing Notifications`_      Required   Required   Required   Required   Optional
- `VoIP`_                      Required   Required   Required   Optional   Optional
- `Content Repository`_        Required   Required   Required   Optional   Optional
- `History Visibility`_        Required   Required   Required   Required   Optional
- `End-to-End Encryption`_     Optional   Optional   Optional   Optional   Optional
-============================ ========== ========== ========== ========== ==========
+===================================== ========== ========== ========== ========== ==========
+  Module / Profile                       Web       Mobile    Desktop       CLI     Embedded
+===================================== ========== ========== ========== ========== ==========
+ `Instant Messaging`_                  Required   Required   Required   Required   Optional
+ `Presence`_                           Required   Required   Required   Required   Optional
+ `Push Notifications`_                 Optional   Required   Optional   Optional   Optional
+ `Receipts`_                           Required   Required   Required   Required   Optional
+ `Typing Notifications`_               Required   Required   Required   Required   Optional
+ `VoIP`_                               Required   Required   Required   Optional   Optional
+ `Content Repository`_                 Required   Required   Required   Optional   Optional
+ `Managing History Visibility`_        Required   Required   Required   Required   Optional
+ `End-to-End Encryption`_              Optional   Optional   Optional   Optional   Optional
+===================================== ========== ========== ========== ========== ==========
 
 *Please see each module for more details on what clients need to implement.*
 
@@ -38,7 +38,7 @@ Summary
 .. _Typing Notifications: `module:typing`_
 .. _VoIP: `module:voip`_
 .. _Content Repository: `module:content`_
-.. _History Visibility: `module:history-visibility`_
+.. _Managing History Visibility: `module:history-visibility`_
 
 Clients
 -------
