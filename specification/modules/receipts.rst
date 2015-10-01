@@ -1,6 +1,8 @@
 Receipts
 ========
 
+.. _module:receipts:
+
 This module adds in support for receipts. These receipts are a form of
 acknowledgement of an event. This module defines a single acknowledgement:
 ``m.read`` which indicates that the user has read up to a given event.

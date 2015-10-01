@@ -1,6 +1,8 @@
 End-to-End Encryption
 =====================
 
+.. _module:e2e:
+
 .. TODO-doc
   - Why is this needed.
   - Overview of process

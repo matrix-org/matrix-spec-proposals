@@ -1,5 +1,8 @@
 Voice over IP
 -------------
+
+.. _module:voip:
+
 Matrix can also be used to set up VoIP calls. This is part of the core
 specification, although is at a relatively early stage. Voice (and video) over
 Matrix is built on the WebRTC 1.0 standard. Call events are sent to a room, like
