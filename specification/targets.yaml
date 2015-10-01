@@ -2,11 +2,11 @@ targets:
   main:  # arbitrary name to identify this build target
     files:  # the sort order of files to cat
       - 0-intro.rst
-      - { 1: 0-feature_profiles.rst }
       - 1-client_server_api.rst
       - { 1: 0-events.rst }
       - { 1: 0-event_signing.rst }
       - 2-modules.rst
+      - { 1: 0-feature_profiles.rst }
       - { 1: "group:modules" }  # reference a group of files
       - 3-application_service_api.rst
       - 4-server_server_api.rst

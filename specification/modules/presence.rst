@@ -1,5 +1,7 @@
 Presence
 ========
+
+.. _module:presence:
  
 Each user has the concept of presence information. This encodes the
 "availability" of that user, suitable for display on other user's clients.
