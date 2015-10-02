@@ -21,11 +21,8 @@ A presence list is a list of user IDs whose presence the user wants to follow.
 To be added to this list, the user being added must be invited by the list owner
 who must accept the invitation.
  
-Each user has presence information associated with them. This encodes the
-"availability" of that user, suitable for display on other clients.
-This is transmitted as an ``m.presence`` event and is one of the few events
-which are sent *outside the context of a room*. Their presence state is
-represented by the ``presence`` key, which is an enum of one of the following:
+User's presence state is represented by the ``presence`` key, which is an enum
+of one of the following:
 
       - ``online`` : The default state when the user is connected to an event
         stream.
@@ -35,7 +32,6 @@ represented by the ``presence`` key, which is an enum of one of the following:
         explicitly suppressing their profile information from being sent.
       - ``free_for_chat`` : The user is generally willing to receive messages
         moreso than default.
- 
 
 Events
 ------
