@@ -68,15 +68,12 @@ paths:
           headers:
             Content-Type:
               description: "The content type of the file that was previously uploaded."
-              x-example: "audio/mpeg"
               type: "string"
             Content-Disposition:
               description: "The name of the file that was previously uploaded, if set."
-              x-example: "attachment;filename=03-cool.mp3"
               type: "string"
           schema:
             type: file
-            name: "<file>"
   "/thumbnail/{serverName}/{mediaId}":
     get:
       summary: "Download a thumbnail of the content from the content repository."
@@ -122,11 +119,9 @@ paths:
           headers:
             Content-Type:
               description: "The content type of the thumbnail."
-              x-example: "image/jpeg"
               type: "string"
               enum: ["image/jpeg", "image/png"]
           schema:
             type: file
-            name: "<file>"
             
 
