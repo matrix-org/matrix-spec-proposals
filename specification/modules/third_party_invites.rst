@@ -41,7 +41,28 @@ All homeservers MUST verify that sig(``token``, ``public_key``) = ``signature``.
 If a client of the current homeserver is joining by an
 ``m.room.third_party_invite``, that homesever MUST validate that the public
 key used for signing is still valid, by checking ``key_validity_url``. It does
-this by making an HTTP GET request to ``key_validity_url``, with the querystring
+this by making an HTTP GET request to ``key_validity_url``:
+
+Schema::
+
+    => GET $key_validity_url?public_key=$public_key
+    <= HTTP/1.1 200 OK
+    {
+        "valid": true|false
+    }
+
+
+Example::
+
+    key_validity_url = https://identity.server/is_valid
+    public_key = ALJWLAFQfqffQHFqFfeqFUOEHf4AIHfefh4
+    => GET https://identity.server/is_valid?public_key=ALJWLAFQfqffQHFqFfeqFUOEHf4AIHfefh4
+    <= HTTP/1.1 200 OK
+    {
+        "valid": true
+    }
+
+with the querystring
 ?public_key=``public_key``. A JSON object will be returned, and the key is
 considered valid if the object contains a key named ``valid`` whose value is
 ``true``. If this cannot be verified, the invitation must be rejected.
