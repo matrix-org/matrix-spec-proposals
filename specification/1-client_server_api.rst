@@ -756,7 +756,7 @@ options which can be set when creating a room:
   Optional:
     Yes
   Value:
-    ``private_chat``, ``private_chat_shared_power`` or ``public_chat``
+    ``private_chat``, ``trusted_private_chat`` or ``public_chat``
   Description:
     Convenience parameter for setting various default state events based on a
     preset.
@@ -765,9 +765,9 @@ options which can be set when creating a room:
 
     - ``private_chat``: Sets the ``join_rules`` to ``invite`` and
       ``history_visibility`` to ``shared``
-    - ``private_chat_shared_power``: Set the ``join_rules`` to
-      ``invite``, ``history_visibility`` to ``shared`` and gives all invitees
-      the same power level as the creator.
+    - ``trusted_private_chat``: Set the ``join_rules`` to ``invite``,
+      ``history_visibility`` to ``shared`` and gives all invitees the same
+      power level as the creator.
     - ``public_chat``: Sets the ``join_rules`` to ``public`` and
       ``history_visibility`` to ``shared``
 
