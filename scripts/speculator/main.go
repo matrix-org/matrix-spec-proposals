@@ -362,6 +362,8 @@ func main() {
 	http.HandleFunc("/diff/html/", s.serveHTMLDiff)
 	http.HandleFunc("/healthz", serveText("ok"))
 	http.HandleFunc("/", listPulls)
+
+	fmt.Printf("Listening on port %d\n", *port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
 }
 
