@@ -60,10 +60,9 @@ func (u *User) IsTrusted() bool {
 }
 
 const (
-	pullsPrefix = "https://api.github.com/repos/matrix-org/matrix-doc/pulls"
+	pullsPrefix       = "https://api.github.com/repos/matrix-org/matrix-doc/pulls"
 	matrixDocCloneURL = "https://github.com/matrix-org/matrix-doc.git"
 )
-
 
 func gitClone(url string, shared bool) (string, error) {
 	directory := path.Join("/tmp/matrix-doc", strconv.FormatInt(rand.Int63(), 10))
@@ -80,21 +79,22 @@ func gitClone(url string, shared bool) (string, error) {
 }
 
 func gitCheckout(path, sha string) error {
-	cmd := exec.Command("git", "checkout", sha)
-	cmd.Dir = path
-	err := cmd.Run()
-	if err != nil {
-		return fmt.Errorf("error checking out repo: %v", err)
-	}
-	return nil
+	return runGitCommand(path, []string{"checkout", sha})
 }
 
-func gitFetch(path string) error {
-	cmd := exec.Command("git", "fetch")
+func gitFetchAndMerge(path string) error {
+	if err := runGitCommand(path, []string{"fetch"}); err != nil {
+		return err
+	}
+	return runGitCommand(path, []string{"merge"})
+}
+
+func runGitCommand(path string, args []string) error {
+	cmd := exec.Command("git", args...)
 	cmd.Dir = path
 	err := cmd.Run()
 	if err != nil {
-		return fmt.Errorf("error fetching repo: %v", err)
+		return fmt.Errorf("error running %q: %v", strings.Join(cmd.Args, " "), err)
 	}
 	return nil
 }
@@ -145,7 +145,7 @@ type server struct {
 // generateAt generates spec from repo at sha.
 // Returns the path where the generation was done.
 func (s *server) generateAt(sha string) (dst string, err error) {
-	err = gitFetch(s.matrixDocCloneURL)
+	err = gitFetchAndMerge(s.matrixDocCloneURL)
 	if err != nil {
 		return
 	}
