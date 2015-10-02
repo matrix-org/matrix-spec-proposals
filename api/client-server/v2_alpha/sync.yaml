@@ -88,8 +88,6 @@ paths:
                       type: array
                       description: |-
                         A list of room ids that the user has been invited to.
-                        The entries in the room_map will have a ``invite`` key
-                        containing the ``m.room.member`` event of the invite.
                       items:
                         type: string.
                     archived:
@@ -109,10 +107,6 @@ paths:
                 additionalProperties:
                   type: object
                   properties:
-                    room_id:
-                      type: string
-                      description: |-
-                        The ID of the room.
                     event_map:
                       type: object
                       description: |-
