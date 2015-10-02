@@ -757,7 +757,8 @@ options which can be set when creating a room:
     Yes
   Value:
     Extra keys to be added to the content of the ``m.room.create``. The server
-    will clober certain keys, e.g. ``creator``.
+    will clober the following keys: ``creator``. Future versions of this
+    spec may allow the server to clobber other keys if required.
   Description:
     Allows clients to add keys to the content of ``m.room.create``.
 
