@@ -159,26 +159,29 @@ paths:
         If the identity server does not know a Matrix user identifier for the
         passed third party identifier, the homeserver will issue an invitation
         which can be accepted upon providing proof of ownership of the third
-        party identifier. This is achieved by requesting a nonce and digest from
-        the identity server. When a user binds the invited third party
-        identifier to a Matrix user ID, the identity server will give the user a
-        list of pending invitations, each containing:
+        party identifier. This is achieved by the identity server generating a
+        token, which it gives to the inviting homeserver. The homeserver will
+        add an ``m.room.third_party_invite`` event into the graph for the room,
+        containing that token.
+
+        When a user binds the invited third party identifier to a Matrix user ID,
+        the identity server will give the user a list of pending invitations,
+        each containing:
 
           - The room ID to which they were invited
 
-          - The digest given to the homeserver
+          - The token given to the homeserver
 
-          - A secret which, when appended to the nonce, digests to the above digest,
-            i.e. digest = sha256(nonce + secret)
+          - A signature of the token, signed with the identity server's private key
 
-        The digest algorithm to be used is SHA256.
+          - The matrix user ID who invited them to the room
 
         If the identity server did know the Matrix user identifier for the
         third party identifier, the home server will append a ``m.room.member``
         event to the room.
 
-        If a digest and nonce are requested from the identity server, the home
-        server will append a ``m.room.token_based_invite`` event to the room.
+        If a token is requested from the identity server, the home server will
+        append a ``m.room.third_party_invite`` event to the room.
       security:
         - accessToken: []
       parameters:
@@ -195,13 +198,13 @@ paths:
             type: object
             example: |-
               {
-                "identity_server": "matrix.org",
+                "id_server": "matrix.org",
                 "medium": "email",
                 "address": "cheeky@monkey.com",
                 "display_name": "A very cheeky monkey"
               }
             properties:
-              identity_server:
+              id_server:
                 type: string
                 description: The hostname+port of the identity server which should be used for third party identifier lookups.
               medium:
@@ -213,7 +216,7 @@ paths:
               display_name:
                 type: string
                 description: A user-friendly string describing who has been invited. It should not contain the address of the invitee, to avoid leaking mappings between third party identities and matrix user IDs.
-            required: ["identity_server", "medium", "address", "display_name"]
+            required: ["id_server", "medium", "address", "display_name"]
       responses:
         200:
           description: The user has been invited to join the room.

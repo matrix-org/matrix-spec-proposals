@@ -3,7 +3,12 @@
   "content": {
     "membership": "join",
     "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF#auto",
-    "displayname": "Alice Margatroid"
+    "displayname": "Alice Margatroid",
+    "token": "pc98",
+    "public_key": "abc123",
+    "key_validity_url": "https://magic.forest/verifykey",
+    "signature": "q1w2e3",
+    "sender": "@zun:zun.soft"
   },
   "state_key": "@alice:localhost",
   "origin_server_ts": 1431961217939,
