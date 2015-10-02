@@ -779,10 +779,47 @@ options which can be set when creating a room:
     This will tell the server to invite everyone in the list to the newly
     created room.
 
+``preset``
+  Type:
+    String
+  Optional:
+    Yes
+  Value:
+    ``private_chat``, ``trusted_private_chat`` or ``public_chat``
+  Description:
+    Convenience parameter for setting various default state events based on a
+    preset.
+
+    Three presets are defined:
+
+    - ``private_chat``: Sets the ``join_rules`` to ``invite`` and
+      ``history_visibility`` to ``shared``
+    - ``trusted_private_chat``: Set the ``join_rules`` to ``invite``,
+      ``history_visibility`` to ``shared`` and gives all invitees the same
+      power level as the creator.
+    - ``public_chat``: Sets the ``join_rules`` to ``public`` and
+      ``history_visibility`` to ``shared``
+
+``initial_state``
+  Type:
+    List
+  Optional:
+    Yes
+  Value:
+    A list of state events to set in the new room.
+  Description:
+    Allows the user to override the default state events set in the new room.
+
+    The expected format of the state events are an object with ``type``,
+    ``state_key`` and ``content`` keys set.
+
+    Takes precedence over events set by ``presets``, but gets overriden by
+    ``name`` and ``topic`` keys.
+
 Example::
 
   {
-    "visibility": "public",
+    "preset": "public_chat",
     "room_alias_name": "thepub",
     "name": "The Grand Duke Pub",
     "topic": "All about happy hour"
