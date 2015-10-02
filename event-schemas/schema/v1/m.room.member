@@ -22,26 +22,26 @@
                     "type": ["string", "null"],
                     "description": "The display name for this user, if any. This is added by the homeserver."
                 },
-		"token": {
-		    "type": "string",
-		    "description": "A token which must be correctly signed, in order to join the room."
-		},
-		"key_validity_url": {
-		    "type": "string",
-		    "description": "A URL which can be fetched, with querystring public_key=public_key, to validate whether the key has been revoked. The URL must return a JSON object containing a boolean property named 'valid'."
-		},
-		"public_key": {
-		    "type": "string",
-		    "description": "A base64-encoded ed25519 key with which token must be signed."
-		},
-		"signature": {
-		    "type": "string",
-		    "description": "A base64-encoded signature of token with public_key."
-		},
-		"sender": {
-		    "type": "string",
-		    "description": "The matrix user ID of the user who send the invite which is being used."
-		}
+        "token": {
+            "type": "string",
+            "description": "A token which must be correctly signed, in order to join the room."
+        },
+        "key_validity_url": {
+            "type": "string",
+            "description": "A URL which can be fetched, with querystring public_key=public_key, to validate whether the key has been revoked. The URL must return a JSON object containing a boolean property named 'valid'."
+        },
+        "public_key": {
+            "type": "string",
+            "description": "A base64-encoded ed25519 key with which token must be signed."
+        },
+        "signature": {
+            "type": "string",
+            "description": "A base64-encoded signature of token with public_key."
+        },
+        "sender": {
+            "type": "string",
+            "description": "The matrix user ID of the user who send the invite which is being used."
+        }
             },
             "required": ["membership"]
         },
