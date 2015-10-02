@@ -94,7 +94,7 @@ func runGitCommand(path string, args []string) error {
 	cmd.Dir = path
 	err := cmd.Run()
 	if err != nil {
-		return fmt.Errorf("error running %s: %v", strings.Join(cmd.Args, " "), err)
+		return fmt.Errorf("error running %q: %v", strings.Join(cmd.Args, " "), err)
 	}
 	return nil
 }
