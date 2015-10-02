@@ -5,7 +5,7 @@ info:
 host: localhost:8008
 schemes:
   - https
-basePath: /_matrix/client/api/v2_alpha
+basePath: /_matrix/client/v2_alpha
 consumes:
   - application/json
 produces:
