@@ -6,6 +6,29 @@
 .. in Jenkins. Comments like this are ignored by both RST and the templating
 .. system. Add the newest release notes beneath this comment.
 
+Specification changes in v0.2.0 (2015-10-02)
+============================================
+
+This update restructures the specification and begins to aggressively standardise
+on using Swagger and JSON Schema to document HTTP endpoints and Events
+respectively. It also introduces a number of new concepts to Matrix.
+
+Additions:
+ - New section: Feature Profiles.
+ - New section: Receipts.
+ - New section: Room history visibility.
+ - New event: ``m.receipt``.
+ - New event: ``m.room.canonical_alias``
+ - New event: ``m.room.history_visibility``
+ - New keys: ``/createRoom`` - allows room "presets" using ``preset`` and
+   ``initial_state`` keys.
+ - New endpoint: ``/tokenrefresh`` - Related to refreshing access tokens.
+
+Modifications:
+ - Convert most of the older HTTP APIs to Swagger documentation.
+ - Convert most of the older event formats to JSON Schema.
+ - Move selected client-server sections to be "Modules".
+
 Specification changes in v0.1.0 (2015-06-01)
 ============================================
 - First numbered release.
