@@ -260,12 +260,13 @@ class MatrixUnits(Units):
                 if good_response:
                     self.log("Found a 200 response for this API")
                     res_type = Units.prop(good_response, "schema/type")
+                    res_name = Units.prop(good_response, "schema/name")
                     if res_type and res_type not in ["object", "array"]:
                         # response is a raw string or something like that
                         good_table = {
                             "title": None,
                             "rows": [{
-                                "key": good_response["schema"].get("name", ""),
+                                "key": "<" + res_type + ">" if not res_name else res_name,
                                 "type": res_type,
                                 "desc": res.get("description", ""),
                                 "req_str": ""

@@ -10,8 +10,14 @@ URIs. They look like::
 
   mxc://<server-name>/<media-id>
 
-  <server-name> : The name of the homeserver where this content can be found, e.g. matrix.org
+  <server-name> : The name of the homeserver where this content originated, e.g. matrix.org
   <media-id> : An opaque ID which identifies the content.
+
+Uploads are POSTed to a resource on the user's local homeserver which returns a
+token which is used to GET the download. Content is downloaded from the
+recipient's local homeserver, which must first transfer the content from the
+origin homeserver using the same API (unless the origin and destination
+homeservers are the same).
 
 Client behaviour
 ----------------
@@ -20,42 +26,8 @@ Clients can upload and download content using the following HTTP APIs.
 
 {{content_repo_http_api}}
 
-
-Uploads are POSTed to a resource which returns a token which is used to GET
-the download.  Uploads are POSTed to the sender's local homeserver, but are
-downloaded from the recipient's local homeserver, which must thus first transfer
-the content from the origin homeserver using the same API (unless the origin
-and destination homeservers are the same).  The upload/download API is::
-
-    => POST /_matrix/media/v1/upload HTTP/1.1
-       Content-Type: <media-type>
-
-       <media>
-
-    <= HTTP/1.1 200 OK
-       Content-Type: application/json
-
-       { "content-uri": "mxc://<server-name>/<media-id>" }
-
-    => GET /_matrix/media/v1/download/<server-name>/<media-id> HTTP/1.1
-
-    <= HTTP/1.1 200 OK
-       Content-Type: <media-type>
-       Content-Disposition: attachment;filename=<upload-filename>
-
-       <media>
-
-Clients can get thumbnails by supplying a desired width and height and
-thumbnailing method::
-
-    => GET /_matrix/media/v1/thumbnail/<server_name>
-            /<media-id>?width=<w>&height=<h>&method=<m> HTTP/1.1
-
-    <= HTTP/1.1 200 OK
-       Content-Type: image/jpeg or image/png
-
-       <thumbnail>
-
+Thumbnails
+~~~~~~~~~~
 The thumbnail methods are "crop" and "scale". "scale" tries to return an
 image where either the width or the height is smaller than the requested
 size. The client should then scale and letterbox the image if it needs to
