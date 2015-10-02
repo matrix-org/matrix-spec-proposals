@@ -2,10 +2,9 @@ Federation API
 ==============
 
 Matrix home servers use the Federation APIs (also known as server-server APIs)
-to communicate with each other.
-Home servers use these APIs to push messages to each other in real-time, to
-request historic messages from each other, and to query profile and presence
-information about users on each other's servers.
+to communicate with each other. Home servers use these APIs to push messages to
+each other in real-time, to request historic messages from each other, and to
+query profile and presence information about users on each other's servers.
 
 The APIs are implemented using HTTPS GETs and PUTs between each of the
 servers. These HTTPS requests are strongly authenticated using public key
@@ -21,7 +20,7 @@ Persisted Data Units (PDUs):
     context.
 
     Like email, it is the responsibility of the originating server of a PDU
-    to deliver that event to its recepient servers. However PDUs are signed
+    to deliver that event to its recipient servers. However PDUs are signed
     using the originating server's public key so that it is possible to
     deliver them through third-party servers.
 
@@ -60,13 +59,11 @@ and an optional TLS port.
 .. **
 
 If the port is present then the server is discovered by looking up an AAAA or
-A record for the DNS name and connecting to the specified TLS port.
-
-If the port is absent then the server is discovered by looking up a
-``_matrix._tcp`` SRV record for the DNS name. If this record does not exist
-then the server is discovered by looking up an AAAA or A record on the DNS
-name and taking the default fallback port number of 8448.
-
+A record for the DNS name and connecting to the specified TLS port. If the port
+is absent then the server is discovered by looking up a ``_matrix._tcp`` SRV
+record for the DNS name. If this record does not exist then the server is
+discovered by looking up an AAAA or A record on the DNS name and taking the
+default fallback port number of 8448.
 Home servers may use SRV records to load balance requests between multiple TLS
 endpoints or to failover to another endpoint if an endpoint fails.
 
@@ -84,18 +81,19 @@ directly or by querying an intermediate notary server using a
 response with their own key. A server may query multiple notary servers to
 ensure that they all report the same public keys.
 
-This approach is borrowed from the Perspectives Project
-(http://perspectives-project.org/), but modified to include the NACL keys and to
-use JSON instead of XML. It has the advantage of avoiding a single trust-root
-since each server is free to pick which notary servers they trust and can
-corroborate the keys returned by a given notary server by querying other
-servers.
+This approach is borrowed from the `Perspectives Project`_, but modified to
+include the NACL keys and to use JSON instead of XML. It has the advantage of
+avoiding a single trust-root since each server is free to pick which notary
+servers they trust and can corroborate the keys returned by a given notary
+server by querying other servers.
+
+.. _Perspectives Project: http://perspectives-project.org/
 
 Publishing Keys
-_______________
+^^^^^^^^^^^^^^^
 
 Home servers publish the allowed TLS fingerprints and signing keys in a JSON
-object at ``/_matrix/key/v2/server/${key_id}``. The response contains a list of
+object at ``/_matrix/key/v2/server/{key_id}``. The response contains a list of
 ``verify_keys`` that are valid for signing federation requests made by the
 server and for signing events. It contains a list of ``old_verify_keys``
 which are only valid for signing events. Finally the response contains a list
@@ -178,7 +176,7 @@ events sent by that server can still be checked.
     }
 
 Querying Keys Through Another Server
-____________________________________
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Servers may offer a query API ``_matrix/key/v2/query/`` for getting the keys
 for another server. This API can be used to GET at list of JSON objects for a
@@ -510,7 +508,7 @@ To backfill events on a given context::
 
 Retrieves a sliding-window history of previous PDUs that occurred on the given
 context. Starting from the PDU ID(s) given in the "v" argument, the PDUs that
-preceeded it are retrieved, up to a total number given by the "limit" argument.
+preceded it are retrieved, up to a total number given by the "limit" argument.
 These are then returned in a new Transaction containing all of the PDUs.
 
 
@@ -554,9 +552,7 @@ Every HTTP request made by a homeserver is authenticated using public key
 digital signatures. The request method, target and body are signed by wrapping
 them in a JSON object and signing it using the JSON signing algorithm. The
 resulting signatures are added as an Authorization header with an auth scheme
-of X-Matrix.
-
-Note that the target field should include the full path starting with
+of X-Matrix. Note that the target field should include the full path starting with
 ``/_matrix/...``, including the ``?`` and any query parameters if present, but
 should not include the leading ``https:``, nor the destination server's
 hostname.
@@ -656,12 +652,12 @@ State Conflict Resolution
   - How does this work with deleting current state
   - How do we reject invalid federation traffic?
 
-[[TODO(paul): At this point we should probably have a long description of how
-State management works, with descriptions of clobbering rules, power levels, etc
-etc... But some of that detail is rather up-in-the-air, on the whiteboard, and
-so on. This part needs refining. And writing in its own document as the details
-relate to the server/system as a whole, not specifically to server-server
-federation.]]
+  [[TODO(paul): At this point we should probably have a long description of how
+  State management works, with descriptions of clobbering rules, power levels, etc
+  etc... But some of that detail is rather up-in-the-air, on the whiteboard, and
+  so on. This part needs refining. And writing in its own document as the details
+  relate to the server/system as a whole, not specifically to server-server
+  federation.]]
 
 Presence
 --------
@@ -677,8 +673,8 @@ Performing a presence update and poll subscription request::
       Each should be an object with the following keys:
         user_id: string containing a User ID
         presence: "offline"|"unavailable"|"online"|"free_for_chat"
-        status_msg: (optional) string of freeform text
-        last_active_ago: miliseconds since the last activity by the user
+        status_msg: (optional) string of free-form text
+        last_active_ago: milliseconds since the last activity by the user
 
     poll: (optional): list of strings giving User IDs
 
@@ -696,7 +692,7 @@ removed until explicitly requested by a later ``unpoll``.
 On receipt of a message containing a non-empty ``poll`` list, the receiving
 server should immediately send the sending server a presence update EDU of its
 own, containing in a ``push`` list the current state of every user that was in
-the orginal EDU's ``poll`` list.
+the original EDU's ``poll`` list.
 
 Sending a presence invite::
 
@@ -721,7 +717,7 @@ Rejecting a presence invite::
   Content keys - as for m.presence_invite
 
 .. TODO-doc
-  - Explain the timing-based roundtrip reduction mechanism for presence
+  - Explain the timing-based round-trip reduction mechanism for presence
     messages
   - Explain the zero-byte presence inference logic
   See also: docs/client-server/model/presence
@@ -742,8 +738,8 @@ Querying profile information::
     field: (optional) string giving a field name
 
   Returns: JSON object containing the following keys:
-    displayname: string of freeform text
-    avatar_url: string containing an http-scheme URL
+    displayname: string of free-form text
+    avatar_url: string containing an HTTP-scheme URL
 
 If the query contains the optional ``field`` key, it should give the name of a
 result field. If such is present, then the result should contain only a field
@@ -769,3 +765,4 @@ Querying directory information::
 The list of join candidates is a list of server names that are likely to hold
 the given room; these are servers that the requesting server may wish to try
 joining with. This list may or may not include the server answering the query.
+

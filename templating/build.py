@@ -38,7 +38,7 @@ Processing
 """
 from batesian import AccessKeyStore
 
-from jinja2 import Environment, FileSystemLoader, StrictUndefined, Template
+from jinja2 import Environment, FileSystemLoader, StrictUndefined, Template, meta
 from argparse import ArgumentParser, FileType
 import importlib
 import json
@@ -52,8 +52,8 @@ def create_from_template(template, sections):
 def check_unaccessed(name, store):
     unaccessed_keys = store.get_unaccessed_set()
     if len(unaccessed_keys) > 0:
-        print "Found %s unused %s keys." % (len(unaccessed_keys), name)
-        print unaccessed_keys
+        log("Found %s unused %s keys." % (len(unaccessed_keys), name))
+        log(unaccessed_keys)
 
 def main(input_module, file_stream=None, out_dir=None, verbose=False):
     if out_dir and not os.path.exists(out_dir):
@@ -121,17 +121,31 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
         return
 
     # check the input files and substitute in sections where required
-    print "Parsing input template: %s" % file_stream.name
-    temp = Template(file_stream.read())
-    print "Creating output for: %s" % file_stream.name
+    log("Parsing input template: %s" % file_stream.name)
+    temp_str = file_stream.read().decode("utf-8")
+    # do sanity checking on the template to make sure they aren't reffing things
+    # which will never be replaced with a section.
+    ast = env.parse(temp_str)
+    template_vars = meta.find_undeclared_variables(ast)
+    unused_vars = [var for var in template_vars if var not in sections]
+    if len(unused_vars) > 0:
+        raise Exception(
+            "You have {{ variables }} which are not found in sections: %s" %
+            (unused_vars,)
+        )
+    # process the template
+    temp = Template(temp_str)
+    log("Creating output for: %s" % file_stream.name)
     output = create_from_template(temp, sections)
     with open(
             os.path.join(out_dir, os.path.basename(file_stream.name)), "w"
             ) as f:
-        f.write(output)
-    print "Output file for: %s" % file_stream.name
+        f.write(output.encode("utf-8"))
+    log("Output file for: %s" % file_stream.name)
     check_unaccessed("units", units)
 
+def log(line):
+    print "batesian: %s" % line
 
 if __name__ == '__main__':
     parser = ArgumentParser(
@@ -175,7 +189,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if not args.file:
-        print "No file supplied."
+        log("No file supplied.")
         parser.print_help()
         sys.exit(1)
 

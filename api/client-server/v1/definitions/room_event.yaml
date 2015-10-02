@@ -1,9 +1,0 @@
-type: object
-description: A Matrix Room Event
-properties:
-  event_id:
-    type: string
-    description: An event ID.
-  room_id:
-    type: string
-required: ["event_id", "room_id"]

@@ -70,7 +70,7 @@ Room Rules
 Sender
   These rules configure notification behaviour for messages from a specific,
   named Matrix user ID. The rule_id of Sender rules is always the Matrix user
-  ID of the user whose messages theyt apply to.
+  ID of the user whose messages they'd apply to.
 Underride
   These are identical to override rules, but have a lower priority than content,
   room and sender rules.
@@ -99,20 +99,17 @@ be redundant. Actions for the highest priority rule and only that rule apply
 (for example, a set_tweak action in a lower priority rule will not apply if a
 higher priority rule matches, even if that rule does not specify any tweaks).
 
-Rules also have an identifier, rule_id, which is a string. The rule_id is
-unique within the kind of rule and scope: rule_ids need not be unique between
-rules of the same kind on different devices.
-
-A home server may also have server default rules of each kind and in each scope.
-Server default rules are lower priority than user-defined rules in each scope.
-Server default rules (and only server default rules) begin with a dot ('.')
-character.
-
-In addition, all rules may be enabled or disabled. Disabled rules never match.
+Rules also have an identifier, ``rule_id``, which is a string. The ``rule_id``
+is unique within the kind of rule and scope: ``rule_ids`` need not be unique
+between rules of the same kind on different devices. A home server may also have
+server default rules of each kind and in each scope. Server default rules are
+lower priority than user-defined rules in each scope. Server default rules (and
+only server default rules) begin with a dot ('.') character. In addition, all
+rules may be enabled or disabled. Disabled rules never match.
 
 If no rules match an event, the Home Server should not notify for the message
 (that is to say, the default action is "dont-notify"). Events that the user sent
-themself are never alerted for.
+themselves are never alerted for.
 
 Predefined Rules
 ----------------
@@ -128,7 +125,7 @@ with these IDs, their semantics should match those given below:
 
     {
         "rule_id": ".m.rule.contains_user_name"
-        "pattern": "[the lcoal part of the user's Matrix ID]",
+        "pattern": "[the local part of the user's Matrix ID]",
         "actions": [
             "notify",
             {
@@ -220,7 +217,7 @@ with these IDs, their semantics should match those given below:
 Push Rules: Actions:
 --------------------
 All rules have an associated list of 'actions'. An action affects if and how a
-notification is delievered for a matching event. This standard defines the
+notification is delivered for a matching event. This standard defines the
 following actions, although if Home servers wish to support more, they are free
 to do so:
 
@@ -241,11 +238,11 @@ set_tweak
 
 Actions that have no parameters are represented as a string. Otherwise, they are
 represented as a dictionary with a key equal to their name and other keys as
-their parameters, eg. { "set_tweak": "sound", "value": "default" }
+their parameters, e.g. ``{ "set_tweak": "sound", "value": "default" }``
 
 Push Rules: Actions: Tweaks
 ---------------------------
-The 'set_tweak' key action is used to add an entry to the 'tweaks' dictionary
+The ``set_tweak`` key action is used to add an entry to the 'tweaks' dictionary
 that is sent in the notification poke. The following tweaks are defined:
 
 sound
@@ -275,7 +272,7 @@ do so:
 
 event_match
   This is a glob pattern match on a field of the event. Parameters:
-   * 'key': The dot-separated field of the event to match, eg. content.body
+   * 'key': The dot-separated field of the event to match, e.g. content.body
    * 'pattern': The glob-style pattern to match against. Patterns with no
                 special glob characters should be treated as having asterisks
                 prepended and appended when testing the condition.
@@ -295,7 +292,7 @@ room_member_count
      '>=' or '<='. A prefix of '<' matches rooms where the member count is
      strictly less than the given number and so forth. If no prefix is present,
      this matches rooms where the member count is exactly equal to the given
-     number (ie. the same as '==').
+     number (i.e. the same as '==').
 
 Room, Sender, User and Content rules do not have conditions in the same way,
 but instead have predefined conditions, the behaviour of which can be configured
@@ -314,7 +311,7 @@ scope
   Either 'global' or 'device/<profile_tag>' to specify global rules or
   device rules for the given profile_tag.
 kind
-  The kind of rule, ie. 'override', 'underride', 'sender', 'room', 'content'.
+  The kind of rule, i.e. 'override', 'underride', 'sender', 'room', 'content'.
 rule_id
   The identifier for the rule.
 
@@ -330,7 +327,7 @@ after
   rule.
 
 All requests to the push rules API also require an access_token as a query
-paraemter.
+parameter.
 
 The content of the PUT request is a JSON object with a list of actions under the
 'actions' key and either conditions (under the 'conditions' key) or the

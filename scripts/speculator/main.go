@@ -3,6 +3,7 @@
 //  - / lists open pull requests
 //  - /spec/123 which renders the spec as html at pull request 123.
 //  - /diff/rst/123 which gives a diff of the spec's rst at pull request 123.
+//  - /diff/html/123 which gives a diff of the spec's HTML at pull request 123.
 // It is currently woefully inefficient, and there is a lot of low hanging fruit for improvement.
 package main
 
@@ -16,12 +17,14 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"path"
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 )
 
 type PullRequest struct {
@@ -52,16 +55,28 @@ var (
 	allowedMembers map[string]bool
 )
 
-const pullsPrefix = "https://api.github.com/repos/matrix-org/matrix-doc/pulls"
+func (u *User) IsTrusted() bool {
+	return allowedMembers[u.Login]
+}
 
-func gitClone(url string) (string, error) {
-	dst := path.Join("/tmp/matrix-doc", strconv.FormatInt(rand.Int63(), 10))
-	cmd := exec.Command("git", "clone", url, dst)
+const (
+	pullsPrefix = "https://api.github.com/repos/matrix-org/matrix-doc/pulls"
+	matrixDocCloneURL = "https://github.com/matrix-org/matrix-doc.git"
+)
+
+
+func gitClone(url string, shared bool) (string, error) {
+	directory := path.Join("/tmp/matrix-doc", strconv.FormatInt(rand.Int63(), 10))
+	cmd := exec.Command("git", "clone", url, directory)
+	if shared {
+		cmd.Args = append(cmd.Args, "--shared")
+	}
+
 	err := cmd.Run()
 	if err != nil {
 		return "", fmt.Errorf("error cloning repo: %v", err)
 	}
-	return dst, nil
+	return directory, nil
 }
 
 func gitCheckout(path, sha string) error {
@@ -74,7 +89,25 @@ func gitCheckout(path, sha string) error {
 	return nil
 }
 
-func lookupPullRequest(prNumber string) (*PullRequest, error) {
+func gitFetch(path string) error {
+	cmd := exec.Command("git", "fetch")
+	cmd.Dir = path
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("error fetching repo: %v", err)
+	}
+	return nil
+}
+
+func lookupPullRequest(url url.URL, pathPrefix string) (*PullRequest, error) {
+	if !strings.HasPrefix(url.Path, pathPrefix+"/") {
+		return nil, fmt.Errorf("invalid path passed: %s expect %s/123", url.Path, pathPrefix)
+	}
+	prNumber := url.Path[len(pathPrefix)+1:]
+	if strings.Contains(prNumber, "/") {
+		return nil, fmt.Errorf("invalid path passed: %s expect %s/123", url.Path, pathPrefix)
+	}
+
 	resp, err := http.Get(fmt.Sprintf("%s/%s", pullsPrefix, prNumber))
 	defer resp.Body.Close()
 	if err != nil {
@@ -100,15 +133,23 @@ func generate(dir string) error {
 	return nil
 }
 
-func writeError(w http.ResponseWriter, err error) {
-	w.WriteHeader(500)
+func writeError(w http.ResponseWriter, code int, err error) {
+	w.WriteHeader(code)
 	io.WriteString(w, fmt.Sprintf("%v\n", err))
+}
+
+type server struct {
+	matrixDocCloneURL string
 }
 
 // generateAt generates spec from repo at sha.
 // Returns the path where the generation was done.
-func generateAt(repo, sha string) (dst string, err error) {
-	dst, err = gitClone(repo)
+func (s *server) generateAt(sha string) (dst string, err error) {
+	err = gitFetch(s.matrixDocCloneURL)
+	if err != nil {
+		return
+	}
+	dst, err = gitClone(s.matrixDocCloneURL, true)
 	if err != nil {
 		return
 	}
@@ -121,76 +162,74 @@ func generateAt(repo, sha string) (dst string, err error) {
 	return
 }
 
-func serveSpec(w http.ResponseWriter, req *http.Request) {
-	parts := strings.Split(req.URL.Path, "/")
-	if len(parts) != 3 {
-		w.WriteHeader(400)
-		io.WriteString(w, fmt.Sprintf("Invalid path passed: %v expect /pull/123", req.URL.Path))
-		return
+func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
+	var sha string
+
+	if strings.ToLower(req.URL.Path) == "/spec/head" {
+		sha = "HEAD"
+	} else {
+		pr, err := lookupPullRequest(*req.URL, "/spec")
+		if err != nil {
+			writeError(w, 400, err)
+			return
+		}
+
+		// We're going to run whatever Python is specified in the pull request, which
+		// may do bad things, so only trust people we trust.
+		if err := checkAuth(pr); err != nil {
+			writeError(w, 403, err)
+			return
+		}
+		sha = pr.Head.SHA
 	}
 
-	pr, err := lookupPullRequest(parts[2])
-	if err != nil {
-		writeError(w, err)
-		return
-	}
-
-	// We're going to run whatever Python is specified in the pull request, which
-	// may do bad things, so only trust people we trust.
-	if !allowedMembers[pr.User.Login] {
-		w.WriteHeader(403)
-		io.WriteString(w, fmt.Sprintf("%q is not a trusted pull requester", pr.User.Login))
-		return
-	}
-
-	dst, err := generateAt(pr.Head.Repo.CloneURL, pr.Head.SHA)
+	dst, err := s.generateAt(sha)
 	defer os.RemoveAll(dst)
 	if err != nil {
-		writeError(w, err)
+		writeError(w, 500, err)
 		return
 	}
 
 	b, err := ioutil.ReadFile(path.Join(dst, "scripts/gen/specification.html"))
 	if err != nil {
-		writeError(w, fmt.Errorf("Error reading spec: %v", err))
+		writeError(w, 500, fmt.Errorf("Error reading spec: %v", err))
 		return
 	}
 	w.Write(b)
 }
 
-func serveRstDiff(w http.ResponseWriter, req *http.Request) {
-	parts := strings.Split(req.URL.Path, "/")
-	if len(parts) != 4 {
-		w.WriteHeader(400)
-		io.WriteString(w, fmt.Sprintf("Invalid path passed: %v expect /diff/rst/123", req.URL.Path))
-		return
+func checkAuth(pr *PullRequest) error {
+	if !pr.User.IsTrusted() {
+		return fmt.Errorf("%q is not a trusted pull requester", pr.User.Login)
 	}
+	return nil
+}
 
-	pr, err := lookupPullRequest(parts[3])
+func (s *server) serveRSTDiff(w http.ResponseWriter, req *http.Request) {
+	pr, err := lookupPullRequest(*req.URL, "/diff/rst")
 	if err != nil {
-		writeError(w, err)
+		writeError(w, 400, err)
 		return
 	}
 
 	// We're going to run whatever Python is specified in the pull request, which
 	// may do bad things, so only trust people we trust.
-	if !allowedMembers[pr.User.Login] {
-		w.WriteHeader(403)
-		io.WriteString(w, fmt.Sprintf("%q is not a trusted pull requester", pr.User.Login))
+	if err := checkAuth(pr); err != nil {
+		writeError(w, 403, err)
 		return
 	}
 
-	base, err := generateAt(pr.Base.Repo.CloneURL, pr.Base.SHA)
+	base, err := s.generateAt(pr.Base.SHA)
 	defer os.RemoveAll(base)
 	if err != nil {
-		writeError(w, err)
+		writeError(w, 500, err)
 		return
 	}
 
-	head, err := generateAt(pr.Head.Repo.CloneURL, pr.Head.SHA)
+	head, err := s.generateAt(pr.Head.SHA)
 	defer os.RemoveAll(head)
 	if err != nil {
-		writeError(w, err)
+		writeError(w, 500, err)
 		return
 	}
 
@@ -198,23 +237,79 @@ func serveRstDiff(w http.ResponseWriter, req *http.Request) {
 	var diff bytes.Buffer
 	diffCmd.Stdout = &diff
 	if err := ignoreExitCodeOne(diffCmd.Run()); err != nil {
-		writeError(w, fmt.Errorf("error running diff: %v", err))
+		writeError(w, 500, fmt.Errorf("error running diff: %v", err))
 		return
 	}
 	w.Write(diff.Bytes())
 }
 
+func (s *server) serveHTMLDiff(w http.ResponseWriter, req *http.Request) {
+	pr, err := lookupPullRequest(*req.URL, "/diff/html")
+	if err != nil {
+		writeError(w, 400, err)
+		return
+	}
+
+	// We're going to run whatever Python is specified in the pull request, which
+	// may do bad things, so only trust people we trust.
+	if err := checkAuth(pr); err != nil {
+		writeError(w, 403, err)
+		return
+	}
+
+	base, err := s.generateAt(pr.Base.SHA)
+	defer os.RemoveAll(base)
+	if err != nil {
+		writeError(w, 500, err)
+		return
+	}
+
+	head, err := s.generateAt(pr.Head.SHA)
+	defer os.RemoveAll(head)
+	if err != nil {
+		writeError(w, 500, err)
+		return
+	}
+
+	htmlDiffer, err := findHTMLDiffer()
+	if err != nil {
+		writeError(w, 500, fmt.Errorf("could not find HTML differ"))
+		return
+	}
+
+	cmd := exec.Command(htmlDiffer, path.Join(base, "scripts", "gen", "specification.html"), path.Join(head, "scripts", "gen", "specification.html"))
+	var b bytes.Buffer
+	cmd.Stdout = &b
+	if err := cmd.Run(); err != nil {
+		writeError(w, 500, fmt.Errorf("error running HTML differ: %v", err))
+		return
+	}
+	w.Write(b.Bytes())
+}
+
+func findHTMLDiffer() (string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	differ := path.Join(wd, "htmldiff.pl")
+	if _, err := os.Stat(differ); err == nil {
+		return differ, nil
+	}
+	return "", fmt.Errorf("unable to find htmldiff.pl")
+}
+
 func listPulls(w http.ResponseWriter, req *http.Request) {
 	resp, err := http.Get(pullsPrefix)
 	if err != nil {
-		writeError(w, err)
+		writeError(w, 500, err)
 		return
 	}
 	defer resp.Body.Close()
 	dec := json.NewDecoder(resp.Body)
 	var pulls []PullRequest
 	if err := dec.Decode(&pulls); err != nil {
-		writeError(w, err)
+		writeError(w, 500, err)
 		return
 	}
 	if len(pulls) == 0 {
@@ -223,10 +318,10 @@ func listPulls(w http.ResponseWriter, req *http.Request) {
 	}
 	s := "<body><ul>"
 	for _, pull := range pulls {
-		s += fmt.Sprintf(`<li>%d: <a href="%s">%s</a>: <a href="%s">%s</a>: <a href="spec/%d">spec</a> <a href="diff/rst/%d">rst diff</a></li>`,
-			pull.Number, pull.User.HTMLURL, pull.User.Login, pull.HTMLURL, pull.Title, pull.Number, pull.Number)
+		s += fmt.Sprintf(`<li>%d: <a href="%s">%s</a>: <a href="%s">%s</a>: <a href="spec/%d">spec</a> <a href="diff/html/%d">spec diff</a> <a href="diff/rst/%d">rst diff</a></li>`,
+			pull.Number, pull.User.HTMLURL, pull.User.Login, pull.HTMLURL, pull.Title, pull.Number, pull.Number, pull.Number)
 	}
-	s += "</ul></body>"
+	s += `</ul><div><a href="spec/head">View the spec at head</a></div></body>`
 	io.WriteString(w, s)
 }
 
@@ -256,8 +351,15 @@ func main() {
 		"Kegsay":        true,
 		"NegativeMjark": true,
 	}
-	http.HandleFunc("/spec/", serveSpec)
-	http.HandleFunc("/diff/rst/", serveRstDiff)
+	rand.Seed(time.Now().Unix())
+	masterCloneDir, err := gitClone(matrixDocCloneURL, false)
+	if err != nil {
+		log.Fatal(err)
+	}
+	s := server{masterCloneDir}
+	http.HandleFunc("/spec/", s.serveSpec)
+	http.HandleFunc("/diff/rst/", s.serveRSTDiff)
+	http.HandleFunc("/diff/html/", s.serveHTMLDiff)
 	http.HandleFunc("/healthz", serveText("ok"))
 	http.HandleFunc("/", listPulls)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))

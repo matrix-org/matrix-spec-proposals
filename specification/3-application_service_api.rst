@@ -4,11 +4,9 @@ Application Service API
 The Matrix client-server API and server-server APIs provide the means to
 implement a consistent self-contained federated messaging fabric. However, they
 provide limited means of implementing custom server-side behaviour in Matrix
-(e.g. gateways, filters, extensible hooks etc).
-
-The Application Service API defines a standard API to allow such extensible 
-functionality to be implemented irrespective of the underlying homeserver
-implementation.
+(e.g. gateways, filters, extensible hooks etc). The Application Service API
+defines a standard API to allow such extensible functionality to be implemented
+irrespective of the underlying homeserver implementation.
 
 .. TODO-spec
   Add in Client-Server services? Overview of bots? Seems weird to be in the spec
@@ -18,12 +16,10 @@ Passive Application Services
 ----------------------------
 "Passive" application services can only observe events from a given home server.
 They cannot prevent events from being sent, nor can they modify the content of
-the event being sent.
-
-In order to observe events from a homeserver, the homeserver needs to be
-configured to pass certain types of traffic to the application service.  This
-is achieved by manually configuring the homeserver with information about the
-AS..
+the event being sent. In order to observe events from a homeserver, the
+homeserver needs to be configured to pass certain types of traffic to the
+application service.  This is achieved by manually configuring the homeserver
+with information about the AS.
 
 .. NOTE::
   Previously, application services could register with a homeserver via HTTP
@@ -66,13 +62,13 @@ An example HS configuration required to pass traffic to the AS is:
   application service is merely augmenting the room itself (e.g. providing
   logging or searching facilities).
 - Namespaces are represented by POSIX extended regular expressions, 
-  e.g.:
+  e.g:
 
 .. code-block:: yaml
 
    users:
      - exclusive: true
-       regex: @irc.freenode.net/.*
+       regex: @irc.freenode.net_.*
 
 
 Home Server -> Application Service API
@@ -326,7 +322,7 @@ but only if the application service has defined the namespace as ``exclusive``.
 
 ID conventions
 ~~~~~~~~~~~~~~
-.. NOTE::
+.. TODO-spec
   - Giving HSes the freedom to namespace still feels like the Right Thing here.
   - Exposing a public API provides the consistency which was the main complaint
     against namespacing.
@@ -345,7 +341,7 @@ types, including:
 - MSISDNs (``tel``)
 - Email addresses (``mailto``)
 - IRC nicks (``irc`` - https://tools.ietf.org/html/draft-butcher-irc-url-04)
-- XMPP (xep-0032)
+- XMPP (XEP-0032)
 - SIP URIs (RFC 3261)
 
 As a result, virtual user IDs SHOULD relate to their URI counterpart. This
@@ -401,21 +397,3 @@ client from which the event originated.  For instance, this could contain the
 message-ID for emails/nntp posts, or a link to a blog comment when gatewaying
 blog comment traffic in & out of matrix
 
-Active Application Services
-----------------------------
-
-.. TODO-spec
-  API that provides hooks into the server so that you can intercept and
-  manipulate events, and/or insert virtual users & rooms into the server.
-
-Policy Servers
-==============
-.. NOTE::
-  This section is a work in progress.
-
-.. TODO-spec
-  We should mention them in the Architecture section at least: how they fit
-  into the picture.
-
-Enforcing policies
-------------------

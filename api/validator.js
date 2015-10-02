@@ -44,7 +44,8 @@ if (isDir) {
             process.exit(1);
         }
         files.forEach(function(f) {
-            if (f.indexOf(".yaml") > 0) {
+            var suffix = ".yaml";
+            if (f.indexOf(suffix, f.length - suffix.length) > 0) {
                 parser.parse(path.join(opts.schema, f), function(err, api, metadata) {
                     if (!err) {
                         console.log("%s is valid.", f);
