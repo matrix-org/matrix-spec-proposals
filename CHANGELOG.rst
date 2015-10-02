@@ -9,9 +9,14 @@
 Specification changes in v0.2.0 (2015-10-02)
 ============================================
 
-This update restructures the specification and begins to aggressively standardise
-on using Swagger and JSON Schema to document HTTP endpoints and Events
-respectively. It also introduces a number of new concepts to Matrix.
+This update fundamentally restructures the specification. The specification has
+been split into more digestible "modules" which each describe a particular
+function (e.g. typing). This was done in order make the specification easier to
+maintain and help define which modules are mandatory for certain types
+of clients. Types of clients along with the mandatory modules can be found in a
+new "Feature Profiles" section. This update also begins to aggressively
+standardise on using Swagger and JSON Schema to document HTTP endpoints and
+Events respectively. It also introduces a number of new concepts to Matrix.
 
 Additions:
  - New section: Feature Profiles.
