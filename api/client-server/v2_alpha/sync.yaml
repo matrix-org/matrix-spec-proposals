@@ -5,7 +5,7 @@ info:
 host: localhost:8008
 schemes:
   - https
-basePath: /_matrix/client/v2_alpha
+basePath: /_matrix/client/api/v2_alpha
 consumes:
   - application/json
 produces:
@@ -73,43 +73,71 @@ paths:
                   ``/sync`` request.
               rooms:
                 type: object
-                properties:
-                  roomlist:
-                    type: array
-                    description: |-
-                      A list of rooms that the client needs to update.
-                    items:
+                description: |-
+                  The updates to rooms, grouped according to the filter. By
+                  default there is a single ``default`` group.
+                additionalProperties:
+                    joined:
+                      type: array
+                      description: |-
+                        A list of room ids that the user is a member of that
+                        have updates.
+                      items:
+                        type: string.
+                    invited:
+                      type: array
+                      description: |-
+                        A list of room ids that the user has been invited to.
+                        The entries in the room_map will have a ``invite`` key
+                        containing the ``m.room.member`` event of the invite.
+                      items:
+                        type: string.
+                    archived:
+                      type: array
+                      description: |-
+                        A list of room ids that the user has left or been
+                        banned from. The entries in the room_map will have a
+                        ``state`` key and a ``timeline`` key. But will lack the
+                        ``emphemeral`` key.
+                      items:
+                        type: string.
+              room_map:
+                description: |-
+                  Map from room id to the updates for that room. The room ids
+                  are referenced from the ``rooms`` key.
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    room_id:
+                      type: string
+                      description: |-
+                        The ID of the room.
+                    event_map:
                       type: object
-                      properties:
-                        room_id:
-                          type: string
-                          description: |-
-                            The ID of the room.
-                        event_map:
-                          type: object
-                          description: |-
-                            A map from event ID to events for this room. The events
-                            are referenced from the ``timeline`` and ``state`` keys
-                            for this room.
-                          additionalProperties:
-                            description: An event object.
-                            type: object
-                        state:
-                          description: |-
-                            The state updates for the room.
-                          allOf:
-                            - $ref: "definitions/room_event_batch.json"
-                        timeline:
-                          description: |-
-                            The timeline of messages and state changes in the room.
-                          allOf:
-                            - $ref: "definitions/timeline_batch.json"
-                        ephemeral:
-                          description: |-
-                            The ephemeral events in the room that aren't recorded
-                            in the timeline or state of the room. E.g. typing.
-                          allOf:
-                            - $ref: "definitions/event_batch.json"
+                      description: |-
+                        A map from event ID to events for this room. The events
+                        are referenced from the ``timeline`` and ``state`` keys
+                        for this room.
+                      additionalProperties:
+                        description: An event object.
+                        type: object
+                    state:
+                      description: |-
+                        The state updates for the room.
+                      allOf:
+                        - $ref: "definitions/room_event_batch.json"
+                    timeline:
+                      description: |-
+                        The timeline of messages and state changes in the room.
+                      allOf:
+                        - $ref: "definitions/timeline_batch.json"
+                    ephemeral:
+                      description: |-
+                        The ephemeral events in the room that aren't recorded
+                        in the timeline or state of the room. E.g. typing.
+                      allOf:
+                        - $ref: "definitions/event_batch.json"
               presence:
                 description: |-
                   The updates to the presence status of other users.
@@ -129,8 +157,14 @@ paths:
                   ]
                 },
                 "rooms": {
-                  "roomlist": [{
-                    "room_id": "!726s6s6q:example.com",
+                  "default": {
+                    "invited": [],
+                    "archived": [],
+                    "joined": ["!726s6s6q:example.com"]
+                  }
+                },
+                "room_map": {
+                  "!726s6s6q:example.com": {
                     "event_map": {
                       "$66697273743031:example.com": {
                         "sender": "@alice:example.com",
@@ -177,6 +211,6 @@ paths:
                         }
                       ]
                     }
-                  }]
+                  }
                 }
               }
