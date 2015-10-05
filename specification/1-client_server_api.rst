@@ -779,13 +779,65 @@ options which can be set when creating a room:
     This will tell the server to invite everyone in the list to the newly
     created room.
 
+``creation_content``
+  Type:
+    Object
+  Optional:
+    Yes
+  Value:
+    Extra keys to be added to the content of the ``m.room.create``. The server
+    will clober the following keys: ``creator``. Future versions of this
+    spec may allow the server to clobber other keys if required.
+  Description:
+    Allows clients to add keys to the content of ``m.room.create``.
+
+``preset``
+  Type:
+    String
+  Optional:
+    Yes
+  Value:
+    ``private_chat``, ``trusted_private_chat`` or ``public_chat``
+  Description:
+    Convenience parameter for setting various default state events based on a
+    preset.
+
+    Three presets are defined:
+
+    - ``private_chat``: Sets the ``join_rules`` to ``invite`` and
+      ``history_visibility`` to ``shared``
+    - ``trusted_private_chat``: Set the ``join_rules`` to ``invite``,
+      ``history_visibility`` to ``shared`` and gives all invitees the same
+      power level as the creator.
+    - ``public_chat``: Sets the ``join_rules`` to ``public`` and
+      ``history_visibility`` to ``shared``
+
+``initial_state``
+  Type:
+    List
+  Optional:
+    Yes
+  Value:
+    A list of state events to set in the new room.
+  Description:
+    Allows the user to override the default state events set in the new room.
+
+    The expected format of the state events are an object with ``type``,
+    ``state_key`` and ``content`` keys set.
+
+    Takes precedence over events set by ``presets``, but gets overriden by
+    ``name`` and ``topic`` keys.
+
 Example::
 
   {
-    "visibility": "public",
+    "preset": "public_chat",
     "room_alias_name": "thepub",
     "name": "The Grand Duke Pub",
-    "topic": "All about happy hour"
+    "topic": "All about happy hour",
+    "creation_content": {
+        "m.federate": false
+    }
   }
 
 The home server will create a ``m.room.create`` event when the room is created,
@@ -1083,6 +1135,27 @@ Profiles
 --------
 
 {{profile_http_api}}
+
+Events on Change of Profile Information
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Because the profile display name and avatar information are likely to be used in
+many places of a client's display, changes to these fields cause an automatic
+propagation event to occur, informing likely-interested parties of the new
+values. This change is conveyed using two separate mechanisms:
+
+ - a ``m.room.member`` event is sent to every room the user is a member of,
+   to update the ``displayname`` and ``avatar_url``.
+ - a ``m.presence`` presence status update is sent, again containing the new
+   values of the ``displayname`` and ``avatar_url`` keys, in addition to the
+   required ``presence`` key containing the current presence state of the user.
+
+Both of these should be done automatically by the home server when a user
+successfully changes their display name or avatar URL fields.
+
+Additionally, when home servers emit room membership events for their own
+users, they should include the display name and avatar URL fields in these
+events so that clients already have these details to hand, and do not have to
+perform extra round trips to query it.
 
 Security
 --------
