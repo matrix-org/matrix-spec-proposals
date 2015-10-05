@@ -24,6 +24,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 )
 
 type PullRequest struct {
@@ -58,24 +59,42 @@ func (u *User) IsTrusted() bool {
 	return allowedMembers[u.Login]
 }
 
-const pullsPrefix = "https://api.github.com/repos/matrix-org/matrix-doc/pulls"
+const (
+	pullsPrefix       = "https://api.github.com/repos/matrix-org/matrix-doc/pulls"
+	matrixDocCloneURL = "https://github.com/matrix-org/matrix-doc.git"
+)
 
-func gitClone(url string) (string, error) {
-	dst := path.Join("/tmp/matrix-doc", strconv.FormatInt(rand.Int63(), 10))
-	cmd := exec.Command("git", "clone", url, dst)
+func gitClone(url string, shared bool) (string, error) {
+	directory := path.Join("/tmp/matrix-doc", strconv.FormatInt(rand.Int63(), 10))
+	cmd := exec.Command("git", "clone", url, directory)
+	if shared {
+		cmd.Args = append(cmd.Args, "--shared")
+	}
+
 	err := cmd.Run()
 	if err != nil {
 		return "", fmt.Errorf("error cloning repo: %v", err)
 	}
-	return dst, nil
+	return directory, nil
 }
 
 func gitCheckout(path, sha string) error {
-	cmd := exec.Command("git", "checkout", sha)
+	return runGitCommand(path, []string{"checkout", sha})
+}
+
+func gitFetchAndMerge(path string) error {
+	if err := runGitCommand(path, []string{"fetch"}); err != nil {
+		return err
+	}
+	return runGitCommand(path, []string{"merge"})
+}
+
+func runGitCommand(path string, args []string) error {
+	cmd := exec.Command("git", args...)
 	cmd.Dir = path
 	err := cmd.Run()
 	if err != nil {
-		return fmt.Errorf("error checking out repo: %v", err)
+		return fmt.Errorf("error running %q: %v", strings.Join(cmd.Args, " "), err)
 	}
 	return nil
 }
@@ -119,10 +138,18 @@ func writeError(w http.ResponseWriter, code int, err error) {
 	io.WriteString(w, fmt.Sprintf("%v\n", err))
 }
 
+type server struct {
+	matrixDocCloneURL string
+}
+
 // generateAt generates spec from repo at sha.
 // Returns the path where the generation was done.
-func generateAt(repo, sha string) (dst string, err error) {
-	dst, err = gitClone(repo)
+func (s *server) generateAt(sha string) (dst string, err error) {
+	err = gitFetchAndMerge(s.matrixDocCloneURL)
+	if err != nil {
+		return
+	}
+	dst, err = gitClone(s.matrixDocCloneURL, true)
 	if err != nil {
 		return
 	}
@@ -135,21 +162,28 @@ func generateAt(repo, sha string) (dst string, err error) {
 	return
 }
 
-func serveSpec(w http.ResponseWriter, req *http.Request) {
-	pr, err := lookupPullRequest(*req.URL, "/spec")
-	if err != nil {
-		writeError(w, 400, err)
-		return
+func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
+	var sha string
+
+	if strings.ToLower(req.URL.Path) == "/spec/head" {
+		sha = "HEAD"
+	} else {
+		pr, err := lookupPullRequest(*req.URL, "/spec")
+		if err != nil {
+			writeError(w, 400, err)
+			return
+		}
+
+		// We're going to run whatever Python is specified in the pull request, which
+		// may do bad things, so only trust people we trust.
+		if err := checkAuth(pr); err != nil {
+			writeError(w, 403, err)
+			return
+		}
+		sha = pr.Head.SHA
 	}
 
-	// We're going to run whatever Python is specified in the pull request, which
-	// may do bad things, so only trust people we trust.
-	if err := checkAuth(pr); err != nil {
-		writeError(w, 403, err)
-		return
-	}
-
-	dst, err := generateAt(pr.Head.Repo.CloneURL, pr.Head.SHA)
+	dst, err := s.generateAt(sha)
 	defer os.RemoveAll(dst)
 	if err != nil {
 		writeError(w, 500, err)
@@ -171,7 +205,7 @@ func checkAuth(pr *PullRequest) error {
 	return nil
 }
 
-func serveRSTDiff(w http.ResponseWriter, req *http.Request) {
+func (s *server) serveRSTDiff(w http.ResponseWriter, req *http.Request) {
 	pr, err := lookupPullRequest(*req.URL, "/diff/rst")
 	if err != nil {
 		writeError(w, 400, err)
@@ -185,14 +219,14 @@ func serveRSTDiff(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	base, err := generateAt(pr.Base.Repo.CloneURL, pr.Base.SHA)
+	base, err := s.generateAt(pr.Base.SHA)
 	defer os.RemoveAll(base)
 	if err != nil {
 		writeError(w, 500, err)
 		return
 	}
 
-	head, err := generateAt(pr.Head.Repo.CloneURL, pr.Head.SHA)
+	head, err := s.generateAt(pr.Head.SHA)
 	defer os.RemoveAll(head)
 	if err != nil {
 		writeError(w, 500, err)
@@ -209,7 +243,7 @@ func serveRSTDiff(w http.ResponseWriter, req *http.Request) {
 	w.Write(diff.Bytes())
 }
 
-func serveHTMLDiff(w http.ResponseWriter, req *http.Request) {
+func (s *server) serveHTMLDiff(w http.ResponseWriter, req *http.Request) {
 	pr, err := lookupPullRequest(*req.URL, "/diff/html")
 	if err != nil {
 		writeError(w, 400, err)
@@ -223,14 +257,14 @@ func serveHTMLDiff(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	base, err := generateAt(pr.Base.Repo.CloneURL, pr.Base.SHA)
+	base, err := s.generateAt(pr.Base.SHA)
 	defer os.RemoveAll(base)
 	if err != nil {
 		writeError(w, 500, err)
 		return
 	}
 
-	head, err := generateAt(pr.Head.Repo.CloneURL, pr.Head.SHA)
+	head, err := s.generateAt(pr.Head.SHA)
 	defer os.RemoveAll(head)
 	if err != nil {
 		writeError(w, 500, err)
@@ -287,7 +321,7 @@ func listPulls(w http.ResponseWriter, req *http.Request) {
 		s += fmt.Sprintf(`<li>%d: <a href="%s">%s</a>: <a href="%s">%s</a>: <a href="spec/%d">spec</a> <a href="diff/html/%d">spec diff</a> <a href="diff/rst/%d">rst diff</a></li>`,
 			pull.Number, pull.User.HTMLURL, pull.User.Login, pull.HTMLURL, pull.Title, pull.Number, pull.Number, pull.Number)
 	}
-	s += "</ul></body>"
+	s += `</ul><div><a href="spec/head">View the spec at head</a></div></body>`
 	io.WriteString(w, s)
 }
 
@@ -317,11 +351,19 @@ func main() {
 		"Kegsay":        true,
 		"NegativeMjark": true,
 	}
-	http.HandleFunc("/spec/", serveSpec)
-	http.HandleFunc("/diff/rst/", serveRSTDiff)
-	http.HandleFunc("/diff/html/", serveHTMLDiff)
+	rand.Seed(time.Now().Unix())
+	masterCloneDir, err := gitClone(matrixDocCloneURL, false)
+	if err != nil {
+		log.Fatal(err)
+	}
+	s := server{masterCloneDir}
+	http.HandleFunc("/spec/", s.serveSpec)
+	http.HandleFunc("/diff/rst/", s.serveRSTDiff)
+	http.HandleFunc("/diff/html/", s.serveHTMLDiff)
 	http.HandleFunc("/healthz", serveText("ok"))
 	http.HandleFunc("/", listPulls)
+
+	fmt.Printf("Listening on port %d\n", *port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
 }
 

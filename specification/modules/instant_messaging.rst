@@ -1,6 +1,8 @@
 Instant Messaging
 =================
 
+.. _module:im:
+
 Events
 ------
 

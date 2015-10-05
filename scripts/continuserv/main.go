@@ -17,6 +17,7 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	fsnotify "gopkg.in/fsnotify.v1"
 )
@@ -67,7 +68,6 @@ func watchFS(ch chan struct{}, w *fsnotify.Watcher) {
 		select {
 		case e := <-w.Events:
 			if filter(e) {
-				wg.Add(1)
 				fmt.Printf("Noticed change to %s, re-generating spec\n", e.Name)
 				ch <- struct{}{}
 			}
@@ -95,6 +95,11 @@ func filter(e fsnotify.Event) bool {
 	}
 	// Avoid some temp files that vim writes
 	if strings.HasSuffix(e.Name, "~") || strings.HasSuffix(e.Name, ".swp") || strings.HasPrefix(e.Name, ".") {
+		return false
+	}
+
+	// Ignore the .git directory - It's very noisy
+	if strings.Contains(e.Name, "/.git/") {
 		return false
 	}
 
@@ -133,8 +138,20 @@ func populateOnce(dir string) {
 }
 
 func doPopulate(ch chan struct{}, dir string) {
-	for _ = range ch {
-		populateOnce(dir)
+	var pending int
+	for {
+		select {
+		case <-ch:
+			if pending == 0 {
+				wg.Add(1)
+			}
+			pending++
+		case <-time.After(10 * time.Millisecond):
+			if pending > 0 {
+				pending = 0
+				populateOnce(dir)
+			}
+		}
 	}
 }
 

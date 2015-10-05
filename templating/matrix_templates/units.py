@@ -19,6 +19,7 @@ import yaml
 V1_CLIENT_API = "../api/client-server/v1"
 V1_EVENT_EXAMPLES = "../event-schemas/examples/v1"
 V1_EVENT_SCHEMA = "../event-schemas/schema/v1"
+V2_CLIENT_API = "../api/client-server/v2_alpha"
 CORE_EVENT_SCHEMA = "../event-schemas/schema/v1/core-event-schema"
 CHANGELOG = "../CHANGELOG.rst"
 TARGETS = "../specification/targets.yaml"
@@ -49,8 +50,17 @@ def get_json_schema_object_fields(obj, enforce_title=False):
     }
     tables = [fields]
 
-    props = obj.get("properties", obj.get("patternProperties"))
     parents = obj.get("allOf")
+    props = obj.get("properties")
+    if not props:
+        props = obj.get("patternProperties")
+        if props:
+            # try to replace horrible regex key names with pretty x-pattern ones
+            for key_name in props.keys():
+                pretty_key = props[key_name].get("x-pattern")
+                if pretty_key:
+                    props[pretty_key] = props[key_name]
+                    del props[key_name]
     if not props and not parents:
         raise Exception(
             "Object %s has no properties or parents." % obj
@@ -70,10 +80,17 @@ def get_json_schema_object_fields(obj, enforce_title=False):
         if props[key_name]["type"] == "object":
             if props[key_name].get("additionalProperties"):
                 # not "really" an object, just a KV store
-                value_type = (
-                    "{string: %s}" %
-                    props[key_name]["additionalProperties"]["type"]
-                )
+                prop_val = props[key_name]["additionalProperties"]["type"]
+                if prop_val == "object":
+                    nested_object = get_json_schema_object_fields(
+                        props[key_name]["additionalProperties"],
+                        enforce_title=True
+                    )
+                    value_type = "{string: %s}" % nested_object[0]["title"]
+                    if not nested_object[0].get("no-table"):
+                        tables += nested_object
+                else:
+                    value_type = "{string: %s}" % prop_val
             else:
                 nested_object = get_json_schema_object_fields(
                     props[key_name], 
@@ -151,6 +168,13 @@ class MatrixUnits(Units):
 
                     # assign value expected for this param
                     val_type = param.get("type") # integer/string
+
+                    if param.get("enum"):
+                        val_type = "enum"
+                        desc += (
+                            " One of: %s" % json.dumps(param.get("enum"))
+                        )
+
                     refType = Units.prop(param, "schema/$ref/") # Error,Event
                     schemaFmt = Units.prop(param, "schema/format") # bytes e.g. uploads
                     if not val_type and refType:
@@ -253,17 +277,27 @@ class MatrixUnits(Units):
                 if good_response:
                     self.log("Found a 200 response for this API")
                     res_type = Units.prop(good_response, "schema/type")
+                    res_name = Units.prop(good_response, "schema/name")
                     if res_type and res_type not in ["object", "array"]:
                         # response is a raw string or something like that
-                        endpoint["res_tables"].append({
+                        good_table = {
                             "title": None,
                             "rows": [{
-                                "key": good_response["schema"].get("name", ""),
+                                "key": "<" + res_type + ">" if not res_name else res_name,
                                 "type": res_type,
                                 "desc": res.get("description", ""),
                                 "req_str": ""
                             }]
-                        })
+                        }
+                        if good_response.get("headers"):
+                            for (header_name, header) in good_response.get("headers").iteritems():
+                                good_table["rows"].append({
+                                    "key": header_name,
+                                    "type": "Header<" + header["type"] + ">",
+                                    "desc": header["description"],
+                                    "req_str": ""
+                                })
+                        endpoint["res_tables"].append(good_table)
                     elif res_type and Units.prop(good_response, "schema/properties"):
                         # response is an object:
                         schema = good_response["schema"]
@@ -320,18 +354,27 @@ class MatrixUnits(Units):
         }
 
     def load_swagger_apis(self):
-        path = V1_CLIENT_API
+        paths = [
+            V1_CLIENT_API, V2_CLIENT_API
+        ]
         apis = {}
-        for filename in os.listdir(path):
-            if not filename.endswith(".yaml"):
+        for path in paths:
+            is_v2 = (path == V2_CLIENT_API)
+            if not os.path.exists(V2_CLIENT_API):
+                self.log("Skipping v2 apis: %s does not exist." % V2_CLIENT_API)
                 continue
-            self.log("Reading swagger API: %s" % filename)
-            with open(os.path.join(path, filename), "r") as f:
-                # strip .yaml
-                group_name = filename[:-5]
-                api = yaml.load(f.read())
-                api["__meta"] = self._load_swagger_meta(api, group_name)
-                apis[group_name] = api
+            for filename in os.listdir(path):
+                if not filename.endswith(".yaml"):
+                    continue
+                self.log("Reading swagger API: %s" % filename)
+                with open(os.path.join(path, filename), "r") as f:
+                    # strip .yaml
+                    group_name = filename[:-5].replace("-", "_")
+                    if is_v2:
+                        group_name = "v2_" + group_name
+                    api = yaml.load(f.read())
+                    api["__meta"] = self._load_swagger_meta(api, group_name)
+                    apis[group_name] = api
         return apis
 
     def load_common_event_fields(self):

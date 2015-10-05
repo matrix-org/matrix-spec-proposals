@@ -1,64 +1,64 @@
 Receipts
---------
+========
 
-Receipts are used to publish which events in a room the user or their devices
-have interacted with. For example, which events the user has read. For
-efficiency this is done as "up to" markers, i.e. marking a particular event
-as, say, ``read`` indicates the user has read all events *up to* that event.
+.. _module:receipts:
 
-Client-Server API
-~~~~~~~~~~~~~~~~~
+This module adds in support for receipts. These receipts are a form of
+acknowledgement of an event. This module defines a single acknowledgement:
+``m.read`` which indicates that the user has read up to a given event.
 
-Clients will receive receipts in the following format::
+Sending a receipt for each event can result in sending large amounts of traffic
+to a homeserver. To prevent this from becoming a problem, receipts are implemented
+using "up to" markers. This marker indicates that the acknowledgement applies
+to all events "up to and including" the event specified. For example, marking
+an event as "read" would indicate that the user had read all events *up to* the
+referenced event.
 
-     {
-        "type": "m.receipt",
-        "room_id": <room_id>,
-        "content": {
-            <event_id>: {
-                <receipt_type>: {
-                    <user_id>: { "ts": <ts>, ... },
-                    ...
-                }
-            },
-            ...
-        }
-    }
+Events
+------
+Each ``user_id``, ``receipt_type`` pair must be associated with only a
+single ``event_id``.
 
-For example::
+{{m_receipt_event}}
 
-    {
-        "type": "m.receipt",
-        "room_id": "!KpjVgQyZpzBwvMBsnT:matrix.org",
-        "content": {
-            "$1435641916114394fHBLK:matrix.org": {
-                "read": {
-                    "@erikj:jki.re": { "ts": 1436451550453 },
-                    ...
-                }
-            },
-            ...
-        }
-    }
+Client behaviour
+----------------
 
-For efficiency, receipts are batched into one event per room. In the initialSync
-and v2 sync APIs the receipts are listed in a separate top level ``receipts``
-key. Each ``user_id``, ``receipt_type`` pair must be associated with only a
-single ``event_id``. New receipts that come down the event streams are deltas.
-Deltas update existing mappings, clobbering based on ``user_id``,
-``receipt_type`` pairs.
+In v1 ``/initialSync``, receipts are listed in a separate top level ``receipts``
+key. In v2 ``/sync``, receipts are contained in the ``ephemeral`` block for a
+room. New receipts that come down the event streams are deltas which update
+existing mappings. Clients should replace older receipt acknowledgements based
+on ``user_id`` and ``receipt_type`` pairs. For example::
 
+  Client receives m.receipt:
+    user = @alice:example.com
+    receipt_type = m.read
+    event_id = $aaa:example.com
 
-A client can update the markers for its user by issuing a request::
+  Client receives another m.receipt:
+    user = @alice:example.com
+    receipt_type = m.read
+    event_id = $bbb:example.com
 
-    POST /_matrix/client/v2_alpha/rooms/<room_id>/receipt/read/<event_id>
+  The client should replace the older acknowledgement for $aaa:example.com with
+  this one for $bbb:example.com
 
-Where the contents of the ``POST`` will be included in the content sent to
-other users. The server will automatically set the ``ts`` field.
+Clients should send read receipts when there is some certainty that the event in
+question has been **displayed** to the user. Simply receiving an event does not
+provide enough certainty that the user has seen the event. The user SHOULD need
+to *take some action* such as viewing the room that the event was sent to or
+dismissing a notification in order for the event to count as "read".
 
+A client can update the markers for its user by interacting with the following
+HTTP APIs.
 
-Server-Server API
-~~~~~~~~~~~~~~~~~
+{{v2_receipts_http_api}}
+
+Server behaviour
+----------------
+
+For efficiency, receipts SHOULD be batched into one event per room before
+delivering them to clients.
 
 Receipts are sent across federation as EDUs with type ``m.receipt``. The
 format of the EDUs are::
@@ -73,5 +73,12 @@ format of the EDUs are::
         ...
     }
 
-These are always sent as deltas to previously sent receipts.
+These are always sent as deltas to previously sent receipts. Currently only a
+single ``<receipt_type>`` should be used: ``m.read``.
+
+Security considerations
+-----------------------
+
+As receipts are sent outside the context of the event graph, there are no
+integrity checks performed on the contents of ``m.receipt`` events.
 

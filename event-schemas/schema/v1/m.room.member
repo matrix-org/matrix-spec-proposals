@@ -32,6 +32,26 @@
         "type": {
             "type": "string",
             "enum": ["m.room.member"]
+        },
+        "invite_room_state": {
+            "type": "array",
+            "description": "A subset of the state of the room at the time of the invite, if ``membership`` is ``invite``",
+            "items": {
+                "type": "object",
+                "title": "StateEvent",
+                "description": "A stripped down state event, with only the ``type``, ``state_key`` and ``content`` keys.",
+                "properties": {
+                    "type": {
+                        "type": "string"
+                    },
+                    "state_key": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "type": "object"
+                    }
+                }
+            }
         }
     }
 }

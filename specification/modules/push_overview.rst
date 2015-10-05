@@ -1,6 +1,8 @@
 Push Notifications
 ==================
 
+.. _module:push:
+
 Overview
 --------
 
