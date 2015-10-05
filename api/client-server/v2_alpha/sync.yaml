@@ -235,7 +235,7 @@ paths:
                         },
                         {
                           "sender": "@alice:example.com",
-                          "type": "m.room.name",
+                          "type": "m.room.member",
                           "state_key": "@bob:example.com",
                           "content": {"membership": "invite"}
                         }
