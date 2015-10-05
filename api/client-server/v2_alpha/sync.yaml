@@ -96,7 +96,7 @@ paths:
                         A list of room ids that the user has left or been
                         banned from. The entries in the room_map will have a
                         ``state`` key and a ``timeline`` key. But will lack the
-                        ``emphemeral`` key.
+                        ``ephemeral`` key.
                       items:
                         type: string.
               room_map:
