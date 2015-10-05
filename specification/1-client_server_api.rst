@@ -779,6 +779,18 @@ options which can be set when creating a room:
     This will tell the server to invite everyone in the list to the newly
     created room.
 
+``creation_content``
+  Type:
+    Object
+  Optional:
+    Yes
+  Value:
+    Extra keys to be added to the content of the ``m.room.create``. The server
+    will clober the following keys: ``creator``. Future versions of this
+    spec may allow the server to clobber other keys if required.
+  Description:
+    Allows clients to add keys to the content of ``m.room.create``.
+
 ``preset``
   Type:
     String
@@ -822,7 +834,10 @@ Example::
     "preset": "public_chat",
     "room_alias_name": "thepub",
     "name": "The Grand Duke Pub",
-    "topic": "All about happy hour"
+    "topic": "All about happy hour",
+    "creation_content": {
+        "m.federate": false
+    }
   }
 
 The home server will create a ``m.room.create`` event when the room is created,
