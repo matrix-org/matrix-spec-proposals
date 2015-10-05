@@ -88,6 +88,9 @@ paths:
                       type: array
                       description: |-
                         A list of room ids that the user has been invited to.
+                        The entries in the room_map will have an
+                        ``invite_state`` key. But will lack the ``ephemeral``
+                        key, the ``timeline`` key and the ``state`` key.
                       items:
                         type: string.
                     archived:
@@ -132,6 +135,21 @@ paths:
                         in the timeline or state of the room. E.g. typing.
                       allOf:
                         - $ref: "definitions/event_batch.json"
+                    invite_state:
+                      description: |-
+                        The state of a room that the user has been invited to.
+                        These state events may only have the ``type``,
+                        ``state_key`` and ``content`` keys present.
+                        These events do not replace any state that the client
+                        already has for the room, for example if the client has
+                        archived the room. Instead the client should keep two
+                        separate copies of the state: the one from the
+                        ``invite_state`` and one from the archived ``state``.
+                        If the client joins the room then the current state
+                        will be given as a delta against the archived ``state``
+                        not the ``invite_state``.
+                      allOf:
+                        - $ref: "definitions/event_batch.json"
               presence:
                 description: |-
                   The updates to the presence status of other users.
@@ -152,7 +170,7 @@ paths:
                 },
                 "rooms": {
                   "default": {
-                    "invited": [],
+                    "invited": ["!696r7674:example.com"],
                     "archived": [],
                     "joined": ["!726s6s6q:example.com"]
                   }
@@ -202,6 +220,24 @@ paths:
                           "room_id": "!726s6s6q:example.com",
                           "type": "m.typing",
                           "content": {"user_ids": ["@alice:example.com"]}
+                        }
+                      ]
+                    }
+                  },
+                  "!696r7674:example.com": {
+                    "invite_state": {
+                      "events": [
+                        {
+                          "sender": "@alice:example.com",
+                          "type": "m.room.name",
+                          "state_key": "@alice:example.com",
+                          "content": {"name": "My Room Name"}
+                        },
+                        {
+                          "sender": "@alice:example.com",
+                          "type": "m.room.name",
+                          "state_key": "",
+                          "content": {"membership": "invite"}
                         }
                       ]
                     }
