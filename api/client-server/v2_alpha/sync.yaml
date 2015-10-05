@@ -138,8 +138,8 @@ paths:
                     invite_state:
                       description: |-
                         The state of a room that the user has been invited to.
-                        These state events may only have the ``type``,
-                        ``state_key`` and ``content`` keys present.
+                        These state events may only have the `sender``,
+                        ``type``, ``state_key`` and ``content`` keys present.
                         These events do not replace any state that the client
                         already has for the room, for example if the client has
                         archived the room. Instead the client should keep two
@@ -230,13 +230,13 @@ paths:
                         {
                           "sender": "@alice:example.com",
                           "type": "m.room.name",
-                          "state_key": "@alice:example.com",
+                          "state_key": "",
                           "content": {"name": "My Room Name"}
                         },
                         {
                           "sender": "@alice:example.com",
                           "type": "m.room.name",
-                          "state_key": "",
+                          "state_key": "@bob:example.com",
                           "content": {"membership": "invite"}
                         }
                       ]
