@@ -1,5 +1,5 @@
-Client-Server API v1
-====================
+Client-Server API
+=================
 
 Overview
 --------
