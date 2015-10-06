@@ -47,6 +47,7 @@ paths:
           required: true
           x-example: "$1924376522eioj:example.com"
         - in: body
+          name: receipt
           description: |-
             Extra receipt information to attach to ``content`` if any. The
             server will automatically set the ``ts`` field.

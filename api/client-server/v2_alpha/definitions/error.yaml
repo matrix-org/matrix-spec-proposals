@@ -1,0 +1,10 @@
+type: object
+description: A Matrix-level Error
+properties:
+  errcode:
+    type: string
+    description: An error code.
+  error:
+    type: string
+    description: A human-readable error message.
+required: ["errcode"]
