@@ -72,36 +72,49 @@ paths:
                   The batch token to supply in the ``since`` param of the next
                   ``/sync`` request.
               rooms:
+                title: Rooms
                 type: object
                 description: |-
                   Updates to rooms.
                 properties:
                   joined:
+                    title: Joined
                     type: object
                     additionalProperties:
+                      title: Joined Room
                       type: object
                       properties:
                         event_map:
+                          title: EventMap
                           type: object
                           description: |-
                             A map from event ID to events for this room. The
                             events are referenced from the ``timeline`` and
                             ``state`` keys for this room.
                           additionalProperties:
+                            title: Event
                             description: An event object.
                             type: object
+                            allOf:
+                              - $ref: "core-event-schema/event.json"
                         state:
+                          title: State
+                          type: object
                           description: |-
                             The state updates for the room.
                           allOf:
                             - $ref: "definitions/room_event_batch.json"
                         timeline:
+                          title: Timeline
+                          type: object
                           description: |-
                             The timeline of messages and state changes in the
                             room.
                           allOf:
                             - $ref: "definitions/timeline_batch.json"
                         ephemeral:
+                          title: Ephemeral
+                          type: object
                           description: |-
                             The ephemeral events in the room that aren't
                             recorded in the timeline or state of the room.
@@ -109,13 +122,17 @@ paths:
                           allOf:
                             - $ref: "definitions/event_batch.json"
                   invited:
+                    title: Invited
                     type: object
                     description: |-
                       The rooms that the user has been invited to.
                     additionalProperties:
+                      title: Invited Room
                       type: object
                       properties:
                         invite_state:
+                          title: InviteState
+                          type: object
                           description: |-
                             The state of a room that the user has been invited
                             to. These state events may only have the `sender``,
@@ -132,35 +149,47 @@ paths:
                           allOf:
                             - $ref: "definitions/event_batch.json"
                   archived:
+                    title: Archived
                     type: object
                     description: |-
                       The rooms that the user has left or been banned from. The
                       entries in the room_map will lack an ``ephemeral`` key.
                     additionalProperties:
+                      title: Archived Room
                       type: object
                       properties:
                         event_map:
+                          title: EventMap
                           type: object
                           description: |-
                             A map from event ID to events for this room. The
                             events are referenced from the ``timeline`` and
                             ``state`` keys for this room.
                           additionalProperties:
+                            title: Event
                             description: An event object.
                             type: object
+                            allOf:
+                              - $ref: "core-event-schema/event.json"
                         state:
+                          title: State
+                          type: object
                           description: |-
                             The state updates for the room up to the point when
                             the user left.
                           allOf:
                             - $ref: "definitions/room_event_batch.json"
                         timeline:
+                          title: Timeline
+                          type: object
                           description: |-
                             The timeline of messages and state changes in the
                             room up to the point when the user left.
                           allOf:
                             - $ref: "definitions/timeline_batch.json"
               presence:
+                title: Presence
+                type: object
                 description: |-
                   The updates to the presence status of other users.
                 allOf:
