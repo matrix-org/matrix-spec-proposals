@@ -82,7 +82,7 @@ paths:
                   type: object
                   title: RoomEvent
                   allOf:
-                   - "$ref": "definitions/room_event.yaml"
+                   - "$ref": "core-event-schema/room_event.json"
         400:
           description: "Bad pagination ``from`` parameter."
   "/initialSync":
@@ -253,7 +253,7 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                   - "$ref": "definitions/event.yaml"
+                   - "$ref": "core-event-schema/event.json"
               rooms:
                 type: array
                 items:
@@ -267,6 +267,12 @@ paths:
                       type: string
                       description: "The user's membership state in this room."
                       enum: ["invite", "join", "leave", "ban"]
+                    invite:
+                        type: object
+                        title: "InviteEvent"
+                        description: "The invite event if ``membership`` is ``invite``"
+                        allOf:
+                          - "$ref": "v1-event-schema/m.room.member"
                     messages:
                       type: object
                       title: PaginationChunk
@@ -285,24 +291,29 @@ paths:
                         chunk:
                           type: array
                           description: |-
-                            A list of the most recent messages for this room. This
-                            array will consist of at most ``limit`` elements.
+                            If the user is a member of the room this will be a
+                            list of the most recent messages for this room. If
+                            the user has left the room this will be the
+                            messages that preceeded them leaving. This array
+                            will consist of at most ``limit`` elements.
                           items:
                             type: object
                             title: RoomEvent
                             allOf:
-                              - "$ref": "definitions/room_event.yaml"
+                              - "$ref": "core-event-schema/room_event.json"
                       required: ["start", "end", "chunk"]
                     state:
                       type: array
                       description: |-
-                        A list of state events representing the current state
-                        of the room.
+                        If the user is a member of the room this will be the
+                        current state of the room as a list of events. If the
+                        user has left the room this will be the state of the
+                        room when they left it.
                       items:
                         title: StateEvent
                         type: object
                         allOf:
-                          - "$ref": "definitions/state_event.yaml"
+                          - "$ref": "core-event-schema/state_event.json"
                     visibility:
                       type: string
                       enum: ["private", "public"]
@@ -338,13 +349,13 @@ paths:
                   "body": "Hello world!",
                   "msgtype": "m.text"
                 },
-                "room_id:" "!wfgy43Sg4a:matrix.org",
+                "room_id:": "!wfgy43Sg4a:matrix.org",
                 "user_id": "@bob:matrix.org",
                 "event_id": "$asfDuShaf7Gafaw:matrix.org",
                 "type": "m.room.message"
               }
           schema:
             allOf:
-              - "$ref": "definitions/event.yaml"
+              - "$ref": "core-event-schema/event.json"
         404:
           description: The event was not found or you do not have permission to read this event.

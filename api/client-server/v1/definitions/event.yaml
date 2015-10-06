@@ -1,7 +1,0 @@
-type: object
-description: A Matrix Event
-properties:
-  event_id:
-    type: string
-    description: An event ID.
-required: ["event_id"]

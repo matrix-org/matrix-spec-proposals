@@ -1,10 +1,9 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "title": "The first event in the room.",
     "description": "This is the first event in a room and cannot be changed. It acts as the root of all other events.",
     "allOf": [{
-        "$ref": "core#/definitions/state_event"
+        "$ref": "core-event-schema/state_event.json"
     }],
     "properties": {
         "content": {
@@ -13,6 +12,10 @@
                 "creator": {
                     "type": "string",
                     "description": "The ``user_id`` of the room creator. This is set by the homeserver."
+                },
+                "m.federate": {
+                    "type": "boolean",
+                    "description": "Whether users on other servers can join this room. Defaults to ``true`` if key does not exist."
                 }
             },
             "required": ["creator"]
