@@ -3,9 +3,6 @@ Push Notifications
 
 .. _module:push:
 
-Overview
---------
-
 ::
 
                                    +--------------------+ +-------------------+
@@ -54,8 +51,7 @@ APNS or Google's GCM. This happens as follows:
     notifications.
  5. The Push Notification provider sends the notification to the device.
 
-Nomenclature
-~~~~~~~~~~~~
+Definitions for terms used in this section are below:
 
 Pusher
   A 'pusher' is an activity in the Home Server that manages the sending
@@ -222,7 +218,7 @@ gateway). However, Matrix strongly recommends:
    gateway before returning and instead to store failures and return
    'rejected' responses next time that pushkey is used.
 
-Pushers HTTP API
+Client behaviour
 ----------------
 
 To receive any notification pokes at all, it is necessary to configure a
@@ -641,4 +637,15 @@ beneath the rule's URI with a content of 'true' or 'false'::
 
   curl -X PUT -H "Content-Type: application/json" -d 'false' "http://localhost:8008/_matrix/client/api/v1/pushrules/global/sender/%40spambot%3Amatrix.org/enabled?access_token=123456"
 
+Server behaviour
+----------------
 
+- HS to sygnal?
+
+Security considerations
+-----------------------
+
+- Message content shouldn't be sent in the push itself as it will pass through
+  the Push Provider (Google/Apple). Instead, send a ping to tell the client to
+  sync.
+- HTTPS should be used on the Matrix HTTP Notification Protocol.
