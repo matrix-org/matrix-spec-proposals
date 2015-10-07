@@ -1,3 +1,227 @@
+Push Notifications
+==================
+
+.. _module:push:
+
+Overview
+--------
+
+::
+
+                                   +--------------------+ +-------------------+
+                  Matrix HTTP      |                    | |                   |
+             Notification Protocol |   App Developer    | |   Device Vendor   |
+                                   |                    | |                   |
+           +-------------------+   | +----------------+ | | +---------------+ |
+           |                   |   | |                | | | |               | |
+           | Matrix Home Server+----->  Push Gateway  | +---> Push Provider | |
+           |                   |   | |                | | | |               | |
+           +-^-----------------+   | +----------------+ | | +----+----------+ |
+             |                     |                    | |      |            |
+    Matrix   |                     |                    | |      |            |
+ Client/Server API  +              |                    | |      |            |
+             |      |              +--------------------+ +-------------------+
+             |   +--+-+                                          |             
+             |   |    <------------------------------------------+             
+             +---+    |                                                        
+                 |    |          Provider Push Protocol                        
+                 +----+                                                        
+                                                                               
+         Mobile Device or Client                                               
+
+
+Matrix supports push notifications as a first class citizen. Home Servers send
+notifications of user events to user-configured HTTP endpoints. User may also
+configure a number of rules that determine what events generate notifications.
+These are all stored and managed by the users home server such that settings can
+be reused between client apps as appropriate.
+
+The above diagram shows the flow of push notifications being sent to a handset
+where push notifications are submitted via the handset vendor, such as Apple's
+APNS or Google's GCM. This happens as follows:
+
+ 1. The client app signs in to a Matrix Home Server
+ 2. The client app registers with its vendor's Push Notification provider and
+    obtains a routing token of some kind.
+ 3. The mobile app, uses the Matrix client/server API to add a 'pusher',
+    providing the URL of a specific Push Gateway which is configured for that
+    application. It also provides the routing token it has acquired from the
+    Push Notification Provider.
+ 4. The Home Server starts sending notification HTTP requests to the Push
+    Gateway using the supplied URL. The Push Gateway relays this notification to
+    the Push Notification Provider, passing the routing token along with any
+    necessary private credentials the provider requires to send push
+    notifications.
+ 5. The Push Notification provider sends the notification to the device.
+
+Nomenclature
+~~~~~~~~~~~~
+
+Pusher
+  A 'pusher' is an activity in the Home Server that manages the sending
+  of HTTP notifications for a single device of a single user.
+
+Push Rules
+  A push rule is a single rule, configured by a matrix user, that gives
+  instructions to the Home Server about whether an event should be notified
+  about and how given a set of conditions. Matrix clients allow the user to
+  configure these. They create and view them via the Client to Server REST API.
+
+Push Gateway
+  A push gateway is a server that receives HTTP event notifications from Home
+  Servers and passes them on to a different protocol such as APNS for iOS
+  devices or GCM for Android devices. Matrix.org provides a reference push
+  gateway, 'sygnal'. A client app tells a Home Server what push gateway
+  to send notifications to when it sets up a pusher.
+
+For information on the client-server API for setting pushers and push rules, see
+the Client Server API section. For more information on the format of HTTP
+notifications, see the HTTP Notification Protocol section.
+
+HTTP Notification Protocol
+--------------------------
+
+This describes the format used by "HTTP" pushers to send notifications of
+events.
+
+Notifications are sent as HTTP POST requests to the URL configured when the
+pusher is created, but Matrix strongly recommends that the path should be::
+
+  /_matrix/push/v1/notify
+
+The body of the POST request is a JSON dictionary. The format
+is as follows::
+
+  {
+    "notification": {
+      "id": "$3957tyerfgewrf384",
+      "room_id": "!slw48wfj34rtnrf:example.com",
+      "type": "m.room.message",
+      "sender": "@exampleuser:matrix.org",
+      "sender_display_name": "Major Tom",
+      "room_name": "Mission Control",
+      "room_alias": "#exampleroom:matrix.org",
+      "prio": "high",
+      "content": {
+        "msgtype": "m.text",
+        "body": "I'm floating in a most peculiar way."
+      }
+     },
+     "counts": {
+       "unread" : 2,
+       "missed_calls": 1
+     }
+     "devices": [
+       {
+         "app_id": "org.matrix.matrixConsole.ios",
+         "pushkey": "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/",
+         "pushkey_ts": 12345678,
+         "data" : {
+         },
+         "tweaks": {
+           "sound": "bing"
+          }
+        }
+      ]
+    }
+  }
+
+The contents of this dictionary are defined as follows:
+
+id
+  An identifier for this notification that may be used to detect duplicate
+  notification requests. This is not necessarily the ID of the event that
+  triggered the notification.
+room_id
+  The ID of the room in which this event occurred.
+type
+  The type of the event as in the event's 'type' field.
+sender
+  The sender of the event as in the corresponding event field.
+sender_display_name
+  The current display name of the sender in the room in which the event
+  occurred.
+room_name
+  The name of the room in which the event occurred.
+room_alias
+  An alias to display for the room in which the event occurred.
+prio
+  The priority of the notification. Acceptable values are 'high' or 'low. If
+  omitted, 'high' is assumed. This may be used by push gateways to deliver less
+  time-sensitive notifications in a way that will preserve battery power on
+  mobile devices.
+content
+  The 'content' field from the event, if present. If the event had no content
+  field, this field is omitted.
+counts
+  This is a dictionary of the current number of unacknowledged communications
+  for the recipient user. Counts whose value is zero are omitted.
+unread
+  The number of unread messages a user has across all of the rooms they are a
+  member of.
+missed_calls
+  The number of unacknowledged missed calls a user has across all rooms of
+  which they are a member.
+device
+  This is an array of devices that the notification should be sent to.
+app_id
+  The app_id given when the pusher was created.
+pushkey
+  The pushkey given when the pusher was created.
+pushkey_ts
+  The unix timestamp (in seconds) when the pushkey was last updated.
+data
+  A dictionary of additional pusher-specific data. For 'http' pushers, this is
+  the data dictionary passed in at pusher creation minus the 'url' key.
+tweaks
+  A dictionary of customisations made to the way this notification is to be
+  presented. These are added by push rules.
+sound
+  Sets the sound file that should be played. 'default' means that a default
+  sound should be played.
+
+And additional key is defined but only present on member events:
+
+user_is_target
+  This is true if the user receiving the notification is the subject of a member
+  event (i.e. the state_key of the member event is equal to the user's Matrix
+  ID).
+
+The recipient of an HTTP notification should respond with an HTTP 2xx response
+when the notification has been processed. If the endpoint returns an HTTP error
+code, the Home Server should retry for a reasonable amount of time with a
+reasonable back-off scheme.
+
+The endpoint should return a JSON dictionary as follows::
+
+  {
+    "rejected": [ "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/" ]
+  }
+
+Whose keys are:
+
+rejected
+  A list of all pushkeys given in the notification request that are not valid.
+  These could have been rejected by an upstream gateway because they have
+  expired or have never been valid. Home Servers must cease sending notification
+  requests for these pushkeys and remove the associated pushers. It may not
+  necessarily be the notification in the request that failed: it could be that
+  a previous notification to the same pushkey failed.
+
+Push: Recommendations for APNS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+For sending APNS notifications, the exact format is flexible and up to the
+client app and its push gateway to agree on (since APNS requires that the sender
+have a private key owned by the app developer, each app must have its own push
+gateway). However, Matrix strongly recommends:
+
+ * That the APNS token be base64 encoded and used as the pushkey.
+ * That a different app_id be used for apps on the production and sandbox
+   APS environments.
+ * That APNS push gateways do not attempt to wait for errors from the APNS
+   gateway before returning and instead to store failures and return
+   'rejected' responses next time that pushkey is used.
+
 Pushers HTTP API
 ----------------
 
@@ -5,7 +229,7 @@ To receive any notification pokes at all, it is necessary to configure a
 'pusher' on the Home Server that you wish to receive notifications from. There
 is a single API endpoint for this::
 
-	POST $PREFIX/pushers/set
+  POST $PREFIX/pushers/set
 
 This takes a JSON object with the following keys:
 
@@ -51,7 +275,7 @@ be empty).
 
 
 Push Rules
-----------
+~~~~~~~~~~
 Home Servers have an interface to configure what events trigger notifications.
 This behaviour is configured through 'Push Rules'. Push Rules come in a variety
 of different kinds and each kind of rule has an associated priority. The
@@ -112,7 +336,7 @@ If no rules match an event, the Home Server should not notify for the message
 themselves are never alerted for.
 
 Predefined Rules
-----------------
+~~~~~~~~~~~~~~~~
 Matrix specifies the following rule IDs for server default rules. Home Servers
 may define rules as follows with the given IDs. If Home Servers provide rules
 with these IDs, their semantics should match those given below:
@@ -215,7 +439,7 @@ with these IDs, their semantics should match those given below:
     }
 
 Push Rules: Actions:
---------------------
+~~~~~~~~~~~~~~~~~~~~
 All rules have an associated list of 'actions'. An action affects if and how a
 notification is delivered for a matching event. This standard defines the
 following actions, although if Home servers wish to support more, they are free
@@ -241,7 +465,7 @@ represented as a dictionary with a key equal to their name and other keys as
 their parameters, e.g. ``{ "set_tweak": "sound", "value": "default" }``
 
 Push Rules: Actions: Tweaks
----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The ``set_tweak`` key action is used to add an entry to the 'tweaks' dictionary
 that is sent in the notification poke. The following tweaks are defined:
 
@@ -263,7 +487,7 @@ If a kind of tweak that a client understands is not specified in an action, the
 client may choose a sensible behaviour for the tweak.
 
 Push Rules: Conditions
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 Override, Underride and Default rules have a list of 'conditions'. All
 conditions must hold true for an event in order for a rule to be applied to an
 event. A rule with no conditions always matches. Matrix specifies the following
@@ -300,7 +524,7 @@ using parameters named as described above. In the cases of room and sender
 rules, the rule_id of the rule determines its behaviour.
 
 Push Rules: API
----------------
+~~~~~~~~~~~~~~~
 Rules live under a hierarchy in the REST API that resembles::
 
   $PREFIX/pushrules/<scope>/<kind>/<rule_id>
@@ -411,7 +635,7 @@ Adding patch components to the request drills down into this structure to filter
 to only the requested set of rules.
 
 Enabling and Disabling Rules
-----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Rules can be enabled or disabled with a PUT operation to the 'enabled' component
 beneath the rule's URI with a content of 'true' or 'false'::
 

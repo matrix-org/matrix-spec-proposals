@@ -22,9 +22,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/content_repo.rst
     - modules/end_to_end_encryption.rst
     - modules/history_visibility.rst
-    - modules/push_overview.rst
-      # relative depth
-    - { 1: [modules/push_cs_api.rst , modules/push_push_gw_api.rst] }
+    - modules/push.rst
 
 title_styles: ["=", "-", "~", "+", "^"]
 
