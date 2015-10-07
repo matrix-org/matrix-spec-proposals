@@ -261,6 +261,7 @@ def run_through_template(input, set_verbose):
                 cwd="../templating"
             )
     except subprocess.CalledProcessError as e:
+        print e.output
         with open(tmpfile, 'r') as f:
             sys.stderr.write(f.read() + "\n")
         raise
