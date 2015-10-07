@@ -108,7 +108,7 @@ When supplying a pagination token no constraints should be specified.
             "constraints": [
                 {
                     "type": "FTS",
-                    "key": "body"
+                    "key": "body",
                     "value": "lazy dog",
                 }
             ],
@@ -121,7 +121,7 @@ When supplying a pagination token no constraints should be specified.
                 ]
             },
         },
-    }
+    },
     
     "limit": 20,
 }
@@ -148,23 +148,21 @@ The *all* search category is special cased, and has the following format:
 
 ```json
 {
-    search_categories": {
+    "search_categories": {
         "room_events": {
             "results": {
                 "<id>": {
                     "rank": 0.5234156548,
-                    "result": { ... }
-                },
-                ...
+                    "result": { }
+                }
             },
           
             "groups": {
                 "<group>": {
                     "rank": 0.214,
-                    "results": ["<id>", ...],
+                    "results": ["<id>"],
                     "next_batch": "<some_token>"
                 },
-                ...
             },
             
             "facets": {
