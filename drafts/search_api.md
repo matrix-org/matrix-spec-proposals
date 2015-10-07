@@ -80,7 +80,22 @@ It can be useful to have results grouped by certain keys. For example, having me
 
 ## Facets
 
-Facets allow users to filter search results further. Typically a list of suggested facets are returned with the response, allowing users to quickly narrow down their search.
+Facets are effectively filters suggested by the server that the user may find helpful to apply to the result set. This allows users to quickly narrow down searches. An example facet would be a specific room or time range.
+
+Facets are usually ranked by some order of relevancy.
+
+Example use case would be attempting to find a conversation about video calling:
+
+1. Do a FTS for "video calling".
+2. Get given a list of results and facets: "Room: WebRTC", "During: January 2015", ...
+3. The user remembers the conversation may have happened around Jan 2015, so selects that facet.
+4. Server returns more results from that timeframes, and more facets: e.g. "Room: WebRTC", "Room: Matrix Dev", ...
+5. User decides it was probably in "Matrix Dev", so selects that facet.
+6. Server returns results for Jan 2015, Matrix Dev matching "video calling".
+7. Users discovers the conversation he was looking for in the results list.
+
+The important part here is that the facets are *suggested* (vaguely) intelligently by the search backend.
+
 
 Facets are an optional feature.
 
