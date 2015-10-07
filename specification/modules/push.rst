@@ -81,12 +81,12 @@ To receive any notification pokes at all, it is necessary to configure a
 'pusher' on the Home Server that you wish to receive notifications from. There
 is a single API endpoint for this, as described below.
 
-{{push_http_api}}
+{{pusher_http_api}}
 
 Push Rules
 ~~~~~~~~~~
-Home Servers have an interface to configure what events trigger notifications.
-This behaviour is configured through 'Push Rules'. Push Rules come in a variety
+Homeservers have an interface to configure what events trigger notifications.
+This behaviour is configured through "Push Rules". Push Rules come in a variety
 of different kinds and each kind of rule has an associated priority. The
 different kinds of rule, in descending order of priority, are:
 
@@ -331,6 +331,8 @@ Room, Sender, User and Content rules do not have conditions in the same way,
 but instead have predefined conditions, the behaviour of which can be configured
 using parameters named as described above. In the cases of room and sender
 rules, the rule_id of the rule determines its behaviour.
+
+{{pushrules_http_api}}
 
 Push Rules: API
 ~~~~~~~~~~~~~~~

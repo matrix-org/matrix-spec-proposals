@@ -1,0 +1,12 @@
+type: "object"
+properties:
+  rule_id:
+    type: string
+  actions:
+    type: array
+    items:
+      type: string
+  default:
+    type: boolean
+  enabled:
+    type: boolean

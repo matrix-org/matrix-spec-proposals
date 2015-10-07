@@ -62,8 +62,8 @@ paths:
                 type: string
                 enum: ["http", null]
                 description: |-
-                  The kind of pusher to configure. 'http' makes a pusher that
-                  sends HTTP pokes. null deletes the pusher.
+                  The kind of pusher to configure. ``"http"`` makes a pusher that
+                  sends HTTP pokes. ``null`` deletes the pusher.
               profile_tag:
                 type: string
                 description: |-
