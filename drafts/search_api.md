@@ -195,4 +195,171 @@ The *all* search category is special cased, and has the following format:
 3. Do servers want to mandate that a search request is over at least one indexed field?
 4. Do we want to be more clever with searching based on timestamps? Currently we would base it off `origin_server_ts`, which isn't necessarily at all accurate. 
 5. Should we support specifying substring matches as prefix, infix or suffix searches?
+6. Support for highlighting search results?
 
+# Examples
+
+
+## Basic search
+
+Search for all messages that contain "lazy dog"
+
+``POST /search``
+
+```json
+{
+    "search_categories": {
+        "room_events": {
+            "constraints": [
+                {
+                    "type": "FTS",
+                    "key": "content.body"
+                    "value": "lazy dog",
+                }
+            ],
+        },
+    }
+}
+```
+
+Response:
+
+```json
+{
+    search_categories": {
+        "room_events": {
+            "results": {
+                "$wibble:example.com": {
+                    "rank": 0.5234156548,
+                    "result": {
+                        "event_id": "$wibble:example.com",
+                        "content": {
+                            "body": "Those are such lazy dogs!"
+                        },
+                        "sender": "@erikj:jki.re",
+                        "room_id": "!123:example.com",
+                    }
+                },
+                "$wibble2:example.com": { ... }
+            }
+        }
+    }
+}
+```
+
+
+## Search a particular room
+
+Search for all messages that contain "lazy dog" in a particular room.
+
+``POST /search``
+
+```json
+{
+    "search_categories": {
+        "room_events": {
+            "constraints": [
+                {
+                    "type": "FTS",
+                    "key": "content.body"
+                    "value": "lazy dog"
+                },
+                {
+                    "type": "exact",
+                    "key": "room_id"
+                    "value": ["!foobar:example.com"]
+                }
+            ]
+        }
+    }
+}
+```
+
+Response:
+
+```json
+{
+    search_categories": {
+        "room_events": {
+            "results": {
+                "$wibble3:wobble": {
+                    "rank": 0.5234156548,
+                    "result": {
+                        "event_id": "$wibble3:wobble",
+                        "content": {
+                            "body": "Those are such lazy dogs!"
+                        },
+                        "room_id": "!foobar:example.com",
+                        "sender": "@erikj:jki.re"
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+## Search everywhere
+
+Search everywhere for "testing".
+
+``POST /search``
+
+```json
+{
+    "search_categories": {
+        "all": {
+            "value": "testing"
+        },
+    }
+}
+```
+
+Response:
+
+```json
+{
+    search_categories": {
+        "room_events": {
+            "results": {
+                "$wibble3:wobble": {
+                    "rank": 0.5234156548,
+                    "result": {
+                        "event_id": "$wibble3:wobble",
+                        "content": {
+                            "body": "This is just a test"
+                        },
+                        "room_id": "!foobar:example.com",
+                        "sender": "@erikj:jki.re"
+                    }
+                }
+            }
+        },
+
+        "rooms": {
+            "results": {
+                "!foobar:example.com": {
+                    "rank": 0.7158,
+                    "result": {
+                        "name": "Testing Room",
+                        "topic": "This is a room for testing",
+                        "room_id": "!foobar:example.com"
+                    }
+                }
+            }
+        },
+
+        "profiles": {
+            "results": {
+                "@testingaccount:example.com": {
+                    "rank": 0.6158,
+                    "result": {
+                        "display_name": "Bob",
+                        "user_id": "@testingaccount:example.com"
+                    }
+                }
+            }
+        }
+    }
+}
+```
