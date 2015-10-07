@@ -79,52 +79,9 @@ Client behaviour
 
 To receive any notification pokes at all, it is necessary to configure a
 'pusher' on the Home Server that you wish to receive notifications from. There
-is a single API endpoint for this::
+is a single API endpoint for this, as described below.
 
-  POST $PREFIX/pushers/set
-
-This takes a JSON object with the following keys:
-
-pushkey
-  This is a unique identifier for this pusher. The value you should use for this
-  is the routing or destination address information for the notification, for
-  example, the APNS token for APNS or the Registration ID for GCM. If your
-  notification client has no such concept, use any unique identifier. Max length,
-  512 bytes.
-kind
-  The kind of pusher to configure. 'http' makes a pusher that sends HTTP pokes.
-  null deletes the pusher.
-profile_tag
-  This is a string that determines what set of device rules will be matched when
-  evaluating push rules for this pusher. It is an arbitrary string. Multiple
-  devices maybe use the same profile_tag. It is advised that when an app's
-  data is copied or restored to a different device, this value remain the same.
-  Client apps should offer ways to change the profile_tag, optionally copying
-  rules from the old profile tag. Max length, 32 bytes.
-app_id
-  appId is a reverse-DNS style identifier for the application. It is recommended
-  that this end with the platform, such that different platform versions get
-  different app identifiers. Max length, 64 chars.
-app_display_name
-  A string that will allow the user to identify what application owns this
-  pusher.
-device_display_name
-  A string that will allow the user to identify what device owns this pusher.
-lang
-  The preferred language for receiving notifications (eg, 'en' or 'en-US')
-data
-  A dictionary of information for the pusher implementation itself. For HTTP
-  pushers, this must contain a 'url' key which is a string of the URL that
-  should be used to send notifications.
-append
-  If this is set to boolean true, the Home Server should add another pusher
-  with the given pushkey and App ID in addition to any others with different
-  user IDs. Otherwise, the Home Server must remove any other pushers with the
-  same App ID and pushkey for different users. The default is false.
-
-If the pusher was created successfully, a JSON dictionary is returned (which may
-be empty).
-
+{{push_http_api}}
 
 Push Rules
 ~~~~~~~~~~

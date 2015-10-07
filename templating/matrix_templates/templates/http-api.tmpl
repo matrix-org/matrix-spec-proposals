@@ -13,17 +13,17 @@
 
 Request format:
 
-================== ================= ===========================================
+====================== ================= ===========================================
    Parameter            Value                        Description
-================== ================= ===========================================
+====================== ================= ===========================================
 {% for loc in endpoint.req_param_by_loc -%}
 *{{loc}} parameters*
--------------------------------------------------------------------------------- 
+------------------------------------------------------------------------------------ 
 {% for param in endpoint.req_param_by_loc[loc] -%}
-{{param.key}}{{param.type|indent(19-param.key|length)}}{{param.desc|indent(18-param.type|length)|wrap(43)|indent_block(37)}}
+{{param.key}}{{param.type|indent(23-param.key|length)}}{{param.desc|indent(18-param.type|length)|wrap(43)|indent_block(41)}}
 {% endfor -%}
 {% endfor -%}
-================== ================= ===========================================
+====================== ================= ===========================================
 
 {% if endpoint.res_tables|length > 0 -%}
 Response format:
@@ -31,18 +31,18 @@ Response format:
 {% for table in endpoint.res_tables -%}
 {{"``"+table.title+"``" if table.title else "" }}
 
-=================== ================= ==========================================
+======================= ================= ==========================================
       Param              Type                 Description
-=================== ================= ==========================================
+======================= ================= ==========================================
 {% for row in table.rows -%}
 {# -#}
 {# Row type needs to prepend spaces to line up with the type column (20 ch) -#}
 {# Desc needs to prepend the required text (maybe) and prepend spaces too -#}
 {#      It also needs to then wrap inside the desc col (42 ch width) -#}
 {# -#}
-{{row.key}}{{row.type|indent(20-row.key|length)}}{{row.desc|wrap(42,row.req_str | indent(18 - (row.type|length))) |indent_block(38)}}
+{{row.key}}{{row.type|indent(24-row.key|length)}}{{row.desc|wrap(40,row.req_str | indent(18 - (row.type|length))) |indent_block(42)}}
 {% endfor -%}
-=================== ================= ==========================================
+======================= ================= ==========================================
 
 {% endfor %}
 {% endif -%}

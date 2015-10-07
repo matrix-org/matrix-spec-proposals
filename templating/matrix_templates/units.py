@@ -207,12 +207,18 @@ class MatrixUnits(Units):
                         )
                     # loop top-level json keys
                     json_body = Units.prop(param, "schema/properties")
+                    required_params = []
+                    if Units.prop(param, "schema/required"):
+                        required_params = Units.prop(param, "schema/required")
                     for key in json_body:
+                        pdesc = json_body[key]["description"]
+                        if key in required_params:
+                            pdesc = "**Required.** " + pdesc
                         endpoint["req_params"].append({
                             "key": key,
                             "loc": "JSON body",
                             "type": json_body[key]["type"],
-                            "desc": json_body[key]["description"]
+                            "desc": pdesc
                         })
                 # endfor[param]
                 for row in endpoint["req_params"]:
