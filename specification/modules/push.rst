@@ -27,92 +27,101 @@ Push Notifications
          Mobile Device or Client                                               
 
 
-Matrix supports push notifications as a first class citizen. Home Servers send
-notifications of user events to user-configured HTTP endpoints. User may also
-configure a number of rules that determine what events generate notifications.
-These are all stored and managed by the users home server such that settings can
-be reused between client apps as appropriate.
+This module adds support for push notifications. Homeservers send notifications
+of user events to user-configured HTTP endpoints. Users may also configure a
+number of rules that determine which events generate notifications. These are
+all stored and managed by the user's homeserver. This allows user-specific push
+settings to be reused between client applications.
 
 The above diagram shows the flow of push notifications being sent to a handset
 where push notifications are submitted via the handset vendor, such as Apple's
 APNS or Google's GCM. This happens as follows:
 
- 1. The client app signs in to a Matrix Home Server
- 2. The client app registers with its vendor's Push Notification provider and
+ 1. The client app signs in to a homeserver.
+ 2. The client app registers with its vendor's Push Provider and
     obtains a routing token of some kind.
- 3. The mobile app, uses the Matrix client/server API to add a 'pusher',
-    providing the URL of a specific Push Gateway which is configured for that
+ 3. The mobile app uses the Client/Server API to add a 'pusher', providing the
+    URL of a specific Push Gateway which is configured for that
     application. It also provides the routing token it has acquired from the
-    Push Notification Provider.
- 4. The Home Server starts sending notification HTTP requests to the Push
-    Gateway using the supplied URL. The Push Gateway relays this notification to
-    the Push Notification Provider, passing the routing token along with any
+    Push Provider.
+ 4. The homeserver starts sending HTTP requests to the Push Gateway using the
+    supplied URL. The Push Gateway relays this notification to
+    the Push Provider, passing the routing token along with any
     necessary private credentials the provider requires to send push
     notifications.
- 5. The Push Notification provider sends the notification to the device.
+ 5. The Push Provider sends the notification to the device.
 
 Definitions for terms used in this section are below:
 
-Pusher
-  A 'pusher' is an activity in the Home Server that manages the sending
-  of HTTP notifications for a single device of a single user.
-
-Push Rules
-  A push rule is a single rule, configured by a matrix user, that gives
-  instructions to the Home Server about whether an event should be notified
-  about and how given a set of conditions. Matrix clients allow the user to
-  configure these. They create and view them via the Client to Server REST API.
+Push Provider
+  A push provider is a service managed by the device vendor which can send
+  notifications directly to the device. Google Cloud Messaging (GCM) and Apple
+  Push Notification Service (APNS) are two examples of push providers.
 
 Push Gateway
-  A push gateway is a server that receives HTTP event notifications from Home
-  Servers and passes them on to a different protocol such as APNS for iOS
-  devices or GCM for Android devices. Matrix.org provides a reference push
-  gateway, 'sygnal'. A client app tells a Home Server what push gateway
-  to send notifications to when it sets up a pusher.
+  A push gateway is a server that receives HTTP event notifications from
+  homeservers and passes them on to a different protocol such as APNS for iOS
+  devices or GCM for Android devices. Clients inform the homeserver which
+  Push Gateway to send notifications to when it sets up a Pusher.
 
-For information on the client-server API for setting pushers and push rules, see
-the Client Server API section. For more information on the format of HTTP
-notifications, see the HTTP Notification Protocol section.
+Pusher
+  A pusher is a worker on the homeserver that manages the sending
+  of HTTP notifications for a user. A user can have multiple pushers: one per
+  device.
+
+Push Rule
+  A push rule is a single rule that states under what *conditions* an event should
+  be passed onto a push gateway and *how* the notification should be presented.
+  These rules are stored on the user's homeserver. They are manually configured
+  by the user, who can create and view them via the Client/Server API.
+
+Push Ruleset
+  A push ruleset *scopes a set of rules according to some criteria*. For example,
+  some rules may only be applied for messages from a particular sender,
+  a particular room, or by default. The push ruleset contains the entire set
+  of scopes and rules.
 
 Client behaviour
 ----------------
 
-To receive any notification pokes at all, it is necessary to configure a
-'pusher' on the Home Server that you wish to receive notifications from. There
-is a single API endpoint for this, as described below.
+Clients MUST configure a Pusher before they will receive push notifications.
+There is a single API endpoint for this, as described below.
 
 {{pusher_http_api}}
 
 Push Rules
 ~~~~~~~~~~
-Homeservers have an interface to configure what events trigger notifications.
-This behaviour is configured through "Push Rules". Push Rules come in a variety
-of different kinds and each kind of rule has an associated priority. The
-different kinds of rule, in descending order of priority, are:
+A push rule is a single rule that states under what *conditions* an event should
+be passed onto a push gateway and *how* the notification should be presented.
+There are different "kinds" of push rules and each rule has an associated
+priority. Every push rule MUST have a ``kind`` and ``rule_id``. The ``rule_id``
+is a unique string within the kind of rule and its' scope: ``rule_ids`` do not
+need to be unique between rules of the same kind on different devices. Rules may
+have extra keys depending on the value of ``kind``.The different kinds of rule
+in descending order of priority are:
 
-Override Rules
+Override Rules ``override``
   The highest priority rules are user-configured overrides.
-Content Rules
+Content-specific Rules ``content``
   These configure behaviour for (unencrypted) messages that match certain
-  patterns. Content rules take one parameter, 'pattern', that gives the pattern
-  to match against. This is treated in the same way as pattern for event_match
-  conditions, below.
-Room Rules
-  These change the behaviour of all messages to a given room. The rule_id of a
-  room rule is always the ID of the room that it affects.
-Sender
-  These rules configure notification behaviour for messages from a specific,
-  named Matrix user ID. The rule_id of Sender rules is always the Matrix user
+  patterns. Content rules take one parameter: ``pattern``, that gives the glob
+  pattern to match against. This is treated in the same way as pattern for
+  ``event_match`` conditions, below.
+Room-specific Rules ``room``
+  These rules change the behaviour of all messages for a given room. The
+  ``rule_id`` of a room rule is always the ID of the room that it affects.
+Sender-specific rules ``sender``
+  These rules configure notification behaviour for messages from a specific
+  Matrix user ID. The ``rule_id`` of Sender rules is always the Matrix user
   ID of the user whose messages they'd apply to.
-Underride
-  These are identical to override rules, but have a lower priority than content,
-  room and sender rules.
+Underride rules ``underride``
+  These are identical to ``override`` rules, but have a lower priority than
+  ``content``, ``room`` and ``sender`` rules.
 
-In addition, each kind of rule may be either global or device-specific. Device
-specific rules only affect delivery of notifications via pushers with a matching
-``profile_tag``. All device-specific rules are higher priority than all global
-rules. Thusly, the full list of rule kinds, in descending priority order, is as
-follows:
+Push rules may be either global or device-specific. Device specific rules only
+affect delivery of notifications via pushers with a matching ``profile_tag``.
+All device-specific rules have a higher priority than global rules. This means
+that the full list of rule kinds, in descending priority order, is as follows:
 
  * Device-specific Override
  * Device-specific Content
@@ -125,36 +134,30 @@ follows:
  * Global Sender
  * Global Underride
 
-For some kinds of rule, rules of the same kind also have an ordering with
-respect to one another. The kinds that do not are room and sender rules where
-the rules are mutually exclusive by definition and therefore an ordering would
-be redundant. Actions for the highest priority rule and only that rule apply
-(for example, a set_tweak action in a lower priority rule will not apply if a
-higher priority rule matches, even if that rule does not specify any tweaks).
+Rules with the same ``kind`` can specify an ordering priority. This determines
+which rule is selected in the event of multiple matches. For example, a rule
+matching "tea" and a separate rule matching "time" would both match the sentence
+"It's time for tea". The ordering of the rules would then resolve the tiebreak
+to determine which rule is executed. Only ``actions`` for highest priority rule
+will be sent to the Push Gateway.
 
-Rules also have an identifier, ``rule_id``, which is a string. The ``rule_id``
-is unique within the kind of rule and scope: ``rule_ids`` need not be unique
-between rules of the same kind on different devices. A home server may also have
-server default rules of each kind and in each scope. Server default rules are
-lower priority than user-defined rules in each scope. Server default rules (and
-only server default rules) begin with a dot ('.') character. In addition, all
-rules may be enabled or disabled. Disabled rules never match.
-
-If no rules match an event, the Home Server should not notify for the message
-(that is to say, the default action is "dont-notify"). Events that the user sent
-themselves are never alerted for.
+Each rule can be enabled or disabled. Disabled rules never match. If no rules
+match an event, the homeserver MUST NOT notify the Push Gateway for that event.
+Homeservers MUST NOT notify the Push Gateway for events that the user has sent
+themselves. 
 
 Predefined Rules
 ++++++++++++++++
-Matrix specifies the following rule IDs for server default rules. Home Servers
-may define rules as follows with the given IDs. If Home Servers provide rules
-with these IDs, their semantics should match those given below:
+Homeservers can specify "server-default rules" which operate at a lower priority
+than "user-defined rules". The ``rule_id`` for all server-default rules MUST
+start with a dot (".") to identify them as "server-default". The following
+server-default rules are specified:
 
-.m.rule.contains_user_name
+``.m.rule.contains_user_name``
   Matches any message whose content is unencrypted and contains the local part
   of the user's Matrix ID, separated by word boundaries.
 
-  Definition (as a content rule)::
+  Definition (as a ``content`` rule)::
 
     {
         "rule_id": ".m.rule.contains_user_name"
@@ -168,11 +171,11 @@ with these IDs, their semantics should match those given below:
         ],
     }
 
-.m.rule.contains_display_name
+``.m.rule.contains_display_name``
   Matches any message whose content is unencrypted and contains the user's
   current display name in the room in which it was sent.
 
-  Definition (this rule can only be an override or underride rule)::
+  Definition (this rule can only be an ``override`` or ``underride`` rule)::
 
     {
         "rule_id": ".m.rule.contains_display_name"
@@ -190,10 +193,10 @@ with these IDs, their semantics should match those given below:
         ],
     }
 
-.m.rule.room_one_to_one
+``.m.rule.room_one_to_one``
   Matches any message sent in a room with exactly two members.
 
-  Definition (this rule can only be an override or underride rule)::
+  Definition (this rule can only be an ``override`` or ``underride`` rule)::
 
     {
         "rule_id": ".m.rule.room_two_members"
@@ -212,9 +215,10 @@ with these IDs, their semantics should match those given below:
         ],
     }
 
-.m.rule.suppress_notices
-  Matches messages with 'msgtype' of 'notice'. This should be an override rule
-  such that, when enabled, it takes priority over content / sender / room rules.
+``.m.rule.suppress_notices``
+  Matches messages with a ``msgtype`` of ``notice``. This should be an
+  ``override`` rule so that it takes priority over ``content`` / ``sender`` /
+  ``room`` rules.
 
   Definition::
 
@@ -232,10 +236,10 @@ with these IDs, their semantics should match those given below:
         ]
     }
   
-.m.rule.fallback
+``.m.rule.fallback``
   Matches any message. Used to define the behaviour of messages that match no
-  other rules. Therefore, if Home Servers define this, it should be the lowest
-  priority underride rule.
+  other rules. If homeservers define this it should be the lowest priority
+  ``underride`` rule.
 
   Definition::
 
@@ -249,24 +253,22 @@ with these IDs, their semantics should match those given below:
 
 Actions
 +++++++
-All rules have an associated list of 'actions'. An action affects if and how a
-notification is delivered for a matching event. This standard defines the
-following actions, although if Home servers wish to support more, they are free
-to do so:
+All rules have an associated list of ``actions``. An action affects if and how a
+notification is delivered for a matching event. The following actions are defined:
 
-notify
+``notify``
   This causes each matching event to generate a notification.
-dont_notify
-  Prevents this event from generating a notification
-coalesce
-  This enables notifications for matching events but activates Home Server
+``dont_notify``
+  This prevents this event from generating a notification
+``coalesce``
+  This enables notifications for matching events but activates homeserver
   specific behaviour to intelligently coalesce multiple events into a single 
-  notification. Not all Home Servers may support this. Those that do not should
-  treat it as the 'notify' action.
-set_tweak
-  Sets an entry in the 'tweaks' dictionary key that is sent in the notification
-  poke. This takes the form of a dictionary with a 'set_tweak' key whose value
-  is the name of the tweak to set. It may also have a 'value' key which is
+  notification. Not all homeservers may support this. Those that do not support
+  it should treat it as the ``notify`` action.
+``set_tweak``
+  Sets an entry in the ``tweaks`` dictionary key that is sent in the notification
+  request. This takes the form of a dictionary with a ``set_tweak`` key whose value
+  is the name of the tweak to set. It may also have a ``value`` key which is
   the value to which it should be set.
 
 Actions that have no parameters are represented as a string. Otherwise, they are
@@ -275,62 +277,60 @@ their parameters, e.g. ``{ "set_tweak": "sound", "value": "default" }``
 
 Tweaks
 ^^^^^^
-The ``set_tweak`` key action is used to add an entry to the 'tweaks' dictionary
-that is sent in the notification poke. The following tweaks are defined:
+The ``set_tweak`` action is used to add an entry to the 'tweaks' dictionary
+that is sent in the notification request. The following tweaks are defined:
 
-sound
-  A sound to be played when this notification arrives. 'default' means to
-  play a default sound.
-highlight
-  Whether or not this message should be highlighted in the UI. This will
-  normally take the form of presenting the message in a different colour and/or
-  weight. The UI might also be adjusted to draw particular attention to the room
-  in which the event occurred. The value may be omitted from the highlight
-  tweak, in which case it should be read as if it had a value of true.
+``sound``
+  A string representing the sound to be played when this notification arrives.
+  A value of ``default`` means to play a default sound.
+``highlight``
+  A boolean representing whether or not this message should be highlighted in
+  the UI. This will normally take the form of presenting the message in a
+  different colour and/or style. The UI might also be adjusted to draw
+  particular attention to the room in which the event occurred. The ``value``
+  may be omitted from the highlight tweak, in which case it should default to
+  ``true``.
 
-Tweaks are passed transparently through the Home Server so client applications
-and push gateways may agree on additional tweaks, for example, how to flash the
-notification light on a mobile device.
-
-If a kind of tweak that a client understands is not specified in an action, the
-client may choose a sensible behaviour for the tweak.
+Tweaks are passed transparently through the homeserver so client applications
+and Push Gateways may agree on additional tweaks. For example, a tweak may be
+added to specify how to flash the notification light on a mobile device.
 
 Conditions
 ++++++++++
-Override, Underride and Default rules have a list of 'conditions'. All
-conditions must hold true for an event in order for a rule to be applied to an
-event. A rule with no conditions always matches. Matrix specifies the following
-conditions, although if Home Servers wish to support others, they are free to
-do so:
 
-event_match
+Override, Underride and Default Rules MAY have a list of 'conditions'. 
+All conditions must hold true for an event in order to apply the ``action`` for
+the event. A rule with no conditions always matches. Room, Sender, User and
+Content rules do not have conditions in the same way, but instead have
+predefined conditions. These conditions can be configured using the parameters
+outlined below. In the cases of room and sender rules, the ``rule_id`` of the
+rule determines its behaviour. The following conditions are defined:
+
+``event_match``
   This is a glob pattern match on a field of the event. Parameters:
-   * 'key': The dot-separated field of the event to match, e.g. content.body
-   * 'pattern': The glob-style pattern to match against. Patterns with no
-                special glob characters should be treated as having asterisks
-                prepended and appended when testing the condition.
-profile_tag
-  Matches the profile_tag of the device that the notification would be
+   * ``key``: The dot-separated field of the event to match, e.g. ``content.body``
+   * ``pattern``: The glob-style pattern to match against. Patterns with no
+     special glob characters should be treated as having asterisks
+     prepended and appended when testing the condition.
+
+``profile_tag``
+  Matches the ``profile_tag`` of the device that the notification would be
   delivered to. Parameters:
 
-   * 'profile_tag': The profile_tag to match with.
-contains_display_name
-  This matches unencrypted messages where content.body contains the owner's
+   * ``profile_tag``: The profile_tag to match with.
+
+``contains_display_name``
+  This matches unencrypted messages where ``content.body`` contains the owner's
   display name in that room. This is a separate rule because display names may
   change and as such it would be hard to maintain a rule that matched the user's
   display name. This condition has no parameters.
-room_member_count
-  This matches the current number of members in the room.
-   * 'is': A decimal integer optionally prefixed by one of, '==', '<', '>',
-     '>=' or '<='. A prefix of '<' matches rooms where the member count is
-     strictly less than the given number and so forth. If no prefix is present,
-     this matches rooms where the member count is exactly equal to the given
-     number (i.e. the same as '==').
 
-Room, Sender, User and Content rules do not have conditions in the same way,
-but instead have predefined conditions, the behaviour of which can be configured
-using parameters named as described above. In the cases of room and sender
-rules, the rule_id of the rule determines its behaviour.
+``room_member_count``
+  This matches the current number of members in the room. Parameters:
+   * ``is``: A decimal integer optionally prefixed by one of, ``==``, ``<``,
+     ``>``, ``>=`` or ``<=``. A prefix of ``<`` matches rooms where the member
+     count is strictly less than the given number and so forth. If no prefix is
+     present, this parameter defaults to ``==``.
 
 Push Rules: API
 ~~~~~~~~~~~~~~~
@@ -396,158 +396,36 @@ Server behaviour
 ----------------
 
 This describes the format used by "HTTP" pushers to send notifications of
-events.
+events. If the endpoint returns an HTTP error code, the homeserver should retry
+for a reasonable amount of time with a reasonable back-off scheme.
 
 {{push_notifier_http_api}}
-
-
-
-Notifications are sent as HTTP POST requests to the URL configured when the
-pusher is created, but Matrix strongly recommends that the path should be::
-
-  /_matrix/push/v1/notify
-
-The body of the POST request is a JSON dictionary. The format
-is as follows::
-
-  {
-    "notification": {
-      "id": "$3957tyerfgewrf384",
-      "room_id": "!slw48wfj34rtnrf:example.com",
-      "type": "m.room.message",
-      "sender": "@exampleuser:matrix.org",
-      "sender_display_name": "Major Tom",
-      "room_name": "Mission Control",
-      "room_alias": "#exampleroom:matrix.org",
-      "prio": "high",
-      "content": {
-        "msgtype": "m.text",
-        "body": "I'm floating in a most peculiar way."
-      }
-     },
-     "counts": {
-       "unread" : 2,
-       "missed_calls": 1
-     }
-     "devices": [
-       {
-         "app_id": "org.matrix.matrixConsole.ios",
-         "pushkey": "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/",
-         "pushkey_ts": 12345678,
-         "data" : {
-         },
-         "tweaks": {
-           "sound": "bing"
-          }
-        }
-      ]
-    }
-  }
-
-The contents of this dictionary are defined as follows:
-
-id
-  An identifier for this notification that may be used to detect duplicate
-  notification requests. This is not necessarily the ID of the event that
-  triggered the notification.
-room_id
-  The ID of the room in which this event occurred.
-type
-  The type of the event as in the event's 'type' field.
-sender
-  The sender of the event as in the corresponding event field.
-sender_display_name
-  The current display name of the sender in the room in which the event
-  occurred.
-room_name
-  The name of the room in which the event occurred.
-room_alias
-  An alias to display for the room in which the event occurred.
-prio
-  The priority of the notification. Acceptable values are 'high' or 'low. If
-  omitted, 'high' is assumed. This may be used by push gateways to deliver less
-  time-sensitive notifications in a way that will preserve battery power on
-  mobile devices.
-content
-  The 'content' field from the event, if present. If the event had no content
-  field, this field is omitted.
-counts
-  This is a dictionary of the current number of unacknowledged communications
-  for the recipient user. Counts whose value is zero are omitted.
-unread
-  The number of unread messages a user has across all of the rooms they are a
-  member of.
-missed_calls
-  The number of unacknowledged missed calls a user has across all rooms of
-  which they are a member.
-device
-  This is an array of devices that the notification should be sent to.
-app_id
-  The app_id given when the pusher was created.
-pushkey
-  The pushkey given when the pusher was created.
-pushkey_ts
-  The unix timestamp (in seconds) when the pushkey was last updated.
-data
-  A dictionary of additional pusher-specific data. For 'http' pushers, this is
-  the data dictionary passed in at pusher creation minus the 'url' key.
-tweaks
-  A dictionary of customisations made to the way this notification is to be
-  presented. These are added by push rules.
-sound
-  Sets the sound file that should be played. 'default' means that a default
-  sound should be played.
-
-And additional key is defined but only present on member events:
-
-user_is_target
-  This is true if the user receiving the notification is the subject of a member
-  event (i.e. the state_key of the member event is equal to the user's Matrix
-  ID).
-
-The recipient of an HTTP notification should respond with an HTTP 2xx response
-when the notification has been processed. If the endpoint returns an HTTP error
-code, the Home Server should retry for a reasonable amount of time with a
-reasonable back-off scheme.
-
-The endpoint should return a JSON dictionary as follows::
-
-  {
-    "rejected": [ "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/" ]
-  }
-
-Whose keys are:
-
-rejected
-  A list of all pushkeys given in the notification request that are not valid.
-  These could have been rejected by an upstream gateway because they have
-  expired or have never been valid. Home Servers must cease sending notification
-  requests for these pushkeys and remove the associated pushers. It may not
-  necessarily be the notification in the request that failed: it could be that
-  a previous notification to the same pushkey failed.
 
 Push Gateway behaviour
 ----------------------
 
 Recommendations for APNS
 ~~~~~~~~~~~~~~~~~~~~~~~~
-For sending APNS notifications, the exact format is flexible and up to the
-client app and its push gateway to agree on (since APNS requires that the sender
-have a private key owned by the app developer, each app must have its own push
-gateway). However, Matrix strongly recommends:
+The exact format for sending APNS notifications is flexible and up to the
+client app and its' push gateway to agree on. As APNS requires that the sender
+has a private key owned by the app developer, each app must have its own push
+gateway. It is recommended that:
 
- * That the APNS token be base64 encoded and used as the pushkey.
- * That a different app_id be used for apps on the production and sandbox
+ * The APNS token be base64 encoded and used as the pushkey.
+ * A different app_id be used for apps on the production and sandbox
    APS environments.
- * That APNS push gateways do not attempt to wait for errors from the APNS
+ * APNS push gateways do not attempt to wait for errors from the APNS
    gateway before returning and instead to store failures and return
    'rejected' responses next time that pushkey is used.
 
 Security considerations
 -----------------------
 
-- Message content shouldn't be sent in the push itself as it will pass through
-  the Push Provider (Google/Apple). Instead, send a ping to tell the client to
-  sync.
-- HTTPS should be used on the Matrix HTTP Notification Protocol.
+Clients specify the Push Gateway URL to use to send event notifications to. This
+URL should be over HTTPS and *never* over HTTP.
+
+As push notifications will pass through a Push Provider, message content
+shouldn't be sent in the push itself where possible. Instead, Push Gateways
+should send a "sync" command to instruct the client to get new events from the
+homeserver directly.
 

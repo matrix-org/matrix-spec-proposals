@@ -94,6 +94,12 @@ paths:
                   room_alias:
                     type: string
                     description: An alias to display for the room in which the event occurred.
+                  user_is_target:
+                    type: boolean
+                    description: |-
+                      This is true if the user receiving the notification is the
+                      subject of a member event (i.e. the ``state_key`` of the
+                      member event is equal to the user's Matrix ID).
                   prio:
                     type: string
                     enum: ["high", "low"]
