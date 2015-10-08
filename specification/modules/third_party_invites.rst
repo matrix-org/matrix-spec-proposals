@@ -8,7 +8,7 @@ Matrix user ID is not known, instead addressing them by a third party identifier
 such as an email address.
 
 There are two flows here; one if a Matrix user ID is known for the third party
-identifier, and one if not. Either way, the client calls /invite with the
+identifier, and one if not. Either way, the client calls ``/invite`` with the
 details of the third party identifier.
 
 The homeserver asks the identity server whether a Matrix user ID is known for
@@ -16,8 +16,8 @@ that identifier. If it is, an invite is simply issued for that user.
 
 If it is not, the homeserver asks the identity server to record the details of
 the invitation, and to notify the client of this pending invitation if it gets
-a binding for this identifier in the future. The identity server returns to the
-homeserver a token, as well as its public key.
+a binding for this identifier in the future. The identity server returns a token
+and public key to the homeserver.
 
 If a client then tries to join the room in the future, it will be allowed to if
 it presents both the token, and a signature of that token from the identity
@@ -43,6 +43,8 @@ If a client of the current homeserver is joining by an
 key used for signing is still valid, by checking ``key_validity_url``. It does
 this by making an HTTP GET request to ``key_validity_url``:
 
+.. TODO: Link to identity server spec when it exists
+
 Schema::
 
     => GET $key_validity_url?public_key=$public_key
@@ -63,14 +65,16 @@ Example::
     }
 
 with the querystring
-?public_key=``public_key``. A JSON object will be returned, and the key is
-considered valid if the object contains a key named ``valid`` whose value is
-``true``. If this cannot be verified, the invitation must be rejected.
+?public_key=``public_key``. A JSON object will be returned.
+The invitation is valid if the object contains a key named ``valid`` which is
+``true``. Otherwise, the invitation MUST be rejected. This request is
+idempotent, and may be retried by the homeserver.
 
 If a homeserver is joining a room for the first time because of an
 ``m.room.third_party_invite``, the server which is already participating in the
-room MUST validate that the public key used for signing is still valid, by
-checking ``key_validity_url`` in the above described way.
+room (which is chosen as per the standard server-server specification) MUST
+validate that the public key used for signing is still valid, by checking
+``key_validity_url`` in the above described way.
 
 No other homeservers may reject the joining of the room on the basis of
 ``key_validity_url``, this is so that all homeservers have a consistent view of
@@ -97,4 +101,13 @@ sign(``token``, ``public_key``) = ``signature`` *and* check ``key_validity_url``
 
 Having validated these things, H1 writes the join event to the room, and H3
 begins participating in the room. H2 *must* accept this event.
+
+The reason that no other homeserver may reject the event based on checking
+``key_validity_url`` is that we must ensure event acceptance is deterministic.
+If some other participating server doesn't have a network path to the keyserver,
+or if the keyserver were to go offline, or revoke its keys, that other server
+would reject the event and cause the participating servers' graphs to diverge.
+This relies on participating servers trusting each other, but that trust is
+already implied by the server-server protocol. Also, the public key signature
+verification must still be performed, so the attack surface here is minimized.
 

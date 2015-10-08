@@ -1,7 +1,7 @@
 {
     "type": "object",
     "title": "The current membership state of a user in the room.",
-    "description": "Adjusts the membership state for a user in a room. It is preferable to use the membership APIs (``/rooms/<room id>/invite`` etc) when performing membership actions rather than adjusting the state directly as there are a restricted set of valid transformations. For example, user A cannot force user B to join a room, and trying to force this state change directly will fail. The token, public_key, key_validity_url, signature, and sender properties either must all or none be set - they are set if the invite was an ``m.room.third_party_invite`` event, and absent if the invite was an ``m.room.member`` event.",
+    "description": "Adjusts the membership state for a user in a room. It is preferable to use the membership APIs (``/rooms/<room id>/invite`` etc) when performing membership actions rather than adjusting the state directly as there are a restricted set of valid transformations. For example, user A cannot force user B to join a room, and trying to force this state change directly will fail. The ``third_party_invite`` property will be set if the invite was an ``m.room.third_party_invite`` event, and absent if the invite was an ``m.room.member`` event.",
     "allOf": [{
         "$ref": "core-event-schema/state_event.json"
     }],
@@ -32,7 +32,7 @@
                         },
                         "key_validity_url": {
                             "type": "string",
-                            "description": "A URL which can be fetched, with querystring public_key=public_key, to validate whether the key has been revoked. The URL must return a JSON object containing a boolean property named 'valid'."
+                            "description": "A URL which can be fetched, with querystring ``public_key=public_key``, to validate whether the key has been revoked. The URL must return a JSON object containing a boolean property named 'valid'."
                         },
                         "public_key": {
                             "type": "string",
