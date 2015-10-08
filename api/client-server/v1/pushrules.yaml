@@ -413,6 +413,8 @@ paths:
                   always matches.
                 items:
                   type: object
+                  title: conditions
+                  allOf: [ "$ref": "definitions/push_condition.json" ]
             required: ["actions"]
       responses:
         200:

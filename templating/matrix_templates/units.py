@@ -219,23 +219,39 @@ class MatrixUnits(Units):
                     if Units.prop(param, "schema/required"):
                         required_params = Units.prop(param, "schema/required")
                     for key in json_body:
-                        pdesc = json_body[key]["description"]
+                        req_obj = json_body[key]
+                        pdesc = req_obj["description"]
                         if key in required_params:
                             pdesc = "**Required.** " + pdesc
+
+                        is_array = req_obj["type"] == "array"
+                        is_array_of_objects = (
+                            is_array and req_obj["items"]["type"] == "object"
+                        )
                         endpoint["req_params"].append({
                             "key": key,
                             "loc": "JSON body",
-                            "type": json_body[key]["type"],
+                            "type": (
+                                req_obj["type"] if not is_array else
+                                "array[%s]" % req_obj["items"]["type"]
+                            ),
                             "desc": pdesc
                         })
-                        if json_body[key]["type"] in ["object"]:
-                            req_tables = get_json_schema_object_fields(
-                                json_body[key]
-                            )
+                        if not is_array_of_objects and req_obj["type"] == "array":
+                            continue
+                        # Put in request.dot.notation for nested keys
+                        if req_obj["type"] in ["object", "array"]:
+                            if is_array_of_objects:
+                                req_obj = req_obj["items"]
+
+                            req_tables = get_json_schema_object_fields(req_obj)
+                            key_sep = "[0]." if is_array else "."
                             for table in req_tables:
+                                if table.get("no-table"):
+                                    continue
                                 for row in table["rows"]:
                                     endpoint["req_params"].append({
-                                        "key": key + "." + row["key"],
+                                        "key": key + key_sep + row["key"],
                                         "loc": "JSON body",
                                         "type": row["type"],
                                         "desc": row["req_str"] + row["desc"]

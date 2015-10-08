@@ -151,12 +151,17 @@ paths:
                         pushkey was last updated.
                     data:
                       type: object
+                      title: PusherData
                       description: |-
                         A dictionary of additional pusher-specific data. For
                         'http' pushers, this is the data dictionary passed in at
                         pusher creation minus the ``url`` key.
+                      properties:
+                        foo:
+                          type: string
                     tweaks:
                       type: object
+                      title: Tweaks
                       description: |-
                         A dictionary of customisations made to the way this
                         notification is to be presented. These are added by push rules.
