@@ -33,6 +33,8 @@ You can use multiple clients with the same user, so you might want to also look 
 
 ## Run a server and/or client yourself
 
+You can clone our open source projects and run clients and servers yourself. Here is how:
+
 ### Running your own client:
 
 You can run your own Matrix client; there are [numerous clients available](https://matrix.org/blog/try-matrix-now/). You can take Matrix.org's [reference client](https://github.com/matrix-org/matrix-angular-sdk) and use it as-is - or modify it any way you want! Since it's written in JavaScript, running a client is [really easy](https://github.com/matrix-org/matrix-angular-sdk#running)!
@@ -98,12 +100,15 @@ curl -XGET "http://localhost:8008/_matrix/client/api/v1/events?access_token=YOUR
             "end": "s39_18_0",
             "start": "s39_18_0"
         }
+
 7. Even if there are no new events (as in the example above), there will be some pagination stream response keys. The client should make subsequent requests using the value of the "end" key (in this case s39_18_0) as the from query parameter e.g.
 ```
 http://localhost:8008/_matrix/client/api/v1/events?access _token=YOUR_ACCESS_TOKEN&from=s39_18_0
 ```
 
 8. This ensures that you only get new events. Now you have initial rooms and presence, and a stream of events - a good client should be able to process all these events and present them to the user. And potentially you might want to add functionality to generate events as well (such as messages from the user, for example) - again please consult the [client-server API spec](http://matrix.org/docs/howtos/client-server.html)!
+
+| 
 
 ### Write your own server:
 

@@ -1,49 +1,46 @@
 Typing Notifications
---------------------
+====================
 
 .. _module:typing:
 
-Client APIs
-~~~~~~~~~~~
+Users may wish to be informed when another user is typing in a room. This can be
+achieved using typing notifications. These are ephemeral events scoped to a
+``room_id``. This means they do not form part of the `Event Graph`_ but still
+have a ``room_id`` key.
 
-To set "I am typing for the next N msec"::
+.. _Event Graph: `sect:event-graph`_
 
-  PUT .../rooms/<room_id>/typing/<user_id>
-  Content:  { "typing": true, "timeout": N }
-  # timeout is in milliseconds; suggested no more than 20 or 30 seconds
+Events
+------
 
-This should be re-sent by the client to continue informing the server the user
-is still typing; a safety margin of 5 seconds before the expected
-timeout runs out is recommended. Just keep declaring a new timeout, it will
-replace the old one.
+{{m_typing_event}}
 
-To set "I am no longer typing"::
+Client behaviour
+----------------
 
-  PUT ../rooms/<room_id>/typing/<user_id>
-  Content: { "typing": false }
+When a client receives an ``m.typing`` event, it MUST use the user ID list to
+**REPLACE** its knowledge of every user who is currently typing. The reason for
+this is that the server *does not remember* users who are not currently typing
+as that list gets big quickly. The client should mark as not typing any user ID
+who is not in that list.
 
-Client Events
-~~~~~~~~~~~~~
+It is recommended that clients store a ``boolean`` indicating whether the user
+is typing or not. Whilst this value is ``true`` a timer should fire periodically
+every N seconds to send a typing HTTP request. The value of N is recommended to
+be no more than 20-30 seconds. This request should be re-sent by the client to
+continue informing the server the user is still typing. As subsequent
+requests will replace older requests, a safety margin of 5 seconds before the
+expected timeout runs out is recommended. When the user stops typing, the
+state change of the ``boolean`` to ``false`` should trigger another HTTP request
+to inform the server that the user has stopped typing.
 
-All room members will receive an event on the event stream::
+{{typing_http_api}}
 
-  {
-    "type": "m.typing",
-    "room_id": "!room-id-here:matrix.org",
-    "content": {
-      "user_ids": ["list of", "every user", "who is", "currently typing"]
-    }
-  }
+Server behaviour
+----------------
 
-The client must use this list to *REPLACE* its knowledge of every user who is
-currently typing. The reason for this is that the server DOES NOT remember
-users who are not currently typing, as that list gets big quickly. The client
-should mark as not typing, any user ID who is not in that list.
-
-Server APIs
-~~~~~~~~~~~
-
-Servers will emit EDUs in the following form::
+Servers MUST emit typing EDUs in a different form to ``m.typing`` events which
+are shown to clients. This form looks like::
 
   {
     "type": "m.typing",
@@ -54,10 +51,16 @@ Servers will emit EDUs in the following form::
     }
   }
 
-Server EDUs don't (currently) contain timing information; it is up to
-originating HSes to ensure they eventually send "stop" notifications.
+This does not contain timing information so it is up to originating homeservers
+to ensure they eventually send "stop" notifications.
 
 .. TODO
   ((This will eventually need addressing, as part of the wider typing/presence
   timer addition work))
+
+Security considerations
+-----------------------
+
+Clients may not wish to inform everyone in a room that they are typing and
+instead only specific users in the room.
 

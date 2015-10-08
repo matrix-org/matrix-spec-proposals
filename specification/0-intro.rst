@@ -180,6 +180,8 @@ of a "Room".
 Event Graphs
 ~~~~~~~~~~~~
 
+.. _sect:event-graph:
+
 Events exchanged in the context of a room are stored in a directed acyclic graph
 (DAG) called an ``event graph``. The partial ordering of this graph gives the
 chronological ordering of events within the room. Each event in the graph has a
@@ -331,49 +333,6 @@ and persist and replicate the mappings.
 Usage of an IS is not required in order for a client application to be part of
 the Matrix ecosystem. However, without one clients will not be able to look up
 user IDs using 3PIDs.
-
-Presence
-~~~~~~~~
-
-Each user has the concept of presence information. This encodes:
-
- * Whether the user is currently online
- * How recently the user was last active (as seen by the server)
- * Whether a given client considers the user to be currently idle
- * Arbitrary information about the user's current status (e.g. "in a meeting").
-
-This information is collated from both per-device (online; idle; last_active) and
-per-user (status) data, aggregated by the user's homeserver and transmitted as
-an ``m.presence`` event. This is one of the few events which are sent *outside
-the context of a room*. Presence events are sent to all users who subscribe to
-this user's presence through a presence list or by sharing membership of a room.
-
-.. TODO
-  How do we let users hide their presence information?
-
-.. TODO
-  The last_active specifics should be moved to the detailed presence event section
-  
-Last activity is tracked by the server maintaining a timestamp of the last time
-it saw a pro-active event from the user. Any event which could be triggered by a
-human using the application is considered pro-active (e.g. sending an event to a
-room). An example of a non-proactive client activity would be a client setting
-'idle' presence status, or polling for events. This timestamp is presented via a
-key called ``last_active_ago``, which gives the relative number of milliseconds
-since the message is generated/emitted that the user was last seen active.
-
-N.B. in v1 API, status/online/idle state are muxed into a single 'presence'
-field on the ``m.presence`` event.
-
-Presence Lists
-~~~~~~~~~~~~~~
-
-Each user's home server stores a "presence list". This stores a list of user IDs
-whose presence the user wants to follow.
-
-To be added to this list, the user being added must be invited by the list owner
-and accept the invitation. Once accepted, both user's HSes track the
-subscription.
 
 
 Profiles

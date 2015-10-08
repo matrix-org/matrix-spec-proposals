@@ -168,6 +168,13 @@ class MatrixUnits(Units):
 
                     # assign value expected for this param
                     val_type = param.get("type") # integer/string
+
+                    if param.get("enum"):
+                        val_type = "enum"
+                        desc += (
+                            " One of: %s" % json.dumps(param.get("enum"))
+                        )
+
                     refType = Units.prop(param, "schema/$ref/") # Error,Event
                     schemaFmt = Units.prop(param, "schema/format") # bytes e.g. uploads
                     if not val_type and refType:
@@ -270,17 +277,27 @@ class MatrixUnits(Units):
                 if good_response:
                     self.log("Found a 200 response for this API")
                     res_type = Units.prop(good_response, "schema/type")
+                    res_name = Units.prop(good_response, "schema/name")
                     if res_type and res_type not in ["object", "array"]:
                         # response is a raw string or something like that
-                        endpoint["res_tables"].append({
+                        good_table = {
                             "title": None,
                             "rows": [{
-                                "key": good_response["schema"].get("name", ""),
+                                "key": "<" + res_type + ">" if not res_name else res_name,
                                 "type": res_type,
                                 "desc": res.get("description", ""),
                                 "req_str": ""
                             }]
-                        })
+                        }
+                        if good_response.get("headers"):
+                            for (header_name, header) in good_response.get("headers").iteritems():
+                                good_table["rows"].append({
+                                    "key": header_name,
+                                    "type": "Header<" + header["type"] + ">",
+                                    "desc": header["description"],
+                                    "req_str": ""
+                                })
+                        endpoint["res_tables"].append(good_table)
                     elif res_type and Units.prop(good_response, "schema/properties"):
                         # response is an object:
                         schema = good_response["schema"]
@@ -352,7 +369,7 @@ class MatrixUnits(Units):
                 self.log("Reading swagger API: %s" % filename)
                 with open(os.path.join(path, filename), "r") as f:
                     # strip .yaml
-                    group_name = filename[:-5]
+                    group_name = filename[:-5].replace("-", "_")
                     if is_v2:
                         group_name = "v2_" + group_name
                     api = yaml.load(f.read())

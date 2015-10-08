@@ -14,7 +14,8 @@ irrespective of the underlying homeserver implementation.
 
 Passive Application Services
 ----------------------------
-"Passive" application services can only observe events from a given home server.
+"Passive" application services can only observe events from a given home server,
+and inject events into a room they are participating in.
 They cannot prevent events from being sent, nor can they modify the content of
 the event being sent. In order to observe events from a homeserver, the
 homeserver needs to be configured to pass certain types of traffic to the

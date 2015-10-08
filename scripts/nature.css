@@ -278,3 +278,9 @@ td[colspan]:not([colspan="1"]) {
 thead {
     background: #eeeeee;
 }
+
+div.admonition-rationale {
+    background-color: #efe;
+    border: 1px solid #ccc;
+}
+
