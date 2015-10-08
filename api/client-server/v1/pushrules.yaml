@@ -25,7 +25,7 @@ paths:
         Retrieve all push rulesets for this user. Clients can "drill-down" on
         the rulesets by suffixing a ``scope`` to this path e.g.
         ``/pushrules/global/``. This will return a subset of this data under the
-        specified key: in this case the ``global`` key.
+        specified key e.g. the ``global`` key.
       security:
         - accessToken: []
       responses:
@@ -38,7 +38,7 @@ paths:
               device:
                 type: object
                 title: Devices
-                description: A dictionary of devices.
+                description: A dictionary of profile tags to rulesets.
                 additionalProperties:
                     x-pattern: "$PROFILE_TAG"
                     type: object

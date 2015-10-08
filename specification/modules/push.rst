@@ -336,33 +336,6 @@ rules, the rule_id of the rule determines its behaviour.
 
 Push Rules: API
 ~~~~~~~~~~~~~~~
-Rules live under a hierarchy in the REST API that resembles::
-
-  $PREFIX/pushrules/<scope>/<kind>/<rule_id>
-
-The component parts are as follows:
-
-scope
-  Either 'global' or 'device/<profile_tag>' to specify global rules or
-  device rules for the given profile_tag.
-kind
-  The kind of rule, i.e. 'override', 'underride', 'sender', 'room', 'content'.
-rule_id
-  The identifier for the rule.
-
-To add or change a rule, a client performs a PUT request to the appropriate URL.
-When adding rules of a type that has an ordering, the client can add parameters
-that define the priority of the rule:
-
-before
-  Use 'before' with a rule_id as its value to make the new rule the next-more
-  important rule with respect to the given rule.
-after
-  This makes the new rule the next-less important rule relative to the given
-  rule.
-
-All requests to the push rules API also require an access_token as a query
-parameter.
 
 The content of the PUT request is a JSON object with a list of actions under the
 'actions' key and either conditions (under the 'conditions' key) or the
@@ -390,60 +363,6 @@ To add a custom sound for notifications messages containing the word 'beer' in a
 
   curl -X PUT -H "Content-Type: application/json" -d '{ "conditions": [{"kind": "event_match", "key": "content.body", "pattern": "beer" }, {"kind": "room_member_count", "is": "<=10"}], "actions" : ["notify", {"set_sound":"beeroclock.wav"}] }' "http://localhost:8008/_matrix/client/api/v1/pushrules/global/override/U2VlIHlvdSBpbiBUaGUgRHVrZQ?access_token=123456
 
-
-To delete rules, a client would just make a DELETE request to the same URL::
-
-  curl -X DELETE "http://localhost:8008/_matrix/client/api/v1/pushrules/global/room/%23spam%3Amatrix.org?access_token=123456"
-
-
-Retrieving the current ruleset can be done either by fetching individual rules
-using the scheme as specified above. This returns the rule in the same format as
-would be given in the PUT API with the addition of a rule_id::
-
-  curl "http://localhost:8008/_matrix/client/api/v1/pushrules/global/room/%23spam%3Amatrix.org?access_token=123456"
-
-Returns::
-
-  {
-    "actions": [
-        "dont_notify"
-    ],
-    "rule_id": "#spam:matrix.org",
-    "enabled": true
-  }
-
-Clients can also fetch broader sets of rules by removing path components.
-Requesting the root level returns a structure as follows::
-
-  {
-      "device": {
-          "exampledevice": {
-              "content": [],
-              "override": [],
-              "room": [
-                  {
-                      "actions": [
-                          "dont_notify"
-                      ],
-                      "rule_id": "#spam:matrix.org",
-                      "enabled", true
-                  }
-              ],
-              "sender": [],
-              "underride": []
-          }
-      },
-      "global": {
-          "content": [],
-          "override": [],
-          "room": [],
-          "sender": [],
-          "underride": []
-      }
-  }
-
-Adding patch components to the request drills down into this structure to filter
-to only the requested set of rules.
 
 Enabling and Disabling Rules
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -86,7 +86,10 @@ def get_json_schema_object_fields(obj, enforce_title=False):
                         props[key_name]["additionalProperties"],
                         enforce_title=True
                     )
-                    value_type = "{string: %s}" % nested_object[0]["title"]
+                    key = props[key_name]["additionalProperties"].get(
+                        "x-pattern", "string"
+                    )
+                    value_type = "{%s: %s}" % (key, nested_object[0]["title"])
                     if not nested_object[0].get("no-table"):
                         tables += nested_object
                 else:
