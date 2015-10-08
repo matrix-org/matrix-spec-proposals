@@ -395,11 +395,12 @@ sender and content rules)::
 Server behaviour
 ----------------
 
-HTTP Notification Protocol
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 This describes the format used by "HTTP" pushers to send notifications of
 events.
+
+{{push_notifier_http_api}}
+
+
 
 Notifications are sent as HTTP POST requests to the URL configured when the
 pusher is created, but Matrix strongly recommends that the path should be::

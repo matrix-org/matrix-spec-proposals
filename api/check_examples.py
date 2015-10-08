@@ -51,7 +51,7 @@ def check_parameter(filepath, request, parameter):
             schema['id'] = fileurl
             jsonschema.validate(example, schema)
         except Exception as e:
-            raise ValueError("Error validating JSON schema for %r %r" % (
+            raise ValueError("Error validating JSON schema for %r" % (
                 request
             ), e)
 

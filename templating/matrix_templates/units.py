@@ -228,6 +228,19 @@ class MatrixUnits(Units):
                             "type": json_body[key]["type"],
                             "desc": pdesc
                         })
+                        if json_body[key]["type"] in ["object"]:
+                            req_tables = get_json_schema_object_fields(
+                                json_body[key]
+                            )
+                            for table in req_tables:
+                                for row in table["rows"]:
+                                    endpoint["req_params"].append({
+                                        "key": key + "." + row["key"],
+                                        "loc": "JSON body",
+                                        "type": row["type"],
+                                        "desc": row["req_str"] + row["desc"]
+                                    })
+
                 # endfor[param]
                 for row in endpoint["req_params"]:
                     self.log("Request parameter: %s" % row)
