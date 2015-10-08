@@ -184,6 +184,11 @@ class MatrixUnits(Units):
                         val_type = refType  # TODO: Resolve to human-readable.
                     if not val_type and schemaFmt:
                         val_type = schemaFmt
+                    # handle top-level strings/bools
+                    if not val_type and Units.prop(param, "schema/type") == "string":
+                        val_type = "string"
+                    if not val_type and Units.prop(param, "schema/type") == "boolean":
+                        val_type = "boolean"
                     if val_type:
                         endpoint["req_params"].append({
                             "key": param["name"],

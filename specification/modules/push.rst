@@ -110,7 +110,7 @@ Underride
 
 In addition, each kind of rule may be either global or device-specific. Device
 specific rules only affect delivery of notifications via pushers with a matching
-profile_tag. All device-specific rules are higher priority than all global
+``profile_tag``. All device-specific rules are higher priority than all global
 rules. Thusly, the full list of rule kinds, in descending priority order, is as
 follows:
 
@@ -145,7 +145,7 @@ If no rules match an event, the Home Server should not notify for the message
 themselves are never alerted for.
 
 Predefined Rules
-~~~~~~~~~~~~~~~~
+++++++++++++++++
 Matrix specifies the following rule IDs for server default rules. Home Servers
 may define rules as follows with the given IDs. If Home Servers provide rules
 with these IDs, their semantics should match those given below:
@@ -247,8 +247,8 @@ with these IDs, their semantics should match those given below:
         ],
     }
 
-Push Rules: Actions:
-~~~~~~~~~~~~~~~~~~~~
+Actions
++++++++
 All rules have an associated list of 'actions'. An action affects if and how a
 notification is delivered for a matching event. This standard defines the
 following actions, although if Home servers wish to support more, they are free
@@ -273,8 +273,8 @@ Actions that have no parameters are represented as a string. Otherwise, they are
 represented as a dictionary with a key equal to their name and other keys as
 their parameters, e.g. ``{ "set_tweak": "sound", "value": "default" }``
 
-Push Rules: Actions: Tweaks
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tweaks
+^^^^^^
 The ``set_tweak`` key action is used to add an entry to the 'tweaks' dictionary
 that is sent in the notification poke. The following tweaks are defined:
 
@@ -295,8 +295,8 @@ notification light on a mobile device.
 If a kind of tweak that a client understands is not specified in an action, the
 client may choose a sensible behaviour for the tweak.
 
-Push Rules: Conditions
-~~~~~~~~~~~~~~~~~~~~~~
+Conditions
+++++++++++
 Override, Underride and Default rules have a list of 'conditions'. All
 conditions must hold true for an event in order for a rule to be applied to an
 event. A rule with no conditions always matches. Matrix specifies the following
@@ -332,44 +332,65 @@ but instead have predefined conditions, the behaviour of which can be configured
 using parameters named as described above. In the cases of room and sender
 rules, the rule_id of the rule determines its behaviour.
 
-{{pushrules_http_api}}
-
 Push Rules: API
 ~~~~~~~~~~~~~~~
 
-The content of the PUT request is a JSON object with a list of actions under the
-'actions' key and either conditions (under the 'conditions' key) or the
-appropriate parameters for the rule (under the appropriate key name).
+Clients can retrieve, add, modify and remove push rules globally or per-device
+using the APIs below.
 
-Examples:
+{{pushrules_http_api}}
 
-To create a rule that suppresses notifications for the room with ID '!dj234r78wl45Gh4D:matrix.org'::
+Examples
+++++++++
 
-  curl -X PUT -H "Content-Type: application/json" -d '{ "actions" : ["dont_notify"] }' "http://localhost:8008/_matrix/client/api/v1/pushrules/global/room/%21dj234r78wl45Gh4D%3Amatrix.org?access_token=123456"
+To create a rule that suppresses notifications for the room with ID
+``!dj234r78wl45Gh4D:matrix.org``::
 
-To suppress notifications for the user '@spambot:matrix.org'::
+  curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/room/%21dj234r78wl45Gh4D%3Amatrix.org?access_token=123456" -d \
+  '{
+     "actions" : ["dont_notify"]
+   }' 
 
-  curl -X PUT -H "Content-Type: application/json" -d '{ "actions" : ["dont_notify"] }' "http://localhost:8008/_matrix/client/api/v1/pushrules/global/sender/%40spambot%3Amatrix.org?access_token=123456"
+To suppress notifications for the user ``@spambot:matrix.org``::
 
-To always notify for messages that contain the work 'cake' and set a specific sound (with a rule_id of 'SSByZWFsbHkgbGlrZSBjYWtl')::
+  curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/sender/%40spambot%3Amatrix.org?access_token=123456" -d \
+  '{
+     "actions" : ["dont_notify"]
+   }' 
 
-  curl -X PUT -H "Content-Type: application/json" -d '{ "pattern": "cake", "actions" : ["notify", {"set_sound":"cakealarm.wav"}] }' "http://localhost:8008/_matrix/client/api/v1/pushrules/global/content/SSByZWFsbHkgbGlrZSBjYWtl?access_token=123456"
+To always notify for messages that contain the work 'cake' and set a specific
+sound (with a rule_id of ``SSByZWFsbHkgbGlrZSBjYWtl``)::
 
-To add a rule suppressing notifications for messages starting with 'cake' but ending with 'lie', superseeding the previous rule::
+  curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/content/SSByZWFsbHkgbGlrZSBjYWtl?access_token=123456" -d \
+  '{
+     "pattern": "cake",
+     "actions" : ["notify", {"set_sound":"cakealarm.wav"}]
+   }' 
 
-  curl -X PUT -H "Content-Type: application/json" -d '{ "pattern": "cake*lie", "actions" : ["notify"] }' "http://localhost:8008/_matrix/client/api/v1/pushrules/global/content/U3BvbmdlIGNha2UgaXMgYmVzdA?access_token=123456&before=SSByZWFsbHkgbGlrZSBjYWtl"
+To add a rule suppressing notifications for messages starting with 'cake' but
+ending with 'lie', superseding the previous rule::
 
-To add a custom sound for notifications messages containing the word 'beer' in any rooms with 10 members or fewer (with greater importance than the room, sender and content rules)::
+  curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/content/U3BvbmdlIGNha2UgaXMgYmVzdA?access_token=123456&before=SSByZWFsbHkgbGlrZSBjYWtl" -d \
+  '{
+     "pattern": "cake*lie",
+     "actions" : ["notify"]
+   }' 
 
-  curl -X PUT -H "Content-Type: application/json" -d '{ "conditions": [{"kind": "event_match", "key": "content.body", "pattern": "beer" }, {"kind": "room_member_count", "is": "<=10"}], "actions" : ["notify", {"set_sound":"beeroclock.wav"}] }' "http://localhost:8008/_matrix/client/api/v1/pushrules/global/override/U2VlIHlvdSBpbiBUaGUgRHVrZQ?access_token=123456
+To add a custom sound for notifications messages containing the word 'beer' in
+any rooms with 10 members or fewer (with greater importance than the room,
+sender and content rules)::
 
-
-Enabling and Disabling Rules
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Rules can be enabled or disabled with a PUT operation to the 'enabled' component
-beneath the rule's URI with a content of 'true' or 'false'::
-
-  curl -X PUT -H "Content-Type: application/json" -d 'false' "http://localhost:8008/_matrix/client/api/v1/pushrules/global/sender/%40spambot%3Amatrix.org/enabled?access_token=123456"
+  curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/override/U2VlIHlvdSBpbiBUaGUgRHVrZQ?access_token=123456" -d \
+  '{
+     "conditions": [
+       {"kind": "event_match", "key": "content.body", "pattern": "beer" },
+       {"kind": "room_member_count", "is": "<=10"}
+     ],
+     "actions" : [
+       "notify",
+       {"set_sound":"beeroclock.wav"}
+     ]
+   }' 
 
 Server behaviour
 ----------------
@@ -504,8 +525,11 @@ rejected
   necessarily be the notification in the request that failed: it could be that
   a previous notification to the same pushkey failed.
 
-Push: Recommendations for APNS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Push Gateway behaviour
+----------------------
+
+Recommendations for APNS
+~~~~~~~~~~~~~~~~~~~~~~~~
 For sending APNS notifications, the exact format is flexible and up to the
 client app and its push gateway to agree on (since APNS requires that the sender
 have a private key owned by the app developer, each app must have its own push
@@ -517,9 +541,6 @@ gateway). However, Matrix strongly recommends:
  * That APNS push gateways do not attempt to wait for errors from the APNS
    gateway before returning and instead to store failures and return
    'rejected' responses next time that pushkey is used.
-
-Push Gateway behaviour
-----------------------
 
 Security considerations
 -----------------------

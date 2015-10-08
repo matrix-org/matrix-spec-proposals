@@ -52,7 +52,7 @@ def check_parameter(filepath, request, parameter):
             jsonschema.validate(example, schema)
         except Exception as e:
             raise ValueError("Error validating JSON schema for %r %r" % (
-                request, code
+                request
             ), e)
 
 
