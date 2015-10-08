@@ -40,7 +40,7 @@ Response format:
 {# Desc needs to prepend the required text (maybe) and prepend spaces too -#}
 {#      It also needs to then wrap inside the desc col (42 ch width) -#}
 {# -#}
-{{row.key}}{{row.type|indent(24-row.key|length)}}{{row.desc|wrap(40,row.req_str | indent(26 - (row.type|length))) |indent_block(50)}}
+{{row.key}}{{row.type|indent(24-row.key|length)}}{{row.desc|wrap(42,row.req_str | indent(26 - (row.type|length))) |indent_block(50)}}
 {% endfor -%}
 ======================= ========================= ==========================================
 
