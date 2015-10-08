@@ -1,0 +1,20 @@
+{
+  "type": "object", 
+  "properties": {
+    "default": {
+      "type": "boolean"
+    }, 
+    "enabled": {
+      "type": "boolean"
+    }, 
+    "rule_id": {
+      "type": "string"
+    }, 
+    "actions": {
+      "items": {
+        "type": ["object", "string"]
+      }, 
+      "type": "array"
+    }
+  }
+}

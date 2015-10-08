@@ -30,6 +30,7 @@ paths:
         - accessToken: []
       responses:
         200:
+          description: All the push rulesets for this user.
           schema:
             type: object
             required: ["device", "global"]
@@ -38,21 +39,20 @@ paths:
                 type: object
                 title: Devices
                 description: A dictionary of devices.
-                patternProperties:
-                  ".*":
+                additionalProperties:
                     x-pattern: "$PROFILE_TAG"
                     type: object
                     description: The ruleset for this profile tag.
                     title: Ruleset
                     allOf: [
-                      "$ref": "definitions/push_ruleset.yaml"
+                      "$ref": "definitions/push_ruleset.json"
                     ]
               global:
                 type: object
                 description: The global ruleset.
                 title: Ruleset
                 allOf: [
-                  "$ref": "definitions/push_ruleset.yaml"
+                  "$ref": "definitions/push_ruleset.json"
                 ]
           examples:
             application/json: |-
@@ -292,14 +292,11 @@ paths:
               }
           schema:
             type: object
-            required: ["enabled", "rule_id", "actions"]
-            properties:
-              enabled:
-                type: boolean
-                description: Whether this rule is active or not.
-              rule_id:
-                type: string
-                description: The rule ID from the path.
+            description: The push rule.
+            title: PushRule
+            allOf: [
+              "$ref": "definitions/push_rule.json"
+            ]
     delete:
       summary: Delete a push rule.
       description: |-
@@ -330,6 +327,14 @@ paths:
           x-example: "#spam:example.com"
           description: |
             The identifier for the rule.
+      responses:
+        200:
+          description: The push rule was deleted.
+          examples:
+            application/json: |-
+              {}
+          schema:
+            type: object  # empty json object
     put:
       summary: Add or change a push rule.
       description: |-
