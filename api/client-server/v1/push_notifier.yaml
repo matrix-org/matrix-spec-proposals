@@ -18,7 +18,7 @@ paths:
       description: |-
         This endpoint is invoked by HTTP pushers to notify a push gateway about
         an event.
-        *NB: Notifications are send to the URL configured when the pusher is
+        *NB: Notifications are sent to the URL configured when the pusher is
         created. This means that the HTTP path may be different depending on the
         push gateway.*
       parameters:
@@ -111,10 +111,6 @@ paths:
                   content:
                     type: object
                     title: EventContent
-                    properties:
-                      body:
-                        type: string
-                        description: Message text
                     description: |-
                       The ``content`` field from the event, if present. If the
                       event had no content field, this field is omitted.
@@ -162,21 +158,12 @@ paths:
                         A dictionary of additional pusher-specific data. For
                         'http' pushers, this is the data dictionary passed in at
                         pusher creation minus the ``url`` key.
-                      properties:
-                        foo:
-                          type: string
                     tweaks:
                       type: object
                       title: Tweaks
                       description: |-
                         A dictionary of customisations made to the way this
                         notification is to be presented. These are added by push rules.
-                      properties:
-                        sound:
-                          type: string
-                          description: |-
-                            Sets the sound file that should be played.
-                            ``default`` means that a default sound should be played.
       responses:
         200:
           description: A list of rejected push keys.

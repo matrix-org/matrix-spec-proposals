@@ -62,6 +62,13 @@ def get_json_schema_object_fields(obj, enforce_title=False):
                     props[pretty_key] = props[key_name]
                     del props[key_name]
     if not props and not parents:
+        # Sometimes you just want to specify that a thing is an object without
+        # doing all the keys. Allow people to do that if they set a 'title'.
+        if obj.get("title"):
+            parents = [{
+                "$ref": obj.get("title")
+            }]
+    if not props and not parents:
         raise Exception(
             "Object %s has no properties or parents." % obj
         )

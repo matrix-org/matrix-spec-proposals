@@ -5,21 +5,21 @@ Push Notifications
 
 ::
 
-                                   +--------------------+ +-------------------+
-                  Matrix HTTP      |                    | |                   |
-             Notification Protocol |   App Developer    | |   Device Vendor   |
-                                   |                    | |                   |
-           +-------------------+   | +----------------+ | | +---------------+ |
-           |                   |   | |                | | | |               | |
-           | Matrix Home Server+----->  Push Gateway  | +---> Push Provider | |
-           |                   |   | |                | | | |               | |
-           +-^-----------------+   | +----------------+ | | +----+----------+ |
-             |                     |                    | |      |            |
-    Matrix   |                     |                    | |      |            |
- Client/Server API  +              |                    | |      |            |
-             |      |              +--------------------+ +-------------------+
-             |   +--+-+                                          |             
-             |   |    <------------------------------------------+             
+                                   +--------------------+  +-------------------+
+                  Matrix HTTP      |                    |  |                   |
+             Notification Protocol |   App Developer    |  |   Device Vendor   |
+                                   |                    |  |                   |
+           +-------------------+   | +----------------+ |  | +---------------+ |
+           |                   |   | |                | |  | |               | |
+           | Matrix Home Server+----->  Push Gateway  +------> Push Provider | |
+           |                   |   | |                | |  | |               | |
+           +-^-----------------+   | +----------------+ |  | +----+----------+ |
+             |                     |                    |  |      |            |
+    Matrix   |                     |                    |  |      |            |
+ Client/Server API  +              |                    |  |      |            |
+             |      |              +--------------------+  +-------------------+
+             |   +--+-+                                           |             
+             |   |    <-------------------------------------------+             
              +---+    |                                                        
                  |    |          Provider Push Protocol                        
                  +----+                                                        
@@ -28,7 +28,7 @@ Push Notifications
 
 
 This module adds support for push notifications. Homeservers send notifications
-of user events to user-configured HTTP endpoints. Users may also configure a
+of events to user-configured HTTP endpoints. Users may also configure a
 number of rules that determine which events generate notifications. These are
 all stored and managed by the user's homeserver. This allows user-specific push
 settings to be reused between client applications.
@@ -105,8 +105,8 @@ Override Rules ``override``
 Content-specific Rules ``content``
   These configure behaviour for (unencrypted) messages that match certain
   patterns. Content rules take one parameter: ``pattern``, that gives the glob
-  pattern to match against. This is treated in the same way as pattern for
-  ``event_match`` conditions, below.
+  pattern to match against. This is treated in the same way as ``pattern`` for
+  ``event_match``.
 Room-specific Rules ``room``
   These rules change the behaviour of all messages for a given room. The
   ``rule_id`` of a room rule is always the ID of the room that it affects.
@@ -144,7 +144,52 @@ will be sent to the Push Gateway.
 Each rule can be enabled or disabled. Disabled rules never match. If no rules
 match an event, the homeserver MUST NOT notify the Push Gateway for that event.
 Homeservers MUST NOT notify the Push Gateway for events that the user has sent
-themselves. 
+themselves.
+
+Actions
++++++++
+All rules have an associated list of ``actions``. An action affects if and how a
+notification is delivered for a matching event. The following actions are defined:
+
+``notify``
+  This causes each matching event to generate a notification.
+``dont_notify``
+  This prevents each matching event from generating a notification
+``coalesce``
+  This enables notifications for matching events but activates homeserver
+  specific behaviour to intelligently coalesce multiple events into a single 
+  notification. Not all homeservers may support this. Those that do not support
+  it should treat it as the ``notify`` action.
+``set_tweak``
+  Sets an entry in the ``tweaks`` dictionary key that is sent in the notification
+  request to the Push Gateway. This takes the form of a dictionary with a
+  ``set_tweak`` key whose value is the name of the tweak to set. It may also
+  have a ``value`` key which is the value to which it should be set.
+
+Actions that have no parameters are represented as a string. Otherwise, they are
+represented as a dictionary with a key equal to their name and other keys as
+their parameters, e.g. ``{ "set_tweak": "sound", "value": "default" }``
+
+Tweaks
+^^^^^^
+The ``set_tweak`` action is used to add an entry to the 'tweaks' dictionary
+that is sent in the notification request to the Push Gateway. The following
+tweaks are defined:
+
+``sound``
+  A string representing the sound to be played when this notification arrives.
+  A value of ``default`` means to play a default sound.
+``highlight``
+  A boolean representing whether or not this message should be highlighted in
+  the UI. This will normally take the form of presenting the message in a
+  different colour and/or style. The UI might also be adjusted to draw
+  particular attention to the room in which the event occurred. The ``value``
+  may be omitted from the highlight tweak, in which case it should default to
+  ``true``.
+
+Tweaks are passed transparently through the homeserver so client applications
+and Push Gateways may agree on additional tweaks. For example, a tweak may be
+added to specify how to flash the notification light on a mobile device.
 
 Predefined Rules
 ++++++++++++++++
@@ -251,49 +296,7 @@ server-default rules are specified:
         ],
     }
 
-Actions
-+++++++
-All rules have an associated list of ``actions``. An action affects if and how a
-notification is delivered for a matching event. The following actions are defined:
 
-``notify``
-  This causes each matching event to generate a notification.
-``dont_notify``
-  This prevents this event from generating a notification
-``coalesce``
-  This enables notifications for matching events but activates homeserver
-  specific behaviour to intelligently coalesce multiple events into a single 
-  notification. Not all homeservers may support this. Those that do not support
-  it should treat it as the ``notify`` action.
-``set_tweak``
-  Sets an entry in the ``tweaks`` dictionary key that is sent in the notification
-  request. This takes the form of a dictionary with a ``set_tweak`` key whose value
-  is the name of the tweak to set. It may also have a ``value`` key which is
-  the value to which it should be set.
-
-Actions that have no parameters are represented as a string. Otherwise, they are
-represented as a dictionary with a key equal to their name and other keys as
-their parameters, e.g. ``{ "set_tweak": "sound", "value": "default" }``
-
-Tweaks
-^^^^^^
-The ``set_tweak`` action is used to add an entry to the 'tweaks' dictionary
-that is sent in the notification request. The following tweaks are defined:
-
-``sound``
-  A string representing the sound to be played when this notification arrives.
-  A value of ``default`` means to play a default sound.
-``highlight``
-  A boolean representing whether or not this message should be highlighted in
-  the UI. This will normally take the form of presenting the message in a
-  different colour and/or style. The UI might also be adjusted to draw
-  particular attention to the room in which the event occurred. The ``value``
-  may be omitted from the highlight tweak, in which case it should default to
-  ``true``.
-
-Tweaks are passed transparently through the homeserver so client applications
-and Push Gateways may agree on additional tweaks. For example, a tweak may be
-added to specify how to flash the notification light on a mobile device.
 
 Conditions
 ++++++++++
@@ -349,14 +352,14 @@ To create a rule that suppresses notifications for the room with ID
   curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/room/%21dj234r78wl45Gh4D%3Amatrix.org?access_token=123456" -d \
   '{
      "actions" : ["dont_notify"]
-   }' 
+   }'
 
 To suppress notifications for the user ``@spambot:matrix.org``::
 
   curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/sender/%40spambot%3Amatrix.org?access_token=123456" -d \
   '{
      "actions" : ["dont_notify"]
-   }' 
+   }'
 
 To always notify for messages that contain the work 'cake' and set a specific
 sound (with a rule_id of ``SSByZWFsbHkgbGlrZSBjYWtl``)::
@@ -365,7 +368,7 @@ sound (with a rule_id of ``SSByZWFsbHkgbGlrZSBjYWtl``)::
   '{
      "pattern": "cake",
      "actions" : ["notify", {"set_sound":"cakealarm.wav"}]
-   }' 
+   }'
 
 To add a rule suppressing notifications for messages starting with 'cake' but
 ending with 'lie', superseding the previous rule::
@@ -374,7 +377,7 @@ ending with 'lie', superseding the previous rule::
   '{
      "pattern": "cake*lie",
      "actions" : ["notify"]
-   }' 
+   }'
 
 To add a custom sound for notifications messages containing the word 'beer' in
 any rooms with 10 members or fewer (with greater importance than the room,
@@ -390,14 +393,14 @@ sender and content rules)::
        "notify",
        {"set_sound":"beeroclock.wav"}
      ]
-   }' 
+   }'
 
 Server behaviour
 ----------------
 
 This describes the format used by "HTTP" pushers to send notifications of
-events. If the endpoint returns an HTTP error code, the homeserver should retry
-for a reasonable amount of time with a reasonable back-off scheme.
+events to Push Gateways. If the endpoint returns an HTTP error code, the
+homeserver SHOULD retry for a reasonable amount of time using exponential-backoff.
 
 {{push_notifier_http_api}}
 

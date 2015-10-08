@@ -69,7 +69,7 @@ paths:
                 description: |-
                   This is a string that determines what set of device rules will
                   be matched when evaluating push rules for this pusher. It is
-                  an arbitrary string. Multiple devices maybe use the same
+                  an arbitrary string. Multiple devices may use the same
                   ``profile_tag``. It is advised that when an app's data is
                   copied or restored to a different device, this value remain
                   the same. Client apps should offer ways to change the
