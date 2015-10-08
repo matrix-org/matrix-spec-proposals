@@ -39,6 +39,16 @@ paths:
           description: The maximum time in milliseconds to wait for an event.
           required: false
           x-example: "35000"
+        - in: query
+          type: string
+          name: archived
+          description: |-
+            Whether to include rooms that the user has left. If absent then
+            only rooms that the user has been invited to or has joined are
+            included. If set to "1" then rooms that the user has left are
+            included as well.
+          required: false
+          x-example: "1"
       responses:
         200:
           description: "The events received, which may be none."
