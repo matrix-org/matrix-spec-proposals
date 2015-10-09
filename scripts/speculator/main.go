@@ -82,8 +82,11 @@ func gitCheckout(path, sha string) error {
 	return runGitCommand(path, []string{"checkout", sha})
 }
 
-func gitFetch(path string) error {
-	return runGitCommand(path, []string{"fetch"})
+func gitFetchAndMerge(path string) error {
+	if err := runGitCommand(path, []string{"fetch"}); err != nil {
+		return err
+	}
+	return runGitCommand(path, []string{"merge", "origin/master"})
 }
 
 func runGitCommand(path string, args []string) error {
@@ -142,7 +145,7 @@ type server struct {
 // generateAt generates spec from repo at sha.
 // Returns the path where the generation was done.
 func (s *server) generateAt(sha string) (dst string, err error) {
-	err = gitFetch(s.matrixDocCloneURL)
+	err = gitFetchAndMerge(s.matrixDocCloneURL)
 	if err != nil {
 		return
 	}
@@ -159,27 +162,11 @@ func (s *server) generateAt(sha string) (dst string, err error) {
 	return
 }
 
-func (s *server) getSHAOf(ref string) (string, error) {
-	cmd := exec.Command("git", "rev-list", ref, "-n1")
-	cmd.Dir = path.Join(s.matrixDocCloneURL)
-	var b bytes.Buffer
-	cmd.Stdout = &b
-	err := cmd.Run()
-	if err != nil {
-		return "", fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())
-	}
-	return strings.TrimSpace(b.String()), nil
-}
-
 func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 	var sha string
 
 	if strings.ToLower(req.URL.Path) == "/spec/head" {
-		originHead, err := s.getSHAOf("origin/master")
-		if err != nil {
-			writeError(w, 500, err)
-		}
-		sha = originHead
+		sha = "HEAD"
 	} else {
 		pr, err := lookupPullRequest(*req.URL, "/spec")
 		if err != nil {
