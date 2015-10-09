@@ -178,6 +178,7 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 		originHead, err := s.getSHAOf("origin/master")
 		if err != nil {
 			writeError(w, 500, err)
+			return
 		}
 		sha = originHead
 	} else {
