@@ -86,7 +86,7 @@ func gitFetchAndMerge(path string) error {
 	if err := runGitCommand(path, []string{"fetch"}); err != nil {
 		return err
 	}
-	return runGitCommand(path, []string{"merge"})
+	return runGitCommand(path, []string{"merge", "origin/master"})
 }
 
 func runGitCommand(path string, args []string) error {
