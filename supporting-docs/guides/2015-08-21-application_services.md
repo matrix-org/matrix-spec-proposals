@@ -17,7 +17,7 @@ One of the main use cases for application services is protocol bridges. Our Matr
 ### Some of the features of the IRC application service we have since implemented include:
 
 - Specific channel-to-matrix room bridging : This is what the original IRC bot did. You can specify specific channels and specific room IDs, and messages will be bridged.
-- Dynamic channel-to-matrix room bridging> : This allows Matrix users to join any channel on an IRC network, rather than being forced to use one of the specific channels configured.
+- Dynamic channel-to-matrix room bridging : This allows Matrix users to join any channel on an IRC network, rather than being forced to use one of the specific channels configured.
 - Two-way PM support : IRC users can PM the virtual "M-" users and private Matrix rooms will be created. Likewise, Matrix users can invite the virtual "@irc_Nick:domain" user IDs to a room and a PM to the IRC nick will be made.
 - IRC nick changing support: Matrix users are no longer forced to use "M-" nicks and can change them by sending "!nick" messages directly to the bridge.
 - Ident support: This allows usernames to be authenticated for virtual IRC clients, which means IRC bans can be targeted at the Matrix user rather than the entire application service.
