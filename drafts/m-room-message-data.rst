@@ -8,6 +8,19 @@ which may have subtly different ways to express the same data. This proposal
 defines a set of **guidelines** which client SHOULD use when attaching data to
 ``m.room.message`` events.
 
+Motivation
+==========
+
+It would be nice to allow complex messages to be displayed to the client. For
+example, bringing up a JIRA issue and allowing the client to hit "assign to me"
+or "resolve" from within Matrix. This is currently hard to do because we don't
+contain fields with the information required in the message itself. Even rich
+text messages are not rich enough to provide this ability (which requires the
+client to know about JIRA, be able to get tokens and hit endpoints). With the
+anticipation that attaching data to messages will become prolific, this document
+tries to define a set of guidelines which creates some structure with how the
+data is represented.
+
 Proposal
 ========
 
@@ -25,10 +38,11 @@ key.
 
 Contextual data for this message SHOULD be contained under a ``context`` key.
 If the message data is related to a website (Github, Google, Facebook, etc) then
-a ``domain`` should be specified within ``context``. Likewise, if the message
-data involves an entity (a Facebook user, a Github user, etc) then an ``entity``
-should be specified within ``context``. Extra data which only makes sense within
-the given context should be added as keys within the ``context`` object.
+a string ``domain`` should be specified within ``context``. Likewise, if the
+message data involves an entity (a Facebook user, a Github user, etc) then a string
+``entity`` should be specified within ``context``. Extra data which only makes
+sense within the given context should be added as keys within the ``context``
+object.
 
 
 ::
@@ -53,14 +67,19 @@ Rationale
 =========
 
 Extensible data is inserted under the ``data`` key to avoid polluting the
-top-level ``body`` namespace. The intention of ``link`` is to allow an entire
-message to be clickable (e.g. git commits )
-
-- why under data key
-- why link AND uri keys
-- 
+top-level ``body`` namespace.
 
 Clients may wish to display messages which can be linkified. A standard way to
 represent this is desirable beyond manually parsing the ``body`` looking for
-"http-like" links. This also allows any text to be linked even if it doesn't
-look like a URL.
+"http-like" links. This also allows anything to be linked even if it doesn't
+look like a URL (e.g. random text, images). The intention of ``link`` is to
+allow an entire message to be clickable (e.g. linking through to git commits).
+If there are multiple links, the intention is that they are done in the body
+itself as HTTP URLs which are then linkified.
+
+The ``uri`` key exists to act as a "domain-specific" link, which only makes sense
+if you know how to process the URI. For example, an IRC message could have
+a ``link`` taking you to an IRC web-client to respond or a ``uri`` which contains
+the ``irc://`` room in which the user spoke. Knowledgeable clients who know how
+to process ``irc`` URIs can do so, but dumb clients can just display the ``link``.
+
