@@ -64,6 +64,8 @@ Push Gateway
   devices or GCM for Android devices. Clients inform the homeserver which
   Push Gateway to send notifications to when it sets up a Pusher.
 
+.. _def:pushers:
+
 Pusher
   A pusher is a worker on the homeserver that manages the sending
   of HTTP notifications for a user. A user can have multiple pushers: one per
@@ -88,6 +90,8 @@ Clients MUST configure a Pusher before they will receive push notifications.
 There is a single API endpoint for this, as described below.
 
 {{pusher_http_api}}
+
+.. _pushers: `def:pushers`_
 
 Push Rules
 ~~~~~~~~~~

@@ -22,7 +22,7 @@ paths:
     post:
       summary: Modify a pusher for this user on the homeserver.
       description: |-
-        This endpoint allows the creation, modification and deletion of pushers
+        This endpoint allows the creation, modification and deletion of `pushers`_
         for this user ID. The behaviour of this endpoint varies depending on the
         values in the JSON body.
       security:
