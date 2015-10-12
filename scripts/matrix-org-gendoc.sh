@@ -37,7 +37,9 @@ fi
 
 python gendoc.py
 
-perl -MFile::Slurp -pi -e 'BEGIN { $header = read_file("'$HEADER'") } s#<head>#<head>$header#' gen/specification.html gen/howtos.html
+perl -MFile::Slurp -pi -e 'BEGIN { $header = read_file("'$HEADER'") } s#<head>#<head>$header
+  <link rel="stylesheet" href="//matrix.org/docs/guides/css/docs_overrides.css">
+#' gen/specification.html gen/howtos.html
 
 perl -MFile::Slurp -pi -e 'BEGIN { $nav = read_file("'$NAV_BAR'") } s#<body>#  <body class="blog et_fixed_nav et_cover_background et_right_sidebar">
    <div id="page-wrapper">
