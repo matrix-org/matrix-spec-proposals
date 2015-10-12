@@ -68,7 +68,7 @@ with the querystring
 ?public_key=``public_key``. A JSON object will be returned.
 The invitation is valid if the object contains a key named ``valid`` which is
 ``true``. Otherwise, the invitation MUST be rejected. This request is
-idempotent, and may be retried by the homeserver.
+idempotent and may be retried by the homeserver.
 
 If a homeserver is joining a room for the first time because of an
 ``m.room.third_party_invite``, the server which is already participating in the
@@ -83,24 +83,24 @@ membership is questionable.
 
 For example:
 
-If room R has two participating homeservers, H1, H2
+    If room R has two participating homeservers, H1, H2
 
-And user A on H1 invites a third party identifier to room R
+    And user A on H1 invites a third party identifier to room R
 
-H1 asks the identity server for a binding to a Matrix user ID, and has none,
-so issues an ``m.room.third_party_invite`` event to the room.
+    H1 asks the identity server for a binding to a Matrix user ID, and has none,
+    so issues an ``m.room.third_party_invite`` event to the room.
 
-When the third party user validates their identity, they are told about the
-invite, and ask their homeserver, H3, to join the room.
+    When the third party user validates their identity, they are told about the
+    invite, and ask their homeserver, H3, to join the room.
 
-H3 validates that sign(``token``, ``public_key``) = ``signature``, and may check
-``key_validity_url``.
+    H3 validates that sign(``token``, ``public_key``) = ``signature``, and may check
+    ``key_validity_url``.
 
-H3 then asks H1 to join it to the room. H1 *must* validate that
-sign(``token``, ``public_key``) = ``signature`` *and* check ``key_validity_url``.
+    H3 then asks H1 to join it to the room. H1 *must* validate that
+    sign(``token``, ``public_key``) = ``signature`` *and* check ``key_validity_url``.
 
-Having validated these things, H1 writes the join event to the room, and H3
-begins participating in the room. H2 *must* accept this event.
+    Having validated these things, H1 writes the join event to the room, and H3
+    begins participating in the room. H2 *must* accept this event.
 
 The reason that no other homeserver may reject the event based on checking
 ``key_validity_url`` is that we must ensure event acceptance is deterministic.
