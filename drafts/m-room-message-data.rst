@@ -5,7 +5,7 @@ The specification does not define an extensible way to attach data to an
 ``m.room.message`` event. Whilst we freely say that keys can be "anything you
 want", this does not ensure interoperability between client implementations
 which may have subtly different ways to express the same data. This proposal
-defines a set of **guidelines** which client SHOULD use when attaching data to
+defines a set of **guidelines** which clients SHOULD use when attaching data to
 ``m.room.message`` events.
 
 Motivation
@@ -18,8 +18,8 @@ contain fields with the information required in the message itself. Even rich
 text messages are not rich enough to provide this ability (which requires the
 client to know about JIRA, be able to get tokens and hit endpoints). With the
 anticipation that attaching data to messages will become prolific, this document
-tries to define a set of guidelines which creates some structure with how the
-data is represented.
+tries to define a set of guidelines to get a more consistent representation of
+the same data.
 
 Proposal
 ========
