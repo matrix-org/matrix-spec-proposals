@@ -22,12 +22,10 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/content_repo.rst
     - modules/end_to_end_encryption.rst
     - modules/history_visibility.rst
+    - modules/push.rst
     - modules/third_party_invites.rst
-    - modules/push_overview.rst
-      # relative depth
-    - { 1: [modules/push_cs_api.rst , modules/push_push_gw_api.rst] }
 
-title_styles: ["=", "-", "~", "+", "^"]
+title_styles: ["=", "-", "~", "+", "^", "`"]
 
 # The templating system doesn't know the right title style to use when generating
 # RST. These symbols are 'relative' to say "make a sub-title" (-1), "make a title

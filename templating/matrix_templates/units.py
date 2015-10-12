@@ -62,6 +62,13 @@ def get_json_schema_object_fields(obj, enforce_title=False):
                     props[pretty_key] = props[key_name]
                     del props[key_name]
     if not props and not parents:
+        # Sometimes you just want to specify that a thing is an object without
+        # doing all the keys. Allow people to do that if they set a 'title'.
+        if obj.get("title"):
+            parents = [{
+                "$ref": obj.get("title")
+            }]
+    if not props and not parents:
         raise Exception(
             "Object %s has no properties or parents." % obj
         )
@@ -86,7 +93,10 @@ def get_json_schema_object_fields(obj, enforce_title=False):
                         props[key_name]["additionalProperties"],
                         enforce_title=True
                     )
-                    value_type = "{string: %s}" % nested_object[0]["title"]
+                    key = props[key_name]["additionalProperties"].get(
+                        "x-pattern", "string"
+                    )
+                    value_type = "{%s: %s}" % (key, nested_object[0]["title"])
                     if not nested_object[0].get("no-table"):
                         tables += nested_object
                 else:
@@ -181,6 +191,11 @@ class MatrixUnits(Units):
                         val_type = refType  # TODO: Resolve to human-readable.
                     if not val_type and schemaFmt:
                         val_type = schemaFmt
+                    # handle top-level strings/bools
+                    if not val_type and Units.prop(param, "schema/type") == "string":
+                        val_type = "string"
+                    if not val_type and Units.prop(param, "schema/type") == "boolean":
+                        val_type = "boolean"
                     if val_type:
                         endpoint["req_params"].append({
                             "key": param["name"],
@@ -207,13 +222,48 @@ class MatrixUnits(Units):
                         )
                     # loop top-level json keys
                     json_body = Units.prop(param, "schema/properties")
+                    required_params = []
+                    if Units.prop(param, "schema/required"):
+                        required_params = Units.prop(param, "schema/required")
                     for key in json_body:
+                        req_obj = json_body[key]
+                        pdesc = req_obj["description"]
+                        if key in required_params:
+                            pdesc = "**Required.** " + pdesc
+
+                        is_array = req_obj["type"] == "array"
+                        is_array_of_objects = (
+                            is_array and req_obj["items"]["type"] == "object"
+                        )
                         endpoint["req_params"].append({
                             "key": key,
                             "loc": "JSON body",
-                            "type": json_body[key]["type"],
-                            "desc": json_body[key]["description"]
+                            "type": (
+                                req_obj["type"] if not is_array else
+                                "array[%s]" % req_obj["items"]["type"]
+                            ),
+                            "desc": pdesc
                         })
+                        if not is_array_of_objects and req_obj["type"] == "array":
+                            continue
+                        # Put in request.dot.notation for nested keys
+                        if req_obj["type"] in ["object", "array"]:
+                            if is_array_of_objects:
+                                req_obj = req_obj["items"]
+
+                            req_tables = get_json_schema_object_fields(req_obj)
+                            key_sep = "[0]." if is_array else "."
+                            for table in req_tables:
+                                if table.get("no-table"):
+                                    continue
+                                for row in table["rows"]:
+                                    endpoint["req_params"].append({
+                                        "key": key + key_sep + row["key"],
+                                        "loc": "JSON body",
+                                        "type": row["type"],
+                                        "desc": row["req_str"] + row["desc"]
+                                    })
+
                 # endfor[param]
                 for row in endpoint["req_params"]:
                     self.log("Request parameter: %s" % row)
