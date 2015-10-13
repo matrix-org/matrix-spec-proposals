@@ -244,10 +244,6 @@ div.viewcode-block:target {
     border-bottom: 1px solid #ac9;
 }
 
-p {
-	margin: 0;
-}
-
 ul li dd {
 	margin-top: 0;
 }
@@ -266,5 +262,25 @@ dd ul {
 
 li dd ul {
 	margin-bottom: 0;
+}
+
+table {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 0;
+    border-collapse: collapse;
+}
+
+td[colspan]:not([colspan="1"]) {
+    background: #eeeeee;
+}
+
+thead {
+    background: #eeeeee;
+}
+
+div.admonition-rationale {
+    background-color: #efe;
+    border: 1px solid #ccc;
 }
 

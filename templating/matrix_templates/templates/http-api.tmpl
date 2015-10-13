@@ -1,0 +1,72 @@
+``{{endpoint.method}} {{endpoint.path}}``
+{{(5 + (endpoint.path | length) + (endpoint.method | length)) * title_kind}}
+{% if "alias_for_path" in endpoint -%}
+``{{endpoint.path}}`` is an alias for `{{endpoint.alias_for_path}}`_.
+
+.. _`{{endpoint.alias_for_path}}`: #{{endpoint.alias_link}}
+{% else -%}
+
+{{endpoint.desc | wrap(80)}}
+
+{{":Rate-limited: Yes." if endpoint.rate_limited else "" }}
+{{":Requires auth: Yes." if endpoint.requires_auth else "" }}
+
+Request format:
+
+=================================== ================= ===========================================
+   Parameter                             Value                        Description
+=================================== ================= ===========================================
+{% for loc in endpoint.req_param_by_loc -%}
+*{{loc}} parameters*
+------------------------------------------------------------------------------------------------- 
+{% for param in endpoint.req_param_by_loc[loc] -%}
+{{param.key}}{{param.type|indent(36-param.key|length)}}{{param.desc|indent(18-param.type|length)|wrap(43)|indent_block(54)}}
+{% endfor -%}
+{% endfor -%}
+=================================== ================= ===========================================
+
+{% if endpoint.res_tables|length > 0 -%}
+Response format:
+
+{% for table in endpoint.res_tables -%}
+{{"``"+table.title+"``" if table.title else "" }}
+
+======================= ========================= ==========================================
+      Param                        Type                           Description
+======================= ========================= ==========================================
+{% for row in table.rows -%}
+{# -#}
+{# Row type needs to prepend spaces to line up with the type column (20 ch) -#}
+{# Desc needs to prepend the required text (maybe) and prepend spaces too -#}
+{#      It also needs to then wrap inside the desc col (42 ch width) -#}
+{# -#}
+{{row.key}}{{row.type|indent(24-row.key|length)}}{{row.desc|wrap(42,row.req_str | indent(26 - (row.type|length))) |indent_block(50)}}
+{% endfor -%}
+======================= ========================= ==========================================
+
+{% endfor %}
+{% endif -%}
+
+Example request::
+
+  {{endpoint.example.req | indent_block(2)}}
+
+{% if endpoint.example.responses|length > 0 -%}
+Response{{"s" if endpoint.example.responses|length > 1 else "" }}:
+
+{% endif -%}
+
+{% for res in endpoint.example.responses -%}
+
+**Status code {{res["code"]}}:**
+
+{{res["description"]}}
+
+Example
+
+.. code:: json
+
+  {{res["example"] | indent_block(2)}}
+
+{% endfor %}
+{% endif -%}

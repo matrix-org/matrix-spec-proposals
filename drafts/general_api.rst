@@ -555,7 +555,7 @@ signature. Requesting the "raw" federation event will have to return these keys.
 
 Account Management API ``[Draft]``
 ----------------------------------
-The registration and login APIs in v2 do not support specifying device IDs. In v2,
+The registration and login APIs in v1 do not support specifying device IDs. In v2,
 this will become *mandatory* when sending your initial request. Access tokens will
 be scoped per device, so using the same device ID twice when logging in will 
 clobber the old access token.
@@ -810,6 +810,11 @@ Notes:
 
 Presence API ``[Draft]``
 ------------------------
+
+.. FIXME
+  this seems to be ignoring activity timers entirely, which were present on
+  the planning etherpad and are present in the actual HTTP API. Needs attention.
+
 The goals of presence are to:
 
 - Let other users know if someone is "online".
@@ -817,22 +822,23 @@ The goals of presence are to:
 - Let other users know specific status information (e.g. "In a Meeting").
 
 "Online" state can be detected by inspecting when the last time the client made
-a request to the server. This could be any request, or a specific kind of request.
-For connection-orientated protocols, detecting "online" state can be determined by
-the state of this connection stream. For HTTP, this can be detected via requests
-to the event stream.
+a request to the server. This could be any request, or a specific kind of 
+request. For connection-orientated protocols, detecting "online" state can be 
+determined by the state of this connection stream. For HTTP, this can be 
+detected via requests to the event stream.
 
 Online state is separate from letting other users know if someone is *likely to
-respond* to messages. This introduces the concept of an "idle" flag, which is
-set when the user has not done any "interaction" with the app. The definition of
-"interaction" varies based on the app, so it is up to the app to set this "idle"
-flag.
+respond* to messages. This introduces the concept of being "idle", which is
+when the user has not done any "interaction" with the app for a while. The 
+definition of "interaction" and "for a while" varies based on the app, so it is
+up to the app to set when the user is idle.
 
-Letting users know specific status information can be achieved via the same method
-as v1. Status information should be scoped per *user* and not device as determining
-a union algorithm between statuses is nonsensical. Passing status information per
-device to all other users just redirects the union problem to the client, which
-will commonly be presenting this information as an icon alongside the user.
+Letting users know specific status information can be achieved via the same 
+method as v1. Status information should be scoped per *user* and not device as 
+determining a union algorithm between statuses is nonsensical. Passing status 
+information per device to all other users just redirects the union problem to 
+the client, which will commonly be presenting this information as an icon 
+alongside the user.
 
 When a client hits the event stream, the home server can treat the user as 
 "online". This behaviour should be able to be overridden to avoid flicker 
@@ -841,11 +847,11 @@ appear offline > goes into a tunnel > server times out > device regains
 connection and hits the event stream forcing the device online before the
 "appear offline" state can be set). When the client has not hit the event 
 stream for a certain period of time, the home server can treat the user as 
-"offline". 
+"offline". The user can also set a global *per-user* appear offline flag.
 
-The user should also be able to set their presence via a direct API, without 
-having to hit the event stream. The home server will set a timer when the 
-connection ends, after which it will set that device to offline.
+The user should also be able to set their presence state via a direct API, 
+without having to hit the event stream. The home server will set a timer when 
+the connection ends, after which it will set that device to offline.
 
 As the idle flag and online state is determined per device, there needs to be a
 union algorithm to merge these into a single state and flag per user, which will
@@ -859,22 +865,33 @@ Changing presence status:
 
 Inputs:
  - User ID
- - Presence status (online, away, busy, do not disturb, etc)
-Outputs:
+ - Presence status (busy, do not disturb, in a meeting, etc)
+Output:
  - None.
  
-Setting the idle flag:
+Setting presence state:
 
 Inputs:
  - User ID
- - Is idle
-Outputs:
+ - Device ID
+ - Presence state (online|idle|offline)
+Output:
+ - None.
+ 
+Setting global appear offline:
+
+Inputs:
+ - User ID
+ - Should appear offline (boolean)
+Output:
  - None.
  
 Extra parameters associated with the event stream:
 
 Inputs:
- - Presence state (online, appear offline)
+ - Presence state (online, idle, offline)
+Notes:
+ - Scoped per device just like the above API, e.g. from the access_token.
 
 
 Typing API ``[Final]``
