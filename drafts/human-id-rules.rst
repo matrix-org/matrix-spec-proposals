@@ -35,15 +35,20 @@ User ID Localparts:
  - MUST NOT contain one of the 107 blacklisted characters on this list: 
      http://kb.mozillazine.org/Network.IDN.blacklist_chars
  - After stripping " 0-9, +, -, [, ], _, and the space character it MUST NOT
-   contain characters from >1 language, defined by http://cldr.unicode.org/
+   contain characters from >1 language, defined by the `exemplar characters`_
+   on http://cldr.unicode.org/
+
+.. _exemplar characters: http://cldr.unicode.org/translation/characters#TOC-Exemplar-Characters
 
 Room Alias Localparts:
  - MUST NOT contain a ``:``
  - MUST NOT contain one of the 107 blacklisted characters on this list: 
    http://kb.mozillazine.org/Network.IDN.blacklist_chars
  - After stripping " 0-9, +, -, [, ], _, and the space character it MUST NOT
-   contain characters from >1 language, defined by http://cldr.unicode.org/
+   contain characters from >1 language, defined by the `exemplar characters`_
+   on http://cldr.unicode.org/
 
+.. _exemplar characters: http://cldr.unicode.org/translation/characters#TOC-Exemplar-Characters
 
 In the event of a failed user ID check, well behaved homeservers MUST:
  - Rewrite user IDs in the offending events to be punycode with an additional ``@``
@@ -79,11 +84,13 @@ Each ID is split into segments (localpart/domain) around the ``:``. For
 this reason, ``:`` is a reserved character and cannot be a localpart character. 
 The 107 blacklisted characters are used to prevent non-printable characters and
 spaces from being used. The decision to ban characters from more than 1 language
-matches the behaviour of Google Chrome for IDN handling. This is to protect
+matches the behaviour of `Google Chrome for IDN handling`_. This is to protect
 against common homograph attacks such as ebаy.com (Cyrillic "a", rest is
 English). This would always result in a failed check. Even with this though
 there are limitations. For example, сахар is entirely Cyrillic, whereas caxap is
-entirely Latin. 
+entirely Latin.
+
+.. _Google Chrome for IDN handling: https://www.chromium.org/developers/design-documents/idn-in-google-chrome
 
 User ID localparts cannot start with ``@`` so that a namespace of localparts
 beginning with ``@`` can be created. This namespace is used for user IDs which
