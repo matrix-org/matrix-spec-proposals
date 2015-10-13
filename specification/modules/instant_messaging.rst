@@ -12,15 +12,6 @@ Events
 
 {{m_room_message_event}}
 
-
-.. admonition:: Rationale
-
-  Not all clients can display all message types. The most commonly supported
-  message type is raw text. As a result, we chose to have a textual fallback
-  display method represented by the ``body`` key. This means that even if the
-  client cannot display a particular ``msgtype``, they can still display
-  *something*, even if it is just plain text.
-
 {{m_room_message_feedback_event}}
 
 Usage of this event is discouraged for several reasons:
@@ -44,7 +35,7 @@ m.room.message msgtypes
 
 Each `m.room.message`_ MUST have a ``msgtype`` key which identifies the type
 of message being sent. Each type has their own required and optional keys, as
-outlined below. If a client cannot display the given ``msgtype`` then it MUST
+outlined below. If a client cannot display the given ``msgtype`` then it SHOULD
 display the fallback plain text ``body`` key instead.
 
 {{msgtype_events}}
@@ -62,9 +53,7 @@ be removed entirely from the messages view.
 
 Events which have attachments (e.g. ``m.image``, ``m.file``) SHOULD be
 uploaded using the `content repository module`_ where available. The
-resulting ``mxc://`` URI can then be used in the ``url`` key. The
-attachment SHOULD be uploaded *prior* to sending the event in order to stop a
-race condition where the recipient receives a link to a non-existent attachment.
+resulting ``mxc://`` URI can then be used in the ``url`` key.
 
 .. _`content repository module`: `module:content`_
 
@@ -95,12 +84,15 @@ Local echo
 Messages SHOULD appear immediately in the message view when a user presses the
 "send" button. This should occur even if the message is still sending. This is
 referred to as "local echo". Clients SHOULD implement "local echo" of messages.
- 
-Clients need to be able to pair up the "remote echo" from the server with the
-"local echo" to prevent duplicate messages being displayed. Ideally this pairing
-would occur transparently to the user: the UI would not flicker as it transitions
-from local to remote. Flickering cannot be fully avoided in version 1 of the
-client-server API. Two scenarios need to be considered:
+
+Clients need to be able to match the message they are sending with the same
+message which they receive from the event stream. The echo of the same message
+from the event stream is referred to as "remote echo". Both echoes need to be
+identified as the same message in order to prevent duplicate messages being
+displayed. Ideally this pairing would occur transparently to the user: the UI
+would not flicker as it transitions from local to remote. Flickering cannot be
+fully avoided in version 1 of the client-server API. Two scenarios need to be
+considered:
 
 - The client sends a message and the remote echo arrives on the event stream
   *after* the request to send the message completes.
@@ -123,8 +115,8 @@ Displaying membership information with messages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Clients may wish to show the display name and avatar URL of the room member who
-sent a message. This can be achieved by inspecting the ``m.room.member`` event
-for that user ID.
+sent a message. This can be achieved by inspecting the ``m.room.member`` state
+event for that user ID.
 
 When a user paginates the message history, clients may wish to show the
 **historical** display name and avatar URL for a room member. This is possible
@@ -139,15 +131,15 @@ This can then be used to set the historical display name and avatar URL.
 Server behaviour
 ----------------
 
-Homeservers SHOULD enforce that ``m.room.message`` events have textual ``body``
-and ``msgtype`` keys by 400ing the request to send a message.
+Homeservers SHOULD reject ``m.room.message`` events which don't have a
+``msgtype`` key, or who don't have a textual ``body`` key, with an HTTP status
+code of 400.
 
 Security considerations
 -----------------------
 
-Messages sent using this module are not encrypted. Encryption can be layered
-over the top of this module: where the plaintext format is an ``m.room.message``
-conforming to this module. This can be achieved using the `E2E module`_.
+Messages sent using this module are not encrypted. Messages can be encrypted
+using the `E2E module`_.
 
 Clients should sanitise **all keys** for unsafe HTML to prevent Cross-Site
 Scripting (XSS) attacks. This includes room names and topics.
