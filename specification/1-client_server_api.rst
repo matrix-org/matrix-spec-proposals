@@ -528,7 +528,7 @@ Room events are split into two categories:
 :Message events:
   These are events which describe transient "once-off" activity in a room:
   typically communication such as sending an instant message or setting up a
-  VoIP call. These used to be called 'non-state' events.
+  VoIP call.
 
 This specification outlines several events, all with the event type prefix
 ``m.``. However, applications may wish to add their own type of event, and this
@@ -600,9 +600,6 @@ See `Room Events`_ for the ``m.`` event specification.
 Syncing rooms
 ~~~~~~~~~~~~~
 
-.. NOTE::
-  This section is a work in progress.
-
 When a client logs in, they may have a list of rooms which they have already
 joined. These rooms may also have a list of events associated with them. The
 purpose of 'syncing' is to present the current room and event information in a
@@ -620,45 +617,8 @@ presence events will also be returned. A single syncing API is provided:
    onwards. The event stream cannot do this for a single room currently.
    As a result, commenting room-scoped initial sync at this time.
 
-The |initialSync|_ API contains the following keys:
 
-``presence``
-  Description:
-    Contains a list of presence information for users the client is interested
-    in.
-  Format:
-    A JSON array of ``m.presence`` events.
-
-``end``
-  Description:
-    Contains an event stream token which can be used with the `Event Stream`_.
-  Format:
-    A string containing the event stream token.
-
-``rooms``
-  Description:
-    Contains a list of room information for all rooms the client has joined,
-    and limited room information on rooms the client has been invited to.
-  Format:
-    A JSON array containing Room Information JSON objects.
-
-Room Information:
-  Description:
-    Contains all state events for the room, along with a limited amount of
-    the most recent events, configured via the ``limit`` query
-    parameter. Also contains additional keys with room metadata, such as the
-    ``room_id`` and the client's ``membership`` to the room.
-  Format:
-    A JSON object with the following keys:
-      ``room_id``
-        A string containing the ID of the room being described.
-      ``membership``
-        A string representing the client's membership status in this room.
-      ``messages``
-        An event stream JSON object containing a ``chunk`` of recent
-        events (both state events and non-state events), along with an ``end`` token.
-      ``state``
-        A JSON array containing all the current state events for this room.
+{{sync_http_api}}
 
 Getting events for a room
 ~~~~~~~~~~~~~~~~~~~~~~~~~
