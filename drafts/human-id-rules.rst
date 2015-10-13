@@ -46,17 +46,17 @@ Room Alias Localparts:
 
 
 In the event of a failed user ID check, well behaved homeservers MUST:
-- Rewrite user IDs in the offending events to be punycode with an additional ``@``
-  prefix **before** delivering them to clients. There are no guarantees for
-  consistency between homeserver ID checking implementations. As a result, user
-  IDs MUST be sent in their *original* form over federation. This can be done in
-  a stateless manner as the punycode form has no information loss.
+ - Rewrite user IDs in the offending events to be punycode with an additional ``@``
+   prefix **before** delivering them to clients. There are no guarantees for
+   consistency between homeserver ID checking implementations. As a result, user
+   IDs MUST be sent in their *original* form over federation. This can be done in
+   a stateless manner as the punycode form has no information loss.
 
 In the event of a failed room alias check, well behaved homeservers MUST:
-- Send an HTTP status code 400 with an ``errcode`` of ``M_FAILED_HUMAN_ID_CHECK``
-  to the client if the client is attempting to *create* this alias.
-- Send an HTTP status code 400 with an ``errcode`` of ``M_FAILED_HUMAN_ID_CHECK``
-  to the client if the client is attempting to *join* a room via this alias.
+ - Send an HTTP status code 400 with an ``errcode`` of ``M_FAILED_HUMAN_ID_CHECK``
+   to the client if the client is attempting to *create* this alias.
+ - Send an HTTP status code 400 with an ``errcode`` of ``M_FAILED_HUMAN_ID_CHECK``
+   to the client if the client is attempting to *join* a room via this alias.
 
 Examples::
 
@@ -98,7 +98,7 @@ Room aliases cannot be rewritten as punycode and sent to the HS the alias is
 referring to as the HS will not necessarily understand the rewritten alias.
 
 Other rejected solutions for failed checks
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------
 - Additional key: Informational key on the event attached by HS to say "unsafe
   ID". Problem: clients can just ignore it, and since it will appear only very
   rarely, easy to forget when implementing clients.
@@ -123,4 +123,3 @@ The capitalisation rules outlined above are nice but do not fully resolve issues
 where ``@alice:example.com`` tries to speak with ``@bob:domain.com`` using
 ``@Bob:domain.com``. It is up to ``domain.com`` to map ``Bob`` to ``bob`` in
 a sensible way.
-
