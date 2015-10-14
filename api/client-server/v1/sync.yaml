@@ -30,7 +30,9 @@ paths:
         - in: query
           type: string
           name: from
-          description: The token to stream from.
+          description: |-
+            The token to stream from. This token is either from the a previous
+            request to this API or from the initial sync API.
           required: false
           x-example: "s3456_9_0"
         - in: query
@@ -40,7 +42,7 @@ paths:
           required: false
           x-example: "35000"
         - in: query
-          type: string
+          type: boolean
           name: archived
           description: |-
             Whether to include rooms that the user has left. If absent then

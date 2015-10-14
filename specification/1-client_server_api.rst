@@ -1,9 +1,6 @@
 Client-Server API
 =================
 
-Overview
---------
-
 The client-server API provides a simple lightweight API to let clients send
 messages, control rooms and synchronise conversation history. It is designed to
 support both lightweight clients which store no state and lazy-load data from
@@ -31,7 +28,7 @@ return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
 ``M_UNKNOWN_TOKEN`` respectively.
 
 User-Interactive Authentication API
------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 This section refers to API Version 2.
 
 Some API endpoints such as ``login`` or ``register`` require authentication that
@@ -159,7 +156,7 @@ absence of that login stage type in the 'completed' array indicating whether
 that stage is complete.
 
 Example
-~~~~~~~
++++++++
 At a high level, the requests made for an API call completing an auth flow with
 three stages will resemble the following diagram::
   
@@ -201,7 +198,7 @@ This specification defines the following login types:
  - ``m.login.dummy``
 
 Password-based
-~~~~~~~~~~~~~~
+++++++++++++++
 :Type:
   ``m.login.password``
 :Description:
@@ -216,7 +213,7 @@ To respond to this type, reply with an auth dict as follows::
   }
 
 Google ReCaptcha
-~~~~~~~~~~~~~~~~
+++++++++++++++++
 :Type:
   ``m.login.recaptcha``
 :Description:
@@ -230,7 +227,7 @@ To respond to this type, reply with an auth dict as follows::
   }
 
 Token-based
-~~~~~~~~~~~
++++++++++++
 :Type:
   ``m.login.token``
 :Description:
@@ -261,7 +258,7 @@ newly provisioned access_token).
 The ``token`` must be a macaroon.
 
 OAuth2-based
-~~~~~~~~~~~~
+++++++++++++
 :Type:
   ``m.login.oauth2``
 :Description:
@@ -285,7 +282,7 @@ the OAuth flow has completed, the client retries the request with the session
 only, as above.
 
 Email-based (identity server)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++++++++++++++++++++++++++++++
 :Type:
   ``m.login.email.identity``
 :Description:
@@ -310,7 +307,7 @@ To respond to this type, reply with an auth dict as follows::
   }
 
 Dummy Auth
-~~~~~~~~~~
+++++++++++
 :Type:
   ``m.login.dummy``
 :Description:
@@ -327,7 +324,7 @@ if provided::
 
 
 Fallback
-~~~~~~~~
+++++++++
 Clients cannot be expected to be able to know how to process every single login
 type. If a client does not know how to handle a given login type, it can direct
 the user to a web browser with the URL of a fallback page which will allow the
@@ -346,7 +343,15 @@ the authentication has been completed.
 Pagination
 ----------
 
-Querying large datasets in Matrix always uses the same pagination API pattern to
+.. NOTE::
+  The paths referred to in this section are not actual endpoints. They only
+  serve as examples to explain how pagination functions.
+
+Pagination is the process of dividing a dataset into multiple discrete pages.
+Matrix makes use of pagination to allow clients to view extremely large datasets.
+These datasets are not limited to events in a room (for example clients may want
+to paginate rooms in addition to events within those rooms). Regardless of *what*
+is being paginated, there is a common underlying API which is used to
 to give clients a consistent way of selecting subsets of a potentially changing
 dataset. Requests pass in ``from``, ``to``, ``dir`` and ``limit`` parameters
 which describe where to read from the stream. ``from`` and ``to`` are opaque
@@ -354,7 +359,8 @@ textual 'stream tokens' which describe the current position in the dataset.
 The ``dir`` parameter is an enum representing the direction of events to return:
 either ``f`` orwards or ``b`` ackwards. The response returns new ``start`` and
 ``end`` stream token values which can then be passed to subsequent requests to
-continue pagination.
+continue pagination. Not all endpoints will make use of all the parameters
+outlined here: see the specific endpoint in question for more information.
 
 Pagination Request Query Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -385,10 +391,10 @@ events and doesn't know any previous events::
     S                                                    E
     |-E1-E2-E3-E4-E5-E6-E7-E8-E9-E10-E11-E12-E13-E14-E15-|
     |                               |                    |
-    |                          _____|                    |
-    |__________________       |           _______________|
-                       |      |           |
-     GET /somepath?to=START&limit=5&from=END
+    |                          _____|  <--backwards--    |
+    |__________________       |         |        ________|
+                       |      |         |        |
+     GET /somepath?to=START&limit=5&dir=b&from=END
      Returns:
        E15,E14,E13,E12,E11
 
@@ -433,9 +439,6 @@ Events
 
 .. _sect:events:
 
-Overview
-~~~~~~~~
-
 The model of conversation history exposed by the client-server API can be
 considered as a list of events. The server 'linearises' the
 eventually-consistent event graph of events into an 'event stream' at any given
@@ -463,7 +466,7 @@ You can visualise the range of events being returned as::
                               |                             |
                         start: '1-2-3'                end: 'a-b-c'
                              
-Now, to receive future events in real-time on the eventstream, you simply GET
+Now, to receive future events in real-time on the event stream, you simply GET
 $PREFIX/events with a ``from`` parameter of 'a-b-c': in other words passing in the
 ``end`` token returned by initial sync. The request blocks until new events are
 available or until your specified timeout elapses, and then returns a
@@ -493,31 +496,30 @@ To continue paginating backwards, one calls the /messages API again, supplying
 the new ``start`` value as the ``from`` parameter.
 
 
-Receiving live updates on a client
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Syncing
+~~~~~~~
 
-Clients receive new events by long-polling the home server via the
-$PREFIX/events API, specifying a timeout in milliseconds in the timeout
-parameter. This will hold open the HTTP connection for a short period of time
-waiting for new events, returning early if an event occurs. This is called the
-`Event Stream`_. All events which are visible to the client will appear in the
-event stream. When the request returns, an ``end`` token is included in the
+Clients receive new events by "long-polling" the home server via the events API.
+This involves specifying a timeout in the request which will hold
+open the HTTP connection for a short period of time waiting for new events,
+returning early if an event occurs. Only the events API supports long-polling.
+All events which are visible to the client will appear in the
+events API. When the request returns, an ``end`` token is included in the
 response. This token can be used in the next request to continue where the
-last request left off.
-
-All events must be de-duplicated based on their event ID.
+last request left off. Multiple events can be returned per long-poll. All events
+must be de-duplicated based on their event ID.
 
 .. TODO
   is deduplication actually a hard requirement in CS v2?
 
 .. TODO-spec
-  Do we ever return multiple events in a single request?
-  Don't we get lots of request setup RTT latency if we only do one event per request?
   Do we ever support streaming requests? Why not websockets?
 
 When the client first logs in, they will need to initially synchronise with
-their home server. This is achieved via the |initialSync|_ API. This API also
-returns an ``end`` token which can be used with the event stream.  See the 'Room Sync' section below.
+their home server. This is achieved via the initial sync API. This API also
+returns an ``end`` token which can be used with the event stream.
+
+{{sync_http_api}}
 
 Events in a room
 ~~~~~~~~~~~~~~~~
@@ -600,29 +602,6 @@ example::
   { "text": "Goodbye world!" }
 
 See `Room Events`_ for the ``m.`` event specification.
-
-Syncing rooms
-~~~~~~~~~~~~~
-
-When a client logs in, they may have a list of rooms which they have already
-joined. These rooms may also have a list of events associated with them. The
-purpose of 'syncing' is to present the current room and event information in a
-convenient, compact manner. The events returned are not limited to room events;
-presence events will also be returned. A single syncing API is provided:
-
- - |initialSync|_ : A global sync which will present room and event information
-   for all rooms the user has joined.
-
-.. TODO-spec room-scoped initial sync
- - |/rooms/<room_id>/initialSync|_ : A sync scoped to a single room. Presents
-   room and event information for this room only.
- - Room-scoped initial sync is Very Tricky because typically people would
-   want to sync the room then listen for any new content from that point
-   onwards. The event stream cannot do this for a single room currently.
-   As a result, commenting room-scoped initial sync at this time.
-
-
-{{sync_http_api}}
 
 Getting events for a room
 ~~~~~~~~~~~~~~~~~~~~~~~~~
