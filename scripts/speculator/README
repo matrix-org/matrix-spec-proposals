@@ -8,3 +8,7 @@ It serves the following HTTP endpoints:
 
 To run it, you must install the `go` tool, and run:
  `go run main.go`
+
+To build the binary (which is necessary for deployment to the matrix.org
+servers), you must again install `go`, and then run:
+ `go build`
