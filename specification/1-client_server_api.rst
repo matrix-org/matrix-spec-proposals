@@ -215,6 +215,12 @@ To respond to this type, reply with an auth dict as follows::
     "password": "<password>"
   }
 
+.. WARNING::
+  Clients SHOULD enforce that the password provided is suitably complex. The
+  password SHOULD include a lower-case letter, an upper-case letter, a number
+  and a symbol and be at a minimum 8 characters in length. Servers MAY reject
+  weak passwords with an error code ``M_WEAK_PASSWORD``.
+
 Google ReCaptcha
 ~~~~~~~~~~~~~~~~
 :Type:
