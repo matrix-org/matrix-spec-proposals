@@ -3,7 +3,8 @@ Server Side Search
 
 .. _module:search:
 
-TODO: Add summary.
+The search API allows clients to perform full text search across events in
+their rooms without having to download the entire histories.
 
 Client behaviour
 ----------------
