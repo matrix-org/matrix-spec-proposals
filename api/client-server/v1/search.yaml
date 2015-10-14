@@ -93,7 +93,7 @@ paths:
                         additionalProperties:
                           type: object
                           title: Result
-                          desciption: The result object.
+                          description: The result object.
                           properties:
                             rank:
                               type: number
