@@ -875,6 +875,7 @@ homeservers to send update requests to other servers. Home servers can respond t
 resolve requests for aliases on other domains than their own by using the
 federation API to ask other domain name home servers.
 
+NB: Aliases contain a hash ('#') which MUST be URL-encoded where appropriate.
 The directory API consists of:
 
 {{directory_http_api}}
