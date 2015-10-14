@@ -296,7 +296,7 @@ be obtained by visiting the domain specified. They are case-insensitive. Note
 that the mapping from a room alias to a room ID is not fixed, and may change
 over time to point to a different room ID. For this reason, Clients SHOULD
 resolve the room alias to a room ID once and then use that ID on subsequent
-requests.
+requests. Room aliases MUST NOT exceed 255 bytes.
 
 When resolving a room alias the server will also respond with a list of servers
 that are in the room that can be used to join via.
