@@ -665,140 +665,19 @@ Rooms
 
 Creation
 ~~~~~~~~
-To create a room, a client has to use the |createRoom|_ API. There are various
-options which can be set when creating a room:
-
-``visibility``
-  Type:
-    String
-  Optional:
-    Yes
-  Value:
-    Either ``public`` or ``private``.
-  Description:
-    A ``public`` visibility indicates that the room will be shown in the public
-    room list. A ``private`` visibility will hide the room from the public room
-    list. Rooms default to ``private`` visibility if this key is not included.
-
-``room_alias_name``
-  Type:
-    String
-  Optional:
-    Yes
-  Value:
-    The room alias localpart.
-  Description:
-    If this is included, a room alias will be created and mapped to the newly
-    created room.  The alias will belong on the same home server which created
-    the room, e.g.  ``!qadnasoi:domain.com >>> #room_alias_name:domain.com``
-
-``name``
-  Type:
-    String
-  Optional:
-    Yes
-  Value:
-    The ``name`` value for the ``m.room.name`` state event.
-  Description:
-    If this is included, an ``m.room.name`` event will be sent into the room to
-    indicate the name of the room. See `Room Events`_ for more information on
-    ``m.room.name``.
-
-``topic``
-  Type:
-    String
-  Optional:
-    Yes
-  Value:
-    The ``topic`` value for the ``m.room.topic`` state event.
-  Description:
-    If this is included, an ``m.room.topic`` event will be sent into the room
-    to indicate the topic for the room. See `Room Events`_ for more information
-    on ``m.room.topic``.
-
-``invite``
-  Type:
-    List
-  Optional:
-    Yes
-  Value:
-    A list of user ids to invite.
-  Description:
-    This will tell the server to invite everyone in the list to the newly
-    created room.
-
-``creation_content``
-  Type:
-    Object
-  Optional:
-    Yes
-  Value:
-    Extra keys to be added to the content of the ``m.room.create``. The server
-    will clober the following keys: ``creator``. Future versions of this
-    spec may allow the server to clobber other keys if required.
-  Description:
-    Allows clients to add keys to the content of ``m.room.create``.
-
-``preset``
-  Type:
-    String
-  Optional:
-    Yes
-  Value:
-    ``private_chat``, ``trusted_private_chat`` or ``public_chat``
-  Description:
-    Convenience parameter for setting various default state events based on a
-    preset.
-
-    Three presets are defined:
-
-    - ``private_chat``: Sets the ``join_rules`` to ``invite`` and
-      ``history_visibility`` to ``shared``
-    - ``trusted_private_chat``: Set the ``join_rules`` to ``invite``,
-      ``history_visibility`` to ``shared`` and gives all invitees the same
-      power level as the creator.
-    - ``public_chat``: Sets the ``join_rules`` to ``public`` and
-      ``history_visibility`` to ``shared``
-
-``initial_state``
-  Type:
-    List
-  Optional:
-    Yes
-  Value:
-    A list of state events to set in the new room.
-  Description:
-    Allows the user to override the default state events set in the new room.
-
-    The expected format of the state events are an object with ``type``,
-    ``state_key`` and ``content`` keys set.
-
-    Takes precedence over events set by ``presets``, but gets overriden by
-    ``name`` and ``topic`` keys.
-
-Example::
-
-  {
-    "preset": "public_chat",
-    "room_alias_name": "thepub",
-    "name": "The Grand Duke Pub",
-    "topic": "All about happy hour",
-    "creation_content": {
-        "m.federate": false
-    }
-  }
-
-The home server will create a ``m.room.create`` event when the room is created,
-which serves as the root of the PDU graph for this room. This event also has a
+The home server will create a ``m.room.create`` event when a room is created,
+which serves as the root of the event graph for this room. This event also has a
 ``creator`` key which contains the user ID of the room creator. It will also
 generate several other events in order to manage permissions in this room. This
 includes:
 
- - ``m.room.power_levels`` : Sets the power levels of users and required power
-    levels.
+ - ``m.room.power_levels`` : Sets the power levels of users and required power levels.
  - ``m.room.join_rules`` : Whether the room is "invite-only" or not.
 
-See `Room Events`_ for more information on these events.
+See `Room Events`_ for more information on these events. To create a room, a
+client has to use the the following API.
+
+{{create_room_http_api}}
 
 Room aliases
 ~~~~~~~~~~~~
