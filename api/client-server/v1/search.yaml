@@ -102,6 +102,7 @@ paths:
                                 closer.
                             result:
                                 type: object
+                                title: Event
                                 description: The event that matched.
                                 allOf:
                                   - "$ref": "core-event-schema/room_event.json"
