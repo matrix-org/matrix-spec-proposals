@@ -348,11 +348,13 @@ Pagination
 
 Querying large datasets in Matrix always uses the same pagination API pattern to
 to give clients a consistent way of selecting subsets of a potentially changing
-dataset. Requests pass in ``from``, ``to`` and ``limit`` parameters which describe
-where to read from the stream. ``from`` and ``to`` are opaque textual 'stream
-tokens' which describe positions in the dataset. The response returns new
-``start`` and ``end`` stream token values which can then be passed to subsequent
-requests to continue pagination.
+dataset. Requests pass in ``from``, ``to``, ``dir`` and ``limit`` parameters
+which describe where to read from the stream. ``from`` and ``to`` are opaque
+textual 'stream tokens' which describe the current position in the dataset.
+The ``dir`` parameter is an enum representing the direction of events to return:
+either ``f`` orwards or ``b`` ackwards. The response returns new ``start`` and
+``end`` stream token values which can then be passed to subsequent requests to
+continue pagination.
 
 Pagination Request Query Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -367,24 +369,26 @@ Query parameters:
   limit:
     integer - An integer representing the maximum number of items to 
     return.
+  dir:
+    f|b - The direction to return events in. Typically this is ``b`` to paginate
+    backwards in time.
 
 'START' and 'END' are placeholder values used in these examples to describe the
 start and end of the dataset respectively.
 
-Unless specified, the default pagination parameters are from=START, to=END, 
-without a limit set. This allows you to hit an API like
-/events without any query parameters to get everything.
+Unless specified, the default pagination parameters are ``from=START``,
+``to=END``, without a limit set.
 
-For example, the event stream has events E1 -> E15. The client wants the last 5 
+For example, if an endpoint had events E1 -> E15. The client wants the last 5 
 events and doesn't know any previous events::
 
     S                                                    E
     |-E1-E2-E3-E4-E5-E6-E7-E8-E9-E10-E11-E12-E13-E14-E15-|
     |                               |                    |
     |                          _____|                    |
-    |__________________       |       ___________________|
-                       |      |      |
-     GET /events?to=START&limit=5&from=END
+    |__________________       |           _______________|
+                       |      |           |
+     GET /somepath?to=START&limit=5&from=END
      Returns:
        E15,E14,E13,E12,E11
 
@@ -401,7 +405,7 @@ now show page 3 (rooms R11 -> 15)::
                         Currently            |
                         viewing              |
                                              |
-                             GET /rooms/list?from=9&to=END&limit=5
+                             GET /roomslist?from=9&to=END&limit=5
                              Returns: R11,R12,R13,R14,R15
                          
 Note that tokens are treated in an *exclusive*, not inclusive, manner. The end 
