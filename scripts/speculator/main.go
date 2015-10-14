@@ -364,6 +364,7 @@ func main() {
 		"illicitonion":  true,
 		"Kegsay":        true,
 		"NegativeMjark": true,
+		"richvdh":       true,
 	}
 	rand.Seed(time.Now().Unix())
 	masterCloneDir, err := gitClone(matrixDocCloneURL, false)
