@@ -67,15 +67,18 @@ paths:
           description: Results of the search.
           schema:
             type: object
+            title: Results
             required: ["search_categories"]
             properties:
               search_categories:
                 type: object
+                title: Categories
                 description: Describes which categories to search in and
                   their creteria.
                 properties:
                   room_events:
                     type: object
+                    title: Room Event Results
                     description: Mapping of category name to search criteria.
                     properties:
                       count:
@@ -83,9 +86,11 @@ paths:
                         description: Total number of results found
                       results:
                         type: object
+                        title: Results
                         description: Mapping of event_id to result.
                         additionalProperties:
                           type: object
+                          title: Result
                           desciption: The result object.
                           properties:
                             rank:
