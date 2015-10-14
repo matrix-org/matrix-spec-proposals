@@ -29,6 +29,9 @@ return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
 
 User-Interactive Authentication API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _sect:auth-api:
+
 This section refers to API Version 2.
 
 Some API endpoints such as ``login`` or ``register`` require authentication that
@@ -349,8 +352,10 @@ Registering for a user account is done using the request::
 
   POST $V2PREFIX/register
 
-This API endpoint uses the User-Interactive Authentication API.
+This API endpoint uses the `User-Interactive Authentication API`_.
 This API endpoint does not require an access token.
+
+.. _User-Interactive Authentication API: `sect:auth-api`_
 
 The body of the POST request is a JSON object containing:
 
@@ -371,6 +376,9 @@ access_token
   An access token for the new account.
 home_server
   The hostname of the Home Server on which the account has been registered.
+refresh_token
+  A token that may be exchanged for a new ``access_token`` using the
+  ``/tokenrefresh`` API endpoint.
 
 This endpoint may also return the following error codes:
 
@@ -381,9 +389,11 @@ M_EXCLUSIVE
   service.
 
 Home Servers MUST perform the relevant checks and return these codes before
-performing User-Interactive Authentication, although they may also return
+performing `User-Interactive Authentication`_, although they may also return
 them after authentication is completed if, for example, the requested user ID
 was registered whilst the client was performing authentication.
+
+.. _User-Interactive Authentication: `sect:auth-api`_
 
 Old V1 API docs: |register|_
 
@@ -414,8 +424,8 @@ The error code M_NOT_FOUND is returned if the user authenticated with a third
 party identifier but the Home Server could not find a matching account in its
 database.
 
-Adding a Third Party Identifier
-+++++++++++++++++++++++++++++++
+Adding Account Administrative Contact Information
++++++++++++++++++++++++++++++++++++++++++++++++++
 This section refers to API Version 2. These API calls currently use the prefix
 ``/_matrix/client/v2_alpha``.
 
@@ -423,18 +433,18 @@ Request::
 
   POST $V2PREFIX/account/3pid
 
-Used to add a third party identifier to the user's account.
+Used to add contact information to the user's account.
 
 The body of the POST request is a JSON object containing:
 
 threePidCreds
-  An object containing third party identifier credentials.
+  An object containing contact information.
 bind
   Optional. A boolean indicating whether the Home Server should also bind this
   third party identifier to the account's matrix ID with the Identity Server. If
   supplied and true, the Home Server must bind the 3pid accordingly.
 
-The third party identifier credentials object comprises:
+The contact information object comprises:
 
 id_server
   The colon-separated hostname and port of the Identity Server used to
@@ -452,8 +462,8 @@ May also return error codes:
 M_THREEPID_AUTH_FAILED
   If the credentials provided could not be verified with the ID Server.
 
-Fetching Currently Associated Third Party Identifiers
-+++++++++++++++++++++++++++++++++++++++++++++++++++++
+Fetching Currently Associated Contact Information
++++++++++++++++++++++++++++++++++++++++++++++++++
 This section refers to API Version 2. These API calls currently use the prefix
 ``/_matrix/client/v2_alpha``.
 
@@ -706,8 +716,8 @@ Pagination
 Pagination is the process of dividing a dataset into multiple discrete pages.
 Matrix makes use of pagination to allow clients to view extremely large datasets.
 These datasets are not limited to events in a room (for example clients may want
-to paginate rooms in addition to events within those rooms). Regardless of *what*
-is being paginated, there is a common underlying API which is used to
+to paginate a list of rooms in addition to events within those rooms). Regardless
+of *what* is being paginated, there is a common underlying API which is used to
 to give clients a consistent way of selecting subsets of a potentially changing
 dataset. Requests pass in ``from``, ``to``, ``dir`` and ``limit`` parameters
 which describe where to read from the stream. ``from`` and ``to`` are opaque
@@ -800,13 +810,14 @@ Rooms
 
 Creation
 ~~~~~~~~
-The home server will create a ``m.room.create`` event when a room is created,
+The home server will create an ``m.room.create`` event when a room is created,
 which serves as the root of the event graph for this room. This event also has a
 ``creator`` key which contains the user ID of the room creator. It will also
 generate several other events in order to manage permissions in this room. This
 includes:
 
- - ``m.room.power_levels`` : Sets the power levels of users and required power levels.
+ - ``m.room.power_levels`` : Sets the power levels of users and required power
+   levels for various actions within the room such as sending events.
  - ``m.room.join_rules`` : Whether the room is "invite-only" or not.
 
 See `Room Events`_ for more information on these events. To create a room, a
