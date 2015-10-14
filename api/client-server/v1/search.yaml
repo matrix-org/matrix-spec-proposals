@@ -44,11 +44,13 @@ paths:
             properties:
               search_categories:
                 type: object
+                title: "Categories"
                 description: Describes which categories to search in and
                   their creteria.
                 properties:
                   room_events:
                     type: object
+                    title: "Room Events"
                     description: Mapping of category name to search criteria.
                     properties:
                       search_term:
