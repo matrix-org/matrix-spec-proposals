@@ -52,7 +52,17 @@ The HTTP GET endpoint does not require any authentication. Knowing the URL of
 the content is sufficient to retrieve the content, even if the entity isn't in
 the room.
 
-Homeservers have additional concerns:
+MXC URIs are vulnerable to directory traversal attacks such as
+``mxc://127.0.0.1/../../../some_service/etc/passwd``. This would cause the target
+homeserver to try to access and return this file. As such, homeservers MUST
+sanitise MXC URIs by allowing only alphanumeric (``A-Za-z0-9``), ``_``
+and  ``-`` characters in the ``server-name`` and ``media-id`` values. This set
+of whitelisted characters allows URL-safe base64 encodings specified in RFC 4648.
+Applying this character whitelist is preferable to blacklisting ``.`` and ``/``
+as there are techniques around blacklisted characters (percent-encoded characters,
+UTF-8 encoded traversals, etc).
+
+Homeservers have additional content-specific concerns:
 
  - Clients may try to upload very large files. Homeservers should not store files
    that are too large and should not serve them to clients.
