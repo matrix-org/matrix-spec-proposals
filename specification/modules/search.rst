@@ -12,3 +12,4 @@ Client behaviour
 Security considerations
 -----------------------
 The server must only return results that the user has permission to see.
+
