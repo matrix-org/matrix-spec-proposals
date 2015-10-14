@@ -31,7 +31,7 @@ paths:
           type: string
           name: from
           description: |-
-            The token to stream from. This token is either from the a previous
+            The token to stream from. This token is either from a previous
             request to this API or from the initial sync API.
           required: false
           x-example: "s3456_9_0"
@@ -45,10 +45,10 @@ paths:
           type: boolean
           name: archived
           description: |-
-            Whether to include rooms that the user has left. If absent then
+            Whether to include rooms that the user has left. If ``false`` then
             only rooms that the user has been invited to or has joined are
-            included. If set to "true" then rooms that the user has left are
-            included as well.
+            included. If set to ``true`` then rooms that the user has left are
+            included as well. By default this is ``false``.
           required: false
           x-example: "true"
       responses:
