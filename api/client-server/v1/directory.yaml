@@ -29,12 +29,17 @@ paths:
           name: roomAlias
           description: The room alias to set.
           required: true
+          x-example: "#coffee:example.com"
         - in: body
           name: roomInfo
           description: Information about this room alias.
           required: true
           schema:
             type: object
+            example: |-
+              {
+                "room_id": "!AfafhafwefwiugefSD:example.com"
+              }
             properties:
               room_id:
                 type: string
@@ -42,6 +47,9 @@ paths:
       responses:
         200:
           description: The mapping was created.
+          examples:
+            application/json: |-
+              {}
           schema:
             type: object  # empty json object
     get:
@@ -52,9 +60,16 @@ paths:
           name: roomAlias
           description: The room alias.
           required: true
+          x-example: "#coffee:example.com"
       responses:
         200:
           description: The room ID and other information for this alias.
+          examples:
+            application/json: |-
+              {
+                "room_id": "!AfafhafwefwiugefSD:example.com",
+                "servers": ["example.com", "testing.com"]
+              }
           schema:
             type: object
             properties:
@@ -79,9 +94,13 @@ paths:
           name: roomAlias
           description: The room alias to remove.
           required: true
+          x-example: "#coffee:example.com"
       responses:
         200:
           description: The mapping was removed.
+          examples:
+            application/json: |-
+              {}
           schema:
             type: object  # empty json object
 
