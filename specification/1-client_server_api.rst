@@ -340,6 +340,141 @@ This MUST return an HTML page which can perform this authentication stage. This
 page must attempt to call the JavaScript function ``window.onAuthDone`` when
 the authentication has been completed.
 
+Registration
+~~~~~~~~~~~~
+This section refers to API Version 2. These API calls currently use the prefix
+``/_matrix/client/v2_alpha``.
+
+Registering for a user account is done using the request::
+
+  POST $V2PREFIX/register
+
+This API endpoint uses the User-Interactive Authentication API.
+This API endpoint does not require an access token.
+
+The body of the POST request is a JSON object containing:
+
+username
+  Optional. This is the local part of the desired Matrix ID. If omitted, the
+  Home Server must generate a Matrix ID local part.
+password
+  Required. The desired password for the account.
+bind_email
+  Optional. If ``true``, the server binds the email used for authentication to
+  the Matrix ID with the ID Server.
+
+On success, this returns a JSON object with keys:
+
+user_id
+  The fully-qualified Matrix ID that has been registered.
+access_token
+  An access token for the new account.
+home_server
+  The hostname of the Home Server on which the account has been registered.
+
+This endpoint may also return the following error codes:
+
+M_USER_IN_USE
+  If the Matrix ID is already in use
+M_EXCLUSIVE
+  If the requested Matrix ID is in the exclusive namespace of an application
+  service.
+
+Home Servers MUST perform the relevant checks and return these codes before
+performing User-Interactive Authentication, although they may also return
+them after authentication is completed if, for example, the requested user ID
+was registered whilst the client was performing authentication.
+
+Old V1 API docs: |register|_
+
+{{login_http_api}}
+
+Changing Password
++++++++++++++++++
+This section refers to API Version 2. These API calls currently use the prefix
+``/_matrix/client/v2_alpha``.
+
+Request::
+
+  POST $V2PREFIX/account/password
+
+This API endpoint uses the User-Interactive Authentication API. An access token
+should be submitted to this endpoint if the client has an active session. The
+Home Server may change the flows available depending on whether a valid access
+token is provided.
+
+The body of the POST request is a JSON object containing:
+
+new_password
+  The new password for the account.
+
+On success, an empty JSON object is returned.
+
+The error code M_NOT_FOUND is returned if the user authenticated with a third
+party identifier but the Home Server could not find a matching account in its
+database.
+
+Adding a Third Party Identifier
++++++++++++++++++++++++++++++++
+This section refers to API Version 2. These API calls currently use the prefix
+``/_matrix/client/v2_alpha``.
+
+Request::
+
+  POST $V2PREFIX/account/3pid
+
+Used to add a third party identifier to the user's account.
+
+The body of the POST request is a JSON object containing:
+
+threePidCreds
+  An object containing third party identifier credentials.
+bind
+  Optional. A boolean indicating whether the Home Server should also bind this
+  third party identifier to the account's matrix ID with the Identity Server. If
+  supplied and true, the Home Server must bind the 3pid accordingly.
+
+The third party identifier credentials object comprises:
+
+id_server
+  The colon-separated hostname and port of the Identity Server used to
+  authenticate the third party identifier. If the port is the default, it and the
+  colon should be omitted.
+sid
+  The session ID given by the Identity Server
+client_secret
+  The client secret used in the session with the Identity Server.
+
+On success, the empty JSON object is returned.
+
+May also return error codes:
+
+M_THREEPID_AUTH_FAILED
+  If the credentials provided could not be verified with the ID Server.
+
+Fetching Currently Associated Third Party Identifiers
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+This section refers to API Version 2. These API calls currently use the prefix
+``/_matrix/client/v2_alpha``.
+
+Request::
+
+  GET $V2PREFIX/account/3pid
+
+This returns a list of third party identifiers that the Home Server has
+associated with the user's account. This is *not* the same as the list of third
+party identifiers bound to the user's Matrix ID in Identity Servers. Identifiers
+in this list may be used by the Home Server as, for example, identifiers that it
+will accept to reset the user's account password.
+
+Returns a JSON object with the key ``threepids`` whose contents is an array of
+objects with the following keys:
+
+medium
+  The medium of the 3pid (eg, ``email``)
+address
+  The textual address of the 3pid, eg. the email address
+
 Events
 ------
 
@@ -742,7 +877,7 @@ certain operations such as kicking, banning and sending state events. See
 `m.room.power_levels`_ for more information.
 
 Joining rooms
--------------
+~~~~~~~~~~~~~
 Users need to be a member of a room in order to send and receive events in that
 room. There are several states in which a user may be, in relation to a room:
 
@@ -820,143 +955,6 @@ member's state, by making a request to
   {
     "membership": "ban"
   }
-
-
-Registration
-------------
-This section refers to API Version 2. These API calls currently use the prefix
-``/_matrix/client/v2_alpha``.
-
-Registering for a user account is done using the request::
-
-  POST $V2PREFIX/register
-
-This API endpoint uses the User-Interactive Authentication API.
-This API endpoint does not require an access token.
-
-The body of the POST request is a JSON object containing:
-
-username
-  Optional. This is the local part of the desired Matrix ID. If omitted, the
-  Home Server must generate a Matrix ID local part.
-password
-  Required. The desired password for the account.
-bind_email
-  Optional. If ``true``, the server binds the email used for authentication to
-  the Matrix ID with the ID Server.
-
-On success, this returns a JSON object with keys:
-
-user_id
-  The fully-qualified Matrix ID that has been registered.
-access_token
-  An access token for the new account.
-home_server
-  The hostname of the Home Server on which the account has been registered.
-
-This endpoint may also return the following error codes:
-
-M_USER_IN_USE
-  If the Matrix ID is already in use
-M_EXCLUSIVE
-  If the requested Matrix ID is in the exclusive namespace of an application
-  service.
-
-Home Servers MUST perform the relevant checks and return these codes before
-performing User-Interactive Authentication, although they may also return
-them after authentication is completed if, for example, the requested user ID
-was registered whilst the client was performing authentication.
-
-Old V1 API docs: |register|_
-
-{{login_http_api}}
-
-Changing Password
-~~~~~~~~~~~~~~~~~
-This section refers to API Version 2. These API calls currently use the prefix
-``/_matrix/client/v2_alpha``.
-
-Request::
-
-  POST $V2PREFIX/account/password
-
-This API endpoint uses the User-Interactive Authentication API. An access token
-should be submitted to this endpoint if the client has an active session. The
-Home Server may change the flows available depending on whether a valid access
-token is provided.
-
-The body of the POST request is a JSON object containing:
-
-new_password
-  The new password for the account.
-
-On success, an empty JSON object is returned.
-
-The error code M_NOT_FOUND is returned if the user authenticated with a third
-party identifier but the Home Server could not find a matching account in its
-database.
-
-Adding a Third Party Identifier
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This section refers to API Version 2. These API calls currently use the prefix
-``/_matrix/client/v2_alpha``.
-
-Request::
-
-  POST $V2PREFIX/account/3pid
-
-Used to add a third party identifier to the user's account.
-
-The body of the POST request is a JSON object containing:
-
-threePidCreds
-  An object containing third party identifier credentials.
-bind
-  Optional. A boolean indicating whether the Home Server should also bind this
-  third party identifier to the account's matrix ID with the Identity Server. If
-  supplied and true, the Home Server must bind the 3pid accordingly.
-
-The third party identifier credentials object comprises:
-
-id_server
-  The colon-separated hostname and port of the Identity Server used to
-  authenticate the third party identifier. If the port is the default, it and the
-  colon should be omitted.
-sid
-  The session ID given by the Identity Server
-client_secret
-  The client secret used in the session with the Identity Server.
-
-On success, the empty JSON object is returned.
-
-May also return error codes:
-
-M_THREEPID_AUTH_FAILED
-  If the credentials provided could not be verified with the ID Server.
-
-Fetching Currently Associated Third Party Identifiers
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This section refers to API Version 2. These API calls currently use the prefix
-``/_matrix/client/v2_alpha``.
-
-Request::
-
-  GET $V2PREFIX/account/3pid
-
-This returns a list of third party identifiers that the Home Server has
-associated with the user's account. This is *not* the same as the list of third
-party identifiers bound to the user's Matrix ID in Identity Servers. Identifiers
-in this list may be used by the Home Server as, for example, identifiers that it
-will accept to reset the user's account password.
-
-Returns a JSON object with the key ``threepids`` whose contents is an array of
-objects with the following keys:
-
-medium
-  The medium of the 3pid (eg, ``email``)
-address
-  The textual address of the 3pid, eg. the email address
-
 
 Profiles
 --------
