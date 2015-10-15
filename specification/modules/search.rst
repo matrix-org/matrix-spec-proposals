@@ -32,6 +32,9 @@ The supported keys to search over are:
 
 The search will *not* include rooms that are end to end encrypted.
 
+The results include a ``rank`` key that can be used to sort the results by
+revelancy. The higher the ``rank`` the more relevant the result is.
+
 Security considerations
 -----------------------
 The server must only return results that the user has permission to see.
