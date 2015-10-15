@@ -1001,52 +1001,17 @@ member's state, by making a request to
   }
 
 
+Account operations
+------------------
+
 Registration
-------------
-This section refers to API Version 2. These API calls currently use the prefix
-``/_matrix/client/v2_alpha``.
-
-Registering for a user account is done using the request::
-
-  POST $V2PREFIX/register
-
+~~~~~~~~~~~~
 This API endpoint uses the User-Interactive Authentication API.
-This API endpoint does not require an access token.
 
-The body of the POST request is a JSON object containing:
+{{v2_registration_http_api}}
 
-username
-  Optional. This is the local part of the desired Matrix ID. If omitted, the
-  Home Server must generate a Matrix ID local part.
-password
-  Required. The desired password for the account.
-bind_email
-  Optional. If ``true``, the server binds the email used for authentication to
-  the Matrix ID with the ID Server.
-
-On success, this returns a JSON object with keys:
-
-user_id
-  The fully-qualified Matrix ID that has been registered.
-access_token
-  An access token for the new account.
-home_server
-  The hostname of the Home Server on which the account has been registered.
-
-This endpoint may also return the following error codes:
-
-M_USER_IN_USE
-  If the Matrix ID is already in use
-M_EXCLUSIVE
-  If the requested Matrix ID is in the exclusive namespace of an application
-  service.
-
-Home Servers MUST perform the relevant checks and return these codes before
-performing User-Interactive Authentication, although they may also return
-them after authentication is completed if, for example, the requested user ID
-was registered whilst the client was performing authentication.
-
-Old V1 API docs: |register|_
+Login
+~~~~~
 
 {{login_http_api}}
 
