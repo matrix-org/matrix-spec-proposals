@@ -30,6 +30,8 @@ The supported keys to search over are:
 - ``content.name`` in ``m.room.name``
 - ``content.topic`` in ``m.room.topic``
 
+The search will *not* include rooms that are end to end encrypted.
+
 Security considerations
 -----------------------
 The server must only return results that the user has permission to see.
