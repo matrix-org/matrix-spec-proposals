@@ -54,6 +54,11 @@ An example HS configuration required to pass traffic to the AS is:
       aliases: []  # Namespaces of room aliases which should be delegated to the AS
       rooms: [] # Namespaces of room ids which should be delegated to the AS
 
+.. WARNING::
+  If the homeserver in question has multiple application services, each
+  ``as_token`` MUST be unique per application service as this token is used to
+  identify the application service. The homeserver MUST enforce this.
+
 - An application service can state whether they should be the only ones who 
   can manage a specified namespace. This is referred to as an "exclusive" 
   namespace. An exclusive namespace prevents humans and other application 
