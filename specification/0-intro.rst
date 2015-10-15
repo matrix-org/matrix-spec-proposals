@@ -434,6 +434,8 @@ Some requests have unique error codes:
 :``M_LOGIN_EMAIL_URL_NOT_YET``:
   Encountered when polling for an email link which has not been clicked yet.
 
+.. _sect:txn_ids:
+
 The C-S API typically uses ``HTTP POST`` to submit requests. This means these
 requests are not idempotent. The C-S API also allows ``HTTP PUT`` to make
 requests idempotent. In order to use a ``PUT``, paths should be suffixed with
