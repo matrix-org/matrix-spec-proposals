@@ -4,7 +4,7 @@ Application Service API
 The Matrix client-server API and server-server APIs provide the means to
 implement a consistent self-contained federated messaging fabric. However, they
 provide limited means of implementing custom server-side behaviour in Matrix
-(e.g. gateways, filters, extensible hooks etc). The Application Service API
+(e.g. gateways, filters, extensible hooks etc). The Application Service API (AS API)
 defines a standard API to allow such extensible functionality to be implemented
 irrespective of the underlying homeserver implementation.
 
@@ -20,7 +20,10 @@ They cannot prevent events from being sent, nor can they modify the content of
 the event being sent. In order to observe events from a homeserver, the
 homeserver needs to be configured to pass certain types of traffic to the
 application service.  This is achieved by manually configuring the homeserver
-with information about the AS.
+with information about the application service (AS).
+
+Registration
+~~~~~~~~~~~~
 
 .. NOTE::
   Previously, application services could register with a homeserver via HTTP
@@ -38,7 +41,30 @@ with information about the AS.
   A better solution would be to somehow mandate that the API done to avoid
   abuse.
 
-An example HS configuration required to pass traffic to the AS is:
+Application services register "namespaces" of user IDs, room aliases and room IDs.
+These namespaces are represented as regular expressions. An application service
+is said to be "interested" in a given event if one of the IDs in the event match
+the regular expression provided by the application service. An application
+service can also state whether they should be the only ones who 
+can manage a specified namespace. This is referred to as an "exclusive" 
+namespace. An exclusive namespace prevents humans and other application 
+services from creating/deleting entities in that namespace. Typically,
+exclusive namespaces are used when the rooms represent real rooms on
+another service (e.g. IRC). Non-exclusive namespaces are used when the
+application service is merely augmenting the room itself (e.g. providing
+logging or searching facilities). Namespaces are represented by POSIX extended
+regular expressions and look like:
+
+.. code-block:: yaml
+
+   users:
+     - exclusive: true
+       regex: @irc.freenode.net_.*
+
+
+The registration is represented by a series of key-value pairs, which this
+specification will present as YAML. An example HS configuration required to pass
+traffic to the AS is:
 
 .. code-block:: yaml
 
@@ -59,135 +85,15 @@ An example HS configuration required to pass traffic to the AS is:
   ``as_token`` MUST be unique per application service as this token is used to
   identify the application service. The homeserver MUST enforce this.
 
-- An application service can state whether they should be the only ones who 
-  can manage a specified namespace. This is referred to as an "exclusive" 
-  namespace. An exclusive namespace prevents humans and other application 
-  services from creating/deleting entities in that namespace. Typically,
-  exclusive namespaces are used when the rooms represent real rooms on
-  another service (e.g. IRC). Non-exclusive namespaces are used when the
-  application service is merely augmenting the room itself (e.g. providing
-  logging or searching facilities).
-- Namespaces are represented by POSIX extended regular expressions, 
-  e.g:
-
-.. code-block:: yaml
-
-   users:
-     - exclusive: true
-       regex: @irc.freenode.net_.*
-
 
 Home Server -> Application Service API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This contains application service APIs which are used by the home server. All
-application services MUST implement these APIs.
 
-User Query
-++++++++++
+Pushing events
+++++++++++++++
 
-This API is called by the HS to query the existence of a user on the Application
-Service's namespace.
-
-Inputs:
- - User ID
- - HS Credentials
-Output:
- - Whether the user exists.
-Side effects:
- - User is created on the HS by the AS via CS APIs during the processing of this request.
-API called when:
- - HS receives an event for an unknown user ID in the AS's namespace, e.g. an
-   invite event to a room.
-Notes:
- - When the AS receives this request, if the user exists, it must create the user via
-   the CS API.
- - It can also set arbitrary information about the user (e.g. display name, join rooms, etc)
-   using the CS API.
- - When this setup is complete, the AS should respond to the HS request. This means the AS 
-   blocks the HS until the user is created.
- - This is deemed more flexible than alternative methods (e.g. returning a JSON blob with the
-   user's display name and get the HS to provision the user).
-Retry notes:
- - The home server cannot respond to the client's request until the response to
-   this API is obtained from the AS.
- - Recommended that home servers try a few times then time out, returning a
-   408 Request Timeout to the client.
-   
-::
-
- GET /users/$user_id?access_token=$hs_token
- 
- Returns:
-   200 : User is recognised.
-   404 : User not found.
-   401 : Credentials need to be supplied.
-   403 : HS credentials rejected.
- 
- 
-   200 OK response format
- 
-   {}
-   
-Room Alias Query
-++++++++++++++++
-This API is called by the HS to query the existence of a room alias on the 
-Application Service's namespace.
-
-Inputs:
- - Room alias
- - HS Credentials
-Output:
- - Whether the room exists.
-Side effects:
- - Room is created on the HS by the AS via CS APIs during the processing of 
-   this request.
-API called when:
- - HS receives an event to join a room alias in the AS's namespace.
-Notes:
- - When the AS receives this request, if the room exists, it must create the room via
-   the CS API.
- - It can also set arbitrary information about the room (e.g. name, topic, etc)
-   using the CS API.
- - It can send messages as other users in order to populate scrollback.
- - When this setup is complete, the AS should respond to the HS request. This means the AS 
-   blocks the HS until the room is created and configured.
- - This is deemed more flexible than alternative methods (e.g. returning an initial sync
-   style JSON blob and get the HS to provision the room). It also means that the AS knows
-   the room ID -> alias mapping.
-Retry notes:
- - The home server cannot respond to the client's request until the response to
-   this API is obtained from the AS.
- - Recommended that home servers try a few times then time out, returning a
-   408 Request Timeout to the client.
- 
-::
-
- GET /rooms/$room_alias?access_token=$hs_token
- 
- Returns:
-   200 : Room is recognised.
-   404 : Room not found.
-   401 : Credentials need to be supplied.
-   403 : HS credentials rejected.
- 
- 
-   200 OK response format
- 
-   {}
-
-Pushing
-+++++++
-This API is called by the HS when the HS wants to push an event (or batch of 
-events) to the AS.
-
-Inputs:
- - HS Credentials
- - Event(s) to give to the AS
- - HS-generated transaction ID
-Output:
- - None. 
-
-Data flows:
+The application service API provides a transaction API for sending a list of
+events. Each list of events includes a transaction ID, which works as follows:
 
 ::
 
@@ -201,24 +107,53 @@ Data flows:
  HS ---> AS : Home server retries with the same transaction ID of T.
     <---    : AS sends back 200 OK. If the AS had processed these events 
               already, it can NO-OP this request (and it knows if it is the same
-              events based on the transacton ID).
-            
+              events based on the transaction ID).
 
-Retry notes:
- - If the HS fails to pass on the events to the AS, it must retry the request.
- - Since ASes by definition cannot alter the traffic being passed to it (unlike
-   say, a Policy Server), these requests can be done in parallel to general HS
-   processing; the HS doesn't need to block whilst doing this.
- - Home servers should use exponential backoff as their retry algorithm.
- - Home servers MUST NOT alter (e.g. add more) events they were going to 
-   send within that transaction ID on retries, as the AS may have already 
-   processed the events.
+The events sent to the application service should be linearised, as if they were
+from the event stream. The homeserver MUST maintain a queue of transactions to
+send to the AS. If the application service cannot be reached, the homeserver
+SHOULD backoff exponentially until the application service is reachable again.
+As application services cannot *modify* the events in any way, these requests can
+be made without blocking other aspects of the homeserver. Homeservers MUST NOT
+alter (e.g. add more) events they were going to send within that transaction ID
+on retries, as the AS may have already processed the events.
+
+Querying
+++++++++
+
+The application service API includes two querying APIs: for room aliases and for
+user IDs. The application service SHOULD create the queried entity if it desires.
+During this process, the application service is blocking the homeserver until the
+entity is created and configured. If the homeserver does not receive a response
+to this request, the homeserver should retry several times before timing out. This
+should result in an HTTP status 408 "Request Timeout" on the client which initiated
+this request (e.g. to join a room alias).
+
+.. admonition:: Rationale
+
+  Blocking the homeserver and expecting the application service to create the entity
+  using the client-server API is simpler and more flexible than alternative methods
+  such as returning an initial sync style JSON blob and get the HS to provision
+  the room/user. This also meant that there didn't need to be a "backchannel" to inform
+  the application service about information about the entity such as room ID to
+  room alias mappings.
+
+
+Pushing
++++++++
+This API is called by the HS when the HS wants to push an event (or batch of 
+events) to the AS.
+
+Inputs:
+ - HS Credentials
+ - Event(s) to give to the AS
+ - HS-generated transaction ID
+Output:
+ - None. 
+
     
 Ordering notes:
- - The events sent to the AS should be linearised, as they are from the event
-   stream.
- - The home server will need to maintain a queue of transactions to send to 
-   the AS.
+ - 
 
 ::
 
@@ -230,6 +165,14 @@ Ordering notes:
       ...
     ]
   }
+
+HTTP APIs
++++++++++
+
+This contains application service APIs which are used by the home server. All
+application services MUST implement these APIs. These APIs are defined below.
+
+{{application_service_http_api}}
 
 Client-Server v2 API Extensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
