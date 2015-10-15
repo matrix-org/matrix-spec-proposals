@@ -13,7 +13,7 @@ outlined below. After a user has left a room, they may seen any events which the
 were allowed to see before they left the room, but no events received after they
 left.
 
-The three options for this event are:
+The three options for the ``m.room.history_visibility`` event are:
 
 - ``shared`` - Previous events are always accessible to newly joined members. All
   events in the room are accessible, even those sent when the member was not a part
@@ -22,7 +22,7 @@ The three options for this event are:
   they were invited onwards. Events stop being accessible when the member's state
   changes to something other than ``invite`` or ``join``.
 - ``joined`` - Previous events are accessible to newly joined members from the point
-  they joined the room onwards. Events stop being accessible when the members state
+  they joined the room onwards. Events stop being accessible when the member's state
   changes to something other than ``join``.
 
 .. WARNING::
