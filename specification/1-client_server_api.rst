@@ -860,46 +860,31 @@ See `Room Events`_ for more information on these events.
 
 Room aliases
 ~~~~~~~~~~~~
-.. NOTE::
-  This section is a work in progress.
 
-Room aliases can be created by sending a ``PUT /directory/room/<room alias>``::
-
-  {
-    "room_id": <room id>
-  }
-
-They can be deleted by sending a ``DELETE /directory/room/<room alias>`` with
-no content. Only some privileged users may be able to delete room aliases, e.g.
-server admins, the creator of the room alias, etc. This specification does not
-outline the privilege level required for deleting room aliases.
-
-As room aliases are scoped to a particular home server domain name, it is
-likely that a home server will reject attempts to maintain aliases on other
-domain names. This specification does not provide a way for home servers to
-send update requests to other servers.
-
-Rooms store a *partial* list of room aliases via the ``m.room.aliases`` state
+Room aliases are pointers to room IDs. They exist outside the context of a room.
+Rooms can store a *partial* list of room aliases via the ``m.room.aliases`` state
 event. This alias list is partial because it cannot guarantee that the alias
 list is in any way accurate or up-to-date, as room aliases can point to
 different room IDs over time. Crucially, the aliases in this event are
 **purely informational** and SHOULD NOT be treated as accurate. They SHOULD
 be checked before they are used or shared with another user. If a room
 appears to have a room alias of ``#alias:example.com``, this SHOULD be checked
-to make sure that the room's ID matches the ``room_id`` returned from the
+to make sure that the room's ID matches the ``room_id`` returned from the directory
 request.
 
-Room aliases can be checked in the same way they are resolved; by sending a
-``GET /directory/room/<room alias>``::
 
-  {
-    "room_id": <room id>,
-    "servers": [ <domain>, <domain2>, <domain3> ]
-  }
+As room aliases are scoped to a particular homeserver domain it is likely that a
+homeserver will reject attempts to maintain aliases on other domain names. This
+means that the aliases used in the following APIs should belong to the same
+domain as the homeserver. This specification does not provide a way for
+homeservers to send update requests to other servers. Home servers can respond to
+resolve requests for aliases on other domains than their own by using the
+federation API to ask other domain name home servers.
 
-Home servers can respond to resolve requests for aliases on other domains than
-their own by using the federation API to ask other domain name home servers.
+NB: Aliases contain a hash ('#') which MUST be URL-encoded where appropriate.
+The directory API consists of:
 
+{{directory_http_api}}
 
 Permissions
 ~~~~~~~~~~~
