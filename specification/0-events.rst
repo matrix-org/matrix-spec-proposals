@@ -26,8 +26,6 @@ prefixed with ``m.``
 
 {{m_room_create_event}}
 
-{{m_room_history_visibility_event}}
-
 {{m_room_join_rules_event}}
 
 {{m_room_member_event}}

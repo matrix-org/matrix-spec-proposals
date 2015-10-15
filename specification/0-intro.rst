@@ -427,6 +427,7 @@ Some requests have unique error codes:
 :``M_BAD_PAGINATION``:
   Encountered when specifying bad pagination query parameters.
 
+.. _sect:txn_ids:
 
 The Client-Server API typically uses ``HTTP POST`` to submit requests. This
 means these requests are not idempotent. The C-S API also allows ``HTTP PUT`` to

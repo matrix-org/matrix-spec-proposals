@@ -33,17 +33,21 @@ paths:
             type: object
             example: |-
               {
-                "username": "cheeky_monkey",
+                "type": "m.login.pasword",
+                "user": "cheeky_monkey",
                 "password": "ilovebananas"
               }
             properties:
-              username:
+              type:
+                type: string
+                description: The login type being used. Currently only "m.login.password" is supported.
+              user:
                 type: string
                 description: The fully qualified user ID or just local part of the user ID, to log in.
               password:
                 type: string
                 description: The user's password.
-            required: ["username", "password"]
+            required: ["type", "user", "password"]
       responses:
         200:
           description: The user has been authenticated.
@@ -78,6 +82,15 @@ paths:
               home_server:
                 type: string
                 description: The hostname of the Home Server on which the account has been registered.
+        400:
+          description: |-
+            Part of the request was invalid. For example, the login type may not be recognised.
+          examples:
+            application/json: |-
+              {
+                  "errcode": "M_UNKNOWN",
+                  "error": "Bad login type."
+              }
         403:
           description: |-
             The login attempt failed. For example, the password may have been incorrect.
