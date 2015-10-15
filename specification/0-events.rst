@@ -23,9 +23,8 @@ restrictions on sizes per key:
  - ``state_key`` MUST NOT exceed 255 bytes.
  - ``type`` MUST NOT exceed 255 bytes.
  - ``event_id`` MUST NOT exceed 255 bytes.
- - ``user_id`` MUST NOT exceed 255 bytes.
 
-Some event types have additional sizes restrictions which are specified in
+Some event types have additional size restrictions which are specified in
 the description of the event. Additional keys have no limit other than that
 implied by the total 65 KB limit on events.
 
