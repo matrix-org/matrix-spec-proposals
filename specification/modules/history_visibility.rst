@@ -4,21 +4,25 @@ Room History Visibility
 .. _module:history-visibility:
 
 This module adds support for controlling the visibility of previous events in a
-room. Whether a member of a room can see the events that happened in a room from
-before they joined the room is controlled by the ``m.room.history_visibility``
-event outlined below. In all cases, the member still needs to be joined to the
-room to receive events for that room. The visibility option simply determines
-which subset of events in the room are presented to the client. Visibility can
-take the form of one of three options:
+room.
 
-- ``shared`` - Previous events are always shown to newly joined members. All
-  events in the room are shown, even those sent when the member was not a part
+In all cases, a user needs to join a room to view events in that room. Once they
+have joined a room, they will gain access to a subset of events in the room. How
+this subset is chosen is controlled by the ``m.room.history_visibility`` event
+outlined below. After a user has left a room, they may seen any events which they
+were allowed to see before they left the room, but no events received after they
+left.
+
+The three options for this event are:
+
+- ``shared`` - Previous events are always accessible to newly joined members. All
+  events in the room are accessible, even those sent when the member was not a part
   of the room.
-- ``invited`` - Previous events are shown to newly joined members from the point
-  they were invited onwards. Events stop being shown when the member's state
+- ``invited`` - Previous events are accessible to newly joined members from the point
+  they were invited onwards. Events stop being accessible when the member's state
   changes to something other than ``invite`` or ``join``.
-- ``joined`` - Previous events are shown to newly joined members from the point
-  they joined the room onwards. Events stop being shown when the members state
+- ``joined`` - Previous events are accessible to newly joined members from the point
+  they joined the room onwards. Events stop being accessible when the members state
   changes to something other than ``join``.
 
 .. WARNING::
