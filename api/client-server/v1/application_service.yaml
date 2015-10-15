@@ -6,7 +6,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: ""
+basePath: "/"
 consumes:
   - application/json
 produces:
