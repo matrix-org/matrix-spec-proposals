@@ -8,7 +8,7 @@
   "properties": {
     "state_key": {
       "type": "string",
-      "description": "A unique key which defines the overwriting semantics for this piece of room state. This value is often a zero-length string. The presence of this key makes this event a State Event."
+      "description": "A unique key which defines the overwriting semantics for this piece of room state. This value is often a zero-length string. The presence of this key makes this event a State Event. The key MUST NOT start with '_'."
     },
     "prev_content": {
       "type": "object",
