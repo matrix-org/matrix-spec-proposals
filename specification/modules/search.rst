@@ -19,7 +19,7 @@ Currently the only specified category is ``room_events``.
 ``room_events``
 ~~~~~~~~~~~~~~~
 
-This category covers all events in rooms that the user had joined. The search
+This category covers all events in rooms that the user has joined. The search
 is performed on certain keys of certain event types.
 
 The supported keys to search over are:
