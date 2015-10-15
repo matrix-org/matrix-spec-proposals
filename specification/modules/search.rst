@@ -14,7 +14,7 @@ Search Categories
 ~~~~~~~~~~~~~~~~~
 
 The search API allows clients to search in different categories of items.
-Currently, the only specified category is ``room_events``, which searches for
+Currently the only specified category is ``room_events``, which include
 events in rooms the user had joined.
 
 Security considerations
