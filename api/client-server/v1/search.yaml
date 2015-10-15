@@ -46,7 +46,7 @@ paths:
                 type: object
                 title: "Categories"
                 description: Describes which categories to search in and
-                  their creteria.
+                  their criteria.
                 properties:
                   room_events:
                     type: object
@@ -76,7 +76,7 @@ paths:
                 type: object
                 title: Categories
                 description: Describes which categories to search in and
-                  their creteria.
+                  their criteria.
                 properties:
                   room_events:
                     type: object
