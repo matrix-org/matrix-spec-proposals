@@ -84,6 +84,9 @@ Local echo
 Messages SHOULD appear immediately in the message view when a user presses the
 "send" button. This should occur even if the message is still sending. This is
 referred to as "local echo". Clients SHOULD implement "local echo" of messages.
+Clients MAY display messages in a different format to indicate that the server
+has not processed the message. This format should be removed when the server
+responds.
 
 Clients need to be able to match the message they are sending with the same
 message which they receive from the event stream. The echo of the same message
@@ -91,7 +94,7 @@ from the event stream is referred to as "remote echo". Both echoes need to be
 identified as the same message in order to prevent duplicate messages being
 displayed. Ideally this pairing would occur transparently to the user: the UI
 would not flicker as it transitions from local to remote. Flickering cannot be
-fully avoided in version 1 of the client-server API. Two scenarios need to be
+fully avoided in the current client-server API. Two scenarios need to be
 considered:
 
 - The client sends a message and the remote echo arrives on the event stream
@@ -106,8 +109,8 @@ arrives before the client has obtained an event ID. This makes it impossible to
 identify it as a duplicate event. This results in the client displaying the
 message twice for a fraction of a second before the the original request to send
 the message completes. Once it completes, the client can take remedial actions
-to remove the duplicate event by looking for duplicate event IDs. Version 2 of
-the client-server API resolves this by attaching the transaction ID of the
+to remove the duplicate event by looking for duplicate event IDs. A future version
+of the client-server API will resolve this by attaching the transaction ID of the
 sending request to the event itself.
 
 
@@ -132,7 +135,7 @@ Server behaviour
 ----------------
 
 Homeservers SHOULD reject ``m.room.message`` events which don't have a
-``msgtype`` key, or who don't have a textual ``body`` key, with an HTTP status
+``msgtype`` key, or which don't have a textual ``body`` key, with an HTTP status
 code of 400.
 
 Security considerations
@@ -141,7 +144,7 @@ Security considerations
 Messages sent using this module are not encrypted. Messages can be encrypted
 using the `E2E module`_.
 
-Clients should sanitise **all keys** for unsafe HTML to prevent Cross-Site
+Clients should sanitise **all displayed keys** for unsafe HTML to prevent Cross-Site
 Scripting (XSS) attacks. This includes room names and topics.
 
 .. _`E2E module`: `module:e2e`_
