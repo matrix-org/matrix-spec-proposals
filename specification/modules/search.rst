@@ -3,8 +3,9 @@ Server Side Search
 
 .. _module:search:
 
-The search API allows clients to perform full text search across events in
-their rooms without having to download the entire histories.
+The search API allows clients to perform full text search across events in all
+rooms that the user has been in, including those that they have left. Only
+events that the user is allowed to see will be searched.
 
 Client behaviour
 ----------------
@@ -19,8 +20,9 @@ Currently the only specified category is ``room_events``.
 ``room_events``
 ~~~~~~~~~~~~~~~
 
-This category covers all events in rooms that the user has joined. The search
-is performed on certain keys of certain event types.
+This category covers all events that the user is allowed to see, including
+events in rooms that they have left. The search is performed on certain keys of
+certain event types.
 
 The supported keys to search over are:
 
