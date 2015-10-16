@@ -87,7 +87,7 @@ paths:
         the existence of a given room alias. The homeserver will only query room
         aliases inside the application service's ``aliases`` namespace. The
         homeserver will send this request when it receives a request to join a
-        room alias within the application services's namespace.
+        room alias within the application service's namespace.
       parameters:
         - in: path
           name: roomAlias
@@ -101,7 +101,7 @@ paths:
             The application service indicates that this room alias exists. The
             application service MUST have created a room and associated it with
             the queried room alias using the client-server API. Additional
-            information about the room such as its' name and topic can be set
+            information about the room such as its name and topic can be set
             before responding.
           examples:
             application/json: |-

@@ -12,10 +12,10 @@ irrespective of the underlying homeserver implementation.
   Add in Client-Server services? Overview of bots? Seems weird to be in the spec
   given it is VERY implementation specific.
 
-Passive Application Services
-----------------------------
-"Passive" application services can only observe events from a given home server,
-and inject events into a room they are participating in.
+Application Services
+--------------------
+Application services are passive and can only observe events from a given
+homeserver. They can inject events into rooms they are participating in.
 They cannot prevent events from being sent, nor can they modify the content of
 the event being sent. In order to observe events from a homeserver, the
 homeserver needs to be configured to pass certain types of traffic to the
@@ -139,33 +139,6 @@ this request (e.g. to join a room alias).
   room alias mappings.
 
 
-Pushing
-+++++++
-This API is called by the HS when the HS wants to push an event (or batch of 
-events) to the AS.
-
-Inputs:
- - HS Credentials
- - Event(s) to give to the AS
- - HS-generated transaction ID
-Output:
- - None. 
-
-    
-Ordering notes:
- - 
-
-::
-
-  PUT /transactions/$transaction_id?access_token=$hs_token
- 
-  Request format
-  {
-    events: [
-      ...
-    ]
-  }
-
 HTTP APIs
 +++++++++
 
@@ -177,7 +150,7 @@ application services MUST implement these APIs. These APIs are defined below.
 Client-Server v2 API Extensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Passive application services can utilise a more powerful version of the 
+Application services can utilise a more powerful version of the 
 client-server API by identifying itself as an application service to the
 home server.
 
