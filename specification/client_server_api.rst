@@ -663,11 +663,8 @@ last request left off. Multiple events can be returned per long-poll.
   Events are ordered in this API according to the arrival time of the event on
   the homeserver. This can conflict with other APIs which order events based on
   their partial ordering in the event graph. This can result in duplicate events
-  being received (once per API call). Clients SHOULD de-duplicate events based
-  on the event ID when this happens.
-
-.. TODO
-  is deduplication actually a hard requirement in CS v2?
+  being received (once per distinct API called). Clients SHOULD de-duplicate
+  events based on the event ID when this happens.
 
 .. TODO-spec
   Do we ever support streaming requests? Why not websockets?
