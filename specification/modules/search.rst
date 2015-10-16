@@ -35,6 +35,10 @@ The search will *not* include rooms that are end to end encrypted.
 The results include a ``rank`` key that can be used to sort the results by
 revelancy. The higher the ``rank`` the more relevant the result is.
 
+The value of ``count`` may not match the number of results. For example due to
+the search query matching 1000s of results and the server truncating the
+response.
+
 Security considerations
 -----------------------
 The server must only return results that the user has permission to see.
