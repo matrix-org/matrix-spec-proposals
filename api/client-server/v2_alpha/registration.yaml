@@ -80,9 +80,15 @@ paths:
                 description: The hostname of the Home Server on which the account has been registered.
         400:
           description: |-
-            Part of the request was invalid. For example, this user ID may be taken. This may
-            be returned at any stage of the registration process, including after authentication
-            if the requested user ID was registered whilst the client was performing authentication.
+            Part of the request was invalid. This may include one of the following error codes:
+
+              * ``M_USER_IN_USE`` : The desired user ID is already taken.
+              * ``M_EXCLUSIVE`` : The desired user ID is in the exclusive namespace
+                claimed by an application service.
+
+            This errors may be returned at any stage of the registration process,
+            including after authentication if the requested user ID was registered
+            whilst the client was performing authentication.
           examples:
             application/json: |-
               {

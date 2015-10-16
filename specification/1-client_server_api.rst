@@ -1006,7 +1006,7 @@ Account operations
 
 Registration
 ~~~~~~~~~~~~
-This API endpoint uses the User-Interactive Authentication API.
+This API endpoint uses the `User-Interactive Authentication API`_.
 
 {{v2_registration_http_api}}
 
