@@ -38,9 +38,9 @@
                             "type": "string",
                             "description": "A base64-encoded ed25519 key with which token must be signed."
                         },
-                        "signature": {
-                            "type": "string",
-                            "description": "A base64-encoded signature of token with public_key."
+                        "signatures": {
+                            "type": "object",
+                            "description": "A signature object as per the 'Signing Details' section, containing a signature of the token string."
                         },
                         "sender": {
                             "type": "string",

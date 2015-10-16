@@ -36,7 +36,8 @@ A client asks a server to invite a user by their third party identifier.
 Server behaviour
 ----------------
 
-All homeservers MUST verify that sig(``token``, ``public_key``) = ``signature``.
+All homeservers MUST verify that sig(``token``, ``public_key``) = ``signature``,
+where ``signature`` is the only signature in the ``signatures`` property.
 
 If a client of the current homeserver is joining by an
 ``m.room.third_party_invite``, that homesever MUST validate that the public
