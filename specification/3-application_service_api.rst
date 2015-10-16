@@ -338,40 +338,6 @@ ID conventions
 This concerns the well-defined conventions for mapping 3P network IDs to matrix
 IDs, which we expect clients to be able to do by themselves.
 
-User IDs
-++++++++
-Matrix users may wish to directly contact a virtual user, e.g. to send an email.
-The URI format is a well-structured way to represent a number of different ID
-types, including:
-
-- MSISDNs (``tel``)
-- Email addresses (``mailto``)
-- IRC nicks (``irc`` - https://tools.ietf.org/html/draft-butcher-irc-url-04)
-- XMPP (XEP-0032)
-- SIP URIs (RFC 3261)
-
-As a result, virtual user IDs SHOULD relate to their URI counterpart. This
-mapping from URI to user ID can be expressed in a number of ways:
-
-- Expose a C-S API on the HS which takes URIs and responds with user IDs.
-- Munge the URI with the user ID.
-
-Exposing an API would allow HSes to internally map user IDs however they like,
-at the cost of an extra round trip (of which the response can be cached).
-Munging the URI would allow clients to apply the mapping locally, but would force
-user X on service Y to always map to the same munged user ID. Considering the
-exposed API could just be applying this munging, there is more flexibility if
-an API is exposed. 
-
-::
-
-  GET /_matrix/app/v1/user?uri=$url_encoded_uri
-  
-  Returns 200 OK:
-  {
-    user_id: <complete user ID on local HS>
-  }
-
 Room Aliases
 ++++++++++++
 We may want to expose some 3P network rooms so Matrix users can join them directly,
