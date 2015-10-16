@@ -38,9 +38,23 @@
                             "type": "string",
                             "description": "A base64-encoded ed25519 key with which token must be signed."
                         },
-                        "signature": {
-                            "type": "string",
-                            "description": "A base64-encoded signature of token with public_key."
+                        "signed": {
+                            "type": "object",
+                            "title": "signed_third_party_invite",
+                            "properties": {
+                                "mxid": {
+                                    "type": "string",
+                                    "description": "The invited matrix user ID. Must be equal to the user_id property of the event."
+                                },
+                                "token": {
+                                    "type": "string",
+                                    "description": "The token property of the containing third_party_invite object.",
+                                },
+                                "signatures": {
+                                    "type": "object",
+                                    "description": "A single signature from the verifying server, in the format specified by the Signing Events section."
+                                }
+                            }
                         },
                         "sender": {
                             "type": "string",
