@@ -71,7 +71,7 @@
                     "type": {
                         "type": "string",
                         "description": "The ``type`` for the event.",
-                        "enum": ["``m.room.join_rules``", "``m.room.canonical_alias``", "``m.room.avatar``", "``m.room.name``"]
+                        "enum": ["m.room.join_rules", "m.room.canonical_alias", "m.room.avatar", "m.room.name"]
                     },
                     "state_key": {
                         "type": "string",
