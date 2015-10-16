@@ -54,14 +54,15 @@
                                     "type": "object",
                                     "description": "A single signature from the verifying server, in the format specified by the Signing Events section."
                                 }
-                            }
+                            },
+                            "required": ["mxid", "signatures", "token"]
                         },
                         "sender": {
                             "type": "string",
                             "description": "The matrix user ID of the user who send the invite which is being used."
                         }
                     },
-                    "required": ["token", "key_validity_url", "public_key", "signature", "sender"]
+                    "required": ["token", "key_validity_url", "public_key", "sender", "signed"]
                 }
             },
             "required": ["membership"]
