@@ -491,227 +491,6 @@ medium
 address
   The textual address of the 3pid, eg. the email address
 
-Events
-------
-
-.. _sect:events:
-
-The model of conversation history exposed by the client-server API can be
-considered as a list of events. The server 'linearises' the
-eventually-consistent event graph of events into an 'event stream' at any given
-point in time::
-
-  [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]
-  
-Clients can add to the stream by POSTing message or state events, and can read
-from the stream via the |initialSync|_, |/rooms/<room_id>/initialSync|_, `Event
-Stream`_ and |/rooms/<room_id>/messages|_ APIs.
-
-For reading events, the intended flow of operation is to call
-$PREFIX/initialSync, which returns all of the state and the last N events in the
-event stream for each room, including ``start`` and ``end`` values describing the
-pagination of each room's event stream. For instance,
-$PREFIX/initialSync?limit=5 might return the events for a room in the
-rooms[0].messages.chunk[] array, with tokens describing the start and end of the
-range in rooms[0].messages.start as '1-2-3' and rooms[0].messages.end as
-'a-b-c'.
-
-You can visualise the range of events being returned as::
-
-  [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]
-                              ^                             ^
-                              |                             |
-                        start: '1-2-3'                end: 'a-b-c'
-                             
-Now, to receive future events in real-time on the event stream, you simply GET
-$PREFIX/events with a ``from`` parameter of 'a-b-c': in other words passing in the
-``end`` token returned by initial sync. The request blocks until new events are
-available or until your specified timeout elapses, and then returns a
-new paginatable chunk of events alongside new start and end parameters::
-
-  [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
-                                                            ^      ^
-                                                            |      |
-                                                            |  end: 'x-y-z'
-                                                      start: 'a-b-c'
-
-To resume polling the events stream, you pass in the new ``end`` token as the
-``from`` parameter of $PREFIX/events and poll again.
-
-Similarly, to paginate events backwards in order to lazy-load in previous
-history from the room, you simply GET $PREFIX/rooms/<room_id>/messages
-specifying the ``from`` token to paginate backwards from and a limit of the number
-of messages to retrieve. For instance, calling this API with a ``from`` parameter
-of '1-2-3' and a limit of 5 would return::
-
-  [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
-  ^                            ^
-  |                            |
-  start: 'u-v-w'          end: '1-2-3'
-
-To continue paginating backwards, one calls the /messages API again, supplying
-the new ``start`` value as the ``from`` parameter.
-
-
-Syncing
-~~~~~~~
-
-Clients receive new events by "long-polling" the home server via the events API.
-This involves specifying a timeout in the request which will hold
-open the HTTP connection for a short period of time waiting for new events,
-returning early if an event occurs. Only the events API supports long-polling.
-All events which are visible to the client will appear in the
-events API. When the request returns, an ``end`` token is included in the
-response. This token can be used in the next request to continue where the
-last request left off. Multiple events can be returned per long-poll. All events
-must be de-duplicated based on their event ID.
-
-.. TODO
-  is deduplication actually a hard requirement in CS v2?
-
-.. TODO-spec
-  Do we ever support streaming requests? Why not websockets?
-
-When the client first logs in, they will need to initially synchronise with
-their home server. This is achieved via the initial sync API. This API also
-returns an ``end`` token which can be used with the event stream.
-
-{{sync_http_api}}
-
-Types of room events
-~~~~~~~~~~~~~~~~~~~~
-
-Room events are split into two categories:
-
-:State Events:
-  These are events which update the metadata state of the room (e.g. room topic,
-  room membership etc). State is keyed by a tuple of event ``type`` and a
-  ``state_key``. State in the room with the same key-tuple will be overwritten.
-
-:Message events:
-  These are events which describe transient "once-off" activity in a room:
-  typically communication such as sending an instant message or setting up a
-  VoIP call.
-
-This specification outlines several events, all with the event type prefix
-``m.``. However, applications may wish to add their own type of event, and this
-can be achieved using the REST API detailed in the following sections. If new
-events are added, the event ``type`` key SHOULD follow the Java package naming
-convention, e.g. ``com.example.myapp.event``.  This ensures event types are
-suitably namespaced for each application and reduces the risk of clashes.
-
-State events
-++++++++++++
-
-State events can be sent by ``PUT`` ing to
-|/rooms/<room_id>/state/<event_type>/<state_key>|_.  These events will be
-overwritten if ``<room id>``, ``<event type>`` and ``<state key>`` all match.
-If the state event has no ``state_key``, it can be omitted from the path. These
-requests **cannot use transaction IDs** like other ``PUT`` paths because they
-cannot be differentiated from the ``state_key``. Furthermore, ``POST`` is
-unsupported on state paths. Valid requests look like::
-
-  PUT /rooms/!roomid:domain/state/m.example.event
-  { "key" : "without a state key" }
-
-  PUT /rooms/!roomid:domain/state/m.another.example.event/foo
-  { "key" : "with 'foo' as the state key" }
-
-In contrast, these requests are invalid::
-
-  POST /rooms/!roomid:domain/state/m.example.event/
-  { "key" : "cannot use POST here" }
-
-  PUT /rooms/!roomid:domain/state/m.another.example.event/foo/11
-  { "key" : "txnIds are not supported" }
-
-Care should be taken to avoid setting the wrong ``state key``::
-
-  PUT /rooms/!roomid:domain/state/m.another.example.event/11
-  { "key" : "with '11' as the state key, but was probably intended to be a txnId" }
-
-The ``state_key`` is often used to store state about individual users, by using
-the user ID as the ``state_key`` value. For example::
-
-  PUT /rooms/!roomid:domain/state/m.favorite.animal.event/%40my_user%3Adomain.com
-  { "animal" : "cat", "reason": "fluffy" }
-
-In some cases, there may be no need for a ``state_key``, so it can be omitted::
-
-  PUT /rooms/!roomid:domain/state/m.room.bgd.color
-  { "color": "red", "hex": "#ff0000" }
-
-See `Room Events`_ for the ``m.`` event specification.
-
-Message events
-++++++++++++++
-
-Message events can be sent by sending a request to
-|/rooms/<room_id>/send/<event_type>|_.  These requests *can* use transaction
-IDs and ``PUT``/``POST`` methods. Message events allow access to historical
-events and pagination, making it best suited for sending messages.  For
-example::
-
-  POST /rooms/!roomid:domain/send/m.custom.example.message
-  { "text": "Hello world!" }
-
-  PUT /rooms/!roomid:domain/send/m.custom.example.message/11
-  { "text": "Goodbye world!" }
-
-See `Room Events`_ for the ``m.`` event specification.
-
-Getting events for a room
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-There are several APIs provided to ``GET`` events for a room:
-
-{{rooms_http_api}}
-
-Redactions
-~~~~~~~~~~
-Since events are extensible it is possible for malicious users and/or servers
-to add keys that are, for example offensive or illegal. Since some events
-cannot be simply deleted, e.g. membership events, we instead 'redact' events.
-This involves removing all keys from an event that are not required by the
-protocol. This stripped down event is thereafter returned anytime a client or
-remote server requests it. Redacting an event cannot be undone, allowing server
-owners to delete the offending content from the databases. Events that have been
-redacted include a ``redacted_because`` key whose value is the event that caused
-it to be redacted, which may include a reason.
-
-.. TODO
-  Currently, only room admins can redact events by sending a ``m.room.redaction``
-  event, but server admins also need to be able to redact events by a similar
-  mechanism.
-
-Upon receipt of a redaction event, the server should strip off any keys not in
-the following list:
-
- - ``event_id``
- - ``type``
- - ``room_id``
- - ``user_id``
- - ``state_key``
- - ``prev_state``
- - ``content``
-
-The content object should also be stripped of all keys, unless it is one of
-one of the following event types:
-
- - ``m.room.member`` allows key ``membership``
- - ``m.room.create`` allows key ``creator``
- - ``m.room.join_rules`` allows key ``join_rule``
- - ``m.room.power_levels`` allows keys ``ban``, ``events``, ``events_default``,
-   ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
- - ``m.room.aliases`` allows key ``aliases``
-
-.. TODO
-  Need to update m.room.power_levels to reflect new power levels formatting
-
-The redaction event should be added under the key ``redacted_because``. When a
-client receives a redaction event it should change the redacted event
-in the same way a server does.
-
 Pagination
 ----------
 
@@ -806,10 +585,235 @@ Where $streamtoken is an opaque token which can be used in another query to
 get the next set of results. The "start" and "end" keys can only be omitted if
 the complete dataset is provided in "chunk".
 
-Pagination APIs
-~~~~~~~~~~~~~~~
+Events
+------
+
+.. _sect:events:
+
+The model of conversation history exposed by the client-server API can be
+considered as a list of events. The server 'linearises' the
+eventually-consistent event graph of events into an 'event stream' at any given
+point in time::
+
+  [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]
+  
+Clients can add to the stream by POSTing message or state events, and can read
+from the stream via the |initialSync|_, |/rooms/<room_id>/initialSync|_, `Event
+Stream`_ and |/rooms/<room_id>/messages|_ APIs.
+
+For reading events, the intended flow of operation is to call
+$PREFIX/initialSync, which returns all of the state and the last N events in the
+event stream for each room, including ``start`` and ``end`` values describing the
+pagination of each room's event stream. For instance,
+$PREFIX/initialSync?limit=5 might return the events for a room in the
+rooms[0].messages.chunk[] array, with tokens describing the start and end of the
+range in rooms[0].messages.start as '1-2-3' and rooms[0].messages.end as
+'a-b-c'.
+
+You can visualise the range of events being returned as::
+
+  [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]
+                              ^                             ^
+                              |                             |
+                        start: '1-2-3'                end: 'a-b-c'
+                             
+Now, to receive future events in real-time on the event stream, you simply GET
+$PREFIX/events with a ``from`` parameter of 'a-b-c': in other words passing in the
+``end`` token returned by initial sync. The request blocks until new events are
+available or until your specified timeout elapses, and then returns a
+new paginatable chunk of events alongside new start and end parameters::
+
+  [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
+                                                            ^      ^
+                                                            |      |
+                                                            |  end: 'x-y-z'
+                                                      start: 'a-b-c'
+
+To resume polling the events stream, you pass in the new ``end`` token as the
+``from`` parameter of $PREFIX/events and poll again.
+
+Similarly, to paginate events backwards in order to lazy-load in previous
+history from the room, you simply GET $PREFIX/rooms/<room_id>/messages
+specifying the ``from`` token to paginate backwards from and a limit of the number
+of messages to retrieve. For instance, calling this API with a ``from`` parameter
+of '1-2-3' and a limit of 5 would return::
+
+  [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
+  ^                            ^
+  |                            |
+  start: 'u-v-w'          end: '1-2-3'
+
+To continue paginating backwards, one calls the /messages API again, supplying
+the new ``start`` value as the ``from`` parameter.
+
+
+Syncing
+~~~~~~~
+
+Clients receive new events by "long-polling" the home server via the events API.
+This involves specifying a timeout in the request which will hold
+open the HTTP connection for a short period of time waiting for new events,
+returning early if an event occurs. Only the events API supports long-polling.
+All events which are visible to the client will appear in the
+events API. When the request returns, an ``end`` token is included in the
+response. This token can be used in the next request to continue where the
+last request left off. Multiple events can be returned per long-poll.
+
+.. Warning::
+  Events are ordered in this API according to the arrival time of the event on
+  the homeserver. This can conflict with other APIs which order events based on
+  their partial ordering in the event graph. This can result in duplicate events
+  being received (once per API call). Clients SHOULD de-duplicate events based
+  on the event ID when this happens.
+
+.. TODO
+  is deduplication actually a hard requirement in CS v2?
+
+.. TODO-spec
+  Do we ever support streaming requests? Why not websockets?
+
+When the client first logs in, they will need to initially synchronise with
+their home server. This is achieved via the initial sync API described below.
+This API also returns an ``end`` token which can be used with the event stream.
+
+{{sync_http_api}}
+
+Types of room events
+~~~~~~~~~~~~~~~~~~~~
+
+Room events are split into two categories:
+
+:State Events:
+  These are events which update the metadata state of the room (e.g. room topic,
+  room membership etc). State is keyed by a tuple of event ``type`` and a
+  ``state_key``. State in the room with the same key-tuple will be overwritten.
+
+:Message events:
+  These are events which describe transient "once-off" activity in a room:
+  typically communication such as sending an instant message or setting up a
+  VoIP call.
+
+This specification outlines several events, all with the event type prefix
+``m.``. However, applications may wish to add their own type of event, and this
+can be achieved using the REST API detailed in the following sections. If new
+events are added, the event ``type`` key SHOULD follow the Java package naming
+convention, e.g. ``com.example.myapp.event``.  This ensures event types are
+suitably namespaced for each application and reduces the risk of clashes.
+
+State events
+++++++++++++
+
+State events can be sent by ``PUT`` ing to
+|/rooms/<room_id>/state/<event_type>/<state_key>|_.  These events will be
+overwritten if ``<room id>``, ``<event type>`` and ``<state key>`` all match.
+If the state event has no ``state_key``, it can be omitted from the path. These
+requests **cannot use transaction IDs** like other ``PUT`` paths because they
+cannot be differentiated from the ``state_key``. Furthermore, ``POST`` is
+unsupported on state paths. Valid requests look like::
+
+  PUT /rooms/!roomid:domain/state/m.example.event
+  { "key" : "without a state key" }
+
+  PUT /rooms/!roomid:domain/state/m.another.example.event/foo
+  { "key" : "with 'foo' as the state key" }
+
+In contrast, these requests are invalid::
+
+  POST /rooms/!roomid:domain/state/m.example.event/
+  { "key" : "cannot use POST here" }
+
+  PUT /rooms/!roomid:domain/state/m.another.example.event/foo/11
+  { "key" : "txnIds are not supported" }
+
+Care should be taken to avoid setting the wrong ``state key``::
+
+  PUT /rooms/!roomid:domain/state/m.another.example.event/11
+  { "key" : "with '11' as the state key, but was probably intended to be a txnId" }
+
+The ``state_key`` is often used to store state about individual users, by using
+the user ID as the ``state_key`` value. For example::
+
+  PUT /rooms/!roomid:domain/state/m.favorite.animal.event/%40my_user%3Adomain.com
+  { "animal" : "cat", "reason": "fluffy" }
+
+In some cases, there may be no need for a ``state_key``, so it can be omitted::
+
+  PUT /rooms/!roomid:domain/state/m.room.bgd.color
+  { "color": "red", "hex": "#ff0000" }
+
+See `Room Events`_ for the ``m.`` event specification.
+
+Message events
+++++++++++++++
+
+Message events can be sent by sending a request to
+|/rooms/<room_id>/send/<event_type>|_.  These requests *can* use transaction
+IDs and ``PUT``/``POST`` methods. Message events allow access to historical
+events and pagination, making it best suited for sending messages.  For
+example::
+
+  POST /rooms/!roomid:domain/send/m.custom.example.message
+  { "text": "Hello world!" }
+
+  PUT /rooms/!roomid:domain/send/m.custom.example.message/11
+  { "text": "Goodbye world!" }
+
+See `Room Events`_ for the ``m.`` event specification.
+
+Getting events for a room
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are several APIs provided to ``GET`` events for a room:
+
+{{rooms_http_api}}
+
 
 {{message_pagination_http_api}}
+
+Redactions
+~~~~~~~~~~
+Since events are extensible it is possible for malicious users and/or servers
+to add keys that are, for example offensive or illegal. Since some events
+cannot be simply deleted, e.g. membership events, we instead 'redact' events.
+This involves removing all keys from an event that are not required by the
+protocol. This stripped down event is thereafter returned anytime a client or
+remote server requests it. Redacting an event cannot be undone, allowing server
+owners to delete the offending content from the databases. Events that have been
+redacted include a ``redacted_because`` key whose value is the event that caused
+it to be redacted, which may include a reason.
+
+.. TODO
+  Currently, only room admins can redact events by sending a ``m.room.redaction``
+  event, but server admins also need to be able to redact events by a similar
+  mechanism.
+
+Upon receipt of a redaction event, the server should strip off any keys not in
+the following list:
+
+ - ``event_id``
+ - ``type``
+ - ``room_id``
+ - ``user_id``
+ - ``state_key``
+ - ``prev_state``
+ - ``content``
+
+The content object should also be stripped of all keys, unless it is one of
+one of the following event types:
+
+ - ``m.room.member`` allows key ``membership``
+ - ``m.room.create`` allows key ``creator``
+ - ``m.room.join_rules`` allows key ``join_rule``
+ - ``m.room.power_levels`` allows keys ``ban``, ``events``, ``events_default``,
+   ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
+ - ``m.room.aliases`` allows key ``aliases``
+
+.. TODO
+  Need to update m.room.power_levels to reflect new power levels formatting
+
+The redaction event should be added under the key ``redacted_because``. When a
+client receives a redaction event it should change the redacted event
+in the same way a server does.
 
 Rooms
 -----

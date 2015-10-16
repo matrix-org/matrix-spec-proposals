@@ -41,16 +41,6 @@ paths:
           description: The maximum time in milliseconds to wait for an event.
           required: false
           x-example: "35000"
-        - in: query
-          type: boolean
-          name: archived
-          description: |-
-            Whether to include rooms that the user has left. If ``false`` then
-            only rooms that the user has been invited to or has joined are
-            included. If set to ``true`` then rooms that the user has left are
-            included as well. By default this is ``false``.
-          required: false
-          x-example: "true"
       responses:
         200:
           description: "The events received, which may be none."
@@ -80,19 +70,19 @@ paths:
               start:
                 type: string
                 description: |-
-                  A token which correlates to the first value in ``chunk``. Used
-                  for pagination.
+                  A token which correlates to the first value in ``chunk``. This
+                  is usually the same token supplied to ``from=``.
               end:
                 type: string
                 description: |-
-                  A token which correlates to the last value in ``chunk``. Used
-                  for pagination.
+                  A token which correlates to the last value in ``chunk``. This
+                  token should be used in the next request to ``/events``.
               chunk:
                 type: array
                 description: "An array of events."
                 items:
                   type: object
-                  title: RoomEvent
+                  title: Event
                   allOf:
                    - "$ref": "core-event-schema/room_event.json"
         400:
@@ -112,6 +102,16 @@ paths:
           description: The maximum number of messages to return for each room.
           required: false
           x-example: "2"
+        - in: query
+          type: boolean
+          name: archived
+          description: |-
+            Whether to include rooms that the user has left. If ``false`` then
+            only rooms that the user has been invited to or has joined are
+            included. If set to ``true`` then rooms that the user has left are
+            included as well. By default this is ``false``.
+          required: false
+          x-example: "true"
       responses:
         200:
           description: The user's current state.
