@@ -532,6 +532,14 @@ class MatrixUnits(Units):
                     Units.prop(json_schema, "properties/content")
                 )
 
+                # this is horrible
+                if schema["type"] == "m.room.member":
+                    invite_room_state = get_json_schema_object_fields(
+                        json_schema["properties"]["invite_room_state"]["items"]
+                    )
+                    schema["content_fields"].extend(invite_room_state)
+
+
                 # grab msgtype if it is the right kind of event
                 msgtype = Units.prop(
                     json_schema, "properties/content/properties/msgtype/enum"
