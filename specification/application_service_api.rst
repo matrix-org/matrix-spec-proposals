@@ -99,7 +99,7 @@ API called when:
  - HS receives an event for an unknown user ID in the AS's namespace, e.g. an
    invite event to a room.
 Notes:
- - When the AS receives this request, if the user exists, it must create the user via
+ - When the AS receives this request, if the user exists, it must `create the user`_ via
    the CS API.
  - It can also set arbitrary information about the user (e.g. display name, join rooms, etc)
    using the CS API.
@@ -231,6 +231,9 @@ Ordering notes:
     ]
   }
 
+
+.. _create the user: `sect:asapi-permissions`_
+
 Client-Server v2 API Extensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -287,6 +290,9 @@ Notes:
 
 Server admin style permissions
 ++++++++++++++++++++++++++++++
+
+.. _sect:asapi-permissions:
+
 The home server needs to give the application service *full control* over its
 namespace, both for users and for room aliases. This means that the AS should
 be able to create/edit/delete any room alias in its namespace, as well as
