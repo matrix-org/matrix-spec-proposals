@@ -99,23 +99,23 @@ Architecture
 ------------
 
 Matrix defines APIs for synchronising extensible JSON objects known as
-``events`` between compatible clients, servers and services. Clients are
+"events" between compatible clients, servers and services. Clients are
 typically messaging/VoIP applications or IoT devices/hubs and communicate by
-synchronising communication history with their ``homeserver`` using the
-``Client-Server API``. Each homeserver stores the communication history and
+synchronising communication history with their "homeserver" using the
+"Client-Server API". Each homeserver stores the communication history and
 account information for all of its clients, and shares data with the wider
 Matrix ecosystem by synchronising communication history with other homeservers
 and their clients.
 
 Clients typically communicate with each other by emitting events in the
-context of a virtual ``room``. Room data is replicated across *all of the
+context of a virtual "room". Room data is replicated across *all of the
 homeservers* whose users are participating in a given room. As such, *no
 single homeserver has control or ownership over a given room*. Homeservers
 model communication history as a partially ordered graph of events known as
-the room's ``event graph``, which is synchronised with eventual consistency
-between the participating servers using the ``Server-Server API``. This process
+the room's "event graph", which is synchronised with eventual consistency
+between the participating servers using the "Server-Server API". This process
 of synchronising shared conversation history between homeservers run by
-different parties is called ``Federation``. Matrix optimises for the the
+different parties is called "Federation". Matrix optimises for the the
 Availability and Partitioned properties of CAP theorem at
 the expense of Consistency.
 
@@ -151,13 +151,13 @@ Users
 ~~~~~
 
 Each client is associated with a user account, which is identified in Matrix
-using a unique "User ID". This ID is namespaced to the home server which
+using a unique "User ID". This ID is namespaced to the homeserver which
 allocated the account and has the form::
 
   @localpart:domain
 
 The ``localpart`` of a user ID may be a user name, or an opaque ID identifying
-this user. They are case-insensitive.
+this user. The ``domain`` of a user ID is the domain of the homeserver.
 
 .. TODO-spec
     - Need to specify precise grammar for Matrix IDs
@@ -183,9 +183,9 @@ Event Graphs
 .. _sect:event-graph:
 
 Events exchanged in the context of a room are stored in a directed acyclic graph
-(DAG) called an ``event graph``. The partial ordering of this graph gives the
+(DAG) called an "event graph". The partial ordering of this graph gives the
 chronological ordering of events within the room. Each event in the graph has a
-list of zero or more ``parent`` events, which refer to any preceding events
+list of zero or more "parent" events, which refer to any preceding events
 which have no chronological successor from the perspective of the homeserver
 which created the event.
 
@@ -292,11 +292,12 @@ Each room can also have multiple "Room Aliases", which look like::
 
 A room alias "points" to a room ID and is the human-readable label by which
 rooms are publicised and discovered.  The room ID the alias is pointing to can
-be obtained by visiting the domain specified. They are case-insensitive. Note
-that the mapping from a room alias to a room ID is not fixed, and may change
-over time to point to a different room ID. For this reason, Clients SHOULD
-resolve the room alias to a room ID once and then use that ID on subsequent
-requests.
+be obtained by visiting the domain specified. Note that the mapping from a room
+alias to a room ID is not fixed, and may change over time to point to a
+different room ID. For this reason, Clients SHOULD resolve the room alias to a
+room ID once and then use that ID on subsequent requests. Room aliases MUST NOT
+exceed 255 bytes (including the domain).
+
 
 When resolving a room alias the server will also respond with a list of servers
 that are in the room that can be used to join via.
@@ -339,11 +340,8 @@ Profiles
 ~~~~~~~~
 
 Users may publish arbitrary key/value data associated with their account - such
-as a human readable ``display name``, a profile photo URL, contact information
+as a human readable display name, a profile photo URL, contact information
 (email address, phone numbers, website URLs etc).
-
-In Client-Server API v2, profile data is typed using namespaced keys for
-interoperability, much like events - e.g. ``m.profile.display_name``.
 
 .. TODO
   Actually specify the different types of data - e.g. what format are display
@@ -431,13 +429,12 @@ Some requests have unique error codes:
 :``M_BAD_PAGINATION``:
   Encountered when specifying bad pagination query parameters.
 
-:``M_LOGIN_EMAIL_URL_NOT_YET``:
-  Encountered when polling for an email link which has not been clicked yet.
+.. _sect:txn_ids:
 
-The C-S API typically uses ``HTTP POST`` to submit requests. This means these
-requests are not idempotent. The C-S API also allows ``HTTP PUT`` to make
-requests idempotent. In order to use a ``PUT``, paths should be suffixed with
-``/{txnId}``. ``{txnId}`` is a unique client-generated transaction ID which
+The Client-Server API typically uses ``HTTP POST`` to submit requests. This
+means these requests are not idempotent. The C-S API also allows ``HTTP PUT`` to
+make requests idempotent. In order to use a ``PUT``, paths should be suffixed
+with ``/{txnId}``. ``{txnId}`` is a unique client-generated transaction ID which
 identifies the request, and is scoped to a given Client (identified by that
 client's ``access_token``). Crucially, it **only** serves to identify new
 requests from retransmits. After the request has finished, the ``{txnId}``

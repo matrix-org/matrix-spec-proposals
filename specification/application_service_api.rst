@@ -54,6 +54,11 @@ An example HS configuration required to pass traffic to the AS is:
       aliases: []  # Namespaces of room aliases which should be delegated to the AS
       rooms: [] # Namespaces of room ids which should be delegated to the AS
 
+.. WARNING::
+  If the homeserver in question has multiple application services, each
+  ``as_token`` MUST be unique per application service as this token is used to
+  identify the application service. The homeserver MUST enforce this.
+
 - An application service can state whether they should be the only ones who 
   can manage a specified namespace. This is referred to as an "exclusive" 
   namespace. An exclusive namespace prevents humans and other application 
@@ -247,11 +252,8 @@ additional permissions granting the AS permission to masquerade as a matrix user
 
 Inputs:
  - Application service token (``access_token``)
+ - User ID in the AS namespace to act as.
 
- Either:
-   - User ID in the AS namespace to act as.
- Or:
-   - OAuth2 token of real user (which may end up being an access token) 
 Notes:
  - This will apply on all aspects of the CS API, except for Account Management.
  - The ``as_token`` is inserted into ``access_token`` which is usually where the
@@ -266,12 +268,6 @@ Notes:
    access_token: The application service token
    user_id: The desired user ID to act as.
    
- /path?access_token=$token&user_token=$token
-
- Query Parameters:
-   access_token: The application service token
-   user_token: The token granted to the AS by the real user
-
 Timestamp massaging
 +++++++++++++++++++
 The application service may want to inject events at a certain time (reflecting
@@ -323,7 +319,7 @@ including the AS token on a ``/register`` request, along with a login type of
 
 Application services which attempt to create users or aliases *outside* of
 their defined namespaces will receive an error code ``M_EXCLUSIVE``. Similarly,
-normal users who attempt to create users or alises *inside* an application
+normal users who attempt to create users or aliases *inside* an application
 service-defined namespace will receive the same ``M_EXCLUSIVE`` error code,
 but only if the application service has defined the namespace as ``exclusive``.
 
@@ -376,9 +372,10 @@ an API is exposed.
 Room Aliases
 ++++++++++++
 We may want to expose some 3P network rooms so Matrix users can join them directly,
-e.g. IRC rooms. We don't want to expose every 3P network room though, e.g. mailto,
-tel. Rooms which are publicly accessible (e.g. IRC rooms) can be exposed as an alias by
-the application service. Private rooms (e.g. sending an email to someone) should not
+e.g. IRC rooms. We don't want to expose every 3P network room though, e.g.
+``mailto``, ``tel``. Rooms which are publicly accessible (e.g. IRC rooms) can be
+exposed as an alias by the application service. Private rooms
+(e.g. sending an email to someone) should not
 be exposed in this way, but should instead operate using normal invite/join semantics.
 Therefore, the ID conventions discussed below are only valid for public rooms which 
 expose room aliases.
@@ -398,9 +395,9 @@ SHOULD be mapped in the same way as "user" URIs.
   
 Event fields
 ++++++++++++
-We recommend that any gatewayed events should include an ``external_url`` field
-in their content to provide a way for Matrix clients to link into the 'native'
-client from which the event originated.  For instance, this could contain the
-message-ID for emails/nntp posts, or a link to a blog comment when gatewaying
-blog comment traffic in & out of matrix
+We recommend that any events that originated from a remote network should
+include an ``external_url`` field in their content to provide a way for Matrix
+clients to link into the 'native' client from which the event originated.
+For instance, this could contain the message-ID for emails/nntp posts, or a link
+to a blog comment when bridging blog comment traffic in & out of Matrix.
 

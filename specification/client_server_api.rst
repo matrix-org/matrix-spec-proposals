@@ -1,9 +1,6 @@
 Client-Server API
 =================
 
-Overview
---------
-
 The client-server API provides a simple lightweight API to let clients send
 messages, control rooms and synchronise conversation history. It is designed to
 support both lightweight clients which store no state and lazy-load data from
@@ -31,7 +28,10 @@ return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
 ``M_UNKNOWN_TOKEN`` respectively.
 
 User-Interactive Authentication API
------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _sect:auth-api:
+
 This section refers to API Version 2.
 
 Some API endpoints such as ``login`` or ``register`` require authentication that
@@ -159,7 +159,7 @@ absence of that login stage type in the 'completed' array indicating whether
 that stage is complete.
 
 Example
-~~~~~~~
++++++++
 At a high level, the requests made for an API call completing an auth flow with
 three stages will resemble the following diagram::
   
@@ -201,7 +201,7 @@ This specification defines the following login types:
  - ``m.login.dummy``
 
 Password-based
-~~~~~~~~~~~~~~
+++++++++++++++
 :Type:
   ``m.login.password``
 :Description:
@@ -215,8 +215,14 @@ To respond to this type, reply with an auth dict as follows::
     "password": "<password>"
   }
 
+.. WARNING::
+  Clients SHOULD enforce that the password provided is suitably complex. The
+  password SHOULD include a lower-case letter, an upper-case letter, a number
+  and a symbol and be at a minimum 8 characters in length. Servers MAY reject
+  weak passwords with an error code ``M_WEAK_PASSWORD``.
+
 Google ReCaptcha
-~~~~~~~~~~~~~~~~
+++++++++++++++++
 :Type:
   ``m.login.recaptcha``
 :Description:
@@ -230,7 +236,7 @@ To respond to this type, reply with an auth dict as follows::
   }
 
 Token-based
-~~~~~~~~~~~
++++++++++++
 :Type:
   ``m.login.token``
 :Description:
@@ -261,7 +267,7 @@ newly provisioned access_token).
 The ``token`` must be a macaroon.
 
 OAuth2-based
-~~~~~~~~~~~~
+++++++++++++
 :Type:
   ``m.login.oauth2``
 :Description:
@@ -285,7 +291,7 @@ the OAuth flow has completed, the client retries the request with the session
 only, as above.
 
 Email-based (identity server)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++++++++++++++++++++++++++++++
 :Type:
   ``m.login.email.identity``
 :Description:
@@ -310,7 +316,7 @@ To respond to this type, reply with an auth dict as follows::
   }
 
 Dummy Auth
-~~~~~~~~~~
+++++++++++
 :Type:
   ``m.login.dummy``
 :Description:
@@ -327,7 +333,7 @@ if provided::
 
 
 Fallback
-~~~~~~~~
+++++++++
 Clients cannot be expected to be able to know how to process every single login
 type. If a client does not know how to handle a given login type, it can direct
 the user to a web browser with the URL of a fallback page which will allow the
@@ -343,16 +349,169 @@ This MUST return an HTML page which can perform this authentication stage. This
 page must attempt to call the JavaScript function ``window.onAuthDone`` when
 the authentication has been completed.
 
+Registration
+~~~~~~~~~~~~
+This section refers to API Version 2. These API calls currently use the prefix
+``/_matrix/client/v2_alpha``.
+
+Registering for a user account is done using the request::
+
+  POST $V2PREFIX/register
+
+This API endpoint uses the `User-Interactive Authentication API`_.
+This API endpoint does not require an access token.
+
+.. _User-Interactive Authentication API: `sect:auth-api`_
+
+The body of the POST request is a JSON object containing:
+
+username
+  Optional. This is the local part of the desired Matrix ID. If omitted, the
+  Home Server must generate a Matrix ID local part.
+password
+  Required. The desired password for the account.
+bind_email
+  Optional. If ``true``, the server binds the email used for authentication to
+  the Matrix ID with the ID Server.
+
+On success, this returns a JSON object with keys:
+
+user_id
+  The fully-qualified Matrix ID that has been registered.
+access_token
+  An access token for the new account.
+home_server
+  The hostname of the Home Server on which the account has been registered.
+refresh_token
+  A token that may be exchanged for a new ``access_token`` using the
+  ``/tokenrefresh`` API endpoint.
+
+This endpoint may also return the following error codes:
+
+M_USER_IN_USE
+  If the Matrix ID is already in use
+M_EXCLUSIVE
+  If the requested Matrix ID is in the exclusive namespace of an application
+  service.
+
+Home Servers MUST perform the relevant checks and return these codes before
+performing `User-Interactive Authentication`_, although they may also return
+them after authentication is completed if, for example, the requested user ID
+was registered whilst the client was performing authentication.
+
+.. _User-Interactive Authentication: `sect:auth-api`_
+
+Old V1 API docs: |register|_
+
+{{login_http_api}}
+
+Changing Password
++++++++++++++++++
+This section refers to API Version 2. These API calls currently use the prefix
+``/_matrix/client/v2_alpha``.
+
+Request::
+
+  POST $V2PREFIX/account/password
+
+This API endpoint uses the User-Interactive Authentication API. An access token
+should be submitted to this endpoint if the client has an active session. The
+Home Server may change the flows available depending on whether a valid access
+token is provided.
+
+The body of the POST request is a JSON object containing:
+
+new_password
+  The new password for the account.
+
+On success, an empty JSON object is returned.
+
+The error code M_NOT_FOUND is returned if the user authenticated with a third
+party identifier but the Home Server could not find a matching account in its
+database.
+
+Adding Account Administrative Contact Information
++++++++++++++++++++++++++++++++++++++++++++++++++
+This section refers to API Version 2. These API calls currently use the prefix
+``/_matrix/client/v2_alpha``.
+
+Request::
+
+  POST $V2PREFIX/account/3pid
+
+Used to add contact information to the user's account.
+
+The body of the POST request is a JSON object containing:
+
+threePidCreds
+  An object containing contact information.
+bind
+  Optional. A boolean indicating whether the Home Server should also bind this
+  third party identifier to the account's matrix ID with the Identity Server. If
+  supplied and true, the Home Server must bind the 3pid accordingly.
+
+The contact information object comprises:
+
+id_server
+  The colon-separated hostname and port of the Identity Server used to
+  authenticate the third party identifier. If the port is the default, it and the
+  colon should be omitted.
+sid
+  The session ID given by the Identity Server
+client_secret
+  The client secret used in the session with the Identity Server.
+
+On success, the empty JSON object is returned.
+
+May also return error codes:
+
+M_THREEPID_AUTH_FAILED
+  If the credentials provided could not be verified with the ID Server.
+
+Fetching Currently Associated Contact Information
++++++++++++++++++++++++++++++++++++++++++++++++++
+This section refers to API Version 2. These API calls currently use the prefix
+``/_matrix/client/v2_alpha``.
+
+Request::
+
+  GET $V2PREFIX/account/3pid
+
+This returns a list of third party identifiers that the Home Server has
+associated with the user's account. This is *not* the same as the list of third
+party identifiers bound to the user's Matrix ID in Identity Servers. Identifiers
+in this list may be used by the Home Server as, for example, identifiers that it
+will accept to reset the user's account password.
+
+Returns a JSON object with the key ``threepids`` whose contents is an array of
+objects with the following keys:
+
+medium
+  The medium of the 3pid (eg, ``email``)
+address
+  The textual address of the 3pid, eg. the email address
+
 Pagination
 ----------
 
-Querying large datasets in Matrix always uses the same pagination API pattern to
+.. NOTE::
+  The paths referred to in this section are not actual endpoints. They only
+  serve as examples to explain how pagination functions.
+
+Pagination is the process of dividing a dataset into multiple discrete pages.
+Matrix makes use of pagination to allow clients to view extremely large datasets.
+These datasets are not limited to events in a room (for example clients may want
+to paginate a list of rooms in addition to events within those rooms). Regardless
+of *what* is being paginated, there is a common underlying API which is used to
 to give clients a consistent way of selecting subsets of a potentially changing
-dataset. Requests pass in ``from``, ``to`` and ``limit`` parameters which describe
-where to read from the stream. ``from`` and ``to`` are opaque textual 'stream
-tokens' which describe positions in the dataset. The response returns new
-``start`` and ``end`` stream token values which can then be passed to subsequent
-requests to continue pagination.
+dataset. Requests pass in ``from``, ``to``, ``dir`` and ``limit`` parameters
+which describe where to read from the stream. ``from`` and ``to`` are opaque
+textual 'stream tokens' which describe the current position in the dataset.
+The ``dir`` parameter is an enum representing the direction of events to return:
+either ``f`` orwards or ``b`` ackwards. The response returns new ``start`` and
+``end`` stream token values which can then be passed to subsequent requests to
+continue pagination. Not all endpoints will make use of all the parameters
+outlined here: see the specific endpoint in question for more information.
 
 Pagination Request Query Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -367,24 +526,26 @@ Query parameters:
   limit:
     integer - An integer representing the maximum number of items to 
     return.
+  dir:
+    f|b - The direction to return events in. Typically this is ``b`` to paginate
+    backwards in time.
 
 'START' and 'END' are placeholder values used in these examples to describe the
 start and end of the dataset respectively.
 
-Unless specified, the default pagination parameters are from=START, to=END, 
-without a limit set. This allows you to hit an API like
-/events without any query parameters to get everything.
+Unless specified, the default pagination parameters are ``from=START``,
+``to=END``, without a limit set.
 
-For example, the event stream has events E1 -> E15. The client wants the last 5 
+For example, if an endpoint had events E1 -> E15. The client wants the last 5 
 events and doesn't know any previous events::
 
     S                                                    E
     |-E1-E2-E3-E4-E5-E6-E7-E8-E9-E10-E11-E12-E13-E14-E15-|
     |                               |                    |
-    |                          _____|                    |
-    |__________________       |       ___________________|
-                       |      |      |
-     GET /events?to=START&limit=5&from=END
+    |                          _____|  <--backwards--    |
+    |__________________       |         |        ________|
+                       |      |         |        |
+     GET /somepath?to=START&limit=5&dir=b&from=END
      Returns:
        E15,E14,E13,E12,E11
 
@@ -401,7 +562,7 @@ now show page 3 (rooms R11 -> 15)::
                         Currently            |
                         viewing              |
                                              |
-                             GET /rooms/list?from=9&to=END&limit=5
+                             GET /roomslist?from=9&to=END&limit=5
                              Returns: R11,R12,R13,R14,R15
                          
 Note that tokens are treated in an *exclusive*, not inclusive, manner. The end 
@@ -428,9 +589,6 @@ Events
 ------
 
 .. _sect:events:
-
-Overview
-~~~~~~~~
 
 The model of conversation history exposed by the client-server API can be
 considered as a list of events. The server 'linearises' the
@@ -459,7 +617,7 @@ You can visualise the range of events being returned as::
                               |                             |
                         start: '1-2-3'                end: 'a-b-c'
                              
-Now, to receive future events in real-time on the eventstream, you simply GET
+Now, to receive future events in real-time on the event stream, you simply GET
 $PREFIX/events with a ``from`` parameter of 'a-b-c': in other words passing in the
 ``end`` token returned by initial sync. The request blocks until new events are
 available or until your specified timeout elapses, and then returns a
@@ -489,34 +647,36 @@ To continue paginating backwards, one calls the /messages API again, supplying
 the new ``start`` value as the ``from`` parameter.
 
 
-Receiving live updates on a client
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Syncing
+~~~~~~~
 
-Clients receive new events by long-polling the home server via the
-$PREFIX/events API, specifying a timeout in milliseconds in the timeout
-parameter. This will hold open the HTTP connection for a short period of time
-waiting for new events, returning early if an event occurs. This is called the
-`Event Stream`_. All events which are visible to the client will appear in the
-event stream. When the request returns, an ``end`` token is included in the
+Clients receive new events by "long-polling" the home server via the events API.
+This involves specifying a timeout in the request which will hold
+open the HTTP connection for a short period of time waiting for new events,
+returning early if an event occurs. Only the events API supports long-polling.
+All events which are visible to the client will appear in the
+events API. When the request returns, an ``end`` token is included in the
 response. This token can be used in the next request to continue where the
-last request left off.
+last request left off. Multiple events can be returned per long-poll.
 
-All events must be de-duplicated based on their event ID.
-
-.. TODO
-  is deduplication actually a hard requirement in CS v2?
+.. Warning::
+  Events are ordered in this API according to the arrival time of the event on
+  the homeserver. This can conflict with other APIs which order events based on
+  their partial ordering in the event graph. This can result in duplicate events
+  being received (once per distinct API called). Clients SHOULD de-duplicate
+  events based on the event ID when this happens.
 
 .. TODO-spec
-  Do we ever return multiple events in a single request?
-  Don't we get lots of request setup RTT latency if we only do one event per request?
   Do we ever support streaming requests? Why not websockets?
 
 When the client first logs in, they will need to initially synchronise with
-their home server. This is achieved via the |initialSync|_ API. This API also
-returns an ``end`` token which can be used with the event stream.  See the 'Room Sync' section below.
+their home server. This is achieved via the initial sync API described below.
+This API also returns an ``end`` token which can be used with the event stream.
 
-Events in a room
-~~~~~~~~~~~~~~~~
+{{sync_http_api}}
+
+Types of room events
+~~~~~~~~~~~~~~~~~~~~
 
 Room events are split into two categories:
 
@@ -528,7 +688,7 @@ Room events are split into two categories:
 :Message events:
   These are events which describe transient "once-off" activity in a room:
   typically communication such as sending an instant message or setting up a
-  VoIP call. These used to be called 'non-state' events.
+  VoIP call.
 
 This specification outlines several events, all with the event type prefix
 ``m.``. However, applications may wish to add their own type of event, and this
@@ -538,7 +698,7 @@ convention, e.g. ``com.example.myapp.event``.  This ensures event types are
 suitably namespaced for each application and reduces the risk of clashes.
 
 State events
-~~~~~~~~~~~~
+++++++++++++
 
 State events can be sent by ``PUT`` ing to
 |/rooms/<room_id>/state/<event_type>/<state_key>|_.  These events will be
@@ -581,7 +741,7 @@ In some cases, there may be no need for a ``state_key``, so it can be omitted::
 See `Room Events`_ for the ``m.`` event specification.
 
 Message events
-~~~~~~~~~~~~~~
+++++++++++++++
 
 Message events can be sent by sending a request to
 |/rooms/<room_id>/send/<event_type>|_.  These requests *can* use transaction
@@ -597,75 +757,15 @@ example::
 
 See `Room Events`_ for the ``m.`` event specification.
 
-Syncing rooms
-~~~~~~~~~~~~~
-
-.. NOTE::
-  This section is a work in progress.
-
-When a client logs in, they may have a list of rooms which they have already
-joined. These rooms may also have a list of events associated with them. The
-purpose of 'syncing' is to present the current room and event information in a
-convenient, compact manner. The events returned are not limited to room events;
-presence events will also be returned. A single syncing API is provided:
-
- - |initialSync|_ : A global sync which will present room and event information
-   for all rooms the user has joined.
-
-.. TODO-spec room-scoped initial sync
- - |/rooms/<room_id>/initialSync|_ : A sync scoped to a single room. Presents
-   room and event information for this room only.
- - Room-scoped initial sync is Very Tricky because typically people would
-   want to sync the room then listen for any new content from that point
-   onwards. The event stream cannot do this for a single room currently.
-   As a result, commenting room-scoped initial sync at this time.
-
-The |initialSync|_ API contains the following keys:
-
-``presence``
-  Description:
-    Contains a list of presence information for users the client is interested
-    in.
-  Format:
-    A JSON array of ``m.presence`` events.
-
-``end``
-  Description:
-    Contains an event stream token which can be used with the `Event Stream`_.
-  Format:
-    A string containing the event stream token.
-
-``rooms``
-  Description:
-    Contains a list of room information for all rooms the client has joined,
-    and limited room information on rooms the client has been invited to.
-  Format:
-    A JSON array containing Room Information JSON objects.
-
-Room Information:
-  Description:
-    Contains all state events for the room, along with a limited amount of
-    the most recent events, configured via the ``limit`` query
-    parameter. Also contains additional keys with room metadata, such as the
-    ``room_id`` and the client's ``membership`` to the room.
-  Format:
-    A JSON object with the following keys:
-      ``room_id``
-        A string containing the ID of the room being described.
-      ``membership``
-        A string representing the client's membership status in this room.
-      ``messages``
-        An event stream JSON object containing a ``chunk`` of recent
-        events (both state events and non-state events), along with an ``end`` token.
-      ``state``
-        A JSON array containing all the current state events for this room.
-
 Getting events for a room
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There are several APIs provided to ``GET`` events for a room:
 
 {{rooms_http_api}}
+
+
+{{message_pagination_http_api}}
 
 Redactions
 ~~~~~~~~~~
@@ -717,140 +817,20 @@ Rooms
 
 Creation
 ~~~~~~~~
-To create a room, a client has to use the |createRoom|_ API. There are various
-options which can be set when creating a room:
-
-``visibility``
-  Type:
-    String
-  Optional:
-    Yes
-  Value:
-    Either ``public`` or ``private``.
-  Description:
-    A ``public`` visibility indicates that the room will be shown in the public
-    room list. A ``private`` visibility will hide the room from the public room
-    list. Rooms default to ``private`` visibility if this key is not included.
-
-``room_alias_name``
-  Type:
-    String
-  Optional:
-    Yes
-  Value:
-    The room alias localpart.
-  Description:
-    If this is included, a room alias will be created and mapped to the newly
-    created room.  The alias will belong on the same home server which created
-    the room, e.g.  ``!qadnasoi:domain.com >>> #room_alias_name:domain.com``
-
-``name``
-  Type:
-    String
-  Optional:
-    Yes
-  Value:
-    The ``name`` value for the ``m.room.name`` state event.
-  Description:
-    If this is included, an ``m.room.name`` event will be sent into the room to
-    indicate the name of the room. See `Room Events`_ for more information on
-    ``m.room.name``.
-
-``topic``
-  Type:
-    String
-  Optional:
-    Yes
-  Value:
-    The ``topic`` value for the ``m.room.topic`` state event.
-  Description:
-    If this is included, an ``m.room.topic`` event will be sent into the room
-    to indicate the topic for the room. See `Room Events`_ for more information
-    on ``m.room.topic``.
-
-``invite``
-  Type:
-    List
-  Optional:
-    Yes
-  Value:
-    A list of user ids to invite.
-  Description:
-    This will tell the server to invite everyone in the list to the newly
-    created room.
-
-``creation_content``
-  Type:
-    Object
-  Optional:
-    Yes
-  Value:
-    Extra keys to be added to the content of the ``m.room.create``. The server
-    will clober the following keys: ``creator``. Future versions of this
-    spec may allow the server to clobber other keys if required.
-  Description:
-    Allows clients to add keys to the content of ``m.room.create``.
-
-``preset``
-  Type:
-    String
-  Optional:
-    Yes
-  Value:
-    ``private_chat``, ``trusted_private_chat`` or ``public_chat``
-  Description:
-    Convenience parameter for setting various default state events based on a
-    preset.
-
-    Three presets are defined:
-
-    - ``private_chat``: Sets the ``join_rules`` to ``invite`` and
-      ``history_visibility`` to ``shared``
-    - ``trusted_private_chat``: Set the ``join_rules`` to ``invite``,
-      ``history_visibility`` to ``shared`` and gives all invitees the same
-      power level as the creator.
-    - ``public_chat``: Sets the ``join_rules`` to ``public`` and
-      ``history_visibility`` to ``shared``
-
-``initial_state``
-  Type:
-    List
-  Optional:
-    Yes
-  Value:
-    A list of state events to set in the new room.
-  Description:
-    Allows the user to override the default state events set in the new room.
-
-    The expected format of the state events are an object with ``type``,
-    ``state_key`` and ``content`` keys set.
-
-    Takes precedence over events set by ``presets``, but gets overriden by
-    ``name`` and ``topic`` keys.
-
-Example::
-
-  {
-    "preset": "public_chat",
-    "room_alias_name": "thepub",
-    "name": "The Grand Duke Pub",
-    "topic": "All about happy hour",
-    "creation_content": {
-        "m.federate": false
-    }
-  }
-
-The home server will create a ``m.room.create`` event when the room is created,
-which serves as the root of the PDU graph for this room. This event also has a
+The home server will create an ``m.room.create`` event when a room is created,
+which serves as the root of the event graph for this room. This event also has a
 ``creator`` key which contains the user ID of the room creator. It will also
 generate several other events in order to manage permissions in this room. This
 includes:
 
  - ``m.room.power_levels`` : Sets the power levels of users and required power
-    levels.
+   levels for various actions within the room such as sending events.
  - ``m.room.join_rules`` : Whether the room is "invite-only" or not.
 
-See `Room Events`_ for more information on these events.
+See `Room Events`_ for more information on these events. To create a room, a
+client has to use the the following API.
+
+{{create_room_http_api}}
 
 Room aliases
 ~~~~~~~~~~~~
@@ -915,7 +895,7 @@ certain operations such as kicking, banning and sending state events. See
 `m.room.power_levels`_ for more information.
 
 Joining rooms
--------------
+~~~~~~~~~~~~~
 Users need to be a member of a room in order to send and receive events in that
 room. There are several states in which a user may be, in relation to a room:
 
@@ -993,143 +973,6 @@ member's state, by making a request to
   {
     "membership": "ban"
   }
-
-
-Registration
-------------
-This section refers to API Version 2. These API calls currently use the prefix
-``/_matrix/client/v2_alpha``.
-
-Registering for a user account is done using the request::
-
-  POST $V2PREFIX/register
-
-This API endpoint uses the User-Interactive Authentication API.
-This API endpoint does not require an access token.
-
-The body of the POST request is a JSON object containing:
-
-username
-  Optional. This is the local part of the desired Matrix ID. If omitted, the
-  Home Server must generate a Matrix ID local part.
-password
-  Required. The desired password for the account.
-bind_email
-  Optional. If ``true``, the server binds the email used for authentication to
-  the Matrix ID with the ID Server.
-
-On success, this returns a JSON object with keys:
-
-user_id
-  The fully-qualified Matrix ID that has been registered.
-access_token
-  An access token for the new account.
-home_server
-  The hostname of the Home Server on which the account has been registered.
-
-This endpoint may also return the following error codes:
-
-M_USER_IN_USE
-  If the Matrix ID is already in use
-M_EXCLUSIVE
-  If the requested Matrix ID is in the exclusive namespace of an application
-  service.
-
-Home Servers MUST perform the relevant checks and return these codes before
-performing User-Interactive Authentication, although they may also return
-them after authentication is completed if, for example, the requested user ID
-was registered whilst the client was performing authentication.
-
-Old V1 API docs: |register|_
-
-{{login_http_api}}
-
-Changing Password
-~~~~~~~~~~~~~~~~~
-This section refers to API Version 2. These API calls currently use the prefix
-``/_matrix/client/v2_alpha``.
-
-Request::
-
-  POST $V2PREFIX/account/password
-
-This API endpoint uses the User-Interactive Authentication API. An access token
-should be submitted to this endpoint if the client has an active session. The
-Home Server may change the flows available depending on whether a valid access
-token is provided.
-
-The body of the POST request is a JSON object containing:
-
-new_password
-  The new password for the account.
-
-On success, an empty JSON object is returned.
-
-The error code M_NOT_FOUND is returned if the user authenticated with a third
-party identifier but the Home Server could not find a matching account in its
-database.
-
-Adding a Third Party Identifier
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This section refers to API Version 2. These API calls currently use the prefix
-``/_matrix/client/v2_alpha``.
-
-Request::
-
-  POST $V2PREFIX/account/3pid
-
-Used to add a third party identifier to the user's account.
-
-The body of the POST request is a JSON object containing:
-
-threePidCreds
-  An object containing third party identifier credentials.
-bind
-  Optional. A boolean indicating whether the Home Server should also bind this
-  third party identifier to the account's matrix ID with the Identity Server. If
-  supplied and true, the Home Server must bind the 3pid accordingly.
-
-The third party identifier credentials object comprises:
-
-id_server
-  The colon-separated hostname and port of the Identity Server used to
-  authenticate the third party identifier. If the port is the default, it and the
-  colon should be omitted.
-sid
-  The session ID given by the Identity Server
-client_secret
-  The client secret used in the session with the Identity Server.
-
-On success, the empty JSON object is returned.
-
-May also return error codes:
-
-M_THREEPID_AUTH_FAILED
-  If the credentials provided could not be verified with the ID Server.
-
-Fetching Currently Associated Third Party Identifiers
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This section refers to API Version 2. These API calls currently use the prefix
-``/_matrix/client/v2_alpha``.
-
-Request::
-
-  GET $V2PREFIX/account/3pid
-
-This returns a list of third party identifiers that the Home Server has
-associated with the user's account. This is *not* the same as the list of third
-party identifiers bound to the user's Matrix ID in Identity Servers. Identifiers
-in this list may be used by the Home Server as, for example, identifiers that it
-will accept to reset the user's account password.
-
-Returns a JSON object with the key ``threepids`` whose contents is an array of
-objects with the following keys:
-
-medium
-  The medium of the 3pid (eg, ``email``)
-address
-  The textual address of the 3pid, eg. the email address
-
 
 Profiles
 --------

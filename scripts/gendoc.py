@@ -128,11 +128,8 @@ def get_rst(file_info, title_level, title_styles, spec_dir, adjust_titles):
                 )
             else:
                 rst = f.read()
-            if rst[-2:] != "\n\n":
-                raise Exception(
-                    ("File %s should end with TWO new-line characters to ensure " +
-                    "file concatenation works correctly.") % (file_info,)
-                )
+
+            rst += "\n\n"
             return rst
     # dicts look like {0: filepath, 1: filepath} where the key is the title level
     elif isinstance(file_info, dict):
