@@ -313,7 +313,7 @@ including the AS token on a ``/register`` request, along with a login type of
 
 Application services which attempt to create users or aliases *outside* of
 their defined namespaces will receive an error code ``M_EXCLUSIVE``. Similarly,
-normal users who attempt to create users or alises *inside* an application
+normal users who attempt to create users or aliases *inside* an application
 service-defined namespace will receive the same ``M_EXCLUSIVE`` error code,
 but only if the application service has defined the namespace as ``exclusive``.
 
@@ -366,9 +366,10 @@ an API is exposed.
 Room Aliases
 ++++++++++++
 We may want to expose some 3P network rooms so Matrix users can join them directly,
-e.g. IRC rooms. We don't want to expose every 3P network room though, e.g. mailto,
-tel. Rooms which are publicly accessible (e.g. IRC rooms) can be exposed as an alias by
-the application service. Private rooms (e.g. sending an email to someone) should not
+e.g. IRC rooms. We don't want to expose every 3P network room though, e.g.
+``mailto``, ``tel``. Rooms which are publicly accessible (e.g. IRC rooms) can be
+exposed as an alias by the application service. Private rooms
+(e.g. sending an email to someone) should not
 be exposed in this way, but should instead operate using normal invite/join semantics.
 Therefore, the ID conventions discussed below are only valid for public rooms which 
 expose room aliases.
@@ -388,9 +389,9 @@ SHOULD be mapped in the same way as "user" URIs.
   
 Event fields
 ++++++++++++
-We recommend that any gatewayed events should include an ``external_url`` field
-in their content to provide a way for Matrix clients to link into the 'native'
-client from which the event originated.  For instance, this could contain the
-message-ID for emails/nntp posts, or a link to a blog comment when gatewaying
-blog comment traffic in & out of matrix
+We recommend that any events that originated from a remote network should
+include an ``external_url`` field in their content to provide a way for Matrix
+clients to link into the 'native' client from which the event originated.
+For instance, this could contain the message-ID for emails/nntp posts, or a link
+to a blog comment when bridging blog comment traffic in & out of Matrix.
 
