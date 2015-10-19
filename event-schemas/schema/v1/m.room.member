@@ -40,7 +40,7 @@
                         },
                         "signed": {
                             "type": "object",
-                            "title": "signed_third_party_invite",
+                            "title": "signed",
                             "properties": {
                                 "mxid": {
                                     "type": "string",
@@ -48,11 +48,12 @@
                                 },
                                 "token": {
                                     "type": "string",
-                                    "description": "The token property of the containing third_party_invite object.",
+                                    "description": "The token property of the containing third_party_invite object."
                                 },
                                 "signatures": {
                                     "type": "object",
-                                    "description": "A single signature from the verifying server, in the format specified by the Signing Events section."
+                                    "description": "A single signature from the verifying server, in the format specified by the Signing Events section.",
+                                    "title": "Signatures"
                                 }
                             },
                             "required": ["mxid", "signatures", "token"]
