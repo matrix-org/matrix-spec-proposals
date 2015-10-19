@@ -5,7 +5,8 @@ Server Side Search
 
 The search API allows clients to perform full text search across events in all
 rooms that the user has been in, including those that they have left. Only
-events that the user is allowed to see will be searched.
+events that the user is allowed to see will be searched, e.g. it won't include
+evnets in rooms that happened after you left.
 
 Client behaviour
 ----------------
