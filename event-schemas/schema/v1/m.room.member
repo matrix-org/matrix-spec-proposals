@@ -67,6 +67,7 @@
                 "type": "object",
                 "title": "StrippedState",
                 "description": "A stripped down state event, with only the ``type``, ``state_key`` and ``content`` keys.",
+                "required": ["type", "state_key", "content"],
                 "properties": {
                     "type": {
                         "type": "string",

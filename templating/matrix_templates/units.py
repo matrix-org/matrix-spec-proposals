@@ -532,7 +532,8 @@ class MatrixUnits(Units):
                     Units.prop(json_schema, "properties/content")
                 )
 
-                # this is horrible
+                # This is horrible because we're special casing a key on m.room.member.
+                # We need to do this because we want to document a non-content object.
                 if schema["type"] == "m.room.member":
                     invite_room_state = get_json_schema_object_fields(
                         json_schema["properties"]["invite_room_state"]["items"]
