@@ -630,7 +630,7 @@ because HTTP services like Matrix are often deployed behind load balancers that
 handle the TLS and these load balancers make it difficult to check TLS client
 certificates.
 
-A home server may provide a TLS client certficate and the receiving home server
+A home server may provide a TLS client certificate and the receiving home server
 may check that the client certificate matches the certificate of the origin
 home server.
 

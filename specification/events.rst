@@ -1,5 +1,5 @@
-Events
-======
+Event Structure
+===============
 
 All communication in Matrix is expressed in the form of data objects called
 Events. These are the fundamental building blocks common to the client-server,

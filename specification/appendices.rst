@@ -24,7 +24,7 @@ Threat: Unrecoverable Consistency Violations
 ++++++++++++++++++++++++++++++++++++++++++++
 
 An attacker could send messages which created an unrecoverable "split-brain"
-state in the cluster such that the victim's servers could no longer dervive a
+state in the cluster such that the victim's servers could no longer derive a
 consistent view of the chatroom state.
 
 Threat: Bad History
@@ -63,7 +63,7 @@ Spoofing
 An attacker could try to send a message claiming to be from the victim without
 the victim having sent the message in order to:
 
-* Impersonate the victim while performing illict activity.
+* Impersonate the victim while performing illicit activity.
 * Obtain privileges of the victim.
 
 Threat: Altering Message Contents
@@ -81,7 +81,7 @@ with a phony "origin" field.
 Spamming
 ~~~~~~~~
 
-The attacker could try to send a high volume of solicicted or unsolicted
+The attacker could try to send a high volume of solicited or unsolicited
 messages to the victim in order to:
 
 * Find victims for scams.
