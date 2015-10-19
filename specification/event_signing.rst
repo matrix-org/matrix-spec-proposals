@@ -191,8 +191,8 @@ in the event JSON in a ``hash`` object under a ``sha256`` key.
         return event_json_object
 
 The event is then stripped of all non-essential keys both at the top level and
-within the ``content`` object. Essential top-level keys given below; any
-top-level keys not in this list are removed.
+within the ``content`` object. Any top-level keys not in he following list MUST
+be removed:
 
 .. code::
 
@@ -212,8 +212,9 @@ top-level keys not in this list are removed.
     type
 
 A new ``content`` object is constructed for the resulting event that contains
-only the essential keys of the original event. If the original event lacked a
-``content`` object at all, a new blank one is created for it.
+only the essential keys of the original ``content`` object. If the original
+event lacked a ``content`` object at all, a new empty JSON object is created
+for it.
 
 The keys that are considered essential for the ``content`` object depend on the
 the ``type`` of the event. These are:
@@ -246,7 +247,7 @@ the ``type`` of the event. These are:
       users_default
 
 The resulting stripped object with the new ``content`` object and the original
-``hashes`` key is then signed using the JSON signing algorithm.
+``hashes`` key is then signed using the JSON signing algorithm outlined below:
 
 .. code:: python
 
