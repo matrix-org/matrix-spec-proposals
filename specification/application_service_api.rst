@@ -249,11 +249,8 @@ additional permissions granting the AS permission to masquerade as a matrix user
 
 Inputs:
  - Application service token (``access_token``)
+ - User ID in the AS namespace to act as.
 
- Either:
-   - User ID in the AS namespace to act as.
- Or:
-   - OAuth2 token of real user (which may end up being an access token) 
 Notes:
  - This will apply on all aspects of the CS API, except for Account Management.
  - The ``as_token`` is inserted into ``access_token`` which is usually where the
@@ -268,12 +265,6 @@ Notes:
    access_token: The application service token
    user_id: The desired user ID to act as.
    
- /path?access_token=$token&user_token=$token
-
- Query Parameters:
-   access_token: The application service token
-   user_token: The token granted to the AS by the real user
-
 Timestamp massaging
 +++++++++++++++++++
 The application service may want to inject events at a certain time (reflecting
