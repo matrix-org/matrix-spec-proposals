@@ -905,6 +905,11 @@ room. There are several states in which a user may be, in relation to a room:
  - Joined (the user can send and receive events in the room)
  - Banned (the user is not allowed to join the room)
 
+There is an exception to the requirement that a user join a room before sending
+events to it: users may send an ``m.room.member`` event to a room with
+``content.membership`` set to ``leave`` to reject an invitation if they have
+currently been invited to a room but have not joined it.
+
 Some rooms require that users be invited to it before they can join; others
 allow anyone to join. Whether a given room is an "invite-only" room is
 determined by the room config key ``m.room.join_rules``. It can have one of the
@@ -931,7 +936,10 @@ Leaving rooms
 
 
 A user can leave a room to stop receiving events for that room. A user must
-have joined the room before they are eligible to leave the room. If the room is
+have been invited to, or joined the room before they are eligible to leave the
+room. Leaving from an invited state serves to reject the invite.
+
+Whether or not they actually joined the room, if the room is
 an "invite-only" room, they will need to be re-invited before they can re-join
 the room.  To leave a room, a request should be made to
 |/rooms/<room_id>/leave|_ with::
