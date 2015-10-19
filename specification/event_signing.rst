@@ -191,8 +191,8 @@ in the event JSON in a ``hash`` object under a ``sha256`` key.
         return event_json_object
 
 The event is then stripped of all non-essential keys both at the top level and
-within the ``content`` object. Any top-level keys not in he following list MUST
-be removed:
+within the ``content`` object. Any top-level keys not in the following list
+MUST be removed:
 
 .. code::
 
