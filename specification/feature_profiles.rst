@@ -1,7 +1,7 @@
 Feature Profiles
 ================
 
-.. sect:feature-profiles:
+.. _sect:feature-profiles:
 
 Matrix supports many different kinds of clients: from embedded IoT devices to
 desktop clients. Not all clients can provide the same feature sets as other

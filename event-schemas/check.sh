@@ -1,5 +1,11 @@
 #!/bin/bash -e
 # Runs z-schema over all of the schema files (looking for matching examples)
+
+if ! which z-schema; then
+  echo >&2 "Need to install z-schema; run: sudo npm install -g z-schema"
+  exit 1
+fi
+
 find schema/v1/m.* | while read line
 do
     split_path=(${line///// })

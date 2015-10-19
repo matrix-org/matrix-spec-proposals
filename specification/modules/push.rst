@@ -353,14 +353,14 @@ Examples
 To create a rule that suppresses notifications for the room with ID
 ``!dj234r78wl45Gh4D:matrix.org``::
 
-  curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/room/%21dj234r78wl45Gh4D%3Amatrix.org?access_token=123456" -d \
+  curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/api/v1/pushrules/global/room/%21dj234r78wl45Gh4D%3Amatrix.org?access_token=123456" -d \
   '{
      "actions" : ["dont_notify"]
    }'
 
 To suppress notifications for the user ``@spambot:matrix.org``::
 
-  curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/sender/%40spambot%3Amatrix.org?access_token=123456" -d \
+  curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/api/v1/pushrules/global/sender/%40spambot%3Amatrix.org?access_token=123456" -d \
   '{
      "actions" : ["dont_notify"]
    }'
@@ -368,7 +368,7 @@ To suppress notifications for the user ``@spambot:matrix.org``::
 To always notify for messages that contain the work 'cake' and set a specific
 sound (with a rule_id of ``SSByZWFsbHkgbGlrZSBjYWtl``)::
 
-  curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/content/SSByZWFsbHkgbGlrZSBjYWtl?access_token=123456" -d \
+  curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/api/v1/pushrules/global/content/SSByZWFsbHkgbGlrZSBjYWtl?access_token=123456" -d \
   '{
      "pattern": "cake",
      "actions" : ["notify", {"set_sound":"cakealarm.wav"}]
@@ -377,7 +377,7 @@ sound (with a rule_id of ``SSByZWFsbHkgbGlrZSBjYWtl``)::
 To add a rule suppressing notifications for messages starting with 'cake' but
 ending with 'lie', superseding the previous rule::
 
-  curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/content/U3BvbmdlIGNha2UgaXMgYmVzdA?access_token=123456&before=SSByZWFsbHkgbGlrZSBjYWtl" -d \
+  curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/api/v1/pushrules/global/content/U3BvbmdlIGNha2UgaXMgYmVzdA?access_token=123456&before=SSByZWFsbHkgbGlrZSBjYWtl" -d \
   '{
      "pattern": "cake*lie",
      "actions" : ["notify"]
@@ -387,7 +387,7 @@ To add a custom sound for notifications messages containing the word 'beer' in
 any rooms with 10 members or fewer (with greater importance than the room,
 sender and content rules)::
 
-  curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/override/U2VlIHlvdSBpbiBUaGUgRHVrZQ?access_token=123456" -d \
+  curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/api/v1/pushrules/global/override/U2VlIHlvdSBpbiBUaGUgRHVrZQ?access_token=123456" -d \
   '{
      "conditions": [
        {"kind": "event_match", "key": "content.body", "pattern": "beer" },
