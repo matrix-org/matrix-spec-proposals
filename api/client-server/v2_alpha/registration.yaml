@@ -86,7 +86,7 @@ paths:
               * ``M_EXCLUSIVE`` : The desired user ID is in the exclusive namespace
                 claimed by an application service.
 
-            This errors may be returned at any stage of the registration process,
+            These errors may be returned at any stage of the registration process,
             including after authentication if the requested user ID was registered
             whilst the client was performing authentication.
           examples:
