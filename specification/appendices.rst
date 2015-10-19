@@ -133,7 +133,7 @@ Cryptographic Test Vectors
 --------------------------
 
 To assist in the development of compatible implementations, the following test
-values may be useful for verifying the cryptograph event signing code.
+values may be useful for verifying the cryptographic event signing code.
 
 Signing Key
 ~~~~~~~~~~~
