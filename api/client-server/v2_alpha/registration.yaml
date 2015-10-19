@@ -1,0 +1,101 @@
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server v2 Registration API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/api/v2_alpha
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  "/register":
+    post:
+      summary: Register for an account on this homeserver.
+      description: |-
+        Register for an account on this homeserver.
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            example: |-
+              {
+                "username": "cheeky_monkey",
+                "password": "ilovebananas",
+                "bind_email": false
+              }
+            properties:
+              bind_email:
+                type: boolean
+                description: |-
+                  If true, the server binds the email used for authentication to
+                  the Matrix ID with the ID Server.
+              username:
+                type: string
+                description: |-
+                  The local part of the desired Matrix ID. If omitted,
+                  the homeserver MUST generate a Matrix ID local part.
+              password:
+                type: string
+                description: The desired password for the account.
+            required: ["password"]
+      responses:
+        200:
+          description: The account has been registered.
+          examples:
+            application/json: |-
+              {
+                "user_id": "@cheeky_monkey:matrix.org",
+                "access_token": "abc123",
+                "home_server": "matrix.org",
+                "refresh_token": "def456"
+              }
+          schema:
+            type: object
+            properties:
+              user_id:
+                type: string
+                description: The fully-qualified Matrix ID that has been registered.
+              access_token:
+                type: string
+                description: |-
+                  An access token for the account.
+                  This access token can then be used to authorize other requests.
+                  The access token may expire at some point, and if so, it SHOULD come with a ``refresh_token``.
+                  There is no specific error message to indicate that a request has failed because
+                  an access token has expired; instead, if a client has reason to believe its
+                  access token is valid, and it receives an auth error, they should attempt to
+                  refresh for a new token on failure, and retry the request with the new token.
+              refresh_token:
+                type: string
+                # TODO: Work out how to linkify /tokenrefresh
+                description: |-
+                  (optional) A ``refresh_token`` may be exchanged for a new ``access_token`` using the /tokenrefresh API endpoint.
+              home_server:
+                type: string
+                description: The hostname of the Home Server on which the account has been registered.
+        400:
+          description: |-
+            Part of the request was invalid. This may include one of the following error codes:
+
+              * ``M_USER_IN_USE`` : The desired user ID is already taken.
+              * ``M_EXCLUSIVE`` : The desired user ID is in the exclusive namespace
+                claimed by an application service.
+
+            These errors may be returned at any stage of the registration process,
+            including after authentication if the requested user ID was registered
+            whilst the client was performing authentication.
+          examples:
+            application/json: |-
+              {
+                  "errcode": "M_USER_IN_USE",
+                  "error": "Desired user ID is already taken."
+              }
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/error.yaml"
