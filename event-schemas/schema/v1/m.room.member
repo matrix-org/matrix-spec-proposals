@@ -38,16 +38,32 @@
                             "type": "string",
                             "description": "A base64-encoded ed25519 key with which token must be signed."
                         },
-                        "signature": {
-                            "type": "string",
-                            "description": "A base64-encoded signature of token with public_key."
+                        "signed": {
+                            "type": "object",
+                            "title": "signed",
+                            "properties": {
+                                "mxid": {
+                                    "type": "string",
+                                    "description": "The invited matrix user ID. Must be equal to the user_id property of the event."
+                                },
+                                "token": {
+                                    "type": "string",
+                                    "description": "The token property of the containing third_party_invite object."
+                                },
+                                "signatures": {
+                                    "type": "object",
+                                    "description": "A single signature from the verifying server, in the format specified by the Signing Events section.",
+                                    "title": "Signatures"
+                                }
+                            },
+                            "required": ["mxid", "signatures", "token"]
                         },
                         "sender": {
                             "type": "string",
                             "description": "The matrix user ID of the user who send the invite which is being used."
                         }
                     },
-                    "required": ["token", "key_validity_url", "public_key", "signature", "sender"]
+                    "required": ["token", "key_validity_url", "public_key", "sender", "signed"]
                 }
             },
             "required": ["membership"]

@@ -36,7 +36,8 @@ A client asks a server to invite a user by their third party identifier.
 Server behaviour
 ----------------
 
-All homeservers MUST verify that sig(``token``, ``public_key``) = ``signature``.
+All homeservers MUST verify the signature in the event's
+``content.third_party_invite.signed`` object.
 
 If a client of the current homeserver is joining by an
 ``m.room.third_party_invite``, that homesever MUST validate that the public
@@ -93,11 +94,11 @@ For example:
     When the third party user validates their identity, they are told about the
     invite, and ask their homeserver, H3, to join the room.
 
-    H3 validates that sign(``token``, ``public_key``) = ``signature``, and may check
-    ``key_validity_url``.
+    H3 validates the signature in the event's
+    ``content.third_party_invite.signed`` object.
 
-    H3 then asks H1 to join it to the room. H1 *must* validate that
-    sign(``token``, ``public_key``) = ``signature`` *and* check ``key_validity_url``.
+    H3 then asks H1 to join it to the room. H1 *must* validate the ``signed``
+    property *and* check ``key_validity_url``.
 
     Having validated these things, H1 writes the join event to the room, and H3
     begins participating in the room. H2 *must* accept this event.
