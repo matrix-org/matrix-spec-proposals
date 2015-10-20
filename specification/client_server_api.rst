@@ -936,11 +936,11 @@ Leaving rooms
 
 
 A user can leave a room to stop receiving events for that room. A user must
-have been invited to, or joined the room before they are eligible to leave the
-room. Leaving from an invited state serves to reject the invite.
+have been invited to or have joined the room before they are eligible to leave
+the room. Leaving a room to which the user has been invited rejects the invite.
 
 Whether or not they actually joined the room, if the room is
-an "invite-only" room, they will need to be re-invited before they can re-join
+an "invite-only" room they will need to be re-invited before they can re-join
 the room.  To leave a room, a request should be made to
 |/rooms/<room_id>/leave|_ with::
 
