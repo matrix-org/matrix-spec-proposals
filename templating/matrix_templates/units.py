@@ -153,7 +153,7 @@ class MatrixUnits(Units):
         for path in api["paths"]:
             for method in api["paths"][path]:
                 single_api = api["paths"][path][method]
-                full_path = api.get("basePath", "") + path
+                full_path = api.get("basePath", "").rstrip("/") + path
                 endpoint = {
                     "title": single_api.get("summary", ""),
                     "desc": single_api.get("description", single_api.get("summary", "")),
@@ -299,7 +299,7 @@ class MatrixUnits(Units):
                     )
                 ]
                 if len(params_missing_examples) == 0:
-                    path_template = api.get("basePath", "") + path
+                    path_template = api.get("basePath", "").rstrip("/") + path
                     qps = {}
                     body = ""
                     for param in single_api.get("parameters", []):
@@ -398,7 +398,7 @@ class MatrixUnits(Units):
                         })
 
         return {
-            "base": api.get("basePath"),
+            "base": api.get("basePath").rstrip("/"),
             "group": group_name,
             "endpoints": endpoints,
         }
