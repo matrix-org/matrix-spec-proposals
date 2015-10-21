@@ -597,67 +597,61 @@ point in time::
 
   [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]
   
-Clients can add to the stream by POSTing message or state events, and can read
-from the stream via the |initialSync|_, |/rooms/<room_id>/initialSync|_, `Event
-Stream`_ and |/rooms/<room_id>/messages|_ APIs.
+Clients can add to the stream by POSTing or PUTting message or state events,
+and can read from the stream via the Syncing_ and |/rooms/<room_id>/messages|
+APIs.
 
-For reading events, the intended flow of operation is to call
-$PREFIX/initialSync, which returns all of the state and the last N events in the
-event stream for each room, including ``start`` and ``end`` values describing the
-pagination of each room's event stream. For instance,
-$PREFIX/initialSync?limit=5 might return the events for a room in the
-rooms[0].messages.chunk[] array, with tokens describing the start and end of the
-range in rooms[0].messages.start as '1-2-3' and rooms[0].messages.end as
-'a-b-c'.
+Syncing
+~~~~~~~
+
+For reading events, the intended flow of operation is to call $V2PREFIX/sync,
+which returns all of the state and the last N events in the event stream for
+each room, as well as a ``prev_batch`` token for each room and a global
+``next_batch`` token which enable loading earlier and later events.
+
+For instance, $V2PREFIX/sync might return the events for a room in the
+``rooms.joined[0].timeline.events[]`` array, with tokens describing the start of
+the range in ``rooms.joined[0].timeline.prev_batch`` as '1-2-3' and
+``next_batch`` as 'a-b-c'.
 
 You can visualise the range of events being returned as::
 
   [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]
                               ^                             ^
                               |                             |
-                        start: '1-2-3'                end: 'a-b-c'
+                        prev_batch: '1-2-3'           next_batch: 'a-b-c'
                              
-Now, to receive future events in real-time on the event stream, you simply GET
-$PREFIX/events with a ``from`` parameter of 'a-b-c': in other words passing in the
-``end`` token returned by initial sync. The request blocks until new events are
-available or until your specified timeout elapses, and then returns a
-new paginatable chunk of events alongside new start and end parameters::
+Now, to receive future events in real-time on the event stream, you GET
+$V2PREFIX/sync with a ``since`` parameter of 'a-b-c': in other words passing in
+the ``next_batch`` token returned by the initial sync. The request blocks until
+new events are available or until your specified timeout elapses, and then
+returns a new paginatable chunk of events alongside new start and end
+parameters::
 
   [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
                                                             ^      ^
                                                             |      |
-                                                            |  end: 'x-y-z'
-                                                      start: 'a-b-c'
+                                                            |  next_batch: 'x-y-z'
+                                                      prev_batch: 'a-b-c'
 
-To resume polling the events stream, you pass in the new ``end`` token as the
-``from`` parameter of $PREFIX/events and poll again.
+To resume polling the events stream, you pass in the new ``next_batch`` token
+as the ``since`` parameter of $V2PREFIX/sync and poll again. By using the
+``next_batch`` token in this way, clients can be sure of receiving all events
+in all rooms.
 
-Similarly, to paginate events backwards in order to lazy-load in previous
-history from the room, you simply GET $PREFIX/rooms/<room_id>/messages
-specifying the ``from`` token to paginate backwards from and a limit of the number
-of messages to retrieve. For instance, calling this API with a ``from`` parameter
-of '1-2-3' and a limit of 5 would return::
+To paginate events backwards in order to lazy-load in previous history from the
+room, you GET $PREFIX/rooms/<room_id>/messages specifying the ``from`` token to
+paginate backwards from and a limit of the number of messages to retrieve. For
+instance, calling this API with a ``from`` parameter of '1-2-3' and a limit of
+5 would return::
 
   [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
   ^                            ^
   |                            |
   start: 'u-v-w'          end: '1-2-3'
 
-To continue paginating backwards, one calls the /messages API again, supplying
+To continue paginating backwards, call the /messages API again, supplying
 the new ``start`` value as the ``from`` parameter.
-
-
-Syncing
-~~~~~~~
-
-Clients receive new events by "long-polling" the home server via the events API.
-This involves specifying a timeout in the request which will hold
-open the HTTP connection for a short period of time waiting for new events,
-returning early if an event occurs. Only the events API supports long-polling.
-All events which are visible to the client will appear in the
-events API. When the request returns, an ``end`` token is included in the
-response. This token can be used in the next request to continue where the
-last request left off. Multiple events can be returned per long-poll.
 
 .. Warning::
   Events are ordered in this API according to the arrival time of the event on
@@ -669,11 +663,19 @@ last request left off. Multiple events can be returned per long-poll.
 .. TODO-spec
   Do we ever support streaming requests? Why not websockets?
 
-When the client first logs in, they will need to initially synchronise with
-their home server. This is achieved via the initial sync API described below.
-This API also returns an ``end`` token which can be used with the event stream.
-
+{{v2_sync_http_api}}
 {{sync_http_api}}
+
+
+Getting events for a room
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are several APIs provided to ``GET`` events for a room:
+
+{{rooms_http_api}}
+
+{{message_pagination_http_api}}
+
 
 Types of room events
 ~~~~~~~~~~~~~~~~~~~~
@@ -757,15 +759,6 @@ example::
 
 See `Room Events`_ for the ``m.`` event specification.
 
-Getting events for a room
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-There are several APIs provided to ``GET`` events for a room:
-
-{{rooms_http_api}}
-
-
-{{message_pagination_http_api}}
 
 Redactions
 ~~~~~~~~~~

@@ -135,7 +135,7 @@ paths:
                           type: object
                           description: |-
                             The state of a room that the user has been invited
-                            to. These state events may only have the `sender``,
+                            to. These state events may only have the ``sender``,
                             ``type``, ``state_key`` and ``content`` keys
                             present. These events do not replace any state that
                             the client already has for the room, for example if
