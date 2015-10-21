@@ -190,9 +190,64 @@ in the event JSON in a ``hash`` object under a ``sha256`` key.
             event_json_object["unsigned"] = unsigned
         return event_json_object
 
-Then all non-essential keys are stripped from the event object, and the
-resulting object which included the ``hash`` key is signed using the JSON
-signing algorithm
+The event is then stripped of all non-essential keys both at the top level and
+within the ``content`` object. Any top-level keys not in the following list
+MUST be removed:
+
+.. code::
+
+    auth_events
+    depth
+    event_id
+    hashes
+    membership
+    origin
+    origin_server_ts
+    prev_events
+    prev_state
+    room_id
+    sender
+    signatures
+    state_key
+    type
+
+A new ``content`` object is constructed for the resulting event that contains
+only the essential keys of the original ``content`` object. If the original
+event lacked a ``content`` object at all, a new empty JSON object is created
+for it.
+
+The keys that are considered essential for the ``content`` object depend on the
+the ``type`` of the event. These are:
+
+.. code::
+
+    type is "m.room.aliases":
+      aliases
+
+    type is "m.room.create":
+      creator
+
+    type is "m.room.history_visibility":
+      history_visibility
+
+    type is "m.room.join_rules":
+      join_rule
+
+    type is "m.room.member":
+      membership
+
+    type is "m.room.power_levels":
+      ban
+      events
+      events_default
+      kick
+      redact
+      state_default
+      users
+      users_default
+
+The resulting stripped object with the new ``content`` object and the original
+``hashes`` key is then signed using the JSON signing algorithm outlined below:
 
 .. code:: python
 

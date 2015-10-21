@@ -30,6 +30,8 @@ Usage of this event is discouraged for several reasons:
 
 {{m_room_topic_event}}
 
+{{m_room_avatar_event}}
+
 m.room.message msgtypes
 ~~~~~~~~~~~~~~~~~~~~~~~
 

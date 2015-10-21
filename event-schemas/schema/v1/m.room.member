@@ -1,7 +1,7 @@
 {
     "type": "object",
     "title": "The current membership state of a user in the room.",
-    "description": "Adjusts the membership state for a user in a room. It is preferable to use the membership APIs (``/rooms/<room id>/invite`` etc) when performing membership actions rather than adjusting the state directly as there are a restricted set of valid transformations. For example, user A cannot force user B to join a room, and trying to force this state change directly will fail. The ``third_party_invite`` property will be set if the invite was an ``m.room.third_party_invite`` event, and absent if the invite was an ``m.room.member`` event.",
+    "description": "Adjusts the membership state for a user in a room. It is preferable to use the membership APIs (``/rooms/<room id>/invite`` etc) when performing membership actions rather than adjusting the state directly as there are a restricted set of valid transformations. For example, user A cannot force user B to join a room, and trying to force this state change directly will fail. \n\nThe ``third_party_invite`` property will be set if the invite was an ``m.room.third_party_invite`` event, and absent if the invite was an ``m.room.member`` event.\n\nThis event also includes an ``invite_room_state`` key **outside the** ``content`` **key**. This contains an array of ``StrippedState`` Events. These events provide information on a few select state events such as the room name.",
     "allOf": [{
         "$ref": "core-event-schema/state_event.json"
     }],
@@ -24,7 +24,7 @@
                 },
                 "third_party_invite": {
                     "type": "object",
-                    "title": "invite",
+                    "title": "Invite",
                     "properties": {
                         "token": {
                             "type": "string",
@@ -38,16 +38,32 @@
                             "type": "string",
                             "description": "A base64-encoded ed25519 key with which token must be signed."
                         },
-                        "signature": {
-                            "type": "string",
-                            "description": "A base64-encoded signature of token with public_key."
+                        "signed": {
+                            "type": "object",
+                            "title": "signed",
+                            "properties": {
+                                "mxid": {
+                                    "type": "string",
+                                    "description": "The invited matrix user ID. Must be equal to the user_id property of the event."
+                                },
+                                "token": {
+                                    "type": "string",
+                                    "description": "The token property of the containing third_party_invite object."
+                                },
+                                "signatures": {
+                                    "type": "object",
+                                    "description": "A single signature from the verifying server, in the format specified by the Signing Events section.",
+                                    "title": "Signatures"
+                                }
+                            },
+                            "required": ["mxid", "signatures", "token"]
                         },
                         "sender": {
                             "type": "string",
                             "description": "The matrix user ID of the user who send the invite which is being used."
                         }
                     },
-                    "required": ["token", "key_validity_url", "public_key", "signature", "sender"]
+                    "required": ["token", "key_validity_url", "public_key", "sender", "signed"]
                 }
             },
             "required": ["membership"]
@@ -65,17 +81,23 @@
             "description": "A subset of the state of the room at the time of the invite, if ``membership`` is ``invite``",
             "items": {
                 "type": "object",
-                "title": "StateEvent",
+                "title": "StrippedState",
                 "description": "A stripped down state event, with only the ``type``, ``state_key`` and ``content`` keys.",
+                "required": ["type", "state_key", "content"],
                 "properties": {
                     "type": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The ``type`` for the event.",
+                        "enum": ["m.room.join_rules", "m.room.canonical_alias", "m.room.avatar", "m.room.name"]
                     },
                     "state_key": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The ``state_key`` for the event."
                     },
                     "content": {
-                        "type": "object"
+                        "title": "EventContent",
+                        "type": "object",
+                        "description": "The ``content`` for the event."
                     }
                 }
             }
