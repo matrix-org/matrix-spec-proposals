@@ -115,7 +115,7 @@ paths:
           examples:
             application/json: |-
               {
-                "errcode": "ORG.MATRIX.MYAPPSERVICE_UNAUTHORIZED"
+                "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
               }
           schema:
             type: object
@@ -147,7 +147,7 @@ paths:
         This endpoint is invoked by the homeserver on an application service to query
         the existence of a given user ID. The homeserver will only query user IDs
         inside the application service's ``users`` namespace. The homeserver will
-        send this request when it receives an *event* for an unknown user ID in
+        send this request when it receives an event for an unknown user ID in
         the application service's namespace.
       parameters:
         - in: path
