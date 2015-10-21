@@ -136,7 +136,7 @@ paths:
           examples:
             application/json: |-
               {
-                "errcode": "ORG.MATRIX.MYAPPSERVICE_NOT_FOUND"
+                "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
               }
           schema:
             type: object
@@ -173,7 +173,7 @@ paths:
           examples:
             application/json: |-
               {
-                "errcode": "ORG.MATRIX.MYAPPSERVICE_UNAUTHORIZED"
+                "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
               }
           schema:
             type: object
@@ -194,7 +194,7 @@ paths:
           examples:
             application/json: |-
               {
-                "errcode": "ORG.MATRIX.MYAPPSERVICE_NOT_FOUND"
+                "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
               }
           schema:
             type: object
