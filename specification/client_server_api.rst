@@ -625,7 +625,7 @@ Now, to receive future events in real-time on the event stream, you GET
 $V2PREFIX/sync with a ``since`` parameter of 'a-b-c': in other words passing in
 the ``next_batch`` token returned by the initial sync. The request blocks until
 new events are available or until your specified timeout elapses, and then
-returns a new paginatable chunk of events alongside new start and end
+returns a new list of events alongside new ``prev_batch`` and ``next_batch``
 parameters::
 
   [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
