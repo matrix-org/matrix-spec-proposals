@@ -373,6 +373,7 @@ func main() {
 		"Kegsay":        true,
 		"NegativeMjark": true,
 		"richvdh":       true,
+		"leonerd":       true,
 	}
 	if err := initCache(); err != nil {
 		log.Fatal(err)
