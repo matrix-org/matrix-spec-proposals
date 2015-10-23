@@ -119,6 +119,7 @@ paths:
         403:
           description: |-
             You do not have permission to invite the user to the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejections are:
+
             - The invitee has been banned from the room.
             - The invitee is already a member of the room.
             - The inviter is not currently in the room.
@@ -221,10 +222,11 @@ paths:
         403:
           description: |-
             You do not have permission to invite the user to the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejections are:
-              - The invitee has been banned from the room.
-              - The invitee is already a member of the room.
-              - The inviter is not currently in the room.
-              - The inviter's power level is insufficient to invite users to the room.
+
+            - The invitee has been banned from the room.
+            - The invitee is already a member of the room.
+            - The inviter is not currently in the room.
+            - The inviter's power level is insufficient to invite users to the room.
           examples:
             application/json: |-
               {"errcode": "M_FORBIDDEN", "error": "@cheeky_monkey:matrix.org is banned from the room"}
