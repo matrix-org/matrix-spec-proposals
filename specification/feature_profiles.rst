@@ -26,6 +26,7 @@ Summary
  `Content Repository`_                 Required   Required   Required   Optional   Optional
  `Managing History Visibility`_        Required   Required   Required   Required   Optional
  `End-to-End Encryption`_              Optional   Optional   Optional   Optional   Optional
+ `Server Side Search`_                 Optional   Optional   Optional   Optional   Optional
 ===================================== ========== ========== ========== ========== ==========
 
 *Please see each module for more details on what clients need to implement.*
@@ -39,6 +40,7 @@ Summary
 .. _VoIP: `module:voip`_
 .. _Content Repository: `module:content`_
 .. _Managing History Visibility: `module:history-visibility`_
+.. _Server Side Search: `module:search`_
 
 Clients
 -------
