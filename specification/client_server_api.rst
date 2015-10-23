@@ -697,22 +697,32 @@ events are added, the event ``type`` key SHOULD follow the Java package naming
 convention, e.g. ``com.example.myapp.event``.  This ensures event types are
 suitably namespaced for each application and reduces the risk of clashes.
 
-State events
-++++++++++++
+Getting events for a room
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-State events can be sent by ``PUT`` ing to
-|/rooms/<room_id>/state/<event_type>/<state_key>|_.  These events will be
-overwritten if ``<room id>``, ``<event type>`` and ``<state key>`` all match.
-If the state event has no ``state_key``, it can be omitted from the path. These
-requests **cannot use transaction IDs** like other ``PUT`` paths because they
-cannot be differentiated from the ``state_key``. Furthermore, ``POST`` is
-unsupported on state paths. Valid requests look like::
+There are several APIs provided to ``GET`` events for a room:
 
-  PUT /rooms/!roomid:domain/state/m.example.event
-  { "key" : "without a state key" }
+{{rooms_http_api}}
 
-  PUT /rooms/!roomid:domain/state/m.another.example.event/foo
-  { "key" : "with 'foo' as the state key" }
+
+{{message_pagination_http_api}}
+
+
+Sending events to a room
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+{{room_state_http_api}}
+
+
+**Examples**
+
+Valid requests look like::
+
+    PUT /rooms/!roomid:domain/state/m.example.event
+    { "key" : "without a state key" }
+
+    PUT /rooms/!roomid:domain/state/m.another.example.event/foo
+    { "key" : "with 'foo' as the state key" }
 
 In contrast, these requests are invalid::
 
@@ -738,34 +748,8 @@ In some cases, there may be no need for a ``state_key``, so it can be omitted::
   PUT /rooms/!roomid:domain/state/m.room.bgd.color
   { "color": "red", "hex": "#ff0000" }
 
-See `Room Events`_ for the ``m.`` event specification.
+{{room_send_http_api}}
 
-Message events
-++++++++++++++
-
-Message events can be sent by sending a request to
-|/rooms/<room_id>/send/<event_type>|_.  These requests *can* use transaction
-IDs and ``PUT``/``POST`` methods. Message events allow access to historical
-events and pagination, making it best suited for sending messages.  For
-example::
-
-  POST /rooms/!roomid:domain/send/m.custom.example.message
-  { "text": "Hello world!" }
-
-  PUT /rooms/!roomid:domain/send/m.custom.example.message/11
-  { "text": "Goodbye world!" }
-
-See `Room Events`_ for the ``m.`` event specification.
-
-Getting events for a room
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-There are several APIs provided to ``GET`` events for a room:
-
-{{rooms_http_api}}
-
-
-{{message_pagination_http_api}}
 
 Redactions
 ~~~~~~~~~~
