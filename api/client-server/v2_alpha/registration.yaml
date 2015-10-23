@@ -82,9 +82,9 @@ paths:
           description: |-
             Part of the request was invalid. This may include one of the following error codes:
 
-              * ``M_USER_IN_USE`` : The desired user ID is already taken.
-              * ``M_EXCLUSIVE`` : The desired user ID is in the exclusive namespace
-                claimed by an application service.
+            * ``M_USER_IN_USE`` : The desired user ID is already taken.
+            * ``M_EXCLUSIVE`` : The desired user ID is in the exclusive namespace
+              claimed by an application service.
 
             These errors may be returned at any stage of the registration process,
             including after authentication if the requested user ID was registered

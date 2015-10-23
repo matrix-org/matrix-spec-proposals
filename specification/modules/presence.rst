@@ -5,10 +5,10 @@ Presence
 
 Each user has the concept of presence information. This encodes:
 
- * Whether the user is currently online
- * How recently the user was last active (as seen by the server)
- * Whether a given client considers the user to be currently idle
- * Arbitrary information about the user's current status (e.g. "in a meeting").
+* Whether the user is currently online
+* How recently the user was last active (as seen by the server)
+* Whether a given client considers the user to be currently idle
+* Arbitrary information about the user's current status (e.g. "in a meeting").
 
 This information is collated from both per-device (``online``, ``idle``,
 ``last_active``) and per-user (status) data, aggregated by the user's homeserver
@@ -24,14 +24,14 @@ who must accept the invitation.
 User's presence state is represented by the ``presence`` key, which is an enum
 of one of the following:
 
-      - ``online`` : The default state when the user is connected to an event
-        stream.
-      - ``unavailable`` : The user is not reachable at this time e.g. they are
-        idle.
-      - ``offline`` : The user is not connected to an event stream or is
-        explicitly suppressing their profile information from being sent.
-      - ``free_for_chat`` : The user is generally willing to receive messages
-        moreso than default.
+- ``online`` : The default state when the user is connected to an event
+  stream.
+- ``unavailable`` : The user is not reachable at this time e.g. they are
+  idle.
+- ``offline`` : The user is not connected to an event stream or is
+  explicitly suppressing their profile information from being sent.
+- ``free_for_chat`` : The user is generally willing to receive messages
+  moreso than default.
 
 Events
 ------
@@ -94,10 +94,10 @@ pro-active event from the user. A pro-active event may be sending a message to a
 room or changing presence state to a higher level of availability. Levels of
 availability are defined from low to high as follows:
 
-      - ``offline``
-      - ``unavailable``
-      - ``online``
-      - ``free_for_chat``
+- ``offline``
+- ``unavailable``
+- ``online``
+- ``free_for_chat``
 
 Based on this list, changing state from ``unavailable`` to ``online`` counts as
 a pro-active event, whereas ``online`` to ``unavailable`` does not. This

@@ -735,23 +735,23 @@ it to be redacted, which may include a reason.
 Upon receipt of a redaction event, the server should strip off any keys not in
 the following list:
 
- - ``event_id``
- - ``type``
- - ``room_id``
- - ``user_id``
- - ``state_key``
- - ``prev_state``
- - ``content``
+- ``event_id``
+- ``type``
+- ``room_id``
+- ``user_id``
+- ``state_key``
+- ``prev_state``
+- ``content``
 
 The content object should also be stripped of all keys, unless it is one of
 one of the following event types:
 
- - ``m.room.member`` allows key ``membership``
- - ``m.room.create`` allows key ``creator``
- - ``m.room.join_rules`` allows key ``join_rule``
- - ``m.room.power_levels`` allows keys ``ban``, ``events``, ``events_default``,
+- ``m.room.member`` allows key ``membership``
+- ``m.room.create`` allows key ``creator``
+- ``m.room.join_rules`` allows key ``join_rule``
+- ``m.room.power_levels`` allows keys ``ban``, ``events``, ``events_default``,
    ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
- - ``m.room.aliases`` allows key ``aliases``
+- ``m.room.aliases`` allows key ``aliases``
 
 .. TODO
   Need to update m.room.power_levels to reflect new power levels formatting
@@ -771,9 +771,9 @@ which serves as the root of the event graph for this room. This event also has a
 generate several other events in order to manage permissions in this room. This
 includes:
 
- - ``m.room.power_levels`` : Sets the power levels of users and required power
+- ``m.room.power_levels`` : Sets the power levels of users and required power
    levels for various actions within the room such as sending events.
- - ``m.room.join_rules`` : Whether the room is "invite-only" or not.
+- ``m.room.join_rules`` : Whether the room is "invite-only" or not.
 
 See `Room Events`_ for more information on these events. To create a room, a
 client has to use the the following API.
@@ -847,11 +847,11 @@ Joining rooms
 Users need to be a member of a room in order to send and receive events in that
 room. There are several states in which a user may be, in relation to a room:
 
- - Unrelated (the user cannot send or receive events in the room)
- - Invited (the user has been invited to participate in the room, but is not
-   yet participating)
- - Joined (the user can send and receive events in the room)
- - Banned (the user is not allowed to join the room)
+- Unrelated (the user cannot send or receive events in the room)
+- Invited (the user has been invited to participate in the room, but is not
+  yet participating)
+- Joined (the user can send and receive events in the room)
+- Banned (the user is not allowed to join the room)
 
 There is an exception to the requirement that a user join a room before sending
 events to it: users may send an ``m.room.member`` event to a room with
@@ -942,11 +942,11 @@ many places of a client's display, changes to these fields cause an automatic
 propagation event to occur, informing likely-interested parties of the new
 values. This change is conveyed using two separate mechanisms:
 
- - a ``m.room.member`` event is sent to every room the user is a member of,
-   to update the ``displayname`` and ``avatar_url``.
- - a ``m.presence`` presence status update is sent, again containing the new
-   values of the ``displayname`` and ``avatar_url`` keys, in addition to the
-   required ``presence`` key containing the current presence state of the user.
+- a ``m.room.member`` event is sent to every room the user is a member of,
+  to update the ``displayname`` and ``avatar_url``.
+- a ``m.presence`` presence status update is sent, again containing the new
+  values of the ``displayname`` and ``avatar_url`` keys, in addition to the
+  required ``presence`` key containing the current presence state of the user.
 
 Both of these should be done automatically by the home server when a user
 successfully changes their display name or avatar URL fields.

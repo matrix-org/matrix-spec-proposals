@@ -62,19 +62,19 @@ As calls are "placed" to rooms rather than users, the glare resolution algorithm
 outlined below is only considered for calls which are to the same room. The
 algorithm is as follows:
 
- - If an ``m.call.invite`` to a room is received whilst the client is
-   **preparing to send** an ``m.call.invite`` to the same room:
+- If an ``m.call.invite`` to a room is received whilst the client is
+  **preparing to send** an ``m.call.invite`` to the same room:
 
-    * the client should cancel its outgoing call and instead
-      automatically accept the incoming call on behalf of the user.
+  * the client should cancel its outgoing call and instead
+    automatically accept the incoming call on behalf of the user.
 
- - If an ``m.call.invite`` to a room is received **after the client has sent**
-   an ``m.call.invite`` to the same room and is waiting for a response:
+- If an ``m.call.invite`` to a room is received **after the client has sent**
+  an ``m.call.invite`` to the same room and is waiting for a response:
 
-    * the client should perform a lexicographical comparison of the call IDs of
-      the two calls and use the *lesser* of the two calls, aborting the
-      greater. If the incoming call is the lesser, the client should accept
-      this call on behalf of the user.
+  * the client should perform a lexicographical comparison of the call IDs of
+    the two calls and use the *lesser* of the two calls, aborting the
+    greater. If the incoming call is the lesser, the client should accept
+    this call on behalf of the user.
 
 
 The call setup should appear seamless to the user as if they had simply placed

@@ -37,19 +37,19 @@ The above diagram shows the flow of push notifications being sent to a handset
 where push notifications are submitted via the handset vendor, such as Apple's
 APNS or Google's GCM. This happens as follows:
 
- 1. The client app signs in to a homeserver.
- 2. The client app registers with its vendor's Push Provider and
-    obtains a routing token of some kind.
- 3. The mobile app uses the Client/Server API to add a 'pusher', providing the
-    URL of a specific Push Gateway which is configured for that
-    application. It also provides the routing token it has acquired from the
-    Push Provider.
- 4. The homeserver starts sending HTTP requests to the Push Gateway using the
-    supplied URL. The Push Gateway relays this notification to
-    the Push Provider, passing the routing token along with any
-    necessary private credentials the provider requires to send push
-    notifications.
- 5. The Push Provider sends the notification to the device.
+1. The client app signs in to a homeserver.
+2. The client app registers with its vendor's Push Provider and
+   obtains a routing token of some kind.
+3. The mobile app uses the Client/Server API to add a 'pusher', providing the
+   URL of a specific Push Gateway which is configured for that
+   application. It also provides the routing token it has acquired from the
+   Push Provider.
+4. The homeserver starts sending HTTP requests to the Push Gateway using the
+   supplied URL. The Push Gateway relays this notification to
+   the Push Provider, passing the routing token along with any
+   necessary private credentials the provider requires to send push
+   notifications.
+5. The Push Provider sends the notification to the device.
 
 Definitions for terms used in this section are below:
 
@@ -127,16 +127,16 @@ affect delivery of notifications via pushers with a matching ``profile_tag``.
 All device-specific rules have a higher priority than global rules. This means
 that the full list of rule kinds, in descending priority order, is as follows:
 
- * Device-specific Override
- * Device-specific Content
- * Device-specific Room
- * Device-specific Sender
- * Device-specific Underride
- * Global Override
- * Global Content
- * Global Room
- * Global Sender
- * Global Underride
+* Device-specific Override
+* Device-specific Content
+* Device-specific Room
+* Device-specific Sender
+* Device-specific Underride
+* Global Override
+* Global Content
+* Global Room
+* Global Sender
+* Global Underride
 
 Rules with the same ``kind`` can specify an ordering priority. This determines
 which rule is selected in the event of multiple matches. For example, a rule
@@ -315,16 +315,17 @@ rule determines its behaviour. The following conditions are defined:
 
 ``event_match``
   This is a glob pattern match on a field of the event. Parameters:
-   * ``key``: The dot-separated field of the event to match, e.g. ``content.body``
-   * ``pattern``: The glob-style pattern to match against. Patterns with no
-     special glob characters should be treated as having asterisks
-     prepended and appended when testing the condition.
+
+  * ``key``: The dot-separated field of the event to match, e.g. ``content.body``
+  * ``pattern``: The glob-style pattern to match against. Patterns with no
+    special glob characters should be treated as having asterisks
+    prepended and appended when testing the condition.
 
 ``profile_tag``
   Matches the ``profile_tag`` of the device that the notification would be
   delivered to. Parameters:
 
-   * ``profile_tag``: The profile_tag to match with.
+  * ``profile_tag``: The profile_tag to match with.
 
 ``contains_display_name``
   This matches unencrypted messages where ``content.body`` contains the owner's
@@ -334,10 +335,11 @@ rule determines its behaviour. The following conditions are defined:
 
 ``room_member_count``
   This matches the current number of members in the room. Parameters:
-   * ``is``: A decimal integer optionally prefixed by one of, ``==``, ``<``,
-     ``>``, ``>=`` or ``<=``. A prefix of ``<`` matches rooms where the member
-     count is strictly less than the given number and so forth. If no prefix is
-     present, this parameter defaults to ``==``.
+
+  * ``is``: A decimal integer optionally prefixed by one of, ``==``, ``<``,
+    ``>``, ``>=`` or ``<=``. A prefix of ``<`` matches rooms where the member
+    count is strictly less than the given number and so forth. If no prefix is
+    present, this parameter defaults to ``==``.
 
 Push Rules: API
 ~~~~~~~~~~~~~~~
@@ -418,12 +420,12 @@ client app and its' push gateway to agree on. As APNS requires that the sender
 has a private key owned by the app developer, each app must have its own push
 gateway. It is recommended that:
 
- * The APNS token be base64 encoded and used as the pushkey.
- * A different app_id be used for apps on the production and sandbox
-   APS environments.
- * APNS push gateways do not attempt to wait for errors from the APNS
-   gateway before returning and instead to store failures and return
-   'rejected' responses next time that pushkey is used.
+* The APNS token be base64 encoded and used as the pushkey.
+* A different app_id be used for apps on the production and sandbox
+  APS environments.
+* APNS push gateways do not attempt to wait for errors from the APNS
+  gateway before returning and instead to store failures and return
+  'rejected' responses next time that pushkey is used.
 
 Security considerations
 -----------------------

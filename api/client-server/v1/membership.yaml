@@ -52,8 +52,9 @@ paths:
         403:
           description: |-
             You do not have permission to join the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejection are:
-              - The room is invite-only and the user was not invited.
-              - The user has been banned from the room.
+
+            - The room is invite-only and the user was not invited.
+            - The user has been banned from the room.
           examples:
             application/json: |-
               {"errcode": "M_FORBIDDEN", "error": "You are not invited to this room."}
@@ -119,10 +120,11 @@ paths:
         403:
           description: |-
             You do not have permission to invite the user to the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejections are:
-              - The invitee has been banned from the room.
-              - The invitee is already a member of the room.
-              - The inviter is not currently in the room.
-              - The inviter's power level is insufficient to invite users to the room.
+
+            - The invitee has been banned from the room.
+            - The invitee is already a member of the room.
+            - The inviter is not currently in the room.
+            - The inviter's power level is insufficient to invite users to the room.
           examples:
             application/json: |-
               {"errcode": "M_FORBIDDEN", "error": "@cheeky_monkey:matrix.org is banned from the room"}
@@ -164,13 +166,13 @@ paths:
         user ID, the identity server will give the user a list of pending
         invitations, each containing:
 
-          - The room ID to which they were invited
+        - The room ID to which they were invited
 
-          - The token given to the homeserver
+        - The token given to the homeserver
 
-          - A signature of the token, signed with the identity server's private key
+        - A signature of the token, signed with the identity server's private key
 
-          - The matrix user ID who invited them to the room
+        - The matrix user ID who invited them to the room
 
         If a token is requested from the identity server, the home server will
         append a ``m.room.third_party_invite`` event to the room.
@@ -221,10 +223,11 @@ paths:
         403:
           description: |-
             You do not have permission to invite the user to the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejections are:
-              - The invitee has been banned from the room.
-              - The invitee is already a member of the room.
-              - The inviter is not currently in the room.
-              - The inviter's power level is insufficient to invite users to the room.
+
+            - The invitee has been banned from the room.
+            - The invitee is already a member of the room.
+            - The inviter is not currently in the room.
+            - The inviter's power level is insufficient to invite users to the room.
           examples:
             application/json: |-
               {"errcode": "M_FORBIDDEN", "error": "@cheeky_monkey:matrix.org is banned from the room"}

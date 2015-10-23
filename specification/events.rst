@@ -18,11 +18,11 @@ Size limits
 The total size of any event MUST NOT exceed 65 KB. There are additional
 restrictions on sizes per key:
 
- - ``user_id`` MUST NOT exceed 255 bytes (including domain).
- - ``room_id`` MUST NOT exceed 255 bytes.
- - ``state_key`` MUST NOT exceed 255 bytes.
- - ``type`` MUST NOT exceed 255 bytes.
- - ``event_id`` MUST NOT exceed 255 bytes.
+- ``user_id`` MUST NOT exceed 255 bytes (including domain).
+- ``room_id`` MUST NOT exceed 255 bytes.
+- ``state_key`` MUST NOT exceed 255 bytes.
+- ``type`` MUST NOT exceed 255 bytes.
+- ``event_id`` MUST NOT exceed 255 bytes.
 
 Some event types have additional size restrictions which are specified in
 the description of the event. Additional keys have no limit other than that
