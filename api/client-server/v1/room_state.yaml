@@ -51,15 +51,15 @@ paths:
           type: string
           name: stateKey
           description: The state_key for the state to send. Defaults to the empty string.
-          required: false
+          required: true
           x-example: ""
         - in: body
           name: body
           schema:
             type: object
-            example: |
+            example: |-
               {
-                  "name": "The room name"
+                  "name": "New name for the room"
               }
       responses:
         200:
