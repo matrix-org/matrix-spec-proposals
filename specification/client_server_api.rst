@@ -647,6 +647,30 @@ To continue paginating backwards, one calls the /messages API again, supplying
 the new ``start`` value as the ``from`` parameter.
 
 
+Types of room events
+~~~~~~~~~~~~~~~~~~~~
+
+Room events are split into two categories:
+
+:State Events:
+  These are events which update the metadata state of the room (e.g. room topic,
+  room membership etc). State is keyed by a tuple of event ``type`` and a
+  ``state_key``. State in the room with the same key-tuple will be overwritten.
+
+:Message events:
+  These are events which describe transient "once-off" activity in a room:
+  typically communication such as sending an instant message or setting up a
+  VoIP call.
+
+This specification outlines several events, all with the event type prefix
+``m.``. (See `Room Events`_ for the m. event specification.) However,
+applications may wish to add their own type of event, and this can be achieved
+using the REST API detailed in the following sections. If new events are added,
+the event ``type`` key SHOULD follow the Java package naming convention,
+e.g. ``com.example.myapp.event``.  This ensures event types are suitably
+namespaced for each application and reduces the risk of clashes.
+
+
 Syncing
 ~~~~~~~
 
@@ -675,27 +699,6 @@ This API also returns an ``end`` token which can be used with the event stream.
 
 {{sync_http_api}}
 
-Types of room events
-~~~~~~~~~~~~~~~~~~~~
-
-Room events are split into two categories:
-
-:State Events:
-  These are events which update the metadata state of the room (e.g. room topic,
-  room membership etc). State is keyed by a tuple of event ``type`` and a
-  ``state_key``. State in the room with the same key-tuple will be overwritten.
-
-:Message events:
-  These are events which describe transient "once-off" activity in a room:
-  typically communication such as sending an instant message or setting up a
-  VoIP call.
-
-This specification outlines several events, all with the event type prefix
-``m.``. However, applications may wish to add their own type of event, and this
-can be achieved using the REST API detailed in the following sections. If new
-events are added, the event ``type`` key SHOULD follow the Java package naming
-convention, e.g. ``com.example.myapp.event``.  This ensures event types are
-suitably namespaced for each application and reduces the risk of clashes.
 
 Getting events for a room
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1143,12 +1146,6 @@ have to wait in milliseconds before they can try again.
 
 .. |/rooms/<room_id>/state| replace:: ``/rooms/<room_id>/state``
 .. _/rooms/<room_id>/state: /docs/api/client-server/#!/-rooms/get_state_events
-
-.. |/rooms/<room_id>/send/<event_type>| replace:: ``/rooms/<room_id>/send/<event_type>``
-.. _/rooms/<room_id>/send/<event_type>: /docs/api/client-server/#!/-rooms/send_non_state_event
-
-.. |/rooms/<room_id>/state/<event_type>/<state_key>| replace:: ``/rooms/<room_id>/state/<event_type>/<state_key>``
-.. _/rooms/<room_id>/state/<event_type>/<state_key>: /docs/api/client-server/#!/-rooms/send_state_event
 
 .. |/rooms/<room_id>/invite| replace:: ``/rooms/<room_id>/invite``
 .. _/rooms/<room_id>/invite: /docs/api/client-server/#!/-rooms/invite
