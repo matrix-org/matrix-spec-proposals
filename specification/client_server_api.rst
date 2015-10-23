@@ -595,6 +595,30 @@ To continue paginating backwards, one calls the /messages API again, supplying
 the new ``start`` value as the ``from`` parameter.
 
 
+Types of room events
+~~~~~~~~~~~~~~~~~~~~
+
+Room events are split into two categories:
+
+:State Events:
+  These are events which update the metadata state of the room (e.g. room topic,
+  room membership etc). State is keyed by a tuple of event ``type`` and a
+  ``state_key``. State in the room with the same key-tuple will be overwritten.
+
+:Message events:
+  These are events which describe transient "once-off" activity in a room:
+  typically communication such as sending an instant message or setting up a
+  VoIP call.
+
+This specification outlines several events, all with the event type prefix
+``m.``. (See `Room Events`_ for the m. event specification.) However,
+applications may wish to add their own type of event, and this can be achieved
+using the REST API detailed in the following sections. If new events are added,
+the event ``type`` key SHOULD follow the Java package naming convention,
+e.g. ``com.example.myapp.event``.  This ensures event types are suitably
+namespaced for each application and reduces the risk of clashes.
+
+
 Syncing
 ~~~~~~~
 
@@ -623,44 +647,33 @@ This API also returns an ``end`` token which can be used with the event stream.
 
 {{sync_http_api}}
 
-Types of room events
-~~~~~~~~~~~~~~~~~~~~
 
-Room events are split into two categories:
+Getting events for a room
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:State Events:
-  These are events which update the metadata state of the room (e.g. room topic,
-  room membership etc). State is keyed by a tuple of event ``type`` and a
-  ``state_key``. State in the room with the same key-tuple will be overwritten.
+There are several APIs provided to ``GET`` events for a room:
 
-:Message events:
-  These are events which describe transient "once-off" activity in a room:
-  typically communication such as sending an instant message or setting up a
-  VoIP call.
+{{rooms_http_api}}
 
-This specification outlines several events, all with the event type prefix
-``m.``. However, applications may wish to add their own type of event, and this
-can be achieved using the REST API detailed in the following sections. If new
-events are added, the event ``type`` key SHOULD follow the Java package naming
-convention, e.g. ``com.example.myapp.event``.  This ensures event types are
-suitably namespaced for each application and reduces the risk of clashes.
 
-State events
-++++++++++++
+{{message_pagination_http_api}}
 
-State events can be sent by ``PUT`` ing to
-|/rooms/<room_id>/state/<event_type>/<state_key>|_.  These events will be
-overwritten if ``<room id>``, ``<event type>`` and ``<state key>`` all match.
-If the state event has no ``state_key``, it can be omitted from the path. These
-requests **cannot use transaction IDs** like other ``PUT`` paths because they
-cannot be differentiated from the ``state_key``. Furthermore, ``POST`` is
-unsupported on state paths. Valid requests look like::
 
-  PUT /rooms/!roomid:domain/state/m.example.event
-  { "key" : "without a state key" }
+Sending events to a room
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-  PUT /rooms/!roomid:domain/state/m.another.example.event/foo
-  { "key" : "with 'foo' as the state key" }
+{{room_state_http_api}}
+
+
+**Examples**
+
+Valid requests look like::
+
+    PUT /rooms/!roomid:domain/state/m.example.event
+    { "key" : "without a state key" }
+
+    PUT /rooms/!roomid:domain/state/m.another.example.event/foo
+    { "key" : "with 'foo' as the state key" }
 
 In contrast, these requests are invalid::
 
@@ -686,34 +699,8 @@ In some cases, there may be no need for a ``state_key``, so it can be omitted::
   PUT /rooms/!roomid:domain/state/m.room.bgd.color
   { "color": "red", "hex": "#ff0000" }
 
-See `Room Events`_ for the ``m.`` event specification.
+{{room_send_http_api}}
 
-Message events
-++++++++++++++
-
-Message events can be sent by sending a request to
-|/rooms/<room_id>/send/<event_type>|_.  These requests *can* use transaction
-IDs and ``PUT``/``POST`` methods. Message events allow access to historical
-events and pagination, making it best suited for sending messages.  For
-example::
-
-  POST /rooms/!roomid:domain/send/m.custom.example.message
-  { "text": "Hello world!" }
-
-  PUT /rooms/!roomid:domain/send/m.custom.example.message/11
-  { "text": "Goodbye world!" }
-
-See `Room Events`_ for the ``m.`` event specification.
-
-Getting events for a room
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-There are several APIs provided to ``GET`` events for a room:
-
-{{rooms_http_api}}
-
-
-{{message_pagination_http_api}}
 
 Redactions
 ~~~~~~~~~~
@@ -1006,12 +993,6 @@ have to wait in milliseconds before they can try again.
 
 .. |/rooms/<room_id>/state| replace:: ``/rooms/<room_id>/state``
 .. _/rooms/<room_id>/state: /docs/api/client-server/#!/-rooms/get_state_events
-
-.. |/rooms/<room_id>/send/<event_type>| replace:: ``/rooms/<room_id>/send/<event_type>``
-.. _/rooms/<room_id>/send/<event_type>: /docs/api/client-server/#!/-rooms/send_non_state_event
-
-.. |/rooms/<room_id>/state/<event_type>/<state_key>| replace:: ``/rooms/<room_id>/state/<event_type>/<state_key>``
-.. _/rooms/<room_id>/state/<event_type>/<state_key>: /docs/api/client-server/#!/-rooms/send_state_event
 
 .. |/rooms/<room_id>/invite| replace:: ``/rooms/<room_id>/invite``
 .. _/rooms/<room_id>/invite: /docs/api/client-server/#!/-rooms/invite
