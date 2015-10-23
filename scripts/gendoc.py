@@ -15,7 +15,7 @@ import yaml
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 stylesheets = {
-    "stylesheet_path": ["basic.css", "nature.css", "codehighlight.css"]
+    "stylesheet_path": glob.glob("css/*.css"),
 }
 
 VERBOSE = False
