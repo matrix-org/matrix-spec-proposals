@@ -64,21 +64,20 @@ UTF-8 encoded traversals, etc).
 
 Homeservers have additional content-specific concerns:
 
- - Clients may try to upload very large files. Homeservers should not store files
-   that are too large and should not serve them to clients.
+- Clients may try to upload very large files. Homeservers should not store files
+  that are too large and should not serve them to clients.
 
- - Clients may try to upload very large images. Homeservers should not attempt to
-   generate thumbnails for images that are too large.
+- Clients may try to upload very large images. Homeservers should not attempt to
+  generate thumbnails for images that are too large.
 
- - Remote homeservers may host very large files or images. Homeservers should not
-   proxy or thumbnail large files or images from remote homeservers.
+- Remote homeservers may host very large files or images. Homeservers should not
+  proxy or thumbnail large files or images from remote homeservers.
 
- - Clients may try to upload a large number of files. Homeservers should limit the
-   number and total size of media that can be uploaded by clients.
+- Clients may try to upload a large number of files. Homeservers should limit the
+  number and total size of media that can be uploaded by clients.
 
- - Clients may try to access a large number of remote files through a homeserver.
-   Homeservers should restrict the number and size of remote files that it caches.
+- Clients may try to access a large number of remote files through a homeserver.
+  Homeservers should restrict the number and size of remote files that it caches.
 
- - Clients or remote homeservers may try to upload malicious files targeting
-   vulnerabilities in either the homeserver thumbnailing or the client decoders.
-
+- Clients or remote homeservers may try to upload malicious files targeting
+  vulnerabilities in either the homeserver thumbnailing or the client decoders.
