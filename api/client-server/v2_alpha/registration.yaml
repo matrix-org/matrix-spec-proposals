@@ -89,6 +89,11 @@ paths:
             These errors may be returned at any stage of the registration process,
             including after authentication if the requested user ID was registered
             whilst the client was performing authentication.
+
+            Home Servers MUST perform the relevant checks and return these codes before
+            performing `User-Interactive Authentication`_, although they may also return
+            them after authentication is completed if, for example, the requested user ID
+            was registered whilst the client was performing authentication.
           examples:
             application/json: |-
               {
