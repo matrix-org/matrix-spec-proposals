@@ -121,6 +121,14 @@ paths:
                             e.g. typing.
                           allOf:
                             - $ref: "definitions/event_batch.json"
+                        private_user_data:
+                          title: Private User Data
+                          type: object
+                          description: |-
+                            The private data that this user has attached to
+                            this room.
+                          allOf:
+                          - $ref: "definitions/event_batch.json"
                   invited:
                     title: Invited
                     type: object
@@ -253,9 +261,16 @@ paths:
                       "ephemeral": {
                         "events": [
                           {
-                            "room_id": "!726s6s6q:example.com",
                             "type": "m.typing",
                             "content": {"user_ids": ["@alice:example.com"]}
+                          }
+                        ]
+                      },
+                      "private_user_data": {
+                        "events": [
+                          {
+                            "type": "m.tags",
+                            "content": {"tags": ["work"]}
                           }
                         ]
                       }

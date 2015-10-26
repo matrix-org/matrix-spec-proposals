@@ -10,8 +10,8 @@ user that set them but are shared across all their devices.
 Events
 ------
 
-The tags on a room are passed as single ``m.tag`` event in the ``ephemeral``
-section of a v2 room sync.
+The tags on a room are passed as single ``m.tag`` event in the
+``private_user_data`` section of a room in v2 sync.
 
 {{m_tag_event}}
 
