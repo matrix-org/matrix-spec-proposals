@@ -1,5 +1,7 @@
 # Search API
 
+**THIS IS OUTDATED AND HERE FOR HISTORICAL REASONS.**
+
 ## Use Cases
 
 1. Search for events in a particular room, a subset of rooms, or all rooms you have joined. For example, searching for every mention of "matrix.org is great".
