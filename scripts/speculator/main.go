@@ -25,6 +25,8 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/hashicorp/golang-lru"
 )
 
 type PullRequest struct {
@@ -53,6 +55,7 @@ type User struct {
 var (
 	port           = flag.Int("port", 9000, "Port on which to listen for HTTP")
 	allowedMembers map[string]bool
+	specCache      *lru.Cache // string -> []byte
 )
 
 func (u *User) IsTrusted() bool {
@@ -196,6 +199,10 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 		}
 		sha = pr.Head.SHA
 	}
+	if cached, ok := specCache.Get(sha); ok {
+		w.Write(cached.([]byte))
+		return
+	}
 
 	dst, err := s.generateAt(sha)
 	defer os.RemoveAll(dst)
@@ -210,6 +217,7 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	w.Write(b)
+	specCache.Add(sha, b)
 }
 
 func checkAuth(pr *PullRequest) error {
@@ -367,6 +375,9 @@ func main() {
 		"richvdh":       true,
 		"leonerd":       true,
 	}
+	if err := initCache(); err != nil {
+		log.Fatal(err)
+	}
 	rand.Seed(time.Now().Unix())
 	masterCloneDir, err := gitClone(matrixDocCloneURL, false)
 	if err != nil {
@@ -387,4 +398,10 @@ func serveText(s string) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
 		io.WriteString(w, s)
 	}
+}
+
+func initCache() error {
+	c, err := lru.New(50) // Evict after 50 entries (i.e. 50 sha1s)
+	specCache = c
+	return err
 }
