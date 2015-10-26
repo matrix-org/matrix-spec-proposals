@@ -268,7 +268,7 @@ class MatrixUnits(Units):
                                 for table in req_tables[1:]:
                                     nested_key_name = [
                                         s["key"] for s in req_tables[0]["rows"] if
-                                        s["type"] == ("{%s}" % table["title"])
+                                        s["type"] == ("{%s}" % (table["title"],))
                                     ][0]
                                     for row in table["rows"]:
                                         row["key"] = "%s.%s" % (nested_key_name, row["key"])
