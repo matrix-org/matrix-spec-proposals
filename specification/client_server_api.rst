@@ -362,10 +362,8 @@ Old V1 API docs: |register|_
 
 {{login_http_api}}
 
-Fallback
-++++++++
-
-.. _sect:login_fallback:
+Login Fallback
+++++++++++++++
 
 If a client does not recognize any or all login flows it can use the fallback
 login API::
