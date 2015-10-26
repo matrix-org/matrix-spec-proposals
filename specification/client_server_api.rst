@@ -365,14 +365,14 @@ Old V1 API docs: |register|_
 Fallback
 ++++++++
 
-Clients cannot be expected to be able to know how to process every single login
-type. If a client determines it does not know how to handle a given login type,
-it should request a login fallback page:
+If a client does not recognize all or any login flows, it can use the fallback
+login API::
 
     GET /_matrix/client/api/v1/login/fallback
 
 This returns an HTML and JavaScript page which can perform the entire login
-process.
+process. The page will attempt to call the JavaScript function
+``window.onLogin`` when login has been successfully completed.
 
 Changing Password
 +++++++++++++++++
