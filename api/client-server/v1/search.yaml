@@ -62,6 +62,12 @@ paths:
                           type: string
                           enum: ["content.body", "content.name", "content.topic"]
                         description: The keys to search. Defaults to all.
+                      filter:
+                        type: object
+                        title: Filter
+                        description: |-
+                            The filter to apply to search results.
+                            This has the same format as v2 filter API.
                     required: ["search_term"]
             required: ["search_categories"]
       responses:
