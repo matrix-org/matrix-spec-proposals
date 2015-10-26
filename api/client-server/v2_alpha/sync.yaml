@@ -49,7 +49,9 @@ paths:
 
             If this is set to ``true``, then all state events will be returned,
             even if ``since`` is non-empty. The timeline will still be limited
-            by the ``since`` parameter.
+            by the ``since`` parameter. In this case, the ``timeout`` parameter
+            will be ignored and the query will return immediately, possibly with
+            an empty timeline.
 
             If ``false``, and ``since`` is non-empty, only state which has
             changed since the point indicated by ``since`` will be returned.
