@@ -401,7 +401,7 @@ func serveText(s string) func(http.ResponseWriter, *http.Request) {
 }
 
 func initCache() error {
-	c, err := lru.New(50)
+	c, err := lru.New(50) // Evict after 50 entries (i.e. 50 sha1s)
 	specCache = c
 	return err
 }
