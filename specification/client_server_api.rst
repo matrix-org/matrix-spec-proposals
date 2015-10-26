@@ -362,6 +362,18 @@ Old V1 API docs: |register|_
 
 {{login_http_api}}
 
+Fallback
+++++++++
+
+Clients cannot be expected to be able to know how to process every single login
+type. If a client determines it does not know how to handle a given login type,
+it should request a login fallback page:
+
+    GET /_matrix/client/api/v1/login/fallback
+
+This returns an HTML and JavaScript page which can perform the entire login
+process.
+
 Changing Password
 +++++++++++++++++
 Request::
