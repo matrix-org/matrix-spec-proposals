@@ -336,9 +336,15 @@ class MatrixUnits(Units):
                         elif param["in"] == "query":
                             qps[param["name"]] = param["x-example"]
                     query_string = "" if len(qps) == 0 else "?"+urllib.urlencode(qps)
-                    endpoint["example"]["req"] = "%s %s%s\n%s" % (
-                        method.upper(), path_template, query_string, body
-                    )
+                    if body:
+                        endpoint["example"]["req"] = "%s %s%s HTTP/1.1\nContent-Type: application/json\n\n%s" % (
+                            method.upper(), path_template, query_string, body
+                        )
+                    else:
+                        endpoint["example"]["req"] = "%s %s%s HTTP/1.1\n\n" % (
+                            method.upper(), path_template, query_string
+                        )
+
                 else:
                     self.log(
                         "The following parameters are missing examples :( \n %s" %
