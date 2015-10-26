@@ -121,6 +121,17 @@ def get_json_schema_object_fields(obj, enforce_title=False):
                 tables += nested_object
             else:
                 value_type = "[%s]" % props[key_name]["items"]["type"]
+                array_enums = props[key_name]["items"].get("enum")
+                if array_enums:
+                    if len(array_enums) > 1:
+                        value_type = "[enum]"
+                        desc += (
+                            " One of: %s" % json.dumps(array_enums)
+                        )
+                    else:
+                        desc += (
+                            " Must be '%s'." % array_enums[0]
+                        )
         else:
             value_type = props[key_name]["type"]
             if props[key_name].get("enum"):
@@ -252,13 +263,24 @@ class MatrixUnits(Units):
                                 req_obj = req_obj["items"]
 
                             req_tables = get_json_schema_object_fields(req_obj)
+
+                            if req_tables > 1:
+                                for table in req_tables[1:]:
+                                    nested_key_name = [
+                                        s["key"] for s in req_tables[0]["rows"] if
+                                        s["type"] == ("{%s}" % (table["title"],))
+                                    ][0]
+                                    for row in table["rows"]:
+                                        row["key"] = "%s.%s" % (nested_key_name, row["key"])
+
                             key_sep = "[0]." if is_array else "."
                             for table in req_tables:
                                 if table.get("no-table"):
                                     continue
                                 for row in table["rows"]:
+                                    nested_key = key + key_sep + row["key"]
                                     endpoint["req_params"].append({
-                                        "key": key + key_sep + row["key"],
+                                        "key": nested_key,
                                         "loc": "JSON body",
                                         "type": row["type"],
                                         "desc": row["req_str"] + row["desc"]
