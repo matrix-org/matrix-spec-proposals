@@ -365,7 +365,7 @@ Old V1 API docs: |register|_
 Fallback
 ++++++++
 
-If a client does not recognize all or any login flows, it can use the fallback
+If a client does not recognize any or all login flows it can use the fallback
 login API::
 
     GET /_matrix/client/api/v1/login/fallback
