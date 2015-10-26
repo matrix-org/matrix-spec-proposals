@@ -36,6 +36,10 @@ width and height are close to the requested size and the aspect matches
 the requested size. The client should scale the image if it needs to fit
 within a given rectangle.
 
+In summary:
+ * "scale" maintains the original aspect ratio of the image
+ * "crop" provides an image in the aspect ratio of the sizes given in the request
+
 Server behaviour
 ----------------
 
