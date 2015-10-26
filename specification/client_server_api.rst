@@ -368,7 +368,7 @@ Fallback
 If a client does not recognize any or all login flows it can use the fallback
 login API::
 
-    GET /_matrix/client/api/v1/login/fallback
+    GET /_matrix/static/client/login/
 
 This returns an HTML and JavaScript page which can perform the entire login
 process. The page will attempt to call the JavaScript function
