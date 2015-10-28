@@ -659,6 +659,8 @@ This API also returns an ``end`` token which can be used with the event stream.
 
 {{sync_http_api}}
 
+{{v2_sync_http_api}}
+
 
 Getting events for a room
 ~~~~~~~~~~~~~~~~~~~~~~~~~

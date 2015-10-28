@@ -22,7 +22,7 @@ paths:
       summary: Synchronise the client's state and receive new messages.
       description: |-
         Synchronise the client's state with the latest state on the server.
-        Client's use this API when they first log in to get an initial snapshot
+        Clients use this API when they first log in to get an initial snapshot
         of the state on the server, and then continue to call this API to get
         incremental deltas to the state, and to receive new messages.
       security:
@@ -40,6 +40,24 @@ paths:
           description: |-
             A point in time to continue a sync from.
           x-example: "s72594_4483_1934"
+        - in: query
+          name: full_state
+          type: boolean
+          description: |-
+            Controls whether to include the full state for all rooms the user
+            is a member of.
+
+            If this is set to ``true``, then all state events will be returned,
+            even if ``since`` is non-empty. The timeline will still be limited
+            by the ``since`` parameter. In this case, the ``timeout`` parameter
+            will be ignored and the query will return immediately, possibly with
+            an empty timeline.
+
+            If ``false``, and ``since`` is non-empty, only state which has
+            changed since the point indicated by ``since`` will be returned.
+
+            By default, this is ``false``.
+          x-example: "false"
         - in: query
           name: set_presence
           type: string
@@ -135,7 +153,7 @@ paths:
                           type: object
                           description: |-
                             The state of a room that the user has been invited
-                            to. These state events may only have the `sender``,
+                            to. These state events may only have the ``sender``,
                             ``type``, ``state_key`` and ``content`` keys
                             present. These events do not replace any state that
                             the client already has for the room, for example if
