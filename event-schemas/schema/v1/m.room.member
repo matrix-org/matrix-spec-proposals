@@ -1,7 +1,7 @@
 {
     "type": "object",
     "title": "The current membership state of a user in the room.",
-    "description": "Adjusts the membership state for a user in a room. It is preferable to use the membership APIs (``/rooms/<room id>/invite`` etc) when performing membership actions rather than adjusting the state directly as there are a restricted set of valid transformations. For example, user A cannot force user B to join a room, and trying to force this state change directly will fail. \n\nThe ``third_party_invite`` property will be set if the invite was an ``m.room.third_party_invite`` event, and absent if the invite was an ``m.room.member`` event.\n\nThis event also includes an ``invite_room_state`` key **outside the** ``content`` **key**. This contains an array of ``StrippedState`` Events. These events provide information on a few select state events such as the room name.",
+    "description": "Adjusts the membership state for a user in a room. It is preferable to use the membership APIs (``/rooms/<room id>/invite`` etc) when performing membership actions rather than adjusting the state directly as there are a restricted set of valid transformations. For example, user A cannot force user B to join a room, and trying to force this state change directly will fail. \n\nThe ``third_party_invite`` property will be set if this invite is an ``invite`` event and is the successor of an ``m.room.third_party_invite`` event, and absent otherwise.\n\nThis event also includes an ``invite_room_state`` key **outside the** ``content`` **key**. This contains an array of ``StrippedState`` Events. These events provide information on a few select state events such as the room name.",
     "allOf": [{
         "$ref": "core-event-schema/state_event.json"
     }],
@@ -26,18 +26,6 @@
                     "type": "object",
                     "title": "Invite",
                     "properties": {
-                        "token": {
-                            "type": "string",
-                            "description": "A token which must be correctly signed, in order to join the room."
-                        },
-                        "key_validity_url": {
-                            "type": "string",
-                            "description": "A URL which can be fetched, with querystring ``public_key=public_key``, to validate whether the key has been revoked. The URL must return a JSON object containing a boolean property named 'valid'."
-                        },
-                        "public_key": {
-                            "type": "string",
-                            "description": "A base64-encoded ed25519 key with which token must be signed."
-                        },
                         "signed": {
                             "type": "object",
                             "title": "signed",
@@ -57,13 +45,9 @@
                                 }
                             },
                             "required": ["mxid", "signatures", "token"]
-                        },
-                        "sender": {
-                            "type": "string",
-                            "description": "The matrix user ID of the user who send the invite which is being used."
                         }
                     },
-                    "required": ["token", "key_validity_url", "public_key", "sender", "signed"]
+                    "required": ["signed"]
                 }
             },
             "required": ["membership"]

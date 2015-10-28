@@ -15,13 +15,15 @@ The homeserver asks the identity server whether a Matrix user ID is known for
 that identifier. If it is, an invite is simply issued for that user.
 
 If it is not, the homeserver asks the identity server to record the details of
-the invitation, and to notify the client of this pending invitation if it gets
+the invitation, and to notify the invitee's homeserver of this pending invitation if it gets
 a binding for this identifier in the future. The identity server returns a token
-and public key to the homeserver.
+and public key to the inviting homeserver.
 
-If a client then tries to join the room in the future, it will be allowed to if
-it presents both the token, and a signature of that token from the identity
-server which can be verified with the public key.
+When the invitee's homeserver receives the notification of the binding, it
+should insert an ``m.room.member`` event into the room's graph for that user,
+with ``content.membership`` = ``invite``, as well as a
+``content.third_party_invite`` property whichi contains proof that the invitee
+does indeed own that third party identifier.
 
 Events
 ------
@@ -39,9 +41,10 @@ Server behaviour
 All homeservers MUST verify the signature in the event's
 ``content.third_party_invite.signed`` object.
 
-If a client of the current homeserver is joining by an
-``m.room.third_party_invite``, that homesever MUST validate that the public
-key used for signing is still valid, by checking ``key_validity_url``. It does
+When a homeserver inserts an ``m.room.member`` ``invite`` event into the graph
+because of an ``m.room.third_party_invite`` event,
+that homesever MUST validate that the public
+key used for signing is still valid, by checking ``key_validity_url`` from the ``m.room.third_party_invite``. It does
 this by making an HTTP GET request to ``key_validity_url``:
 
 .. TODO: Link to identity server spec when it exists
@@ -91,16 +94,16 @@ For example:
     H1 asks the identity server for a binding to a Matrix user ID, and has none,
     so issues an ``m.room.third_party_invite`` event to the room.
 
-    When the third party user validates their identity, they are told about the
-    invite, and ask their homeserver, H3, to join the room.
+    When the third party user validates their identity, their homeserver, H3,
+    is notified, and attempts to issue an ``m.room.member`` event to participate
+    in the room.
 
-    H3 validates the signature in the event's
-    ``content.third_party_invite.signed`` object.
+    H3 validates the signature given to it by the identity server.
 
     H3 then asks H1 to join it to the room. H1 *must* validate the ``signed``
     property *and* check ``key_validity_url``.
 
-    Having validated these things, H1 writes the join event to the room, and H3
+    Having validated these things, H1 writes the invite event to the room, and H3
     begins participating in the room. H2 *must* accept this event.
 
 The reason that no other homeserver may reject the event based on checking
