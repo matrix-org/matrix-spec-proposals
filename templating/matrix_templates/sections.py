@@ -35,7 +35,7 @@ class MatrixSections(Sections):
             if not filterFn(event_name):
                 continue
             sections.append(template.render(
-                example=examples[event_name], 
+                examples=examples[event_name],
                 event=schemas[event_name],
                 title_kind=subtitle_title_char
             ))
