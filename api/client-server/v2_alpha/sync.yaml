@@ -241,6 +241,9 @@ paths:
                           "type": "m.room.member",
                           "state_key": "@bob:example.com",
                           "content": {"membership": "join"},
+                          "unsigned": {
+                            "prev_content": {"membership": "invite"}
+                          },
                           "origin_server_ts": 1417731086795
                         },
                         "$74686972643033:example.com": {
