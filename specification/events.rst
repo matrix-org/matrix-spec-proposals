@@ -43,6 +43,7 @@ formatted for the /v2 prefix by:
 * Moving the folling keys from the ``unsigned`` object to the top level event
   object: ``age``, ``redacted_because``, ``replaces_state``, ``prev_content``.
 * Removing the ``unsigned`` object.
+* Rename the ``sender`` key to ``user_id``.
 * If the event was an ``m.room.member`` with ``membership`` set to ``invite``
   then adding a ``invite_room_state`` key to the top level event object.
 
