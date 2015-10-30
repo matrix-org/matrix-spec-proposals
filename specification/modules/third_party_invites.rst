@@ -22,7 +22,7 @@ and public key to the inviting homeserver.
 When the invitee's homeserver receives the notification of the binding, it
 should insert an ``m.room.member`` event into the room's graph for that user,
 with ``content.membership`` = ``invite``, as well as a
-``content.third_party_invite`` property whichi contains proof that the invitee
+``content.third_party_invite`` property which contains proof that the invitee
 does indeed own that third party identifier.
 
 Events
@@ -94,8 +94,8 @@ For example:
     H1 asks the identity server for a binding to a Matrix user ID, and has none,
     so issues an ``m.room.third_party_invite`` event to the room.
 
-    When the third party user validates their identity, their homeserver, H3,
-    is notified, and attempts to issue an ``m.room.member`` event to participate
+    When the third party user validates their identity, their homeserver H3
+    is notified and attempts to issue an ``m.room.member`` event to participate
     in the room.
 
     H3 validates the signature given to it by the identity server.
