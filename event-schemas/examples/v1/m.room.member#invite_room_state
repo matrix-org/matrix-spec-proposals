@@ -3,19 +3,24 @@
   "content": {
     "membership": "join",
     "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF#auto",
-    "displayname": "Alice Margatroid",
-    "third_party_invite": {
-      "signed": {
-        "mxid": "@alice:localhost",
-        "signatures": {
-          "magic.forest": {
-            "ed25519:3": "fQpGIW1Snz+pwLZu6sTy2aHy/DYWWTspTJRPyNp0PKkymfIsNffysMl6ObMMFdIJhk6g6pwlIqZ54rxo8SLmAg"
-          }
-        },
-        "token": "abc123"
+    "displayname": "Alice Margatroid"
+  },
+  "invite_room_state": [
+    {
+      "type": "m.room.name",
+      "state_key": "",
+      "content": {
+        "name": "Forest of Magic"
+      }
+    },
+    {
+      "type": "m.room.join_rules",
+      "state_key": "",
+      "content": {
+        "join_rules": "invite"
       }
     }
-  },
+  ],
   "state_key": "@alice:localhost",
   "origin_server_ts": 1431961217939,
   "event_id": "$WLGTSEFSEF:localhost",
