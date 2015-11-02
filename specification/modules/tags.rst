@@ -19,7 +19,7 @@ events appearing in v1 /events will have a ``room_id`` with the room
 the tags are for.
 
 Each tag has an associated JSON object with information about the tag, e.g how
-to order the tags.
+to order the rooms with a given tag.
 
 {{m_tag_event}}
 
