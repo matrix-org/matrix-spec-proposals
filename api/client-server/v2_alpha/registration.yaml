@@ -17,7 +17,24 @@ paths:
       summary: Register for an account on this homeserver.
       description: |-
         Register for an account on this homeserver.
+
+        There are two kinds of user account:
+
+        - user accounts may use the full API described in this specification.
+
+        - guest accounts may have severely limited permissions, and also may not be supported by all servers.
+
       parameters:
+        - in: query
+          name: kind
+          type: string
+          x-example: guest
+          required: false
+          default: user
+          enum:
+            - guest
+            - user
+          description: The kind of account to register. Defaults to user.
         - in: body
           name: body
           schema:
