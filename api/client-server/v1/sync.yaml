@@ -248,8 +248,7 @@ paths:
                           "visibility": "private",
                           "private_user_data": [{
                             "type": "m.tag",
-                            "content": {"tags": ["work"]},
-                            "room_id": "!TmaZBKYIFrIPVGoUYp:localhost"
+                            "content": {"tags": ["work"]}
                           }]
                       }
                   ]
