@@ -85,16 +85,11 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
         wrapper = TextWrapper(initial_indent=initial_indent, width=wrap)
         output_lines = [wrapper.fill(line) for line in input_lines]
 
-        in_bullet = False
         for i in range(len(output_lines)):
             line = output_lines[i]
-            starts_bullet = line.startswith("- ")
-            if line == "":
-                in_bullet = False
+            in_bullet = line.startswith("- ")
             if in_bullet:
-                output_lines[i] = line.replace("\n", "\n  ")
-            if starts_bullet:
-                in_bullet = True
+                output_lines[i] = line.replace("\n", "\n  " + initial_indent)
 
         return '\n\n'.join(output_lines)
 
