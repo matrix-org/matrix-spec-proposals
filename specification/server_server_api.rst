@@ -578,8 +578,23 @@ construction, though in principle any valid candidate may be used at each time.
 Thus, any join handshake can potentially involve anywhere from two to four
 homeservers, though most in practice will use just two.
 
-.. TODO-doc
-  - Consider drawing a request/response diagram here
+::
+
+  Client         Joining                Directory       Resident
+                 Server                 Server          Server
+
+  join request -->
+                 |
+                 directory request ------->
+                 <---------- directory response
+                 |
+                 make_join request ----------------------->
+                 <------------------------------- make_join response
+                 |
+                 send_join request ----------------------->
+                 <------------------------------- send_join response
+                 |
+  <---------- join response
 
 The first part of the handshake involves using the directory server to request
 the room ID and join candidates. This is covered in more detail on the
