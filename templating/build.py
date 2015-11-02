@@ -84,6 +84,13 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
         input_lines = input.split('\n\n')
         wrapper = TextWrapper(initial_indent=initial_indent, width=wrap)
         output_lines = [wrapper.fill(line) for line in input_lines]
+
+        for i in range(len(output_lines)):
+            line = output_lines[i]
+            in_bullet = line.startswith("- ")
+            if in_bullet:
+                output_lines[i] = line.replace("\n", "\n  " + initial_indent)
+
         return '\n\n'.join(output_lines)
 
     # make Jinja aware of the templates and filters
