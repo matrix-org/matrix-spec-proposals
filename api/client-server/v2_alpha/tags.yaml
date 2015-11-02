@@ -49,16 +49,15 @@ paths:
             type: object
             properties:
               tags:
-                type: array
-                items:
-                  type: string
+                title: Tags
+                type: object
           examples:
             application/json: |-
               {
-                "tags": [
-                  "work",
-                  "pinned"
-                ]
+                "tags": {
+                  "work": {"order": 1},
+                  "pinned": {}
+                }
               }
   "/user/{userId}/rooms/{roomId}/tags/{tag}":
     put:
@@ -94,11 +93,11 @@ paths:
           name: body
           required: true
           description: |-
-            An empty JSON object.
+            Extra data for the tag, e.g. ordering.
           schema:
             type: object
             example: |-
-              {}
+              {"order": 1}
       responses:
         200:
           description:

@@ -1,8 +1,8 @@
 {
   "type": "m.tag",
   "content": {
-    "tags": [
-      "work"
-    ]
+    "tags": {
+      "work": {}
+    }
   }
 }

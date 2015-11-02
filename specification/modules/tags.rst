@@ -18,6 +18,9 @@ The ``m.tag`` can also be received in a v1 /events response or in the
 events appearing in v1 /events will have a ``room_id`` with the room
 the tags are for.
 
+Each tag has an associated JSON object with information about the tag, e.g how
+to order the tags.
+
 {{m_tag_event}}
 
 Client Behaviour

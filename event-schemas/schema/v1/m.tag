@@ -11,9 +11,10 @@
       "type": "object",
       "properties": {
         "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
+          "type": "object",
+          "additionalProperties": {
+            "title": "Tag",
+            "type": "object"
           }
         }
       }
