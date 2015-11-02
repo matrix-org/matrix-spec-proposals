@@ -20,9 +20,9 @@ paths:
 
         There are two kinds of user account:
 
-        - user accounts may use the full API described in this specification.
+        - `user` accounts. These accounts may use the full API described in this specification.
 
-        - guest accounts may have severely limited permissions, and also may not be supported by all servers.
+        - `guest` accounts. These accounts may have limited permissions and may not be supported by all servers.
 
       parameters:
         - in: query
@@ -34,7 +34,7 @@ paths:
           enum:
             - guest
             - user
-          description: The kind of account to register. Defaults to user.
+          description: The kind of account to register. Defaults to `user`.
         - in: body
           name: body
           schema:
