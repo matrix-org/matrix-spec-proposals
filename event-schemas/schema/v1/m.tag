@@ -12,13 +12,14 @@
       "properties": {
         "tags": {
           "type": "object",
+          "description": "The tags on the room and their contents.",
           "additionalProperties": {
-            "title": "Tag",
+            "title": "Tag Contents",
             "type": "object"
           }
         }
       }
     }
   },
- "required": ["type", "content"]
+  "required": ["type", "content"]
 }
