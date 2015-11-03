@@ -2,7 +2,7 @@
   "type": "m.tag",
   "content": {
     "tags": {
-      "work": {}
+      "work": {"order": 1}
     }
   }
 }
