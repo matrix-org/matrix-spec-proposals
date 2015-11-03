@@ -13,8 +13,7 @@
                     "type": "string",
                     "description": "The canonical alias."
                 }
-            },
-            "required": ["alias"]
+            }
         },
         "state_key": {
             "type": "string",
