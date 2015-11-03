@@ -14,7 +14,7 @@
           "type": "object",
           "description": "The tags on the room and their contents.",
           "additionalProperties": {
-            "title": "Tag Contents",
+            "title": "Tag",
             "type": "object"
           }
         }
