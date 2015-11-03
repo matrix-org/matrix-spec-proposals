@@ -4,13 +4,13 @@ Room Tagging
 .. _module:tagging:
 
 Users can add tags to rooms. Tags are short strings used to label rooms, e.g.
-"work", "familly". A room may have multiple tags. Tags are only visible to the
+"work", "family". A room may have multiple tags. Tags are only visible to the
 user that set them but are shared across all their devices.
 
 Events
 ------
 
-The tags on a room are receieved as single ``m.tag`` event in the
+The tags on a room are received as single ``m.tag`` event in the
 ``private_user_data`` section of a room in a v2 /sync.
 
 The ``m.tag`` can also be received in a v1 /events response or in the
