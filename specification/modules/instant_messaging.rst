@@ -222,9 +222,12 @@ choose a name:
    .. TODO-spec
      Sorting by user_id certainly isn't ideal, as IDs at the start of the
      alphabet will end up dominating room names: they will all be called
-     "Arathorn and 15 others". Ideally we might sort by the time when the user
-     was first invited to, or first joined the room. But we don't have this
-     information.
+     "Arathorn and 15 others". Furthermore - user_ids are not necessarily
+     ASCII, which means we need to either specify a collation order, or specify
+     how to choose one.
+
+     Ideally we might sort by the time when the user was first invited to, or
+     first joined the room. But we don't have this information.
 
 #. If the room has no ``m.room.name`` or ``m.room.canonical_alias`` events, and
    it has no active members other than the current user, the there are no
