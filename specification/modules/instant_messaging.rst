@@ -116,12 +116,62 @@ of the client-server API will resolve this by attaching the transaction ID of th
 sending request to the event itself.
 
 
+Calculating the display name for a user
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Clients may wish to show the human-readable display name of the room member who
+send a message, and in lists of room members. However, different members may
+have conflicting displaynames; care should be taken to ensure that displaynames
+are disambiguated before showing them to the user.
+
+To ensure this is done consistently across clients, clients SHOULD use the
+following algorithm to calculate a disambiguated display name for a given user:
+
+1. Inspect the ``m.room.member`` state event for the relevant user id.
+2. If the ``m.room.member`` state event has no ``displayname`` field, or if
+   that field has a null value, use the raw user id as the display name.
+3. If the ``displayname`` is unique among members of the room with
+   ``membership: join``, use the given ``displayname`` as the user-visible
+   display name
+4. The given ``displayname`` must be disambiguated using the user id, for
+   example "displayname (@id:homeserver.org)". Clients MAY format the display
+   name differently, provided both components are present.
+
+Developers should take note of the following when implementing the above
+algorithm:
+
+* A corollary of this algorithm is that the user-visible display name of one
+  member can be affected by changes in the state of another member. For
+  example, if ``@user1:matrix.org`` is present in a room, with ``displayname:
+  Alice``, then when ``@user2:example.com`` joins the room, also with
+  ``displayname: Alice``, *both* users must be given disambiguated display
+  names. Similarly, when one of the users then changes their display name,
+  there is no longer a clash, and *both* users can be given their chosen
+  display name.
+
+  Clients should be alert to this possibility and ensure that all affected
+  users are correctly renamed.
+
+* A naïve implementation of this algorithm can be inefficient: if the entire
+  user list is searched for clashing displaynames, this leads to an O(N^2)
+  implementation for building the list of room members, which is very slow for
+  rooms with large numbers of members.
+
+  It is recommended that client implementations maintain a hash table mapping
+  from ``displayname`` to a list of room members using that displayname; this
+  can then be used for efficient calculation of whether disambiguation is
+  needed.
+
+A future version of the client-server API will make this process easier for
+clients by indicating whether or not a ``displayname`` is unique.
+
+
 Displaying membership information with messages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Clients may wish to show the display name and avatar URL of the room member who
 sent a message. This can be achieved by inspecting the ``m.room.member`` state
-event for that user ID.
+event for that user ID (see `Calculating the display name for a user`_).
 
 When a user paginates the message history, clients may wish to show the
 **historical** display name and avatar URL for a room member. This is possible
