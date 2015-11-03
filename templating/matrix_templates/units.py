@@ -164,12 +164,16 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
             if props[key_name].get("enum"):
                 if len(props[key_name].get("enum")) > 1:
                     value_type = "enum"
+                    if desc:
+                        desc += " "
                     desc += (
-                        " One of: %s" % json.dumps(props[key_name]["enum"])
+                        "One of: %s" % json.dumps(props[key_name]["enum"])
                     )
                 else:
+                    if desc:
+                        desc += " "
                     desc += (
-                        " Must be '%s'." % props[key_name]["enum"][0]
+                        "Must be '%s'." % props[key_name]["enum"][0]
                     )
             if isinstance(value_type, list):
                 value_type = " or ".join(value_type)
