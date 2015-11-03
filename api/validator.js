@@ -26,11 +26,10 @@ if (!opts.schema) {
 }
 
 
-var errFn = function(err, api, metadata) {
+var errFn = function(err, api) {
     if (!err) {
         return;
     }
-    console.log(metadata);
     console.error(err);
     process.exit(1);
 };
@@ -44,12 +43,14 @@ if (isDir) {
             process.exit(1);
         }
         files.forEach(function(f) {
-            if (f.indexOf(".yaml") > 0) {
-                parser.parse(path.join(opts.schema, f), function(err, api, metadata) {
+            var suffix = ".yaml";
+            if (f.indexOf(suffix, f.length - suffix.length) > 0) {
+                parser.validate(path.join(opts.schema, f), function(err, api, metadata) {
                     if (!err) {
                         console.log("%s is valid.", f);
                     }
                     else {
+                        console.error("%s is not valid.", f);
                         errFn(err, api, metadata);
                     }
                 });
@@ -58,12 +59,12 @@ if (isDir) {
     });
 }
 else{
-    parser.parse(opts.schema, function(err, api, metadata) {
+    parser.validate(opts.schema, function(err, api) {
         if (!err) {
             console.log("%s is valid", opts.schema);
         }
         else {
-            errFn(err, api, metadata);
+            errFn(err, api);
         }
     });
 };

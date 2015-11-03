@@ -1,21 +1,63 @@
 #! /bin/bash
 
 if [ -z "$1" ]; then
-    echo "Expected /includes/nav.html file as arg."
+    echo "Expected /includes/head.html file as 1st arg."
     exit 1
 fi
 
-NAV_BAR=$1
+if [ -z "$2" ]; then
+    echo "Expected /includes/nav.html file as 2nd arg."
+    exit 1
+fi
+
+if [ -z "$3" ]; then
+    echo "Expected /includes/footer.html file as 3rd arg."
+    exit 1
+fi
+
+
+HEADER=$1
+NAV_BAR=$2
+FOOTER=$3
+
+if [ ! -f $HEADER ]; then
+    echo $HEADER " does not exist"
+    exit 1
+fi
 
 if [ ! -f $NAV_BAR ]; then
     echo $NAV_BAR " does not exist"
     exit 1
 fi
 
+if [ ! -f $FOOTER ]; then
+    echo $FOOTER " does not exist"
+    exit 1
+fi
+
 python gendoc.py
 
-perl -pi -e 's#<head>#<head><link rel="stylesheet" href="/site.css">#' gen/specification.html gen/howtos.html
+perl -MFile::Slurp -pi -e 'BEGIN { $header = read_file("'$HEADER'") } s#<head>#<head>$header
+  <link rel="stylesheet" href="//matrix.org/docs/guides/css/docs_overrides.css">
+#' gen/specification.html gen/howtos.html
 
-perl -MFile::Slurp -pi -e 'BEGIN { $nav = read_file("'$NAV_BAR'") } s#<body>#<body><div id="header"><div id="headerContent">$nav</div></div><div id="page"><div id="wrapper"><div style="text-align: center; padding: 40px;"><a href="/"><img src="/matrix.png" width="305" height="130" alt="[matrix]"/></a></div>#' gen/specification.html gen/howtos.html
+perl -MFile::Slurp -pi -e 'BEGIN { $nav = read_file("'$NAV_BAR'") } s#<body>#  <body class="blog et_fixed_nav et_cover_background et_right_sidebar">
+   <div id="page-wrapper">
+    <div class="page-content" id="page-container">
+      $nav
+       <div id="main-content">
+         <div class="wrapper" id="wrapper">
+           <div class="document_foo" id="document">
+#' gen/specification.html gen/howtos.html
 
-perl -pi -e 's#</body>#</div></div><div id="footer"><div id="footerContent">&copy 2014-2015 Matrix.org</div></div></body>#' gen/specification.html gen/howtos.html
+perl -MFile::Slurp -pi -e 'BEGIN { $footer = read_file("'$FOOTER'") } s#</body>#
+            </div>
+          </div>
+          <div class="push">
+          </div>
+        </div>
+      </div>
+        $footer
+      </div>
+    </div>
+  </body>#' gen/specification.html gen/howtos.html

@@ -101,7 +101,7 @@ paths:
                   The length of time in milliseconds since an action was performed
                   by this user.
               status_msg:
-                type: string
+                type: [string, "null"]
                 description: The state message for this user if one was set.
         404:
           description: |-
@@ -185,7 +185,7 @@ paths:
                     "last_active_ago": 395,
                     "presence": "offline",
                     "user_id": "@alice:matrix.org"
-                  }
+                  },
                   "type": "m.presence"
                 },
                 {
@@ -195,7 +195,7 @@ paths:
                     "last_active_ago": 16874,
                     "presence": "online",
                     "user_id": "@marisa:matrix.org"
-                  }
+                  },
                   "type": "m.presence"
                 }
               ]
@@ -205,5 +205,4 @@ paths:
               type: object
               title: PresenceEvent
               allOf:
-                - "$ref": "definitions/event.yaml"
-  
+                - "$ref": "core-event-schema/event.json"

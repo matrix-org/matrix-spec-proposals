@@ -1,0 +1,160 @@
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server v1 Registration and Login API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/api/v1
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  accessToken:
+    type: apiKey
+    description: The user_id or application service access_token
+    name: access_token
+    in: query
+paths:
+  "/login":
+    post:
+      summary: Authenticates the user.
+      description: |-
+        Authenticates the user by password, and issues an access token they can
+        use to authorize themself in subsequent requests.
+      security:
+        - accessToken: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            example: |-
+              {
+                "type": "m.login.pasword",
+                "user": "cheeky_monkey",
+                "password": "ilovebananas"
+              }
+            properties:
+              type:
+                type: string
+                description: The login type being used. Currently only "m.login.password" is supported.
+              user:
+                type: string
+                description: The fully qualified user ID or just local part of the user ID, to log in.
+              password:
+                type: string
+                description: The user's password.
+            required: ["type", "user", "password"]
+      responses:
+        200:
+          description: The user has been authenticated.
+          examples:
+            application/json: |-
+              {
+                "user_id": "@cheeky_monkey:matrix.org",
+                "access_token": "abc123",
+                "home_server": "matrix.org"
+              }
+          schema:
+            type: object
+            properties:
+              user_id:
+                type: string
+                description: The fully-qualified Matrix ID that has been registered.
+              access_token:
+                type: string
+                description: |-
+                  An access token for the account.
+                  This access token can then be used to authorize other requests.
+                  The access token may expire at some point, and if so, it SHOULD come with a ``refresh_token``.
+                  There is no specific error message to indicate that a request has failed because
+                  an access token has expired; instead, if a client has reason to believe its
+                  access token is valid, and it receives an auth error, they should attempt to
+                  refresh for a new token on failure, and retry the request with the new token.
+              refresh_token:
+                type: string
+                # TODO: Work out how to linkify /tokenrefresh
+                description: |-
+                  (optional) A ``refresh_token`` may be exchanged for a new ``access_token`` using the /tokenrefresh API endpoint.
+              home_server:
+                type: string
+                description: The hostname of the Home Server on which the account has been registered.
+        400:
+          description: |-
+            Part of the request was invalid. For example, the login type may not be recognised.
+          examples:
+            application/json: |-
+              {
+                  "errcode": "M_UNKNOWN",
+                  "error": "Bad login type."
+              }
+        403:
+          description: |-
+            The login attempt failed. For example, the password may have been incorrect.
+          examples:
+            application/json: |-
+              {"errcode": "M_FORBIDDEN"}
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/error.yaml"
+  "/tokenrefresh":
+    post:
+      summary: Exchanges a refresh token for an access token.
+      description: |-
+        Exchanges a refresh token for a new access token.
+        This is intended to be used if the access token has expired.
+      security:
+        - accessToken: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            example: |-
+              {
+                "refresh_token": "a1b2c3"
+              }
+            properties:
+              refresh_token:
+                type: string
+                description: The refresh token which was issued by the server.
+            required: ["refresh_token"]
+      responses:
+        200:
+          description: |-
+            The refresh token was accepted, and a new access token has been issued.
+            The passed refresh token is no longer valid and cannot be used.
+            A new refresh token will have been returned unless some policy does
+            not allow the user to continue to renew their session.
+          examples:
+            application/json: |-
+              {
+                "access_token": "bearwithme123",
+                "refresh_token": "exchangewithme987"
+              }
+          schema:
+            type: object
+            properties:
+              access_token:
+                type: string
+                description: |-
+                  An access token for the account.
+                  This access token can then be used to authorize other requests.
+                  The access token may expire at some point, and if so, it SHOULD come with a ``refresh_token``.
+              refresh_token:
+                type: string
+                description: (optional) A ``refresh_token`` may be exchanged for a new ``access_token`` using the TODO Linkify /tokenrefresh API endpoint.
+        403:
+          description: |-
+            The exchange attempt failed. For example, the refresh token may have already been used.
+          examples:
+            application/json: |-
+              {"errcode": "M_FORBIDDEN"}
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/error.yaml"

@@ -1,0 +1,41 @@
+targets:
+  main:  # arbitrary name to identify this build target
+    files:  # the sort order of files to cat
+      - intro.rst
+      - client_server_api.rst
+      - { 1: events.rst }
+      - { 1: event_signing.rst }
+      - modules.rst
+      - { 1: feature_profiles.rst }
+      - { 1: "group:modules" }  # reference a group of files
+      - application_service_api.rst
+      - server_server_api.rst
+      - identity_servers.rst
+      - appendices.rst
+groups:  # reusable blobs of files when prefixed with 'group:'
+  modules:
+    - modules/instant_messaging.rst
+    - modules/voip_events.rst
+    - modules/typing_notifications.rst
+    - modules/receipts.rst
+    - modules/presence.rst
+    - modules/content_repo.rst
+    - modules/end_to_end_encryption.rst
+    - modules/history_visibility.rst
+    - modules/push.rst
+    - modules/third_party_invites.rst
+    - modules/search.rst
+
+
+title_styles: ["=", "-", "~", "+", "^", "`"]
+
+# The templating system doesn't know the right title style to use when generating
+# RST. These symbols are 'relative' to say "make a sub-title" (-1), "make a title
+# at the same level (0)", or "make a title one above (+1)". The gendoc script
+# will inspect this file and replace these relative styles with actual title
+# styles. The templating system will also inspect this file to know which symbols
+# to inject.
+relative_title_styles:
+  subtitle: "<"
+  sametitle: "/"
+  supertitle: ">"
