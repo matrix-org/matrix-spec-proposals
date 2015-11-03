@@ -129,13 +129,15 @@ following algorithm to calculate a disambiguated display name for a given user:
 
 1. Inspect the ``m.room.member`` state event for the relevant user id.
 2. If the ``m.room.member`` state event has no ``displayname`` field, or if
-   that field has a null value, use the raw user id as the display name.
-3. If the ``displayname`` is unique among members of the room with
-   ``membership: join``, use the given ``displayname`` as the user-visible
-   display name
-4. The given ``displayname`` must be disambiguated using the user id, for
-   example "displayname (@id:homeserver.org)". Clients MAY format the display
-   name differently, provided both components are present.
+   that field has a null value, use the raw user id as the display
+   name. Otherwise:
+3. If the ``m.room.member`` event has a ``displayname`` which is unique among
+   members of the room with ``membership: join``, use the given ``displayname``
+   as the user-visible display name. Otherwise:
+4. The ``m.room.member`` event has a non-unique ``displayname``. This must be
+   disambiguated using the user id, for example "displayname
+   (@id:homeserver.org)". Clients MAY format the display name differently,
+   provided both components are present.
 
 Developers should take note of the following when implementing the above
 algorithm:
@@ -147,10 +149,8 @@ algorithm:
   ``displayname: Alice``, *both* users must be given disambiguated display
   names. Similarly, when one of the users then changes their display name,
   there is no longer a clash, and *both* users can be given their chosen
-  display name.
-
-  Clients should be alert to this possibility and ensure that all affected
-  users are correctly renamed.
+  display name. Clients should be alert to this possibility and ensure that all
+  affected  users are correctly renamed.
 
 * Furthermore, because the display name of a room may be based on the display
   name of users (see `Calculating the display name for a room`_), the display
@@ -159,12 +159,10 @@ algorithm:
 * A naïve implementation of this algorithm can be inefficient: if the entire
   user list is searched for clashing displaynames, this leads to an O(N^2)
   implementation for building the list of room members, which is very slow for
-  rooms with large numbers of members.
-
-  It is recommended that client implementations maintain a hash table mapping
-  from ``displayname`` to a list of room members using that displayname; this
-  can then be used for efficient calculation of whether disambiguation is
-  needed.
+  rooms with large numbers of members. It is recommended that client
+  implementations maintain a hash table mapping from ``displayname`` to a list
+  of room members using that displayname; this can then be used for efficient
+  calculation of whether disambiguation is needed.
 
 A future version of the client-server API will make this process easier for
 clients by indicating whether or not a ``displayname`` is unique.
