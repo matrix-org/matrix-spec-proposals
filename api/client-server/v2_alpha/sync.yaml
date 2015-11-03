@@ -270,7 +270,7 @@ paths:
                         "events": [
                           {
                             "type": "m.tags",
-                            "content": {"tags": ["work"]}
+                            "content": {"tags": {"work": {}}}
                           }
                         ]
                       }

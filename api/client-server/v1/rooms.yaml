@@ -314,8 +314,7 @@ paths:
                 "visibility": "private",
                 "private_user_data": [{
                     "type": "m.tag",
-                    "content": {"tags": ["work"]},
-                    "room_id": "!636q39766251:example.com"
+                    "content": {"tags": {"work": {}}}
                 }]
               }
           schema:
