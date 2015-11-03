@@ -152,6 +152,10 @@ algorithm:
   Clients should be alert to this possibility and ensure that all affected
   users are correctly renamed.
 
+* Furthermore, because the display name of a room may be based on the display
+  name of users (see `Calculating the display name for a room`_), the display
+  name of a room may also be affected by changes to the membership of a room.
+
 * A naïve implementation of this algorithm can be inefficient: if the entire
   user list is searched for clashing displaynames, this leads to an O(N^2)
   implementation for building the list of room members, which is very slow for
@@ -182,6 +186,59 @@ state diverge from each other. New events update the current state and paginated
 events update the old state. When paginated events are processed sequentially,
 the old state represents the state of the room *at the time the event was sent*.
 This can then be used to set the historical display name and avatar URL.
+
+
+Calculating the display name for a room
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Clients will need to show a human-readable name for a room. There are a number
+of possibilities for choosing a useful name. To ensure that rooms are named
+consistently across clients, clients SHOULD use the following algorithm to
+choose a name:
+
+1. If the room has an `m.room.name`_ state event, use the name given by that
+   event.
+#. If the room has an `m.room.canonical_alias`_ state event, use the alias
+   given by that event.
+#. If neither of the above events are present, a name should be composed based/sys/class/backlight/intel_backlight/brightness
+   on the members of the room. Clients should consider `m.room.member`_ events
+   for users other than the logged in user, with ``membership: join`` or
+   ``membership: invite``.
+
+   i. If there is only one such event, the display name for the room should be
+      the `disambiguated display name`_ of the corresponding user.
+
+   #. If there are two such events, they should be lexicographically sorted by
+      their ``state_key`` (i.e. the corresponding user IDs), and the display
+      name for the room should be the  `disambiguated display name`_ of both
+      users: "<user1> and <user2>", or a localised variant thereof.
+
+   #. If there are three or more such events, the display name for the room
+      should be based on the disambiguated display name of the user
+      corresponding to the first such event, under a lexicographical sorting
+      according to their ``state_key``: "<user1> and <N> others", or a
+      localised variant thereof.
+
+   .. TODO-spec
+     Sorting by user_id certainly isn't ideal, as IDs at the start of the
+     alphabet will end up dominating room names: they will all be called
+     "Arathorn and 15 others". Ideally we might sort by the time when the user
+     was first invited to, or first joined the room. But we don't have this
+     information.
+
+#. If the room has no ``m.room.name`` or ``m.room.canonical_alias`` events, and
+   it has no active members other than the current user, the there are no
+   active members, the Room ID of the room should be used as the display name.
+
+.. _`disambiguated display name`: `Calculating the display name for a user`_
+
+Clients MUST NOT use `m.room.aliases`_ events as a source for room names, as
+aliases are not necessarily suitable for display.
+
+.. TODO-spec
+  How can we make this less painful for clients to implement, without forcing
+  an English-language implementation on them all?
+
 
 Server behaviour
 ----------------
