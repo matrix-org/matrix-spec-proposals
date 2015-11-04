@@ -185,7 +185,17 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
             "desc": desc,
             "req_str": "**Required.** " if required else ""
         })
-    return tables
+
+    titles = set()
+    filtered = []
+    for table in tables:
+        if table.get("title") in titles:
+            continue
+
+        titles.add(table.get("title"))
+        filtered.append(table)
+
+    return filtered
 
 
 class MatrixUnits(Units):
