@@ -121,8 +121,8 @@ Calculating the display name for a user
 
 Clients may wish to show the human-readable display name of the room member who
 send a message, and in lists of room members. However, different members may
-have conflicting displaynames; care should be taken to ensure that displaynames
-are disambiguated before showing them to the user.
+have conflicting displaynames. Care should therefore be taken to ensure that
+displaynames are disambiguated before showing them to the user.
 
 To ensure this is done consistently across clients, clients SHOULD use the
 following algorithm to calculate a disambiguated display name for a given user:
@@ -134,10 +134,9 @@ following algorithm to calculate a disambiguated display name for a given user:
 3. If the ``m.room.member`` event has a ``displayname`` which is unique among
    members of the room with ``membership: join``, use the given ``displayname``
    as the user-visible display name. Otherwise:
-4. The ``m.room.member`` event has a non-unique ``displayname``. This must be
+4. The ``m.room.member`` event has a non-unique ``displayname``. This should be
    disambiguated using the user id, for example "displayname
-   (@id:homeserver.org)". Clients MAY format the display name differently,
-   provided both components are present.
+   (@id:homeserver.org)".
 
 Developers should take note of the following when implementing the above
 algorithm:
@@ -161,11 +160,8 @@ algorithm:
   implementation for building the list of room members, which is very slow for
   rooms with large numbers of members. It is recommended that client
   implementations maintain a hash table mapping from ``displayname`` to a list
-  of room members using that displayname; this can then be used for efficient
-  calculation of whether disambiguation is needed.
-
-A future version of the client-server API will make this process easier for
-clients by indicating whether or not a ``displayname`` is unique.
+  of room members using that displayname. Such a table can then be used for
+  efficient calculation of whether disambiguation is needed.
 
 
 Displaying membership information with messages
@@ -189,19 +185,23 @@ This can then be used to set the historical display name and avatar URL.
 Calculating the display name for a room
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Clients will need to show a human-readable name for a room. There are a number
+Clients may wish to show a human-readable name for a room. There are a number
 of possibilities for choosing a useful name. To ensure that rooms are named
 consistently across clients, clients SHOULD use the following algorithm to
 choose a name:
 
 1. If the room has an `m.room.name`_ state event, use the name given by that
    event.
+
 #. If the room has an `m.room.canonical_alias`_ state event, use the alias
    given by that event.
-#. If neither of the above events are present, a name should be composed based/sys/class/backlight/intel_backlight/brightness
+
+#. If neither of the above events are present, a name should be composed based
    on the members of the room. Clients should consider `m.room.member`_ events
-   for users other than the logged in user, with ``membership: join`` or
+   for users other than the logged-in user, with ``membership: join`` or
    ``membership: invite``.
+
+   .. _active_members:
 
    i. If there is only one such event, the display name for the room should be
       the `disambiguated display name`_ of the corresponding user.
@@ -214,8 +214,10 @@ choose a name:
    #. If there are three or more such events, the display name for the room
       should be based on the disambiguated display name of the user
       corresponding to the first such event, under a lexicographical sorting
-      according to their ``state_key``: "<user1> and <N> others", or a
-      localised variant thereof.
+      according to their ``state_key``. The display name should be in the
+      format "<user1> and <N> others" (or a localised variant thereof), where N
+      is the number of `m.room.member`_ events with ``membership: join`` or
+      ``membership: invite``, excluding the logged-in user and "user1".
 
    .. TODO-spec
      Sorting by user_id certainly isn't ideal, as IDs at the start of the
@@ -227,14 +229,24 @@ choose a name:
      Ideally we might sort by the time when the user was first invited to, or
      first joined the room. But we don't have this information.
 
-#. If the room has no ``m.room.name`` or ``m.room.canonical_alias`` events, and
-   it has no active members other than the current user, the there are no
-   active members, the Room ID of the room should be used as the display name.
+#. If the room nas no ``m.room.name`` or ``m.room.canonical_alias`` events, and
+   no active members other than the current user, clients should consider
+   ``m.room.member`` events with ``membership: leave``. If such events exist, a
+   display name such as "Empty room (was <user1> and <N> others)" (or a
+   localised variant thereof) should be used, following similar rules as for
+   active members (see `above <active_members_>`_).
+
+#. A complete absence of ``m.room.name``, ``m.room.canonical_alias``, and
+   ``m.room.member`` events is likely to indicate a problem with creating the
+   room or synchronising the state table; however clients should still handle
+   this situation. A display name such as "Empty room" (or a localised variant
+   thereof) should be used in this situation.
 
 .. _`disambiguated display name`: `Calculating the display name for a user`_
 
 Clients MUST NOT use `m.room.aliases`_ events as a source for room names, as
-aliases are not necessarily suitable for display.
+it is difficult for clients to agree on the best alias to use, and aliases can
+change unexpectedly.
 
 .. TODO-spec
   How can we make this less painful for clients to implement, without forcing
