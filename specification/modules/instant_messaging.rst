@@ -119,49 +119,47 @@ sending request to the event itself.
 Calculating the display name for a user
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Clients may wish to show the human-readable display name of the room member who
-send a message, and in lists of room members. However, different members may
-have conflicting displaynames. Care should therefore be taken to ensure that
-displaynames are disambiguated before showing them to the user.
+Clients may wish to show the human-readable display name of a room member as
+part of a membership list, or when they send a message. However, different
+members may have conflicting display names. Display names MUST be disambiguated
+before showing them to the user, in order to prevent spoofing of other users.
 
 To ensure this is done consistently across clients, clients SHOULD use the
 following algorithm to calculate a disambiguated display name for a given user:
 
 1. Inspect the ``m.room.member`` state event for the relevant user id.
 2. If the ``m.room.member`` state event has no ``displayname`` field, or if
-   that field has a null value, use the raw user id as the display
+   that field has a ``null`` value, use the raw user id as the display
    name. Otherwise:
 3. If the ``m.room.member`` event has a ``displayname`` which is unique among
-   members of the room with ``membership: join``, use the given ``displayname``
-   as the user-visible display name. Otherwise:
+   members of the room with ``membership: join`` or ``membership: invite``, use
+   the given ``displayname`` as the user-visible display name. Otherwise:
 4. The ``m.room.member`` event has a non-unique ``displayname``. This should be
-   disambiguated using the user id, for example "displayname
+   disambiguated using the user id, for example "display name
    (@id:homeserver.org)".
 
 Developers should take note of the following when implementing the above
 algorithm:
 
-* A corollary of this algorithm is that the user-visible display name of one
-  member can be affected by changes in the state of another member. For
-  example, if ``@user1:matrix.org`` is present in a room, with ``displayname:
-  Alice``, then when ``@user2:example.com`` joins the room, also with
-  ``displayname: Alice``, *both* users must be given disambiguated display
-  names. Similarly, when one of the users then changes their display name,
-  there is no longer a clash, and *both* users can be given their chosen
-  display name. Clients should be alert to this possibility and ensure that all
-  affected  users are correctly renamed.
+* The user-visible display name of one member can be affected by changes in the
+  state of another member. For example, if ``@user1:matrix.org`` is present in
+  a room, with ``displayname: Alice``, then when ``@user2:example.com`` joins
+  the room, also with ``displayname: Alice``, *both* users must be given
+  disambiguated display names. Similarly, when one of the users then changes
+  their display name, there is no longer a clash, and *both* users can be given
+  their chosen display name. Clients should be alert to this possibility and
+  ensure that all affected users are correctly renamed.
 
-* Furthermore, because the display name of a room may be based on the display
-  name of users (see `Calculating the display name for a room`_), the display
-  name of a room may also be affected by changes to the membership of a room.
+* The display name of a room may also be affected by changes in the membership
+  list. This is due to the room name sometimes being based on user display
+  names (see `Calculating the display name for a room`_).
 
-* A naïve implementation of this algorithm can be inefficient: if the entire
-  user list is searched for clashing displaynames, this leads to an O(N^2)
-  implementation for building the list of room members, which is very slow for
-  rooms with large numbers of members. It is recommended that client
-  implementations maintain a hash table mapping from ``displayname`` to a list
-  of room members using that displayname. Such a table can then be used for
-  efficient calculation of whether disambiguation is needed.
+* If the entire membership list is searched for clashing display names, this
+  leads to an O(N^2) implementation for building the list of room members. This
+  will be very inefficient for rooms with large numbers of members. It is
+  recommended that client implementations maintain a hash table mapping from
+  ``displayname`` to a list of room members using that name. Such a table can
+  then be used for efficient calculation of whether disambiguation is needed.
 
 
 Displaying membership information with messages
@@ -219,6 +217,11 @@ choose a name:
       is the number of `m.room.member`_ events with ``membership: join`` or
       ``membership: invite``, excluding the logged-in user and "user1".
 
+      For example, if Alice joins a room, where Bob (whose user id is
+      ``@superuser:example.com``), Carol (user id ``@carol:example.com``) and
+      Dan (user id ``@dan:matrix.org``) are in conversation, Alice's
+      client should show the room name as "Carol and 2 others".
+
    .. TODO-spec
      Sorting by user_id certainly isn't ideal, as IDs at the start of the
      alphabet will end up dominating room names: they will all be called
@@ -229,7 +232,7 @@ choose a name:
      Ideally we might sort by the time when the user was first invited to, or
      first joined the room. But we don't have this information.
 
-#. If the room nas no ``m.room.name`` or ``m.room.canonical_alias`` events, and
+#. If the room has no ``m.room.name`` or ``m.room.canonical_alias`` events, and
    no active members other than the current user, clients should consider
    ``m.room.member`` events with ``membership: leave``. If such events exist, a
    display name such as "Empty room (was <user1> and <N> others)" (or a
@@ -244,7 +247,7 @@ choose a name:
 
 .. _`disambiguated display name`: `Calculating the display name for a user`_
 
-Clients MUST NOT use `m.room.aliases`_ events as a source for room names, as
+Clients SHOULD NOT use `m.room.aliases`_ events as a source for room names, as
 it is difficult for clients to agree on the best alias to use, and aliases can
 change unexpectedly.
 
