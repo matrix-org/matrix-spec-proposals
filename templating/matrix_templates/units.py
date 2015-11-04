@@ -147,7 +147,10 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
                 value_type = "[%s]" % nested_object[0]["title"]
                 tables += nested_object
             else:
-                value_type = "[%s]" % props[key_name]["items"]["type"]
+                value_type = props[key_name]["items"]["type"]
+                if isinstance(value_type, list):
+                    value_type = " or ".join(value_type)
+                value_type = "[%s]" % value_type
                 array_enums = props[key_name]["items"].get("enum")
                 if array_enums:
                     if len(array_enums) > 1:
