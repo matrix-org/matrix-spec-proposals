@@ -15,9 +15,9 @@ There are three main kinds of communication that occur between home servers:
 
 Persisted Data Units (PDUs):
     These events are broadcast from one home server to any others that have
-    joined the same "context" (namely, a Room ID). They are persisted in
+    joined the same room (identified by Room ID). They are persisted in
     long-term storage and record the history of messages and state for a
-    context.
+    room.
 
     Like email, it is the responsibility of the originating server of a PDU
     to deliver that event to its recipient servers. However PDUs are signed
@@ -26,7 +26,7 @@ Persisted Data Units (PDUs):
 
 Ephemeral Data Units (EDUs):
     These events are pushed between pairs of home servers. They are not
-    persisted and are not part of the history of a "context", nor does the
+    persisted and are not part of the history of a room, nor does the
     receiving home server have to reply to them.
 
 Queries:
@@ -338,11 +338,11 @@ PDUs
 
 All PDUs have:
 
-- An ID
-- A context
+- An ID to identify the PDU itself
+- A room ID that it relates to
 - A declaration of their type
-- A list of other PDU IDs that have been seen recently on that context
-  (regardless of which origin sent them)
+- A list of other PDU IDs that have been seen recently in that room (regardless
+  of which origin sent them)
 
 
 Required PDU Fields
@@ -351,7 +351,7 @@ Required PDU Fields
 ==================== ================== =======================================
  Key                  Type               Description
 ==================== ================== =======================================
-``context``          String             Event context identifier
+``context``          String             Room identifier
 ``user_id``          String             The ID of the user sending the PDU
 ``origin``           String             DNS name of homeserver that created
                                         this PDU
@@ -363,7 +363,7 @@ Required PDU Fields
 ``content``          Object             The content of the PDU.
 ``prev_pdus``        List of (String,   The originating homeserver, PDU ids and
                      String, Object)    hashes of the most recent PDUs the
-                     Triplets           homeserver was aware of for the context
+                     Triplets           homeserver was aware of for the room
                                         when it made this PDU
 ``depth``            Integer            The maximum depth of the previous PDUs
                                         plus one
@@ -440,7 +440,7 @@ keys exist to support this:
 EDUs
 ----
 
-EDUs, by comparison to PDUs, do not have an ID, a context, or a list of
+EDUs, by comparison to PDUs, do not have an ID, a room ID, or a list of
 "previous" IDs. The only mandatory fields for these are the type, origin and
 destination home server names, and the actual nested content.
 
@@ -491,23 +491,23 @@ Retrieves a given PDU from the server. The response will contain a single new
 Transaction, inside which will be the requested PDU.
 
 
-To fetch all the state of a given context::
+To fetch all the state of a given room::
 
-  GET .../state/<context>/
+  GET .../state/<room_id>/
     Response: JSON encoding of a single Transaction containing multiple PDUs
 
-Retrieves a snapshot of the entire current state of the given context. The
+Retrieves a snapshot of the entire current state of the given room. The
 response will contain a single Transaction, inside which will be a list of PDUs
 that encode the state.
 
-To backfill events on a given context::
+To backfill events on a given room::
 
-  GET .../backfill/<context>/
+  GET .../backfill/<room_id>/
     Query args: v, limit
     Response: JSON encoding of a single Transaction containing multiple PDUs
 
 Retrieves a sliding-window history of previous PDUs that occurred on the given
-context. Starting from the PDU ID(s) given in the "v" argument, the PDUs that
+room. Starting from the PDU ID(s) given in the "v" argument, the PDUs that
 preceded it are retrieved, up to a total number given by the "limit" argument.
 These are then returned in a new Transaction containing all of the PDUs.
 

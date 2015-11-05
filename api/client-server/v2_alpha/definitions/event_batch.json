@@ -5,6 +5,7 @@
       "type": "array",
       "description": "List of events",
       "items": {
+        "title": "Event",
         "type": "object"
       }
     }

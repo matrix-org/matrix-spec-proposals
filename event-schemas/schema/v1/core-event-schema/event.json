@@ -5,6 +5,7 @@
   "properties": {
     "content": {
       "type": "object",
+      "title": "EventContent",
       "description": "The fields in this object will vary depending on the type of event. When interacting with the REST API, this is the HTTP body."
     },
     "type": {
