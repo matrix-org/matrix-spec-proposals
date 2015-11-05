@@ -134,10 +134,10 @@ invitee's common name.
 
 Homeservers are not required to trust any particular identity server(s). It is
 generally a client's responsibility to decide which identity servers it trusts,
-not a homeserver's. Accordingly, this API generally takes identity servers as
-input from end users, and doesn't have any specific trusted set. It is possible
-some homeservers may want to supply defaults, or reject some identity servers
-for *its* users, but no homeserver is allowed to dictate which identity servers
+not a homeserver's. Accordingly, this API takes identity servers as input from
+end users, and doesn't have any specific trusted set. It is possible some
+homeservers may want to supply defaults, or reject some identity servers for
+*its* users, but no homeserver is allowed to dictate which identity servers
 *other* homeservers' users trust.
 
 There is some risk of denial of service attacks by flooding homeservers or
