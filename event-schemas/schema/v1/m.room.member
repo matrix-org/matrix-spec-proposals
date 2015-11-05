@@ -8,6 +8,7 @@
     "properties": {
         "content": {
             "type": "object",
+            "title": "EventContent",
             "properties": {
                 "membership": {
                     "type": "string",

@@ -56,7 +56,7 @@ paths:
                     "not_rooms": ["!726s6s6q:example.com"],
                     "not_senders": ["@spam:example.com"]
                   },
-                  "emphemeral": {
+                  "ephemeral": {
                     "types": ["m.receipt", "m.typing"],
                     "not_rooms": ["!726s6s6q:example.com"],
                     "not_senders": ["@spam:example.com"]
@@ -120,7 +120,7 @@ paths:
                     "not_rooms": ["!726s6s6q:example.com"],
                     "not_senders": ["@spam:example.com"]
                   },
-                  "emphemeral": {
+                  "ephemeral": {
                     "types": ["m.receipt", "m.typing"],
                     "not_rooms": ["!726s6s6q:example.com"],
                     "not_senders": ["@spam:example.com"]

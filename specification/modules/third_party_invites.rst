@@ -1,23 +1,24 @@
 Third party invites
 ===================
 
-.. _module:third_party_invites:
+.. _module:third-party-invites:
 
 This module adds in support for inviting new members to a room where their
 Matrix user ID is not known, instead addressing them by a third party identifier
 such as an email address.
-
 There are two flows here; one if a Matrix user ID is known for the third party
 identifier, and one if not. Either way, the client calls ``/invite`` with the
 details of the third party identifier.
 
 The homeserver asks the identity server whether a Matrix user ID is known for
-that identifier. If it is, an invite is simply issued for that user.
+that identifier:
 
-If it is not, the homeserver asks the identity server to record the details of
-the invitation, and to notify the invitee's homeserver of this pending invitation if it gets
-a binding for this identifier in the future. The identity server returns a token
-and public key to the inviting homeserver.
+- If it is, an invite is simply issued for that user.
+
+- If it is not, the homeserver asks the identity server to record the details of
+  the invitation, and to notify the invitee's homeserver of this pending invitation if it gets
+  a binding for this identifier in the future. The identity server returns a token
+  and public key to the inviting homeserver.
 
 When the invitee's homeserver receives the notification of the binding, it
 should insert an ``m.room.member`` event into the room's graph for that user,
@@ -34,6 +35,8 @@ Client behaviour
 ----------------
 
 A client asks a server to invite a user by their third party identifier.
+
+{{third_party_membership_http_api}}
 
 Server behaviour
 ----------------
@@ -87,24 +90,24 @@ membership is questionable.
 
 For example:
 
-    If room R has two participating homeservers, H1, H2
+#. Room R has two participating homeservers, H1, H2
 
-    And user A on H1 invites a third party identifier to room R
+#. User A on H1 invites a third party identifier to room R
 
-    H1 asks the identity server for a binding to a Matrix user ID, and has none,
-    so issues an ``m.room.third_party_invite`` event to the room.
+#. H1 asks the identity server for a binding to a Matrix user ID, and has none,
+   so issues an ``m.room.third_party_invite`` event to the room.
 
-    When the third party user validates their identity, their homeserver H3
-    is notified and attempts to issue an ``m.room.member`` event to participate
-    in the room.
+#. When the third party user validates their identity, their homeserver H3
+   is notified and attempts to issue an ``m.room.member`` event to participate
+   in the room.
 
-    H3 validates the signature given to it by the identity server.
+#. H3 validates the signature given to it by the identity server.
 
-    H3 then asks H1 to join it to the room. H1 *must* validate the ``signed``
-    property *and* check ``key_validity_url``.
+#. H3 then asks H1 to join it to the room. H1 *must* validate the ``signed``
+   property *and* check ``key_validity_url``.
 
-    Having validated these things, H1 writes the invite event to the room, and H3
-    begins participating in the room. H2 *must* accept this event.
+#. Having validated these things, H1 writes the invite event to the room, and H3
+   begins participating in the room. H2 *must* accept this event.
 
 The reason that no other homeserver may reject the event based on checking
 ``key_validity_url`` is that we must ensure event acceptance is deterministic.
@@ -114,4 +117,33 @@ would reject the event and cause the participating servers' graphs to diverge.
 This relies on participating servers trusting each other, but that trust is
 already implied by the server-server protocol. Also, the public key signature
 verification must still be performed, so the attack surface here is minimized.
+
+Security considerations
+-----------------------
+
+There are a number of privary and trust implications to this module.
+
+It is important for user privacy that leaking the mapping between a matrix user
+ID and a third party identifier is hard. In particular, being able to look up
+all third party identifiers from a matrix user ID (and accordingly, being able
+to link each third party identifier) should be avoided wherever possible.
+To this end, when implementing this API care should be taken to avoid
+adding links between these two identifiers as room events. This mapping can be
+unintentionally created by specifying the third party identifier in the
+``display_name`` field of the ``m.room.third_party_invite`` event, and then
+observing which matrix user ID joins the room using that invite. Clients SHOULD
+set ``display_name`` to a value other than the third party identifier, e.g. the
+invitee's common name.
+
+Homeservers are not required to trust any particular identity server(s). It is
+generally a client's responsibility to decide which identity servers it trusts,
+not a homeserver's. Accordingly, this API takes identity servers as input from
+end users, and doesn't have any specific trusted set. It is possible some
+homeservers may want to supply defaults, or reject some identity servers for
+*its* users, but no homeserver is allowed to dictate which identity servers
+*other* homeservers' users trust.
+
+There is some risk of denial of service attacks by flooding homeservers or
+identity servers with many requests, or much state to store. Defending against
+these is left to the implementer's discretion.
 
