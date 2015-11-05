@@ -3,22 +3,7 @@
   "content": {
     "membership": "join",
     "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF#auto",
-    "displayname": "Alice Margatroid",
-    "third_party_invite": {
-        "token": "pc98",
-        "public_key": "abc123",
-        "key_validity_url": "https://magic.forest/verifykey",
-        "signed": {
-          "mxid": "@alice:localhost",
-          "token": "pc98",
-          "signatures": {
-            "magic.forest": {
-              "ed25519:0": "poi098"
-            }
-          }
-        },
-        "sender": "@zun:zun.soft"
-    }
+    "displayname": "Alice Margatroid"
   },
   "invite_room_state": [
     {
