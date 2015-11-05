@@ -121,12 +121,16 @@ Security considerations
 There are a number of privary and trust implications to this module.
 
 It is important for user privacy that leaking the mapping between a matrix user
-ID and a third party identifier (particularly lookup index by matrix ID) is
-hard. To this end, when implementing this API, care should be kept to avoid
-adding links between these two identifiers as room events. The ``display_name``
-field in the ``m.room.third_party_invite`` event exists for this purpose, to
-avoid adding the third party identifier to the room state (which could then be
-mapped into a matrix ID based on the ``invite`` event exchanged for it.
+ID and a third party identifier is hard. In particular, being able to look up
+all third party identifiers from a matrix user ID (and accordingly, being able
+to link each third party identifier) should be avoided wherever possible.
+To this end, when implementing this API care should be taken to avoid
+adding links between these two identifiers as room events. This mapping can be
+unintentionally created by specifying the third party identifier in the
+``display_name`` field of the ``m.room.third_party_invite`` event, and then
+observing which matrix user ID joins the room using that invite. Clients SHOULD
+set ``display_name`` to a value other than the third party identifier, e.g. the
+invitee's common name.
 
 Homeservers are not required to trust any particular identity server(s). It is
 generally a client's responsibility to decide which identity servers it trusts,
