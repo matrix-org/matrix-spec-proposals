@@ -115,3 +115,28 @@ This relies on participating servers trusting each other, but that trust is
 already implied by the server-server protocol. Also, the public key signature
 verification must still be performed, so the attack surface here is minimized.
 
+Security considerations
+-----------------------
+
+There are a number of privary and trust implications to this module.
+
+It is important for user privacy that leaking the mapping between a matrix user
+ID and a third party identifier (particularly lookup index by matrix ID) is
+hard. To this end, when implementing this API, care should be kept to avoid
+adding links between these two identifiers as room events. The ``display_name``
+field in the ``m.room.third_party_invite`` event exists for this purpose, to
+avoid adding the third party identifier to the room state (which could then be
+mapped into a matrix ID based on the ``invite`` event exchanged for it.
+
+Homeservers are not required to trust any particular identity server(s). It is
+generally a client's responsibility to decide which identity servers it trusts,
+not a homeserver's. Accordingly, this API generally takes identity servers as
+input from end users, and doesn't have any specific trusted set. It is possible
+some homeservers may want to supply defaults, or reject some identity servers
+for *its* users, but no homeserver is allowed to dictate which identity servers
+*other* homeservers' users trust.
+
+There is some risk of denial of service attacks by flooding homeservers or
+identity servers with many requests, or much state to store. Defending against
+these is left to the implementer's discretion.
+
