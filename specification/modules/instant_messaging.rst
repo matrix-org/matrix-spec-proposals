@@ -138,6 +138,11 @@ following algorithm to calculate a disambiguated display name for a given user:
    disambiguated using the user id, for example "display name
    (@id:homeserver.org)".
 
+   .. TODO-spec
+     what does it mean for a ``displayname`` to be 'unique'? Are we
+     case-sensitive?  Do we care about homograph attacks? See
+     https://matrix.org/jira/browse/SPEC-221.
+
 Developers should take note of the following when implementing the above
 algorithm:
 
@@ -231,6 +236,8 @@ choose a name:
 
      Ideally we might sort by the time when the user was first invited to, or
      first joined the room. But we don't have this information.
+
+     See https://matrix.org/jira/browse/SPEC-267 for further discussion.
 
 #. If the room has no ``m.room.name`` or ``m.room.canonical_alias`` events, and
    no active members other than the current user, clients should consider
