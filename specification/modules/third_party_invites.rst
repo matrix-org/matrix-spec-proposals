@@ -87,24 +87,24 @@ membership is questionable.
 
 For example:
 
-    If room R has two participating homeservers, H1, H2
+#. Room R has two participating homeservers, H1, H2
 
-    And user A on H1 invites a third party identifier to room R
+#. User A on H1 invites a third party identifier to room R
 
-    H1 asks the identity server for a binding to a Matrix user ID, and has none,
-    so issues an ``m.room.third_party_invite`` event to the room.
+#. H1 asks the identity server for a binding to a Matrix user ID, and has none,
+   so issues an ``m.room.third_party_invite`` event to the room.
 
-    When the third party user validates their identity, their homeserver H3
-    is notified and attempts to issue an ``m.room.member`` event to participate
-    in the room.
+#. When the third party user validates their identity, their homeserver H3
+   is notified and attempts to issue an ``m.room.member`` event to participate
+   in the room.
 
-    H3 validates the signature given to it by the identity server.
+#. H3 validates the signature given to it by the identity server.
 
-    H3 then asks H1 to join it to the room. H1 *must* validate the ``signed``
-    property *and* check ``key_validity_url``.
+#. H3 then asks H1 to join it to the room. H1 *must* validate the ``signed``
+   property *and* check ``key_validity_url``.
 
-    Having validated these things, H1 writes the invite event to the room, and H3
-    begins participating in the room. H2 *must* accept this event.
+#. Having validated these things, H1 writes the invite event to the room, and H3
+   begins participating in the room. H2 *must* accept this event.
 
 The reason that no other homeserver may reject the event based on checking
 ``key_validity_url`` is that we must ensure event acceptance is deterministic.
