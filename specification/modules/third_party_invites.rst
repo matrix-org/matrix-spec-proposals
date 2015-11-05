@@ -1,23 +1,24 @@
 Third party invites
 ===================
 
-.. _module:third_party_invites:
+.. _module:third-party-invites:
 
 This module adds in support for inviting new members to a room where their
 Matrix user ID is not known, instead addressing them by a third party identifier
 such as an email address.
-
 There are two flows here; one if a Matrix user ID is known for the third party
 identifier, and one if not. Either way, the client calls ``/invite`` with the
 details of the third party identifier.
 
 The homeserver asks the identity server whether a Matrix user ID is known for
-that identifier. If it is, an invite is simply issued for that user.
+that identifier:
 
-If it is not, the homeserver asks the identity server to record the details of
-the invitation, and to notify the invitee's homeserver of this pending invitation if it gets
-a binding for this identifier in the future. The identity server returns a token
-and public key to the inviting homeserver.
+- If it is, an invite is simply issued for that user.
+
+- If it is not, the homeserver asks the identity server to record the details of
+  the invitation, and to notify the invitee's homeserver of this pending invitation if it gets
+  a binding for this identifier in the future. The identity server returns a token
+  and public key to the inviting homeserver.
 
 When the invitee's homeserver receives the notification of the binding, it
 should insert an ``m.room.member`` event into the room's graph for that user,
@@ -34,6 +35,8 @@ Client behaviour
 ----------------
 
 A client asks a server to invite a user by their third party identifier.
+
+{{third_party_membership_http_api}}
 
 Server behaviour
 ----------------
