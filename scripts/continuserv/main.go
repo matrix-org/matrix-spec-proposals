@@ -25,7 +25,7 @@ import (
 var (
 	port = flag.Int("port", 8000, "Port on which to serve HTTP")
 
-	toServe atomic.Value   // Always contains valid []byte to serve. May be stale unless wg is zero.
+	toServe atomic.Value   // Always contains valid bytesOrErr to serve. May be stale unless wg is zero.
 	wg      sync.WaitGroup // Indicates how many updates are pending.
 	mu      sync.Mutex     // Prevent multiple updates in parallel.
 )
@@ -112,9 +112,14 @@ func filter(e fsnotify.Event) bool {
 
 func serve(w http.ResponseWriter, req *http.Request) {
 	wg.Wait()
-	b := toServe.Load().([]byte)
-	w.Header().Set("Content-Type", "text/html")
-	w.Write(b)
+	b := toServe.Load().(bytesOrErr)
+	if b.err != nil {
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write([]byte(b.err.Error()))
+	} else {
+		w.Header().Set("Content-Type", "text/html")
+		w.Write([]byte(b.bytes))
+	}
 }
 
 func populateOnce(dir string) {
@@ -127,15 +132,15 @@ func populateOnce(dir string) {
 	cmd.Stderr = &b
 	err := cmd.Run()
 	if err != nil {
-		toServe.Store([]byte(fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String()).Error()))
+		toServe.Store(bytesOrErr{nil, fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())})
 		return
 	}
 	specBytes, err := ioutil.ReadFile(path.Join(dir, "scripts", "gen", "specification.html"))
 	if err != nil {
-		toServe.Store([]byte(fmt.Errorf("error reading spec: %v", err).Error()))
+		toServe.Store(bytesOrErr{nil, fmt.Errorf("error reading spec: %v", err)})
 		return
 	}
-	toServe.Store(specBytes)
+	toServe.Store(bytesOrErr{specBytes, nil})
 }
 
 func doPopulate(ch chan struct{}, dir string) {
@@ -159,4 +164,9 @@ func doPopulate(ch chan struct{}, dir string) {
 func exists(path string) bool {
 	_, err := os.Stat(path)
 	return !os.IsNotExist(err)
+}
+
+type bytesOrErr struct {
+	bytes []byte
+	err   error
 }
