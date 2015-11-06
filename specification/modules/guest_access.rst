@@ -76,3 +76,6 @@ Clients may wish to display to their users that rooms which are
 way using this module to find out whether any non-joined guest users *do* see
 events in the room, or to list or count any guest users.
 
+Homeservers may want to enable protections such as captchas for guest
+registration to prevent spam, denial of service, and similar attacks.
+
