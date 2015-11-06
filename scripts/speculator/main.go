@@ -384,14 +384,21 @@ func main() {
 		log.Fatal(err)
 	}
 	s := server{masterCloneDir}
-	http.HandleFunc("/spec/", s.serveSpec)
-	http.HandleFunc("/diff/rst/", s.serveRSTDiff)
-	http.HandleFunc("/diff/html/", s.serveHTMLDiff)
+	http.HandleFunc("/spec/", forceHTML(s.serveSpec))
+	http.HandleFunc("/diff/rst/", forceHTML(s.serveRSTDiff))
+	http.HandleFunc("/diff/html/", forceHTML(s.serveHTMLDiff))
 	http.HandleFunc("/healthz", serveText("ok"))
-	http.HandleFunc("/", listPulls)
+	http.HandleFunc("/", forceHTML(listPulls))
 
 	fmt.Printf("Listening on port %d\n", *port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
+}
+
+func forceHTML(h func(w http.ResponseWriter, req *http.Request)) func(w http.ResponseWriter, req *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
+		h(w, req)
+	}
 }
 
 func serveText(s string) func(http.ResponseWriter, *http.Request) {
