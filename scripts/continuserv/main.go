@@ -113,6 +113,7 @@ func filter(e fsnotify.Event) bool {
 func serve(w http.ResponseWriter, req *http.Request) {
 	wg.Wait()
 	b := toServe.Load().([]byte)
+	w.Header().Set("Content-Type", "text/html")
 	w.Write(b)
 }
 
