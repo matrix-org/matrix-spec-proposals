@@ -5,7 +5,7 @@ Guest access
 
 There are times when it is desirable for clients to be able to interact with
 rooms without having to fully register for an account on a homeserver or join
-the room. This module specifies how these clients should interact with servers,
+the room. This module specifies how these clients should interact with servers
 in order to participate in rooms as guests.
 
 Guest users retrieve access tokens from a homeserver using the ordinary
