@@ -12,7 +12,7 @@
                 "guest_access": {
                     "type": "string",
                     "description": "Whether guests can join the room.",
-                    "enum": ["allowed", "forbidden"]
+                    "enum": ["can_join", "forbidden"]
                 }
             },
             "required": ["guest_access"]

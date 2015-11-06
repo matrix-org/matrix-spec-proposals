@@ -60,7 +60,7 @@ be returned even if the anonymous user is not joined to the room.
 
 Servers MUST only allow guest users to join rooms if the ``m.room.guest_access``
 state event is present on the room, and has the ``guest_access`` value
-``allowed``. If the ``m.room.guest_access`` event is changed to stop this from
+``can_join``. If the ``m.room.guest_access`` event is changed to stop this from
 being the case, the server MUST set those users' ``m.room.member`` state to
 ``leave``.
 

@@ -1,7 +1,7 @@
 {
   "age": 242353,
   "content": {
-    "guest_access": "allowed"
+    "guest_access": "can_join"
   },
   "state_key": "",
   "origin_server_ts": 1431961217938,
