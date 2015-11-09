@@ -25,9 +25,11 @@ import (
 var (
 	port = flag.Int("port", 8000, "Port on which to serve HTTP")
 
-	toServe atomic.Value   // Always contains valid bytesOrErr to serve. May be stale unless wg is zero.
-	wg      sync.WaitGroup // Indicates how many updates are pending.
-	mu      sync.Mutex     // Prevent multiple updates in parallel.
+	mu      sync.Mutex   // Prevent multiple updates in parallel.
+	toServe atomic.Value // Always contains valid []byte to serve. May be stale unless wg is zero.
+
+	wgMu sync.Mutex     // Prevent multiple calls to wg.Wait() or wg.Add(positive number) in parallel.
+	wg   sync.WaitGroup // Indicates how many updates are pending.
 )
 
 func main() {
@@ -111,7 +113,9 @@ func filter(e fsnotify.Event) bool {
 }
 
 func serve(w http.ResponseWriter, req *http.Request) {
+	wgMu.Lock()
 	wg.Wait()
+	wgMu.Unlock()
 	b := toServe.Load().(bytesOrErr)
 	if b.err != nil {
 		w.Header().Set("Content-Type", "text/plain")
@@ -149,7 +153,9 @@ func doPopulate(ch chan struct{}, dir string) {
 		select {
 		case <-ch:
 			if pending == 0 {
+				wgMu.Lock()
 				wg.Add(1)
+				wgMu.Unlock()
 			}
 			pending++
 		case <-time.After(10 * time.Millisecond):
