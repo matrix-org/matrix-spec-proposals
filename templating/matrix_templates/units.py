@@ -369,7 +369,7 @@ class MatrixUnits(Units):
                 ]
                 if len(params_missing_examples) == 0:
                     path_template = api.get("basePath", "").rstrip("/") + path
-                    qps = {}
+                    qps = []
                     body = ""
                     for param in single_api.get("parameters", []):
                         if param["in"] == "path":
@@ -381,7 +381,12 @@ class MatrixUnits(Units):
                         elif param["in"] == "body":
                             body = param["schema"]["example"]
                         elif param["in"] == "query":
-                            qps[param["name"]] = param["x-example"]
+                            example = param["x-example"]
+                            if type(example) == list:
+                                for value in example:
+                                    qps.append((param["name"], value))
+                            else:
+                                qps.append((param["name"], example))
                     query_string = "" if len(qps) == 0 else "?"+urllib.urlencode(qps)
                     if body:
                         endpoint["example"]["req"] = "%s %s%s HTTP/1.1\nContent-Type: application/json\n\n%s" % (
