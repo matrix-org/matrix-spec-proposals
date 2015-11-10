@@ -9,12 +9,15 @@ Caveats can only be used for reducing the scope of a token, never for increasing
 
 Some caveats are specified in this specification, and must be understood by all servers. The use of non-standard caveats is allowed.
 
-All caveats must take the form:
+All caveats must take the form::
 
-`key` `operator` `value`
-where `key` is a non-empty string drawn from the character set [A-Za-z0-9_]
-`operator` is a non-empty string which does not contain whitespace
-`value` is a non-empty string
+  key operator value
+
+where:
+ - ``key`` is a non-empty string drawn from the character set [A-Za-z0-9_]
+ - ``operator`` is a non-empty string which does not contain whitespace
+ - ``value`` is a non-empty string
+ 
 And these are joined by single space characters.
 
 Specified caveats:
