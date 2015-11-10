@@ -385,7 +385,7 @@ func main() {
 	}
 	s := server{masterCloneDir}
 	http.HandleFunc("/spec/", forceHTML(s.serveSpec))
-	http.HandleFunc("/diff/rst/", forceHTML(s.serveRSTDiff))
+	http.HandleFunc("/diff/rst/", s.serveRSTDiff)
 	http.HandleFunc("/diff/html/", forceHTML(s.serveHTMLDiff))
 	http.HandleFunc("/healthz", serveText("ok"))
 	http.HandleFunc("/", forceHTML(listPulls))
