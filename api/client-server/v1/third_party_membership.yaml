@@ -84,8 +84,7 @@ paths:
               {
                 "id_server": "matrix.org",
                 "medium": "email",
-                "address": "cheeky@monkey.com",
-                "display_name": "A very cheeky monkey"
+                "address": "cheeky@monkey.com"
               }
             properties:
               id_server:
@@ -98,10 +97,7 @@ paths:
               address:
                 type: string
                 description: The invitee's third party identifier.
-              display_name:
-                type: string
-                description: A user-friendly string describing who has been invited. It should not contain the address of the invitee, to avoid leaking mappings between third party identities and matrix user IDs.
-            required: ["id_server", "medium", "address", "display_name"]
+            required: ["id_server", "medium", "address"]
       responses:
         200:
           description: The user has been invited to join the room.

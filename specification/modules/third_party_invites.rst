@@ -127,13 +127,10 @@ It is important for user privacy that leaking the mapping between a matrix user
 ID and a third party identifier is hard. In particular, being able to look up
 all third party identifiers from a matrix user ID (and accordingly, being able
 to link each third party identifier) should be avoided wherever possible.
-To this end, when implementing this API care should be taken to avoid
-adding links between these two identifiers as room events. This mapping can be
-unintentionally created by specifying the third party identifier in the
-``display_name`` field of the ``m.room.third_party_invite`` event, and then
-observing which matrix user ID joins the room using that invite. Clients SHOULD
-set ``display_name`` to a value other than the third party identifier, e.g. the
-invitee's common name.
+To this end, the third party identifier is not put in any event, rather an
+opaque display name provided by the identity server is put into the events.
+Clients should not remember or display third party identifiers from invites,
+other than for the use of the inviter themself.
 
 Homeservers are not required to trust any particular identity server(s). It is
 generally a client's responsibility to decide which identity servers it trusts,
