@@ -136,7 +136,7 @@ class MatrixSections(Sections):
             if not event_name.startswith("m.room.message#m."):
                 continue
             sections.append(template.render(
-                example=examples[event_name], 
+                example=examples[event_name][0],
                 event=schemas[event_name],
                 title_kind=subtitle_title_char
             ))

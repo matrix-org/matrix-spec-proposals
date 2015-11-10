@@ -562,7 +562,7 @@ class MatrixUnits(Units):
                 event_name = filename.split("#")[0]
                 example = json.loads(f.read())
 
-                examples[filename] = examples.get(event_name, [])
+                examples[filename] = examples.get(filename, [])
                 examples[filename].append(example)
                 if filename != event_name:
                     examples[event_name] = examples.get(event_name, [])
