@@ -74,8 +74,7 @@ func gitClone(url string, shared bool) (string, error) {
 		cmd.Args = append(cmd.Args, "--shared")
 	}
 
-	err := cmd.Run()
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		return "", fmt.Errorf("error cloning repo: %v", err)
 	}
 	return directory, nil
@@ -92,8 +91,7 @@ func gitFetch(path string) error {
 func runGitCommand(path string, args []string) error {
 	cmd := exec.Command("git", args...)
 	cmd.Dir = path
-	err := cmd.Run()
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("error running %q: %v", strings.Join(cmd.Args, " "), err)
 	}
 	return nil
@@ -126,8 +124,7 @@ func generate(dir string) error {
 	cmd.Dir = path.Join(dir, "scripts")
 	var b bytes.Buffer
 	cmd.Stderr = &b
-	err := cmd.Run()
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())
 	}
 	return nil
@@ -167,8 +164,7 @@ func (s *server) getSHAOf(ref string) (string, error) {
 	cmd.Dir = path.Join(s.matrixDocCloneURL)
 	var b bytes.Buffer
 	cmd.Stdout = &b
-	err := cmd.Run()
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		return "", fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())
 	}
 	return strings.TrimSpace(b.String()), nil
