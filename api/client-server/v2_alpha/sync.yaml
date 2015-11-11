@@ -119,7 +119,11 @@ paths:
                           title: State
                           type: object
                           description: |-
-                            The state updates for the room.
+                            Updates to the state, between the time indicated by
+                            the ``since`` parameter, and the start of the
+                            ``timeline`` (or all state up to the start of the
+                            ``timeline``, if ``since`` is not given, or
+                            ``full_state`` is true).
                           allOf:
                             - $ref: "definitions/room_event_batch.json"
                         timeline:
@@ -193,8 +197,7 @@ paths:
                           title: State
                           type: object
                           description: |-
-                            The state updates for the room up to the point when
-                            the user left.
+                            The state updates for the room up to the start of the timeline.
                           allOf:
                             - $ref: "definitions/room_event_batch.json"
                         timeline:
@@ -260,7 +263,6 @@ paths:
                       "state": {
                         "events": [
                           "$66697273743031:example.com",
-                          "$7365636s6r6432:example.com"
                         ]
                       },
                       "timeline": {
