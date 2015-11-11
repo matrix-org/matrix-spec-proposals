@@ -57,6 +57,16 @@ paths:
                       type: string
                       description: |-
                         The topic of the room, if any. May be null.
+                    world_readable:
+                      type: boolean
+                      description: |-
+                        Whether the room may be viewed by guest users without joining.
+                    guest_can_join:
+                      type: boolean
+                      description: |-
+                        Whether guest users may join the room and participate in it.
+                        If they can, they will be subject to ordinary power level
+                        rules like any other user.
               start:
                 type: string
                 description: |-
@@ -71,10 +81,12 @@ paths:
                 "chunk": [
                   {
                     "aliases": ["#murrays:cheese.bar"],
+                    "guest_can_join": false,
                     "name": "CHEESE",
                     "num_joined_members": 37,
                     "room_id": "!ol19s:bleecker.street",
-                    "topic": "Tasty tasty cheese"
+                    "topic": "Tasty tasty cheese",
+                    "world_readable": true
                   }
                 ],
                 "start": "p190q",
