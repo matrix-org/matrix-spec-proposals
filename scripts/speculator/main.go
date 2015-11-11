@@ -178,6 +178,10 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 	var sha string
 
 	if strings.ToLower(req.URL.Path) == "/spec/head" {
+		if err := gitFetch(s.matrixDocCloneURL); err != nil {
+			writeError(w, 500, err)
+			return
+		}
 		originHead, err := s.getSHAOf("origin/master")
 		if err != nil {
 			writeError(w, 500, err)
