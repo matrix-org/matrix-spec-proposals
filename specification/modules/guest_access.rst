@@ -33,6 +33,7 @@ retrieving events:
 * `GET /rooms/:room_id/state/:event_type/:state_key <#get-matrix-client-api-v1-rooms-roomid-state-eventtype-statekey>`_
 * `GET /rooms/:room_id/messages <#get-matrix-client-api-v1-rooms-roomid-messages>`_
 * `GET /rooms/:room_id/initialSync <#get-matrix-client-api-v1-rooms-roomid-initialsync>`_
+* `GET /rooms/:room_id/context/:event_id <#get-matrix-client-api-v1-rooms-roomid-context-eventid>`_
 
 There is also a special version of the
 `GET /events <#get-matrix-client-api-v1-events>`_ endpoint:
