@@ -931,6 +931,11 @@ member's state, by making a request to
     "membership": "ban"
   }
 
+Listing rooms
+~~~~~~~~~~~~~
+
+{{list_public_rooms_http_api}}
+
 Profiles
 --------
 
