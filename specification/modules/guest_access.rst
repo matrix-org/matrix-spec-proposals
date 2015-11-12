@@ -51,6 +51,11 @@ sending events:
 
 Guest clients *do* need to join rooms in order to send events to them.
 
+The following API endpoints are allowed to be accessed by guest accounts for
+their own account maintenance:
+
+* `PUT /profile/:user_id/displayname <#put-matrix-client-api-v1-profile-userid-displayname>`_
+
 Server behaviour
 ----------------
 Servers are required to only return events to guest accounts for rooms where
