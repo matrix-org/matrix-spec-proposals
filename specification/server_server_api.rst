@@ -596,9 +596,12 @@ homeservers, though most in practice will use just two.
                  |
   <---------- join response
 
-The first part of the handshake involves using the directory server to request
-the room ID and join candidates. This is covered in more detail on the
-directory server documentation, below.
+The first part of the handshake usually involves using the directory server to
+request the room ID and join candidates. This is covered in more detail on the
+directory server documentation, below. In the case of a new user joining a
+room as a result of a received invite, the joining user's homeserver could
+optimise this step away by picking the origin server of that invite message as
+the join candidate.
 
 Once the joining server has the room ID and the join candidates, it then needs
 to obtain enough of the current state of the room to fill in the required
