@@ -629,7 +629,8 @@ the assisting resident. The required fields are:
                               resident
 ``origin``           String   The name of the assisting resident homeserver
 ``origin_server_ts`` Integer  A timestamp added by the resident homeserver
-``prev_events``      List     (TODO(paul): ? - I notice these can be blank)
+``prev_events``      List     An event-reference list containing the immediate
+                              predecessor events
 ``prev_state``       List     (TODO(paul): ? - I notice these can be blank)
 ``room_id``          String   The room ID of the room
 ``sender``           String   The user ID of the joining member
