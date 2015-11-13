@@ -566,9 +566,8 @@ room members are already present (referred to as the "resident" server).
 In summary, the remote join handshake consists of the joining server querying
 the directory server for information about the room alias; receiving a room ID
 and a list of join candidates. The joining server then requests information
-about the current state of the room from one of the residents. It uses this
-information to construct a ``m.room.member`` event which it finally sends to
-a resident server.
+about the room from one of the residents. It uses this information to construct
+a ``m.room.member`` event which it finally sends to a resident server.
 
 Conceptually these are three different roles of homeserver. In practice the
 directory server is likely to be resident in the room, and so may be selected
@@ -604,11 +603,11 @@ optimise this step away by picking the origin server of that invite message as
 the join candidate.
 
 Once the joining server has the room ID and the join candidates, it then needs
-to obtain enough of the current state of the room to fill in the required
-fields of the ``m.room.member`` event. It obtains this by selecting a resident
-from the candidate list, and requesting the ``make_join`` endpoint using a
-``GET`` request, specifying the room ID and the user ID of the new member who
-is attempting to join.
+to obtain enough information about the room to fill in the required fields of
+the ``m.room.member`` event. It obtains this by selecting a resident from the
+candidate list, and requesting the ``make_join`` endpoint using a ``GET``
+request, specifying the room ID and the user ID of the new member who is
+attempting to join.
 
 The resident server replies to this request with a JSON-encoded object having a
 single key called ``event``; within this is an object whose fields contain some
