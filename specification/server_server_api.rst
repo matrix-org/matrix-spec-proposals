@@ -555,8 +555,8 @@ sign, and emit a new ``m.room.member`` state event adding the user into that
 room. When the homeserver does not yet know about the room it cannot do this
 directly. Instead, it must take a longer multi-stage handshaking process by
 which it first selects a remote homeserver which is already participating in
-that room, and uses it to assist in the joining procss. This is the remote join
-handshake.
+that room, and uses it to assist in the joining process. This is the remote
+join handshake.
 
 This handshake involves the homeserver of the new member wishing to join
 (referred to here as the "joining" server), the directory server hosting the
