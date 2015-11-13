@@ -631,7 +631,6 @@ the assisting resident. The required fields are:
 ``origin_server_ts`` Integer  A timestamp added by the resident homeserver
 ``prev_events``      List     An event-reference list containing the immediate
                               predecessor events
-``prev_state``       List     (TODO(paul): ? - I notice these can be blank)
 ``room_id``          String   The room ID of the room
 ``sender``           String   The user ID of the joining member
 ``state_key``        String   The user ID of the joining member
@@ -688,8 +687,6 @@ integer 200, and whose second element contains the following keys:
   - (paul) I don't really understand why the full auth_chain events are given
     here. What purpose does it serve expanding them out in full, when surely
     they'll appear in the state anyway?
-  - (paul) the state seems to be entirely ignored by synapse, so I'm not really
-    sure what ought to be there.
 
 Backfilling
 -----------
