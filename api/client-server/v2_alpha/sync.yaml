@@ -253,7 +253,7 @@ paths:
                         "$74686972643033:example.com": {
                           "sender": "@alice:example.com",
                           "type": "m.room.message",
-                          "unsigned": {"age": "124524", "txn_id": "1234"},
+                          "unsigned": {"age": 124524, "txn_id": "1234"},
                           "content": {
                             "body": "I am a fish",
                             "msgtype": "m.text"
@@ -263,7 +263,7 @@ paths:
                       },
                       "state": {
                         "events": [
-                          "$66697273743031:example.com",
+                          "$66697273743031:example.com"
                         ]
                       },
                       "timeline": {
