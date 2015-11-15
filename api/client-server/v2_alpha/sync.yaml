@@ -96,8 +96,10 @@ paths:
                   Updates to rooms.
                 properties:
                   joined:
-                    title: Joined
+                    title: Joined Rooms
                     type: object
+                    description: |-
+                      The rooms that the user has joined.
                     additionalProperties:
                       title: Joined Room
                       type: object
@@ -114,7 +116,7 @@ paths:
                             description: An event object.
                             type: object
                             allOf:
-                              - $ref: "core-event-schema/event.json"
+                              - $ref: "definitions/event.json"
                         state:
                           title: State
                           type: object
@@ -144,7 +146,7 @@ paths:
                           allOf:
                             - $ref: "definitions/event_batch.json"
                   invited:
-                    title: Invited
+                    title: Invited Rooms
                     type: object
                     description: |-
                       The rooms that the user has been invited to.
@@ -171,11 +173,10 @@ paths:
                           allOf:
                             - $ref: "definitions/event_batch.json"
                   archived:
-                    title: Archived
+                    title: Archived rooms
                     type: object
                     description: |-
-                      The rooms that the user has left or been banned from. The
-                      entries in the room_map will lack an ``ephemeral`` key.
+                      The rooms that the user has left or been banned from.
                     additionalProperties:
                       title: Archived Room
                       type: object
@@ -192,7 +193,7 @@ paths:
                             description: An event object.
                             type: object
                             allOf:
-                              - $ref: "core-event-schema/event.json"
+                              - $ref: "definitions/event.json"
                         state:
                           title: State
                           type: object
@@ -276,7 +277,6 @@ paths:
                       "ephemeral": {
                         "events": [
                           {
-                            "room_id": "!726s6s6q:example.com",
                             "type": "m.typing",
                             "content": {"user_ids": ["@alice:example.com"]}
                           }
