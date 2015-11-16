@@ -215,6 +215,16 @@ paths:
                     }
                   ]
                 },
+                "private_user_data": {
+                  "events": [
+                    {
+                      "type": "org.example.custom.config",
+                      "content": {
+                        "custom_config_key": "custom_config_value"
+                      }
+                    }
+                  ]
+                },
                 "rooms": {
                   "joined": {
                     "!726s6s6q:example.com": {
@@ -271,6 +281,12 @@ paths:
                           {
                             "type": "m.tags",
                             "content": {"tags": {"work": {"order": 1}}}
+                          },
+                          {
+                            "type": "org.example.custom.room.config",
+                            "content": {
+                              "custom_config_key": "custom_config_value"
+                            }
                           }
                         ]
                       }
