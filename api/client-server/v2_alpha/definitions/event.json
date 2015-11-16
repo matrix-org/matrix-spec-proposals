@@ -43,7 +43,7 @@
           "type": "string",
           "description": "Optional. The event_id of the previous event for this state. This will be present only for state events appearing in the ``timeline``. If this is not a state event, or there is no previous content, this key will be missing."
         },
-        "txn_id": {
+        "transaction_id": {
           "type": "string",
           "description": "Optional. The transaction ID set when this message was sent. This key will only be present for message events sent by the device calling this API."
         }
