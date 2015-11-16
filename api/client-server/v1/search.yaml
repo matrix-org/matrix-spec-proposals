@@ -193,7 +193,7 @@ paths:
                                 events_after:
                                   type: array
                                   title: Events After
-                                  descriptions: Events just after the result.
+                                  description: Events just after the result.
                                   items:
                                     type: object
                                     title: Event
@@ -236,18 +236,18 @@ paths:
             application/json: |-
                {
                   "search_categories": {
-                    "groups": {
-                      "room_id": {
-                        "!qPewotXpIctQySfjSy:localhost": {
-                          "order": 1,
-                          "next_batch": "BdgFsdfHSf-dsFD",
-                          "results": [
-                            "$144429830826TWwbB:localhost"
-                          ]
-                        }
-                      }
-                    },
                     "room_events": {
+                      "groups": {
+                        "room_id": {
+                          "!qPewotXpIctQySfjSy:localhost": {
+                            "order": 1,
+                            "next_batch": "BdgFsdfHSf-dsFD",
+                            "results": [
+                              "$144429830826TWwbB:localhost"
+                            ]
+                          }
+                        }
+                      },
                       "count": 24,
                       "results": {
                         "$144429830826TWwbB:localhost": {
