@@ -28,6 +28,7 @@ would appear before a room with a tag with an ``order`` key of ``"oranges"``.
 If a room has a tag without an ``order`` key then it should appear after the
 rooms with that tag that have an ``order`` key.
 
+The name of a tag MUST not exceed 255 bytes.
 
 {{m_tag_event}
 
