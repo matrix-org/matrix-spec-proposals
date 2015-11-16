@@ -12,7 +12,7 @@
 {{":Requires auth: Yes." if endpoint.requires_auth else "" }}
 
 Request format:
-
+{% if (endpoint.req_param_by_loc | length) %}
 =========================================== ================= ===========================================
    Parameter                                 Value                        Description
 =========================================== ================= ===========================================
@@ -24,6 +24,9 @@ Request format:
 {% endfor -%}
 {% endfor -%}
 =========================================== ================= ===========================================
+{% else %}
+`No parameters`
+{% endif %}
 
 {% if endpoint.res_tables|length > 0 -%}
 Response format:
@@ -47,7 +50,9 @@ Response format:
 {% endfor %}
 {% endif -%}
 
-Example request::
+Example request:
+
+.. code:: http
 
   {{endpoint.example.req | indent_block(2)}}
 

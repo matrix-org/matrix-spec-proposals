@@ -384,7 +384,7 @@ paths:
                   type: object
                   allOf:
                     - "$ref": "core-event-schema/event.json"
-            required: ["room_id", "membership"]
+            required: ["room_id"]
         403:
           description: >
             You aren't a member of the room and weren't previously a
