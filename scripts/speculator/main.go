@@ -74,8 +74,7 @@ func gitClone(url string, shared bool) (string, error) {
 		cmd.Args = append(cmd.Args, "--shared")
 	}
 
-	err := cmd.Run()
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		return "", fmt.Errorf("error cloning repo: %v", err)
 	}
 	return directory, nil
@@ -92,8 +91,7 @@ func gitFetch(path string) error {
 func runGitCommand(path string, args []string) error {
 	cmd := exec.Command("git", args...)
 	cmd.Dir = path
-	err := cmd.Run()
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("error running %q: %v", strings.Join(cmd.Args, " "), err)
 	}
 	return nil
@@ -126,8 +124,7 @@ func generate(dir string) error {
 	cmd.Dir = path.Join(dir, "scripts")
 	var b bytes.Buffer
 	cmd.Stderr = &b
-	err := cmd.Run()
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())
 	}
 	return nil
@@ -167,8 +164,7 @@ func (s *server) getSHAOf(ref string) (string, error) {
 	cmd.Dir = path.Join(s.matrixDocCloneURL)
 	var b bytes.Buffer
 	cmd.Stdout = &b
-	err := cmd.Run()
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		return "", fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())
 	}
 	return strings.TrimSpace(b.String()), nil
@@ -178,6 +174,10 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 	var sha string
 
 	if strings.ToLower(req.URL.Path) == "/spec/head" {
+		if err := gitFetch(s.matrixDocCloneURL); err != nil {
+			writeError(w, 500, err)
+			return
+		}
 		originHead, err := s.getSHAOf("origin/master")
 		if err != nil {
 			writeError(w, 500, err)
@@ -384,14 +384,21 @@ func main() {
 		log.Fatal(err)
 	}
 	s := server{masterCloneDir}
-	http.HandleFunc("/spec/", s.serveSpec)
+	http.HandleFunc("/spec/", forceHTML(s.serveSpec))
 	http.HandleFunc("/diff/rst/", s.serveRSTDiff)
-	http.HandleFunc("/diff/html/", s.serveHTMLDiff)
+	http.HandleFunc("/diff/html/", forceHTML(s.serveHTMLDiff))
 	http.HandleFunc("/healthz", serveText("ok"))
-	http.HandleFunc("/", listPulls)
+	http.HandleFunc("/", forceHTML(listPulls))
 
 	fmt.Printf("Listening on port %d\n", *port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
+}
+
+func forceHTML(h func(w http.ResponseWriter, req *http.Request)) func(w http.ResponseWriter, req *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
+		h(w, req)
+	}
 }
 
 func serveText(s string) func(http.ResponseWriter, *http.Request) {

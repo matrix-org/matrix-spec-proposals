@@ -116,12 +116,63 @@ of the client-server API will resolve this by attaching the transaction ID of th
 sending request to the event itself.
 
 
+Calculating the display name for a user
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Clients may wish to show the human-readable display name of a room member as
+part of a membership list, or when they send a message. However, different
+members may have conflicting display names. Display names MUST be disambiguated
+before showing them to the user, in order to prevent spoofing of other users.
+
+To ensure this is done consistently across clients, clients SHOULD use the
+following algorithm to calculate a disambiguated display name for a given user:
+
+1. Inspect the ``m.room.member`` state event for the relevant user id.
+2. If the ``m.room.member`` state event has no ``displayname`` field, or if
+   that field has a ``null`` value, use the raw user id as the display
+   name. Otherwise:
+3. If the ``m.room.member`` event has a ``displayname`` which is unique among
+   members of the room with ``membership: join`` or ``membership: invite``, use
+   the given ``displayname`` as the user-visible display name. Otherwise:
+4. The ``m.room.member`` event has a non-unique ``displayname``. This should be
+   disambiguated using the user id, for example "display name
+   (@id:homeserver.org)".
+
+   .. TODO-spec
+     what does it mean for a ``displayname`` to be 'unique'? Are we
+     case-sensitive?  Do we care about homograph attacks? See
+     https://matrix.org/jira/browse/SPEC-221.
+
+Developers should take note of the following when implementing the above
+algorithm:
+
+* The user-visible display name of one member can be affected by changes in the
+  state of another member. For example, if ``@user1:matrix.org`` is present in
+  a room, with ``displayname: Alice``, then when ``@user2:example.com`` joins
+  the room, also with ``displayname: Alice``, *both* users must be given
+  disambiguated display names. Similarly, when one of the users then changes
+  their display name, there is no longer a clash, and *both* users can be given
+  their chosen display name. Clients should be alert to this possibility and
+  ensure that all affected users are correctly renamed.
+
+* The display name of a room may also be affected by changes in the membership
+  list. This is due to the room name sometimes being based on user display
+  names (see `Calculating the display name for a room`_).
+
+* If the entire membership list is searched for clashing display names, this
+  leads to an O(N^2) implementation for building the list of room members. This
+  will be very inefficient for rooms with large numbers of members. It is
+  recommended that client implementations maintain a hash table mapping from
+  ``displayname`` to a list of room members using that name. Such a table can
+  then be used for efficient calculation of whether disambiguation is needed.
+
+
 Displaying membership information with messages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Clients may wish to show the display name and avatar URL of the room member who
 sent a message. This can be achieved by inspecting the ``m.room.member`` state
-event for that user ID.
+event for that user ID (see `Calculating the display name for a user`_).
 
 When a user paginates the message history, clients may wish to show the
 **historical** display name and avatar URL for a room member. This is possible
@@ -132,6 +183,85 @@ state diverge from each other. New events update the current state and paginated
 events update the old state. When paginated events are processed sequentially,
 the old state represents the state of the room *at the time the event was sent*.
 This can then be used to set the historical display name and avatar URL.
+
+
+Calculating the display name for a room
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Clients may wish to show a human-readable name for a room. There are a number
+of possibilities for choosing a useful name. To ensure that rooms are named
+consistently across clients, clients SHOULD use the following algorithm to
+choose a name:
+
+1. If the room has an `m.room.name`_ state event, use the name given by that
+   event.
+
+#. If the room has an `m.room.canonical_alias`_ state event, use the alias
+   given by that event.
+
+#. If neither of the above events are present, a name should be composed based
+   on the members of the room. Clients should consider `m.room.member`_ events
+   for users other than the logged-in user, with ``membership: join`` or
+   ``membership: invite``.
+
+   .. _active_members:
+
+   i. If there is only one such event, the display name for the room should be
+      the `disambiguated display name`_ of the corresponding user.
+
+   #. If there are two such events, they should be lexicographically sorted by
+      their ``state_key`` (i.e. the corresponding user IDs), and the display
+      name for the room should be the  `disambiguated display name`_ of both
+      users: "<user1> and <user2>", or a localised variant thereof.
+
+   #. If there are three or more such events, the display name for the room
+      should be based on the disambiguated display name of the user
+      corresponding to the first such event, under a lexicographical sorting
+      according to their ``state_key``. The display name should be in the
+      format "<user1> and <N> others" (or a localised variant thereof), where N
+      is the number of `m.room.member`_ events with ``membership: join`` or
+      ``membership: invite``, excluding the logged-in user and "user1".
+
+      For example, if Alice joins a room, where Bob (whose user id is
+      ``@superuser:example.com``), Carol (user id ``@carol:example.com``) and
+      Dan (user id ``@dan:matrix.org``) are in conversation, Alice's
+      client should show the room name as "Carol and 2 others".
+
+   .. TODO-spec
+     Sorting by user_id certainly isn't ideal, as IDs at the start of the
+     alphabet will end up dominating room names: they will all be called
+     "Arathorn and 15 others". Furthermore - user_ids are not necessarily
+     ASCII, which means we need to either specify a collation order, or specify
+     how to choose one.
+
+     Ideally we might sort by the time when the user was first invited to, or
+     first joined the room. But we don't have this information.
+
+     See https://matrix.org/jira/browse/SPEC-267 for further discussion.
+
+#. If the room has no ``m.room.name`` or ``m.room.canonical_alias`` events, and
+   no active members other than the current user, clients should consider
+   ``m.room.member`` events with ``membership: leave``. If such events exist, a
+   display name such as "Empty room (was <user1> and <N> others)" (or a
+   localised variant thereof) should be used, following similar rules as for
+   active members (see `above <active_members_>`_).
+
+#. A complete absence of ``m.room.name``, ``m.room.canonical_alias``, and
+   ``m.room.member`` events is likely to indicate a problem with creating the
+   room or synchronising the state table; however clients should still handle
+   this situation. A display name such as "Empty room" (or a localised variant
+   thereof) should be used in this situation.
+
+.. _`disambiguated display name`: `Calculating the display name for a user`_
+
+Clients SHOULD NOT use `m.room.aliases`_ events as a source for room names, as
+it is difficult for clients to agree on the best alias to use, and aliases can
+change unexpectedly.
+
+.. TODO-spec
+  How can we make this less painful for clients to implement, without forcing
+  an English-language implementation on them all?
+
 
 Server behaviour
 ----------------

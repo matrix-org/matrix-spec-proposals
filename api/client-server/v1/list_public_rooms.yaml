@@ -1,0 +1,97 @@
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server v1 Room Creation API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/api/v1
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  "/publicRooms":
+    get:
+      summary: Lists the public rooms on the server.
+      description: |-
+        Lists the public rooms on the server.
+
+        This API returns paginated responses.
+      responses:
+        200:
+          description: A list of the rooms on the server.
+          schema:
+            type: object
+            description: A list of the rooms on the server.
+            properties:
+              chunk:
+                title: "PublicRoomsChunks"
+                type: array
+                description: |-
+                  A paginated chunk of public rooms.
+                items:
+                  type: object
+                  title: "PublicRoomsChunk"
+                  properties:
+                    aliases:
+                      type: array
+                      description: |-
+                        Aliases of the room. May be empty.
+                      items:
+                        type: string
+                    name:
+                      type: string
+                      description: |-
+                        The name of the room, if any. May be null.
+                    num_joined_members:
+                      type: number
+                      description: |-
+                        The number of members joined to the room.
+                    room_id:
+                      type: string
+                      description: |-
+                        The ID of the room.
+                    topic:
+                      type: string
+                      description: |-
+                        The topic of the room, if any. May be null.
+                    world_readable:
+                      type: boolean
+                      description: |-
+                        Whether the room may be viewed by guest users without joining.
+                    guest_can_join:
+                      type: boolean
+                      description: |-
+                        Whether guest users may join the room and participate in it.
+                        If they can, they will be subject to ordinary power level
+                        rules like any other user.
+              start:
+                type: string
+                description: |-
+                  A pagination token for the response.
+              end:
+                type: string
+                description: |-
+                  A pagination token for the response.
+          examples:
+            application/json: |-
+              {
+                "chunk": [
+                  {
+                    "aliases": ["#murrays:cheese.bar"],
+                    "guest_can_join": false,
+                    "name": "CHEESE",
+                    "num_joined_members": 37,
+                    "room_id": "!ol19s:bleecker.street",
+                    "topic": "Tasty tasty cheese",
+                    "world_readable": true
+                  }
+                ],
+                "start": "p190q",
+                "end": "p1902"
+              }
+        400:
+          description: >
+            The request body is malformed or the room alias specified is already taken.
