@@ -1,0 +1,105 @@
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Client Config API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/v2_alpha
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  accessToken:
+    type: apiKey
+    description: The user_id or application service access_token
+    name: access_token
+    in: query
+paths:
+  "/user/{userId}/config/{configType}":
+    put:
+      summary: Set some config for the user.
+      description: |-
+        Set some config for the client. This config is only visible to the user
+        that set the config. The config will be synced to clients in the
+        top-level ``private_user_data``.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          required: true
+          description: |-
+            The id of the user to set config for. The access token must be
+            authorized to make requests for this user id.
+          x-example: "@alice:example.com"
+        - in: path
+          type: string
+          name: configType
+          required: true
+          description: |-
+            The type of the config to set. Custom types should be namespaced to
+            avoid clashes.
+          x-example: "org.example.custom.config"
+        - in: body
+          name: content
+          required: true
+          description: |-
+            The content of the config
+          schema:
+            type: object
+            example: |-
+              {"custom_config_key": "custom_config_value"}
+      responses:
+        200:
+          description:
+            The config was successfully added.
+  "/user/{userId}/rooms/{roomId}/config/{configType}":
+    put:
+      summary: Set some config for the user.
+      description: |-
+        Set some config for the client on a given room. This config is only
+        visible to the user that set the config. The config will be synced to
+        clients in the per-room ``private_user_data``.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          required: true
+          description: |-
+            The id of the user to set config for. The access token must be
+            authorized to make requests for this user id.
+          x-example: "@alice:example.com"
+        - in: path
+          type: string
+          name: roomId
+          required: true
+          description: |-
+            The id of the room to set config on.
+          x-example: "!726s6s6q:example.com"
+        - in: path
+          type: string
+          name: configType
+          required: true
+          description: |-
+            The type of the config to set. Custom types should be namespaced to
+            avoid clashes.
+          x-example: "org.example.custom.room.config"
+        - in: body
+          name: content
+          required: true
+          description: |-
+            The content of the config
+          schema:
+            type: object
+            example: |-
+              {"custom_config_key": "custom_config_value"}
+      responses:
+        200:
+          description:
+            The config was successfully added.
