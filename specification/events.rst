@@ -35,8 +35,8 @@ formatted for federation by:
   a ``state event`` which gives previous content of that state key.
 * Adding a ``redacted_because`` to the ``unsigned`` object if the event was
   redacted which gives the event that redacted it.
-* Adding a ``txn_id`` to the ``unsigned`` object if the event was sent by the
-  client requesting it.
+* Adding a ``transaction_id`` to the ``unsigned`` object if the event was sent
+  by the client requesting it.
 
 Events in responses for APIs with the /v1 prefix are generated from an event
 formatted for the /v2 prefix by:
