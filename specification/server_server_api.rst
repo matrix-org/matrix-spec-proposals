@@ -613,7 +613,7 @@ The resident server replies to this request with a JSON-encoded object having a
 single key called ``event``; within this is an object whose fields contain some
 of the information that the joining server will need. Despite its name, this
 object is not a full event; notably it does not need to be hashed or signed by
-the assisting resident. The required fields are:
+the resident homeserver. The required fields are:
 
 ==================== ======== ============
  Key                  Type     Description
@@ -625,9 +625,9 @@ the assisting resident. The required fields are:
 ``content``          Object   The event content
 ``depth``            Integer  (this field must be present but is ignored; it
                               may be 0)
-``event_id``         String   A new event ID specified by the assisting
-                              resident
-``origin``           String   The name of the assisting resident homeserver
+``event_id``         String   A new event ID specified by the resident
+                              homeserver
+``origin``           String   The name of the resident homeserver
 ``origin_server_ts`` Integer  A timestamp added by the resident homeserver
 ``prev_events``      List     An event-reference list containing the immediate
                               predecessor events
@@ -665,12 +665,12 @@ algorithm to it, resulting in the addition of the ``hashes`` and ``signatures``
 fields.
 
 To complete the join handshake, the joining server must now submit this new
-event to an assisting resident, by using the ``send_join`` endpoint. This is
+event to an resident homeserver, by using the ``send_join`` endpoint. This is
 invoked using the room ID and the event ID of the new member event.
 
-The assisting resident then accepts this event into the room's event graph, and
-responds to the joining server with the full set of state for the newly-joined
-room. This is returned as a two-element list, whose first element is the
+The resident homeserver then accepts this event into the room's event graph,
+and responds to the joining server with the full set of state for the newly-
+joined room. This is returned as a two-element list, whose first element is the
 integer 200, and whose second element contains the following keys:
 
 ============== ===== ============
@@ -919,6 +919,6 @@ Querying directory information::
 
 The list of join candidates is a list of server names that are likely to hold
 the given room; these are servers that the requesting server may wish to use as
-assisting resident servers as part of the remote join handshake. This list may
-or may not include the server answering the query.
+resident servers as part of the remote join handshake. This list may or may not
+include the server answering the query.
 
