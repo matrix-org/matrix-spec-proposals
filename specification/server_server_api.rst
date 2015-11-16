@@ -612,7 +612,7 @@ attempting to join.
 The resident server replies to this request with a JSON-encoded object having a
 single key called ``event``; within this is an object whose fields contain some
 of the information that the joining server will need. Despite its name, this
-object is not a full object; notably it does not need to be hashed or signed by
+object is not a full event; notably it does not need to be hashed or signed by
 the assisting resident. The required fields are:
 
 ==================== ======== ============
