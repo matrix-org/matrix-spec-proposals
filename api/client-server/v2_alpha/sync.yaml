@@ -227,7 +227,7 @@ paths:
                             "content": {"membership": "join"},
                             "prev_content": {"membership": "invite"},
                             "origin_server_ts": 1417731086795,
-                            "event_id": "$7365636s6r6432:example.com":
+                            "event_id": "$7365636s6r6432:example.com"
                           },
                           {
                             "sender": "@alice:example.com",
@@ -265,8 +265,7 @@ paths:
                             "type": "m.room.name",
                             "state_key": "",
                             "content": {"name": "My Room Name"},
-                            "event_id": "$asdkgjrsfg2314375:example.com",
-
+                            "event_id": "$asdkgjrsfg2314375:example.com"
                           }
                         },
                         "m.room.member": {
@@ -275,7 +274,8 @@ paths:
                             "type": "m.room.member",
                             "state_key": "@bob:example.com",
                             "content": {"membership": "invite"},
-                            "event_id": "$257kasjdg315324akhg:example.com",
+                            "event_id": "$257kasjdg315324akhg:example.com"
+                          }
                         }
                       }
                     }
