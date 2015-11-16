@@ -621,7 +621,7 @@ the resident homeserver. The required fields are:
  Key                  Type     Description
 ==================== ======== ============
 ``type``             String   The value ``m.room.member``
-``auth_events``      String   An event-reference list containing the
+``auth_events``      List     An event-reference list containing the
                               authorization events that would allow this member
                               to join
 ``content``          Object   The event content
