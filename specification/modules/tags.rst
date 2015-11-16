@@ -30,6 +30,16 @@ rooms with that tag that have an ``order`` key.
 
 The name of a tag MUST not exceed 255 bytes.
 
+The name of a tag should be human readable. When displaying tags for a room a
+client should display this human readable name. When adding a tag for a room
+a client may offer a list to choose from that includes all the tags that the
+user has previously set on any of their rooms.
+
+Two special names are listed in the specification:
+
+* ``m.favourite``
+* ``m.lowpriority``
+
 {{m_tag_event}}
 
 Client Behaviour
