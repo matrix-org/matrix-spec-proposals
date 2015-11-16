@@ -600,7 +600,9 @@ request the room ID and join candidates. This is covered in more detail on the
 directory server documentation, below. In the case of a new user joining a
 room as a result of a received invite, the joining user's homeserver could
 optimise this step away by picking the origin server of that invite message as
-the join candidate.
+the join candidate. However, the joining server should be aware that the origin
+server of the invite might since have left the room, so should be prepared to
+fall back on the regular join flow if this optimisation fails.
 
 Once the joining server has the room ID and the join candidates, it then needs
 to obtain enough information about the room to fill in the required fields of
