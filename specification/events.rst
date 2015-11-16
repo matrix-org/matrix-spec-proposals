@@ -36,7 +36,8 @@ formatted for federation by:
   that state key
 * Adding a ``redacted_because`` to event object if the event was
   redacted which gives the event that redacted it.
-* Adding a ``txn_id`` if the event was sent by the client requesting it.
+* Adding a ``txn_id`` to the event object if the event was sent by the client
+  requesting it.
 
 Events in responses for APIs with the /v1 prefix are generated from an event
 formatted for the /v2 prefix by:
