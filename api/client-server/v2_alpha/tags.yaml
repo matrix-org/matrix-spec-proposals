@@ -55,7 +55,7 @@ paths:
             application/json: |-
               {
                 "tags": {
-                  "work": {"order": 1},
+                  "work": {"order": "1"},
                   "pinned": {}
                 }
               }
@@ -97,7 +97,7 @@ paths:
           schema:
             type: object
             example: |-
-              {"order": 1}
+              {"order": "1"}
       responses:
         200:
           description:

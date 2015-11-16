@@ -21,6 +21,11 @@ the tags are for.
 Each tag has an associated JSON object with information about the tag, e.g how
 to order the rooms with a given tag.
 
+Ordering information is given under the ``order`` key as a string. The string
+are compared lexicographically by unicode codepoint to determine which should
+displayed first. So a tag with an ``order`` key of ``"apples"`` would appear
+before a tag with an ``order`` key of ``"oranges"``.
+
 {{m_tag_event}}
 
 Client Behaviour

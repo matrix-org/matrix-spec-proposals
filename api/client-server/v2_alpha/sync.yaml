@@ -291,7 +291,7 @@ paths:
                         "events": [
                           {
                             "type": "m.tags",
-                            "content": {"tags": {"work": {"order": 1}}}
+                            "content": {"tags": {"work": {"order": "1"}}}
                           }
                         ]
                       }

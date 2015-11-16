@@ -314,7 +314,7 @@ paths:
                 "visibility": "private",
                 "private_user_data": [{
                     "type": "m.tag",
-                    "content": {"tags": {"work": {"order": 1}}}
+                    "content": {"tags": {"work": {"order": "1"}}}
                 }]
               }
           schema:
