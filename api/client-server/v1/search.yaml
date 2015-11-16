@@ -39,6 +39,14 @@ paths:
                     ],
                     "search_term": "martians and men"
                   }
+                },
+                "order_by": "recent",
+                "groupings": {
+                  "group_by": [
+                    {
+                      "key": "room_id"
+                    }
+                  ]
                 }
               }
             properties:
@@ -68,6 +76,52 @@ paths:
                         description: |-
                             The filter to apply to search results.
                             This has the same format as v2 filter API.
+                      order_by:
+                        title: "Ordering"
+                        type: string
+                        enum: ["recent", "rank"]
+                        description: "The order in which to search for results."
+                      event_context:
+                        title: "Event Context"
+                        type: object
+                        description: |-
+                          Configures whether any context for the events
+                          returned are included in the response.
+                        properties:
+                            before_limit:
+                                type: integer
+                                title: "Before limit"
+                                description: |-
+                                  How many events before the result are
+                                  returned.
+                            after_limit:
+                                type: integer
+                                title: "After limit"
+                                description: |-
+                                  How many events after the result are
+                                  returned.
+                      groupings:
+                        type: object
+                        title: Groupings
+                        description: |-
+                          Requests the server returns results with information
+                          about how they fit into groups the specified groups.
+                        properties:
+                          group_by:
+                            type: array
+                            title: Groups
+                            description: List of groups to request.
+                            items:
+                              type: object
+                              title: Group
+                              description: Configuration for group.
+                              properties:
+                                key:
+                                  type: string
+                                  title: Group Key
+                                  description: |- 
+                                    Key that defines the group.
+                                  enum: ["room_id", "sender"]
                     required: ["search_term"]
             required: ["search_categories"]
       responses:
