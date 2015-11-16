@@ -30,7 +30,7 @@ rooms with that tag that have an ``order`` key.
 
 The name of a tag MUST not exceed 255 bytes.
 
-{{m_tag_event}
+{{m_tag_event}}
 
 Client Behaviour
 ----------------
