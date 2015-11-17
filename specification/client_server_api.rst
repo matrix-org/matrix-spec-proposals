@@ -290,6 +290,33 @@ the auth code. Home servers can choose any path for the ``redirect URI``. Once
 the OAuth flow has completed, the client retries the request with the session
 only, as above.
 
+CAS-based
+++++++++++++
+:Type:
+  ``m.login.cas``
+:Description:
+  Authentication is supported via CAS URLs. This login is based on redirection of
+  the user to multiple endpoints.
+:Parameters:
+  ``redirectUrl``: Client URL to redirect to after the homeserver has authenticated
+  the user with CAS.
+
+CAS login works by redirecting the user to the CAS server endpoint via the homeserver. 
+
+The login process is started by a client redirecting a user to the endpoint
+/login/cas/redirect on the homeserver client API. When redirecting to this endpoint
+the client should include a redirectUrl query parameter to which the user will be
+redirected after the homeserver has authenticated the user with CAS.
+
+The homeserver then redirects the user to CAS which authenticates the user and redirects
+the user back to the homeserver with a one time ticket. The homeserver can use the ticket
+to validate the authentication with CAS.
+
+If successful, the user is redirected back to the client via the redirectUrl given to the
+homeserver on the initial redirect request. In the url will be a loginToken query parameter
+which contains a Matrix login token which the client should then use to complete the login
+via the Token-based process described above.
+
 Email-based (identity server)
 +++++++++++++++++++++++++++++
 :Type:
