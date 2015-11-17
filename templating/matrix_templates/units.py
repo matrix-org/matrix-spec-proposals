@@ -171,6 +171,7 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
                 include_parents=include_parents,
             )
             value_type = nested_objects[0]["title"]
+            value_id = value_type
 
             tables += [x for x in nested_objects if not x.get("no-table")]
         elif prop_type == "array":
@@ -181,12 +182,14 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
                     enforce_title=True,
                     include_parents=include_parents,
                 )
-                value_type = "[%s]" % nested_objects[0]["title"]
+                value_id = nested_objects[0]["title"]
+                value_type = "[%s]" % value_id
                 tables += nested_objects
             else:
                 value_type = props[key_name]["items"]["type"]
                 if isinstance(value_type, list):
                     value_type = " or ".join(value_type)
+                value_id = value_type
                 value_type = "[%s]" % value_type
                 array_enums = props[key_name]["items"].get("enum")
                 if array_enums:
@@ -201,6 +204,7 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
                         )
         else:
             value_type = prop_type
+            value_id = prop_type
             if props[key_name].get("enum"):
                 if len(props[key_name].get("enum")) > 1:
                     value_type = "enum"
@@ -221,6 +225,7 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
         fields["rows"].append({
             "key": key_name,
             "type": value_type,
+            "id": value_id,
             "required": required,
             "desc": desc,
             "req_str": "**Required.** " if required else ""
@@ -365,10 +370,16 @@ class MatrixUnits(Units):
 
                             if req_tables > 1:
                                 for table in req_tables[1:]:
-                                    nested_key_name = [
-                                        s["key"] for s in req_tables[0]["rows"] if
-                                        s["type"] == ("%s" % (table["title"],))
-                                    ][0]
+                                    nested_key_name = {
+                                        "key": s["key"]
+                                        for rtable in req_tables
+                                        for s in rtable["rows"]
+                                        if s["id"] == table["title"]
+                                    }.get("key", None)
+
+                                    if nested_key_name is None:
+                                        raise Exception("Failed to find table for %r" % (table["title"],))
+
                                     for row in table["rows"]:
                                         row["key"] = "%s.%s" % (nested_key_name, row["key"])
 

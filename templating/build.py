@@ -94,6 +94,27 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
 
         return '\n\n'.join(output_lines)
 
+    def fieldwidths(input, keys, defaults=[], default_width=15):
+        """
+        A template filter to help in the generation of tables.
+
+        Given a list of rows, returns a list giving the maximum length of the
+        values in each column.
+
+        :param list[dict[str, str]] input: a list of rows. Each row should be a
+           dict with the keys given in ``keys``.
+        :param list[str] keys: the keys corresponding to the table columns
+        :param list[int] defaults: for each column, the default column width.
+        :param int default_width: if ``defaults`` is shorter than ``keys``, this
+           will be used as a fallback
+        """
+        def colwidth(key, default):
+            return reduce(max, (len(row[key]) for row in input),
+                          default if default is not None else default_width)
+
+        results = map(colwidth, keys, defaults)
+        return results
+
     # make Jinja aware of the templates and filters
     env = Environment(
         loader=FileSystemLoader(in_mod.exports["templates"]),
@@ -103,6 +124,7 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
     env.filters["indent"] = indent
     env.filters["indent_block"] = indent_block
     env.filters["wrap"] = wrap
+    env.filters["fieldwidths"] = fieldwidths
 
     # load up and parse the lowest single units possible: we don't know or care
     # which spec section will use it, we just need it there in memory for when
