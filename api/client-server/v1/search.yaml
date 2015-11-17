@@ -218,7 +218,7 @@ paths:
                                 title: Next Batch in Group
                                 description: |-
                                   Token that can be used to get the next
-                                  batch of results if exists.
+                                  batch of results in the group, if exists.
                               order:
                                 type: integer
                                 title: Group Order
@@ -232,6 +232,12 @@ paths:
                                 items:
                                   type: string
                                   title: Result Event ID
+                      next_batch:
+                        type: string
+                        title: Next Batch
+                        description: |-
+                          Token that can be used to get the next batch of
+                          results, if exists.
           examples:
             application/json: |-
                {
