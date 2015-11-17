@@ -40,6 +40,41 @@ The value of ``count`` may not match the number of results. For example due to
 the search query matching 1000s of results and the server truncating the
 response.
 
+Ordering
+--------
+
+The client can specify the ordering that the server returns results in. The two
+allowed orderings are:
+
+- ``rank``, which returns the most relevant results first.
+- ``recent``, which returns the most recent results first.
+
+The default ordering is ``rank``.
+
+Groups
+------
+
+The client can request that the results are returned along with grouping
+information, e.g. grouped by ``room_id``. In this case the response will
+contain a group entry for each distinct value of ``room_id``. Each group entry
+contains at least a list of the ``event_ids`` that are in that group, as well
+as potentially other metadata about the group.
+
+Pagination
+----------
+
+The server may return a ``next_batch`` key at various places in the response.
+These are used to paginate the results. To fetch more results, the client
+should send the *same* request to the server with a ``next_batch`` query
+parameter set to that of the token.
+
+The scope of the pagination is defined depending on where the ``next_batch``
+token was returned. For example, using a token inside a group will return more
+results from within that group.
+
+A server need not support pagination, even if there are more matching results.
+
+
 Security considerations
 -----------------------
 The server must only return results that the user has permission to see.
