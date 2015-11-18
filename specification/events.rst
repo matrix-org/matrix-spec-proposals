@@ -28,20 +28,23 @@ formatted for federation by:
 
 * Removing the following keys:
   ``auth_events``, ``prev_events``, ``hashes``, ``signatures``, ``depth``,
-  ``origin``, ``prev_state``, ``unsigned``.
-* Adding an ``age`` to the event object which gives the time in
+  ``origin``, ``prev_state``.
+* Adding an ``age`` to the ``unsigned`` object which gives the time in
   milliseconds that has elapsed since the event was sent.
-* Adding ``prev_content`` and ``prev_sender`` to the event object if the event
-  is a ``state event``, which give the previous content and previous sender of
-  that state key
-* Adding a ``redacted_because`` to event object if the event was
+* Adding ``prev_content`` and ``prev_sender`` to the ``unsigned`` object if the
+  event is a ``state event``, which give the previous content and previous
+  sender of that state key
+* Adding a ``redacted_because`` to the ``unsigned`` object if the event was
   redacted which gives the event that redacted it.
-* Adding a ``txn_id`` to the event object if the event was sent by the client
-  requesting it.
+* Adding a ``transaction_id`` to the ``unsigned`` object if the event was sent
+  by the client requesting it.
 
 Events in responses for APIs with the /v1 prefix are generated from an event
 formatted for the /v2 prefix by:
 
+* Moving the folling keys from the ``unsigned`` object to the top level event
+  object: ``age``, ``redacted_because``, ``replaces_state``, ``prev_content``.
+* Removing the ``unsigned`` object.
 * Rename the ``sender`` key to ``user_id``.
 * If the event was an ``m.room.member`` with ``membership`` set to ``invite``
   then adding a ``invite_room_state`` key to the top level event object.
