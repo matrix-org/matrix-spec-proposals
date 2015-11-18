@@ -114,7 +114,7 @@ paths:
                             ``timeline``, if ``since`` is not given, or
                             ``full_state`` is true).
                           allOf:
-                            - $ref: "definitions/state_batch.json"
+                            - $ref: "definitions/event_batch.json"
                         timeline:
                           title: Timeline
                           type: object
@@ -158,7 +158,7 @@ paths:
                             delta against the archived ``state`` not the
                             ``invite_state``.
                           allOf:
-                            - $ref: "definitions/state_batch.json"
+                            - $ref: "definitions/event_batch.json"
                   leave:
                     title: Left rooms
                     type: object
@@ -174,7 +174,7 @@ paths:
                           description: |-
                             The state updates for the room up to the start of the timeline.
                           allOf:
-                            - $ref: "definitions/state_batch.json"
+                            - $ref: "definitions/event_batch.json"
                         timeline:
                           title: Timeline
                           type: object
@@ -207,8 +207,8 @@ paths:
                   "join": {
                     "!726s6s6q:example.com": {
                       "state": {
-                        "m.room.member": {
-                          "@alice:example.com": {
+                        "events": [
+                          {
                             "sender": "@alice:example.com",
                             "type": "m.room.member",
                             "state_key": "@alice:example.com",
@@ -216,7 +216,7 @@ paths:
                             "origin_server_ts": 1417731086795,
                             "event_id": "$66697273743031:example.com"
                           }
-                        }
+                        ]
                       },
                       "timeline": {
                         "events": [
@@ -248,7 +248,6 @@ paths:
                       "ephemeral": {
                         "events": [
                           {
-                            "room_id": "!726s6s6q:example.com",
                             "type": "m.typing",
                             "content": {"user_ids": ["@alice:example.com"]}
                           }
@@ -259,24 +258,20 @@ paths:
                   "invite": {
                     "!696r7674:example.com": {
                       "invite_state": {
-                        "m.room.name": {
-                          "": {
+                        "events": [
+                          {
                             "sender": "@alice:example.com",
                             "type": "m.room.name",
                             "state_key": "",
-                            "content": {"name": "My Room Name"},
-                            "event_id": "$asdkgjrsfg2314375:example.com"
-                          }
-                        },
-                        "m.room.member": {
-                          "@bob:example.com": {
+                            "content": {"name": "My Room Name"}
+                          },
+                          {
                             "sender": "@alice:example.com",
                             "type": "m.room.member",
                             "state_key": "@bob:example.com",
-                            "content": {"membership": "invite"},
-                            "event_id": "$257kasjdg315324akhg:example.com"
+                            "content": {"membership": "invite"}
                           }
-                        }
+                        ]
                       }
                     }
                   },
