@@ -233,7 +233,7 @@ paths:
                     }
                   ]
                 },
-                "private_user_data": {
+                "account_data": {
                   "events": [
                     {
                       "type": "org.example.custom.config",

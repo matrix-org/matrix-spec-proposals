@@ -131,7 +131,7 @@ paths:
                           "type": "m.presence"
                       }
                   ],
-                  "private_user_data": [
+                  "account_data": [
                     {
                       "type": "org.example.custom.config",
                       "content": {

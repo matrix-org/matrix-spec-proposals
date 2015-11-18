@@ -24,7 +24,7 @@ paths:
       description: |-
         Set some config for the client. This config is only visible to the user
         that set the config. The config will be synced to clients in the
-        top-level ``private_user_data``.
+        top-level ``account_data``.
       security:
         - accessToken: []
       parameters:
@@ -63,7 +63,7 @@ paths:
       description: |-
         Set some config for the client on a given room. This config is only
         visible to the user that set the config. The config will be synced to
-        clients in the per-room ``private_user_data``.
+        clients in the per-room ``account_data``.
       security:
         - accessToken: []
       parameters:

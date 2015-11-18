@@ -12,11 +12,11 @@ The config may be either global or scoped to a particular rooms.
 Events
 ------
 
-The client recieves the config as a event in the ``private_user_data`` sections
+The client recieves the config as a event in the ``account_data`` sections
 of a v2 /sync.
 
 These events can also be received in a v1 /events response or in the
-``private_user_data`` section of a room in v1 /initialSync. ``m.tag``
+``account_data`` section of a room in v1 /initialSync. ``m.tag``
 events appearing in v1 /events will have a ``room_id`` with the room
 the tags are for.
 
