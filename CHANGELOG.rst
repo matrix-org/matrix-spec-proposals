@@ -6,35 +6,6 @@
 .. in Jenkins. Comments like this are ignored by both RST and the templating
 .. system. Add the newest release notes beneath this comment.
 
-Specification changes in v0.3.0 (2015-11-18)
-============================================
-
-Many sections have been filled in, or added to reflect long-standing status
-quos. Several API endpoints have also been converted to Swagger. Several
-presentation improvements (e.g. syntax highlighting) have also been added.
-
-Additions:
- - Extensive narrative on instant messaging
- - Documentation of event sending
- - Documentation of state event retrieval
- - Redaction algorithm
- - Algorithm for calculating display names for rooms and users
- - New endpoint: ``/publicRooms``
- - New event: ``m.room.avatar``
- - invite_room_state on ``m.room.member`` events
- - New section: Third party invitations
- - Ability to reject invitations
- - New API: Search
- - Guest access to rooms
- - Descriptions of server-server API endpoints for joining rooms
- - Sample expected crypto output
- - Several security warnings
-
- Modifications:
-  - Fixed errors in parameters of /login
-  - Significant clarification and improvements to description of pagination
-  - Changes to v2_alpha/sync API (Note: this API is still not stable)
-
 Specification changes in v0.2.0 (2015-10-02)
 ============================================
 
