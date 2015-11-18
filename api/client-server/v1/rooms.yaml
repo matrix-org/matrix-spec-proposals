@@ -312,9 +312,9 @@ paths:
                   }
                 ],
                 "visibility": "private",
-                "private_user_data": [{
+                "account_data": [{
                     "type": "m.tag",
-                    "content": {"tags": {"work": {"order": 1}}}
+                    "content": {"tags": {"work": {"order": "1"}}}
                 }]
               }
           schema:
@@ -375,7 +375,7 @@ paths:
                 description: |-
                   Whether this room is visible to the ``/publicRooms`` API
                   or not."
-              private_user_data:
+              account_data:
                 type: array
                 description: |-
                   The private data that this user has attached to this room.

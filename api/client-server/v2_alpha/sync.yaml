@@ -139,7 +139,7 @@ paths:
                             e.g. typing.
                           allOf:
                             - $ref: "definitions/event_batch.json"
-                        private_user_data:
+                        account_data:
                           title: Private User Data
                           type: object
                           description: |-
@@ -297,7 +297,7 @@ paths:
                           }
                         ]
                       },
-                      "private_user_data": {
+                      "account_data": {
                         "events": [
                           {
                             "type": "m.tags",
