@@ -147,12 +147,20 @@ func (s *server) updateBase() error {
 	return runGitCommand(s.matrixDocCloneURL, []string{"fetch"})
 }
 
+func (s *server) knowsAbout(sha string) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return runGitCommand(s.matrixDocCloneURL, []string{"cat-file", "-e", sha + "^{commit}"}) == nil
+}
+
 // generateAt generates spec from repo at sha.
 // Returns the path where the generation was done.
 func (s *server) generateAt(sha string) (dst string, err error) {
-	err = s.updateBase()
-	if err != nil {
-		return
+	if !s.knowsAbout(sha) {
+		err = s.updateBase()
+		if err != nil {
+			return
+		}
 	}
 	s.mu.Lock()
 	dst, err = gitClone(s.matrixDocCloneURL, true)
