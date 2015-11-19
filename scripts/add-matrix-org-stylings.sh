@@ -9,7 +9,7 @@ HEADER="$1/head.html"
 NAV_BAR="$1/nav.html"
 FOOTER="$1/footer.html"
 
-for f in "${HEADER}"/{head,nav,footer}.html; do
+for f in "$1"/{head,nav,footer}.html; do
   if [[ ! -e "${f}" ]]; then
     echo >&2 "Need ${f} to exist"
     exit 1
