@@ -23,6 +23,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -136,17 +137,26 @@ func writeError(w http.ResponseWriter, code int, err error) {
 }
 
 type server struct {
+	mu                sync.Mutex // Must be locked around any git command on matrixDocCloneURL
 	matrixDocCloneURL string
+}
+
+func (s *server) updateBase() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return gitFetch(s.matrixDocCloneURL)
 }
 
 // generateAt generates spec from repo at sha.
 // Returns the path where the generation was done.
 func (s *server) generateAt(sha string) (dst string, err error) {
-	err = gitFetch(s.matrixDocCloneURL)
+	err = s.updateBase()
 	if err != nil {
 		return
 	}
+	s.mu.Lock()
 	dst, err = gitClone(s.matrixDocCloneURL, true)
+	s.mu.Unlock()
 	if err != nil {
 		return
 	}
@@ -164,7 +174,10 @@ func (s *server) getSHAOf(ref string) (string, error) {
 	cmd.Dir = path.Join(s.matrixDocCloneURL)
 	var b bytes.Buffer
 	cmd.Stdout = &b
-	if err := cmd.Run(); err != nil {
+	s.mu.Lock()
+	err := cmd.Run()
+	s.mu.Unlock()
+	if err != nil {
 		return "", fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())
 	}
 	return strings.TrimSpace(b.String()), nil
@@ -174,7 +187,7 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 	var sha string
 
 	if strings.ToLower(req.URL.Path) == "/spec/head" {
-		if err := gitFetch(s.matrixDocCloneURL); err != nil {
+		if err := s.updateBase(); err != nil {
 			writeError(w, 500, err)
 			return
 		}
@@ -383,7 +396,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	s := server{masterCloneDir}
+	s := server{matrixDocCloneURL: masterCloneDir}
 	http.HandleFunc("/spec/", forceHTML(s.serveSpec))
 	http.HandleFunc("/diff/rst/", s.serveRSTDiff)
 	http.HandleFunc("/diff/html/", forceHTML(s.serveHTMLDiff))
