@@ -1,7 +1,7 @@
 Client Config
 =============
 
-.. _module:client_config:
+.. _module:account_data:
 
 Clients can store their config on their homeserver. This config will be synced
 between different devices and can persist across installations on a particular
@@ -23,4 +23,4 @@ the tags are for.
 Client Behaviour
 ----------------
 
-{{v2_client_config_http_api}}
+{{v2_account_data_http_api}}
