@@ -87,10 +87,6 @@ func gitCheckout(path, sha string) error {
 	return runGitCommand(path, []string{"checkout", sha})
 }
 
-func gitFetch(path string) error {
-	return runGitCommand(path, []string{"fetch"})
-}
-
 func runGitCommand(path string, args []string) error {
 	cmd := exec.Command("git", args...)
 	cmd.Dir = path
@@ -148,7 +144,7 @@ type server struct {
 func (s *server) updateBase() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	return gitFetch(s.matrixDocCloneURL)
+	return runGitCommand(s.matrixDocCloneURL, []string{"fetch"})
 }
 
 // generateAt generates spec from repo at sha.
@@ -191,16 +187,12 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 	var sha string
 
 	if strings.ToLower(req.URL.Path) == "/spec/head" {
-		if err := s.updateBase(); err != nil {
+		if headSha, err := s.lookupHeadSHA(); headSha == "" {
 			writeError(w, 500, err)
 			return
+		} else {
+			sha = headSha
 		}
-		originHead, err := s.getSHAOf("origin/master")
-		if err != nil {
-			writeError(w, 500, err)
-			return
-		}
-		sha = originHead
 	} else {
 		pr, err := lookupPullRequest(*req.URL, "/spec")
 		if err != nil {
@@ -235,6 +227,25 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 	}
 	w.Write(b)
 	specCache.Add(sha, b)
+}
+
+// lookupHeadSHA looks up what origin/master's HEAD SHA is.
+// It attempts to `git fetch` before doing so.
+// If this fails, it may still return a stale sha, but will also return an error.
+func (s *server) lookupHeadSHA() (sha string, retErr error) {
+	retErr = s.updateBase()
+	if retErr != nil {
+		log.Printf("Error fetching: %v, attempting to fall back to current known value", retErr)
+	}
+	originHead, err := s.getSHAOf("origin/master")
+	if err != nil {
+		retErr = err
+	}
+	sha = originHead
+	if retErr != nil && originHead != "" {
+		log.Printf("Successfully fell back to possibly stale sha: %s", sha)
+	}
+	return
 }
 
 func checkAuth(pr *PullRequest) error {
