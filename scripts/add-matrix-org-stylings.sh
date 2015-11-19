@@ -35,8 +35,6 @@ if [ ! -f $FOOTER ]; then
     exit 1
 fi
 
-python gendoc.py
-
 perl -MFile::Slurp -pi -e 'BEGIN { $header = read_file("'$HEADER'") } s#<head>#<head>$header
   <link rel="stylesheet" href="//matrix.org/docs/guides/css/docs_overrides.css">
 #' gen/specification.html gen/howtos.html
