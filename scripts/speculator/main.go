@@ -70,13 +70,15 @@ const (
 
 func gitClone(url string, shared bool) (string, error) {
 	directory := path.Join("/tmp/matrix-doc", strconv.FormatInt(rand.Int63(), 10))
-	cmd := exec.Command("git", "clone", url, directory)
-	if shared {
-		cmd.Args = append(cmd.Args, "--shared")
+	if err := os.MkdirAll(directory, 0755); err != nil {
+		return "", fmt.Errorf("error making directory %s: %v", directory, err)
 	}
-
-	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("error cloning repo: %v", err)
+	args := []string{"clone", url, directory}
+	if shared {
+		args = append(args, "--shared")
+	}
+	if err := runGitCommand(directory, args); err != nil {
+		return "", err
 	}
 	return directory, nil
 }
@@ -92,8 +94,10 @@ func gitFetch(path string) error {
 func runGitCommand(path string, args []string) error {
 	cmd := exec.Command("git", args...)
 	cmd.Dir = path
+	var b bytes.Buffer
+	cmd.Stderr = &b
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("error running %q: %v", strings.Join(cmd.Args, " "), err)
+		return fmt.Errorf("error running %q: %v (stderr: %s)", strings.Join(cmd.Args, " "), err, b.String())
 	}
 	return nil
 }
