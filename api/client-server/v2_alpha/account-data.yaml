@@ -41,8 +41,8 @@ paths:
           name: type
           required: true
           description: |-
-            The type of the account_data to set. Custom types should be namespaced to
-            avoid clashes.
+            The event type of the account_data to set. Custom types should be
+            namespaced to avoid clashes.
           x-example: "org.example.custom.config"
         - in: body
           name: content
@@ -87,7 +87,7 @@ paths:
           name: type
           required: true
           description: |-
-            The type of the account_data to set. Custom types should be
+            The event type of the account_data to set. Custom types should be
             namespaced to avoid clashes.
           x-example: "org.example.custom.room.config"
         - in: body
