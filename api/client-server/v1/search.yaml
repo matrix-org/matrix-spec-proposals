@@ -100,6 +100,19 @@ paths:
                                 description: |-
                                   How many events after the result are
                                   returned.
+                            include_profile:
+                                type: boolean
+                                title: "Return profile information"
+                                description: |-
+                                  Requests that the server returns the
+                                  historic profile information for the users
+                                  that sent the events that were returned.
+                      include_state:
+                        type: boolean
+                        title: Include current state
+                        description: |-
+                          Requests the server return the current state for
+                          each room returned.
                       groupings:
                         type: object
                         title: Groupings
@@ -181,6 +194,22 @@ paths:
                                   title: End Token
                                   description: |-
                                     Pagination token for the end of the chunk
+                                profile_info:
+                                  type: object
+                                  title: Profile Information
+                                  description: |-
+                                    The historic profile information of the
+                                    users that sent the events returned.
+                                  additionalProperties:
+                                    type: object
+                                    title: User Profile
+                                    properties:
+                                      displayname:
+                                        type: string
+                                        title: Display name
+                                      avatar_url:
+                                        type: string
+                                        title: Avatar Url
                                 events_before:
                                   type: array
                                   title: Events Before
@@ -199,6 +228,17 @@ paths:
                                     title: Event
                                     allOf:
                                       - "$ref": "core-event-schema/room_event.json"
+                      state:
+                        type: object
+                        title: Current state
+                        additionalProperties:
+                          type: array
+                          title: Room State
+                          items:
+                            type: object
+                            title: Event
+                            allOf:
+                              - "$ref": "core-event-schema/room_event.json"
                       groups:
                         type: object
                         title: Groups
