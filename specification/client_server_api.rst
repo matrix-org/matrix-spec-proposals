@@ -870,42 +870,22 @@ following values:
 ``invite``
   This room can only be joined if you were invited.
 
-{{membership_http_api}}
+{{inviting_http_api}}
+
+{{joining_http_api}}
 
 Leaving rooms
 ~~~~~~~~~~~~~
-.. TODO-spec - HS deleting rooms they are no longer a part of. Not implemented.
-  - This is actually Very Tricky. If all clients a HS is serving leave a room,
-  the HS will no longer get any new events for that room, because the servers
-  who get the events are determined on the *membership list*. There should
-  probably be a way for a HS to lurk on a room even if there are 0 of their
-  members in the room.
-  - Grace period before deletion?
-  - Under what conditions should a room NOT be purged?
-
-
 A user can leave a room to stop receiving events for that room. A user must
 have been invited to or have joined the room before they are eligible to leave
 the room. Leaving a room to which the user has been invited rejects the invite.
+Once a user leaves a room, it will no longer appear on the |initialSync|_ API.
 
 Whether or not they actually joined the room, if the room is
 an "invite-only" room they will need to be re-invited before they can re-join
-the room.  To leave a room, a request should be made to
-|/rooms/<room_id>/leave|_ with::
+the room.
 
-  {}
-
-Alternatively, the membership state for this user in this room can be modified
-directly by sending the following request to
-``/rooms/<room id>/state/m.room.member/<url encoded user id>``::
-
-  {
-    "membership": "leave"
-  }
-
-See the `Room events`_ section for more information on ``m.room.member``. Once a
-user has left a room, that room will no longer appear on the |initialSync|_ API.
-If all members in a room leave, that room becomes eligible for deletion.
+{{leaving_http_api}}
 
 Banning users in a room
 ~~~~~~~~~~~~~~~~~~~~~~~
