@@ -31,8 +31,9 @@ formatted for federation by:
   ``origin``, ``prev_state``.
 * Adding an ``age`` to the ``unsigned`` object which gives the time in
   milliseconds that has elapsed since the event was sent.
-* Adding a ``prev_content`` to the ``unsigned`` object if the event is
-  a ``state event`` which gives previous content of that state key.
+* Adding ``prev_content`` and ``prev_sender`` to the ``unsigned`` object if the
+  event is a ``state event``, which give the previous content and previous
+  sender of that state key
 * Adding a ``redacted_because`` to the ``unsigned`` object if the event was
   redacted which gives the event that redacted it.
 * Adding a ``transaction_id`` to the ``unsigned`` object if the event was sent
