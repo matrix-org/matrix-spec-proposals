@@ -238,6 +238,18 @@ def rst2html(i, o):
             )
 
 
+def addAnchors(path):
+    with open(path, "r") as f:
+        lines = f.readlines()
+
+    replacement = replacement = r'<p><a class="anchor" id="\3"></a></p>\n\1'
+    with open(path, "w") as f:
+        for line in lines:
+            line = re.sub(r'(<h\d id="#?(.*?)">)', replacement, line.rstrip())
+            line = re.sub(r'(<div class="section" (id)="(.*?)">)', replacement, line.rstrip())
+            f.write(line + "\n")
+
+
 def run_through_template(input, set_verbose):
     tmpfile = './tmp/output'
     try:
@@ -387,6 +399,7 @@ def main(target_name, keep_intermediates):
     shutil.copy("../supporting-docs/howtos/client-server.rst", "tmp/howto.rst")
     run_through_template("tmp/howto.rst", False)  # too spammy to mark -v on this
     rst2html("tmp/full_spec.rst", "gen/specification.html")
+    addAnchors("gen/specification.html")
     rst2html("tmp/howto.rst", "gen/howtos.html")
     if not keep_intermediates:
         cleanup_env()
