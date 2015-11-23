@@ -148,7 +148,8 @@ func (s *server) updateBase() error {
 	return runGitCommand(s.matrixDocCloneURL, []string{"fetch"})
 }
 
-func (s *server) knowsAbout(sha string) bool {
+// canCheckout returns whether a given sha can currently be checked out from s.matrixDocCloneURL.
+func (s *server) canCheckout(sha string) bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return runGitCommand(s.matrixDocCloneURL, []string{"cat-file", "-e", sha + "^{commit}"}) == nil
@@ -157,7 +158,7 @@ func (s *server) knowsAbout(sha string) bool {
 // generateAt generates spec from repo at sha.
 // Returns the path where the generation was done.
 func (s *server) generateAt(sha string) (dst string, err error) {
-	if !s.knowsAbout(sha) {
+	if !s.canCheckout(sha) {
 		err = s.updateBase()
 		if err != nil {
 			return
