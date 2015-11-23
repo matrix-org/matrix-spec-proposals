@@ -8,7 +8,11 @@ set -ex
 (cd api && npm install && node validator.js -s "client-server/v1" && node validator.js -s "client-server/v2_alpha")
 (cd event-schemas/ && ./check.sh)
 
-if which go >/dev/null 2>/dev/null; then
-  (cd scripts/continuserv && go build)
-  (cd scripts/speculator && go build)
-fi
+: ${GOPATH:=${WORKSPACE}/.gopath}
+mkdir -p "${GOPATH}"
+export GOPATH
+go get github.com/hashicorp/golang-lru
+go get gopkg.in/fsnotify.v1
+
+(cd scripts/continuserv && go build)
+(cd scripts/speculator && go build)
