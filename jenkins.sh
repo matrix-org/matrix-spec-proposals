@@ -7,3 +7,12 @@ set -ex
 (cd scripts && ./gendoc.py -v)
 (cd api && npm install && node validator.js -s "client-server/v1" && node validator.js -s "client-server/v2_alpha")
 (cd event-schemas/ && ./check.sh)
+
+: ${GOPATH:=${WORKSPACE}/.gopath}
+mkdir -p "${GOPATH}"
+export GOPATH
+go get github.com/hashicorp/golang-lru
+go get gopkg.in/fsnotify.v1
+
+(cd scripts/continuserv && go build)
+(cd scripts/speculator && go build)
