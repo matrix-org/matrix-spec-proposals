@@ -197,6 +197,8 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 	var sha string
 
 	if strings.ToLower(req.URL.Path) == "/spec/head" {
+		// err may be non-nil here but if headSha is non-empty we will serve a possibly-stale result in favour of erroring.
+		// This is to deal with cases like where github is down but we still want to serve the spec.
 		if headSha, err := s.lookupHeadSHA(); headSha == "" {
 			writeError(w, 500, err)
 			return
