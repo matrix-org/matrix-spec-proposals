@@ -64,13 +64,14 @@ func (u *User) IsTrusted() bool {
 }
 
 const (
-	pullsPrefix       = "https://api.github.com/repos/matrix-org/matrix-doc/pulls"
-	matrixDocCloneURL = "https://github.com/matrix-org/matrix-doc.git"
+	pullsPrefix          = "https://api.github.com/repos/matrix-org/matrix-doc/pulls"
+	matrixDocCloneURL    = "https://github.com/matrix-org/matrix-doc.git"
+	permissionsOwnerFull = 0700
 )
 
 func gitClone(url string, shared bool) (string, error) {
 	directory := path.Join("/tmp/matrix-doc", strconv.FormatInt(rand.Int63(), 10))
-	if err := os.MkdirAll(directory, 0755); err != nil {
+	if err := os.MkdirAll(directory, permissionsOwnerFull); err != nil {
 		return "", fmt.Errorf("error making directory %s: %v", directory, err)
 	}
 	args := []string{"clone", url, directory}
