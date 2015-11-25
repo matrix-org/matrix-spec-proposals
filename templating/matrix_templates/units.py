@@ -572,9 +572,14 @@ class MatrixUnits(Units):
             if not filename.startswith("m."):
                 continue
             with open(os.path.join(path, filename), "r") as f:
-                examples[filename] = json.loads(f.read())
-                if filename == "m.room.message#m.text":
-                    examples["m.room.message"] = examples[filename]
+                event_name = filename.split("#")[0]
+                example = json.loads(f.read())
+
+                examples[filename] = examples.get(filename, [])
+                examples[filename].append(example)
+                if filename != event_name:
+                    examples[event_name] = examples.get(event_name, [])
+                    examples[event_name].append(example)
         return examples
 
     def load_event_schemas(self):

@@ -12,8 +12,10 @@
 {{ tables.paramtable(table.rows, [(table.title or "Content") ~ " Key", "Type", "Description"]) }}
 
 {% endfor %}
-Example:
+Example{% if examples | length > 1 %}s{% endif %}:
 
+{% for example in examples %}
 .. code:: json
 
     {{example | jsonify(4, 4)}}
+{% endfor %}
