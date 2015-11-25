@@ -23,6 +23,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -63,20 +64,22 @@ func (u *User) IsTrusted() bool {
 }
 
 const (
-	pullsPrefix       = "https://api.github.com/repos/matrix-org/matrix-doc/pulls"
-	matrixDocCloneURL = "https://github.com/matrix-org/matrix-doc.git"
+	pullsPrefix          = "https://api.github.com/repos/matrix-org/matrix-doc/pulls"
+	matrixDocCloneURL    = "https://github.com/matrix-org/matrix-doc.git"
+	permissionsOwnerFull = 0700
 )
 
 func gitClone(url string, shared bool) (string, error) {
 	directory := path.Join("/tmp/matrix-doc", strconv.FormatInt(rand.Int63(), 10))
-	cmd := exec.Command("git", "clone", url, directory)
-	if shared {
-		cmd.Args = append(cmd.Args, "--shared")
+	if err := os.MkdirAll(directory, permissionsOwnerFull); err != nil {
+		return "", fmt.Errorf("error making directory %s: %v", directory, err)
 	}
-
-	err := cmd.Run()
-	if err != nil {
-		return "", fmt.Errorf("error cloning repo: %v", err)
+	args := []string{"clone", url, directory}
+	if shared {
+		args = append(args, "--shared")
+	}
+	if err := runGitCommand(directory, args); err != nil {
+		return "", err
 	}
 	return directory, nil
 }
@@ -85,16 +88,13 @@ func gitCheckout(path, sha string) error {
 	return runGitCommand(path, []string{"checkout", sha})
 }
 
-func gitFetch(path string) error {
-	return runGitCommand(path, []string{"fetch"})
-}
-
 func runGitCommand(path string, args []string) error {
 	cmd := exec.Command("git", args...)
 	cmd.Dir = path
-	err := cmd.Run()
-	if err != nil {
-		return fmt.Errorf("error running %q: %v", strings.Join(cmd.Args, " "), err)
+	var b bytes.Buffer
+	cmd.Stderr = &b
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("error running %q: %v (stderr: %s)", strings.Join(cmd.Args, " "), err, b.String())
 	}
 	return nil
 }
@@ -126,8 +126,7 @@ func generate(dir string) error {
 	cmd.Dir = path.Join(dir, "scripts")
 	var b bytes.Buffer
 	cmd.Stderr = &b
-	err := cmd.Run()
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())
 	}
 	return nil
@@ -139,17 +138,35 @@ func writeError(w http.ResponseWriter, code int, err error) {
 }
 
 type server struct {
+	mu                sync.Mutex // Must be locked around any git command on matrixDocCloneURL
 	matrixDocCloneURL string
+}
+
+func (s *server) updateBase() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return runGitCommand(s.matrixDocCloneURL, []string{"fetch"})
+}
+
+// canCheckout returns whether a given sha can currently be checked out from s.matrixDocCloneURL.
+func (s *server) canCheckout(sha string) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return runGitCommand(s.matrixDocCloneURL, []string{"cat-file", "-e", sha + "^{commit}"}) == nil
 }
 
 // generateAt generates spec from repo at sha.
 // Returns the path where the generation was done.
 func (s *server) generateAt(sha string) (dst string, err error) {
-	err = gitFetch(s.matrixDocCloneURL)
-	if err != nil {
-		return
+	if !s.canCheckout(sha) {
+		err = s.updateBase()
+		if err != nil {
+			return
+		}
 	}
+	s.mu.Lock()
 	dst, err = gitClone(s.matrixDocCloneURL, true)
+	s.mu.Unlock()
 	if err != nil {
 		return
 	}
@@ -167,7 +184,9 @@ func (s *server) getSHAOf(ref string) (string, error) {
 	cmd.Dir = path.Join(s.matrixDocCloneURL)
 	var b bytes.Buffer
 	cmd.Stdout = &b
+	s.mu.Lock()
 	err := cmd.Run()
+	s.mu.Unlock()
 	if err != nil {
 		return "", fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())
 	}
@@ -178,12 +197,14 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 	var sha string
 
 	if strings.ToLower(req.URL.Path) == "/spec/head" {
-		originHead, err := s.getSHAOf("origin/master")
-		if err != nil {
+		// err may be non-nil here but if headSha is non-empty we will serve a possibly-stale result in favour of erroring.
+		// This is to deal with cases like where github is down but we still want to serve the spec.
+		if headSha, err := s.lookupHeadSHA(); headSha == "" {
 			writeError(w, 500, err)
 			return
+		} else {
+			sha = headSha
 		}
-		sha = originHead
 	} else {
 		pr, err := lookupPullRequest(*req.URL, "/spec")
 		if err != nil {
@@ -218,6 +239,25 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 	}
 	w.Write(b)
 	specCache.Add(sha, b)
+}
+
+// lookupHeadSHA looks up what origin/master's HEAD SHA is.
+// It attempts to `git fetch` before doing so.
+// If this fails, it may still return a stale sha, but will also return an error.
+func (s *server) lookupHeadSHA() (sha string, retErr error) {
+	retErr = s.updateBase()
+	if retErr != nil {
+		log.Printf("Error fetching: %v, attempting to fall back to current known value", retErr)
+	}
+	originHead, err := s.getSHAOf("origin/master")
+	if err != nil {
+		retErr = err
+	}
+	sha = originHead
+	if retErr != nil && originHead != "" {
+		log.Printf("Successfully fell back to possibly stale sha: %s", sha)
+	}
+	return
 }
 
 func checkAuth(pr *PullRequest) error {
@@ -383,9 +423,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	s := server{masterCloneDir}
+	s := server{matrixDocCloneURL: masterCloneDir}
 	http.HandleFunc("/spec/", forceHTML(s.serveSpec))
-	http.HandleFunc("/diff/rst/", forceHTML(s.serveRSTDiff))
+	http.HandleFunc("/diff/rst/", s.serveRSTDiff)
 	http.HandleFunc("/diff/html/", forceHTML(s.serveHTMLDiff))
 	http.HandleFunc("/healthz", serveText("ok"))
 	http.HandleFunc("/", forceHTML(listPulls))

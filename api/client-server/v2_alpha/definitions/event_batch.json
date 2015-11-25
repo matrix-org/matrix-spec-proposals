@@ -5,8 +5,8 @@
       "type": "array",
       "description": "List of events",
       "items": {
-        "title": "Event",
-        "type": "object"
+        "type": "object",
+        "allOf": [{"$ref": "event.json" }]
       }
     }
   }

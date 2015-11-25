@@ -122,10 +122,12 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
                         "x-pattern", "string"
                     )
                     value_type = "{%s: %s}" % (key, nested_object[0]["title"])
+                    value_id = "%s: %s" % (key, nested_object[0]["title"])
                     if not nested_object[0].get("no-table"):
                         tables += nested_object
                 else:
-                    value_type = "{string: %s}" % prop_val
+                    value_type = "{string: %s}" % (prop_val,)
+                    value_id = "string: %s" % (prop_val,)
             else:
                 nested_object = get_json_schema_object_fields(
                     props[key_name],
@@ -133,6 +135,7 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
                     include_parents=include_parents,
                 )
                 value_type = "{%s}" % nested_object[0]["title"]
+                value_id = "%s" % (nested_object[0]["title"],)
 
                 if not nested_object[0].get("no-table"):
                     tables += nested_object
@@ -145,12 +148,14 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
                     include_parents=include_parents,
                 )
                 value_type = "[%s]" % nested_object[0]["title"]
+                value_id = "%s" % (nested_object[0]["title"],)
                 tables += nested_object
             else:
                 value_type = props[key_name]["items"]["type"]
                 if isinstance(value_type, list):
                     value_type = " or ".join(value_type)
                 value_type = "[%s]" % value_type
+                value_id = "%s" % (value_type,)
                 array_enums = props[key_name]["items"].get("enum")
                 if array_enums:
                     if len(array_enums) > 1:
@@ -164,6 +169,7 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
                         )
         else:
             value_type = props[key_name]["type"]
+            value_id = props[key_name]["type"]
             if props[key_name].get("enum"):
                 if len(props[key_name].get("enum")) > 1:
                     value_type = "enum"
@@ -184,6 +190,7 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
         fields["rows"].append({
             "key": key_name,
             "type": value_type,
+            "id": value_id,
             "required": required,
             "desc": desc,
             "req_str": "**Required.** " if required else ""
@@ -313,10 +320,16 @@ class MatrixUnits(Units):
 
                             if req_tables > 1:
                                 for table in req_tables[1:]:
-                                    nested_key_name = [
-                                        s["key"] for s in req_tables[0]["rows"] if
-                                        s["type"] == ("{%s}" % (table["title"],))
-                                    ][0]
+                                    nested_key_name = {
+                                        "key": s["key"]
+                                        for rtable in req_tables
+                                        for s in rtable["rows"]
+                                        if s["id"] == table["title"]
+                                    }.get("key", None)
+
+                                    if nested_key_name is None:
+                                        raise Exception("Failed to find table for %r" % (table["title"],))
+
                                     for row in table["rows"]:
                                         row["key"] = "%s.%s" % (nested_key_name, row["key"])
 

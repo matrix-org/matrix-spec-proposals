@@ -533,6 +533,164 @@ part of the path specifies the kind of query being made, and its query
 arguments have a meaning specific to that kind of query. The response is a
 JSON-encoded object whose meaning also depends on the kind of query.
 
+
+To join a room::
+
+  GET .../make_join/<room_id>/<user_id>
+    Response: JSON encoding of a join proto-event
+
+  PUT .../send_join/<room_id>/<event_id>
+    Response: JSON encoding of the state of the room at the time of the event
+
+Performs the room join handshake. For more information, see "Joining Rooms"
+below.
+
+Joining Rooms
+-------------
+
+When a new user wishes to join room that the user's homeserver already knows
+about, the homeserver can immediately determine if this is allowable by
+inspecting the state of the room, and if it is acceptable, it can generate,
+sign, and emit a new ``m.room.member`` state event adding the user into that
+room. When the homeserver does not yet know about the room it cannot do this
+directly. Instead, it must take a longer multi-stage handshaking process by
+which it first selects a remote homeserver which is already participating in
+that room, and uses it to assist in the joining process. This is the remote
+join handshake.
+
+This handshake involves the homeserver of the new member wishing to join
+(referred to here as the "joining" server), the directory server hosting the
+room alias the user is requesting to join with, and a homeserver where existing
+room members are already present (referred to as the "resident" server).
+
+In summary, the remote join handshake consists of the joining server querying
+the directory server for information about the room alias; receiving a room ID
+and a list of join candidates. The joining server then requests information
+about the room from one of the residents. It uses this information to construct
+a ``m.room.member`` event which it finally sends to a resident server.
+
+Conceptually these are three different roles of homeserver. In practice the
+directory server is likely to be resident in the room, and so may be selected
+by the joining server to be the assisting resident. Likewise, it is likely that
+the joining server picks the same candidate resident for both phases of event
+construction, though in principle any valid candidate may be used at each time.
+Thus, any join handshake can potentially involve anywhere from two to four
+homeservers, though most in practice will use just two.
+
+::
+
+  Client         Joining                Directory       Resident
+                 Server                 Server          Server
+
+  join request -->
+                 |
+                 directory request ------->
+                 <---------- directory response
+                 |
+                 make_join request ----------------------->
+                 <------------------------------- make_join response
+                 |
+                 send_join request ----------------------->
+                 <------------------------------- send_join response
+                 |
+  <---------- join response
+
+The first part of the handshake usually involves using the directory server to
+request the room ID and join candidates. This is covered in more detail on the
+directory server documentation, below. In the case of a new user joining a
+room as a result of a received invite, the joining user's homeserver could
+optimise this step away by picking the origin server of that invite message as
+the join candidate. However, the joining server should be aware that the origin
+server of the invite might since have left the room, so should be prepared to
+fall back on the regular join flow if this optimisation fails.
+
+Once the joining server has the room ID and the join candidates, it then needs
+to obtain enough information about the room to fill in the required fields of
+the ``m.room.member`` event. It obtains this by selecting a resident from the
+candidate list, and requesting the ``make_join`` endpoint using a ``GET``
+request, specifying the room ID and the user ID of the new member who is
+attempting to join.
+
+The resident server replies to this request with a JSON-encoded object having a
+single key called ``event``; within this is an object whose fields contain some
+of the information that the joining server will need. Despite its name, this
+object is not a full event; notably it does not need to be hashed or signed by
+the resident homeserver. The required fields are:
+
+==================== ======== ============
+ Key                  Type     Description
+==================== ======== ============
+``type``             String   The value ``m.room.member``
+``auth_events``      List     An event-reference list containing the
+                              authorization events that would allow this member
+                              to join
+``content``          Object   The event content
+``depth``            Integer  (this field must be present but is ignored; it
+                              may be 0)
+``event_id``         String   A new event ID specified by the resident
+                              homeserver
+``origin``           String   The name of the resident homeserver
+``origin_server_ts`` Integer  A timestamp added by the resident homeserver
+``prev_events``      List     An event-reference list containing the immediate
+                              predecessor events
+``room_id``          String   The room ID of the room
+``sender``           String   The user ID of the joining member
+``state_key``        String   The user ID of the joining member
+==================== ======== ============
+
+The ``content`` field itself must be an object, containing:
+
+============== ====== ============
+ Key            Type   Description
+============== ====== ============
+``membership`` String The value ``join``
+============== ====== ============
+
+The joining server now has sufficient information to construct the real join
+event from these protoevent fields. It copies the values of most of them,
+adding (or replacing) the following fields:
+
+==================== ======= ============
+ Key                  Type    Description
+==================== ======= ============
+``event_id``         String  A new event ID specified by the joining homeserver
+``origin``           String  The name of the joining homeserver
+``origin_server_ts`` Integer A timestamp added by the joining homeserver
+==================== ======= ============
+
+.. TODO-spec
+  - Why does the protoevent have an event_id, only for the real event to ignore
+    it and specify a different one? We should definitely pick one or the other.
+
+This will be a true event, so the joining server should apply the event-signing
+algorithm to it, resulting in the addition of the ``hashes`` and ``signatures``
+fields.
+
+To complete the join handshake, the joining server must now submit this new
+event to an resident homeserver, by using the ``send_join`` endpoint. This is
+invoked using the room ID and the event ID of the new member event.
+
+The resident homeserver then accepts this event into the room's event graph,
+and responds to the joining server with the full set of state for the newly-
+joined room. This is returned as a two-element list, whose first element is the
+integer 200, and whose second element is an object which contains the
+following keys:
+
+============== ===== ============
+ Key            Type  Description
+============== ===== ============
+``auth_chain`` List  A list of events giving the authorization chain for this
+                     join event
+``state``      List  A complete list of the prevailing state events at the
+                     instant just before accepting the new ``m.room.member``
+                     event
+============== ===== ============
+
+.. TODO-spec
+  - (paul) I don't really understand why the full auth_chain events are given
+    here. What purpose does it serve expanding them out in full, when surely
+    they'll appear in the state anyway?
+
 Backfilling
 -----------
 .. NOTE::
@@ -763,6 +921,7 @@ Querying directory information::
     servers: list of strings giving the join candidates
 
 The list of join candidates is a list of server names that are likely to hold
-the given room; these are servers that the requesting server may wish to try
-joining with. This list may or may not include the server answering the query.
+the given room; these are servers that the requesting server may wish to use as
+resident servers as part of the remote join handshake. This list may or may not
+include the server answering the query.
 
