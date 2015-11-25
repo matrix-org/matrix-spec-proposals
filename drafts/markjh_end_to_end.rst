@@ -84,18 +84,22 @@ follows:
 
 .. math::
     \begin{align}
-    R_{2^24n,0} &= H_1\left(R_{2^24(i-1),0}\right) \\
-    R_{2^24n,1} &= H_2\left(R_{2^24(i-1),0}\right) \\
+    R_{2^24n,0} &= H_0\left(R_{2^24(i-1),0}\right) \\
+    R_{2^24n,1} &= H_1\left(R_{2^24(i-1),0}\right) \\
+    R_{2^24n,2} &= H_2\left(R_{2^24(i-1),0}\right) \\
+    R_{2^24n,3} &= H_3\left(R_{2^24(i-1),0}\right) \\
     R_{2^16n,1} &= H_1\left(R_{2^16(i-1),1}\right) \\
     R_{2^16n,2} &= H_2\left(R_{2^16(i-1),1}\right) \\
-    R_{2^8i,2}  &= H_1\left(R_{2^8(i-1),2}\right) \\
-    R_{2^8i,3}  &= H_2\left(R_{2^8(i-1),2}\right) \\
-    R_{i,3}     &= H_1\left(R_{(i-1),3}\right)
+    R_{2^16n,3} &= H_3\left(R_{2^16(i-1),1}\right) \\
+    R_{2^8i,2}  &= H_2\left(R_{2^8(i-1),2}\right) \\
+    R_{2^8i,3}  &= H_3\left(R_{2^8(i-1),2}\right) \\
+    R_{i,3}     &= H_3\left(R_{(i-1),3}\right)
     \end{align}
 
-Where :math:`H_1` and :math:`H_2` are different hash functions. For example
-:math:`H_1` could be :math:`HMAC\left(X,\text{"\textbackslash x01"}\right)` and
-:math:`H_2` could be :math:`HMAC\left(X,\text{"\textbackslash x02"}\right)`.
+Where :math:`H_0`, :math:`H_1`, :math:`H_2`, and :math:`H_3`
+are different hash functions. For example
+:math:`H_0` could be :math:`HMAC\left(X,\text{"\textbackslash x00"}\right)` and
+:math:`H_1` could be :math:`HMAC\left(X,\text{"\textbackslash x01"}\right)`.
 
 So every :math:`2^24` iterations :math:`R_{n,1}` is reseeded from :math:`R_{n,0}`.
 Every :math:`2^16` iterations :math:`R_{n,2}` is reseeded from :math:`R_{n,1}`.
