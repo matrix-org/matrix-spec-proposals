@@ -54,9 +54,11 @@ type User struct {
 }
 
 var (
-	port           = flag.Int("port", 9000, "Port on which to listen for HTTP")
-	allowedMembers map[string]bool
-	specCache      *lru.Cache // string -> []byte
+	port            = flag.Int("port", 9000, "Port on which to listen for HTTP")
+	includesDir     = flag.String("includes_dir", "", "Directory containing include files for styling like matrix.org")
+	allowedMembers  map[string]bool
+	specCache       *lru.Cache // string -> []byte
+	styledSpecCache *lru.Cache // string -> []byte
 )
 
 func (u *User) IsTrusted() bool {
@@ -196,6 +198,13 @@ func (s *server) getSHAOf(ref string) (string, error) {
 func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 	var sha string
 
+	var styleLikeMatrixDotOrg = req.URL.Query().Get("matrixdotorgstyle") != ""
+
+	if styleLikeMatrixDotOrg && *includesDir == "" {
+		writeError(w, 500, fmt.Errorf("Cannot style like matrix.org - no include dir specified"))
+		return
+	}
+
 	if strings.ToLower(req.URL.Path) == "/spec/head" {
 		// err may be non-nil here but if headSha is non-empty we will serve a possibly-stale result in favour of erroring.
 		// This is to deal with cases like where github is down but we still want to serve the spec.
@@ -220,7 +229,13 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 		}
 		sha = pr.Head.SHA
 	}
-	if cached, ok := specCache.Get(sha); ok {
+
+	var cache = specCache
+	if styleLikeMatrixDotOrg {
+		cache = styledSpecCache
+	}
+
+	if cached, ok := cache.Get(sha); ok {
 		w.Write(cached.([]byte))
 		return
 	}
@@ -232,13 +247,24 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	if styleLikeMatrixDotOrg {
+		cmd := exec.Command("./add-matrix-org-stylings.sh", *includesDir)
+		cmd.Dir = path.Join(dst, "scripts")
+		var b bytes.Buffer
+		cmd.Stderr = &b
+		if err := cmd.Run(); err != nil {
+			writeError(w, 500, fmt.Errorf("error styling spec: %v\nOutput:\n%v", err, b.String()))
+			return
+		}
+	}
+
 	b, err := ioutil.ReadFile(path.Join(dst, "scripts/gen/specification.html"))
 	if err != nil {
 		writeError(w, 500, fmt.Errorf("Error reading spec: %v", err))
 		return
 	}
 	w.Write(b)
-	specCache.Add(sha, b)
+	cache.Add(sha, b)
 }
 
 // lookupHeadSHA looks up what origin/master's HEAD SHA is.
@@ -384,6 +410,10 @@ func listPulls(w http.ResponseWriter, req *http.Request) {
 			pull.Number, pull.User.HTMLURL, pull.User.Login, pull.HTMLURL, pull.Title, pull.Number, pull.Number, pull.Number)
 	}
 	s += `</ul><div><a href="spec/head">View the spec at head</a></div></body>`
+	if *includesDir != "" {
+		s += `</ul><div><a href="spec/head?matrixdotorgstyle=1">View the spec at head styled like matrix.org</a></div></body>`
+	}
+
 	io.WriteString(w, s)
 }
 
@@ -448,7 +478,10 @@ func serveText(s string) func(http.ResponseWriter, *http.Request) {
 }
 
 func initCache() error {
-	c, err := lru.New(50) // Evict after 50 entries (i.e. 50 sha1s)
-	specCache = c
+	c1, err := lru.New(50) // Evict after 50 entries (i.e. 50 sha1s)
+	specCache = c1
+
+	c2, err := lru.New(50) // Evict after 50 entries (i.e. 50 sha1s)
+	styledSpecCache = c2
 	return err
 }
