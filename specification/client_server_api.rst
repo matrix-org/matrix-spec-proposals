@@ -783,19 +783,9 @@ client has to use the the following API.
 
 Room aliases
 ~~~~~~~~~~~~
-.. NOTE::
-  This section is a work in progress.
 
-Room aliases can be created by sending a ``PUT /directory/room/<room alias>``::
-
-  {
-    "room_id": <room id>
-  }
-
-They can be deleted by sending a ``DELETE /directory/room/<room alias>`` with
-no content. Only some privileged users may be able to delete room aliases, e.g.
-server admins, the creator of the room alias, etc. This specification does not
-outline the privilege level required for deleting room aliases.
+Servers may host aliases for rooms with human-friendly names. Aliases take the
+form ``#friendlyname:server.name``.
 
 As room aliases are scoped to a particular home server domain name, it is
 likely that a home server will reject attempts to maintain aliases on other
@@ -812,16 +802,10 @@ appears to have a room alias of ``#alias:example.com``, this SHOULD be checked
 to make sure that the room's ID matches the ``room_id`` returned from the
 request.
 
-Room aliases can be checked in the same way they are resolved; by sending a
-``GET /directory/room/<room alias>``::
-
-  {
-    "room_id": <room id>,
-    "servers": [ <domain>, <domain2>, <domain3> ]
-  }
-
 Home servers can respond to resolve requests for aliases on other domains than
 their own by using the federation API to ask other domain name home servers.
+
+{{directory_http_api}}
 
 
 Permissions
