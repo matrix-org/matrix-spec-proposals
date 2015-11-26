@@ -264,7 +264,7 @@ paths:
                       "account_data": {
                         "events": [
                           {
-                            "type": "m.tags",
+                            "type": "m.tag",
                             "content": {"tags": {"work": {"order": "1"}}}
                           }
                         ]
