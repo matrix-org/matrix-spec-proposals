@@ -285,7 +285,7 @@ Encrypted messages are sent in the form.
 
 
 Using Olm
-#########
++++++++++
 
 Devices that support olm must include "m.olm.v1.curve25519-aes-sha2" in their
 list of supported chat algorithms, must list a Curve25519 device key, and
