@@ -41,6 +41,9 @@ EDUs and PDUs are further wrapped in an envelope called a Transaction, which is
 transferred from the origin to the destination home server using an HTTPS PUT
 request.
 
+.. contents:: Table of Contents
+.. sectnum::
+
 Server Discovery
 ----------------
 

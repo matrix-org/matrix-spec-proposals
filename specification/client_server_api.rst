@@ -17,6 +17,9 @@ shortly.
 Documentation for the old `V1 authentication
 <../attic/v1_registration_login.rst>`_ is still available separately.
 
+.. contents:: Table of Contents
+.. sectnum::
+
 API Standards
 -------------
 
