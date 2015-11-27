@@ -1,0 +1,65 @@
+{
+  "type": "object",
+  "properties": {
+    "content": {
+      "items": {
+        "type": "object",
+        "title": "PushRule",
+        "allOf": [
+          {
+            "$ref": "push_rule.json"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "override": {
+      "items": {
+        "type": "object",
+        "title": "PushRule",
+        "allOf": [
+          {
+            "$ref": "push_rule.json"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "sender": {
+      "items": {
+        "type": "object",
+        "title": "PushRule",
+        "allOf": [
+          {
+            "$ref": "push_rule.json"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "underride": {
+      "items": {
+        "type": "object",
+        "title": "PushRule",
+        "allOf": [
+          {
+            "$ref": "push_rule.json"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "room": {
+      "items": {
+        "type": "object",
+        "title": "PushRule",
+        "allOf": [
+          {
+            "$ref": "push_rule.json"
+          }
+        ]
+      },
+      "type": "array"
+    }
+  }
+}

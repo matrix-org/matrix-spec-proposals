@@ -1,0 +1,280 @@
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server v2 sync API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+basePath: /_matrix/client/v2_alpha
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  accessToken:
+    type: apiKey
+    description: The user_id or application service access_token
+    name: access_token
+    in: query
+paths:
+  "/sync":
+    get:
+      summary: Synchronise the client's state and receive new messages.
+      description: |-
+        Synchronise the client's state with the latest state on the server.
+        Clients use this API when they first log in to get an initial snapshot
+        of the state on the server, and then continue to call this API to get
+        incremental deltas to the state, and to receive new messages.
+      security:
+        - accessToken: []
+      parameters:
+        - in: query
+          name: filter
+          type: string
+          description: |-
+            The ID of a filter created using the filter API.
+          x-example: "66696p746572"
+        - in: query
+          name: since
+          type: string
+          description: |-
+            A point in time to continue a sync from.
+          x-example: "s72594_4483_1934"
+        - in: query
+          name: full_state
+          type: boolean
+          description: |-
+            Controls whether to include the full state for all rooms the user
+            is a member of.
+
+            If this is set to ``true``, then all state events will be returned,
+            even if ``since`` is non-empty. The timeline will still be limited
+            by the ``since`` parameter. In this case, the ``timeout`` parameter
+            will be ignored and the query will return immediately, possibly with
+            an empty timeline.
+
+            If ``false``, and ``since`` is non-empty, only state which has
+            changed since the point indicated by ``since`` will be returned.
+
+            By default, this is ``false``.
+          x-example: "false"
+        - in: query
+          name: set_presence
+          type: string
+          enum: ["offline"]
+          description: |-
+            Controls whether the client is automatically marked as online by
+            polling this API. If this parameter is omitted then the client is
+            automatically marked as online when it uses this API. Otherwise if
+            the parameter is set to "offline" then the client is not marked as
+            being online when it uses this API.
+          x-example: "offline"
+        - in: query
+          name: timeout
+          type: integer
+          description: |-
+            The maximum time to poll in milliseconds before returning this
+            request.
+          x-example: 30000
+      responses:
+        200:
+          description:
+            The initial snapshot or delta for the client to use to update their
+            state.
+          schema:
+            type: object
+            properties:
+              next_batch:
+                type: string
+                description: |-
+                  The batch token to supply in the ``since`` param of the next
+                  ``/sync`` request.
+              rooms:
+                title: Rooms
+                type: object
+                description: |-
+                  Updates to rooms.
+                properties:
+                  join:
+                    title: Joined Rooms
+                    type: object
+                    description: |-
+                      The rooms that the user has joined.
+                    additionalProperties:
+                      title: Joined Room
+                      type: object
+                      properties:
+                        state:
+                          title: State
+                          type: object
+                          description: |-
+                            Updates to the state, between the time indicated by
+                            the ``since`` parameter, and the start of the
+                            ``timeline`` (or all state up to the start of the
+                            ``timeline``, if ``since`` is not given, or
+                            ``full_state`` is true).
+                          allOf:
+                            - $ref: "definitions/event_batch.json"
+                        timeline:
+                          title: Timeline
+                          type: object
+                          description: |-
+                            The timeline of messages and state changes in the
+                            room.
+                          allOf:
+                            - $ref: "definitions/timeline_batch.json"
+                        ephemeral:
+                          title: Ephemeral
+                          type: object
+                          description: |-
+                            The ephemeral events in the room that aren't
+                            recorded in the timeline or state of the room.
+                            e.g. typing.
+                          allOf:
+                            - $ref: "definitions/event_batch.json"
+                  invite:
+                    title: Invited Rooms
+                    type: object
+                    description: |-
+                      The rooms that the user has been invited to.
+                    additionalProperties:
+                      title: Invited Room
+                      type: object
+                      properties:
+                        invite_state:
+                          title: InviteState
+                          type: object
+                          description: |-
+                            The state of a room that the user has been invited
+                            to. These state events may only have the ``sender``,
+                            ``type``, ``state_key`` and ``content`` keys
+                            present. These events do not replace any state that
+                            the client already has for the room, for example if
+                            the client has archived the room. Instead the
+                            client should keep two separate copies of the
+                            state: the one from the ``invite_state`` and one
+                            from the archived ``state``. If the client joins
+                            the room then the current state will be given as a
+                            delta against the archived ``state`` not the
+                            ``invite_state``.
+                          allOf:
+                            - $ref: "definitions/event_batch.json"
+                  leave:
+                    title: Left rooms
+                    type: object
+                    description: |-
+                      The rooms that the user has left or been banned from.
+                    additionalProperties:
+                      title: Left Room
+                      type: object
+                      properties:
+                        state:
+                          title: State
+                          type: object
+                          description: |-
+                            The state updates for the room up to the start of the timeline.
+                          allOf:
+                            - $ref: "definitions/event_batch.json"
+                        timeline:
+                          title: Timeline
+                          type: object
+                          description: |-
+                            The timeline of messages and state changes in the
+                            room up to the point when the user left.
+                          allOf:
+                            - $ref: "definitions/timeline_batch.json"
+              presence:
+                title: Presence
+                type: object
+                description: |-
+                  The updates to the presence status of other users.
+                allOf:
+                  - $ref: "definitions/event_batch.json"
+          examples:
+            application/json: |-
+              {
+                "next_batch": "s72595_4483_1934",
+                "presence": {
+                  "events": [
+                    {
+                      "sender": "@alice:example.com",
+                      "type": "m.presence",
+                      "content": {"presence": "online"}
+                    }
+                  ]
+                },
+                "rooms": {
+                  "join": {
+                    "!726s6s6q:example.com": {
+                      "state": {
+                        "events": [
+                          {
+                            "sender": "@alice:example.com",
+                            "type": "m.room.member",
+                            "state_key": "@alice:example.com",
+                            "content": {"membership": "join"},
+                            "origin_server_ts": 1417731086795,
+                            "event_id": "$66697273743031:example.com"
+                          }
+                        ]
+                      },
+                      "timeline": {
+                        "events": [
+                          {
+                            "sender": "@bob:example.com",
+                            "type": "m.room.member",
+                            "state_key": "@bob:example.com",
+                            "content": {"membership": "join"},
+                            "prev_content": {"membership": "invite"},
+                            "origin_server_ts": 1417731086795,
+                            "event_id": "$7365636s6r6432:example.com"
+                          },
+                          {
+                            "sender": "@alice:example.com",
+                            "type": "m.room.message",
+                            "age": 124524,
+                            "txn_id": "1234",
+                            "content": {
+                              "body": "I am a fish",
+                              "msgtype": "m.text"
+                            },
+                            "origin_server_ts": 1417731086797,
+                            "event_id": "$74686972643033:example.com"
+                          }
+                        ],
+                        "limited": true,
+                        "prev_batch": "t34-23535_0_0"
+                      },
+                      "ephemeral": {
+                        "events": [
+                          {
+                            "type": "m.typing",
+                            "content": {"user_ids": ["@alice:example.com"]}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "invite": {
+                    "!696r7674:example.com": {
+                      "invite_state": {
+                        "events": [
+                          {
+                            "sender": "@alice:example.com",
+                            "type": "m.room.name",
+                            "state_key": "",
+                            "content": {"name": "My Room Name"}
+                          },
+                          {
+                            "sender": "@alice:example.com",
+                            "type": "m.room.member",
+                            "state_key": "@bob:example.com",
+                            "content": {"membership": "invite"}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "leave": {}
+                }
+              }
