@@ -12,6 +12,9 @@ irrespective of the underlying homeserver implementation.
   Add in Client-Server services? Overview of bots? Seems weird to be in the spec
   given it is VERY implementation specific.
 
+.. contents:: Table of Contents
+.. sectnum::
+
 Application Services
 --------------------
 Application services are passive and can only observe events from a given
