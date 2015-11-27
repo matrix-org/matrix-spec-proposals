@@ -26,6 +26,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/third_party_invites.rst
     - modules/search.rst
     - modules/guest_access.rst
+    - modules/tags.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`"]

@@ -132,6 +132,14 @@ paths:
                             e.g. typing.
                           allOf:
                             - $ref: "definitions/event_batch.json"
+                        account_data:
+                          title: Account Data
+                          type: object
+                          description: |-
+                            The private data that this user has attached to
+                            this room.
+                          allOf:
+                          - $ref: "definitions/event_batch.json"
                   invite:
                     title: Invited Rooms
                     type: object
@@ -250,6 +258,14 @@ paths:
                           {
                             "type": "m.typing",
                             "content": {"user_ids": ["@alice:example.com"]}
+                          }
+                        ]
+                      },
+                      "account_data": {
+                        "events": [
+                          {
+                            "type": "m.tag",
+                            "content": {"tags": {"work": {"order": "1"}}}
                           }
                         ]
                       }

@@ -311,7 +311,11 @@ paths:
                     "user_id": "@alice:example.com"
                   }
                 ],
-                "visibility": "private"
+                "visibility": "private",
+                "account_data": [{
+                    "type": "m.tag",
+                    "content": {"tags": {"work": {"order": "1"}}}
+                }]
               }
           schema:
             title: RoomInfo
@@ -371,6 +375,15 @@ paths:
                 description: |-
                   Whether this room is visible to the ``/publicRooms`` API
                   or not."
+              account_data:
+                type: array
+                description: |-
+                  The private data that this user has attached to this room.
+                items:
+                  title: Event
+                  type: object
+                  allOf:
+                    - "$ref": "core-event-schema/event.json"
             required: ["room_id"]
         403:
           description: >
