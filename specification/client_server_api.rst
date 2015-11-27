@@ -465,7 +465,7 @@ This section refers to API Version 2. These API calls currently use the prefix
 
 .. _User-Interactive Authentication: `sect:auth-api`_
 
-{{v2_registration_http_api}}
+{{registration_http_api}}
 
 Old V1 API docs: |register|_
 
@@ -768,7 +768,7 @@ This API also returns an ``end`` token which can be used with the event stream.
 
 {{sync_http_api}}
 
-{{v2_sync_http_api}}
+{{sync_http_api}}
 
 
 Getting events for a room

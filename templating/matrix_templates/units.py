@@ -17,11 +17,10 @@ import subprocess
 import urllib
 import yaml
 
-V1_CLIENT_API = "../api/client-server/v1"
-V1_EVENT_EXAMPLES = "../event-schemas/examples/v1"
-V1_EVENT_SCHEMA = "../event-schemas/schema/v1"
-V2_CLIENT_API = "../api/client-server/v2_alpha"
-CORE_EVENT_SCHEMA = "../event-schemas/schema/v1/core-event-schema"
+HTTP_APIS = "../api/client-server"
+V1_EVENT_EXAMPLES = "../event-schemas/examples"
+V1_EVENT_SCHEMA = "../event-schemas/schema"
+CORE_EVENT_SCHEMA = "../event-schemas/schema/core-event-schema"
 CHANGELOG = "../CHANGELOG.rst"
 TARGETS = "../specification/targets.yaml"
 
@@ -549,30 +548,21 @@ class MatrixUnits(Units):
         }
 
     def load_swagger_apis(self):
-        paths = [
-            V1_CLIENT_API, V2_CLIENT_API
-        ]
         apis = {}
-        for path in paths:
-            is_v2 = (path == V2_CLIENT_API)
-            if not os.path.exists(V2_CLIENT_API):
-                self.log("Skipping v2 apis: %s does not exist." % V2_CLIENT_API)
+        path = HTTP_APIS
+        for filename in os.listdir(path):
+            if not filename.endswith(".yaml"):
                 continue
-            for filename in os.listdir(path):
-                if not filename.endswith(".yaml"):
-                    continue
-                self.log("Reading swagger API: %s" % filename)
-                filepath = os.path.join(path, filename)
-                with open(filepath, "r") as f:
-                    # strip .yaml
-                    group_name = filename[:-5].replace("-", "_")
-                    if is_v2:
-                        group_name = "v2_" + group_name
-                    api = yaml.load(f.read())
-                    api["__meta"] = self._load_swagger_meta(
-                        filepath, api, group_name
-                    )
-                    apis[group_name] = api
+            self.log("Reading swagger API: %s" % filename)
+            filepath = os.path.join(path, filename)
+            with open(filepath, "r") as f:
+                # strip .yaml
+                group_name = filename[:-5].replace("-", "_")
+                api = yaml.load(f.read())
+                api["__meta"] = self._load_swagger_meta(
+                    filepath, api, group_name
+                )
+                apis[group_name] = api
         return apis
 
     def load_common_event_fields(self):

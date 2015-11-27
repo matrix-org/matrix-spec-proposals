@@ -45,4 +45,4 @@ Two special names are listed in the specification:
 Client Behaviour
 ----------------
 
-{{v2_tags_http_api}}
+{{tags_http_api}}
