@@ -276,6 +276,12 @@ def run_through_template(input, set_verbose):
         raise
 
 
+def get_build_targets(targets_listing):
+    with open(targets_listing, "r") as targ_file:
+        all_targets = yaml.load(targ_file.read())
+    return all_targets["targets"].keys()
+
+
 """
 Extract and resolve groups for the given target in the given targets listing.
 Args:
@@ -386,21 +392,34 @@ def cleanup_env():
     shutil.rmtree("./tmp")
 
 
-def main(target_name, keep_intermediates):
+def main(requested_target_name, keep_intermediates):
     prepare_env()
-    log("Building spec [target=%s]" % target_name)
-    target = get_build_target("../specification/targets.yaml", target_name)
-    build_spec(target=target, out_filename="tmp/templated_spec.rst")
-    run_through_template("tmp/templated_spec.rst", VERBOSE)
-    fix_relative_titles(
-        target=target, filename="tmp/templated_spec.rst",
-        out_filename="tmp/full_spec.rst"
-    )
-    shutil.copy("../supporting-docs/howtos/client-server.rst", "tmp/howto.rst")
-    run_through_template("tmp/howto.rst", False)  # too spammy to mark -v on this
-    rst2html("tmp/full_spec.rst", "gen/specification.html")
-    addAnchors("gen/specification.html")
-    rst2html("tmp/howto.rst", "gen/howtos.html")
+    log("Building spec [target=%s]" % requested_target_name)
+
+    targets = [requested_target_name]
+    if requested_target_name == "all":
+        targets = get_build_targets("../specification/targets.yaml")
+
+    for target_name in targets:
+        templated_file = "tmp/templated_%s.rst" % (target_name,)
+        rst_file = "tmp/spec_%s.rst" % (target_name,)
+        html_file = "gen/%s.html" % (target_name,)
+
+        target = get_build_target("../specification/targets.yaml", target_name)
+        build_spec(target=target, out_filename=templated_file)
+        run_through_template(templated_file, VERBOSE)
+        fix_relative_titles(
+            target=target, filename=templated_file,
+            out_filename=rst_file,
+        )
+        rst2html(rst_file, html_file)
+        addAnchors(html_file)
+
+    if requested_target_name == "all":
+        shutil.copy("../supporting-docs/howtos/client-server.rst", "tmp/howto.rst")
+        run_through_template("tmp/howto.rst", False)  # too spammy to mark -v on this
+        rst2html("tmp/howto.rst", "gen/howtos.html")
+
     if not keep_intermediates:
         cleanup_env()
 
@@ -414,8 +433,9 @@ if __name__ == '__main__':
         help="Do not delete intermediate files. They will be found in tmp/"
     )
     parser.add_argument(
-        "--target", "-t", default="main",
-        help="Specify the build target to build from specification/targets.yaml"
+        "--target", "-t", default="all",
+        help="Specify the build target to build from specification/targets.yaml. " +
+             "The value 'all' will build all of the targets therein."
     )
     parser.add_argument(
         "--verbose", "-v", action="store_true",

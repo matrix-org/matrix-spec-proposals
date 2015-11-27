@@ -8,6 +8,16 @@ https://github.com/matrix-org/matrix-doc using
 https://github.com/matrix-org/matrix-doc/blob/master/scripts/gendoc.py as of
 revision ``{{git_version}}`` - https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}
 
+APIs
+~~~~
+The following APIs are documented in this specification:
+
+- `Client-Server API <client_server.html>`_ for writing Matrix clients.
+- `Server-Server API <server_server.html>`_ for writing servers which can federate with Matrix.
+- `Application Service API <application_service.html>`_ for writing privileged plugins to servers.
+
+There are also some `appendices <appendices.html>`_.
+
 Changelog
 ~~~~~~~~~
 {{spec_changelog}}
