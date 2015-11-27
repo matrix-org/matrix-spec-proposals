@@ -6,7 +6,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v1
+basePath: /_matrix/client/api/%MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -63,6 +63,6 @@ paths:
           schema:
             "$ref": "definitions/error.yaml"
       x-alias:
-        canonical-link: "post-matrix-client-api-v1-rooms-roomid-join"
+        canonical-link: "post-matrix-client-api-%MAJOR_VERSION%-rooms-roomid-join"
         aliases:
-          - /_matrix/client/api/v1/join/{roomId}
+          - /_matrix/client/api/%MAJOR_VERSION%/join/{roomId}
