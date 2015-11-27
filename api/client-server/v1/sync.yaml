@@ -131,6 +131,14 @@ paths:
                           "type": "m.presence"
                       }
                   ],
+                  "account_data": [
+                    {
+                      "type": "org.example.custom.config",
+                      "content": {
+                        "custom_config_key": "custom_config_value"
+                      }
+                    }
+                  ],
                   "rooms": [
                       {
                           "membership": "join",
@@ -246,10 +254,18 @@ paths:
                               }
                           ],
                           "visibility": "private",
-                          "account_data": [{
-                            "type": "m.tag",
-                            "content": {"tags": {"work": {"order": "1"}}}
-                          }]
+                          "account_data": [
+                            {
+                              "type": "m.tag",
+                              "content": {"tags": {"work": {"order": 1}}}
+                            },
+                            {
+                              "type": "org.example.custom.room.config",
+                              "content": {
+                                "custom_config_key": "custom_config_value"
+                              }
+                            }
+                          ]
                       }
                   ]
               }
