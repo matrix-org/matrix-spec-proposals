@@ -983,6 +983,8 @@ following values:
 
 {{joining_http_api}}
 
+{{banning_http_api}}
+
 Leaving rooms
 ~~~~~~~~~~~~~
 A user can leave a room to stop receiving events for that room. A user must
