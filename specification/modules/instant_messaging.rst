@@ -62,10 +62,8 @@ resulting ``mxc://`` URI can then be used in the ``url`` key.
 Recommendations when sending messages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Clients can send messages using ``POST`` or ``PUT`` requests. Clients SHOULD use
-``PUT`` requests with `transaction IDs`_ to make requests idempotent. This
-ensures that messages are sent exactly once even under poor network conditions.
-Clients SHOULD retry requests using an exponential-backoff algorithm for a
+In the event of send failure, clients SHOULD retry requests using an
+exponential-backoff algorithm for a
 certain amount of time T. It is recommended that T is no longer than 5 minutes.
 After this time, the client should stop retrying and mark the message as "unsent".
 Users should be able to manually resend unsent messages.
@@ -77,8 +75,6 @@ sending the next request. This can lead to head-of-line blocking. In order to
 reduce the impact of head-of-line blocking, clients should use a queue per room
 rather than a global queue, as ordering is only relevant within a single room
 rather than between rooms.
-
-.. _`transaction IDs`: `sect:txn_ids`_
 
 Local echo
 ~~~~~~~~~~
