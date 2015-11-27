@@ -18,7 +18,7 @@ This contains the client-server API for the reference implementation of the home
 
 EOF
 
-for f in ../api/client-server/*/*.yaml; do
+for f in ../api/client-server/*.yaml; do
   f="$(basename "${f/.yaml/_http_api}")"
   echo "{{${f/-/_}}}" >> tmp/http_apis
 done
