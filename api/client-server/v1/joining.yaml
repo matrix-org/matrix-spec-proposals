@@ -65,4 +65,4 @@ paths:
       x-alias:
         canonical-link: "post-matrix-client-api-v1-rooms-roomid-join"
         aliases:
-          - /join/{roomId}
+          - /_matrix/client/api/v1/join/{roomId}
