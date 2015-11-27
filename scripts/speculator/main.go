@@ -57,8 +57,8 @@ var (
 	port            = flag.Int("port", 9000, "Port on which to listen for HTTP")
 	includesDir     = flag.String("includes_dir", "", "Directory containing include files for styling like matrix.org")
 	allowedMembers  map[string]bool
-	specCache       *lru.Cache // string -> []byte
-	styledSpecCache *lru.Cache // string -> []byte
+	specCache       *lru.Cache // string -> map[string][]byte filename -> contents
+	styledSpecCache *lru.Cache // string -> map[string][]byte filename -> contents
 )
 
 func (u *User) IsTrusted() bool {
@@ -105,10 +105,7 @@ func lookupPullRequest(url url.URL, pathPrefix string) (*PullRequest, error) {
 	if !strings.HasPrefix(url.Path, pathPrefix+"/") {
 		return nil, fmt.Errorf("invalid path passed: %s expect %s/123", url.Path, pathPrefix)
 	}
-	prNumber := url.Path[len(pathPrefix)+1:]
-	if strings.Contains(prNumber, "/") {
-		return nil, fmt.Errorf("invalid path passed: %s expect %s/123", url.Path, pathPrefix)
-	}
+	prNumber := strings.Split(url.Path[len(pathPrefix)+1:], "/")[0]
 
 	resp, err := http.Get(fmt.Sprintf("%s/%s", pullsPrefix, prNumber))
 	defer resp.Body.Close()
@@ -196,6 +193,17 @@ func (s *server) getSHAOf(ref string) (string, error) {
 	return strings.TrimSpace(b.String()), nil
 }
 
+func extractPath(path, base string) string {
+	// Assume exactly one flat directory
+	max := strings.Count(base, "/") + 2
+	parts := strings.SplitN(path, "/", max)
+
+	if len(parts) < max || parts[max-1] == "" {
+		return "index.html"
+	}
+	return parts[max-1]
+}
+
 func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 	var sha string
 
@@ -206,7 +214,7 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if strings.ToLower(req.URL.Path) == "/spec/head" {
+	if strings.HasPrefix(strings.ToLower(req.URL.Path), "/spec/head") {
 		// err may be non-nil here but if headSha is non-empty we will serve a possibly-stale result in favour of erroring.
 		// This is to deal with cases like where github is down but we still want to serve the spec.
 		if headSha, err := s.lookupHeadSHA(); headSha == "" {
@@ -236,36 +244,59 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 		cache = styledSpecCache
 	}
 
+	var pathToContent map[string][]byte
+
 	if cached, ok := cache.Get(sha); ok {
-		w.Write(cached.([]byte))
-		return
+		pathToContent = cached.(map[string][]byte)
+	} else {
+		dst, err := s.generateAt(sha)
+		defer os.RemoveAll(dst)
+		if err != nil {
+			writeError(w, 500, err)
+			return
+		}
+
+		if styleLikeMatrixDotOrg {
+			cmd := exec.Command("./add-matrix-org-stylings.sh", *includesDir)
+			cmd.Dir = path.Join(dst, "scripts")
+			var b bytes.Buffer
+			cmd.Stderr = &b
+			if err := cmd.Run(); err != nil {
+				writeError(w, 500, fmt.Errorf("error styling spec: %v\nOutput:\n%v", err, b.String()))
+				return
+			}
+		}
+
+		fis, err := ioutil.ReadDir(path.Join(dst, "scripts", "gen"))
+		if err != nil {
+			writeError(w, 500, fmt.Errorf("Error reading directory: %v", err))
+		}
+		pathToContent = make(map[string][]byte)
+		for _, fi := range fis {
+			b, err := ioutil.ReadFile(path.Join(dst, "scripts", "gen", fi.Name()))
+			if err != nil {
+				writeError(w, 500, fmt.Errorf("Error reading spec: %v", err))
+				return
+			}
+			pathToContent[fi.Name()] = b
+		}
+		cache.Add(sha, pathToContent)
 	}
 
-	dst, err := s.generateAt(sha)
-	defer os.RemoveAll(dst)
-	if err != nil {
-		writeError(w, 500, err)
+	requestedPath := extractPath(req.URL.Path, "/spec/pr")
+	if b, ok := pathToContent[requestedPath]; ok {
+		w.Write(b)
 		return
 	}
-
-	if styleLikeMatrixDotOrg {
-		cmd := exec.Command("./add-matrix-org-stylings.sh", *includesDir)
-		cmd.Dir = path.Join(dst, "scripts")
-		var b bytes.Buffer
-		cmd.Stderr = &b
-		if err := cmd.Run(); err != nil {
-			writeError(w, 500, fmt.Errorf("error styling spec: %v\nOutput:\n%v", err, b.String()))
+	if requestedPath == "index.html" {
+		// Fall back to single-page spec for old PRs
+		if b, ok := pathToContent["specification.html"]; ok {
+			w.Write(b)
 			return
 		}
 	}
-
-	b, err := ioutil.ReadFile(path.Join(dst, "scripts/gen/specification.html"))
-	if err != nil {
-		writeError(w, 500, fmt.Errorf("Error reading spec: %v", err))
-		return
-	}
-	w.Write(b)
-	cache.Add(sha, b)
+	w.WriteHeader(404)
+	w.Write([]byte("Not found"))
 }
 
 // lookupHeadSHA looks up what origin/master's HEAD SHA is.
@@ -322,7 +353,7 @@ func (s *server) serveRSTDiff(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	diffCmd := exec.Command("diff", "-u", path.Join(base, "scripts", "tmp", "full_spec.rst"), path.Join(head, "scripts", "tmp", "full_spec.rst"))
+	diffCmd := exec.Command("diff", "-r", "-u", path.Join(base, "scripts", "tmp"), path.Join(head, "scripts", "tmp"))
 	var diff bytes.Buffer
 	diffCmd.Stdout = &diff
 	if err := ignoreExitCodeOne(diffCmd.Run()); err != nil {
@@ -366,7 +397,8 @@ func (s *server) serveHTMLDiff(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	cmd := exec.Command(htmlDiffer, path.Join(base, "scripts", "gen", "specification.html"), path.Join(head, "scripts", "gen", "specification.html"))
+	requestedPath := extractPath(req.URL.Path, "/diff/spec/pr")
+	cmd := exec.Command(htmlDiffer, path.Join(base, "scripts", "gen", requestedPath), path.Join(head, "scripts", "gen", requestedPath))
 	var b bytes.Buffer
 	cmd.Stdout = &b
 	if err := cmd.Run(); err != nil {
