@@ -16,9 +16,11 @@ for f in "$1"/{head,nav,footer}.html; do
   fi
 done
 
+files=gen/*.html
+
 perl -MFile::Slurp -pi -e 'BEGIN { $header = read_file("'$HEADER'") } s#<head>#<head>$header
   <link rel="stylesheet" href="//matrix.org/docs/guides/css/docs_overrides.css">
-#' gen/specification.html gen/howtos.html
+#' ${files}
 
 perl -MFile::Slurp -pi -e 'BEGIN { $nav = read_file("'$NAV_BAR'") } s#<body>#  <body class="blog et_fixed_nav et_cover_background et_right_sidebar">
    <div id="page-wrapper">
@@ -27,7 +29,7 @@ perl -MFile::Slurp -pi -e 'BEGIN { $nav = read_file("'$NAV_BAR'") } s#<body>#  <
        <div id="main-content">
          <div class="wrapper" id="wrapper">
            <div class="document_foo" id="document">
-#' gen/specification.html gen/howtos.html
+#' ${files}
 
 perl -MFile::Slurp -pi -e 'BEGIN { $footer = read_file("'$FOOTER'") } s#</body>#
             </div>
@@ -39,4 +41,4 @@ perl -MFile::Slurp -pi -e 'BEGIN { $footer = read_file("'$FOOTER'") } s#</body>#
         $footer
       </div>
     </div>
-  </body>#' gen/specification.html gen/howtos.html
+  </body>#' ${files}
