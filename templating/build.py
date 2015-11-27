@@ -42,6 +42,7 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined, Template, met
 from argparse import ArgumentParser, FileType
 import importlib
 import json
+import logging
 import os
 import sys
 from textwrap import TextWrapper
@@ -209,6 +210,9 @@ if __name__ == '__main__':
         help="Turn on verbose mode."
     )
     args = parser.parse_args()
+
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
 
     if not args.input:
         raise Exception("Missing [i]nput python module.")
