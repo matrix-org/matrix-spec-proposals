@@ -1,41 +1,20 @@
-#! /bin/bash
+#!/bin/bash -eu
 
-if [ -z "$1" ]; then
-    echo "Expected /includes/head.html file as 1st arg."
-    exit 1
+if [[ $# != 1 || ! -d $1 ]]; then
+  echo >&2 "Usage: $0 include_dir"
+  exit 1
 fi
 
-if [ -z "$2" ]; then
-    echo "Expected /includes/nav.html file as 2nd arg."
+HEADER="$1/head.html"
+NAV_BAR="$1/nav.html"
+FOOTER="$1/footer.html"
+
+for f in "$1"/{head,nav,footer}.html; do
+  if [[ ! -e "${f}" ]]; then
+    echo >&2 "Need ${f} to exist"
     exit 1
-fi
-
-if [ -z "$3" ]; then
-    echo "Expected /includes/footer.html file as 3rd arg."
-    exit 1
-fi
-
-
-HEADER=$1
-NAV_BAR=$2
-FOOTER=$3
-
-if [ ! -f $HEADER ]; then
-    echo $HEADER " does not exist"
-    exit 1
-fi
-
-if [ ! -f $NAV_BAR ]; then
-    echo $NAV_BAR " does not exist"
-    exit 1
-fi
-
-if [ ! -f $FOOTER ]; then
-    echo $FOOTER " does not exist"
-    exit 1
-fi
-
-python gendoc.py
+  fi
+done
 
 perl -MFile::Slurp -pi -e 'BEGIN { $header = read_file("'$HEADER'") } s#<head>#<head>$header
   <link rel="stylesheet" href="//matrix.org/docs/guides/css/docs_overrides.css">
