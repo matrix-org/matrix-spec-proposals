@@ -135,6 +135,7 @@ func generate(dir string) error {
 }
 
 func writeError(w http.ResponseWriter, code int, err error) {
+	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(code)
 	io.WriteString(w, fmt.Sprintf("%v\n", err))
 }
