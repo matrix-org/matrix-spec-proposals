@@ -769,7 +769,7 @@ When the client first logs in, they will need to initially synchronise with
 their home server. This is achieved via the initial sync API described below.
 This API also returns an ``end`` token which can be used with the event stream.
 
-{{sync_http_api}}
+{{old_sync_http_api}}
 
 {{sync_http_api}}
 
