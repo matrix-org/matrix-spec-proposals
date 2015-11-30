@@ -7,24 +7,24 @@
         "state": {
           "description":
             "The state events to include for rooms.",
-          "allOf": [{"$ref": "definitions/room_event_filter.json"}]
+          "allOf": [{"$ref": "room_event_filter.json"}]
         },
         "timeline": {
           "description":
             "The message and state update events to include for rooms.",
-          "allOf": [{"$ref": "definitions/room_event_filter.json"}]
+          "allOf": [{"$ref": "room_event_filter.json"}]
         },
         "ephemeral": {
           "description":
             "The events that aren't recorded in the room history, e.g. typing and receipts, to include for rooms.",
-          "allOf": [{"$ref": "definitions/room_event_filter.json"}]
+          "allOf": [{"$ref": "room_event_filter.json"}]
         }
       }
     },
     "presence": {
       "description":
         "The presence updates to include.",
-      "allOf": [{"$ref": "definitions/event_filter.json"}]
+      "allOf": [{"$ref": "event_filter.json"}]
     },
     "event_format": {
       "description":

@@ -98,6 +98,6 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                   - "$ref": "core-event-schema/room_event.json"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
         400:
           description: "Bad pagination ``from`` parameter."
