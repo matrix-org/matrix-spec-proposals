@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "allOf": [{"$ref": "definitions/event_filter.json"}],
+  "allOf": [{"$ref": "event_filter.json"}],
   "properties": {
     "rooms": {
       "type": "array",

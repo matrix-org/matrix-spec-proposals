@@ -84,7 +84,7 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                   - "$ref": "core-event-schema/room_event.json"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
         400:
           description: "Bad pagination ``from`` parameter."
   "/initialSync":
@@ -285,7 +285,7 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                   - "$ref": "core-event-schema/event.json"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/event.json"
               rooms:
                 type: array
                 items:
@@ -304,7 +304,7 @@ paths:
                         title: "InviteEvent"
                         description: "The invite event if ``membership`` is ``invite``"
                         allOf:
-                          - "$ref": "v1-event-schema/m.room.member"
+                          - "$ref": "../../event-schemas/schema/m.room.member"
                     messages:
                       type: object
                       title: PaginationChunk
@@ -332,7 +332,7 @@ paths:
                             type: object
                             title: RoomEvent
                             allOf:
-                              - "$ref": "core-event-schema/room_event.json"
+                              - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
                       required: ["start", "end", "chunk"]
                     state:
                       type: array
@@ -345,7 +345,7 @@ paths:
                         title: StateEvent
                         type: object
                         allOf:
-                          - "$ref": "core-event-schema/state_event.json"
+                          - "$ref": "../../event-schemas/schema/core-event-schema/state_event.json"
                     visibility:
                       type: string
                       enum: ["private", "public"]
@@ -361,7 +361,7 @@ paths:
                         title: Event
                         type: object
                         allOf:
-                          - "$ref": "core-event-schema/event.json"
+                          - "$ref": "../../event-schemas/schema/core-event-schema/event.json"
                   required: ["room_id", "membership"]
             required: ["end", "rooms", "presence"]
         404:
@@ -398,6 +398,6 @@ paths:
               }
           schema:
             allOf:
-              - "$ref": "core-event-schema/event.json"
+              - "$ref": "../../event-schemas/schema/core-event-schema/event.json"
         404:
           description: The event was not found or you do not have permission to read this event.

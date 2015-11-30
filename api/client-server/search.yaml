@@ -111,7 +111,7 @@ paths:
                                 title: Event
                                 description: The event that matched.
                                 allOf:
-                                  - "$ref": "core-event-schema/room_event.json"
+                                  - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
           examples:
             application/json: |-
                {

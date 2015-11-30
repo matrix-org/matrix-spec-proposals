@@ -3,7 +3,7 @@
   "title": "Room Event",
   "description": "In addition to the Event fields, Room Events MUST have the following additional field.",
   "allOf":[{
-    "$ref": "core-event-schema/event.json"
+    "$ref": "event.json"
   }],
   "properties": {
     "room_id": {

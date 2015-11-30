@@ -205,4 +205,4 @@ paths:
               type: object
               title: PresenceEvent
               allOf:
-                - "$ref": "core-event-schema/event.json"
+                - "$ref": "../../event-schemas/schema/core-event-schema/event.json"
