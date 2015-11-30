@@ -6,7 +6,6 @@ set -ex
 (cd api && ./check_examples.py)
 (cd scripts && ./gendoc.py -v)
 (cd api && npm install && node validator.js -s "client-server")
-(cd event-schemas/ && ./check.sh)
 
 : ${GOPATH:=${WORKSPACE}/.gopath}
 mkdir -p "${GOPATH}"
