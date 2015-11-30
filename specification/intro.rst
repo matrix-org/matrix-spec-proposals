@@ -9,7 +9,7 @@ https://github.com/matrix-org/matrix-doc/blob/master/scripts/gendoc.py as of
 revision ``{{git_version}}`` - https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}
 
 APIs
-~~~~
+----
 The following APIs are documented in this specification:
 
 - `Client-Server API <client_server.html>`_ for writing Matrix clients.
@@ -19,7 +19,7 @@ The following APIs are documented in this specification:
 There are also some `appendices <appendices.html>`_.
 
 Changelog
-~~~~~~~~~
+---------
 {{spec_changelog}}
 
 For a full changelog, see 
@@ -29,7 +29,7 @@ https://github.com/matrix-org/matrix-doc/blob/master/CHANGELOG.rst
 .. sectnum::
 
 Introduction
-============
+------------
 .. WARNING::
   The Matrix specification is still evolving: the APIs are not yet frozen
   and this document is in places a work in progress or stale. We have made every 
@@ -103,10 +103,10 @@ reliably and persistently pushed from A to B in an inter-operable and federated
 manner.
 
 Overview
-========
+--------
 
 Architecture
-------------
+~~~~~~~~~~~~
 
 Matrix defines APIs for synchronising extensible JSON objects known as
 "events" between compatible clients, servers and services. Clients are
@@ -158,7 +158,7 @@ a long-lived GET request.
 
 
 Users
-~~~~~
++++++
 
 Each client is associated with a user account, which is identified in Matrix
 using a unique "User ID". This ID is namespaced to the homeserver which
@@ -173,7 +173,7 @@ this user. The ``domain`` of a user ID is the domain of the homeserver.
     - Need to specify precise grammar for Matrix IDs
 
 Events
-~~~~~~
+++++++
 
 All data exchanged over Matrix is expressed as an "event". Typically each client
 action (e.g. sending a message) correlates with exactly one event. Each event
@@ -188,7 +188,7 @@ of a "Room".
 .. _package naming conventions: https://en.wikipedia.org/wiki/Java_package#Package_naming_conventions
 
 Event Graphs
-~~~~~~~~~~~~
+++++++++++++
 
 .. _sect:event-graph:
 
@@ -212,7 +212,7 @@ of its parents. The root event should have a depth of 1. Thus if one event is
 before another, then it must have a strictly smaller depth.
 
 Room structure
-~~~~~~~~~~~~~~
+++++++++++++++
 
 A room is a conceptual place where users can send and receive events. Events are
 sent to a room, and all participants in that room with sufficient access will
@@ -291,7 +291,7 @@ from the other servers participating in a room.
 
 
 Room Aliases
-++++++++++++
+^^^^^^^^^^^^
 
 Each room can also have multiple "Room Aliases", which look like::
 
@@ -327,7 +327,7 @@ that are in the room that can be used to join via.
    |________________________________|
 
 Identity
-~~~~~~~~
+++++++++
 
 Users in Matrix are identified via their matrix user ID (MXID). However,
 existing 3rd party ID namespaces can also be used in order to identify Matrix
@@ -347,7 +347,7 @@ user IDs using 3PIDs.
 
 
 Profiles
-~~~~~~~~
+++++++++
 
 Users may publish arbitrary key/value data associated with their account - such
 as a human readable display name, a profile photo URL, contact information
@@ -358,7 +358,7 @@ as a human readable display name, a profile photo URL, contact information
   names allowed to be?
 
 Private User Data
-~~~~~~~~~~~~~~~~~
++++++++++++++++++
 
 Users may also store arbitrary private key/value data in their account - such as
 client preferences, or server configuration settings which lack any other
