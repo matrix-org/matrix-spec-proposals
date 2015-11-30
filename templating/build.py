@@ -44,6 +44,7 @@ import importlib
 import json
 import logging
 import os
+import re
 import sys
 from textwrap import TextWrapper
 
@@ -56,7 +57,7 @@ def check_unaccessed(name, store):
         log("Found %s unused %s keys." % (len(unaccessed_keys), name))
         log(unaccessed_keys)
 
-def main(input_module, file_stream=None, out_dir=None, verbose=False):
+def main(input_module, file_stream=None, out_dir=None, verbose=False, substitutions={}):
     if out_dir and not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
@@ -167,6 +168,12 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
     temp = Template(temp_str)
     log("Creating output for: %s" % file_stream.name)
     output = create_from_template(temp, sections)
+
+    # Do these substitutions outside of the ordinary templating system because
+    # we want them to apply to things like the underlying swagger used to
+    # generate the templates, not just the top-level sections.
+    for old, new in substitutions.items():
+        output = output.replace(old, new)
     with open(
             os.path.join(out_dir, os.path.basename(file_stream.name)), "w"
             ) as f:
@@ -209,6 +216,11 @@ if __name__ == '__main__':
         "--verbose", "-v", action="store_true",
         help="Turn on verbose mode."
     )
+    parser.add_argument(
+        "--release_label", action="store",
+        help="Release label of API, used in URL endpoints, e.g. r1.2, or unstable." +
+             " Note that some places may derive a major version number from this."
+    )
     args = parser.parse_args()
 
     if args.verbose:
@@ -221,12 +233,25 @@ if __name__ == '__main__':
         main(args.input, verbose=args.verbose)
         sys.exit(0)
 
+    if not args.release_label:
+        raise Exception("Missing release label.")
+
     if not args.file:
         log("No file supplied.")
         parser.print_help()
         sys.exit(1)
 
+    major_version = args.release_label
+    match = re.match("^(r\d)+(\.\d+)?$", major_version)
+    if match:
+        major_version = match.group(1)
+
+    substitutions = {
+        "%RELEASE_LABEL%": args.release_label,
+        "%MAJOR_VERSION%": major_version,
+    }
+
     main(
         args.input, file_stream=args.file, out_dir=args.out_directory,
-        verbose=args.verbose
+        substitutions=substitutions, verbose=args.verbose
     )

@@ -4,6 +4,15 @@
 # It takes all of the swagger YAML files for the client-server API, and turns
 # them into API docs, with none of the narrative found in the rst files which
 # normally wrap these API docs.
+#
+# Optionally takes one positional argument, the label of the release, e.g. r1.2.
+# This falls back to "unstable" if unspecified.
+
+if [[ $# == 1 ]]; then
+  RELEASE=$1
+else
+  RELEASE="unstable"
+fi
 
 cd "$(dirname $0)"
 
@@ -23,5 +32,5 @@ for f in ../api/client-server/*.yaml; do
   echo "{{${f/-/_}}}" >> tmp/http_apis
 done
 
-(cd ../templating ; python build.py -i matrix_templates -o ../scripts/gen ../scripts/tmp/http_apis)
+(cd ../templating ; python build.py -i matrix_templates -o ../scripts/gen ../scripts/tmp/http_apis --release="${RELEASE}")
 rst2html.py --stylesheet-path=$(echo css/*.css | tr ' ' ',') gen/http_apis > gen/http_apis.html
