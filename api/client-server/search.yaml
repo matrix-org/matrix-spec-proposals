@@ -162,7 +162,7 @@ paths:
                       results:
                         type: array
                         title: Results
-                        description: Mapping of event_id to result.
+                        description: List of results in the requested order.
                         items:
                           type: object
                           title: Result
