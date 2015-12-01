@@ -14,5 +14,5 @@
   "type": "m.room.avatar",
   "state_key": "",
   "room_id": "!Cuyf34gef24t:localhost",
-  "user_id": "@example:localhost"
+  "sender": "@example:localhost"
 }

@@ -131,7 +131,7 @@ paths:
                             "origin_server_ts": 1444298308034,
                             "room_id": "!qPewotXpIctQySfjSy:localhost",
                             "type": "m.room.message",
-                            "user_id": "@test:localhost"
+                            "sender": "@test:localhost"
                           }
                         }
                       }

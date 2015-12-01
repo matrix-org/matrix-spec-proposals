@@ -60,7 +60,7 @@ paths:
                     "origin_server_ts": 1432804485886,
                     "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                     "type": "m.room.message",
-                    "user_id": "@bob:localhost"
+                    "sender": "@bob:localhost"
                   }
                 ]
               }
@@ -154,7 +154,7 @@ paths:
                                       "origin_server_ts": 1432804485886,
                                       "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                                       "type": "m.room.message",
-                                      "user_id": "@alice:localhost"
+                                      "sender": "@alice:localhost"
                                   },
                                   {
                                       "age": 343511809,
@@ -166,7 +166,7 @@ paths:
                                       "origin_server_ts": 1432804487480,
                                       "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                                       "type": "m.room.message",
-                                      "user_id": "@bob:localhost"
+                                      "sender": "@bob:localhost"
                                   }
                               ],
                               "end": "s3456_9_0",
@@ -184,13 +184,12 @@ paths:
                                   "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                                   "state_key": "",
                                   "type": "m.room.join_rules",
-                                  "user_id": "@alice:localhost"
+                                  "sender": "@alice:localhost"
                               },
                               {
                                   "age": 6547561012,
                                   "content": {
                                       "avatar_url": "mxc://localhost/fzysBrHpPEeTGANCVLXWXNMI#auto",
-                                      "displayname": null,
                                       "membership": "join"
                                   },
                                   "event_id": "$1426600438280zExKY:localhost",
@@ -199,7 +198,7 @@ paths:
                                   "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                                   "state_key": "@alice:localhost",
                                   "type": "m.room.member",
-                                  "user_id": "@alice:localhost"
+                                  "sender": "@alice:localhost"
                               },
                               {
                                   "age": 7148267200,
@@ -211,7 +210,7 @@ paths:
                                   "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                                   "state_key": "",
                                   "type": "m.room.create",
-                                  "user_id": "@alice:localhost"
+                                  "sender": "@alice:localhost"
                               },
                               {
                                   "age": 1622568720,
@@ -226,7 +225,7 @@ paths:
                                   "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                                   "state_key": "@bob:localhost",
                                   "type": "m.room.member",
-                                  "user_id": "@bob:localhost"
+                                  "sender": "@bob:localhost"
                               },
                               {
                                   "age": 7148267004,
@@ -250,7 +249,7 @@ paths:
                                   "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                                   "state_key": "",
                                   "type": "m.room.power_levels",
-                                  "user_id": "@alice:localhost"
+                                  "sender": "@alice:localhost"
                               }
                           ],
                           "visibility": "private",
@@ -392,7 +391,7 @@ paths:
                   "msgtype": "m.text"
                 },
                 "room_id:": "!wfgy43Sg4a:matrix.org",
-                "user_id": "@bob:matrix.org",
+                "sender": "@bob:matrix.org",
                 "event_id": "$asfDuShaf7Gafaw:matrix.org",
                 "type": "m.room.message"
               }

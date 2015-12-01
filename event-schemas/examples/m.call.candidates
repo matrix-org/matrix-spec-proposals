@@ -15,5 +15,5 @@
   "event_id": "$WLGTSEFSEF:localhost",
   "type": "m.call.candidates",
   "room_id": "!Cuyf34gef24t:localhost",
-  "user_id": "@example:localhost"
+  "sender": "@example:localhost"
 }
