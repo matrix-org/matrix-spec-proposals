@@ -250,7 +250,7 @@ def addAnchors(path):
             f.write(line + "\n")
 
 
-def run_through_template(input, set_verbose):
+def run_through_template(input, set_verbose, release_label):
     tmpfile = './tmp/output'
     try:
         with open(tmpfile, 'w') as out:
@@ -258,6 +258,7 @@ def run_through_template(input, set_verbose):
                 'python', 'build.py',
                 "-i", "matrix_templates",
                 "-o", "../scripts/tmp",
+                "--release_label", release_label,
                 "../scripts/"+input
             ]
             if set_verbose:
@@ -392,7 +393,7 @@ def cleanup_env():
     shutil.rmtree("./tmp")
 
 
-def main(requested_target_name, keep_intermediates):
+def main(requested_target_name, keep_intermediates, release_label):
     prepare_env()
     log("Building spec [target=%s]" % requested_target_name)
 
@@ -407,7 +408,7 @@ def main(requested_target_name, keep_intermediates):
 
         target = get_build_target("../specification/targets.yaml", target_name)
         build_spec(target=target, out_filename=templated_file)
-        run_through_template(templated_file, VERBOSE)
+        run_through_template(templated_file, VERBOSE, release_label)
         fix_relative_titles(
             target=target, filename=templated_file,
             out_filename=rst_file,
@@ -417,7 +418,7 @@ def main(requested_target_name, keep_intermediates):
 
     if requested_target_name == "all":
         shutil.copy("../supporting-docs/howtos/client-server.rst", "tmp/howto.rst")
-        run_through_template("tmp/howto.rst", False)  # too spammy to mark -v on this
+        run_through_template("tmp/howto.rst", False, release_label)  # too spammy to mark -v on this
         rst2html("tmp/howto.rst", "gen/howtos.html")
 
     if not keep_intermediates:
@@ -441,9 +442,13 @@ if __name__ == '__main__':
         "--verbose", "-v", action="store_true",
         help="Turn on verbose mode."
     )
+    parser.add_argument(
+        "--release", "-r", action="store", default="unstable",
+        help="The release tag to generate, e.g. r1.2"
+    )
     args = parser.parse_args()
     if not args.target:
         parser.print_help()
         sys.exit(1)
     VERBOSE = args.verbose
-    main(args.target, args.nodelete)
+    main(args.target, args.nodelete, args.release)
