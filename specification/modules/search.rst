@@ -72,6 +72,11 @@ The scope of the pagination is defined depending on where the ``next_batch``
 token was returned. For example, using a token inside a group will return more
 results from within that group.
 
+The currently supported locations for the ``next_batch`` token are:
+
+- ``search_categories.<category>.next_batch``
+- ``search_categories.<category>.groups.<group_key>.<group_id>.next_batch``
+
 A server need not support pagination, even if there are more matching results.
 
 
