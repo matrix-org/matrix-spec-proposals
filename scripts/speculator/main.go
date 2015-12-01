@@ -193,15 +193,31 @@ func (s *server) getSHAOf(ref string) (string, error) {
 	return strings.TrimSpace(b.String()), nil
 }
 
-func extractPath(path, base string) string {
-	// Assume exactly one flat directory
-	max := strings.Count(base, "/") + 2
+// extractPath extracts the file path within the gen directory which should be served for the request.
+// Returns one of (file to serve, path to redirect to).
+// path is the actual path being requested, e.g. "/spec/head/client_server.html".
+// base is the base path of the handler, including a trailing slash, before the PR number, e.g. "/spec/".
+func extractPath(path, base string) (string, string) {
+	// Assumes exactly one flat directory
+
+	// Count slashes in /spec/head/client_server.html
+	// base is /spec/
+	// +1 for the PR number - /spec/head
+	// +1 for the path-part after the slash after the PR number
+	max := strings.Count(base, "/") + 1
 	parts := strings.SplitN(path, "/", max)
 
-	if len(parts) < max || parts[max-1] == "" {
-		return "index.html"
+	if len(parts) < max {
+		// Path is base/pr - redirect to base/pr/index.html
+		return "", path + "/index.html"
 	}
-	return parts[max-1]
+	if parts[max-1] == "" {
+		// Path is base/pr/ - serve index.html
+		return "index.html", ""
+	}
+
+	// Path is base/pr/file.html - serve file
+	return parts[max-1], ""
 }
 
 func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
@@ -283,7 +299,11 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 		cache.Add(sha, pathToContent)
 	}
 
-	requestedPath := extractPath(req.URL.Path, "/spec/pr")
+	requestedPath, redirect := extractPath(req.URL.Path, "/spec/")
+	if redirect != "" {
+		s.redirectTo(w, req, redirect)
+		return
+	}
 	if b, ok := pathToContent[requestedPath]; ok {
 		w.Write(b)
 		return
@@ -297,6 +317,12 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 	}
 	w.WriteHeader(404)
 	w.Write([]byte("Not found"))
+}
+
+func (s *server) redirectTo(w http.ResponseWriter, req *http.Request, path string) {
+	req.URL.Path = path
+	w.Header().Set("Location", req.URL.String())
+	w.WriteHeader(302)
 }
 
 // lookupHeadSHA looks up what origin/master's HEAD SHA is.
@@ -397,7 +423,11 @@ func (s *server) serveHTMLDiff(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	requestedPath := extractPath(req.URL.Path, "/diff/spec/pr")
+	requestedPath, redirect := extractPath(req.URL.Path, "/diff/spec/")
+	if redirect != "" {
+		s.redirectTo(w, req, redirect)
+		return
+	}
 	cmd := exec.Command(htmlDiffer, path.Join(base, "scripts", "gen", requestedPath), path.Join(head, "scripts", "gen", requestedPath))
 	var b bytes.Buffer
 	cmd.Stdout = &b
