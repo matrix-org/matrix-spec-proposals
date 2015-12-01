@@ -18,8 +18,8 @@ import urllib
 import yaml
 
 HTTP_APIS = "../api/client-server"
-V1_EVENT_EXAMPLES = "../event-schemas/examples"
-V1_EVENT_SCHEMA = "../event-schemas/schema"
+EVENT_EXAMPLES = "../event-schemas/examples"
+EVENT_SCHEMA = "../event-schemas/schema"
 CORE_EVENT_SCHEMA = "../event-schemas/schema/core-event-schema"
 CHANGELOG = "../CHANGELOG.rst"
 TARGETS = "../specification/targets.yaml"
@@ -605,7 +605,7 @@ class MatrixUnits(Units):
         return event_types
 
     def load_event_examples(self):
-        path = V1_EVENT_EXAMPLES
+        path = EVENT_EXAMPLES
         examples = {}
         for filename in os.listdir(path):
             if not filename.startswith("m."):
@@ -622,7 +622,7 @@ class MatrixUnits(Units):
         return examples
 
     def load_event_schemas(self):
-        path = V1_EVENT_SCHEMA
+        path = EVENT_SCHEMA
         schemata = {}
 
         for filename in os.listdir(path):
@@ -714,7 +714,6 @@ class MatrixUnits(Units):
     def load_spec_meta(self):
         path = CHANGELOG
         title_part = None
-        version = None
         changelog_lines = []
         with open(path, "r") as f:
             prev_line = None
@@ -738,19 +737,11 @@ class MatrixUnits(Units):
                         break
                     changelog_lines.append(line)
 
-        # parse out version from title
-        for word in title_part.split():
-            if re.match("^v[0-9\.]+$", word):
-                version = word[1:]  # strip the 'v'
-
-        self.log("Version: %s Title part: %s Changelog line count: %s" % (
-            version, title_part, len(changelog_lines)
+        self.log("Title part: %s Changelog line count: %s" % (
+            title_part, len(changelog_lines)
         ))
-        if not version or len(changelog_lines) == 0:
-            raise Exception("Failed to parse CHANGELOG.rst")
 
         return {
-            "version": version,
             "changelog": "".join(changelog_lines)
         }
 
