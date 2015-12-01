@@ -85,8 +85,7 @@ paths:
             application/json: |-
               {
                 "presence": "unavailable",
-                "last_active_ago": 420845,
-                "status_msg": null
+                "last_active_ago": 420845
               }
           schema:
             type: object

@@ -8,5 +8,5 @@
   "type": "m.room.redaction",
   "room_id": "!Cuyf34gef24t:localhost",
   "redacts": "!fukweghifu23:localhost",
-  "user_id": "@example:localhost"
+  "sender": "@example:localhost"
 }

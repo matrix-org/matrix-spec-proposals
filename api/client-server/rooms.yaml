@@ -92,13 +92,12 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.join_rules",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                 },
                 {
                     "age": 6547561012,
                     "content": {
                         "avatar_url": "mxc://example.com/fzysBrHpPEeTGANCVLXWXNMI#auto",
-                        "displayname": null,
                         "membership": "join"
                     },
                     "event_id": "$1426600438280zExKY:example.com",
@@ -107,7 +106,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "@alice:example.com",
                     "type": "m.room.member",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                 },
                 {
                     "age": 7148267200,
@@ -119,7 +118,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.create",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                 },
                 {
                     "age": 1622568720,
@@ -134,7 +133,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "@bob:example.com",
                     "type": "m.room.member",
-                    "user_id": "@bob:example.com"
+                    "sender": "@bob:example.com"
                 },
                 {
                     "age": 7148267004,
@@ -158,7 +157,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.power_levels",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                 }
               ]
           schema:
@@ -212,7 +211,7 @@ paths:
                       "origin_server_ts": 1432804485886,
                       "room_id": "!636q39766251:example.com",
                       "type": "m.room.message",
-                      "user_id": "@alice:example.com"
+                      "sender": "@alice:example.com"
                     },
                     {
                       "age": 343511809,
@@ -224,7 +223,7 @@ paths:
                       "origin_server_ts": 1432804487480,
                       "room_id": "!636q39766251:example.com",
                       "type": "m.room.message",
-                      "user_id": "@bob:example.com"
+                      "sender": "@bob:example.com"
                     }
                   ],
                   "end": "s3456_9_0",
@@ -242,13 +241,12 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.join_rules",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                   },
                   {
                     "age": 6547561012,
                     "content": {
                       "avatar_url": "mxc://example.com/fzysBrHpPEeTGANCVLXWXNMI#auto",
-                      "displayname": null,
                       "membership": "join"
                     },
                     "event_id": "$1426600438280zExKY:example.com",
@@ -257,7 +255,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "@alice:example.com",
                     "type": "m.room.member",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                   },
                   {
                     "age": 7148267200,
@@ -269,7 +267,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.create",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                   },
                   {
                     "age": 1622568720,
@@ -284,7 +282,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "@bob:example.com",
                     "type": "m.room.member",
-                    "user_id": "@bob:example.com"
+                    "sender": "@bob:example.com"
                   },
                   {
                     "age": 7148267004,
@@ -308,7 +306,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.power_levels",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                   }
                 ],
                 "visibility": "private",
@@ -416,7 +414,6 @@ paths:
                     "age": 6547561012,
                     "content": {
                       "avatar_url": "mxc://example.com/fzysBrHpPEeTGANCVLXWXNMI#auto",
-                      "displayname": null,
                       "membership": "join"
                     },
                     "event_id": "$1426600438280zExKY:example.com",
@@ -425,7 +422,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "@alice:example.com",
                     "type": "m.room.member",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                   },
                   {
                     "age": 1622568720,
@@ -440,7 +437,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "@bob:example.com",
                     "type": "m.room.member",
-                    "user_id": "@bob:example.com"
+                    "sender": "@bob:example.com"
                   }
                 ]
               }
