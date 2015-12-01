@@ -510,58 +510,11 @@ database.
 
 Adding Account Administrative Contact Information
 +++++++++++++++++++++++++++++++++++++++++++++++++
-Request::
 
-  POST $V2PREFIX/account/3pid
+A homeserver may keep some contact information for administrative use.
+This is independent of any information kept by any Identity Servers.
 
-Used to add contact information to the user's account.
-
-The body of the POST request is a JSON object containing:
-
-threePidCreds
-  An object containing contact information.
-bind
-  Optional. A boolean indicating whether the Home Server should also bind this
-  third party identifier to the account's matrix ID with the Identity Server. If
-  supplied and true, the Home Server must bind the 3pid accordingly.
-
-The contact information object comprises:
-
-id_server
-  The colon-separated hostname and port of the Identity Server used to
-  authenticate the third party identifier. If the port is the default, it and the
-  colon should be omitted.
-sid
-  The session ID given by the Identity Server
-client_secret
-  The client secret used in the session with the Identity Server.
-
-On success, the empty JSON object is returned.
-
-May also return error codes:
-
-M_THREEPID_AUTH_FAILED
-  If the credentials provided could not be verified with the ID Server.
-
-Fetching Currently Associated Contact Information
-+++++++++++++++++++++++++++++++++++++++++++++++++
-Request::
-
-  GET $V2PREFIX/account/3pid
-
-This returns a list of third party identifiers that the Home Server has
-associated with the user's account. This is *not* the same as the list of third
-party identifiers bound to the user's Matrix ID in Identity Servers. Identifiers
-in this list may be used by the Home Server as, for example, identifiers that it
-will accept to reset the user's account password.
-
-Returns a JSON object with the key ``threepids`` whose contents is an array of
-objects with the following keys:
-
-medium
-  The medium of the 3pid (eg, ``email``)
-address
-  The textual address of the 3pid, eg. the email address
+{{administrative_contact_http_api}}
 
 Pagination
 ----------
