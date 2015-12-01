@@ -15,10 +15,6 @@ class MatrixSections(Sections):
     def render_git_rev(self):
         return self.units.get("git_version")["revision"]
 
-    def render_spec_version(self):
-        spec_meta = self.units.get("spec_meta")
-        return spec_meta["version"]
-
     def render_spec_changelog(self):
         spec_meta = self.units.get("spec_meta")
         return spec_meta["changelog"]
