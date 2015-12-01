@@ -204,7 +204,7 @@ func extractPath(path, base string) (string, string) {
 	// base is /spec/
 	// +1 for the PR number - /spec/head
 	// +1 for the path-part after the slash after the PR number
-	max := strings.Count(base, "/") + 1
+	max := strings.Count(base, "/") + 2
 	parts := strings.SplitN(path, "/", max)
 
 	if len(parts) < max {
