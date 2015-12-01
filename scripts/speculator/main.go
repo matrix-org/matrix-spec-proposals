@@ -469,12 +469,12 @@ func listPulls(w http.ResponseWriter, req *http.Request) {
 	}
 	s := "<body><ul>"
 	for _, pull := range pulls {
-		s += fmt.Sprintf(`<li>%d: <a href="%s">%s</a>: <a href="%s">%s</a>: <a href="spec/%d">spec</a> <a href="diff/html/%d">spec diff</a> <a href="diff/rst/%d">rst diff</a></li>`,
+		s += fmt.Sprintf(`<li>%d: <a href="%s">%s</a>: <a href="%s">%s</a>: <a href="spec/%d/">spec</a> <a href="diff/html/%d/">spec diff</a> <a href="diff/rst/%d/">rst diff</a></li>`,
 			pull.Number, pull.User.HTMLURL, pull.User.Login, pull.HTMLURL, pull.Title, pull.Number, pull.Number, pull.Number)
 	}
-	s += `</ul><div><a href="spec/head">View the spec at head</a></div></body>`
+	s += `</ul><div><a href="spec/head/">View the spec at head</a></div></body>`
 	if *includesDir != "" {
-		s += `</ul><div><a href="spec/head?matrixdotorgstyle=1">View the spec at head styled like matrix.org</a></div></body>`
+		s += `</ul><div><a href="spec/head/?matrixdotorgstyle=1">View the spec at head styled like matrix.org</a></div></body>`
 	}
 
 	io.WriteString(w, s)
