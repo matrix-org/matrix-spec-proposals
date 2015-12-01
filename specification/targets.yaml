@@ -1,16 +1,23 @@
 targets:
-  main:  # arbitrary name to identify this build target
+  index:
     files:  # the sort order of files to cat
       - intro.rst
+  client_server:
+    files:
       - client_server_api.rst
       - { 1: events.rst }
       - { 1: event_signing.rst }
       - modules.rst
       - { 1: feature_profiles.rst }
       - { 1: "group:modules" }  # reference a group of files
+  application_service:
+    files:
       - application_service_api.rst
+  server_server:
+    files:
       - server_server_api.rst
-      - identity_servers.rst
+  appendices:
+    files:
       - appendices.rst
 groups:  # reusable blobs of files when prefixed with 'group:'
   modules:
@@ -26,6 +33,8 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/third_party_invites.rst
     - modules/search.rst
     - modules/guest_access.rst
+    - modules/tags.rst
+    - modules/account_data.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`"]

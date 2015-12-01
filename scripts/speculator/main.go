@@ -23,6 +23,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -53,9 +54,11 @@ type User struct {
 }
 
 var (
-	port           = flag.Int("port", 9000, "Port on which to listen for HTTP")
-	allowedMembers map[string]bool
-	specCache      *lru.Cache // string -> []byte
+	port            = flag.Int("port", 9000, "Port on which to listen for HTTP")
+	includesDir     = flag.String("includes_dir", "", "Directory containing include files for styling like matrix.org")
+	allowedMembers  map[string]bool
+	specCache       *lru.Cache // string -> map[string][]byte filename -> contents
+	styledSpecCache *lru.Cache // string -> map[string][]byte filename -> contents
 )
 
 func (u *User) IsTrusted() bool {
@@ -63,19 +66,22 @@ func (u *User) IsTrusted() bool {
 }
 
 const (
-	pullsPrefix       = "https://api.github.com/repos/matrix-org/matrix-doc/pulls"
-	matrixDocCloneURL = "https://github.com/matrix-org/matrix-doc.git"
+	pullsPrefix          = "https://api.github.com/repos/matrix-org/matrix-doc/pulls"
+	matrixDocCloneURL    = "https://github.com/matrix-org/matrix-doc.git"
+	permissionsOwnerFull = 0700
 )
 
 func gitClone(url string, shared bool) (string, error) {
 	directory := path.Join("/tmp/matrix-doc", strconv.FormatInt(rand.Int63(), 10))
-	cmd := exec.Command("git", "clone", url, directory)
-	if shared {
-		cmd.Args = append(cmd.Args, "--shared")
+	if err := os.MkdirAll(directory, permissionsOwnerFull); err != nil {
+		return "", fmt.Errorf("error making directory %s: %v", directory, err)
 	}
-
-	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("error cloning repo: %v", err)
+	args := []string{"clone", url, directory}
+	if shared {
+		args = append(args, "--shared")
+	}
+	if err := runGitCommand(directory, args); err != nil {
+		return "", err
 	}
 	return directory, nil
 }
@@ -84,15 +90,13 @@ func gitCheckout(path, sha string) error {
 	return runGitCommand(path, []string{"checkout", sha})
 }
 
-func gitFetch(path string) error {
-	return runGitCommand(path, []string{"fetch"})
-}
-
 func runGitCommand(path string, args []string) error {
 	cmd := exec.Command("git", args...)
 	cmd.Dir = path
+	var b bytes.Buffer
+	cmd.Stderr = &b
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("error running %q: %v", strings.Join(cmd.Args, " "), err)
+		return fmt.Errorf("error running %q: %v (stderr: %s)", strings.Join(cmd.Args, " "), err, b.String())
 	}
 	return nil
 }
@@ -101,10 +105,7 @@ func lookupPullRequest(url url.URL, pathPrefix string) (*PullRequest, error) {
 	if !strings.HasPrefix(url.Path, pathPrefix+"/") {
 		return nil, fmt.Errorf("invalid path passed: %s expect %s/123", url.Path, pathPrefix)
 	}
-	prNumber := url.Path[len(pathPrefix)+1:]
-	if strings.Contains(prNumber, "/") {
-		return nil, fmt.Errorf("invalid path passed: %s expect %s/123", url.Path, pathPrefix)
-	}
+	prNumber := strings.Split(url.Path[len(pathPrefix)+1:], "/")[0]
 
 	resp, err := http.Get(fmt.Sprintf("%s/%s", pullsPrefix, prNumber))
 	defer resp.Body.Close()
@@ -131,22 +132,41 @@ func generate(dir string) error {
 }
 
 func writeError(w http.ResponseWriter, code int, err error) {
+	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(code)
 	io.WriteString(w, fmt.Sprintf("%v\n", err))
 }
 
 type server struct {
+	mu                sync.Mutex // Must be locked around any git command on matrixDocCloneURL
 	matrixDocCloneURL string
+}
+
+func (s *server) updateBase() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return runGitCommand(s.matrixDocCloneURL, []string{"fetch"})
+}
+
+// canCheckout returns whether a given sha can currently be checked out from s.matrixDocCloneURL.
+func (s *server) canCheckout(sha string) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return runGitCommand(s.matrixDocCloneURL, []string{"cat-file", "-e", sha + "^{commit}"}) == nil
 }
 
 // generateAt generates spec from repo at sha.
 // Returns the path where the generation was done.
 func (s *server) generateAt(sha string) (dst string, err error) {
-	err = gitFetch(s.matrixDocCloneURL)
-	if err != nil {
-		return
+	if !s.canCheckout(sha) {
+		err = s.updateBase()
+		if err != nil {
+			return
+		}
 	}
+	s.mu.Lock()
 	dst, err = gitClone(s.matrixDocCloneURL, true)
+	s.mu.Unlock()
 	if err != nil {
 		return
 	}
@@ -164,26 +184,61 @@ func (s *server) getSHAOf(ref string) (string, error) {
 	cmd.Dir = path.Join(s.matrixDocCloneURL)
 	var b bytes.Buffer
 	cmd.Stdout = &b
-	if err := cmd.Run(); err != nil {
+	s.mu.Lock()
+	err := cmd.Run()
+	s.mu.Unlock()
+	if err != nil {
 		return "", fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())
 	}
 	return strings.TrimSpace(b.String()), nil
 }
 
+// extractPath extracts the file path within the gen directory which should be served for the request.
+// Returns one of (file to serve, path to redirect to).
+// path is the actual path being requested, e.g. "/spec/head/client_server.html".
+// base is the base path of the handler, including a trailing slash, before the PR number, e.g. "/spec/".
+func extractPath(path, base string) (string, string) {
+	// Assumes exactly one flat directory
+
+	// Count slashes in /spec/head/client_server.html
+	// base is /spec/
+	// +1 for the PR number - /spec/head
+	// +1 for the path-part after the slash after the PR number
+	max := strings.Count(base, "/") + 2
+	parts := strings.SplitN(path, "/", max)
+
+	if len(parts) < max {
+		// Path is base/pr - redirect to base/pr/index.html
+		return "", path + "/index.html"
+	}
+	if parts[max-1] == "" {
+		// Path is base/pr/ - serve index.html
+		return "index.html", ""
+	}
+
+	// Path is base/pr/file.html - serve file
+	return parts[max-1], ""
+}
+
 func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 	var sha string
 
-	if strings.ToLower(req.URL.Path) == "/spec/head" {
-		if err := gitFetch(s.matrixDocCloneURL); err != nil {
+	var styleLikeMatrixDotOrg = req.URL.Query().Get("matrixdotorgstyle") != ""
+
+	if styleLikeMatrixDotOrg && *includesDir == "" {
+		writeError(w, 500, fmt.Errorf("Cannot style like matrix.org - no include dir specified"))
+		return
+	}
+
+	if strings.HasPrefix(strings.ToLower(req.URL.Path), "/spec/head") {
+		// err may be non-nil here but if headSha is non-empty we will serve a possibly-stale result in favour of erroring.
+		// This is to deal with cases like where github is down but we still want to serve the spec.
+		if headSha, err := s.lookupHeadSHA(); headSha == "" {
 			writeError(w, 500, err)
 			return
+		} else {
+			sha = headSha
 		}
-		originHead, err := s.getSHAOf("origin/master")
-		if err != nil {
-			writeError(w, 500, err)
-			return
-		}
-		sha = originHead
 	} else {
 		pr, err := lookupPullRequest(*req.URL, "/spec")
 		if err != nil {
@@ -199,25 +254,94 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 		}
 		sha = pr.Head.SHA
 	}
-	if cached, ok := specCache.Get(sha); ok {
-		w.Write(cached.([]byte))
-		return
+
+	var cache = specCache
+	if styleLikeMatrixDotOrg {
+		cache = styledSpecCache
 	}
 
-	dst, err := s.generateAt(sha)
-	defer os.RemoveAll(dst)
-	if err != nil {
-		writeError(w, 500, err)
-		return
+	var pathToContent map[string][]byte
+
+	if cached, ok := cache.Get(sha); ok {
+		pathToContent = cached.(map[string][]byte)
+	} else {
+		dst, err := s.generateAt(sha)
+		defer os.RemoveAll(dst)
+		if err != nil {
+			writeError(w, 500, err)
+			return
+		}
+
+		if styleLikeMatrixDotOrg {
+			cmd := exec.Command("./add-matrix-org-stylings.sh", *includesDir)
+			cmd.Dir = path.Join(dst, "scripts")
+			var b bytes.Buffer
+			cmd.Stderr = &b
+			if err := cmd.Run(); err != nil {
+				writeError(w, 500, fmt.Errorf("error styling spec: %v\nOutput:\n%v", err, b.String()))
+				return
+			}
+		}
+
+		fis, err := ioutil.ReadDir(path.Join(dst, "scripts", "gen"))
+		if err != nil {
+			writeError(w, 500, fmt.Errorf("Error reading directory: %v", err))
+		}
+		pathToContent = make(map[string][]byte)
+		for _, fi := range fis {
+			b, err := ioutil.ReadFile(path.Join(dst, "scripts", "gen", fi.Name()))
+			if err != nil {
+				writeError(w, 500, fmt.Errorf("Error reading spec: %v", err))
+				return
+			}
+			pathToContent[fi.Name()] = b
+		}
+		cache.Add(sha, pathToContent)
 	}
 
-	b, err := ioutil.ReadFile(path.Join(dst, "scripts/gen/specification.html"))
-	if err != nil {
-		writeError(w, 500, fmt.Errorf("Error reading spec: %v", err))
+	requestedPath, redirect := extractPath(req.URL.Path, "/spec/")
+	if redirect != "" {
+		s.redirectTo(w, req, redirect)
 		return
 	}
-	w.Write(b)
-	specCache.Add(sha, b)
+	if b, ok := pathToContent[requestedPath]; ok {
+		w.Write(b)
+		return
+	}
+	if requestedPath == "index.html" {
+		// Fall back to single-page spec for old PRs
+		if b, ok := pathToContent["specification.html"]; ok {
+			w.Write(b)
+			return
+		}
+	}
+	w.WriteHeader(404)
+	w.Write([]byte("Not found"))
+}
+
+func (s *server) redirectTo(w http.ResponseWriter, req *http.Request, path string) {
+	req.URL.Path = path
+	w.Header().Set("Location", req.URL.String())
+	w.WriteHeader(302)
+}
+
+// lookupHeadSHA looks up what origin/master's HEAD SHA is.
+// It attempts to `git fetch` before doing so.
+// If this fails, it may still return a stale sha, but will also return an error.
+func (s *server) lookupHeadSHA() (sha string, retErr error) {
+	retErr = s.updateBase()
+	if retErr != nil {
+		log.Printf("Error fetching: %v, attempting to fall back to current known value", retErr)
+	}
+	originHead, err := s.getSHAOf("origin/master")
+	if err != nil {
+		retErr = err
+	}
+	sha = originHead
+	if retErr != nil && originHead != "" {
+		log.Printf("Successfully fell back to possibly stale sha: %s", sha)
+	}
+	return
 }
 
 func checkAuth(pr *PullRequest) error {
@@ -255,7 +379,7 @@ func (s *server) serveRSTDiff(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	diffCmd := exec.Command("diff", "-u", path.Join(base, "scripts", "tmp", "full_spec.rst"), path.Join(head, "scripts", "tmp", "full_spec.rst"))
+	diffCmd := exec.Command("diff", "-r", "-u", path.Join(base, "scripts", "tmp"), path.Join(head, "scripts", "tmp"))
 	var diff bytes.Buffer
 	diffCmd.Stdout = &diff
 	if err := ignoreExitCodeOne(diffCmd.Run()); err != nil {
@@ -299,7 +423,12 @@ func (s *server) serveHTMLDiff(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	cmd := exec.Command(htmlDiffer, path.Join(base, "scripts", "gen", "specification.html"), path.Join(head, "scripts", "gen", "specification.html"))
+	requestedPath, redirect := extractPath(req.URL.Path, "/diff/spec/")
+	if redirect != "" {
+		s.redirectTo(w, req, redirect)
+		return
+	}
+	cmd := exec.Command(htmlDiffer, path.Join(base, "scripts", "gen", requestedPath), path.Join(head, "scripts", "gen", requestedPath))
 	var b bytes.Buffer
 	cmd.Stdout = &b
 	if err := cmd.Run(); err != nil {
@@ -344,6 +473,10 @@ func listPulls(w http.ResponseWriter, req *http.Request) {
 			pull.Number, pull.User.HTMLURL, pull.User.Login, pull.HTMLURL, pull.Title, pull.Number, pull.Number, pull.Number)
 	}
 	s += `</ul><div><a href="spec/head">View the spec at head</a></div></body>`
+	if *includesDir != "" {
+		s += `</ul><div><a href="spec/head?matrixdotorgstyle=1">View the spec at head styled like matrix.org</a></div></body>`
+	}
+
 	io.WriteString(w, s)
 }
 
@@ -383,7 +516,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	s := server{masterCloneDir}
+	s := server{matrixDocCloneURL: masterCloneDir}
 	http.HandleFunc("/spec/", forceHTML(s.serveSpec))
 	http.HandleFunc("/diff/rst/", s.serveRSTDiff)
 	http.HandleFunc("/diff/html/", forceHTML(s.serveHTMLDiff))
@@ -408,7 +541,10 @@ func serveText(s string) func(http.ResponseWriter, *http.Request) {
 }
 
 func initCache() error {
-	c, err := lru.New(50) // Evict after 50 entries (i.e. 50 sha1s)
-	specCache = c
+	c1, err := lru.New(50) // Evict after 50 entries (i.e. 50 sha1s)
+	specCache = c1
+
+	c2, err := lru.New(50) // Evict after 50 entries (i.e. 50 sha1s)
+	styledSpecCache = c2
 	return err
 }

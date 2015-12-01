@@ -1,0 +1,103 @@
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server v1 Sync Guest API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/api/v1
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  accessToken:
+    type: apiKey
+    description: The user_id or application service access_token
+    name: access_token
+    in: query
+paths:
+  "/events":
+    get:
+      summary: Listen on the event stream.
+      description: |-
+        This will listen for new events related to a particular room and return
+        them to the caller. This will block until an event is received, or until
+        the ``timeout`` is reached.
+
+        This API is the same as the non-guest /events endpoint, but can be
+        called by guest users.
+      security:
+        - accessToken: []
+      parameters:
+        - in: query
+          type: string
+          name: from
+          description: |-
+            The token to stream from. This token is either from a previous
+            request to this API or from the initial sync API.
+          required: false
+          x-example: "s3456_9_0"
+        - in: query
+          type: integer
+          name: timeout
+          description: The maximum time in milliseconds to wait for an event.
+          required: false
+          x-example: "35000"
+        - in: query
+          type: array
+          items:
+            type: string
+          name: room_id
+          description: |-
+            The room IDs for which events should be returned.
+          x-example:
+            - "!somewhere:over"
+            - "!the:rainbow"
+      responses:
+        200:
+          description: "The events received, which may be none."
+          examples:
+            application/json: |-
+              {
+                "start": "s3456_9_0",
+                "end": "s3457_9_0",
+                "chunk": [
+                  {
+                    "age": 32,
+                    "content": {
+                        "body": "incoming message",
+                        "msgtype": "m.text"
+                    },
+                    "event_id": "$14328055551tzaee:localhost",
+                    "origin_server_ts": 1432804485886,
+                    "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
+                    "type": "m.room.message",
+                    "user_id": "@bob:localhost"
+                  }
+                ]
+              }
+          schema:
+            type: object
+            properties:
+              start:
+                type: string
+                description: |-
+                  A token which correlates to the first value in ``chunk``. This
+                  is usually the same token supplied to ``from=``.
+              end:
+                type: string
+                description: |-
+                  A token which correlates to the last value in ``chunk``. This
+                  token should be used in the next request to ``/events``.
+              chunk:
+                type: array
+                description: "An array of events."
+                items:
+                  type: object
+                  title: Event
+                  allOf:
+                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
+        400:
+          description: "Bad pagination ``from`` parameter."

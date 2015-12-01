@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 
 import sys
 import json
@@ -60,6 +60,8 @@ def check_example_dir(exampledir, schemadir):
                 continue
             examplepath = os.path.join(root, filename)
             schemapath = examplepath.replace(exampledir, schemadir)
+            if schemapath.find("#") >= 0:
+                schemapath = schemapath[:schemapath.find("#")]
             try:
                 check_example_file(examplepath, schemapath)
             except Exception as e:

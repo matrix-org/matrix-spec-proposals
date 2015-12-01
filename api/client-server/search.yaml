@@ -1,0 +1,323 @@
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server v1 Search API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/api/v1
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  accessToken:
+    type: apiKey
+    description: The user_id or application service access_token
+    name: access_token
+    in: query
+paths:
+  "/search":
+    post:
+      summary: Search server side for things.
+      description: |-
+        Performs a full text search across different categories.
+      security:
+        - accessToken: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            example: |-
+              {
+                "search_categories": {
+                  "room_events": {
+                    "keys": [
+                      "content.body"
+                    ],
+                    "search_term": "martians and men"
+                  }
+                },
+                "order_by": "recent",
+                "groupings": {
+                  "group_by": [
+                    {
+                      "key": "room_id"
+                    }
+                  ]
+                }
+              }
+            properties:
+              search_categories:
+                type: object
+                title: "Categories"
+                description: Describes which categories to search in and
+                  their criteria.
+                properties:
+                  room_events:
+                    type: object
+                    title: "Room Events"
+                    description: Mapping of category name to search criteria.
+                    properties:
+                      search_term:
+                        type: string
+                        description: The string to search events for
+                      keys:
+                        type: array
+                        items:
+                          type: string
+                          enum: ["content.body", "content.name", "content.topic"]
+                        description: The keys to search. Defaults to all.
+                      filter:
+                        type: object
+                        title: Filter
+                        description: |-
+                            The filter to apply to search results.
+                            This has the same format as v2 filter API.
+                      order_by:
+                        title: "Ordering"
+                        type: string
+                        enum: ["recent", "rank"]
+                        description: "The order in which to search for results."
+                      event_context:
+                        title: "Event Context"
+                        type: object
+                        description: |-
+                          Configures whether any context for the events
+                          returned are included in the response.
+                        properties:
+                            before_limit:
+                                type: integer
+                                title: "Before limit"
+                                description: |-
+                                  How many events before the result are
+                                  returned.
+                            after_limit:
+                                type: integer
+                                title: "After limit"
+                                description: |-
+                                  How many events after the result are
+                                  returned.
+                            include_profile:
+                                type: boolean
+                                title: "Return profile information"
+                                description: |-
+                                  Requests that the server returns the
+                                  historic profile information for the users
+                                  that sent the events that were returned.
+                      include_state:
+                        type: boolean
+                        title: Include current state
+                        description: |-
+                          Requests the server return the current state for
+                          each room returned.
+                      groupings:
+                        type: object
+                        title: Groupings
+                        description: |-
+                          Requests the server returns results with information
+                          about how they fit into groups the specified groups.
+                        properties:
+                          group_by:
+                            type: array
+                            title: Groups
+                            description: List of groups to request.
+                            items:
+                              type: object
+                              title: Group
+                              description: Configuration for group.
+                              properties:
+                                key:
+                                  type: string
+                                  title: Group Key
+                                  description: |- 
+                                    Key that defines the group.
+                                  enum: ["room_id", "sender"]
+                    required: ["search_term"]
+            required: ["search_categories"]
+      responses:
+        200:
+          description: Results of the search.
+          schema:
+            type: object
+            title: Results
+            required: ["search_categories"]
+            properties:
+              search_categories:
+                type: object
+                title: Categories
+                description: Describes which categories to search in and
+                  their criteria.
+                properties:
+                  room_events:
+                    type: object
+                    title: Room Event Results
+                    description: Mapping of category name to search criteria.
+                    properties:
+                      count:
+                        type: number
+                        description: Total number of results found
+                      results:
+                        type: object
+                        title: Results
+                        description: Mapping of event_id to result.
+                        additionalProperties:
+                          type: object
+                          title: Result
+                          description: The result object.
+                          properties:
+                            rank:
+                              type: number
+                              description: A number that describes how closely
+                                this result matches the search. Higher is
+                                closer.
+                            result:
+                              type: object
+                              title: Event
+                              description: The event that matched.
+                              allOf:
+                                - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
+                            context:
+                              type: object
+                              title: Event Context
+                              description: Context for result, if requested.
+                              properties:
+                                start:
+                                  type: string
+                                  title: Start Token
+                                  description: |-
+                                    Pagination token for the start of the chunk
+                                end:
+                                  type: string
+                                  title: End Token
+                                  description: |-
+                                    Pagination token for the end of the chunk
+                                profile_info:
+                                  type: object
+                                  title: Profile Information
+                                  description: |-
+                                    The historic profile information of the
+                                    users that sent the events returned.
+                                  additionalProperties:
+                                    type: object
+                                    title: User Profile
+                                    properties:
+                                      displayname:
+                                        type: string
+                                        title: Display name
+                                      avatar_url:
+                                        type: string
+                                        title: Avatar Url
+                                events_before:
+                                  type: array
+                                  title: Events Before
+                                  description: Events just before the result.
+                                  items:
+                                    type: object
+                                    title: Event
+                                    allOf:
+                                      - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
+                                events_after:
+                                  type: array
+                                  title: Events After
+                                  description: Events just after the result.
+                                  items:
+                                    type: object
+                                    title: Event
+                                    allOf:
+                                      - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
+                      state:
+                        type: object
+                        title: Current state
+                        additionalProperties:
+                          type: array
+                          title: Room State
+                          items:
+                            type: object
+                            title: Event
+                            allOf:
+                              - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
+                      groups:
+                        type: object
+                        title: Groups
+                        description: Any groups that were requseted.
+                        additionalProperties:
+                          type: object
+                          title: Group Key
+                          description: The results for a given group.
+                          additionalProperties:
+                            type: object
+                            title: Group Value
+                            description: |-
+                                The results for a particular group value.
+                            properties:
+                              next_batch:
+                                type: string
+                                title: Next Batch in Group
+                                description: |-
+                                  Token that can be used to get the next
+                                  batch of results in the group, if exists.
+                              order:
+                                type: integer
+                                title: Group Order
+                                description: |-
+                                  Key that can be used to order different
+                                  groups.
+                              results:
+                                type: array
+                                description: |-
+                                  Which results are in this group.
+                                items:
+                                  type: string
+                                  title: Result Event ID
+                      next_batch:
+                        type: string
+                        title: Next Batch
+                        description: |-
+                          Token that can be used to get the next batch of
+                          results, if exists.
+          examples:
+            application/json: |-
+               {
+                  "search_categories": {
+                    "room_events": {
+                      "groups": {
+                        "room_id": {
+                          "!qPewotXpIctQySfjSy:localhost": {
+                            "order": 1,
+                            "next_batch": "BdgFsdfHSf-dsFD",
+                            "results": [
+                              "$144429830826TWwbB:localhost"
+                            ]
+                          }
+                        }
+                      },
+                      "count": 24,
+                      "results": {
+                        "$144429830826TWwbB:localhost": {
+                          "rank": 0.00424866,
+                          "result": {
+                            "age": 526228296,
+                            "content": {
+                              "body": "Test content martians and men",
+                              "msgtype": "m.text"
+                            },
+                            "event_id": "$144429830826TWwbB:localhost",
+                            "origin_server_ts": 1444298308034,
+                            "room_id": "!qPewotXpIctQySfjSy:localhost",
+                            "type": "m.room.message",
+                            "user_id": "@test:localhost"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+        400:
+          description: Part of the request was invalid.
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/error.yaml"

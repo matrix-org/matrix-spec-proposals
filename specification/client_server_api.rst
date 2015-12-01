@@ -17,6 +17,118 @@ shortly.
 Documentation for the old `V1 authentication
 <../attic/v1_registration_login.rst>`_ is still available separately.
 
+.. contents:: Table of Contents
+.. sectnum::
+
+API Standards
+-------------
+
+.. TODO
+  Need to specify any HMAC or access_token lifetime/ratcheting tricks
+  We need to specify capability negotiation for extensible transports
+
+The mandatory baseline for communication in Matrix is exchanging JSON objects
+over HTTP APIs. HTTPS is mandated as the baseline for server-server
+(federation) communication.  HTTPS is recommended for client-server
+communication, although HTTP may be supported as a fallback to support basic
+HTTP clients. More efficient optional transports for client-server
+communication will in future be supported as optional extensions - e.g. a
+packed binary encoding over stream-cipher encrypted TCP socket for
+low-bandwidth/low-roundtrip mobile usage. For the default HTTP transport, all
+API calls use a Content-Type of ``application/json``.  In addition, all strings
+MUST be encoded as UTF-8. Clients are authenticated using opaque
+``access_token`` strings (see `Client Authentication`_ for details), passed as a
+query string parameter on all requests.
+
+Any errors which occur at the Matrix API level MUST return a "standard error
+response". This is a JSON object which looks like::
+
+  {
+    "errcode": "<error code>",
+    "error": "<error message>"
+  }
+
+The ``error`` string will be a human-readable error message, usually a sentence
+explaining what went wrong. The ``errcode`` string will be a unique string
+which can be used to handle an error message e.g. ``M_FORBIDDEN``. These error
+codes should have their namespace first in ALL CAPS, followed by a single _ to
+ease separating the namespace from the error code. For example, if there was a
+custom namespace ``com.mydomain.here``, and a
+``FORBIDDEN`` code, the error code should look like
+``COM.MYDOMAIN.HERE_FORBIDDEN``. There may be additional keys depending on the
+error, but the keys ``error`` and ``errcode`` MUST always be present.
+
+Some standard error codes are below:
+
+:``M_FORBIDDEN``:
+  Forbidden access, e.g. joining a room without permission, failed login.
+
+:``M_UNKNOWN_TOKEN``:
+  The access token specified was not recognised.
+
+:``M_BAD_JSON``:
+  Request contained valid JSON, but it was malformed in some way, e.g. missing
+  required keys, invalid values for keys.
+
+:``M_NOT_JSON``:
+  Request did not contain valid JSON.
+
+:``M_NOT_FOUND``:
+  No resource was found for this request.
+
+:``M_LIMIT_EXCEEDED``:
+  Too many requests have been sent in a short period of time. Wait a while then
+  try again.
+
+Some requests have unique error codes:
+
+:``M_USER_IN_USE``:
+  Encountered when trying to register a user ID which has been taken.
+
+:``M_ROOM_IN_USE``:
+  Encountered when trying to create a room which has been taken.
+
+:``M_BAD_PAGINATION``:
+  Encountered when specifying bad pagination query parameters.
+
+.. _sect:txn_ids:
+
+The Client-Server API typically uses ``HTTP POST`` to submit requests. This
+means these requests are not idempotent. The C-S API also allows ``HTTP PUT`` to
+make requests idempotent. In order to use a ``PUT``, paths should be suffixed
+with ``/{txnId}``. ``{txnId}`` is a unique client-generated transaction ID which
+identifies the request, and is scoped to a given Client (identified by that
+client's ``access_token``). Crucially, it **only** serves to identify new
+requests from retransmits. After the request has finished, the ``{txnId}``
+value should be changed (how is not specified; a monotonically increasing
+integer is recommended). It is preferable to use ``HTTP PUT`` to make sure
+requests to send messages do not get sent more than once should clients need to
+retransmit requests.
+
+Valid requests look like::
+
+    POST /some/path/here?access_token=secret
+    {
+      "key": "This is a post."
+    }
+
+    PUT /some/path/here/11?access_token=secret
+    {
+      "key": "This is a put with a txnId of 11."
+    }
+
+In contrast, these are invalid requests::
+
+    POST /some/path/here/11?access_token=secret
+    {
+      "key": "This is a post, but it has a txnId."
+    }
+
+    PUT /some/path/here?access_token=secret
+    {
+      "key": "This is a put but it is missing a txnId."
+    }
+
 Client Authentication
 ---------------------
 Most API endpoints require the user to identify themselves by presenting
@@ -356,7 +468,7 @@ This section refers to API Version 2. These API calls currently use the prefix
 
 .. _User-Interactive Authentication: `sect:auth-api`_
 
-{{v2_registration_http_api}}
+{{registration_http_api}}
 
 Old V1 API docs: |register|_
 
@@ -398,58 +510,11 @@ database.
 
 Adding Account Administrative Contact Information
 +++++++++++++++++++++++++++++++++++++++++++++++++
-Request::
 
-  POST $V2PREFIX/account/3pid
+A homeserver may keep some contact information for administrative use.
+This is independent of any information kept by any Identity Servers.
 
-Used to add contact information to the user's account.
-
-The body of the POST request is a JSON object containing:
-
-threePidCreds
-  An object containing contact information.
-bind
-  Optional. A boolean indicating whether the Home Server should also bind this
-  third party identifier to the account's matrix ID with the Identity Server. If
-  supplied and true, the Home Server must bind the 3pid accordingly.
-
-The contact information object comprises:
-
-id_server
-  The colon-separated hostname and port of the Identity Server used to
-  authenticate the third party identifier. If the port is the default, it and the
-  colon should be omitted.
-sid
-  The session ID given by the Identity Server
-client_secret
-  The client secret used in the session with the Identity Server.
-
-On success, the empty JSON object is returned.
-
-May also return error codes:
-
-M_THREEPID_AUTH_FAILED
-  If the credentials provided could not be verified with the ID Server.
-
-Fetching Currently Associated Contact Information
-+++++++++++++++++++++++++++++++++++++++++++++++++
-Request::
-
-  GET $V2PREFIX/account/3pid
-
-This returns a list of third party identifiers that the Home Server has
-associated with the user's account. This is *not* the same as the list of third
-party identifiers bound to the user's Matrix ID in Identity Servers. Identifiers
-in this list may be used by the Home Server as, for example, identifiers that it
-will accept to reset the user's account password.
-
-Returns a JSON object with the key ``threepids`` whose contents is an array of
-objects with the following keys:
-
-medium
-  The medium of the 3pid (eg, ``email``)
-address
-  The textual address of the 3pid, eg. the email address
+{{administrative_contact_http_api}}
 
 Pagination
 ----------
@@ -657,9 +722,9 @@ When the client first logs in, they will need to initially synchronise with
 their home server. This is achieved via the initial sync API described below.
 This API also returns an ``end`` token which can be used with the event stream.
 
-{{sync_http_api}}
+{{old_sync_http_api}}
 
-{{v2_sync_http_api}}
+{{sync_http_api}}
 
 
 Getting events for a room
@@ -783,19 +848,9 @@ client has to use the the following API.
 
 Room aliases
 ~~~~~~~~~~~~
-.. NOTE::
-  This section is a work in progress.
 
-Room aliases can be created by sending a ``PUT /directory/room/<room alias>``::
-
-  {
-    "room_id": <room id>
-  }
-
-They can be deleted by sending a ``DELETE /directory/room/<room alias>`` with
-no content. Only some privileged users may be able to delete room aliases, e.g.
-server admins, the creator of the room alias, etc. This specification does not
-outline the privilege level required for deleting room aliases.
+Servers may host aliases for rooms with human-friendly names. Aliases take the
+form ``#friendlyname:server.name``.
 
 As room aliases are scoped to a particular home server domain name, it is
 likely that a home server will reject attempts to maintain aliases on other
@@ -812,16 +867,10 @@ appears to have a room alias of ``#alias:example.com``, this SHOULD be checked
 to make sure that the room's ID matches the ``room_id`` returned from the
 request.
 
-Room aliases can be checked in the same way they are resolved; by sending a
-``GET /directory/room/<room alias>``::
-
-  {
-    "room_id": <room id>,
-    "servers": [ <domain>, <domain2>, <domain3> ]
-  }
-
 Home servers can respond to resolve requests for aliases on other domains than
 their own by using the federation API to ask other domain name home servers.
+
+{{directory_http_api}}
 
 
 Permissions
@@ -870,42 +919,24 @@ following values:
 ``invite``
   This room can only be joined if you were invited.
 
-{{membership_http_api}}
+{{inviting_http_api}}
+
+{{joining_http_api}}
+
+{{banning_http_api}}
 
 Leaving rooms
 ~~~~~~~~~~~~~
-.. TODO-spec - HS deleting rooms they are no longer a part of. Not implemented.
-  - This is actually Very Tricky. If all clients a HS is serving leave a room,
-  the HS will no longer get any new events for that room, because the servers
-  who get the events are determined on the *membership list*. There should
-  probably be a way for a HS to lurk on a room even if there are 0 of their
-  members in the room.
-  - Grace period before deletion?
-  - Under what conditions should a room NOT be purged?
-
-
 A user can leave a room to stop receiving events for that room. A user must
 have been invited to or have joined the room before they are eligible to leave
 the room. Leaving a room to which the user has been invited rejects the invite.
+Once a user leaves a room, it will no longer appear on the |initialSync|_ API.
 
 Whether or not they actually joined the room, if the room is
 an "invite-only" room they will need to be re-invited before they can re-join
-the room.  To leave a room, a request should be made to
-|/rooms/<room_id>/leave|_ with::
+the room.
 
-  {}
-
-Alternatively, the membership state for this user in this room can be modified
-directly by sending the following request to
-``/rooms/<room id>/state/m.room.member/<url encoded user id>``::
-
-  {
-    "membership": "leave"
-  }
-
-See the `Room events`_ section for more information on ``m.room.member``. Once a
-user has left a room, that room will no longer appear on the |initialSync|_ API.
-If all members in a room leave, that room becomes eligible for deletion.
+{{leaving_http_api}}
 
 Banning users in a room
 ~~~~~~~~~~~~~~~~~~~~~~~
