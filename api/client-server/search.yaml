@@ -160,10 +160,10 @@ paths:
                         type: number
                         description: Total number of results found
                       results:
-                        type: object
+                        type: array
                         title: Results
                         description: Mapping of event_id to result.
-                        additionalProperties:
+                        items:
                           type: object
                           title: Result
                           description: The result object.
@@ -295,8 +295,8 @@ paths:
                         }
                       },
                       "count": 24,
-                      "results": {
-                        "$144429830826TWwbB:localhost": {
+                      "results": [
+                        {
                           "rank": 0.00424866,
                           "result": {
                             "age": 526228296,
@@ -311,7 +311,7 @@ paths:
                             "user_id": "@test:localhost"
                           }
                         }
-                      }
+                      ]
                     }
                   }
                 }
