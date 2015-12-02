@@ -793,10 +793,6 @@ owners to delete the offending content from the databases. Events that have been
 redacted include a ``redacted_because`` key whose value is the event that caused
 it to be redacted, which may include a reason.
 
-.. TODO
-  Currently, only room admins can redact events by sending a ``m.room.redaction``
-  event, but server admins also need to be able to redact events by a similar
-  mechanism.
 
 Upon receipt of a redaction event, the server should strip off any keys not in
 the following list:
@@ -819,12 +815,19 @@ one of the following event types:
    ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
 - ``m.room.aliases`` allows key ``aliases``
 
-.. TODO
-  Need to update m.room.power_levels to reflect new power levels formatting
-
 The redaction event should be added under the key ``redacted_because``. When a
 client receives a redaction event it should change the redacted event
 in the same way a server does.
+
+Events
+++++++
+
+{{m_room_redaction_event}}
+
+Client behaviour
+++++++++++++++++
+
+{{redaction_http_api}}
 
 Rooms
 -----
