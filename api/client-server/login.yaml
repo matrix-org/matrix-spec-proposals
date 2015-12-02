@@ -81,7 +81,7 @@ paths:
                   (optional) A ``refresh_token`` may be exchanged for a new ``access_token`` using the /tokenrefresh API endpoint.
               home_server:
                 type: string
-                description: The hostname of the Home Server on which the account has been registered.
+                description: The hostname of the homeserver on which the account has been registered.
         400:
           description: |-
             Part of the request was invalid. For example, the login type may not be recognised.

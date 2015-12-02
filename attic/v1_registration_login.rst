@@ -1,17 +1,17 @@
 Registration and Login
 ----------------------
 
-Clients must register with a home server in order to use Matrix. After
+Clients must register with a homeserver in order to use Matrix. After
 registering, the client will be given an access token which must be used in ALL
-requests to that home server as a query parameter 'access_token'.
+requests to that homeserver as a query parameter 'access_token'.
 
 If the client has already registered, they need to be able to login to their
-account. The home server may provide many different ways of logging in, such as
+account. The homeserver may provide many different ways of logging in, such as
 user/password auth, login via a social network (OAuth2), login by confirming a
 token sent to their email address, etc. This specification does not define how
-home servers should authorise their users who want to login to their existing
+homeservers should authorise their users who want to login to their existing
 accounts, but instead defines the standard interface which implementations
-should follow so that ANY client can login to ANY home server. Clients login
+should follow so that ANY client can login to ANY homeserver. Clients login
 using the |login|_ API. Clients register using the |register|_ API.
 Registration follows the same general procedure as login, but the path requests
 are sent to and the details contained in them are different.
@@ -26,7 +26,7 @@ In order to determine up-front what the server's requirements are, the client
 can request from the server a complete description of all of its acceptable
 flows of the registration or login process. It can then inspect the list of
 returned flows looking for one for which it believes it can complete all of the
-required stages, and perform it. As each home server may have different ways of
+required stages, and perform it. As each homeserver may have different ways of
 logging in, the client needs to know how they should login. All distinct login
 stages MUST have a corresponding ``type``. A ``type`` is a namespaced string
 which details the mechanism for logging in.
@@ -64,12 +64,12 @@ ID and a new access token MUST be returned::
     "access_token": "abcdef0123456789"
   }
 
-The ``user_id`` key is particularly useful if the home server wishes to support
+The ``user_id`` key is particularly useful if the homeserver wishes to support
 localpart entry of usernames (e.g. "user" rather than "@user:matrix.org"), as
 the client may not be able to determine its ``user_id`` in this case.
 
-If the flow has multiple stages to it, the home server may wish to create a
-session to store context between requests. If a home server responds with a
+If the flow has multiple stages to it, the homeserver may wish to create a
+session to store context between requests. If a homeserver responds with a
 ``session`` key to a request, clients MUST submit it in subsequent requests
 until the flow is completed::
 
@@ -99,7 +99,7 @@ To respond to this type, reply with::
     "password": "<password>"
   }
 
-The home server MUST respond with either new credentials, the next stage of the
+The homeserver MUST respond with either new credentials, the next stage of the
 login process, or a standard error response.
 
 Captcha-based
@@ -123,7 +123,7 @@ To respond to this type, reply with::
     Recaptcha.get_challenge();
     Recaptcha.get_response();
 
-The home server MUST respond with either new credentials, the next stage of the
+The homeserver MUST respond with either new credentials, the next stage of the
 login process, or a standard error response.
 
 OAuth2-based
@@ -146,24 +146,24 @@ The server MUST respond with::
     "uri": <Authorization Request URI OR service selection URI>
   }
 
-The home server acts as a 'confidential' client for the purposes of OAuth2.  If
+The homeserver acts as a 'confidential' client for the purposes of OAuth2.  If
 the uri is a ``sevice selection URI``, it MUST point to a webpage which prompts
 the user to choose which service to authorize with. On selection of a service,
 this MUST link through to an ``Authorization Request URI``. If there is only 1
-service which the home server accepts when logging in, this indirection can be
+service which the homeserver accepts when logging in, this indirection can be
 skipped and the "uri" key can be the ``Authorization Request URI``.
 
 The client then visits the ``Authorization Request URI``, which then shows the
 OAuth2 Allow/Deny prompt. Hitting 'Allow' returns the ``redirect URI`` with the
-auth code.  Home servers can choose any path for the ``redirect URI``. The
+auth code.  Homeservers can choose any path for the ``redirect URI``. The
 client should visit the ``redirect URI``, which will then finish the OAuth2
-login process, granting the home server an access token for the chosen service.
-When the home server gets this access token, it verifies that the cilent has
+login process, granting the homeserver an access token for the chosen service.
+When the homeserver gets this access token, it verifies that the cilent has
 authorised with the 3rd party, and can now complete the login. The OAuth2
 ``redirect URI`` (with auth code) MUST respond with either new credentials, the
 next stage of the login process, or a standard error response.
 
-For example, if a home server accepts OAuth2 from Google, it would return the
+For example, if a homeserver accepts OAuth2 from Google, it would return the
 Authorization Request URI for Google::
 
   {
@@ -171,7 +171,7 @@ Authorization Request URI for Google::
     client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&scope=photos"
   }
 
-The client then visits this URI and authorizes the home server. The client then
+The client then visits this URI and authorizes the homeserver. The client then
 visits the REDIRECT_URI with the auth code= query parameter which returns::
 
   {
@@ -195,7 +195,7 @@ To respond to this type, reply with::
     "email": "<email address>"
   }
 
-After validating the email address, the home server MUST send an email
+After validating the email address, the homeserver MUST send an email
 containing an authentication code and return::
 
   {
@@ -212,7 +212,7 @@ code::
     "code": "<code in email sent>"
   }
 
-The home server MUST respond to this with either new credentials, the next
+The homeserver MUST respond to this with either new credentials, the next
 stage of the login process, or a standard error response.
 
 Email-based (url)
@@ -231,7 +231,7 @@ To respond to this type, reply with::
     "email": "<email address>"
   }
 
-After validating the email address, the home server MUST send an email
+After validating the email address, the homeserver MUST send an email
 containing an authentication URL and return::
 
   {
@@ -247,7 +247,7 @@ client should perform another request::
     "session": "<session id>"
   }
 
-The home server MUST respond to this with either new credentials, the next
+The homeserver MUST respond to this with either new credentials, the next
 stage of the login process, or a standard error response.
 
 A common client implementation will be to periodically poll until the link is
@@ -264,7 +264,7 @@ Email-based (identity server)
 
 Prior to submitting this, the client should authenticate with an identity
 server.  After authenticating, the session information should be submitted to
-the home server.
+the homeserver.
 
 To respond to this type, reply with::
 
@@ -293,7 +293,7 @@ of a previous login stage::
     "next": "<next login type>"
   }
 
-If a home server implements N-factor authentication, it MUST respond with all
+If a homeserver implements N-factor authentication, it MUST respond with all
 ``stages`` when initially queried for their login requirements::
 
   {

@@ -24,7 +24,7 @@ cat >tmp/http_apis <<EOF
 Matrix Client-Server API Reference
 ==================================
 
-This contains the client-server API for the reference implementation of the home server.
+This contains the client-server API for the reference implementation of the homeserver.
 
 
 EOF

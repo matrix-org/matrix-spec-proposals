@@ -20,7 +20,7 @@ $('.register').live('click', function() {
             showLoggedIn(data);
         },
         error: function(err) {
-            var errMsg = "To try this, you need a home server running!";
+            var errMsg = "To try this, you need a homeserver running!";
             var errJson = $.parseJSON(err.responseText);
             if (errJson) {
                 errMsg = JSON.stringify(errJson);   
@@ -41,7 +41,7 @@ var login = function(user, password) {
             showLoggedIn(data);
         },
         error: function(err) {
-            var errMsg = "To try this, you need a home server running!";
+            var errMsg = "To try this, you need a homeserver running!";
             var errJson = $.parseJSON(err.responseText);
             if (errJson) {
                 errMsg = JSON.stringify(errJson);   

@@ -66,7 +66,7 @@ Privacy
 
 A User may publish the association between their phone number and Matrix User ID
 on the Identity Server without publishing the number in their Profile hosted on
-their Home Server.
+their homeserver.
 
 Identity Servers should refrain from publishing reverse mappings and should 
 take steps, such as rate limiting, to prevent attackers enumerating the space of

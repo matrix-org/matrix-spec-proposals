@@ -6,15 +6,15 @@ This file contains examples of some application service
 IRC Bridge
 ----------
 Pre-conditions:
-  - Server admin stores the AS token "T_a" on the home server.
-  - Home server has a token "T_h".
-  - Home server has the domain "hsdomain.com"
+  - Server admin stores the AS token "T_a" on the homeserver.
+  - Homeserver has a token "T_h".
+  - Homeserver has the domain "hsdomain.com"
 
 1. Application service registration
 
 ::
   
-  AS -> HS: Registers itself with the home server
+  AS -> HS: Registers itself with the homeserver
   POST /register 
   {
    url: "https://someapp.com/matrix",

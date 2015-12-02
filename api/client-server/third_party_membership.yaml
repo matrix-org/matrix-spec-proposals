@@ -39,7 +39,7 @@ paths:
         join that room.
 
         If the identity server did know the Matrix user identifier for the
-        third party identifier, the home server will append a ``m.room.member``
+        third party identifier, the homeserver will append a ``m.room.member``
         event to the room.
 
         If the identity server does not know a Matrix user identifier for the
@@ -62,7 +62,7 @@ paths:
 
         - The matrix user ID who invited them to the room
 
-        If a token is requested from the identity server, the home server will
+        If a token is requested from the identity server, the homeserver will
         append a ``m.room.third_party_invite`` event to the room.
 
         .. _joining rooms section: `invite-by-user-id-endpoint`_

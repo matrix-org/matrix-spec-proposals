@@ -147,12 +147,12 @@ User-Interactive Authentication API
 This section refers to API Version 2.
 
 Some API endpoints such as ``login`` or ``register`` require authentication that
-interacts with the user. The home server may provide many different ways of
+interacts with the user. The homeserver may provide many different ways of
 authenticating, such as user/password auth, login via a social network (OAuth2),
 login by confirming a token sent to their email address, etc. This specification
-does not define how home servers should authorise their users but instead
+does not define how homeservers should authorise their users but instead
 defines the standard interface which implementations should follow so that ANY
-client can login to ANY home server.
+client can login to ANY homeserver.
 
 The process takes the form of one or more stages, where at each stage the client
 submits a set of data for a given stage type and awaits a response from the
@@ -168,9 +168,9 @@ more than one stage to implement n-factor auth. When all stages are complete,
 authentication is complete and the API call succeeds. To establish what flows a
 server supports for an endpoint, a client sends the request with no
 authentication. A request to an endpoint that uses User-Interactive
-Authentication never succeeds without auth. Home Servers may allow requests that
+Authentication never succeeds without auth. Homeservers may allow requests that
 don't require auth by offering a stage with only the ``m.login.dummy`` auth
-type. The home server returns a response with HTTP status 401 and a JSON object
+type. The homeserver returns a response with HTTP status 401 and a JSON object
 as follows::
 
   {
@@ -208,7 +208,7 @@ does this by resubmitting the same request with the the addition of an 'auth'
 key in the object that it submits. This dictionary contains a ``type`` key whose
 value is the name of the stage type that the client is attempting to complete.
 It must also contains a ``session`` key with the value of the session key given
-by the home server, if one was given. It also contains other keys dependent on
+by the homeserver, if one was given. It also contains other keys dependent on
 the stage type being attempted. For example, if the client is attempting to
 complete login type ``example.type.foo``, it might submit something like this::
 
@@ -222,7 +222,7 @@ complete login type ``example.type.foo``, it might submit something like this::
     }
   }
 
-If the home server deems the authentication attempt to be successful but still
+If the homeserver deems the authentication attempt to be successful but still
 requires more stages to be completed, it returns HTTP status 401 along with the
 same object as when no authentication was attempted, with the addition of the
 ``completed`` key which is an array of stage type the client has completed
@@ -246,7 +246,7 @@ successfully::
     "session": "xxxxxx"
   }
 
-If the home server decides the attempt was unsuccessful, it returns an error
+If the homeserver decides the attempt was unsuccessful, it returns an error
 message in the standard format::
 
   {
@@ -258,7 +258,7 @@ Individual stages may require more than one request to complete, in which case
 the response will be as if the request was unauthenticated with the addition of
 any other keys as defined by the login type.
 
-If the client has completed all stages of a flow, the home server performs the
+If the client has completed all stages of a flow, the homeserver performs the
 API call and returns the result as normal.
 
 Some authentication types may be completed by means other than through the
@@ -389,16 +389,16 @@ OAuth2-based
   ``uri``: Authorization Request URI OR service selection URI. Both contain an
   encoded ``redirect URI``.
 
-The home server acts as a 'confidential' client for the purposes of OAuth2.  If
+The homeserver acts as a 'confidential' client for the purposes of OAuth2.  If
 the uri is a ``service selection URI``, it MUST point to a webpage which prompts
 the user to choose which service to authorize with. On selection of a service,
 this MUST link through to an ``Authorization Request URI``. If there is only one
-service which the home server accepts when logging in, this indirection can be
+service which the homeserver accepts when logging in, this indirection can be
 skipped and the "uri" key can be the ``Authorization Request URI``.
 
 The client then visits the ``Authorization Request URI``, which then shows the
 OAuth2 Allow/Deny prompt. Hitting 'Allow' redirects to the ``redirect URI`` with
-the auth code. Home servers can choose any path for the ``redirect URI``. Once
+the auth code. Homeservers can choose any path for the ``redirect URI``. Once
 the OAuth flow has completed, the client retries the request with the session
 only, as above.
 
@@ -412,7 +412,7 @@ Email-based (identity server)
 
 Prior to submitting this, the client should authenticate with an identity
 server. After authenticating, the session information should be submitted to
-the home server.
+the homeserver.
 
 To respond to this type, reply with an auth dict as follows::
 
@@ -450,12 +450,12 @@ Clients cannot be expected to be able to know how to process every single login
 type. If a client does not know how to handle a given login type, it can direct
 the user to a web browser with the URL of a fallback page which will allow the
 user to complete that login step out-of-band in their web browser. The URL it
-should open is the Home Server base URL plus prefix, plus::
+should open is the homeserver base URL plus prefix, plus::
 
   /auth/<stage type>/fallback/web?session=<session ID>
 
 Where ``stage type`` is the type name of the stage it is attempting and
-``session id`` is the ID of the session given by the home server.
+``session id`` is the ID of the session given by the homeserver.
 
 This MUST return an HTML page which can perform this authentication stage. This
 page must attempt to call the JavaScript function ``window.onAuthDone`` when
@@ -494,7 +494,7 @@ Request::
 
 This API endpoint uses the User-Interactive Authentication API. An access token
 should be submitted to this endpoint if the client has an active session. The
-Home Server may change the flows available depending on whether a valid access
+homeserver may change the flows available depending on whether a valid access
 token is provided.
 
 The body of the POST request is a JSON object containing:
@@ -505,7 +505,7 @@ new_password
 On success, an empty JSON object is returned.
 
 The error code M_NOT_FOUND is returned if the user authenticated with a third
-party identifier but the Home Server could not find a matching account in its
+party identifier but the homeserver could not find a matching account in its
 database.
 
 Adding Account Administrative Contact Information
@@ -699,7 +699,7 @@ namespaced for each application and reduces the risk of clashes.
 Syncing
 ~~~~~~~
 
-Clients receive new events by "long-polling" the home server via the events API.
+Clients receive new events by "long-polling" the homeserver via the events API.
 This involves specifying a timeout in the request which will hold
 open the HTTP connection for a short period of time waiting for new events,
 returning early if an event occurs. Only the events API supports long-polling.
@@ -719,7 +719,7 @@ last request left off. Multiple events can be returned per long-poll.
   Do we ever support streaming requests? Why not websockets?
 
 When the client first logs in, they will need to initially synchronise with
-their home server. This is achieved via the initial sync API described below.
+their homeserver. This is achieved via the initial sync API described below.
 This API also returns an ``end`` token which can be used with the event stream.
 
 {{old_sync_http_api}}
@@ -831,7 +831,7 @@ Rooms
 
 Creation
 ~~~~~~~~
-The home server will create an ``m.room.create`` event when a room is created,
+The homeserver will create an ``m.room.create`` event when a room is created,
 which serves as the root of the event graph for this room. This event also has a
 ``creator`` key which contains the user ID of the room creator. It will also
 generate several other events in order to manage permissions in this room. This
@@ -852,9 +852,9 @@ Room aliases
 Servers may host aliases for rooms with human-friendly names. Aliases take the
 form ``#friendlyname:server.name``.
 
-As room aliases are scoped to a particular home server domain name, it is
-likely that a home server will reject attempts to maintain aliases on other
-domain names. This specification does not provide a way for home servers to
+As room aliases are scoped to a particular homeserver domain name, it is
+likely that a homeserver will reject attempts to maintain aliases on other
+domain names. This specification does not provide a way for homeservers to
 send update requests to other servers.
 
 Rooms store a *partial* list of room aliases via the ``m.room.aliases`` state
@@ -867,8 +867,8 @@ appears to have a room alias of ``#alias:example.com``, this SHOULD be checked
 to make sure that the room's ID matches the ``room_id`` returned from the
 request.
 
-Home servers can respond to resolve requests for aliases on other domains than
-their own by using the federation API to ask other domain name home servers.
+Homeservers can respond to resolve requests for aliases on other domains than
+their own by using the federation API to ask other domain name homeservers.
 
 {{directory_http_api}}
 
@@ -985,10 +985,10 @@ values. This change is conveyed using two separate mechanisms:
   values of the ``displayname`` and ``avatar_url`` keys, in addition to the
   required ``presence`` key containing the current presence state of the user.
 
-Both of these should be done automatically by the home server when a user
+Both of these should be done automatically by the homeserver when a user
 successfully changes their display name or avatar URL fields.
 
-Additionally, when home servers emit room membership events for their own
+Additionally, when homeservers emit room membership events for their own
 users, they should include the display name and avatar URL fields in these
 events so that clients already have these details to hand, and do not have to
 perform extra round trips to query it.
@@ -998,7 +998,7 @@ Security
 
 Rate limiting
 ~~~~~~~~~~~~~
-Home servers SHOULD implement rate limiting to reduce the risk of being
+Homeservers SHOULD implement rate limiting to reduce the risk of being
 overloaded. If a request is refused due to rate limiting, it should return a
 standard error response of the form::
 

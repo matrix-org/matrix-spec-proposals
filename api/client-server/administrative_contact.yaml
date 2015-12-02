@@ -25,7 +25,7 @@ paths:
         This API endpoint uses the User-Interactive Authentication API.
         An access token should be submitted to this endpoint if the client has
         an active session.
-        The Home Server may change the flows available depending on whether a
+        The homeserver may change the flows available depending on whether a
         valid access token is provided.
       security:
         - accessToken: []
@@ -64,7 +64,7 @@ paths:
         This is *not* the same as the list of third party identifiers bound to
         the user's Matrix ID in Identity Servers.
 
-        Identifiers in this list may be used by the Home Server as, for example,
+        Identifiers in this list may be used by the homeserver as, for example,
         identifiers that it will accept to reset the user's account password.
       security:
         - accessToken: []
@@ -126,7 +126,7 @@ paths:
               bind:
                 type: boolean
                 description: |-
-                  Whether the home server should also bind this third party
+                  Whether the homeserver should also bind this third party
                   identifier to the account's Matrix ID with the passed identity
                   server. Default: ``false``.
                 x-example: true

@@ -57,7 +57,7 @@ paths:
                 description: |-
                   The desired room alias **local part**. If this is included, a
                   room alias will be created and mapped to the newly created
-                  room. The alias will belong on the *same* home server which
+                  room. The alias will belong on the *same* homeserver which
                   created the room. For example, if this was set to "foo" and
                   sent to the homeserver "example.com" the complete room alias
                   would be ``#foo:example.com``.

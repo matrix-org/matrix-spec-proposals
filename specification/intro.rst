@@ -140,7 +140,7 @@ a long-lived GET request.
            |          V                                    |          V
        +------------------+                            +------------------+
        |                  |---------( HTTPS )--------->|                  |
-       |   Home Server    |                            |   Home Server    |
+       |   homeserver    |                            |   homeserver    |
        |                  |<--------( HTTPS )----------|                  |
        +------------------+      Server-Server API     +------------------+
                               History Synchronisation
@@ -227,7 +227,7 @@ They are case-sensitive. The following conceptual diagram shows an
                |                                                 |
                V                                                 |
        +------------------+                          +------------------+
-       |   Home Server    |                          |   Home Server    |
+       |   homeserver    |                          |   homeserver    |
        |   matrix.org     |                          |   domain.com     |
        +------------------+                          +------------------+
                |                                                 ^
