@@ -34,5 +34,20 @@ for f in ../api/client-server/*.yaml; do
   echo "{{${f/-/_}}}" >> tmp/http_apis
 done
 
+cat >>tmp/http_apis <<EOF
+
+.. |initialSync| replace:: ``/initialSync``_
+.. _initialSync: https://matrix.org/docs/spec/client_server.html#get-matrix-client-%CLIENT_MAJOR_VERSION%-initialsync
+
+
+.. _\`user-interactive authentication\`: https://matrix.org/docs/spec/client_server.html#user-interactive-authentication-api
+
+.. _pushers: https://matrix.org/docs/spec/client_server.html#def-pushers
+
+.. _\`room events\`: https://matrix.org/docs/spec/client_server.html#room-events
+
+
+EOF
+
 (cd ../templating ; python build.py -i matrix_templates -o ../scripts/gen ../scripts/tmp/http_apis --substitution=%CLIENT_RELEASE_LABEL%="${client_release}" --substitution=%CLIENT_MAJOR_VERSION%="${client_major_version}")
 rst2html.py --stylesheet-path=$(echo css/*.css | tr ' ' ',') gen/http_apis > gen/http_apis.html
