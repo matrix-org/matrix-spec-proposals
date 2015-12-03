@@ -25,13 +25,11 @@ Summary
  `VoIP`_                               Required   Required   Required   Optional   Optional
  `Content Repository`_                 Required   Required   Required   Optional   Optional
  `Managing History Visibility`_        Required   Required   Required   Required   Optional
- `End-to-End Encryption`_              Optional   Optional   Optional   Optional   Optional
  `Server Side Search`_                 Optional   Optional   Optional   Optional   Optional
 ===================================== ========== ========== ========== ========== ==========
 
 *Please see each module for more details on what clients need to implement.*
 
-.. _End-to-End Encryption: `module:e2e`_
 .. _Instant Messaging: `module:im`_
 .. _Presence: `module:presence`_
 .. _Push Notifications: `module:push`_
