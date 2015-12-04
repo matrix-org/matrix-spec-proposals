@@ -18,6 +18,11 @@
           "description":
             "The events that aren't recorded in the room history, e.g. typing and receipts, to include for rooms.",
           "allOf": [{"$ref": "room_event_filter.json"}]
+        },
+        "include_leave": {
+          "description":
+            "Include rooms that the user has left in the sync, default false",
+          "type": "boolean"
         }
       }
     },
