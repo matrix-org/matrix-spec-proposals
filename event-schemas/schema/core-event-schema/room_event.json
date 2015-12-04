@@ -21,6 +21,7 @@
     "unsigned": {
       "type": "object",
       "description": "Contains optional extra information about the event.",
+      "title": "UnsignedData",
       "properties": {
         "age": {
           "type": "integer",

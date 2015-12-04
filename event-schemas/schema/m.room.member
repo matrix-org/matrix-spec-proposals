@@ -30,6 +30,7 @@
                         "signed": {
                             "type": "object",
                             "title": "signed",
+                            "description": "A block of content which has been signed, which servers can use to verify the event. Clients should ignore this.",
                             "properties": {
                                 "mxid": {
                                     "type": "string",
@@ -41,7 +42,7 @@
                                 },
                                 "signatures": {
                                     "type": "object",
-                                    "description": "A single signature from the verifying server, in the format specified by the Signing Events section.",
+                                    "description": "A single signature from the verifying server, in the format specified by the Signing Events section of the server-server API.",
                                     "title": "Signatures"
                                 }
                             },
