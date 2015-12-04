@@ -618,6 +618,7 @@ func main() {
 		"Kegsay":        true,
 		"NegativeMjark": true,
 		"richvdh":       true,
+                "ara4n":         true,
 		"leonerd":       true,
 	}
 	if err := initCache(); err != nil {
