@@ -21,16 +21,43 @@ Matrix optionally supports end-to-end encryption, allowing rooms to be created
 whose conversation contents is not decryptable or interceptable on any of the
 participating homeservers.
 
-End-to-end crypto is still being designed and prototyped - notes on the design
-may be found at https://lwn.net/Articles/634144/
+.. WARNING:
+  End-to-end crypto is still being designed and prototyped. The following is
+  subject to change as the design evolves. Parts of the specification are not
+  yet implemented by the reference implementations.
+
+Key Distribution
+----------------
+Encryption and Authentication in Matrix is based around public-key
+cryptography. The Matrix protocol provides a basic mechanism for exchange of
+public keys, though an out-of-band channel is required for the inital key 
+exchange.
+
+Goals
+~~~~~
+* No central authority: users should not need to trust a central authority
+  when determining the authenticity of keys.
+
+* Easy to add new devices: it should be easy for a user to start using a
+  new device.
+
+* Possible to discover MITM: man-in-the-middle attacks should be visible to a
+  user.
+
+* Lost devices: it should be possible for a user to recover if they lose all
+  their devices.
+
+* No copying keys: private keys should be per device and shouldn't leave the
+  device they were created on.
 
 
 Overview
---------
+~~~~~~~~
 
 .. code::
 
-    1) Bob publishes the public keys and supported algorithms for his device.
+    1) Bob publishes the public keys and supported algorithms for his
+       device. This may include long-term identity keys, or single-use
 
                                           +----------+  +--------------+
                                           | Bob's HS |  | Bob's Device |
@@ -88,10 +115,15 @@ used by the algorithm so that it is easier to see if the algorithm is using a
 broken primitive.
 
 The name ``m.olm.v1.curve25519-aes-sha2`` corresponds to version 1 of the Olm
-ratchet using Curve25519 for the initial key agreement, HKDF-SHA-256 for
-ratchet key derivation, Curve25519 for the DH ratchet, HMAC-SHA-256 for the
-hash ratchet, and HKDF-SHA-256, AES-256 in CBC mode, and 8 byte truncated
-HMAC-SHA-256 for authenticated encryption.
+ratchet, as defined by the `Olm specification`_. This uses:
+
+* Curve25519 for the initial key agreement.
+* HKDF-SHA-256 for ratchet key derivation.
+* Curve25519 for the DH ratchet.
+* HMAC-SHA-256 for the hash ratchet.
+* HKDF-SHA-256, AES-256 in CBC mode, and 8 byte truncated HMAC-SHA-256 for authenticated encryption.
+
+.. _`Olm specification`: http://matrix.org/docs/spec/olm.html
 
 A name of ``m.olm.v1`` is too short: it gives no information about the primitives
 in use, and is difficult to extend for different primitives. However a name of
@@ -109,9 +141,6 @@ a Base64 encoded 32-byte Ed25519 public key.
 The name ``curve25519`` corresponds to the Curve25519 ECDH algorithm. The key is
 a Base64 encoded 32-byte Curve25519 public key.
 
-Client Behaviour
-----------------
-
 Uploading Keys
 ~~~~~~~~~~~~~~
 
@@ -121,6 +150,7 @@ signing key. This key is used as the fingerprint for a device by other clients.
 
 The JSON object is signed using the process given by `Signing JSON`_.
 
+_`Signing JSON`: https://matrix.org/docs/spec/#signing-json
 
 .. code:: http
 
@@ -350,3 +380,79 @@ included in the conversation.
 
 Clients must confirm that the ``sender_key`` belongs to the user that sent the
 message.
+
+
+A Possible Design for Group Chat using Olm
+------------------------------------------
+
+Protecting the secrecy of history
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Each message sent by a client has a 32-bit counter. This counter increments
+by one for each message sent by the client. This counter is used to advance a
+ratchet. The ratchet is split into a vector of four 256-bit values,
+:math:`R_{n,j}` for :math:`j \in {0,1,2,3}`. The ratchet can be advanced as
+follows:
+
+.. math::
+    \begin{align}
+    R_{2^24n,0} &= H_0\left(R_{2^24(i-1),0}\right) \\
+    R_{2^24n,1} &= H_1\left(R_{2^24(i-1),0}\right) \\
+    R_{2^24n,2} &= H_2\left(R_{2^24(i-1),0}\right) \\
+    R_{2^24n,3} &= H_3\left(R_{2^24(i-1),0}\right) \\
+    R_{2^16n,1} &= H_1\left(R_{2^16(i-1),1}\right) \\
+    R_{2^16n,2} &= H_2\left(R_{2^16(i-1),1}\right) \\
+    R_{2^16n,3} &= H_3\left(R_{2^16(i-1),1}\right) \\
+    R_{2^8i,2}  &= H_2\left(R_{2^8(i-1),2}\right) \\
+    R_{2^8i,3}  &= H_3\left(R_{2^8(i-1),2}\right) \\
+    R_{i,3}     &= H_3\left(R_{(i-1),3}\right)
+    \end{align}
+
+Where :math:`H_0`, :math:`H_1`, :math:`H_2`, and :math:`H_3`
+are different hash functions. For example
+:math:`H_0` could be :math:`HMAC\left(X,\text{"\textbackslash x00"}\right)` and
+:math:`H_1` could be :math:`HMAC\left(X,\text{"\textbackslash x01"}\right)`.
+
+So every :math:`2^24` iterations :math:`R_{n,1}` is reseeded from :math:`R_{n,0}`.
+Every :math:`2^16` iterations :math:`R_{n,2}` is reseeded from :math:`R_{n,1}`.
+Every :math:`2^8` iterations :math:`R_{n,3}` is reseeded from :math:`R_{n,2}`.
+
+This scheme allows the ratchet to be advanced an arbitrary amount forwards
+while needing only 1024 hash computations.
+
+This the value of the ratchet is hashed to generate the keys used to encrypt
+each mesage.
+
+A client can decrypt chat history onwards from the earliest value of the
+ratchet it is aware of. But cannot decrypt history from before that point
+without reversing the hash function.
+
+This allows a client to share its ability to decrypt chat history with another
+from a point in the conversation onwards by giving a copy of the ratchet at
+that point in the conversation.
+
+A client can discard history by advancing a ratchet to beyond the last message
+they want to discard and then forgetting all previous values of the ratchet.
+
+Proving and denying the authenticity of history
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Client sign the messages they send using a Ed25519 key generated per
+conversation. That key, along with the ratchet key, is distributed
+to other clients using 1:1 olm ratchets. Those 1:1 ratchets are started using
+Triple Diffie-Hellman which provides authenticity of the messages to the
+participants and deniability of the messages to third parties. Therefore
+any keys shared over those keys inherit the same levels of deniability and
+authenticity.
+
+Protecting the secrecy of future messages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A client would need to generate new keys if it wanted to prevent access to
+messages beyond a given point in the conversation. It must generate new keys
+whenever someone leaves the room. It should generate new keys periodically
+anyway.
+
+The frequency of key generation in a large room may need to be restricted to
+keep the frequency of messages broadcast over the individual 1:1 channels
+low.
