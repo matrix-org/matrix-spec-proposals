@@ -569,6 +569,15 @@ Where $streamtoken is an opaque token which can be used in another query to
 get the next set of results. The "start" and "end" keys can only be omitted if
 the complete dataset is provided in "chunk".
 
+Filtering
+---------
+
+Filters can be created on the server and can be passed as as a parameter to APIs
+which return events. These filters alter the data returned from those APIs.
+Not all APIs accept filters.
+
+{{filter_http_api}}
+
 Events
 ------
 
