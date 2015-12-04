@@ -136,7 +136,7 @@ signing key. This key is used as the fingerprint for a device by other clients.
 
 The JSON object is signed using the process given by `Signing JSON`_.
 
-_`Signing JSON`: https://matrix.org/docs/spec/#signing-json
+.. _`Signing JSON`: server_server.html#signing-json
 
 .. code:: http
 
