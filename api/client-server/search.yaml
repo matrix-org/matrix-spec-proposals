@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v1 Search API"
+  title: "Matrix Client-Server Search API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v1
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -67,7 +67,7 @@ paths:
                         title: Filter
                         description: |-
                             The filter to apply to search results.
-                            This has the same format as v2 filter API.
+                            This has the same format as filter API.
                     required: ["search_term"]
             required: ["search_categories"]
       responses:

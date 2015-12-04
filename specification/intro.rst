@@ -15,6 +15,9 @@ The following APIs are documented in this specification:
 
 There are also some `appendices <appendices.html>`_.
 
+Before we formally started releasing the specification, the last working copy
+we had can be found `here <https://matrix.org/docs/spec/legacy/>`_.
+
 .. contents:: Table of Contents
 .. sectnum::
 

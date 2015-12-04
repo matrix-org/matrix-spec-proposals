@@ -11,11 +11,11 @@ Events
 ------
 
 The tags on a room are received as single ``m.tag`` event in the
-``account_data`` section of a room in a v2 /sync.
+``account_data`` section of a room in a ``/sync``.
 
-The ``m.tag`` can also be received in a v1 /events response or in the
-``account_data`` section of a room in v1 /initialSync. ``m.tag``
-events appearing in v1 /events will have a ``room_id`` with the room
+The ``m.tag`` can also be received in a ``/events`` response or in the
+``account_data`` section of a room in ``/initialSync``. ``m.tag``
+events appearing in ``/events`` will have a ``room_id`` with the room
 the tags are for.
 
 Each tag has an associated JSON object with information about the tag, e.g how

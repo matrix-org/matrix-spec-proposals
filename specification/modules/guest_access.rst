@@ -9,7 +9,7 @@ the room. This module specifies how these clients should interact with servers
 in order to participate in rooms as guests.
 
 Guest users retrieve access tokens from a homeserver using the ordinary
-`register endpoint <#post-matrix-client-api-v2-alpha-register>`_, specifying
+`register endpoint <#post-matrix-client-%CLIENT_MAJOR_VERSION%-register>`_, specifying
 the ``kind`` parameter as ``guest``. They may then interact with the
 client-server API as any other user would, but will only have access to a subset
 of the API as described the Client behaviour subsection below.
@@ -29,13 +29,13 @@ Client behaviour
 The following API endpoints are allowed to be accessed by guest accounts for
 retrieving events:
 
-* `GET /rooms/:room_id/state <#get-matrix-client-api-v1-rooms-roomid-state>`_
-* `GET /rooms/:room_id/state/:event_type/:state_key <#get-matrix-client-api-v1-rooms-roomid-state-eventtype-statekey>`_
-* `GET /rooms/:room_id/messages <#get-matrix-client-api-v1-rooms-roomid-messages>`_
-* `GET /rooms/:room_id/initialSync <#get-matrix-client-api-v1-rooms-roomid-initialsync>`_
+* `GET /rooms/:room_id/state <#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state>`_
+* `GET /rooms/:room_id/state/:event_type/:state_key <#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state-eventtype-statekey>`_
+* `GET /rooms/:room_id/messages <#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-messages>`_
+* `GET /rooms/:room_id/initialSync <#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-initialsync>`_
 
 There is also a special version of the
-`GET /events <#get-matrix-client-api-v1-events>`_ endpoint:
+`GET /events <#get-matrix-client-%CLIENT_MAJOR_VERSION%-events>`_ endpoint:
 
 {{guest_events_http_api}}
 
@@ -47,15 +47,15 @@ receive events for them.
 The following API endpoints are allowed to be accessed by guest accounts for
 sending events:
 
-* `POST /rooms/:room_id/join <#post-matrix-client-api-v1-rooms-roomid-join>`_
-* `PUT /rooms/:room_id/send/m.room.message/:txn_id <#put-matrix-client-api-v1-rooms-roomid-send-eventtype-txnid>`_
+* `POST /rooms/:room_id/join <#post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-join>`_
+* `PUT /rooms/:room_id/send/m.room.message/:txn_id <#put-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-send-eventtype-txnid>`_
 
 Guest clients *do* need to join rooms in order to send events to them.
 
 The following API endpoints are allowed to be accessed by guest accounts for
 their own account maintenance:
 
-* `PUT /profile/:user_id/displayname <#put-matrix-client-api-v1-profile-userid-displayname>`_
+* `PUT /profile/:user_id/displayname <#put-matrix-client-%CLIENT_MAJOR_VERSION%-profile-userid-displayname>`_
 
 Server behaviour
 ----------------

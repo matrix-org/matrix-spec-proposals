@@ -115,7 +115,7 @@ The JSON object is signed using the process given by `Signing JSON`_.
 
 .. code:: http
 
-    POST /_matrix/client/v2_alpha/keys/upload/<device_id> HTTP/1.1
+    POST /_matrix/client/%CLIENT_MAJOR_VERSION%/keys/upload/<device_id> HTTP/1.1
     Content-Type: application/json
 
     {
@@ -206,7 +206,7 @@ lies about the keys a user owns.
     } } } } } }
 
 
-Clients use ``/_matrix/client/v2_alpha/keys/query`` on their own homeservers to
+Clients use ``/_matrix/client/%CLIENT_MAJOR_VERSION%/keys/query`` on their own homeservers to
 query keys for any user they wish to contact. Homeservers will respond with the
 keys for their local users and forward requests for remote users to
 ``/_matrix/federation/v1/user/keys/query`` over federation to the remote
@@ -263,7 +263,7 @@ time key once it has given that key to another user.
     } } } }
 
 
-Clients use ``/_matrix/client/v2_alpha/keys/claim`` on their own homeservers to
+Clients use ``/_matrix/client/%CLIENT_MAJOR_VERSION%/keys/claim`` on their own homeservers to
 claim keys for any user they wish to contact. Homeservers will respond with the
 keys for their local users and forward requests for remote users to
 ``/_matrix/federation/v1/user/keys/claim`` over federation to the remote

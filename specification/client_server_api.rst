@@ -7,16 +7,6 @@ support both lightweight clients which store no state and lazy-load data from
 the server as required - as well as heavyweight clients which maintain a full
 local persistent copy of server state.
 
-This mostly describes v1 of the Client-Server API as featured in the original September
-2014 launch of Matrix, apart from user-interactive authentication where it is
-encouraged to move to v2, therefore this is the version documented here.
-Version 2 is currently in development (as of Jan-March 2015) as an incremental
-but backwards-incompatible refinement of Version 1 and will be released
-shortly.
-
-Documentation for the old `V1 authentication
-<../attic/v1_registration_login.rst>`_ is still available separately.
-
 .. contents:: Table of Contents
 .. sectnum::
 
@@ -93,41 +83,17 @@ Some requests have unique error codes:
 
 .. _sect:txn_ids:
 
-The Client-Server API typically uses ``HTTP POST`` to submit requests. This
-means these requests are not idempotent. The C-S API also allows ``HTTP PUT`` to
-make requests idempotent. In order to use a ``PUT``, paths should be suffixed
-with ``/{txnId}``. ``{txnId}`` is a unique client-generated transaction ID which
-identifies the request, and is scoped to a given Client (identified by that
-client's ``access_token``). Crucially, it **only** serves to identify new
+The Client-Server API typically uses ``HTTP PUT`` to submit requests with a
+client-generated transaction identifier. This means that these requests are
+idempotent. The scope of a transaction identifier is a particular access token.
+It **only** serves to identify new
 requests from retransmits. After the request has finished, the ``{txnId}``
 value should be changed (how is not specified; a monotonically increasing
-integer is recommended). It is preferable to use ``HTTP PUT`` to make sure
-requests to send messages do not get sent more than once should clients need to
-retransmit requests.
+integer is recommended).
 
-Valid requests look like::
-
-    POST /some/path/here?access_token=secret
-    {
-      "key": "This is a post."
-    }
-
-    PUT /some/path/here/11?access_token=secret
-    {
-      "key": "This is a put with a txnId of 11."
-    }
-
-In contrast, these are invalid requests::
-
-    POST /some/path/here/11?access_token=secret
-    {
-      "key": "This is a post, but it has a txnId."
-    }
-
-    PUT /some/path/here?access_token=secret
-    {
-      "key": "This is a put but it is missing a txnId."
-    }
+Some API endpoints may allow or require the use of ``POST`` requests without a
+transaction ID. Where this is optional, the use of a ``PUT`` request is strongly
+recommended.
 
 Client Authentication
 ---------------------
@@ -135,7 +101,7 @@ Most API endpoints require the user to identify themselves by presenting
 previously obtained credentials in the form of an ``access_token`` query
 parameter.
 
-In API version 2, when credentials are missing or invalid, the HTTP call will
+When credentials are required but missing or invalid, the HTTP call will
 return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
 ``M_UNKNOWN_TOKEN`` respectively.
 
@@ -143,8 +109,6 @@ User-Interactive Authentication API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _sect:auth-api:
-
-This section refers to API Version 2.
 
 Some API endpoints such as ``login`` or ``register`` require authentication that
 interacts with the user. The homeserver may provide many different ways of
@@ -450,9 +414,9 @@ Clients cannot be expected to be able to know how to process every single login
 type. If a client does not know how to handle a given login type, it can direct
 the user to a web browser with the URL of a fallback page which will allow the
 user to complete that login step out-of-band in their web browser. The URL it
-should open is the homeserver base URL plus prefix, plus::
+should open is::
 
-  /auth/<stage type>/fallback/web?session=<session ID>
+  /_matrix/client/%CLIENT_MAJOR_VERSION%/auth/<stage type>/fallback/web?session=<session ID>
 
 Where ``stage type`` is the type name of the stage it is attempting and
 ``session id`` is the ID of the session given by the homeserver.
@@ -463,14 +427,9 @@ the authentication has been completed.
 
 API calls using the User-Interactive Authentication mechanism
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This section refers to API Version 2. These API calls currently use the prefix
-``/_matrix/client/v2_alpha``.
-
 .. _User-Interactive Authentication: `sect:auth-api`_
 
 {{registration_http_api}}
-
-Old V1 API docs: |register|_
 
 {{login_http_api}}
 
@@ -490,7 +449,7 @@ Changing Password
 +++++++++++++++++
 Request::
 
-  POST $V2PREFIX/account/password
+  POST /_matrix/client/%CLIENT_MAJOR_VERSION%/account/password
 
 This API endpoint uses the User-Interactive Authentication API. An access token
 should be submitted to this endpoint if the client has an active session. The
@@ -622,15 +581,21 @@ point in time::
 
   [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]
   
-Clients can add to the stream by POSTing message or state events, and can read
-from the stream via the |initialSync|_, |/rooms/<room_id>/initialSync|_, `Event
-Stream`_ and |/rooms/<room_id>/messages|_ APIs.
+Clients can add to the stream by PUTing message or state events, and can read
+from the stream via the
+|initialSync|_,
+|events|_,
+|/rooms/<room_id>/initialSync|_, and
+|/rooms/<room_id>/messages|_
+APIs.
 
 For reading events, the intended flow of operation is to call
-$PREFIX/initialSync, which returns all of the state and the last N events in the
+/_matrix/client/%CLIENT_MAJOR_VERSION%/initialSync, which returns all of the
+state and the last N events in the
 event stream for each room, including ``start`` and ``end`` values describing the
 pagination of each room's event stream. For instance,
-$PREFIX/initialSync?limit=5 might return the events for a room in the
+/_matrix/client/%CLIENT_MAJOR_VERSION%/initialSync?limit=5 might return the
+events for a room in the
 rooms[0].messages.chunk[] array, with tokens describing the start and end of the
 range in rooms[0].messages.start as '1-2-3' and rooms[0].messages.end as
 'a-b-c'.
@@ -643,7 +608,8 @@ You can visualise the range of events being returned as::
                         start: '1-2-3'                end: 'a-b-c'
                              
 Now, to receive future events in real-time on the event stream, you simply GET
-$PREFIX/events with a ``from`` parameter of 'a-b-c': in other words passing in the
+/_matrix/client/%CLIENT_MAJOR_VERSION%/events with a ``from`` parameter of
+'a-b-c': in other words passing in the
 ``end`` token returned by initial sync. The request blocks until new events are
 available or until your specified timeout elapses, and then returns a
 new paginatable chunk of events alongside new start and end parameters::
@@ -655,10 +621,11 @@ new paginatable chunk of events alongside new start and end parameters::
                                                       start: 'a-b-c'
 
 To resume polling the events stream, you pass in the new ``end`` token as the
-``from`` parameter of $PREFIX/events and poll again.
+``from`` parameter of /_matrix/client/%CLIENT_MAJOR_VERSION%/events and poll again.
 
 Similarly, to paginate events backwards in order to lazy-load in previous
-history from the room, you simply GET $PREFIX/rooms/<room_id>/messages
+history from the room, you simply
+GET /_matrix/client/%CLIENT_MAJOR_VERSION%/rooms/<room_id>/messages
 specifying the ``from`` token to paginate backwards from and a limit of the number
 of messages to retrieve. For instance, calling this API with a ``from`` parameter
 of '1-2-3' and a limit of 5 would return::
@@ -1023,44 +990,33 @@ have to wait in milliseconds before they can try again.
 .. Links through the external API docs are below
 .. =============================================
 
-.. |createRoom| replace:: ``/createRoom``
-.. _createRoom: /docs/api/client-server/#!/-rooms/create_room
-
 .. |initialSync| replace:: ``/initialSync``
-.. _initialSync: /docs/api/client-server/#!/-events/initial_sync
+.. _initialSync: #get-matrix-client-%CLIENT_MAJOR_VERSION%-initialsync
+
+.. |events| replace:: ``/events``
+.. _events: #get-matrix-client-%CLIENT_MAJOR_VERSION%-events
 
 .. |/rooms/<room_id>/initialSync| replace:: ``/rooms/<room_id>/initialSync``
-.. _/rooms/<room_id>/initialSync: /docs/api/client-server/#!/-rooms/get_room_sync_data
-
-.. |login| replace:: ``/login``
-.. _login: /docs/api/client-server/#!/-login
-
-.. |register| replace:: ``/register``
-.. _register: /docs/api/client-server/#!/-registration
+.. _/rooms/<room_id>/initialSync: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-initialsync
 
 .. |/rooms/<room_id>/messages| replace:: ``/rooms/<room_id>/messages``
-.. _/rooms/<room_id>/messages: /docs/api/client-server/#!/-rooms/get_messages
+.. _/rooms/<room_id>/messages: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-messages
 
 .. |/rooms/<room_id>/members| replace:: ``/rooms/<room_id>/members``
-.. _/rooms/<room_id>/members: /docs/api/client-server/#!/-rooms/get_members
+.. _/rooms/<room_id>/members: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-members
 
 .. |/rooms/<room_id>/state| replace:: ``/rooms/<room_id>/state``
-.. _/rooms/<room_id>/state: /docs/api/client-server/#!/-rooms/get_state_events
+.. _/rooms/<room_id>/state: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state
 
 .. |/rooms/<room_id>/invite| replace:: ``/rooms/<room_id>/invite``
-.. _/rooms/<room_id>/invite: /docs/api/client-server/#!/-rooms/invite
+.. _/rooms/<room_id>/invite: #post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-invite
 
 .. |/rooms/<room_id>/join| replace:: ``/rooms/<room_id>/join``
-.. _/rooms/<room_id>/join: /docs/api/client-server/#!/-rooms/join_room
+.. _/rooms/<room_id>/join: #post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-join
 
 .. |/rooms/<room_id>/leave| replace:: ``/rooms/<room_id>/leave``
-.. _/rooms/<room_id>/leave: /docs/api/client-server/#!/-rooms/leave
+.. _/rooms/<room_id>/leave: #post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-leave
 
 .. |/rooms/<room_id>/ban| replace:: ``/rooms/<room_id>/ban``
-.. _/rooms/<room_id>/ban: /docs/api/client-server/#!/-rooms/ban
-
-.. |/join/<room_alias_or_id>| replace:: ``/join/<room_alias_or_id>``
-.. _/join/<room_alias_or_id>: /docs/api/client-server/#!/-rooms/join
-
-.. _`Event Stream`: /docs/api/client-server/#!/-events/get_event_stream
+.. _/rooms/<room_id>/ban: #post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-ban
 

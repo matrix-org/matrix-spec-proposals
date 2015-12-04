@@ -14,11 +14,11 @@ Events
 ------
 
 The client recieves the account data as events in the ``account_data`` sections
-of a v2 /sync.
+of a ``/sync``.
 
-These events can also be received in a v1 /events response or in the
-``account_data`` section of a room in v1 /initialSync. ``m.tag``
-events appearing in v1 /events will have a ``room_id`` with the room
+These events can also be received in a ``/events`` response or in the
+``account_data`` section of a room in ``/initialSync``. ``m.tag``
+events appearing in ``/events`` will have a ``room_id`` with the room
 the tags are for.
 
 Client Behaviour

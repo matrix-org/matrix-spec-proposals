@@ -153,10 +153,10 @@ application services MUST implement these APIs. These APIs are defined below.
 
 .. _create the user: `sect:asapi-permissions`_
 
-Client-Server v2 API Extensions
+Client-Server API Extensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Application services can utilise a more powerful version of the 
+Application services can use a more powerful version of the
 client-server API by identifying itself as an application service to the
 homeserver.
 
@@ -281,7 +281,7 @@ an API is exposed.
 
 ::
 
-  GET /_matrix/app/v1/user?uri=$url_encoded_uri
+  GET /_matrix/app/%CLIENT_MAJOR_VERSION%/user?uri=$url_encoded_uri
   
   Returns 200 OK:
   {
@@ -305,7 +305,7 @@ SHOULD be mapped in the same way as "user" URIs.
 
 ::
 
-  GET /_matrix/app/v1/alias?uri=$url_encoded_uri
+  GET /_matrix/app/%CLIENT_MAJOR_VERSION%/alias?uri=$url_encoded_uri
   
   Returns 200 OK:
   {
