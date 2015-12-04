@@ -54,7 +54,7 @@ paths:
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/error.json"
   "/rooms/{roomId}/forget":
     post:
       summary: Stop the requesting user remembering about a particular room.
@@ -89,4 +89,4 @@ paths:
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/error.json"

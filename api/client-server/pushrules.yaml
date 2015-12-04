@@ -437,7 +437,7 @@ paths:
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/error.json"
   "/pushrules/{scope}/{kind}/{ruleId}/enabled":
     put:
       summary: "Enable or disable a push rule."

@@ -61,7 +61,7 @@ paths:
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/error.json"
       x-alias:
         canonical-link: "post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-join"
         aliases:
