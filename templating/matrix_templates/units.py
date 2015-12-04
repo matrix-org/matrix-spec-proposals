@@ -17,7 +17,7 @@ import subprocess
 import urllib
 import yaml
 
-HTTP_APIS = "../api/client-server"
+HTTP_APIS = ("../api/application-service", "../api/client-server",)
 EVENT_EXAMPLES = "../event-schemas/examples"
 EVENT_SCHEMA = "../event-schemas/schema"
 CORE_EVENT_SCHEMA = "../event-schemas/schema/core-event-schema"
@@ -549,20 +549,20 @@ class MatrixUnits(Units):
 
     def load_swagger_apis(self):
         apis = {}
-        path = HTTP_APIS
-        for filename in os.listdir(path):
-            if not filename.endswith(".yaml"):
-                continue
-            self.log("Reading swagger API: %s" % filename)
-            filepath = os.path.join(path, filename)
-            with open(filepath, "r") as f:
-                # strip .yaml
-                group_name = filename[:-5].replace("-", "_")
-                api = yaml.load(f.read())
-                api["__meta"] = self._load_swagger_meta(
-                    filepath, api, group_name
-                )
-                apis[group_name] = api
+        for path in HTTP_APIS:
+            for filename in os.listdir(path):
+                if not filename.endswith(".yaml"):
+                    continue
+                self.log("Reading swagger API: %s" % filename)
+                filepath = os.path.join(path, filename)
+                with open(filepath, "r") as f:
+                    # strip .yaml
+                    group_name = filename[:-5].replace("-", "_")
+                    api = yaml.load(f.read())
+                    api["__meta"] = self._load_swagger_meta(
+                        filepath, api, group_name
+                    )
+                    apis[group_name] = api
         return apis
 
     def load_common_event_fields(self):
