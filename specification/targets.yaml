@@ -6,7 +6,6 @@ targets:
     files:
       - client_server_api.rst
       - { 1: events.rst }
-      - { 1: event_signing.rst }
       - { 1: modules.rst }
       - { 2: feature_profiles.rst }
       - { 2: "group:modules" }  # reference a group of files
@@ -16,6 +15,7 @@ targets:
   server_server:
     files:
       - server_server_api.rst
+      - { 1: event_signing.rst }
   appendices:
     files:
       - appendices.rst
