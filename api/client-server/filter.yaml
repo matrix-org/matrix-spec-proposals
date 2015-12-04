@@ -22,8 +22,8 @@ paths:
       summary: Upload a new filter.
       description: |-
         Uploads a new filter definition to the homeserver.
-        Returns a filter ID that may be used in /sync requests to
-        retrict which events are returned to the client.
+        Returns a filter ID that may be used in future requests to
+        restrict which events are returned to the client.
       security:
         - accessToken: []
       parameters:
