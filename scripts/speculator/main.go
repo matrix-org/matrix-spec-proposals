@@ -387,8 +387,12 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("Not found"))
 }
 
-func (s *server) redirectTo(w http.ResponseWriter, _ *http.Request, path string) {
-	w.Header().Set("Location", path)
+func (s *server) redirectTo(w http.ResponseWriter, req *http.Request, path string) {
+	u := *req.URL
+	u.Scheme = "http"
+	u.Host = req.Host
+	u.Path = path
+	w.Header().Set("Location", u.String())
 	w.WriteHeader(302)
 }
 
