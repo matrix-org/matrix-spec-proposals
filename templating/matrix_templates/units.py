@@ -559,6 +559,7 @@ class MatrixUnits(Units):
                     # strip .yaml
                     group_name = filename[:-5].replace("-", "_")
                     api = yaml.load(f.read())
+                    api = resolve_references(filepath, api)
                     api["__meta"] = self._load_swagger_meta(
                         filepath, api, group_name
                     )
