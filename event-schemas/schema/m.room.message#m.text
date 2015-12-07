@@ -3,7 +3,7 @@
     "title": "TextMessage",
     "description": "This message is the most basic message and is used to represent text.",
     "allOf": [{
-        "$ref": "core-event-schema/room_event.json"
+        "$ref": "core-event-schema/room_event.yaml"
     }],
     "properties": {
         "content": {

@@ -1,0 +1,15 @@
+properties:
+  actions:
+    items:
+      type:
+      - object
+      - string
+    type: array
+  default:
+    type: boolean
+  enabled:
+    type: boolean
+  rule_id:
+    type: string
+title: PushRule
+type: object

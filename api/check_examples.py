@@ -49,7 +49,8 @@ def check_parameter(filepath, request, parameter):
             # Setting the 'id' tells jsonschema where the file is so that it
             # can correctly resolve relative $ref references in the schema
             schema['id'] = fileurl
-            jsonschema.validate(example, schema)
+            resolver = jsonschema.RefResolver(filepath, schema, handlers={"file": load_yaml})
+            jsonschema.validate(example, schema, resolver=resolver)
         except Exception as e:
             raise ValueError("Error validating JSON schema for %r" % (
                 request
@@ -76,7 +77,8 @@ def check_response(filepath, request, code, response):
             # Setting the 'id' tells jsonschema where the file is so that it
             # can correctly resolve relative $ref references in the schema
             schema['id'] = fileurl
-            jsonschema.validate(example, schema)
+            resolver = jsonschema.RefResolver(filepath, schema, handlers={"file": load_yaml})
+            jsonschema.validate(example, schema, resolver=resolver)
         except Exception as e:
             raise ValueError("Error validating JSON schema for %r %r" % (
                 request, code
@@ -101,6 +103,14 @@ def check_swagger_file(filepath):
                 raise ValueError("No responses for %r" % (request,))
             for code, response in responses.items():
                 check_response(filepath, request, code, response)
+
+
+def load_yaml(path):
+    if not path.startswith("file:///"):
+        raise Exception("Bad ref: %s" % (path,))
+    path = path[len("file://"):]
+    with open(path, "r") as f:
+        return yaml.load(f)
 
 
 if __name__ == '__main__':

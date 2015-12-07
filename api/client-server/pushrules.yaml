@@ -45,14 +45,14 @@ paths:
                     description: The ruleset for this profile tag.
                     title: Ruleset
                     allOf: [
-                      "$ref": "definitions/push_ruleset.json"
+                      "$ref": "definitions/push_ruleset.yaml"
                     ]
               global:
                 type: object
                 description: The global ruleset.
                 title: Ruleset
                 allOf: [
-                  "$ref": "definitions/push_ruleset.json"
+                  "$ref": "definitions/push_ruleset.yaml"
                 ]
           examples:
             application/json: |-
@@ -297,7 +297,7 @@ paths:
             description: The push rule.
             title: PushRule
             allOf: [
-              "$ref": "definitions/push_rule.json"
+              "$ref": "definitions/push_rule.yaml"
             ]
       tags:
         - Push notifications
@@ -420,7 +420,7 @@ paths:
                 items:
                   type: object
                   title: conditions
-                  allOf: [ "$ref": "definitions/push_condition.json" ]
+                  allOf: [ "$ref": "definitions/push_condition.yaml" ]
             required: ["actions"]
       responses:
         200:

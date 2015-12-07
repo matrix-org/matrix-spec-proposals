@@ -3,7 +3,7 @@
     "title": "VideoMessage",
     "description": "This message represents a single video clip.",
     "allOf": [{
-        "$ref": "core-event-schema/room_event.json"
+        "$ref": "core-event-schema/room_event.yaml"
     }],
     "properties": {
         "content": {
@@ -54,7 +54,7 @@
                             "type": "object",
                             "title": "ImageInfo",
                             "allOf": [{
-                                "$ref": "core-event-schema/msgtype_infos/image_info.json"
+                                "$ref": "core-event-schema/msgtype_infos/image_info.yaml"
                             }]
                         }
                     }

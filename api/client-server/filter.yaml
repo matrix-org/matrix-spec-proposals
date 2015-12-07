@@ -42,7 +42,7 @@ paths:
           schema:
             type: object
             allOf:
-              - $ref: "definitions/sync_filter.json"
+              - $ref: "definitions/sync_filter.yaml"
             example: |-
               {
                 "room": {
@@ -138,6 +138,6 @@ paths:
           schema:
             type: object
             allOf:
-              - $ref: "definitions/sync_filter.json"
+              - $ref: "definitions/sync_filter.yaml"
       tags:
         - Room participation
