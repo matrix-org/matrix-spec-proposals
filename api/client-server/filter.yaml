@@ -84,6 +84,8 @@ paths:
                 type: string
                 description: |-
                   The ID of the filter that was created.
+      tags:
+        - Room participation
   "/user/{userId}/filter/{filterId}":
     get:
       summary: Download a filter
@@ -137,3 +139,5 @@ paths:
             type: object
             allOf:
               - $ref: "definitions/sync_filter.json"
+      tags:
+        - Room participation

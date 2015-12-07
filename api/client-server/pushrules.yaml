@@ -245,6 +245,8 @@ paths:
                     ]
                 }
               }
+      tags:
+        - Push notifications
   "/pushrules/{scope}/{kind}/{ruleId}":
     get:
       summary: Retrieve a push rule.
@@ -297,6 +299,8 @@ paths:
             allOf: [
               "$ref": "definitions/push_rule.json"
             ]
+      tags:
+        - Push notifications
     delete:
       summary: Delete a push rule.
       description: |-
@@ -335,6 +339,8 @@ paths:
               {}
           schema:
             type: object  # empty json object
+      tags:
+        - Push notifications
     put:
       summary: Add or change a push rule.
       description: |-
@@ -438,6 +444,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - Push notifications
   "/pushrules/{scope}/{kind}/{ruleId}/enabled":
     put:
       summary: "Enable or disable a push rule."
@@ -492,4 +500,6 @@ paths:
             application/json: |-
               {}
           schema:
-            type: object  # empty json object
+            type: object
+      tags:
+        - Push notifications

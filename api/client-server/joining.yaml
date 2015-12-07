@@ -66,3 +66,5 @@ paths:
         canonical-link: "post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-join"
         aliases:
           - /_matrix/client/%CLIENT_MAJOR_VERSION%/join/{roomId}
+      tags:
+        - Room membership

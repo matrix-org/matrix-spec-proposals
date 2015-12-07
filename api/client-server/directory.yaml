@@ -52,6 +52,8 @@ paths:
               {}
           schema:
             type: object
+      tags:
+        - Room directory
     get:
       summary: Get the room ID corresponding to this room alias.
       parameters:
@@ -102,6 +104,8 @@ paths:
                 "errcode": "M_UNKNOWN",
                 "error": "Room alias #monkeys:matrix.org already exists."
               }
+      tags:
+        - Room directory
     delete:
       summary: Remove a mapping of room alias to room ID.
       description: |-
@@ -125,3 +129,5 @@ paths:
               {}
           schema:
             type: object
+      tags:
+        - Room directory

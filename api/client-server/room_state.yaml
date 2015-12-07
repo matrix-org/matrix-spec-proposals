@@ -78,6 +78,8 @@ paths:
                 type: string
                 description: |-
                   A unique identifier for the event.
+      tags:
+        - Room participation
   "/rooms/{roomId}/state/{eventType}":
     put:
       summary: Send a state event to the given room.
@@ -131,3 +133,5 @@ paths:
                 type: string
                 description: |-
                   A unique identifier for the event.
+      tags:
+        - Room participation

@@ -61,7 +61,8 @@ paths:
           description: >
             You aren't a member of the room and weren't previously a
             member of the room.
-
+      tags:
+        - Room participation
   "/rooms/{roomId}/state/{eventType}":
     get:
       summary: Get the state identified by the type, with the empty state key.
@@ -101,8 +102,8 @@ paths:
           description: >
             You aren't a member of the room and weren't previously a
             member of the room.
-
-
+      tags:
+        - Room participation
   "/rooms/{roomId}/state":
     get:
       summary: Get all state events in the current state of a room.
@@ -218,7 +219,8 @@ paths:
           description: >
             You aren't a member of the room and weren't previously a
             member of the room.
-
+      tags:
+        - Room participation
   "/rooms/{roomId}/initialSync":
     get:
       summary: Snapshot the current state of a room and its most recent messages.
@@ -428,7 +430,8 @@ paths:
           description: >
             You aren't a member of the room and weren't previously a
             member of the room.
-
+      tags:
+        - Room participation
   "/rooms/{roomId}/members":
     get:
       summary: Get the m.room.member events for the room.
@@ -496,4 +499,5 @@ paths:
           description: >
             You aren't a member of the room and weren't previously a
             member of the room.
-
+      tags:
+        - Room participation
