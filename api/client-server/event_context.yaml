@@ -23,8 +23,8 @@ paths:
       summary: Get events and state around the specified event.
       description: |-
         This API returns a number of events that happened just before and
-        after the specified event. This allows clients to get the context of
-        an event.
+        after the specified event. This allows clients to get the context
+        surrounding an event.
       security:
         - accessToken: []
       parameters:
