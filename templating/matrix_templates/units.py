@@ -24,8 +24,8 @@ CORE_EVENT_SCHEMA = "../event-schemas/schema/core-event-schema"
 CHANGELOG = "../CHANGELOG.rst"
 TARGETS = "../specification/targets.yaml"
 
-ROOM_EVENT = "core-event-schema/room_event.json"
-STATE_EVENT = "core-event-schema/state_event.json"
+ROOM_EVENT = "core-event-schema/room_event.yaml"
+STATE_EVENT = "core-event-schema/state_event.yaml"
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ def resolve_references(path, schema):
             if key == "$ref":
                 path = os.path.join(os.path.dirname(path), value)
                 with open(path) as f:
-                    schema = json.load(f)
+                    schema = yaml.load(f)
                 return resolve_references(path, schema)
             else:
                 result[key] = resolve_references(path, value)
@@ -571,14 +571,14 @@ class MatrixUnits(Units):
 
         for (root, dirs, files) in os.walk(path):
             for filename in files:
-                if not filename.endswith(".json"):
+                if not filename.endswith(".yaml"):
                     continue
 
-                event_type = filename[:-5]  # strip the ".json"
+                event_type = filename[:-5]  # strip the ".yaml"
                 filepath = os.path.join(root, filename)
                 with open(filepath) as f:
                     try:
-                        event_info = json.load(f)
+                        event_info = yaml.load(f)
                     except Exception as e:
                         raise ValueError(
                             "Error reading file %r" % (filepath,), e
@@ -631,7 +631,7 @@ class MatrixUnits(Units):
             filepath = os.path.join(path, filename)
             self.log("Reading %s" % filepath)
             with open(filepath, "r") as f:
-                json_schema = json.loads(f.read())
+                json_schema = yaml.load(f)
                 schema = {
                     "typeof": None,
                     "typeof_info": "",
