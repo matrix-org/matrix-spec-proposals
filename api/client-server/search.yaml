@@ -117,8 +117,8 @@ paths:
                         type: object
                         title: Groupings
                         description: |-
-                          Requests the server returns results with information
-                          about how they fit into groups the specified groups.
+                          Requests that the server partitions the result set
+                          based on the provided list of keys.
                         properties:
                           group_by:
                             type: array
