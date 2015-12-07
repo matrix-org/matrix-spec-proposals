@@ -21,7 +21,7 @@ HTTP_APIS = ("../api/application-service", "../api/client-server",)
 EVENT_EXAMPLES = "../event-schemas/examples"
 EVENT_SCHEMA = "../event-schemas/schema"
 CORE_EVENT_SCHEMA = "../event-schemas/schema/core-event-schema"
-CHANGELOG = "../CHANGELOG.rst"
+CHANGELOG_DIR = "../changelogs"
 TARGETS = "../specification/targets.yaml"
 
 ROOM_EVENT = "core-event-schema/room_event.yaml"
@@ -711,13 +711,21 @@ class MatrixUnits(Units):
                 schemata[filename] = schema
         return schemata
 
-    def load_spec_meta(self):
-        path = CHANGELOG
-        title_part = None
-        changelog_lines = []
-        with open(path, "r") as f:
+    def load_changelogs(self):
+        changelogs = {}
+
+        for f in os.listdir(CHANGELOG_DIR):
+            if not f.endswith(".rst"):
+                continue
+            path = os.path.join(CHANGELOG_DIR, f)
+            name = f[:-4]
+
+            title_part = None
+            changelog_lines = []
+            with open(path, "r") as f:
+                lines = f.readlines()
             prev_line = None
-            for line in f.readlines():
+            for line in lines:
                 if line.strip().startswith(".. "):
                     continue  # comment
                 if prev_line is None:
@@ -735,15 +743,10 @@ class MatrixUnits(Units):
                         # then bail out.
                         changelog_lines.pop()
                         break
-                    changelog_lines.append(line)
+                    changelog_lines.append(" " + line)
+            changelogs[name] = "\n".join(changelog_lines)
 
-        self.log("Title part: %s Changelog line count: %s" % (
-            title_part, len(changelog_lines)
-        ))
-
-        return {
-            "changelog": "".join(changelog_lines)
-        }
+        return changelogs
 
 
     def load_spec_targets(self):
