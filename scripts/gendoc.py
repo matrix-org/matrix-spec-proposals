@@ -238,7 +238,19 @@ def rst2html(i, o):
             )
 
 
-def run_through_template(input, set_verbose):
+def addAnchors(path):
+    with open(path, "r") as f:
+        lines = f.readlines()
+
+    replacement = replacement = r'<p><a class="anchor" id="\3"></a></p>\n\1'
+    with open(path, "w") as f:
+        for line in lines:
+            line = re.sub(r'(<h\d id="#?(.*?)">)', replacement, line.rstrip())
+            line = re.sub(r'(<div class="section" (id)="(.*?)">)', replacement, line.rstrip())
+            f.write(line + "\n")
+
+
+def run_through_template(input, set_verbose, substitutions):
     tmpfile = './tmp/output'
     try:
         with open(tmpfile, 'w') as out:
@@ -248,6 +260,9 @@ def run_through_template(input, set_verbose):
                 "-o", "../scripts/tmp",
                 "../scripts/"+input
             ]
+            for k, v in substitutions.items():
+                args.append("--substitution=%s=%s" % (k, v))
+
             if set_verbose:
                 args.insert(2, "-v")
             log("EXEC: %s" % " ".join(args))
@@ -262,6 +277,12 @@ def run_through_template(input, set_verbose):
         with open(tmpfile, 'r') as f:
             sys.stderr.write(f.read() + "\n")
         raise
+
+
+def get_build_targets(targets_listing):
+    with open(targets_listing, "r") as targ_file:
+        all_targets = yaml.load(targ_file.read())
+    return all_targets["targets"].keys()
 
 
 """
@@ -374,22 +395,44 @@ def cleanup_env():
     shutil.rmtree("./tmp")
 
 
-def main(target_name, keep_intermediates):
+def main(requested_target_name, keep_intermediates, substitutions):
     prepare_env()
-    log("Building spec [target=%s]" % target_name)
-    target = get_build_target("../specification/targets.yaml", target_name)
-    build_spec(target=target, out_filename="tmp/templated_spec.rst")
-    run_through_template("tmp/templated_spec.rst", VERBOSE)
-    fix_relative_titles(
-        target=target, filename="tmp/templated_spec.rst",
-        out_filename="tmp/full_spec.rst"
-    )
-    shutil.copy("../supporting-docs/howtos/client-server.rst", "tmp/howto.rst")
-    run_through_template("tmp/howto.rst", False)  # too spammy to mark -v on this
-    rst2html("tmp/full_spec.rst", "gen/specification.html")
-    rst2html("tmp/howto.rst", "gen/howtos.html")
+    log("Building spec [target=%s]" % requested_target_name)
+
+    targets = [requested_target_name]
+    if requested_target_name == "all":
+        targets = get_build_targets("../specification/targets.yaml")
+
+    for target_name in targets:
+        templated_file = "tmp/templated_%s.rst" % (target_name,)
+        rst_file = "tmp/spec_%s.rst" % (target_name,)
+        html_file = "gen/%s.html" % (target_name,)
+
+        target = get_build_target("../specification/targets.yaml", target_name)
+        build_spec(target=target, out_filename=templated_file)
+        run_through_template(templated_file, VERBOSE, substitutions)
+        fix_relative_titles(
+            target=target, filename=templated_file,
+            out_filename=rst_file,
+        )
+        rst2html(rst_file, html_file)
+        addAnchors(html_file)
+
+    if requested_target_name == "all":
+        shutil.copy("../supporting-docs/howtos/client-server.rst", "tmp/howto.rst")
+        run_through_template("tmp/howto.rst", False, substitutions)  # too spammy to mark -v on this
+        rst2html("tmp/howto.rst", "gen/howtos.html")
+
     if not keep_intermediates:
         cleanup_env()
+
+
+def extract_major(s):
+    major_version = s
+    match = re.match("^(r\d)+(\.\d+)?$", s)
+    if match:
+        major_version = match.group(1)
+    return major_version
 
 
 if __name__ == '__main__':
@@ -401,16 +444,31 @@ if __name__ == '__main__':
         help="Do not delete intermediate files. They will be found in tmp/"
     )
     parser.add_argument(
-        "--target", "-t", default="main",
-        help="Specify the build target to build from specification/targets.yaml"
+        "--target", "-t", default="all",
+        help="Specify the build target to build from specification/targets.yaml. " +
+             "The value 'all' will build all of the targets therein."
     )
     parser.add_argument(
         "--verbose", "-v", action="store_true",
         help="Turn on verbose mode."
+    )
+    parser.add_argument(
+        "--client_release", "-c", action="store", default="unstable",
+        help="The client-server release tag to generate, e.g. r1.2"
+    )
+    parser.add_argument(
+        "--server_release", "-s", action="store", default="unstable",
+        help="The server-server release tag to generate, e.g. r1.2"
     )
     args = parser.parse_args()
     if not args.target:
         parser.print_help()
         sys.exit(1)
     VERBOSE = args.verbose
-    main(args.target, args.nodelete)
+    substitutions = {
+        "%CLIENT_RELEASE_LABEL%": args.client_release,
+        "%CLIENT_MAJOR_VERSION%": extract_major(args.client_release),
+        "%SERVER_RELEASE_LABEL%": args.server_release,
+        "%SERVER_MAJOR_VERSION%": extract_major(args.server_release),
+    }
+    main(args.target, args.nodelete, substitutions)

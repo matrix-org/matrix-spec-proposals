@@ -1,0 +1,92 @@
+{
+    "type": "object",
+    "title": "The current membership state of a user in the room.",
+    "description": "Adjusts the membership state for a user in a room. It is preferable to use the membership APIs (``/rooms/<room id>/invite`` etc) when performing membership actions rather than adjusting the state directly as there are a restricted set of valid transformations. For example, user A cannot force user B to join a room, and trying to force this state change directly will fail. \n\nThe ``third_party_invite`` property will be set if this invite is an ``invite`` event and is the successor of an ``m.room.third_party_invite`` event, and absent otherwise.\n\nThis event may also include an ``invite_room_state`` key **outside the** ``content`` **key**. If present, this contains an array of ``StrippedState`` Events. These events provide information on a few select state events such as the room name.",
+    "allOf": [{
+        "$ref": "core-event-schema/state_event.yaml"
+    }],
+    "properties": {
+        "content": {
+            "type": "object",
+            "title": "EventContent",
+            "properties": {
+                "membership": {
+                    "type": "string",
+                    "description": "The membership state of the user.",
+                    "enum": ["invite","join","knock","leave","ban"]
+                },
+                "avatar_url": {
+                    "type": "string",
+                    "description": "The avatar URL for this user, if any. This is added by the homeserver."
+                },
+                "displayname": {
+                    "type": ["string", "null"],
+                    "description": "The display name for this user, if any. This is added by the homeserver."
+                },
+                "third_party_invite": {
+                    "type": "object",
+                    "title": "Invite",
+                    "properties": {
+                        "signed": {
+                            "type": "object",
+                            "title": "signed",
+                            "description": "A block of content which has been signed, which servers can use to verify the event. Clients should ignore this.",
+                            "properties": {
+                                "mxid": {
+                                    "type": "string",
+                                    "description": "The invited matrix user ID. Must be equal to the user_id property of the event."
+                                },
+                                "token": {
+                                    "type": "string",
+                                    "description": "The token property of the containing third_party_invite object."
+                                },
+                                "signatures": {
+                                    "type": "object",
+                                    "description": "A single signature from the verifying server, in the format specified by the Signing Events section of the server-server API.",
+                                    "title": "Signatures"
+                                }
+                            },
+                            "required": ["mxid", "signatures", "token"]
+                        }
+                    },
+                    "required": ["signed"]
+                }
+            },
+            "required": ["membership"]
+        },
+        "state_key": {
+            "type": "string",
+            "description": "The ``user_id`` this membership event relates to."
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.room.member"]
+        },
+        "invite_room_state": {
+            "type": "array",
+            "description": "A subset of the state of the room at the time of the invite, if ``membership`` is ``invite``",
+            "items": {
+                "type": "object",
+                "title": "StrippedState",
+                "description": "A stripped down state event, with only the ``type``, ``state_key`` and ``content`` keys.",
+                "required": ["type", "state_key", "content"],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "description": "The ``type`` for the event.",
+                        "enum": ["m.room.join_rules", "m.room.canonical_alias", "m.room.avatar", "m.room.name"]
+                    },
+                    "state_key": {
+                        "type": "string",
+                        "description": "The ``state_key`` for the event."
+                    },
+                    "content": {
+                        "title": "EventContent",
+                        "type": "object",
+                        "description": "The ``content`` for the event."
+                    }
+                }
+            }
+        }
+    }
+}

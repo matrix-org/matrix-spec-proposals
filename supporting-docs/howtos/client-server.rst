@@ -11,11 +11,11 @@ How to use the client-server API
   The git version of this document is ``{{git_version}}``
 
 This guide focuses on how the client-server APIs *provided by the reference 
-home server* can be used. Since this is specific to a home server 
+homeserver* can be used. Since this is specific to a homeserver 
 implementation, there may be variations in relation to registering/logging in
 which are not covered in extensive detail in this guide.
 
-If you haven't already, get a home server up and running on 
+If you haven't already, get a homeserver up and running on 
 ``http://localhost:8008``.
 
 
@@ -48,8 +48,8 @@ if you forget the ``access_token``.
 
 Implementation note: The matrix specification does not enforce how users 
 register with a server. It just specifies the URL path and absolute minimum 
-keys. The reference home server uses a username/password to authenticate user,
-but other home servers may use different methods. This is why you need to
+keys. The reference homeserver uses a username/password to authenticate user,
+but other homeservers may use different methods. This is why you need to
 specify the ``type`` of method.
 
 Login
@@ -74,13 +74,13 @@ The aim when logging in is to get an access token for your existing user ID::
         "user_id": "@example:localhost"
     }
     
-Implementation note: Different home servers may implement different methods for 
+Implementation note: Different homeservers may implement different methods for 
 logging in to an existing account. In order to check that you know how to login 
-to this home server, you must perform a ``GET`` first and make sure you 
+to this homeserver, you must perform a ``GET`` first and make sure you 
 recognise the login type. If you do not know how to login, you can 
 ``GET /login/fallback`` which will return a basic webpage which you can use to 
-login. The reference home server implementation support username/password login,
-but other home servers may support different login methods (e.g. OAuth2).
+login. The reference homeserver implementation support username/password login,
+but other homeservers may support different login methods (e.g. OAuth2).
 
 
 Communicating

@@ -5,10 +5,8 @@ Typing Notifications
 
 Users may wish to be informed when another user is typing in a room. This can be
 achieved using typing notifications. These are ephemeral events scoped to a
-``room_id``. This means they do not form part of the `Event Graph`_ but still
-have a ``room_id`` key.
-
-.. _Event Graph: `sect:event-graph`_
+``room_id``. This means they do not form part of the
+`Event Graph <index.html#event-graphs>`_ but still have a ``room_id`` key.
 
 Events
 ------
@@ -35,28 +33,6 @@ state change of the ``boolean`` to ``false`` should trigger another HTTP request
 to inform the server that the user has stopped typing.
 
 {{typing_http_api}}
-
-Server behaviour
-----------------
-
-Servers MUST emit typing EDUs in a different form to ``m.typing`` events which
-are shown to clients. This form looks like::
-
-  {
-    "type": "m.typing",
-    "content": {
-      "room_id": "!room-id-here:matrix.org",
-      "user_id": "@user-id-here:matrix.org",
-      "typing": true/false
-    }
-  }
-
-This does not contain timing information so it is up to originating homeservers
-to ensure they eventually send "stop" notifications.
-
-.. TODO
-  ((This will eventually need addressing, as part of the wider typing/presence
-  timer addition work))
 
 Security considerations
 -----------------------

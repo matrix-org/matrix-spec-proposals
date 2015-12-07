@@ -1,8 +1,8 @@
 Federation API
 ==============
 
-Matrix home servers use the Federation APIs (also known as server-server APIs)
-to communicate with each other. Home servers use these APIs to push messages to
+Matrix homeservers use the Federation APIs (also known as server-server APIs)
+to communicate with each other. Homeservers use these APIs to push messages to
 each other in real-time, to request historic messages from each other, and to
 query profile and presence information about users on each other's servers.
 
@@ -11,10 +11,10 @@ servers. These HTTPS requests are strongly authenticated using public key
 signatures at the TLS transport layer and using public key signatures in
 HTTP Authorization headers at the HTTP layer.
 
-There are three main kinds of communication that occur between home servers:
+There are three main kinds of communication that occur between homeservers:
 
 Persisted Data Units (PDUs):
-    These events are broadcast from one home server to any others that have
+    These events are broadcast from one homeserver to any others that have
     joined the same room (identified by Room ID). They are persisted in
     long-term storage and record the history of messages and state for a
     room.
@@ -25,9 +25,9 @@ Persisted Data Units (PDUs):
     deliver them through third-party servers.
 
 Ephemeral Data Units (EDUs):
-    These events are pushed between pairs of home servers. They are not
+    These events are pushed between pairs of homeservers. They are not
     persisted and are not part of the history of a room, nor does the
-    receiving home server have to reply to them.
+    receiving homeserver have to reply to them.
 
 Queries:
     These are single request/response interactions between a given pair of
@@ -38,8 +38,11 @@ Queries:
 
 
 EDUs and PDUs are further wrapped in an envelope called a Transaction, which is
-transferred from the origin to the destination home server using an HTTPS PUT
+transferred from the origin to the destination homeserver using an HTTPS PUT
 request.
+
+.. contents:: Table of Contents
+.. sectnum::
 
 Server Discovery
 ----------------
@@ -47,7 +50,7 @@ Server Discovery
 Resolving Server Names
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Each matrix home server is identified by a server name consisting of a DNS name
+Each matrix homeserver is identified by a server name consisting of a DNS name
 and an optional TLS port.
 
 .. code::
@@ -64,7 +67,7 @@ is absent then the server is discovered by looking up a ``_matrix._tcp`` SRV
 record for the DNS name. If this record does not exist then the server is
 discovered by looking up an AAAA or A record on the DNS name and taking the
 default fallback port number of 8448.
-Home servers may use SRV records to load balance requests between multiple TLS
+Homeservers may use SRV records to load balance requests between multiple TLS
 endpoints or to failover to another endpoint if an endpoint fails.
 
 Retrieving Server Keys
@@ -73,8 +76,8 @@ Retrieving Server Keys
 Version 2
 +++++++++
 
-Each home server publishes its public keys under ``/_matrix/key/v2/server/``.
-Home servers query for keys by either getting ``/_matrix/key/v2/server/``
+Each homeserver publishes its public keys under ``/_matrix/key/v2/server/``.
+Homeservers query for keys by either getting ``/_matrix/key/v2/server/``
 directly or by querying an intermediate notary server using a
 ``/_matrix/key/v2/query`` API. Intermediate notary servers query the
 ``/_matrix/key/v2/server/`` API on behalf of another server and sign the
@@ -92,7 +95,7 @@ server by querying other servers.
 Publishing Keys
 ^^^^^^^^^^^^^^^
 
-Home servers publish the allowed TLS fingerprints and signing keys in a JSON
+Homeservers publish the allowed TLS fingerprints and signing keys in a JSON
 object at ``/_matrix/key/v2/server/{key_id}``. The response contains a list of
 ``verify_keys`` that are valid for signing federation requests made by the
 server and for signing events. It contains a list of ``old_verify_keys``
@@ -111,7 +114,7 @@ certificate currently in use by the server. These fingerprints are valid until
 the millisecond POSIX timestamp in ``valid_until_ts``.
 
 The ``verify_keys`` can be used to sign requests and events made by the server
-until the millisecond POSIX timestamp in ``valid_until_ts``. If a Home Server
+until the millisecond POSIX timestamp in ``valid_until_ts``. If a homeserver
 receives an event with a ``origin_server_ts`` after the ``valid_until_ts`` then
 it should request that ``key_id`` for the originating server to check whether
 the key has expired.
@@ -133,8 +136,8 @@ events sent by that server can still be checked.
 ==================== =================== ======================================
     Key                    Type                         Description
 ==================== =================== ======================================
-``server_name``      String              DNS name of the home server.
-``verify_keys``      Object              Public keys of the home server for
+``server_name``      String              DNS name of the homeserver.
+``verify_keys``      Object              Public keys of the homeserver for
                                          verifying digital signatures.
 ``old_verify_keys``  Object              The public keys that the server used
                                          to use and when it stopped using them.
@@ -235,14 +238,14 @@ Version 1
   Version 1 of key distribution is obsolete
 
 
-Home servers publish their TLS certificates and signing keys in a JSON object
+Homeservers publish their TLS certificates and signing keys in a JSON object
 at ``/_matrix/key/v1``.
 
 ==================== =================== ======================================
     Key                    Type                         Description
 ==================== =================== ======================================
-``server_name``      String              DNS name of the home server.
-``verify_keys``      Object              Public keys of the home server for
+``server_name``      String              DNS name of the homeserver.
+``verify_keys``      Object              Public keys of the homeserver for
                                          verifying digital signatures.
 ``signatures``       Object              Digital signatures for this object
                                          signed using the ``verify_keys``.
@@ -275,9 +278,9 @@ Transactions
 .. WARNING::
   This section may be misleading or inaccurate.
 
-The transfer of EDUs and PDUs between home servers is performed by an exchange
+The transfer of EDUs and PDUs between homeservers is performed by an exchange
 of Transaction messages, which are encoded as JSON objects, passed over an HTTP
-PUT request. A Transaction is meaningful only to the pair of home servers that
+PUT request. A Transaction is meaningful only to the pair of homeservers that
 exchanged it; they are not globally-meaningful.
 
 Each transaction has:
@@ -442,7 +445,7 @@ EDUs
 
 EDUs, by comparison to PDUs, do not have an ID, a room ID, or a list of
 "previous" IDs. The only mandatory fields for these are the type, origin and
-destination home server names, and the actual nested content.
+destination homeserver names, and the actual nested content.
 
 ======================== ============ =========================================
  Key                      Type          Description
@@ -528,10 +531,168 @@ To make a query::
     Query args: as specified by the individual query types
     Response: JSON encoding of a response object
 
-Performs a single query request on the receiving home server. The Query Type
+Performs a single query request on the receiving homeserver. The Query Type
 part of the path specifies the kind of query being made, and its query
 arguments have a meaning specific to that kind of query. The response is a
 JSON-encoded object whose meaning also depends on the kind of query.
+
+
+To join a room::
+
+  GET .../make_join/<room_id>/<user_id>
+    Response: JSON encoding of a join proto-event
+
+  PUT .../send_join/<room_id>/<event_id>
+    Response: JSON encoding of the state of the room at the time of the event
+
+Performs the room join handshake. For more information, see "Joining Rooms"
+below.
+
+Joining Rooms
+-------------
+
+When a new user wishes to join room that the user's homeserver already knows
+about, the homeserver can immediately determine if this is allowable by
+inspecting the state of the room, and if it is acceptable, it can generate,
+sign, and emit a new ``m.room.member`` state event adding the user into that
+room. When the homeserver does not yet know about the room it cannot do this
+directly. Instead, it must take a longer multi-stage handshaking process by
+which it first selects a remote homeserver which is already participating in
+that room, and uses it to assist in the joining process. This is the remote
+join handshake.
+
+This handshake involves the homeserver of the new member wishing to join
+(referred to here as the "joining" server), the directory server hosting the
+room alias the user is requesting to join with, and a homeserver where existing
+room members are already present (referred to as the "resident" server).
+
+In summary, the remote join handshake consists of the joining server querying
+the directory server for information about the room alias; receiving a room ID
+and a list of join candidates. The joining server then requests information
+about the room from one of the residents. It uses this information to construct
+a ``m.room.member`` event which it finally sends to a resident server.
+
+Conceptually these are three different roles of homeserver. In practice the
+directory server is likely to be resident in the room, and so may be selected
+by the joining server to be the assisting resident. Likewise, it is likely that
+the joining server picks the same candidate resident for both phases of event
+construction, though in principle any valid candidate may be used at each time.
+Thus, any join handshake can potentially involve anywhere from two to four
+homeservers, though most in practice will use just two.
+
+::
+
+  Client         Joining                Directory       Resident
+                 Server                 Server          Server
+
+  join request -->
+                 |
+                 directory request ------->
+                 <---------- directory response
+                 |
+                 make_join request ----------------------->
+                 <------------------------------- make_join response
+                 |
+                 send_join request ----------------------->
+                 <------------------------------- send_join response
+                 |
+  <---------- join response
+
+The first part of the handshake usually involves using the directory server to
+request the room ID and join candidates. This is covered in more detail on the
+directory server documentation, below. In the case of a new user joining a
+room as a result of a received invite, the joining user's homeserver could
+optimise this step away by picking the origin server of that invite message as
+the join candidate. However, the joining server should be aware that the origin
+server of the invite might since have left the room, so should be prepared to
+fall back on the regular join flow if this optimisation fails.
+
+Once the joining server has the room ID and the join candidates, it then needs
+to obtain enough information about the room to fill in the required fields of
+the ``m.room.member`` event. It obtains this by selecting a resident from the
+candidate list, and requesting the ``make_join`` endpoint using a ``GET``
+request, specifying the room ID and the user ID of the new member who is
+attempting to join.
+
+The resident server replies to this request with a JSON-encoded object having a
+single key called ``event``; within this is an object whose fields contain some
+of the information that the joining server will need. Despite its name, this
+object is not a full event; notably it does not need to be hashed or signed by
+the resident homeserver. The required fields are:
+
+==================== ======== ============
+ Key                  Type     Description
+==================== ======== ============
+``type``             String   The value ``m.room.member``
+``auth_events``      List     An event-reference list containing the
+                              authorization events that would allow this member
+                              to join
+``content``          Object   The event content
+``depth``            Integer  (this field must be present but is ignored; it
+                              may be 0)
+``event_id``         String   A new event ID specified by the resident
+                              homeserver
+``origin``           String   The name of the resident homeserver
+``origin_server_ts`` Integer  A timestamp added by the resident homeserver
+``prev_events``      List     An event-reference list containing the immediate
+                              predecessor events
+``room_id``          String   The room ID of the room
+``sender``           String   The user ID of the joining member
+``state_key``        String   The user ID of the joining member
+==================== ======== ============
+
+The ``content`` field itself must be an object, containing:
+
+============== ====== ============
+ Key            Type   Description
+============== ====== ============
+``membership`` String The value ``join``
+============== ====== ============
+
+The joining server now has sufficient information to construct the real join
+event from these protoevent fields. It copies the values of most of them,
+adding (or replacing) the following fields:
+
+==================== ======= ============
+ Key                  Type    Description
+==================== ======= ============
+``event_id``         String  A new event ID specified by the joining homeserver
+``origin``           String  The name of the joining homeserver
+``origin_server_ts`` Integer A timestamp added by the joining homeserver
+==================== ======= ============
+
+.. TODO-spec
+  - Why does the protoevent have an event_id, only for the real event to ignore
+    it and specify a different one? We should definitely pick one or the other.
+
+This will be a true event, so the joining server should apply the event-signing
+algorithm to it, resulting in the addition of the ``hashes`` and ``signatures``
+fields.
+
+To complete the join handshake, the joining server must now submit this new
+event to an resident homeserver, by using the ``send_join`` endpoint. This is
+invoked using the room ID and the event ID of the new member event.
+
+The resident homeserver then accepts this event into the room's event graph,
+and responds to the joining server with the full set of state for the newly-
+joined room. This is returned as a two-element list, whose first element is the
+integer 200, and whose second element is an object which contains the
+following keys:
+
+============== ===== ============
+ Key            Type  Description
+============== ===== ============
+``auth_chain`` List  A list of events giving the authorization chain for this
+                     join event
+``state``      List  A complete list of the prevailing state events at the
+                     instant just before accepting the new ``m.room.member``
+                     event
+============== ===== ============
+
+.. TODO-spec
+  - (paul) I don't really understand why the full auth_chain events are given
+    here. What purpose does it serve expanding them out in full, when surely
+    they'll appear in the state anyway?
 
 Backfilling
 -----------
@@ -630,9 +791,9 @@ because HTTP services like Matrix are often deployed behind load balancers that
 handle the TLS and these load balancers make it difficult to check TLS client
 certificates.
 
-A home server may provide a TLS client certificate and the receiving home server
+A homeserver may provide a TLS client certificate and the receiving homeserver
 may check that the client certificate matches the certificate of the origin
-home server.
+homeserver.
 
 Server-Server Authorization
 ---------------------------
@@ -744,7 +905,7 @@ Querying profile information::
 If the query contains the optional ``field`` key, it should give the name of a
 result field. If such is present, then the result should contain only a field
 of that name, with no others present. If not, the result should contain as much
-of the user's profile as the home server has available and can make public.
+of the user's profile as the homeserver has available and can make public.
 
 Directory
 ---------
@@ -763,6 +924,7 @@ Querying directory information::
     servers: list of strings giving the join candidates
 
 The list of join candidates is a list of server names that are likely to hold
-the given room; these are servers that the requesting server may wish to try
-joining with. This list may or may not include the server answering the query.
+the given room; these are servers that the requesting server may wish to use as
+resident servers as part of the remote join handshake. This list may or may not
+include the server answering the query.
 

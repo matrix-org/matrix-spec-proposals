@@ -15,13 +15,9 @@ class MatrixSections(Sections):
     def render_git_rev(self):
         return self.units.get("git_version")["revision"]
 
-    def render_spec_version(self):
-        spec_meta = self.units.get("spec_meta")
-        return spec_meta["version"]
-
-    def render_spec_changelog(self):
-        spec_meta = self.units.get("spec_meta")
-        return spec_meta["changelog"]
+    def render_client_server_changelog(self):
+        changelogs = self.units.get("changelogs")
+        return changelogs["client_server"]
 
     def _render_events(self, filterFn, sortFn):
         template = self.env.get_template("events.tmpl")
@@ -35,7 +31,7 @@ class MatrixSections(Sections):
             if not filterFn(event_name):
                 continue
             sections.append(template.render(
-                example=examples[event_name], 
+                examples=examples[event_name],
                 event=schemas[event_name],
                 title_kind=subtitle_title_char
             ))
@@ -136,7 +132,7 @@ class MatrixSections(Sections):
             if not event_name.startswith("m.room.message#m."):
                 continue
             sections.append(template.render(
-                example=examples[event_name], 
+                example=examples[event_name][0],
                 event=schemas[event_name],
                 title_kind=subtitle_title_char
             ))

@@ -42,7 +42,9 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined, Template, met
 from argparse import ArgumentParser, FileType
 import importlib
 import json
+import logging
 import os
+import re
 import sys
 from textwrap import TextWrapper
 
@@ -55,7 +57,7 @@ def check_unaccessed(name, store):
         log("Found %s unused %s keys." % (len(unaccessed_keys), name))
         log(unaccessed_keys)
 
-def main(input_module, file_stream=None, out_dir=None, verbose=False):
+def main(input_module, file_stream=None, out_dir=None, verbose=False, substitutions={}):
     if out_dir and not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
@@ -84,7 +86,35 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
         input_lines = input.split('\n\n')
         wrapper = TextWrapper(initial_indent=initial_indent, width=wrap)
         output_lines = [wrapper.fill(line) for line in input_lines]
+
+        for i in range(len(output_lines)):
+            line = output_lines[i]
+            in_bullet = line.startswith("- ")
+            if in_bullet:
+                output_lines[i] = line.replace("\n", "\n  " + initial_indent)
+
         return '\n\n'.join(output_lines)
+
+    def fieldwidths(input, keys, defaults=[], default_width=15):
+        """
+        A template filter to help in the generation of tables.
+
+        Given a list of rows, returns a list giving the maximum length of the
+        values in each column.
+
+        :param list[dict[str, str]] input: a list of rows. Each row should be a
+           dict with the keys given in ``keys``.
+        :param list[str] keys: the keys corresponding to the table columns
+        :param list[int] defaults: for each column, the default column width.
+        :param int default_width: if ``defaults`` is shorter than ``keys``, this
+           will be used as a fallback
+        """
+        def colwidth(key, default):
+            return reduce(max, (len(row[key]) for row in input),
+                          default if default is not None else default_width)
+
+        results = map(colwidth, keys, defaults)
+        return results
 
     # make Jinja aware of the templates and filters
     env = Environment(
@@ -95,6 +125,7 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
     env.filters["indent"] = indent
     env.filters["indent_block"] = indent_block
     env.filters["wrap"] = wrap
+    env.filters["fieldwidths"] = fieldwidths
 
     # load up and parse the lowest single units possible: we don't know or care
     # which spec section will use it, we just need it there in memory for when
@@ -137,6 +168,12 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
     temp = Template(temp_str)
     log("Creating output for: %s" % file_stream.name)
     output = create_from_template(temp, sections)
+
+    # Do these substitutions outside of the ordinary templating system because
+    # we want them to apply to things like the underlying swagger used to
+    # generate the templates, not just the top-level sections.
+    for old, new in substitutions.items():
+        output = output.replace(old, new)
     with open(
             os.path.join(out_dir, os.path.basename(file_stream.name)), "w"
             ) as f:
@@ -179,7 +216,14 @@ if __name__ == '__main__':
         "--verbose", "-v", action="store_true",
         help="Turn on verbose mode."
     )
+    parser.add_argument(
+        "--substitution", action="append",
+        help="Substitutions to apply to the generated output, of form NEEDLE=REPLACEMENT."
+    )
     args = parser.parse_args()
+
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
 
     if not args.input:
         raise Exception("Missing [i]nput python module.")
@@ -193,7 +237,14 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
+    substitutions = {}
+    for substitution in args.substitution:
+        parts = substitution.split("=", 1)
+        if len(parts) != 2:
+            raise Exception("Invalid substitution")
+        substitutions[parts[0]] = parts[1]
+
     main(
         args.input, file_stream=args.file, out_dir=args.out_directory,
-        verbose=args.verbose
+        substitutions=substitutions, verbose=args.verbose
     )

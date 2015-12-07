@@ -25,9 +25,11 @@ import (
 var (
 	port = flag.Int("port", 8000, "Port on which to serve HTTP")
 
-	toServe atomic.Value   // Always contains valid []byte to serve. May be stale unless wg is zero.
-	wg      sync.WaitGroup // Indicates how many updates are pending.
-	mu      sync.Mutex     // Prevent multiple updates in parallel.
+	mu      sync.Mutex   // Prevent multiple updates in parallel.
+	toServe atomic.Value // Always contains a bytesOrErr. May be stale unless wg is zero.
+
+	wgMu sync.Mutex     // Prevent multiple calls to wg.Wait() or wg.Add(positive number) in parallel.
+	wg   sync.WaitGroup // Indicates how many updates are pending.
 )
 
 func main() {
@@ -111,9 +113,32 @@ func filter(e fsnotify.Event) bool {
 }
 
 func serve(w http.ResponseWriter, req *http.Request) {
+	wgMu.Lock()
 	wg.Wait()
-	b := toServe.Load().([]byte)
-	w.Write(b)
+	wgMu.Unlock()
+
+	file := req.URL.Path
+	if file[0] == '/' {
+		file = file[1:]
+	}
+	if file == "" {
+		file = "index.html"
+	}
+	m := toServe.Load().(bytesOrErr)
+	if m.err != nil {
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write([]byte(m.err.Error()))
+		return
+	}
+	b, ok := m.bytes[file]
+	if ok {
+		w.Header().Set("Content-Type", "text/html")
+		w.Write([]byte(b))
+		return
+	}
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(404)
+	w.Write([]byte("Not found"))
 }
 
 func populateOnce(dir string) {
@@ -126,15 +151,24 @@ func populateOnce(dir string) {
 	cmd.Stderr = &b
 	err := cmd.Run()
 	if err != nil {
-		toServe.Store([]byte(fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String()).Error()))
+		toServe.Store(bytesOrErr{nil, fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())})
 		return
 	}
-	specBytes, err := ioutil.ReadFile(path.Join(dir, "scripts", "gen", "specification.html"))
+	fis, err := ioutil.ReadDir(path.Join(dir, "scripts", "gen"))
 	if err != nil {
-		toServe.Store([]byte(fmt.Errorf("error reading spec: %v", err).Error()))
+		toServe.Store(bytesOrErr{nil, err})
 		return
 	}
-	toServe.Store(specBytes)
+	files := make(map[string][]byte)
+	for _, fi := range fis {
+		bytes, err := ioutil.ReadFile(path.Join(dir, "scripts", "gen", fi.Name()))
+		if err != nil {
+			toServe.Store(bytesOrErr{nil, fmt.Errorf("error reading spec: %v", err)})
+			return
+		}
+		files[fi.Name()] = bytes
+	}
+	toServe.Store(bytesOrErr{files, nil})
 }
 
 func doPopulate(ch chan struct{}, dir string) {
@@ -143,7 +177,9 @@ func doPopulate(ch chan struct{}, dir string) {
 		select {
 		case <-ch:
 			if pending == 0 {
+				wgMu.Lock()
 				wg.Add(1)
+				wgMu.Unlock()
 			}
 			pending++
 		case <-time.After(10 * time.Millisecond):
@@ -158,4 +194,9 @@ func doPopulate(ch chan struct{}, dir string) {
 func exists(path string) bool {
 	_, err := os.Stat(path)
 	return !os.IsNotExist(err)
+}
+
+type bytesOrErr struct {
+	bytes map[string][]byte // filename -> contents
+	err   error
 }

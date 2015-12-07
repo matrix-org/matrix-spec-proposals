@@ -1,0 +1,505 @@
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Push Rules API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  accessToken:
+    type: apiKey
+    description: The user_id or application service access_token
+    name: access_token
+    in: query
+paths:
+  "/pushrules/":
+    get:
+      summary: Retrieve all push rulesets.
+      description: |-
+        Retrieve all push rulesets for this user. Clients can "drill-down" on
+        the rulesets by suffixing a ``scope`` to this path e.g.
+        ``/pushrules/global/``. This will return a subset of this data under the
+        specified key e.g. the ``global`` key.
+      security:
+        - accessToken: []
+      responses:
+        200:
+          description: All the push rulesets for this user.
+          schema:
+            type: object
+            required: ["device", "global"]
+            properties:
+              device:
+                type: object
+                title: Devices
+                description: A dictionary of profile tags to rulesets.
+                additionalProperties:
+                    x-pattern: "$PROFILE_TAG"
+                    type: object
+                    description: The ruleset for this profile tag.
+                    title: Ruleset
+                    allOf: [
+                      "$ref": "definitions/push_ruleset.yaml"
+                    ]
+              global:
+                type: object
+                description: The global ruleset.
+                title: Ruleset
+                allOf: [
+                  "$ref": "definitions/push_ruleset.yaml"
+                ]
+          examples:
+            application/json: |-
+              {
+                "device": {},
+                "global": {
+                    "content": [
+                        {
+                            "actions": [
+                                "notify",
+                                {
+                                    "set_tweak": "sound",
+                                    "value": "default"
+                                },
+                                {
+                                    "set_tweak": "highlight"
+                                }
+                            ],
+                            "default": true,
+                            "enabled": true,
+                            "pattern": "alice",
+                            "rule_id": ".m.rule.contains_user_name"
+                        }
+                    ],
+                    "override": [
+                        {
+                            "actions": [
+                                "dont_notify"
+                            ],
+                            "conditions": [],
+                            "default": true,
+                            "enabled": false,
+                            "rule_id": ".m.rule.master"
+                        },
+                        {
+                            "actions": [
+                                "dont_notify"
+                            ],
+                            "conditions": [
+                                {
+                                    "key": "content.msgtype",
+                                    "kind": "event_match",
+                                    "pattern": "m.notice"
+                                }
+                            ],
+                            "default": true,
+                            "enabled": true,
+                            "rule_id": ".m.rule.suppress_notices"
+                        }
+                    ],
+                    "room": [],
+                    "sender": [],
+                    "underride": [
+                        {
+                            "actions": [
+                                "notify",
+                                {
+                                    "set_tweak": "sound",
+                                    "value": "ring"
+                                },
+                                {
+                                    "set_tweak": "highlight",
+                                    "value": false
+                                }
+                            ],
+                            "conditions": [
+                                {
+                                    "key": "type",
+                                    "kind": "event_match",
+                                    "pattern": "m.call.invite"
+                                }
+                            ],
+                            "default": true,
+                            "enabled": true,
+                            "rule_id": ".m.rule.call"
+                        },
+                        {
+                            "actions": [
+                                "notify",
+                                {
+                                    "set_tweak": "sound",
+                                    "value": "default"
+                                },
+                                {
+                                    "set_tweak": "highlight"
+                                }
+                            ],
+                            "conditions": [
+                                {
+                                    "kind": "contains_display_name"
+                                }
+                            ],
+                            "default": true,
+                            "enabled": true,
+                            "rule_id": ".m.rule.contains_display_name"
+                        },
+                        {
+                            "actions": [
+                                "notify",
+                                {
+                                    "set_tweak": "sound",
+                                    "value": "default"
+                                },
+                                {
+                                    "set_tweak": "highlight",
+                                    "value": false
+                                }
+                            ],
+                            "conditions": [
+                                {
+                                    "is": "2",
+                                    "kind": "room_member_count"
+                                }
+                            ],
+                            "default": true,
+                            "enabled": true,
+                            "rule_id": ".m.rule.room_one_to_one"
+                        },
+                        {
+                            "actions": [
+                                "notify",
+                                {
+                                    "set_tweak": "sound",
+                                    "value": "default"
+                                },
+                                {
+                                    "set_tweak": "highlight",
+                                    "value": false
+                                }
+                            ],
+                            "conditions": [
+                                {
+                                    "key": "type",
+                                    "kind": "event_match",
+                                    "pattern": "m.room.member"
+                                },
+                                {
+                                    "key": "content.membership",
+                                    "kind": "event_match",
+                                    "pattern": "invite"
+                                },
+                                {
+                                    "key": "state_key",
+                                    "kind": "event_match",
+                                    "pattern": "@alice:example.com"
+                                }
+                            ],
+                            "default": true,
+                            "enabled": true,
+                            "rule_id": ".m.rule.invite_for_me"
+                        },
+                        {
+                            "actions": [
+                                "notify",
+                                {
+                                    "set_tweak": "highlight",
+                                    "value": false
+                                }
+                            ],
+                            "conditions": [
+                                {
+                                    "key": "type",
+                                    "kind": "event_match",
+                                    "pattern": "m.room.member"
+                                }
+                            ],
+                            "default": true,
+                            "enabled": true,
+                            "rule_id": ".m.rule.member_event"
+                        },
+                        {
+                            "actions": [
+                                "notify",
+                                {
+                                    "set_tweak": "highlight",
+                                    "value": false
+                                }
+                            ],
+                            "conditions": [
+                                {
+                                    "key": "type",
+                                    "kind": "event_match",
+                                    "pattern": "m.room.message"
+                                }
+                            ],
+                            "default": true,
+                            "enabled": true,
+                            "rule_id": ".m.rule.message"
+                        }
+                    ]
+                }
+              }
+      tags:
+        - Push notifications
+  "/pushrules/{scope}/{kind}/{ruleId}":
+    get:
+      summary: Retrieve a push rule.
+      description: |-
+        Retrieve a single specified push rule.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: scope
+          required: true
+          x-example: "global"
+          description: |-
+            Either ``global`` or ``device/<profile_tag>`` to specify global
+            rules or device rules for the given ``profile_tag``.
+        - in: path
+          type: string
+          name: kind
+          required: true
+          x-example: room
+          enum: ["override", "underride", "sender", "room", "content"]
+          description: |
+            The kind of rule
+        - in: path
+          type: string
+          name: ruleId
+          required: true
+          x-example: "#spam:example.com"
+          description: |
+            The identifier for the rule.
+      responses:
+        200:
+          description: |-
+            The specific push rule. This will also include keys specific to the
+            rule itself such as the rule's ``actions`` and ``conditions`` if set.
+          examples:
+            application/json: |-
+              {
+                "actions": [
+                    "dont_notify"
+                ],
+                "rule_id": "#spam:matrix.org",
+                "enabled": true
+              }
+          schema:
+            type: object
+            description: The push rule.
+            title: PushRule
+            allOf: [
+              "$ref": "definitions/push_rule.yaml"
+            ]
+      tags:
+        - Push notifications
+    delete:
+      summary: Delete a push rule.
+      description: |-
+        This endpoint removes the push rule defined in the path.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: scope
+          required: true
+          x-example: "global"
+          description: |-
+            Either ``global`` or ``device/<profile_tag>`` to specify global
+            rules or device rules for the given ``profile_tag``.
+        - in: path
+          type: string
+          name: kind
+          required: true
+          x-example: room
+          enum: ["override", "underride", "sender", "room", "content"]
+          description: |
+            The kind of rule
+        - in: path
+          type: string
+          name: ruleId
+          required: true
+          x-example: "#spam:example.com"
+          description: |
+            The identifier for the rule.
+      responses:
+        200:
+          description: The push rule was deleted.
+          examples:
+            application/json: |-
+              {}
+          schema:
+            type: object  # empty json object
+      tags:
+        - Push notifications
+    put:
+      summary: Add or change a push rule.
+      description: |-
+        This endpoint allows the creation, modification and deletion of pushers
+        for this user ID. The behaviour of this endpoint varies depending on the
+        values in the JSON body.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: scope
+          required: true
+          x-example: "global"
+          description: |-
+            Either ``global`` or ``device/<profile_tag>`` to specify global
+            rules or device rules for the given ``profile_tag``.
+        - in: path
+          type: string
+          name: kind
+          required: true
+          x-example: room
+          enum: ["override", "underride", "sender", "room", "content"]
+          description: |
+            The kind of rule
+        - in: path
+          type: string
+          name: ruleId
+          required: true
+          x-example: "#spam:example.com"
+          description: |
+            The identifier for the rule.
+        - in: query
+          type: string
+          name: before
+          required: false
+          x-example: someRuleId
+          description: |-
+            Use 'before' with a ``rule_id`` as its value to make the new rule the
+            next-most important rule with respect to the given rule.
+        - in: query
+          type: string
+          name: after
+          required: false
+          x-example: anotherRuleId
+          description: |-
+            This makes the new rule the next-less important rule relative to the
+            given rule.
+        - in: body
+          name: pushrule
+          description: |-
+            The push rule data. Additional top-level keys may be present depending
+            on the parameters for the rule ``kind``.
+          required: true
+          schema:
+            type: object
+            example: |-
+              {
+                "pattern": "cake*lie",
+                "actions": ["notify"]
+              }
+            properties:
+              actions:
+                type: array
+                description: |-
+                  The action(s) to perform when the conditions for this rule are met.
+                items:
+                  type: string
+                  enum: ["notify", "dont_notify", "coalesce", "set_tweak"]
+                  # TODO: type: object e.g. {"set_sound":"beeroclock.wav"} :/
+              conditions:
+                type: array
+                description: |-
+                  The conditions that must hold true for an event in order for a
+                  rule to be applied to an event. A rule with no conditions
+                  always matches.
+                items:
+                  type: object
+                  title: conditions
+                  allOf: [ "$ref": "definitions/push_condition.yaml" ]
+            required: ["actions"]
+      responses:
+        200:
+          description: The pusher was set.
+          examples:
+            application/json: |-
+              {}
+          schema:
+            type: object  # empty json object
+        400:
+          description: There was a problem configuring this push rule.
+          examples:
+            application/json: |-
+              {
+                "error": "before/after rule not found: someRuleId",
+                "errcode": "M_UNKNOWN"
+              }
+          schema:
+            type: object
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/error.yaml"
+      tags:
+        - Push notifications
+  "/pushrules/{scope}/{kind}/{ruleId}/enabled":
+    put:
+      summary: "Enable or disable a push rule."
+      description: |-
+        This endpoint allows clients to enable or disable the specified push rule.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: scope
+          required: true
+          x-example: "global"
+          description: |-
+            Either ``global`` or ``device/<profile_tag>`` to specify global
+            rules or device rules for the given ``profile_tag``.
+        - in: path
+          type: string
+          name: kind
+          required: true
+          x-example: room
+          enum: ["override", "underride", "sender", "room", "content"]
+          description: |
+            The kind of rule
+        - in: path
+          type: string
+          name: ruleId
+          required: true
+          x-example: "#spam:example.com"
+          description: |
+            The identifier for the rule.
+        - in: body
+          name: body
+          description: |
+            Whether the push rule is enabled or not.
+          required: true
+          schema:
+            type: object
+            properties:
+              enabled:
+                type: boolean
+                description: Whether the push rule is enabled or not.
+            required: ["enabled"]
+            example: |-
+              {
+                "enabled": true
+              }
+      responses:
+        200:
+          description: The push rule was enabled or disabled.
+          examples:
+            application/json: |-
+              {}
+          schema:
+            type: object
+      tags:
+        - Push notifications

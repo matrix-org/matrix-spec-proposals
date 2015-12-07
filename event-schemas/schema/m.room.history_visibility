@@ -1,0 +1,30 @@
+{
+    "type": "object",
+    "title": "Controls visibility of history.",
+    "description": "This event controls whether a user can see the events that happened in a room from before they joined.",
+    "allOf": [{
+        "$ref": "core-event-schema/state_event.yaml"
+    }],
+    "properties": {
+        "content": {
+            "type": "object",
+            "properties": {
+                "history_visibility": {
+                    "type": "string",
+                    "description": "Who can see the room history.",
+                    "enum": ["invited","joined","shared","world_readable"]
+                }
+            },
+            "required": ["history_visibility"]
+        },
+        "state_key": {
+            "type": "string",
+            "description": "A zero-length string.",
+            "pattern": "^$"
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.room.history_visibility"]
+        }
+    }
+}

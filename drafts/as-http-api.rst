@@ -13,9 +13,9 @@ Application Services HTTP API
 
 .. sectnum::
 
-Application Service -> Home Server
+Application Service -> Homeserver
 ----------------------------------
-This contains home server APIs which are used by the application service.
+This contains homeserver APIs which are used by the application service.
 
 Registration API ``[Draft]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -34,7 +34,7 @@ Output:
 Side effects:
  - The HS will start delivering events to the URL base specified if this 200s.
 API called when:
- - The application service wants to register with a brand new home server.
+ - The application service wants to register with a brand new homeserver.
 Notes:
  - An application service can state whether they should be the only ones who 
    can manage a specified namespace. This is referred to as an "exclusive" 
@@ -100,7 +100,7 @@ Notes:
    
 Unregister API ``[Draft]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-This API unregisters a previously registered AS from the home server.
+This API unregisters a previously registered AS from the homeserver.
 
 Inputs:
  - AS token
@@ -122,9 +122,9 @@ API called when:
   }
 
 
-Home Server -> Application Service
+Homeserver -> Application Service
 ----------------------------------
-This contains application service APIs which are used by the home server.
+This contains application service APIs which are used by the homeserver.
 
 User Query ``[Draft]``
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -152,9 +152,9 @@ Notes:
  - This is deemed more flexible than alternative methods (e.g. returning a JSON blob with the
    user's display name and get the HS to provision the user).
 Retry notes:
- - The home server cannot respond to the client's request until the response to
+ - The homeserver cannot respond to the client's request until the response to
    this API is obtained from the AS.
- - Recommended that home servers try a few times then time out, returning a
+ - Recommended that homeservers try a few times then time out, returning a
    408 Request Timeout to the client.
    
 ::
@@ -199,9 +199,9 @@ Notes:
    style JSON blob and get the HS to provision the room). It also means that the AS knows
    the room ID -> alias mapping.
 Retry notes:
- - The home server cannot respond to the client's request until the response to
+ - The homeserver cannot respond to the client's request until the response to
    this API is obtained from the AS.
- - Recommended that home servers try a few times then time out, returning a
+ - Recommended that homeservers try a few times then time out, returning a
    408 Request Timeout to the client.
  
 ::
@@ -236,13 +236,13 @@ Data flows:
 ::
 
  Typical
- HS ---> AS : Home server sends events with transaction ID T.
+ HS ---> AS : Homeserver sends events with transaction ID T.
     <---    : AS sends back 200 OK.
     
  AS ACK Lost
- HS ---> AS : Home server sends events with transaction ID T.
+ HS ---> AS : Homeserver sends events with transaction ID T.
     <-/-    : AS 200 OK is lost.
- HS ---> AS : Home server retries with the same transaction ID of T.
+ HS ---> AS : Homeserver retries with the same transaction ID of T.
     <---    : AS sends back 200 OK. If the AS had processed these events 
               already, it can NO-OP this request (and it knows if it is the same
               events based on the transacton ID).
@@ -253,15 +253,15 @@ Retry notes:
  - Since ASes by definition cannot alter the traffic being passed to it (unlike
    say, a Policy Server), these requests can be done in parallel to general HS
    processing; the HS doesn't need to block whilst doing this.
- - Home servers should use exponential backoff as their retry algorithm.
- - Home servers MUST NOT alter (e.g. add more) events they were going to 
+ - Homeservers should use exponential backoff as their retry algorithm.
+ - Homeservers MUST NOT alter (e.g. add more) events they were going to
    send within that transaction ID on retries, as the AS may have already 
    processed the events.
     
 Ordering notes:
  - The events sent to the AS should be linearised, as they are from the event
    stream.
- - The home server will need to maintain a queue of transactions to send to 
+ - The homeserver will need to maintain a queue of transactions to send to 
    the AS.
 
 ::
@@ -336,7 +336,7 @@ Notes:
 
 Server admin style permissions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The home server needs to give the application service *full control* over its
+The homeserver needs to give the application service *full control* over its
 namespace, both for users and for room aliases. This means that the AS should
 be able to create/edit/delete any room alias in its namespace, as well as
 create/delete any user in its namespace. No additional API changes need to be
@@ -451,15 +451,15 @@ Examples
 IRC
 ~~~
 Pre-conditions:
-  - Server admin stores the AS token "T_a" on the home server.
-  - Home server has a token "T_h".
-  - Home server has the domain "hsdomain.com"
+  - Server admin stores the AS token "T_a" on the homeserver.
+  - Homeserver has a token "T_h".
+  - Homeserver has the domain "hsdomain.com"
 
 1. Application service registration
 
 ::
   
-  AS -> HS: Registers itself with the home server
+  AS -> HS: Registers itself with the homeserver
   POST /register 
   {
    url: "https://someapp.com/matrix",

@@ -61,7 +61,7 @@ recommended.
 Server behaviour
 ----------------
 
-Each user's home server stores a "presence list" per user. Once a user accepts
+Each user's homeserver stores a "presence list" per user. Once a user accepts
 a presence list, both user's HSes must track the subscription.
 
 Propagating profile information
@@ -73,7 +73,7 @@ automatic propagation event to occur, informing likely-interested parties of the
 new values. One of these change mechanisms SHOULD be via ``m.presence`` events.
 These events should set ``displayname`` and ``avatar_url`` to the new values
 along with the presence-specific keys. This SHOULD be done automatically by the
-home server when a user successfully changes their display name or avatar URL.
+homeserver when a user successfully changes their display name or avatar URL.
 
 .. admonition:: Rationale
 

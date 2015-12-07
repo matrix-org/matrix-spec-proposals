@@ -12,6 +12,9 @@ irrespective of the underlying homeserver implementation.
   Add in Client-Server services? Overview of bots? Seems weird to be in the spec
   given it is VERY implementation specific.
 
+.. contents:: Table of Contents
+.. sectnum::
+
 Application Services
 --------------------
 Application services are passive and can only observe events from a given
@@ -86,7 +89,7 @@ traffic to the AS is:
   identify the application service. The homeserver MUST enforce this.
 
 
-Home Server -> Application Service API
+Homeserver -> Application Service API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Pushing events
@@ -98,13 +101,13 @@ events. Each list of events includes a transaction ID, which works as follows:
 ::
 
  Typical
- HS ---> AS : Home server sends events with transaction ID T.
+ HS ---> AS : Homeserver sends events with transaction ID T.
     <---    : AS sends back 200 OK.
     
  AS ACK Lost
- HS ---> AS : Home server sends events with transaction ID T.
+ HS ---> AS : Homeserver sends events with transaction ID T.
     <-/-    : AS 200 OK is lost.
- HS ---> AS : Home server retries with the same transaction ID of T.
+ HS ---> AS : Homeserver retries with the same transaction ID of T.
     <---    : AS sends back 200 OK. If the AS had processed these events 
               already, it can NO-OP this request (and it knows if it is the same
               events based on the transaction ID).
@@ -142,7 +145,7 @@ this request (e.g. to join a room alias).
 HTTP APIs
 +++++++++
 
-This contains application service APIs which are used by the home server. All
+This contains application service APIs which are used by the homeserver. All
 application services MUST implement these APIs. These APIs are defined below.
 
 {{application_service_http_api}}
@@ -150,12 +153,12 @@ application services MUST implement these APIs. These APIs are defined below.
 
 .. _create the user: `sect:asapi-permissions`_
 
-Client-Server v2 API Extensions
+Client-Server API Extensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Application services can utilise a more powerful version of the 
+Application services can use a more powerful version of the
 client-server API by identifying itself as an application service to the
-home server.
+homeserver.
 
 Identity assertion
 ++++++++++++++++++
@@ -209,7 +212,7 @@ Server admin style permissions
 
 .. _sect:asapi-permissions:
 
-The home server needs to give the application service *full control* over its
+The homeserver needs to give the application service *full control* over its
 namespace, both for users and for room aliases. This means that the AS should
 be able to create/edit/delete any room alias in its namespace, as well as
 create/delete any user in its namespace. No additional API changes need to be
@@ -278,7 +281,7 @@ an API is exposed.
 
 ::
 
-  GET /_matrix/app/v1/user?uri=$url_encoded_uri
+  GET /_matrix/app/%CLIENT_MAJOR_VERSION%/user?uri=$url_encoded_uri
   
   Returns 200 OK:
   {
@@ -302,7 +305,7 @@ SHOULD be mapped in the same way as "user" URIs.
 
 ::
 
-  GET /_matrix/app/v1/alias?uri=$url_encoded_uri
+  GET /_matrix/app/%CLIENT_MAJOR_VERSION%/alias?uri=$url_encoded_uri
   
   Returns 200 OK:
   {

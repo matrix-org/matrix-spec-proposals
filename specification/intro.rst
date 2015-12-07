@@ -1,25 +1,28 @@
 Matrix Specification
 ====================
 
-Version: {{spec_version}}
------------------------------
 This specification has been generated from
 https://github.com/matrix-org/matrix-doc using
 https://github.com/matrix-org/matrix-doc/blob/master/scripts/gendoc.py as of
-revision ``{{git_version}}`` - https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}
+revision ``{{git_version}}`` -
+https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}.
 
-Changelog
-~~~~~~~~~
-{{spec_changelog}}
+The following APIs are documented in this specification:
 
-For a full changelog, see 
-https://github.com/matrix-org/matrix-doc/blob/master/CHANGELOG.rst
+- `Client-Server API <client_server.html>`_ version %CLIENT_RELEASE_LABEL% for writing Matrix clients.
+- `Server-Server API <server_server.html>`_ version %SERVER_RELEASE_LABEL% for writing servers which can federate with Matrix.
+- `Application Service API <application_service.html>`_ version %CLIENT_RELEASE_LABEL% for writing privileged plugins to servers.
+
+There are also some `appendices <appendices.html>`_.
+
+Before we formally started releasing the specification, the last working copy
+we had can be found `here <https://matrix.org/docs/spec/legacy/>`_.
 
 .. contents:: Table of Contents
 .. sectnum::
 
 Introduction
-============
+------------
 .. WARNING::
   The Matrix specification is still evolving: the APIs are not yet frozen
   and this document is in places a work in progress or stale. We have made every 
@@ -93,10 +96,10 @@ reliably and persistently pushed from A to B in an inter-operable and federated
 manner.
 
 Overview
-========
+--------
 
 Architecture
-------------
+~~~~~~~~~~~~
 
 Matrix defines APIs for synchronising extensible JSON objects known as
 "events" between compatible clients, servers and services. Clients are
@@ -140,7 +143,7 @@ a long-lived GET request.
            |          V                                    |          V
        +------------------+                            +------------------+
        |                  |---------( HTTPS )--------->|                  |
-       |   Home Server    |                            |   Home Server    |
+       |   homeserver    |                            |   homeserver    |
        |                  |<--------( HTTPS )----------|                  |
        +------------------+      Server-Server API     +------------------+
                               History Synchronisation
@@ -148,7 +151,7 @@ a long-lived GET request.
 
 
 Users
-~~~~~
++++++
 
 Each client is associated with a user account, which is identified in Matrix
 using a unique "User ID". This ID is namespaced to the homeserver which
@@ -163,7 +166,7 @@ this user. The ``domain`` of a user ID is the domain of the homeserver.
     - Need to specify precise grammar for Matrix IDs
 
 Events
-~~~~~~
+++++++
 
 All data exchanged over Matrix is expressed as an "event". Typically each client
 action (e.g. sending a message) correlates with exactly one event. Each event
@@ -178,7 +181,7 @@ of a "Room".
 .. _package naming conventions: https://en.wikipedia.org/wiki/Java_package#Package_naming_conventions
 
 Event Graphs
-~~~~~~~~~~~~
+++++++++++++
 
 .. _sect:event-graph:
 
@@ -202,7 +205,7 @@ of its parents. The root event should have a depth of 1. Thus if one event is
 before another, then it must have a strictly smaller depth.
 
 Room structure
-~~~~~~~~~~~~~~
+++++++++++++++
 
 A room is a conceptual place where users can send and receive events. Events are
 sent to a room, and all participants in that room with sufficient access will
@@ -227,7 +230,7 @@ They are case-sensitive. The following conceptual diagram shows an
                |                                                 |
                V                                                 |
        +------------------+                          +------------------+
-       |   Home Server    |                          |   Home Server    |
+       |   homeserver    |                          |   homeserver    |
        |   matrix.org     |                          |   domain.com     |
        +------------------+                          +------------------+
                |                                                 ^
@@ -281,7 +284,7 @@ from the other servers participating in a room.
 
 
 Room Aliases
-++++++++++++
+^^^^^^^^^^^^
 
 Each room can also have multiple "Room Aliases", which look like::
 
@@ -317,7 +320,7 @@ that are in the room that can be used to join via.
    |________________________________|
 
 Identity
-~~~~~~~~
+++++++++
 
 Users in Matrix are identified via their matrix user ID (MXID). However,
 existing 3rd party ID namespaces can also be used in order to identify Matrix
@@ -337,7 +340,7 @@ user IDs using 3PIDs.
 
 
 Profiles
-~~~~~~~~
+++++++++
 
 Users may publish arbitrary key/value data associated with their account - such
 as a human readable display name, a profile photo URL, contact information
@@ -348,7 +351,7 @@ as a human readable display name, a profile photo URL, contact information
   names allowed to be?
 
 Private User Data
-~~~~~~~~~~~~~~~~~
++++++++++++++++++
 
 Users may also store arbitrary private key/value data in their account - such as
 client preferences, or server configuration settings which lack any other
@@ -357,113 +360,4 @@ dedicated API.  The API is symmetrical to managing Profile data.
 .. TODO
   Would it really be overengineered to use the same API for both profile &
   private user data, but with different ACLs?
-
-API Standards
--------------
-
-.. TODO
-  Need to specify any HMAC or access_token lifetime/ratcheting tricks
-  We need to specify capability negotiation for extensible transports
-
-The mandatory baseline for communication in Matrix is exchanging JSON objects
-over HTTP APIs. HTTPS is mandated as the baseline for server-server
-(federation) communication.  HTTPS is recommended for client-server
-communication, although HTTP may be supported as a fallback to support basic
-HTTP clients. More efficient optional transports for client-server
-communication will in future be supported as optional extensions - e.g. a
-packed binary encoding over stream-cipher encrypted TCP socket for
-low-bandwidth/low-roundtrip mobile usage. For the default HTTP transport, all
-API calls use a Content-Type of ``application/json``.  In addition, all strings
-MUST be encoded as UTF-8. Clients are authenticated using opaque
-``access_token`` strings (see `Client Authentication`_ for details), passed as a
-query string parameter on all requests.
-
-Any errors which occur at the Matrix API level MUST return a "standard error
-response". This is a JSON object which looks like::
-
-  {
-    "errcode": "<error code>",
-    "error": "<error message>"
-  }
-
-The ``error`` string will be a human-readable error message, usually a sentence
-explaining what went wrong. The ``errcode`` string will be a unique string
-which can be used to handle an error message e.g. ``M_FORBIDDEN``. These error
-codes should have their namespace first in ALL CAPS, followed by a single _ to
-ease separating the namespace from the error code. For example, if there was a
-custom namespace ``com.mydomain.here``, and a
-``FORBIDDEN`` code, the error code should look like
-``COM.MYDOMAIN.HERE_FORBIDDEN``. There may be additional keys depending on the
-error, but the keys ``error`` and ``errcode`` MUST always be present.
-
-Some standard error codes are below:
-
-:``M_FORBIDDEN``:
-  Forbidden access, e.g. joining a room without permission, failed login.
-
-:``M_UNKNOWN_TOKEN``:
-  The access token specified was not recognised.
-
-:``M_BAD_JSON``:
-  Request contained valid JSON, but it was malformed in some way, e.g. missing
-  required keys, invalid values for keys.
-
-:``M_NOT_JSON``:
-  Request did not contain valid JSON.
-
-:``M_NOT_FOUND``:
-  No resource was found for this request.
-
-:``M_LIMIT_EXCEEDED``:
-  Too many requests have been sent in a short period of time. Wait a while then
-  try again.
-
-Some requests have unique error codes:
-
-:``M_USER_IN_USE``:
-  Encountered when trying to register a user ID which has been taken.
-
-:``M_ROOM_IN_USE``:
-  Encountered when trying to create a room which has been taken.
-
-:``M_BAD_PAGINATION``:
-  Encountered when specifying bad pagination query parameters.
-
-.. _sect:txn_ids:
-
-The Client-Server API typically uses ``HTTP POST`` to submit requests. This
-means these requests are not idempotent. The C-S API also allows ``HTTP PUT`` to
-make requests idempotent. In order to use a ``PUT``, paths should be suffixed
-with ``/{txnId}``. ``{txnId}`` is a unique client-generated transaction ID which
-identifies the request, and is scoped to a given Client (identified by that
-client's ``access_token``). Crucially, it **only** serves to identify new
-requests from retransmits. After the request has finished, the ``{txnId}``
-value should be changed (how is not specified; a monotonically increasing
-integer is recommended). It is preferable to use ``HTTP PUT`` to make sure
-requests to send messages do not get sent more than once should clients need to
-retransmit requests.
-
-Valid requests look like::
-
-    POST /some/path/here?access_token=secret
-    {
-      "key": "This is a post."
-    }
-
-    PUT /some/path/here/11?access_token=secret
-    {
-      "key": "This is a put with a txnId of 11."
-    }
-
-In contrast, these are invalid requests::
-
-    POST /some/path/here/11?access_token=secret
-    {
-      "key": "This is a post, but it has a txnId."
-    }
-
-    PUT /some/path/here?access_token=secret
-    {
-      "key": "This is a put but it is missing a txnId."
-    }
 
