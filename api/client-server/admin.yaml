@@ -101,3 +101,5 @@ paths:
                                 user_agent:
                                   type: string
                                   description: User agent string last seen in the session.
+      tags:
+        - Server administration

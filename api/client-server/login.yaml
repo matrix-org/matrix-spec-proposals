@@ -101,6 +101,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - Session management
   "/tokenrefresh":
     post:
       summary: Exchanges a refresh token for an access token.
@@ -158,3 +160,5 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - Session management

@@ -60,7 +60,6 @@ paths:
                   Max length, 512 bytes.
               kind:
                 type: string
-                enum: ["http", null]
                 description: |-
                   The kind of pusher to configure. ``"http"`` makes a pusher that
                   sends HTTP pokes. ``null`` deletes the pusher.
@@ -141,4 +140,5 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
-
+      tags:
+        - Push notifications

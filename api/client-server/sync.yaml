@@ -310,3 +310,5 @@ paths:
                   "leave": {}
                 }
               }
+      tags:
+        - Room participation

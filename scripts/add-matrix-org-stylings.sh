@@ -22,7 +22,7 @@ perl -MFile::Slurp -pi -e 'BEGIN { $header = read_file("'$HEADER'") } s#<head>#<
   <link rel="stylesheet" href="//matrix.org/docs/guides/css/docs_overrides.css">
 #' ${files}
 
-perl -MFile::Slurp -pi -e 'BEGIN { $nav = read_file("'$NAV_BAR'") } s#<body>#  <body class="blog et_fixed_nav et_cover_background et_right_sidebar">
+perl -MFile::Slurp -pi -e 'BEGIN { $nav = read_file("'$NAV_BAR'") } s#<body class="swagger-section">#  <body class=" swagger-section blog et_fixed_nav et_cover_background et_right_sidebar">
    <div id="page-wrapper">
     <div class="page-content" id="page-container">
       $nav

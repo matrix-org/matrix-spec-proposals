@@ -74,3 +74,5 @@ paths:
                 "errcode": "M_FORBIDDEN",
                 "error": "You do not have a high enough power level to ban from this room."
               }
+      tags:
+        - Room membership

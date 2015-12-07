@@ -59,6 +59,8 @@ paths:
                   "pinned": {}
                 }
               }
+      tags:
+        - User data
   "/user/{userId}/rooms/{roomId}/tags/{tag}":
     put:
       summary: Add a tag to a room.
@@ -107,6 +109,8 @@ paths:
           examples:
             application/json: |-
               {}
+      tags:
+        - User data
     delete:
       summary: Remove a tag from the room.
       description: |-
@@ -145,3 +149,5 @@ paths:
           examples:
             application/json: |-
               {}
+      tags:
+        - User data
