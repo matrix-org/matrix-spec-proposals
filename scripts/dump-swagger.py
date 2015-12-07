@@ -12,7 +12,10 @@ import re
 import shutil
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templating"))
+templating_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templating")
+sys.path.insert(0, templating_dir)
+os.chdir(templating_dir)
+
 from matrix_templates.units import resolve_references, MatrixUnits
 
 if len(sys.argv) < 2 or len(sys.argv) > 3:
