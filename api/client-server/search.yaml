@@ -242,7 +242,7 @@ paths:
                       groups:
                         type: object
                         title: Groups
-                        description: Any groups that were requseted.
+                        description: Any groups that were requested.
                         additionalProperties:
                           type: object
                           title: Group Key
