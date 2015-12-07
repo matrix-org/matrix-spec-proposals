@@ -39,7 +39,7 @@ paths:
           name: eventId
           description: The event to get context around.
           required: true
-          x-example: "!636q39766251:example.com"
+          x-example: "$f3h4d129462ha:example.com"
         - in: query
           type: integer
           name: limit
