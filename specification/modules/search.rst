@@ -60,6 +60,12 @@ contain a group entry for each distinct value of ``room_id``. Each group entry
 contains at least a list of the ``event_ids`` that are in that group, as well
 as potentially other metadata about the group.
 
+The current required supported groupings are:
+
+- ``room_id``
+- ``sender``
+
+
 Pagination
 ----------
 
