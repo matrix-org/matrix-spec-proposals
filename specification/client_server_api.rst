@@ -10,6 +10,19 @@ local persistent copy of server state.
 .. contents:: Table of Contents
 .. sectnum::
 
+Changelog
+---------
+
+Version of this specification: **%CLIENT_RELEASE_LABEL%**.
+
+{{client_server_changelog}}
+
+For the full historical changelog, see
+https://github.com/matrix-org/matrix-doc/blob/master/changelogs/client-server.rst
+
+If this is an unstable snapshot, any changes since the last release may be
+viewed using ``git log``.
+
 API Standards
 -------------
 
