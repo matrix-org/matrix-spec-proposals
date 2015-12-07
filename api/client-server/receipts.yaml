@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v2 Receipts API"
+  title: "Matrix Client-Server Receipts API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/v2_alpha
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -67,3 +67,5 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - Room participation

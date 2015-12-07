@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v1 Push API"
+  title: "Matrix Client-Server Push API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v1
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -60,7 +60,6 @@ paths:
                   Max length, 512 bytes.
               kind:
                 type: string
-                enum: ["http", null]
                 description: |-
                   The kind of pusher to configure. ``"http"`` makes a pusher that
                   sends HTTP pokes. ``null`` deletes the pusher.
@@ -114,7 +113,7 @@ paths:
                 description: |-
                   If true, the homeserver should add another pusher with the
                   given pushkey and App ID in addition to any others with
-                  different user IDs. Otherwise, the Home Server must remove any
+                  different user IDs. Otherwise, the homeserver must remove any
                   other pushers with the same App ID and pushkey for different
                   users. The default is ``false``.
             required: ['profile_tag', 'kind', 'app_id', 'app_display_name',
@@ -141,4 +140,5 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
-
+      tags:
+        - Push notifications

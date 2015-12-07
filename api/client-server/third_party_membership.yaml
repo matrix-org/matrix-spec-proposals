@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v1 Room Membership API for third party identifiers"
+  title: "Matrix Client-Server Room Membership API for third party identifiers"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v1
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -39,7 +39,7 @@ paths:
         join that room.
 
         If the identity server did know the Matrix user identifier for the
-        third party identifier, the home server will append a ``m.room.member``
+        third party identifier, the homeserver will append a ``m.room.member``
         event to the room.
 
         If the identity server does not know a Matrix user identifier for the
@@ -62,7 +62,7 @@ paths:
 
         - The matrix user ID who invited them to the room
 
-        If a token is requested from the identity server, the home server will
+        If a token is requested from the identity server, the homeserver will
         append a ``m.room.third_party_invite`` event to the room.
 
         .. _joining rooms section: `invite-by-user-id-endpoint`_
@@ -121,3 +121,5 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - Room membership

@@ -8,5 +8,5 @@
   "event_id": "$WLGTSEFSEG:localhost",
   "type": "m.room.guest_access",
   "room_id": "!Cuyf34gef24u:localhost",
-  "user_id": "@example:localhost"
+  "sender": "@example:localhost"
 }

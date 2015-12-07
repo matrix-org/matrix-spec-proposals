@@ -1,11 +1,11 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v2 filter API"
+  title: "Matrix Client-Server filter API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
-basePath: /_matrix/client/v2_alpha
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -22,8 +22,8 @@ paths:
       summary: Upload a new filter.
       description: |-
         Uploads a new filter definition to the homeserver.
-        Returns a filter ID that may be used in /sync requests to
-        retrict which events are returned to the client.
+        Returns a filter ID that may be used in future requests to
+        restrict which events are returned to the client.
       security:
         - accessToken: []
       parameters:
@@ -42,7 +42,7 @@ paths:
           schema:
             type: object
             allOf:
-              - $ref: "definitions/sync_filter.json"
+              - $ref: "definitions/sync_filter.yaml"
             example: |-
               {
                 "room": {
@@ -84,6 +84,8 @@ paths:
                 type: string
                 description: |-
                   The ID of the filter that was created.
+      tags:
+        - Room participation
   "/user/{userId}/filter/{filterId}":
     get:
       summary: Download a filter
@@ -136,4 +138,6 @@ paths:
           schema:
             type: object
             allOf:
-              - $ref: "definitions/sync_filter.json"
+              - $ref: "definitions/sync_filter.yaml"
+      tags:
+        - Room participation

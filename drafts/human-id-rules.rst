@@ -13,9 +13,9 @@ phishing/spoofing of IDs, commonly known as a homograph attack.
 Web browers encountered this problem when International Domain Names were
 introduced. A variety of checks were put in place in order to protect users. If
 an address failed the check, the raw punycode would be displayed to
-disambiguate the address. Similar checks are performed by home servers in
+disambiguate the address. Similar checks are performed by homeservers in
 Matrix. However, Matrix does not use punycode representations, and so does not
-show raw punycode on a failed check. Instead, home servers must outright reject
+show raw punycode on a failed check. Instead, homeservers must outright reject
 these misleading IDs.
 
 Types of human-readable IDs
@@ -48,12 +48,12 @@ Checks
 
 Rejecting
 ---------
-- Home servers MUST reject room aliases which do not pass the check, both on 
+- Homeservers MUST reject room aliases which do not pass the check, both on 
   GETs and PUTs.
-- Home servers MUST reject user ID localparts which do not pass the check, both
+- Homeservers MUST reject user ID localparts which do not pass the check, both
   on creation and on events.
-- Any home server whose domain does not pass this check, MUST use their punycode
-  domain name instead of the IDN, to prevent other home servers rejecting you.
+- Any homeserver whose domain does not pass this check, MUST use their punycode
+  domain name instead of the IDN, to prevent other homeservers rejecting you.
 - Error code is ``M_FAILED_HUMAN_ID_CHECK``. (generic enough for both failing 
   due to homograph attacks, and failing due to including ``:`` s, etc)
 - Error message MAY go into further information about which characters were
@@ -74,7 +74,7 @@ Other considerations
 - High security: Outright rejection of the ID at the point of creation /
   receiving event. Point of creation rejection is preferable to avoid the ID
   entering the system in the first place. However, malicious HSes can just
-  allow the ID. Hence, other home servers must reject them if they see them in
+  allow the ID. Hence, other homeservers must reject them if they see them in
   events. Client never sees the problem ID, provided the HS is correctly
   implemented.
 - High security decided; client doesn't need to worry about it, no additional

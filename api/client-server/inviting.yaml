@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v1 Room Joining API"
+  title: "Matrix Client-Server Room Joining API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v1
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -38,7 +38,7 @@ paths:
         Only users currently in a particular room can invite other users to
         join that room.
 
-        If the user was invited to the room, the home server will append a
+        If the user was invited to the room, the homeserver will append a
         ``m.room.member`` event to the room.
 
         .. _third party invites section: `invite-by-third-party-id-endpoint`_
@@ -88,3 +88,5 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - Room membership

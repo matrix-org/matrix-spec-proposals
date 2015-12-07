@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v2 Registration API"
+  title: "Matrix Client-Server Registration API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v2_alpha
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -94,7 +94,7 @@ paths:
                   (optional) A ``refresh_token`` may be exchanged for a new ``access_token`` using the /tokenrefresh API endpoint.
               home_server:
                 type: string
-                description: The hostname of the Home Server on which the account has been registered.
+                description: The hostname of the homeserver on which the account has been registered.
         400:
           description: |-
             Part of the request was invalid. This may include one of the following error codes:
@@ -107,7 +107,7 @@ paths:
             including after authentication if the requested user ID was registered
             whilst the client was performing authentication.
 
-            Home Servers MUST perform the relevant checks and return these codes before
+            Homeservers MUST perform the relevant checks and return these codes before
             performing `User-Interactive Authentication`_, although they may also return
             them after authentication is completed if, for example, the requested user ID
             was registered whilst the client was performing authentication.
@@ -121,3 +121,5 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - User data

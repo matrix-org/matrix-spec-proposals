@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v1 Directory API"
+  title: "Matrix Client-Server Directory API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v1/directory
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%/directory
 consumes:
   - application/json
 produces:
@@ -52,6 +52,8 @@ paths:
               {}
           schema:
             type: object
+      tags:
+        - Room directory
     get:
       summary: Get the room ID corresponding to this room alias.
       parameters:
@@ -102,6 +104,8 @@ paths:
                 "errcode": "M_UNKNOWN",
                 "error": "Room alias #monkeys:matrix.org already exists."
               }
+      tags:
+        - Room directory
     delete:
       summary: Remove a mapping of room alias to room ID.
       description: |-
@@ -125,3 +129,5 @@ paths:
               {}
           schema:
             type: object
+      tags:
+        - Room directory

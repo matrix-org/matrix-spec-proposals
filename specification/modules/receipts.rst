@@ -24,8 +24,8 @@ single ``event_id``.
 Client behaviour
 ----------------
 
-In v1 ``/initialSync``, receipts are listed in a separate top level ``receipts``
-key. In v2 ``/sync``, receipts are contained in the ``ephemeral`` block for a
+In ``/initialSync``, receipts are listed in a separate top level ``receipts``
+key. In ``/sync``, receipts are contained in the ``ephemeral`` block for a
 room. New receipts that come down the event streams are deltas which update
 existing mappings. Clients should replace older receipt acknowledgements based
 on ``user_id`` and ``receipt_type`` pairs. For example::

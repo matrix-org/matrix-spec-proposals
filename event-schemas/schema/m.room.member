@@ -3,7 +3,7 @@
     "title": "The current membership state of a user in the room.",
     "description": "Adjusts the membership state for a user in a room. It is preferable to use the membership APIs (``/rooms/<room id>/invite`` etc) when performing membership actions rather than adjusting the state directly as there are a restricted set of valid transformations. For example, user A cannot force user B to join a room, and trying to force this state change directly will fail. \n\nThe ``third_party_invite`` property will be set if this invite is an ``invite`` event and is the successor of an ``m.room.third_party_invite`` event, and absent otherwise.\n\nThis event may also include an ``invite_room_state`` key **outside the** ``content`` **key**. If present, this contains an array of ``StrippedState`` Events. These events provide information on a few select state events such as the room name.",
     "allOf": [{
-        "$ref": "core-event-schema/state_event.json"
+        "$ref": "core-event-schema/state_event.yaml"
     }],
     "properties": {
         "content": {
@@ -30,6 +30,7 @@
                         "signed": {
                             "type": "object",
                             "title": "signed",
+                            "description": "A block of content which has been signed, which servers can use to verify the event. Clients should ignore this.",
                             "properties": {
                                 "mxid": {
                                     "type": "string",
@@ -41,7 +42,7 @@
                                 },
                                 "signatures": {
                                     "type": "object",
-                                    "description": "A single signature from the verifying server, in the format specified by the Signing Events section.",
+                                    "description": "A single signature from the verifying server, in the format specified by the Signing Events section of the server-server API.",
                                     "title": "Signatures"
                                 }
                             },

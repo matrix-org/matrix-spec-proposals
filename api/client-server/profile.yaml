@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v1 Profile API"
+  title: "Matrix Client-Server Profile API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v1
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -59,6 +59,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - User data
     get:
       summary: Get the user's display name.
       description: |-
@@ -88,6 +90,8 @@ paths:
                 description: The user's display name if they have set one.
         404:
           description: There is no display name for this user or this user does not exist.
+      tags:
+        - User data
   "/profile/{userId}/avatar_url":
     put:
       summary: Set the user's avatar URL.
@@ -129,6 +133,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - User data
     get:
       summary: Get the user's avatar URL.
       description: |-
@@ -158,6 +164,8 @@ paths:
                 description: The user's avatar URL if they have set one.
         404:
           description: There is no avatar URL for this user or this user does not exist.
+      tags:
+        - User data
   "/profile/{userId}":
     get:
       summary: Get this user's profile information.
@@ -193,3 +201,5 @@ paths:
                 description: The user's display name if they have set one.
         404:
           description: There is no profile information for this user or this user does not exist.
+      tags:
+        - User data

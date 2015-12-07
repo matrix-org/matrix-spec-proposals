@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v1 Registration and Login API"
+  title: "Matrix Client-Server Registration and Login API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v1
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -81,7 +81,7 @@ paths:
                   (optional) A ``refresh_token`` may be exchanged for a new ``access_token`` using the /tokenrefresh API endpoint.
               home_server:
                 type: string
-                description: The hostname of the Home Server on which the account has been registered.
+                description: The hostname of the homeserver on which the account has been registered.
         400:
           description: |-
             Part of the request was invalid. For example, the login type may not be recognised.
@@ -101,6 +101,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - Session management
   "/tokenrefresh":
     post:
       summary: Exchanges a refresh token for an access token.
@@ -158,3 +160,5 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - Session management

@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v1 Sync Guest API"
+  title: "Matrix Client-Server Sync Guest API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v1
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -74,7 +74,7 @@ paths:
                     "origin_server_ts": 1432804485886,
                     "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                     "type": "m.room.message",
-                    "user_id": "@bob:localhost"
+                    "sender": "@bob:localhost"
                   }
                 ]
               }
@@ -98,6 +98,7 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
         400:
           description: "Bad pagination ``from`` parameter."
+        # No tags to exclude this from the swagger UI - use the non-guest version instead.

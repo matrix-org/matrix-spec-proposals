@@ -34,28 +34,6 @@ to inform the server that the user has stopped typing.
 
 {{typing_http_api}}
 
-Server behaviour
-----------------
-
-Servers MUST emit typing EDUs in a different form to ``m.typing`` events which
-are shown to clients. This form looks like::
-
-  {
-    "type": "m.typing",
-    "content": {
-      "room_id": "!room-id-here:matrix.org",
-      "user_id": "@user-id-here:matrix.org",
-      "typing": true/false
-    }
-  }
-
-This does not contain timing information so it is up to originating homeservers
-to ensure they eventually send "stop" notifications.
-
-.. TODO
-  ((This will eventually need addressing, as part of the wider typing/presence
-  timer addition work))
-
 Security considerations
 -----------------------
 

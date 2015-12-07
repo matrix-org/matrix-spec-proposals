@@ -6,7 +6,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/push/v1
+basePath: /_matrix/push/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -189,4 +189,5 @@ paths:
                 items:
                   type: string
                   description: A pushkey
-
+      tags:
+        - Push notifications

@@ -26,7 +26,7 @@ var (
 	port = flag.Int("port", 8000, "Port on which to serve HTTP")
 
 	mu      sync.Mutex   // Prevent multiple updates in parallel.
-	toServe atomic.Value // Always contains valid []byte to serve. May be stale unless wg is zero.
+	toServe atomic.Value // Always contains a bytesOrErr. May be stale unless wg is zero.
 
 	wgMu sync.Mutex     // Prevent multiple calls to wg.Wait() or wg.Add(positive number) in parallel.
 	wg   sync.WaitGroup // Indicates how many updates are pending.
@@ -116,14 +116,29 @@ func serve(w http.ResponseWriter, req *http.Request) {
 	wgMu.Lock()
 	wg.Wait()
 	wgMu.Unlock()
-	b := toServe.Load().(bytesOrErr)
-	if b.err != nil {
-		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte(b.err.Error()))
-	} else {
-		w.Header().Set("Content-Type", "text/html")
-		w.Write([]byte(b.bytes))
+
+	file := req.URL.Path
+	if file[0] == '/' {
+		file = file[1:]
 	}
+	if file == "" {
+		file = "index.html"
+	}
+	m := toServe.Load().(bytesOrErr)
+	if m.err != nil {
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write([]byte(m.err.Error()))
+		return
+	}
+	b, ok := m.bytes[file]
+	if ok {
+		w.Header().Set("Content-Type", "text/html")
+		w.Write([]byte(b))
+		return
+	}
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(404)
+	w.Write([]byte("Not found"))
 }
 
 func populateOnce(dir string) {
@@ -139,12 +154,21 @@ func populateOnce(dir string) {
 		toServe.Store(bytesOrErr{nil, fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())})
 		return
 	}
-	specBytes, err := ioutil.ReadFile(path.Join(dir, "scripts", "gen", "specification.html"))
+	fis, err := ioutil.ReadDir(path.Join(dir, "scripts", "gen"))
 	if err != nil {
-		toServe.Store(bytesOrErr{nil, fmt.Errorf("error reading spec: %v", err)})
+		toServe.Store(bytesOrErr{nil, err})
 		return
 	}
-	toServe.Store(bytesOrErr{specBytes, nil})
+	files := make(map[string][]byte)
+	for _, fi := range fis {
+		bytes, err := ioutil.ReadFile(path.Join(dir, "scripts", "gen", fi.Name()))
+		if err != nil {
+			toServe.Store(bytesOrErr{nil, fmt.Errorf("error reading spec: %v", err)})
+			return
+		}
+		files[fi.Name()] = bytes
+	}
+	toServe.Store(bytesOrErr{files, nil})
 }
 
 func doPopulate(ch chan struct{}, dir string) {
@@ -173,6 +197,6 @@ func exists(path string) bool {
 }
 
 type bytesOrErr struct {
-	bytes []byte
+	bytes map[string][]byte // filename -> contents
 	err   error
 }

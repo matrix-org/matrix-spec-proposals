@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v1 Account Administrative Contact API"
+  title: "Matrix Client-Server Account Administrative Contact API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/v2_alpha
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -25,7 +25,7 @@ paths:
         This API endpoint uses the User-Interactive Authentication API.
         An access token should be submitted to this endpoint if the client has
         an active session.
-        The Home Server may change the flows available depending on whether a
+        The homeserver may change the flows available depending on whether a
         valid access token is provided.
       security:
         - accessToken: []
@@ -54,6 +54,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - User data
   "/account/3pid":
     get:
       summary: Gets a list of a user's third party identifiers.
@@ -64,7 +66,7 @@ paths:
         This is *not* the same as the list of third party identifiers bound to
         the user's Matrix ID in Identity Servers.
 
-        Identifiers in this list may be used by the Home Server as, for example,
+        Identifiers in this list may be used by the homeserver as, for example,
         identifiers that it will accept to reset the user's account password.
       security:
         - accessToken: []
@@ -97,6 +99,8 @@ paths:
                     address:
                       type: string
                       description: The third party identifier address.
+      tags:
+        - User data
     post:
       summary: Adds contact information to the user's account.
       description: Adds contact information to the user's account.
@@ -126,7 +130,7 @@ paths:
               bind:
                 type: boolean
                 description: |-
-                  Whether the home server should also bind this third party
+                  Whether the homeserver should also bind this third party
                   identifier to the account's Matrix ID with the passed identity
                   server. Default: ``false``.
                 x-example: true
@@ -155,3 +159,5 @@ paths:
                 "errcode": "M_THREEPID_AUTH_FAILED",
                 "error": "The third party credentials could not be verified by the identity server."
               }
+      tags:
+        - User data

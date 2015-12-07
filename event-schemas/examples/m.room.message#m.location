@@ -16,5 +16,5 @@
   "origin_server_ts": 1432735824653,
   "room_id": "!jEsUZKDJdhlrceRyVU:localhost",
   "type": "m.room.message",
-  "user_id": "@example:localhost"
+  "sender": "@example:localhost"
 } 

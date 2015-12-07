@@ -1,11 +1,11 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v2 sync API"
+  title: "Matrix Client-Server sync API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
-basePath: /_matrix/client/v2_alpha
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -114,7 +114,7 @@ paths:
                             ``timeline``, if ``since`` is not given, or
                             ``full_state`` is true).
                           allOf:
-                            - $ref: "definitions/event_batch.json"
+                            - $ref: "definitions/event_batch.yaml"
                         timeline:
                           title: Timeline
                           type: object
@@ -122,7 +122,7 @@ paths:
                             The timeline of messages and state changes in the
                             room.
                           allOf:
-                            - $ref: "definitions/timeline_batch.json"
+                            - $ref: "definitions/timeline_batch.yaml"
                         ephemeral:
                           title: Ephemeral
                           type: object
@@ -131,7 +131,7 @@ paths:
                             recorded in the timeline or state of the room.
                             e.g. typing.
                           allOf:
-                            - $ref: "definitions/event_batch.json"
+                            - $ref: "definitions/event_batch.yaml"
                         account_data:
                           title: Account Data
                           type: object
@@ -139,7 +139,7 @@ paths:
                             The private data that this user has attached to
                             this room.
                           allOf:
-                          - $ref: "definitions/event_batch.json"
+                          - $ref: "definitions/event_batch.yaml"
                   invite:
                     title: Invited Rooms
                     type: object
@@ -166,7 +166,7 @@ paths:
                             delta against the archived ``state`` not the
                             ``invite_state``.
                           allOf:
-                            - $ref: "definitions/event_batch.json"
+                            - $ref: "definitions/event_batch.yaml"
                   leave:
                     title: Left rooms
                     type: object
@@ -182,7 +182,7 @@ paths:
                           description: |-
                             The state updates for the room up to the start of the timeline.
                           allOf:
-                            - $ref: "definitions/event_batch.json"
+                            - $ref: "definitions/event_batch.yaml"
                         timeline:
                           title: Timeline
                           type: object
@@ -190,14 +190,14 @@ paths:
                             The timeline of messages and state changes in the
                             room up to the point when the user left.
                           allOf:
-                            - $ref: "definitions/timeline_batch.json"
+                            - $ref: "definitions/timeline_batch.yaml"
               presence:
                 title: Presence
                 type: object
                 description: |-
                   The updates to the presence status of other users.
                 allOf:
-                  - $ref: "definitions/event_batch.json"
+                  - $ref: "definitions/event_batch.yaml"
           examples:
             application/json: |-
               {
@@ -310,3 +310,5 @@ paths:
                   "leave": {}
                 }
               }
+      tags:
+        - Room participation

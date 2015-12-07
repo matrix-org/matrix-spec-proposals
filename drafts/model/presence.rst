@@ -5,14 +5,14 @@ A simple implementation of presence messaging has the ability to cause a large
 amount of Internet traffic relating to presence updates. In order to minimise
 the impact of such a feature, the following observations can be made:
 
- * There is no point in a Home Server polling status for peers in a user's
+ * There is no point in a homeserver polling status for peers in a user's
    presence list if the user has no clients connected that care about it.
 
  * It is highly likely that most presence subscriptions will be symmetric - a
    given user watching another is likely to in turn be watched by that user.
 
  * It is likely that most subscription pairings will be between users who share
-   at least one Room in common, and so their Home Servers are actively
+   at least one Room in common, and so their homeservers are actively
    exchanging message PDUs or transactions relating to that Room.
 
  * Presence update messages do not need realtime guarantees. It is acceptable to
@@ -25,7 +25,7 @@ promise to send them when required. Rather than actively polling for the
 current state all the time, HSes can rely on their relative stability to only
 push updates when required.
 
-A Home Server should not rely on the longterm validity of this presence
+A homeserver should not rely on the longterm validity of this presence
 information, however, as this would not cover such cases as a user's server
 crashing and thus failing to inform their peers that users it used to host are
 no longer available online. Therefore, each promise of future updates should
@@ -33,7 +33,7 @@ carry with a timeout value (whether explicit in the message, or implicit as some
 defined default in the protocol), after which the receiving HS should consider
 the information potentially stale and request it again.
 
-However, because of the likelihood that two home servers are exchanging messages
+However, because of the likelihood that two homeservers are exchanging messages
 relating to chat traffic in a room common to both of them, the ongoing receipt
 of these messages can be taken by each server as an implicit notification that
 the sending server is still up and running, and therefore that no status changes
@@ -98,7 +98,7 @@ The data model presented here puts the following requirements on the APIs:
 Client-Server
 -------------
 
-Requests that a client can make to its Home Server
+Requests that a client can make to its homeserver
 
  * get/set current presence state
    Basic enumeration + ability to set a custom piece of text
@@ -128,7 +128,7 @@ Requests that a client can make to its Home Server
 Server-Server
 -------------
 
-Requests that Home Servers make to others
+Requests that homeservers make to others
 
  * request permission to add a user to presence list
 

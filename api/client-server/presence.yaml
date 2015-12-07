@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v1 Presence API"
+  title: "Matrix Client-Server Presence API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v1
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -67,6 +67,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - Presence
     get:
       summary: Get this user's presence state.
       description: |-
@@ -85,8 +87,7 @@ paths:
             application/json: |-
               {
                 "presence": "unavailable",
-                "last_active_ago": 420845,
-                "status_msg": null
+                "last_active_ago": 420845
               }
           schema:
             type: object
@@ -107,6 +108,8 @@ paths:
           description: |-
             There is no presence state for this user. This user may not exist or
             isn't exposing presence information to you.
+      tags:
+        - Presence
   "/presence/list/{userId}":
     post:
       summary: Add or remove users from this presence list.
@@ -161,6 +164,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - Presence
     get:
       summary: Get presence events for this presence list.
       description: |-
@@ -205,4 +210,6 @@ paths:
               type: object
               title: PresenceEvent
               allOf:
-                - "$ref": "../../event-schemas/schema/core-event-schema/event.json"
+                - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
+      tags:
+        - Presence

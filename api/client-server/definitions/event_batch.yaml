@@ -1,0 +1,9 @@
+properties:
+  events:
+    description: List of events
+    items:
+      allOf:
+      - $ref: event.yaml
+      type: object
+    type: array
+type: object

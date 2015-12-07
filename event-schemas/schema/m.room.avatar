@@ -3,7 +3,7 @@
     "description": "A picture that is associated with the room. This can be displayed alongside the room information.",
     "type": "object",
     "allOf": [{
-        "$ref": "core-event-schema/state_event.json"
+        "$ref": "core-event-schema/state_event.yaml"
     }],
     "properties": {
         "content": {
@@ -22,7 +22,7 @@
                     "title": "ImageInfo",
                     "description": "Metadata about the image referred to in ``thumbnail_url``.",
                     "allOf": [{
-                        "$ref": "core-event-schema/msgtype_infos/image_info.json"
+                        "$ref": "core-event-schema/msgtype_infos/image_info.yaml"
                     }]
                 },
                 "info": {

@@ -1,8 +1,8 @@
 Federation API
 ==============
 
-Matrix home servers use the Federation APIs (also known as server-server APIs)
-to communicate with each other. Home servers use these APIs to push messages to
+Matrix homeservers use the Federation APIs (also known as server-server APIs)
+to communicate with each other. Homeservers use these APIs to push messages to
 each other in real-time, to request historic messages from each other, and to
 query profile and presence information about users on each other's servers.
 
@@ -11,10 +11,10 @@ servers. These HTTPS requests are strongly authenticated using public key
 signatures at the TLS transport layer and using public key signatures in
 HTTP Authorization headers at the HTTP layer.
 
-There are three main kinds of communication that occur between home servers:
+There are three main kinds of communication that occur between homeservers:
 
 Persisted Data Units (PDUs):
-    These events are broadcast from one home server to any others that have
+    These events are broadcast from one homeserver to any others that have
     joined the same room (identified by Room ID). They are persisted in
     long-term storage and record the history of messages and state for a
     room.
@@ -25,9 +25,9 @@ Persisted Data Units (PDUs):
     deliver them through third-party servers.
 
 Ephemeral Data Units (EDUs):
-    These events are pushed between pairs of home servers. They are not
+    These events are pushed between pairs of homeservers. They are not
     persisted and are not part of the history of a room, nor does the
-    receiving home server have to reply to them.
+    receiving homeserver have to reply to them.
 
 Queries:
     These are single request/response interactions between a given pair of
@@ -38,7 +38,7 @@ Queries:
 
 
 EDUs and PDUs are further wrapped in an envelope called a Transaction, which is
-transferred from the origin to the destination home server using an HTTPS PUT
+transferred from the origin to the destination homeserver using an HTTPS PUT
 request.
 
 .. contents:: Table of Contents
@@ -50,7 +50,7 @@ Server Discovery
 Resolving Server Names
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Each matrix home server is identified by a server name consisting of a DNS name
+Each matrix homeserver is identified by a server name consisting of a DNS name
 and an optional TLS port.
 
 .. code::
@@ -67,7 +67,7 @@ is absent then the server is discovered by looking up a ``_matrix._tcp`` SRV
 record for the DNS name. If this record does not exist then the server is
 discovered by looking up an AAAA or A record on the DNS name and taking the
 default fallback port number of 8448.
-Home servers may use SRV records to load balance requests between multiple TLS
+Homeservers may use SRV records to load balance requests between multiple TLS
 endpoints or to failover to another endpoint if an endpoint fails.
 
 Retrieving Server Keys
@@ -76,8 +76,8 @@ Retrieving Server Keys
 Version 2
 +++++++++
 
-Each home server publishes its public keys under ``/_matrix/key/v2/server/``.
-Home servers query for keys by either getting ``/_matrix/key/v2/server/``
+Each homeserver publishes its public keys under ``/_matrix/key/v2/server/``.
+Homeservers query for keys by either getting ``/_matrix/key/v2/server/``
 directly or by querying an intermediate notary server using a
 ``/_matrix/key/v2/query`` API. Intermediate notary servers query the
 ``/_matrix/key/v2/server/`` API on behalf of another server and sign the
@@ -95,7 +95,7 @@ server by querying other servers.
 Publishing Keys
 ^^^^^^^^^^^^^^^
 
-Home servers publish the allowed TLS fingerprints and signing keys in a JSON
+Homeservers publish the allowed TLS fingerprints and signing keys in a JSON
 object at ``/_matrix/key/v2/server/{key_id}``. The response contains a list of
 ``verify_keys`` that are valid for signing federation requests made by the
 server and for signing events. It contains a list of ``old_verify_keys``
@@ -114,7 +114,7 @@ certificate currently in use by the server. These fingerprints are valid until
 the millisecond POSIX timestamp in ``valid_until_ts``.
 
 The ``verify_keys`` can be used to sign requests and events made by the server
-until the millisecond POSIX timestamp in ``valid_until_ts``. If a Home Server
+until the millisecond POSIX timestamp in ``valid_until_ts``. If a homeserver
 receives an event with a ``origin_server_ts`` after the ``valid_until_ts`` then
 it should request that ``key_id`` for the originating server to check whether
 the key has expired.
@@ -136,8 +136,8 @@ events sent by that server can still be checked.
 ==================== =================== ======================================
     Key                    Type                         Description
 ==================== =================== ======================================
-``server_name``      String              DNS name of the home server.
-``verify_keys``      Object              Public keys of the home server for
+``server_name``      String              DNS name of the homeserver.
+``verify_keys``      Object              Public keys of the homeserver for
                                          verifying digital signatures.
 ``old_verify_keys``  Object              The public keys that the server used
                                          to use and when it stopped using them.
@@ -238,14 +238,14 @@ Version 1
   Version 1 of key distribution is obsolete
 
 
-Home servers publish their TLS certificates and signing keys in a JSON object
+Homeservers publish their TLS certificates and signing keys in a JSON object
 at ``/_matrix/key/v1``.
 
 ==================== =================== ======================================
     Key                    Type                         Description
 ==================== =================== ======================================
-``server_name``      String              DNS name of the home server.
-``verify_keys``      Object              Public keys of the home server for
+``server_name``      String              DNS name of the homeserver.
+``verify_keys``      Object              Public keys of the homeserver for
                                          verifying digital signatures.
 ``signatures``       Object              Digital signatures for this object
                                          signed using the ``verify_keys``.
@@ -278,9 +278,9 @@ Transactions
 .. WARNING::
   This section may be misleading or inaccurate.
 
-The transfer of EDUs and PDUs between home servers is performed by an exchange
+The transfer of EDUs and PDUs between homeservers is performed by an exchange
 of Transaction messages, which are encoded as JSON objects, passed over an HTTP
-PUT request. A Transaction is meaningful only to the pair of home servers that
+PUT request. A Transaction is meaningful only to the pair of homeservers that
 exchanged it; they are not globally-meaningful.
 
 Each transaction has:
@@ -445,7 +445,7 @@ EDUs
 
 EDUs, by comparison to PDUs, do not have an ID, a room ID, or a list of
 "previous" IDs. The only mandatory fields for these are the type, origin and
-destination home server names, and the actual nested content.
+destination homeserver names, and the actual nested content.
 
 ======================== ============ =========================================
  Key                      Type          Description
@@ -531,7 +531,7 @@ To make a query::
     Query args: as specified by the individual query types
     Response: JSON encoding of a response object
 
-Performs a single query request on the receiving home server. The Query Type
+Performs a single query request on the receiving homeserver. The Query Type
 part of the path specifies the kind of query being made, and its query
 arguments have a meaning specific to that kind of query. The response is a
 JSON-encoded object whose meaning also depends on the kind of query.
@@ -791,9 +791,9 @@ because HTTP services like Matrix are often deployed behind load balancers that
 handle the TLS and these load balancers make it difficult to check TLS client
 certificates.
 
-A home server may provide a TLS client certificate and the receiving home server
+A homeserver may provide a TLS client certificate and the receiving homeserver
 may check that the client certificate matches the certificate of the origin
-home server.
+homeserver.
 
 Server-Server Authorization
 ---------------------------
@@ -905,7 +905,7 @@ Querying profile information::
 If the query contains the optional ``field`` key, it should give the name of a
 result field. If such is present, then the result should contain only a field
 of that name, with no others present. If not, the result should contain as much
-of the user's profile as the home server has available and can make public.
+of the user's profile as the homeserver has available and can make public.
 
 Directory
 ---------

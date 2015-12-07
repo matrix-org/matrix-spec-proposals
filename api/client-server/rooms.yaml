@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v1 Rooms API"
+  title: "Matrix Client-Server Rooms API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v1
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -44,7 +44,7 @@ paths:
         - in: path
           type: string
           name: stateKey
-          description: The key of the state to look up. Defaults to the empty string.
+          description: The key of the state to look up.
           required: true
           x-example: ""
       responses:
@@ -61,7 +61,49 @@ paths:
           description: >
             You aren't a member of the room and weren't previously a
             member of the room.
+      tags:
+        - Room participation
+  "/rooms/{roomId}/state/{eventType}":
+    get:
+      summary: Get the state identified by the type, with the empty state key.
+      description: |-
+        Looks up the contents of a state event in a room. If the user is
+        joined to the room then the state is taken from the current
+        state of the room. If the user has left the room then the state is
+        taken from the state of the room when they left.
 
+        This looks up the state event with the empty state key.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room to look up the state in.
+          required: true
+          x-example: "!636q39766251:example.com"
+        - in: path
+          type: string
+          name: eventType
+          description: The type of state to look up.
+          required: true
+          x-example: "m.room.name"
+      responses:
+        200:
+          description: The content of the state event.
+          examples:
+            application/json: |-
+              {"name": "Example room name"}
+          schema:
+            type: object
+        404:
+          description: The room has no state with the given type or key.
+        403:
+          description: >
+            You aren't a member of the room and weren't previously a
+            member of the room.
+      tags:
+        - Room participation
   "/rooms/{roomId}/state":
     get:
       summary: Get all state events in the current state of a room.
@@ -92,13 +134,12 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.join_rules",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                 },
                 {
                     "age": 6547561012,
                     "content": {
                         "avatar_url": "mxc://example.com/fzysBrHpPEeTGANCVLXWXNMI#auto",
-                        "displayname": null,
                         "membership": "join"
                     },
                     "event_id": "$1426600438280zExKY:example.com",
@@ -107,7 +148,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "@alice:example.com",
                     "type": "m.room.member",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                 },
                 {
                     "age": 7148267200,
@@ -119,7 +160,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.create",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                 },
                 {
                     "age": 1622568720,
@@ -134,7 +175,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "@bob:example.com",
                     "type": "m.room.member",
-                    "user_id": "@bob:example.com"
+                    "sender": "@bob:example.com"
                 },
                 {
                     "age": 7148267004,
@@ -158,7 +199,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.power_levels",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                 }
               ]
           schema:
@@ -173,12 +214,13 @@ paths:
               title: StateEvent
               type: object
               allOf:
-                - "$ref": "../../event-schemas/schema/core-event-schema/state_event.json"
+                - "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
         403:
           description: >
             You aren't a member of the room and weren't previously a
             member of the room.
-
+      tags:
+        - Room participation
   "/rooms/{roomId}/initialSync":
     get:
       summary: Snapshot the current state of a room and its most recent messages.
@@ -212,7 +254,7 @@ paths:
                       "origin_server_ts": 1432804485886,
                       "room_id": "!636q39766251:example.com",
                       "type": "m.room.message",
-                      "user_id": "@alice:example.com"
+                      "sender": "@alice:example.com"
                     },
                     {
                       "age": 343511809,
@@ -224,7 +266,7 @@ paths:
                       "origin_server_ts": 1432804487480,
                       "room_id": "!636q39766251:example.com",
                       "type": "m.room.message",
-                      "user_id": "@bob:example.com"
+                      "sender": "@bob:example.com"
                     }
                   ],
                   "end": "s3456_9_0",
@@ -242,13 +284,12 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.join_rules",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                   },
                   {
                     "age": 6547561012,
                     "content": {
                       "avatar_url": "mxc://example.com/fzysBrHpPEeTGANCVLXWXNMI#auto",
-                      "displayname": null,
                       "membership": "join"
                     },
                     "event_id": "$1426600438280zExKY:example.com",
@@ -257,7 +298,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "@alice:example.com",
                     "type": "m.room.member",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                   },
                   {
                     "age": 7148267200,
@@ -269,7 +310,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.create",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                   },
                   {
                     "age": 1622568720,
@@ -284,7 +325,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "@bob:example.com",
                     "type": "m.room.member",
-                    "user_id": "@bob:example.com"
+                    "sender": "@bob:example.com"
                   },
                   {
                     "age": 7148267004,
@@ -308,7 +349,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "",
                     "type": "m.room.power_levels",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                   }
                 ],
                 "visibility": "private",
@@ -355,7 +396,7 @@ paths:
                       type: object
                       title: RoomEvent
                       allOf:
-                        - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
+                        - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
                 required: ["start", "end", "chunk"]
               state:
                 type: array
@@ -368,7 +409,7 @@ paths:
                   title: StateEvent
                   type: object
                   allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/state_event.json"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
               visibility:
                 type: string
                 enum: ["private", "public"]
@@ -383,13 +424,14 @@ paths:
                   title: Event
                   type: object
                   allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/event.json"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
             required: ["room_id"]
         403:
           description: >
             You aren't a member of the room and weren't previously a
             member of the room.
-
+      tags:
+        - Room participation
   "/rooms/{roomId}/members":
     get:
       summary: Get the m.room.member events for the room.
@@ -416,7 +458,6 @@ paths:
                     "age": 6547561012,
                     "content": {
                       "avatar_url": "mxc://example.com/fzysBrHpPEeTGANCVLXWXNMI#auto",
-                      "displayname": null,
                       "membership": "join"
                     },
                     "event_id": "$1426600438280zExKY:example.com",
@@ -425,7 +466,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "@alice:example.com",
                     "type": "m.room.member",
-                    "user_id": "@alice:example.com"
+                    "sender": "@alice:example.com"
                   },
                   {
                     "age": 1622568720,
@@ -440,7 +481,7 @@ paths:
                     "room_id": "!636q39766251:example.com",
                     "state_key": "@bob:example.com",
                     "type": "m.room.member",
-                    "user_id": "@bob:example.com"
+                    "sender": "@bob:example.com"
                   }
                 ]
               }
@@ -458,4 +499,5 @@ paths:
           description: >
             You aren't a member of the room and weren't previously a
             member of the room.
-
+      tags:
+        - Room participation

@@ -3,7 +3,7 @@
     "title": "Controls visibility of history.",
     "description": "This event controls whether a user can see the events that happened in a room from before they joined.",
     "allOf": [{
-        "$ref": "core-event-schema/state_event.json"
+        "$ref": "core-event-schema/state_event.yaml"
     }],
     "properties": {
         "content": {

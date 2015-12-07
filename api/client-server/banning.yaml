@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v1 Room Banning API"
+  title: "Matrix Client-Server Room Banning API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v1
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -74,3 +74,5 @@ paths:
                 "errcode": "M_FORBIDDEN",
                 "error": "You do not have a high enough power level to ban from this room."
               }
+      tags:
+        - Room membership

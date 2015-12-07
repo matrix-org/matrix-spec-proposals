@@ -269,11 +269,9 @@ code of 400.
 Security considerations
 -----------------------
 
-Messages sent using this module are not encrypted. Messages can be encrypted
-using the `E2E module`_.
+Messages sent using this module are not encrypted, although end to end encryption is in development (see `E2E module`_).
 
 Clients should sanitise **all displayed keys** for unsafe HTML to prevent Cross-Site
 Scripting (XSS) attacks. This includes room names and topics.
 
 .. _`E2E module`: `module:e2e`_
-

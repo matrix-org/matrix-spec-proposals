@@ -8,7 +8,7 @@ Discovery
 =========
 
 To join a room, a user has to discover the room by some mechanism in order to
-obtain the (opaque) Room ID and a candidate list of likely home servers that
+obtain the (opaque) Room ID and a candidate list of likely homeservers that
 contain it.
 
 Sending an Invitation
@@ -21,7 +21,7 @@ The inviter's HS sets the membership status of the invitee to "invited" in the
 "m.members" state key by sending a state update PDU. The HS then broadcasts this
 PDU among the existing members in the usual way. An invitation message is also
 sent to the invited user, containing the Room ID and the PDU ID of this
-invitation state change and potentially a list of some other home servers to use
+invitation state change and potentially a list of some other homeservers to use
 to accept the invite. The user's client can then choose to display it in some
 way to alert the user.
 
@@ -34,7 +34,7 @@ Directory Service
 
 Alternatively, the user may discover the channel via a directory service; either
 by performing a name lookup, or some kind of browse or search acitivty. However
-this is performed, the end result is that the user's home server requests the
+this is performed, the end result is that the user's homeserver requests the
 Room ID and candidate list from the directory service.
 
 [[TODO(paul): At present, no API has been designed or described for this
@@ -44,14 +44,14 @@ directory service]]
 Joining
 =======
 
-Once the ID and home servers are obtained, the user can then actually join the
+Once the ID and homeservers are obtained, the user can then actually join the
 room.
 
 Accepting an Invite
 -------------------
 
 If a user has received and accepted an invitation to join a room, the invitee's
-home server can now send an invite acceptance message to a chosen candidate
+homeserver can now send an invite acceptance message to a chosen candidate
 server from the list given in the invitation, citing also the PDU ID of the
 invitation as "proof" of their invite. (This is required as due to late message
 propagation it could be the case that the acceptance is received before the
@@ -85,7 +85,7 @@ can instead post a "knock" message, which informs other members of the room that
 the would-be joiner wishes to become a member and sets their membership value to
 "knocked". If any of them wish to accept this, they can then send an invitation
 in the usual way described above. Knowing that the user has already knocked and
-expressed an interest in joining, the invited user's home server should
+expressed an interest in joining, the invited user's homeserver should
 immediately accept that invitation on the user's behalf, and go on to join the
 room in the usual way.
 

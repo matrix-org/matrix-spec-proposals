@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v1 Sync API"
+  title: "Matrix Client-Server Sync API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v1
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
@@ -60,7 +60,7 @@ paths:
                     "origin_server_ts": 1432804485886,
                     "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                     "type": "m.room.message",
-                    "user_id": "@bob:localhost"
+                    "sender": "@bob:localhost"
                   }
                 ]
               }
@@ -84,9 +84,11 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
         400:
           description: "Bad pagination ``from`` parameter."
+      tags:
+        - Room participation
   "/initialSync":
     get:
       summary: Get the user's current state.
@@ -154,7 +156,7 @@ paths:
                                       "origin_server_ts": 1432804485886,
                                       "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                                       "type": "m.room.message",
-                                      "user_id": "@alice:localhost"
+                                      "sender": "@alice:localhost"
                                   },
                                   {
                                       "age": 343511809,
@@ -166,7 +168,7 @@ paths:
                                       "origin_server_ts": 1432804487480,
                                       "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                                       "type": "m.room.message",
-                                      "user_id": "@bob:localhost"
+                                      "sender": "@bob:localhost"
                                   }
                               ],
                               "end": "s3456_9_0",
@@ -184,13 +186,12 @@ paths:
                                   "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                                   "state_key": "",
                                   "type": "m.room.join_rules",
-                                  "user_id": "@alice:localhost"
+                                  "sender": "@alice:localhost"
                               },
                               {
                                   "age": 6547561012,
                                   "content": {
                                       "avatar_url": "mxc://localhost/fzysBrHpPEeTGANCVLXWXNMI#auto",
-                                      "displayname": null,
                                       "membership": "join"
                                   },
                                   "event_id": "$1426600438280zExKY:localhost",
@@ -199,7 +200,7 @@ paths:
                                   "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                                   "state_key": "@alice:localhost",
                                   "type": "m.room.member",
-                                  "user_id": "@alice:localhost"
+                                  "sender": "@alice:localhost"
                               },
                               {
                                   "age": 7148267200,
@@ -211,7 +212,7 @@ paths:
                                   "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                                   "state_key": "",
                                   "type": "m.room.create",
-                                  "user_id": "@alice:localhost"
+                                  "sender": "@alice:localhost"
                               },
                               {
                                   "age": 1622568720,
@@ -226,7 +227,7 @@ paths:
                                   "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                                   "state_key": "@bob:localhost",
                                   "type": "m.room.member",
-                                  "user_id": "@bob:localhost"
+                                  "sender": "@bob:localhost"
                               },
                               {
                                   "age": 7148267004,
@@ -250,7 +251,7 @@ paths:
                                   "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
                                   "state_key": "",
                                   "type": "m.room.power_levels",
-                                  "user_id": "@alice:localhost"
+                                  "sender": "@alice:localhost"
                               }
                           ],
                           "visibility": "private",
@@ -285,7 +286,7 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/event.json"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
               rooms:
                 type: array
                 items:
@@ -332,7 +333,7 @@ paths:
                             type: object
                             title: RoomEvent
                             allOf:
-                              - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
+                              - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
                       required: ["start", "end", "chunk"]
                     state:
                       type: array
@@ -345,7 +346,7 @@ paths:
                         title: StateEvent
                         type: object
                         allOf:
-                          - "$ref": "../../event-schemas/schema/core-event-schema/state_event.json"
+                          - "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
                     visibility:
                       type: string
                       enum: ["private", "public"]
@@ -361,11 +362,13 @@ paths:
                         title: Event
                         type: object
                         allOf:
-                          - "$ref": "../../event-schemas/schema/core-event-schema/event.json"
+                          - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
                   required: ["room_id", "membership"]
             required: ["end", "rooms", "presence"]
         404:
           description: There is no avatar URL for this user or this user does not exist.
+      tags:
+        - Room participation
   "/events/{eventId}":
     get:
       summary: Get a single event by event ID.
@@ -392,12 +395,14 @@ paths:
                   "msgtype": "m.text"
                 },
                 "room_id:": "!wfgy43Sg4a:matrix.org",
-                "user_id": "@bob:matrix.org",
+                "sender": "@bob:matrix.org",
                 "event_id": "$asfDuShaf7Gafaw:matrix.org",
                 "type": "m.room.message"
               }
           schema:
             allOf:
-              - "$ref": "../../event-schemas/schema/core-event-schema/event.json"
+              - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
         404:
           description: The event was not found or you do not have permission to read this event.
+      tags:
+        - Room participation
