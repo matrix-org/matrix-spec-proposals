@@ -78,6 +78,7 @@ The currently supported locations for the ``next_batch`` token are:
 - ``search_categories.<category>.groups.<group_key>.<group_id>.next_batch``
 
 A server need not support pagination, even if there are more matching results.
+In which case they must not return a ``next_batch`` token in the response.
 
 
 Security considerations
