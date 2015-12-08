@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server v1 Rooms API"
+  title: "Matrix Client-Server Event Context API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/api/v1
+basePath: /_matrix/client/api/%CLIENT_MAJOR_VERSION%
 consumes:
   - application/json
 produces:
