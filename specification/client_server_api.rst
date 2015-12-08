@@ -801,7 +801,7 @@ one of the following event types:
 - ``m.room.create`` allows key ``creator``
 - ``m.room.join_rules`` allows key ``join_rule``
 - ``m.room.power_levels`` allows keys ``ban``, ``events``, ``events_default``,
-   ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
+  ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
 - ``m.room.aliases`` allows key ``aliases``
 
 The redaction event should be added under the key ``redacted_because``. When a
