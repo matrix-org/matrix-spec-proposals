@@ -36,6 +36,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/tags.rst
     - modules/account_data.rst
     - modules/admin.rst
+    - modules/event_context.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`", "@"]
