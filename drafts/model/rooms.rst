@@ -18,19 +18,19 @@ users, and other management and miscellaneous metadata), and a message history.
 Room Identity and Naming
 ========================
 
-Rooms can be arbitrarily created by any user on any home server; at which point
-the home server will sign the message that creates the channel, and the
+Rooms can be arbitrarily created by any user on any homeserver; at which point
+the homeserver will sign the message that creates the channel, and the
 fingerprint of this signature becomes the strong persistent identify of the
-room. This now identifies the room to any home server in the network regardless
+room. This now identifies the room to any homeserver in the network regardless
 of its original origin. This allows the identify of the room to outlive any
 particular server. Subject to appropriate permissions [to be discussed later],
 any current member of a room can invite others to join it, can post messages
 that become part of its history, and can change the persistent state of the room
 (including its current set of permissions).
 
-Home servers can provide a directory service, allowing a lookup from a
+Homeservers can provide a directory service, allowing a lookup from a
 convenient human-readable form of room label to a room ID. This mapping is
-scoped to the particular home server domain and so simply represents that server
+scoped to the particular homeserver domain and so simply represents that server
 administrator's opinion of what room should take that label; it does not have to
 be globally replicated and does not form part of the stored state of that room.
 
@@ -156,7 +156,7 @@ m.public_history
   to be a member of the room.
 
 m.archive_servers
-  For "public" rooms with public history, gives a list of home servers that
+  For "public" rooms with public history, gives a list of homeservers that
   should be included in message distribution to the room, even if no users on
   that server are present. These ensure that a public room can still persist
   even if no users are currently members of it. This list should be consulted by
@@ -179,7 +179,7 @@ m.topic
 Room Creation Templates
 =======================
 
-A client (or maybe home server?) could offer a few templates for the creation of
+A client (or maybe homeserver?) could offer a few templates for the creation of
 new rooms. For example, for a simple private one-to-one chat the channel could
 assign the creator a power-level of 1, requiring a level of 1 to invite, and
 needing an invite before members can join. An invite is then sent to the other
@@ -215,7 +215,7 @@ permissions to allow this direct messaging.
 
 Between any given pair of user IDs that wish to exchange private messages, there
 will exist a single shared Room, created lazily by either side. These rooms will
-need a certain amount of special handling in both home servers and display on
+need a certain amount of special handling in both homeservers and display on
 clients, but as much as possible should be treated by the lower layers of code
 the same as other rooms.
 
@@ -226,7 +226,7 @@ clients should display these in a special way too as the room name is not
 important; instead it should distinguish them on the Display Name of the other
 party.
 
-Home Servers will need a client-API option to request setting up a new user-user
+Homeservers will need a client-API option to request setting up a new user-user
 chat room, which will then need special handling within the server. It will
 create a new room with the following 
 
@@ -260,7 +260,7 @@ history with each other simultaneously create a room and invite the other to it.
 This is called a "glare" situation. There are two possible ideas for how to
 resolve this:
 
- * Each Home Server should persist the mapping of (user ID pair) to room ID, so
+ * Each homeserver should persist the mapping of (user ID pair) to room ID, so
    that duplicate requests can be suppressed. On receipt of a room creation
    request that the HS thinks there already exists a room for, the invitation to
    join can be rejected if:

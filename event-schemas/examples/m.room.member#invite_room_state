@@ -1,0 +1,30 @@
+{
+  "age": 242352,
+  "content": {
+    "membership": "join",
+    "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF#auto",
+    "displayname": "Alice Margatroid"
+  },
+  "invite_room_state": [
+    {
+      "type": "m.room.name",
+      "state_key": "",
+      "content": {
+        "name": "Forest of Magic"
+      }
+    },
+    {
+      "type": "m.room.join_rules",
+      "state_key": "",
+      "content": {
+        "join_rules": "invite"
+      }
+    }
+  ],
+  "state_key": "@alice:localhost",
+  "origin_server_ts": 1431961217939,
+  "event_id": "$WLGTSEFSEF:localhost",
+  "type": "m.room.member",
+  "room_id": "!Cuyf34gef24t:localhost",
+  "sender": "@example:localhost"
+}

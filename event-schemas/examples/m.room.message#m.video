@@ -1,0 +1,27 @@
+{
+  "age": 146,
+  "content": {
+    "body": "Gangnam Style",
+    "url": "mxc://localhost/a526eYUSFFxlgbQYZmo442",
+    "info": {
+      "thumbnail_url": "mxc://localhost/FHyPlCeYUSFFxlgbQYZmoEoe",
+      "thumbnail_info": {
+        "mimetype": "image/jpeg",
+        "size": 46144,
+        "w": 300,
+        "h": 300
+      },
+      "w": 480,
+      "h": 320,
+      "duration": 2140786,
+      "size": 1563685,
+      "mimetype": "video/mp4"
+    },
+    "msgtype": "m.video"
+  },
+  "event_id": "$143273582443PhrSn:localhost",
+  "origin_server_ts": 1432735824653,
+  "room_id": "!jEsUZKDJdhlrceRyVU:localhost",
+  "type": "m.room.message",
+  "sender": "@example:localhost"
+} 

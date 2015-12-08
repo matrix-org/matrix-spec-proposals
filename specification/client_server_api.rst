@@ -7,15 +7,105 @@ support both lightweight clients which store no state and lazy-load data from
 the server as required - as well as heavyweight clients which maintain a full
 local persistent copy of server state.
 
-This mostly describes v1 of the Client-Server API as featured in the original September
-2014 launch of Matrix, apart from user-interactive authentication where it is
-encouraged to move to v2, therefore this is the version documented here.
-Version 2 is currently in development (as of Jan-March 2015) as an incremental
-but backwards-incompatible refinement of Version 1 and will be released
-shortly.
+.. contents:: Table of Contents
+.. sectnum::
 
-Documentation for the old `V1 authentication
-<../attic/v1_registration_login.rst>`_ is still available separately.
+Changelog
+---------
+
+.. topic:: Version: %CLIENT_RELEASE_LABEL%
+{{client_server_changelog}}
+
+For the full historical changelog, see
+https://github.com/matrix-org/matrix-doc/blob/master/changelogs/client-server.rst
+
+If this is an unstable snapshot, any changes since the last release may be
+viewed using ``git log``.
+
+API Standards
+-------------
+
+.. TODO
+  Need to specify any HMAC or access_token lifetime/ratcheting tricks
+  We need to specify capability negotiation for extensible transports
+
+The mandatory baseline for communication in Matrix is exchanging JSON objects
+over HTTP APIs. HTTPS is mandated as the baseline for server-server
+(federation) communication.  HTTPS is recommended for client-server
+communication, although HTTP may be supported as a fallback to support basic
+HTTP clients. More efficient optional transports for client-server
+communication will in future be supported as optional extensions - e.g. a
+packed binary encoding over stream-cipher encrypted TCP socket for
+low-bandwidth/low-roundtrip mobile usage. For the default HTTP transport, all
+API calls use a Content-Type of ``application/json``.  In addition, all strings
+MUST be encoded as UTF-8. Clients are authenticated using opaque
+``access_token`` strings (see `Client Authentication`_ for details), passed as a
+query string parameter on all requests.
+
+Any errors which occur at the Matrix API level MUST return a "standard error
+response". This is a JSON object which looks like::
+
+  {
+    "errcode": "<error code>",
+    "error": "<error message>"
+  }
+
+The ``error`` string will be a human-readable error message, usually a sentence
+explaining what went wrong. The ``errcode`` string will be a unique string
+which can be used to handle an error message e.g. ``M_FORBIDDEN``. These error
+codes should have their namespace first in ALL CAPS, followed by a single _ to
+ease separating the namespace from the error code. For example, if there was a
+custom namespace ``com.mydomain.here``, and a
+``FORBIDDEN`` code, the error code should look like
+``COM.MYDOMAIN.HERE_FORBIDDEN``. There may be additional keys depending on the
+error, but the keys ``error`` and ``errcode`` MUST always be present.
+
+Some standard error codes are below:
+
+:``M_FORBIDDEN``:
+  Forbidden access, e.g. joining a room without permission, failed login.
+
+:``M_UNKNOWN_TOKEN``:
+  The access token specified was not recognised.
+
+:``M_BAD_JSON``:
+  Request contained valid JSON, but it was malformed in some way, e.g. missing
+  required keys, invalid values for keys.
+
+:``M_NOT_JSON``:
+  Request did not contain valid JSON.
+
+:``M_NOT_FOUND``:
+  No resource was found for this request.
+
+:``M_LIMIT_EXCEEDED``:
+  Too many requests have been sent in a short period of time. Wait a while then
+  try again.
+
+Some requests have unique error codes:
+
+:``M_USER_IN_USE``:
+  Encountered when trying to register a user ID which has been taken.
+
+:``M_ROOM_IN_USE``:
+  Encountered when trying to create a room which has been taken.
+
+:``M_BAD_PAGINATION``:
+  Encountered when specifying bad pagination query parameters.
+
+.. _sect:txn_ids:
+
+The Client-Server API typically uses ``HTTP PUT`` to submit requests with a
+client-generated transaction identifier. This means that these requests are
+idempotent. The scope of a transaction identifier is a particular access token.
+It **only** serves to identify new
+requests from retransmits. After the request has finished, the ``{txnId}``
+value should be changed (how is not specified; a monotonically increasing
+integer is recommended).
+
+Some API endpoints may allow or require the use of ``POST`` requests without a
+transaction ID. Where this is optional, the use of a ``PUT`` request is strongly
+recommended.
 
 Client Authentication
 ---------------------
@@ -23,7 +113,7 @@ Most API endpoints require the user to identify themselves by presenting
 previously obtained credentials in the form of an ``access_token`` query
 parameter.
 
-In API version 2, when credentials are missing or invalid, the HTTP call will
+When credentials are required but missing or invalid, the HTTP call will
 return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
 ``M_UNKNOWN_TOKEN`` respectively.
 
@@ -32,15 +122,13 @@ User-Interactive Authentication API
 
 .. _sect:auth-api:
 
-This section refers to API Version 2.
-
 Some API endpoints such as ``login`` or ``register`` require authentication that
-interacts with the user. The home server may provide many different ways of
+interacts with the user. The homeserver may provide many different ways of
 authenticating, such as user/password auth, login via a social network (OAuth2),
 login by confirming a token sent to their email address, etc. This specification
-does not define how home servers should authorise their users but instead
+does not define how homeservers should authorise their users but instead
 defines the standard interface which implementations should follow so that ANY
-client can login to ANY home server.
+client can login to ANY homeserver.
 
 The process takes the form of one or more stages, where at each stage the client
 submits a set of data for a given stage type and awaits a response from the
@@ -56,9 +144,9 @@ more than one stage to implement n-factor auth. When all stages are complete,
 authentication is complete and the API call succeeds. To establish what flows a
 server supports for an endpoint, a client sends the request with no
 authentication. A request to an endpoint that uses User-Interactive
-Authentication never succeeds without auth. Home Servers may allow requests that
+Authentication never succeeds without auth. Homeservers may allow requests that
 don't require auth by offering a stage with only the ``m.login.dummy`` auth
-type. The home server returns a response with HTTP status 401 and a JSON object
+type. The homeserver returns a response with HTTP status 401 and a JSON object
 as follows::
 
   {
@@ -96,7 +184,7 @@ does this by resubmitting the same request with the the addition of an 'auth'
 key in the object that it submits. This dictionary contains a ``type`` key whose
 value is the name of the stage type that the client is attempting to complete.
 It must also contains a ``session`` key with the value of the session key given
-by the home server, if one was given. It also contains other keys dependent on
+by the homeserver, if one was given. It also contains other keys dependent on
 the stage type being attempted. For example, if the client is attempting to
 complete login type ``example.type.foo``, it might submit something like this::
 
@@ -110,7 +198,7 @@ complete login type ``example.type.foo``, it might submit something like this::
     }
   }
 
-If the home server deems the authentication attempt to be successful but still
+If the homeserver deems the authentication attempt to be successful but still
 requires more stages to be completed, it returns HTTP status 401 along with the
 same object as when no authentication was attempted, with the addition of the
 ``completed`` key which is an array of stage type the client has completed
@@ -134,7 +222,7 @@ successfully::
     "session": "xxxxxx"
   }
 
-If the home server decides the attempt was unsuccessful, it returns an error
+If the homeserver decides the attempt was unsuccessful, it returns an error
 message in the standard format::
 
   {
@@ -146,7 +234,7 @@ Individual stages may require more than one request to complete, in which case
 the response will be as if the request was unauthenticated with the addition of
 any other keys as defined by the login type.
 
-If the client has completed all stages of a flow, the home server performs the
+If the client has completed all stages of a flow, the homeserver performs the
 API call and returns the result as normal.
 
 Some authentication types may be completed by means other than through the
@@ -277,16 +365,16 @@ OAuth2-based
   ``uri``: Authorization Request URI OR service selection URI. Both contain an
   encoded ``redirect URI``.
 
-The home server acts as a 'confidential' client for the purposes of OAuth2.  If
+The homeserver acts as a 'confidential' client for the purposes of OAuth2.  If
 the uri is a ``service selection URI``, it MUST point to a webpage which prompts
 the user to choose which service to authorize with. On selection of a service,
 this MUST link through to an ``Authorization Request URI``. If there is only one
-service which the home server accepts when logging in, this indirection can be
+service which the homeserver accepts when logging in, this indirection can be
 skipped and the "uri" key can be the ``Authorization Request URI``.
 
 The client then visits the ``Authorization Request URI``, which then shows the
 OAuth2 Allow/Deny prompt. Hitting 'Allow' redirects to the ``redirect URI`` with
-the auth code. Home servers can choose any path for the ``redirect URI``. Once
+the auth code. Homeservers can choose any path for the ``redirect URI``. Once
 the OAuth flow has completed, the client retries the request with the session
 only, as above.
 
@@ -300,7 +388,7 @@ Email-based (identity server)
 
 Prior to submitting this, the client should authenticate with an identity
 server. After authenticating, the session information should be submitted to
-the home server.
+the homeserver.
 
 To respond to this type, reply with an auth dict as follows::
 
@@ -338,12 +426,12 @@ Clients cannot be expected to be able to know how to process every single login
 type. If a client does not know how to handle a given login type, it can direct
 the user to a web browser with the URL of a fallback page which will allow the
 user to complete that login step out-of-band in their web browser. The URL it
-should open is the Home Server base URL plus prefix, plus::
+should open is::
 
-  /auth/<stage type>/fallback/web?session=<session ID>
+  /_matrix/client/%CLIENT_MAJOR_VERSION%/auth/<stage type>/fallback/web?session=<session ID>
 
 Where ``stage type`` is the type name of the stage it is attempting and
-``session id`` is the ID of the session given by the home server.
+``session id`` is the ID of the session given by the homeserver.
 
 This MUST return an HTML page which can perform this authentication stage. This
 page must attempt to call the JavaScript function ``window.onAuthDone`` when
@@ -351,14 +439,9 @@ the authentication has been completed.
 
 API calls using the User-Interactive Authentication mechanism
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This section refers to API Version 2. These API calls currently use the prefix
-``/_matrix/client/v2_alpha``.
-
 .. _User-Interactive Authentication: `sect:auth-api`_
 
-{{v2_registration_http_api}}
-
-Old V1 API docs: |register|_
+{{registration_http_api}}
 
 {{login_http_api}}
 
@@ -378,11 +461,11 @@ Changing Password
 +++++++++++++++++
 Request::
 
-  POST $V2PREFIX/account/password
+  POST /_matrix/client/%CLIENT_MAJOR_VERSION%/account/password
 
 This API endpoint uses the User-Interactive Authentication API. An access token
 should be submitted to this endpoint if the client has an active session. The
-Home Server may change the flows available depending on whether a valid access
+homeserver may change the flows available depending on whether a valid access
 token is provided.
 
 The body of the POST request is a JSON object containing:
@@ -393,63 +476,16 @@ new_password
 On success, an empty JSON object is returned.
 
 The error code M_NOT_FOUND is returned if the user authenticated with a third
-party identifier but the Home Server could not find a matching account in its
+party identifier but the homeserver could not find a matching account in its
 database.
 
 Adding Account Administrative Contact Information
 +++++++++++++++++++++++++++++++++++++++++++++++++
-Request::
 
-  POST $V2PREFIX/account/3pid
+A homeserver may keep some contact information for administrative use.
+This is independent of any information kept by any Identity Servers.
 
-Used to add contact information to the user's account.
-
-The body of the POST request is a JSON object containing:
-
-threePidCreds
-  An object containing contact information.
-bind
-  Optional. A boolean indicating whether the Home Server should also bind this
-  third party identifier to the account's matrix ID with the Identity Server. If
-  supplied and true, the Home Server must bind the 3pid accordingly.
-
-The contact information object comprises:
-
-id_server
-  The colon-separated hostname and port of the Identity Server used to
-  authenticate the third party identifier. If the port is the default, it and the
-  colon should be omitted.
-sid
-  The session ID given by the Identity Server
-client_secret
-  The client secret used in the session with the Identity Server.
-
-On success, the empty JSON object is returned.
-
-May also return error codes:
-
-M_THREEPID_AUTH_FAILED
-  If the credentials provided could not be verified with the ID Server.
-
-Fetching Currently Associated Contact Information
-+++++++++++++++++++++++++++++++++++++++++++++++++
-Request::
-
-  GET $V2PREFIX/account/3pid
-
-This returns a list of third party identifiers that the Home Server has
-associated with the user's account. This is *not* the same as the list of third
-party identifiers bound to the user's Matrix ID in Identity Servers. Identifiers
-in this list may be used by the Home Server as, for example, identifiers that it
-will accept to reset the user's account password.
-
-Returns a JSON object with the key ``threepids`` whose contents is an array of
-objects with the following keys:
-
-medium
-  The medium of the 3pid (eg, ``email``)
-address
-  The textual address of the 3pid, eg. the email address
+{{administrative_contact_http_api}}
 
 Pagination
 ----------
@@ -545,6 +581,15 @@ Where $streamtoken is an opaque token which can be used in another query to
 get the next set of results. The "start" and "end" keys can only be omitted if
 the complete dataset is provided in "chunk".
 
+Filtering
+---------
+
+Filters can be created on the server and can be passed as as a parameter to APIs
+which return events. These filters alter the data returned from those APIs.
+Not all APIs accept filters.
+
+{{filter_http_api}}
+
 Events
 ------
 
@@ -557,15 +602,21 @@ point in time::
 
   [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]
   
-Clients can add to the stream by POSTing message or state events, and can read
-from the stream via the |initialSync|_, |/rooms/<room_id>/initialSync|_, `Event
-Stream`_ and |/rooms/<room_id>/messages|_ APIs.
+Clients can add to the stream by PUTing message or state events, and can read
+from the stream via the
+|initialSync|_,
+|events|_,
+|/rooms/<room_id>/initialSync|_, and
+|/rooms/<room_id>/messages|_
+APIs.
 
 For reading events, the intended flow of operation is to call
-$PREFIX/initialSync, which returns all of the state and the last N events in the
+/_matrix/client/%CLIENT_MAJOR_VERSION%/initialSync, which returns all of the
+state and the last N events in the
 event stream for each room, including ``start`` and ``end`` values describing the
 pagination of each room's event stream. For instance,
-$PREFIX/initialSync?limit=5 might return the events for a room in the
+/_matrix/client/%CLIENT_MAJOR_VERSION%/initialSync?limit=5 might return the
+events for a room in the
 rooms[0].messages.chunk[] array, with tokens describing the start and end of the
 range in rooms[0].messages.start as '1-2-3' and rooms[0].messages.end as
 'a-b-c'.
@@ -578,7 +629,8 @@ You can visualise the range of events being returned as::
                         start: '1-2-3'                end: 'a-b-c'
                              
 Now, to receive future events in real-time on the event stream, you simply GET
-$PREFIX/events with a ``from`` parameter of 'a-b-c': in other words passing in the
+/_matrix/client/%CLIENT_MAJOR_VERSION%/events with a ``from`` parameter of
+'a-b-c': in other words passing in the
 ``end`` token returned by initial sync. The request blocks until new events are
 available or until your specified timeout elapses, and then returns a
 new paginatable chunk of events alongside new start and end parameters::
@@ -590,10 +642,11 @@ new paginatable chunk of events alongside new start and end parameters::
                                                       start: 'a-b-c'
 
 To resume polling the events stream, you pass in the new ``end`` token as the
-``from`` parameter of $PREFIX/events and poll again.
+``from`` parameter of /_matrix/client/%CLIENT_MAJOR_VERSION%/events and poll again.
 
 Similarly, to paginate events backwards in order to lazy-load in previous
-history from the room, you simply GET $PREFIX/rooms/<room_id>/messages
+history from the room, you simply
+GET /_matrix/client/%CLIENT_MAJOR_VERSION%/rooms/<room_id>/messages
 specifying the ``from`` token to paginate backwards from and a limit of the number
 of messages to retrieve. For instance, calling this API with a ``from`` parameter
 of '1-2-3' and a limit of 5 would return::
@@ -634,7 +687,7 @@ namespaced for each application and reduces the risk of clashes.
 Syncing
 ~~~~~~~
 
-Clients receive new events by "long-polling" the home server via the events API.
+Clients receive new events by "long-polling" the homeserver via the events API.
 This involves specifying a timeout in the request which will hold
 open the HTTP connection for a short period of time waiting for new events,
 returning early if an event occurs. Only the events API supports long-polling.
@@ -654,12 +707,12 @@ last request left off. Multiple events can be returned per long-poll.
   Do we ever support streaming requests? Why not websockets?
 
 When the client first logs in, they will need to initially synchronise with
-their home server. This is achieved via the initial sync API described below.
+their homeserver. This is achieved via the initial sync API described below.
 This API also returns an ``end`` token which can be used with the event stream.
 
-{{sync_http_api}}
+{{old_sync_http_api}}
 
-{{v2_sync_http_api}}
+{{sync_http_api}}
 
 
 Getting events for a room
@@ -728,10 +781,6 @@ owners to delete the offending content from the databases. Events that have been
 redacted include a ``redacted_because`` key whose value is the event that caused
 it to be redacted, which may include a reason.
 
-.. TODO
-  Currently, only room admins can redact events by sending a ``m.room.redaction``
-  event, but server admins also need to be able to redact events by a similar
-  mechanism.
 
 Upon receipt of a redaction event, the server should strip off any keys not in
 the following list:
@@ -751,22 +800,29 @@ one of the following event types:
 - ``m.room.create`` allows key ``creator``
 - ``m.room.join_rules`` allows key ``join_rule``
 - ``m.room.power_levels`` allows keys ``ban``, ``events``, ``events_default``,
-   ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
+  ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
 - ``m.room.aliases`` allows key ``aliases``
-
-.. TODO
-  Need to update m.room.power_levels to reflect new power levels formatting
 
 The redaction event should be added under the key ``redacted_because``. When a
 client receives a redaction event it should change the redacted event
 in the same way a server does.
+
+Events
+++++++
+
+{{m_room_redaction_event}}
+
+Client behaviour
+++++++++++++++++
+
+{{redaction_http_api}}
 
 Rooms
 -----
 
 Creation
 ~~~~~~~~
-The home server will create an ``m.room.create`` event when a room is created,
+The homeserver will create an ``m.room.create`` event when a room is created,
 which serves as the root of the event graph for this room. This event also has a
 ``creator`` key which contains the user ID of the room creator. It will also
 generate several other events in order to manage permissions in this room. This
@@ -783,23 +839,13 @@ client has to use the the following API.
 
 Room aliases
 ~~~~~~~~~~~~
-.. NOTE::
-  This section is a work in progress.
 
-Room aliases can be created by sending a ``PUT /directory/room/<room alias>``::
+Servers may host aliases for rooms with human-friendly names. Aliases take the
+form ``#friendlyname:server.name``.
 
-  {
-    "room_id": <room id>
-  }
-
-They can be deleted by sending a ``DELETE /directory/room/<room alias>`` with
-no content. Only some privileged users may be able to delete room aliases, e.g.
-server admins, the creator of the room alias, etc. This specification does not
-outline the privilege level required for deleting room aliases.
-
-As room aliases are scoped to a particular home server domain name, it is
-likely that a home server will reject attempts to maintain aliases on other
-domain names. This specification does not provide a way for home servers to
+As room aliases are scoped to a particular homeserver domain name, it is
+likely that a homeserver will reject attempts to maintain aliases on other
+domain names. This specification does not provide a way for homeservers to
 send update requests to other servers.
 
 Rooms store a *partial* list of room aliases via the ``m.room.aliases`` state
@@ -812,16 +858,10 @@ appears to have a room alias of ``#alias:example.com``, this SHOULD be checked
 to make sure that the room's ID matches the ``room_id`` returned from the
 request.
 
-Room aliases can be checked in the same way they are resolved; by sending a
-``GET /directory/room/<room alias>``::
+Homeservers can respond to resolve requests for aliases on other domains than
+their own by using the federation API to ask other domain name homeservers.
 
-  {
-    "room_id": <room id>,
-    "servers": [ <domain>, <domain2>, <domain3> ]
-  }
-
-Home servers can respond to resolve requests for aliases on other domains than
-their own by using the federation API to ask other domain name home servers.
+{{directory_http_api}}
 
 
 Permissions
@@ -870,42 +910,24 @@ following values:
 ``invite``
   This room can only be joined if you were invited.
 
-{{membership_http_api}}
+{{inviting_http_api}}
+
+{{joining_http_api}}
+
+{{banning_http_api}}
 
 Leaving rooms
 ~~~~~~~~~~~~~
-.. TODO-spec - HS deleting rooms they are no longer a part of. Not implemented.
-  - This is actually Very Tricky. If all clients a HS is serving leave a room,
-  the HS will no longer get any new events for that room, because the servers
-  who get the events are determined on the *membership list*. There should
-  probably be a way for a HS to lurk on a room even if there are 0 of their
-  members in the room.
-  - Grace period before deletion?
-  - Under what conditions should a room NOT be purged?
-
-
 A user can leave a room to stop receiving events for that room. A user must
 have been invited to or have joined the room before they are eligible to leave
 the room. Leaving a room to which the user has been invited rejects the invite.
+Once a user leaves a room, it will no longer appear on the |initialSync|_ API.
 
 Whether or not they actually joined the room, if the room is
 an "invite-only" room they will need to be re-invited before they can re-join
-the room.  To leave a room, a request should be made to
-|/rooms/<room_id>/leave|_ with::
+the room.
 
-  {}
-
-Alternatively, the membership state for this user in this room can be modified
-directly by sending the following request to
-``/rooms/<room id>/state/m.room.member/<url encoded user id>``::
-
-  {
-    "membership": "leave"
-  }
-
-See the `Room events`_ section for more information on ``m.room.member``. Once a
-user has left a room, that room will no longer appear on the |initialSync|_ API.
-If all members in a room leave, that room becomes eligible for deletion.
+{{leaving_http_api}}
 
 Banning users in a room
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -931,6 +953,11 @@ member's state, by making a request to
     "membership": "ban"
   }
 
+Listing rooms
+~~~~~~~~~~~~~
+
+{{list_public_rooms_http_api}}
+
 Profiles
 --------
 
@@ -949,10 +976,10 @@ values. This change is conveyed using two separate mechanisms:
   values of the ``displayname`` and ``avatar_url`` keys, in addition to the
   required ``presence`` key containing the current presence state of the user.
 
-Both of these should be done automatically by the home server when a user
+Both of these should be done automatically by the homeserver when a user
 successfully changes their display name or avatar URL fields.
 
-Additionally, when home servers emit room membership events for their own
+Additionally, when homeservers emit room membership events for their own
 users, they should include the display name and avatar URL fields in these
 events so that clients already have these details to hand, and do not have to
 perform extra round trips to query it.
@@ -962,7 +989,7 @@ Security
 
 Rate limiting
 ~~~~~~~~~~~~~
-Home servers SHOULD implement rate limiting to reduce the risk of being
+Homeservers SHOULD implement rate limiting to reduce the risk of being
 overloaded. If a request is refused due to rate limiting, it should return a
 standard error response of the form::
 
@@ -984,44 +1011,33 @@ have to wait in milliseconds before they can try again.
 .. Links through the external API docs are below
 .. =============================================
 
-.. |createRoom| replace:: ``/createRoom``
-.. _createRoom: /docs/api/client-server/#!/-rooms/create_room
-
 .. |initialSync| replace:: ``/initialSync``
-.. _initialSync: /docs/api/client-server/#!/-events/initial_sync
+.. _initialSync: #get-matrix-client-%CLIENT_MAJOR_VERSION%-initialsync
+
+.. |events| replace:: ``/events``
+.. _events: #get-matrix-client-%CLIENT_MAJOR_VERSION%-events
 
 .. |/rooms/<room_id>/initialSync| replace:: ``/rooms/<room_id>/initialSync``
-.. _/rooms/<room_id>/initialSync: /docs/api/client-server/#!/-rooms/get_room_sync_data
-
-.. |login| replace:: ``/login``
-.. _login: /docs/api/client-server/#!/-login
-
-.. |register| replace:: ``/register``
-.. _register: /docs/api/client-server/#!/-registration
+.. _/rooms/<room_id>/initialSync: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-initialsync
 
 .. |/rooms/<room_id>/messages| replace:: ``/rooms/<room_id>/messages``
-.. _/rooms/<room_id>/messages: /docs/api/client-server/#!/-rooms/get_messages
+.. _/rooms/<room_id>/messages: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-messages
 
 .. |/rooms/<room_id>/members| replace:: ``/rooms/<room_id>/members``
-.. _/rooms/<room_id>/members: /docs/api/client-server/#!/-rooms/get_members
+.. _/rooms/<room_id>/members: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-members
 
 .. |/rooms/<room_id>/state| replace:: ``/rooms/<room_id>/state``
-.. _/rooms/<room_id>/state: /docs/api/client-server/#!/-rooms/get_state_events
+.. _/rooms/<room_id>/state: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state
 
 .. |/rooms/<room_id>/invite| replace:: ``/rooms/<room_id>/invite``
-.. _/rooms/<room_id>/invite: /docs/api/client-server/#!/-rooms/invite
+.. _/rooms/<room_id>/invite: #post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-invite
 
 .. |/rooms/<room_id>/join| replace:: ``/rooms/<room_id>/join``
-.. _/rooms/<room_id>/join: /docs/api/client-server/#!/-rooms/join_room
+.. _/rooms/<room_id>/join: #post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-join
 
 .. |/rooms/<room_id>/leave| replace:: ``/rooms/<room_id>/leave``
-.. _/rooms/<room_id>/leave: /docs/api/client-server/#!/-rooms/leave
+.. _/rooms/<room_id>/leave: #post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-leave
 
 .. |/rooms/<room_id>/ban| replace:: ``/rooms/<room_id>/ban``
-.. _/rooms/<room_id>/ban: /docs/api/client-server/#!/-rooms/ban
-
-.. |/join/<room_alias_or_id>| replace:: ``/join/<room_alias_or_id>``
-.. _/join/<room_alias_or_id>: /docs/api/client-server/#!/-rooms/join
-
-.. _`Event Stream`: /docs/api/client-server/#!/-events/get_event_stream
+.. _/rooms/<room_id>/ban: #post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-ban
 

@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 
 import sys
 import json
@@ -38,13 +38,12 @@ def check_example_file(examplepath, schemapath):
         schema = yaml.load(f)
 
     fileurl = "file://" + os.path.abspath(schemapath)
+    schema["id"] = fileurl
+    resolver = jsonschema.RefResolver(schemapath, schema, handlers={"file": load_yaml})
 
     print ("Checking schema for: %r %r" % (examplepath, schemapath))
-    # Setting the 'id' tells jsonschema where the file is so that it
-    # can correctly resolve relative $ref references in the schema
-    schema['id'] = fileurl
     try:
-        jsonschema.validate(example, schema)
+        jsonschema.validate(example, schema, resolver=resolver)
     except Exception as e:
         raise ValueError("Error validating JSON schema for %r %r" % (
             examplepath, schemapath
@@ -60,6 +59,8 @@ def check_example_dir(exampledir, schemadir):
                 continue
             examplepath = os.path.join(root, filename)
             schemapath = examplepath.replace(exampledir, schemadir)
+            if schemapath.find("#") >= 0:
+                schemapath = schemapath[:schemapath.find("#")]
             try:
                 check_example_file(examplepath, schemapath)
             except Exception as e:
@@ -68,6 +69,15 @@ def check_example_dir(exampledir, schemadir):
         traceback.print_exception(exc_type, exc_value, exc_trace)
     if errors:
         raise ValueError("Error validating examples")
+
+
+def load_yaml(path):
+    if not path.startswith("file:///"):
+        raise Exception("Bad ref: %s" % (path,))
+    path = path[len("file://"):]
+    with open(path, "r") as f:
+        return yaml.load(f)
+
 
 if __name__ == '__main__':
     try:

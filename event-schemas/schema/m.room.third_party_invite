@@ -1,0 +1,37 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "title": "An invitation to a room issued to a third party identifier, rather than a matrix user ID.",
+    "description": "Acts as an ``m.room.member`` invite event, where there isn't a target user_id to invite. This event contains a token and a public key whose private key must be used to sign the token. Any user who can present that signature may use this invitation to join the target room.",
+    "allOf": [{
+        "$ref": "core-event-schema/state_event.yaml"
+    }],
+    "properties": {
+        "content": {
+            "type": "object",
+            "properties": {
+                "display_name": {
+                    "type": "string",
+                    "description": "A user-readable string which represents the user who has been invited. This should not contain the user's third party ID, as otherwise when the invite is accepted it would leak the association between the matrix ID and the third party ID."
+                },
+        "key_validity_url": {
+            "type": "string",
+            "description": "A URL which can be fetched, with querystring public_key=public_key, to validate whether the key has been revoked. The URL must return a JSON object containing a boolean property named 'valid'."
+        },
+        "public_key": {
+            "type": "string",
+            "description": "A base64-encoded ed25519 key with which token must be signed."
+        }
+            },
+            "required": ["display_name", "key_validity_url", "public_key"]
+        },
+        "state_key": {
+            "type": "string",
+            "description": "The token, of which a signature must be produced in order to join the room."
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.room.third_party_invite"]
+        }
+    }
+}

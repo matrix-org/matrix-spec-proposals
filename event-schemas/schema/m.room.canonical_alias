@@ -1,0 +1,28 @@
+{
+    "type": "object",
+    "title": "Informs the room as to which alias is the canonical one.",
+    "description": "This event is used to inform the room about which alias should be considered the canonical one. This could be for display purposes or as suggestion to users which alias to use to advertise the room.",
+    "allOf": [{
+        "$ref": "core-event-schema/state_event.yaml"
+    }],
+    "properties": {
+        "content": {
+            "type": "object",
+            "properties": {
+                "alias": {
+                    "type": "string",
+                    "description": "The canonical alias."
+                }
+            }
+        },
+        "state_key": {
+            "type": "string",
+            "description": "A zero-length string.",
+            "pattern": "^$"
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.room.canonical_alias"]
+        }
+    }
+}

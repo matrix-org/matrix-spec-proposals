@@ -1,0 +1,18 @@
+{
+  "age": 146,
+  "content": {
+    "body": "Bee Gees - Stayin' Alive",
+    "url": "mxc://localhost/ffed755USFFxlgbQYZGtryd",
+    "info": {
+      "duration": 2140786,
+      "size": 1563685,
+      "mimetype": "audio/mpeg"
+    },
+    "msgtype": "m.audio"
+  },
+  "event_id": "$143273582443PhrSn:localhost",
+  "origin_server_ts": 1432735824653,
+  "room_id": "!jEsUZKDJdhlrceRyVU:localhost",
+  "type": "m.room.message",
+  "sender": "@example:localhost"
+} 

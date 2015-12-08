@@ -237,7 +237,7 @@ Domain specific string
 ``room_id``
     A domain specific string with prefix ``!`` that is static across all events
     in a graph and uniquely identifies it. The ``domain`` should be that of the
-    home server that created the room (i.e., the server that generated the
+    homeserver that created the room (i.e., the server that generated the
     first ``m.room.create`` event).
 
 ``sender``
@@ -246,7 +246,7 @@ Domain specific string
 
 User Id
     A domain specific string with prefix ``@`` representing a user account. The
-    ``domain`` is the home server of the user and is the server used to contact
+    ``domain`` is the homeserver of the user and is the server used to contact
     the user.
 
 Joining a room
@@ -280,7 +280,7 @@ can then process the join event itself.
 Inviting a user
 ---------------
 
-To invite a remote user to a room we need their home server to sign the invite
+To invite a remote user to a room we need their homeserver to sign the invite
 event. This is done by sending the event to the remote server, which then signs
 the event, before distributing the invite to other servers.
 

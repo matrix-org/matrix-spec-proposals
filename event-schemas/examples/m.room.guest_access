@@ -1,0 +1,12 @@
+{
+  "age": 242353,
+  "content": {
+    "guest_access": "can_join"
+  },
+  "state_key": "",
+  "origin_server_ts": 1431961217938,
+  "event_id": "$WLGTSEFSEG:localhost",
+  "type": "m.room.guest_access",
+  "room_id": "!Cuyf34gef24u:localhost",
+  "sender": "@example:localhost"
+}

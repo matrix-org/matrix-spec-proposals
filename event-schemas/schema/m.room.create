@@ -1,0 +1,33 @@
+{
+    "type": "object",
+    "title": "The first event in the room.",
+    "description": "This is the first event in a room and cannot be changed. It acts as the root of all other events.",
+    "allOf": [{
+        "$ref": "core-event-schema/state_event.yaml"
+    }],
+    "properties": {
+        "content": {
+            "type": "object",
+            "properties": {
+                "creator": {
+                    "type": "string",
+                    "description": "The ``user_id`` of the room creator. This is set by the homeserver."
+                },
+                "m.federate": {
+                    "type": "boolean",
+                    "description": "Whether users on other servers can join this room. Defaults to ``true`` if key does not exist."
+                }
+            },
+            "required": ["creator"]
+        },
+        "state_key": {
+            "type": "string",
+            "description": "A zero-length string.",
+            "pattern": "^$"
+        },
+        "type": {
+            "type": "string",
+            "enum": ["m.room.create"]
+        }
+    }
+}

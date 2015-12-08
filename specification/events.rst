@@ -5,6 +5,9 @@ All communication in Matrix is expressed in the form of data objects called
 Events. These are the fundamental building blocks common to the client-server,
 server-server and application-service APIs, and are described below.
 
+Note that the structure of these events may be different than those in the
+server-server API.
+
 {{common_event_fields}}
 
 {{common_room_event_fields}}
@@ -18,7 +21,7 @@ Size limits
 The total size of any event MUST NOT exceed 65 KB. There are additional
 restrictions on sizes per key:
 
-- ``user_id`` MUST NOT exceed 255 bytes (including domain).
+- ``sender`` MUST NOT exceed 255 bytes (including domain).
 - ``room_id`` MUST NOT exceed 255 bytes.
 - ``state_key`` MUST NOT exceed 255 bytes.
 - ``type`` MUST NOT exceed 255 bytes.

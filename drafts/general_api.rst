@@ -61,7 +61,7 @@ This version will change the path prefix for HTTP:
  - Version 2: ``/_matrix/client/v2``
  
 Note the lack of the ``api`` segment. This is for consistency between other 
-home server path prefixes.
+homeserver path prefixes.
 
 Terminology:
  - ``Chunk token`` : An opaque string which can be used to return another chunk
@@ -169,16 +169,16 @@ Outputs:
    ``content`` key. Deleted message events are ``m.room.redaction`` events.
  - New position in the stream. (chunk token)
 State Events Ordering Notes:
- - Home servers may receive state events over federation that are superceded by 
-   state events previously sent to the client. The home server *cannot* send 
+ - Homeservers may receive state events over federation that are superceded by 
+   state events previously sent to the client. The homeserver *cannot* send 
    these events to the client else they would end up erroneously clobbering the
    superceding state event. 
- - As a result, the home server reserves the right to omit sending state events 
+ - As a result, the homeserver reserves the right to omit sending state events 
    which are known to be superceded already.
  - This may result in missed *state* events. However, the state of the room will
    always be eventually consistent.
 Message Events Ordering Notes:
- - Home servers may receive message events over federation that happened a long 
+ - Homeservers may receive message events over federation that happened a long 
    time ago. The client may or may not be interested in these message events.
  - For clients which do not store scrollback for a room (they discard events 
    after processing them), this is not a problem as they only care about the 
@@ -191,11 +191,11 @@ Message Events Ordering Notes:
  - The event, when it comes down the stream, will indicate which event it comes 
    after.
 Rejected events:
- - A home server may find out via federation that it should not have accepted 
+ - A homeserver may find out via federation that it should not have accepted 
    an event (e.g. to send a message/state event in a room). For example, it may
-   send an event to another home server and receive an auth event stating 
+   send an event to another homeserver and receive an auth event stating 
    that the event should not have been sent. 
- - If this happens, the home server will send a ``m.room.redaction`` for the 
+ - If this happens, the homeserver will send a ``m.room.redaction`` for the 
    event in question. This will be a local server event (not shared with other 
    servers).
  - If the event was a state event, it will synthesise a new state event to 
@@ -206,7 +206,7 @@ Unknown rooms:
  - You could receive events for rooms you are unaware of (e.g. you didn't do an
    initial sync, or your HS lost its database and is told from another HS that 
    they are in this room). How do you handle this?
- - The simplest option would be to redo the initial sync with a filter on the
+   - The simplest option would be to redo the initial sync with a filter on the
    room ID you're unaware of. This would retrieve the room state so you can 
    display the room.
 What data flows does it address:
@@ -291,7 +291,7 @@ Scrollback API ``[Draft]``
    but as a purely informational display thing it would be nice.
 
 Additional Inputs:
- - flag to say if the home server should do a backfill over federation
+ - flag to say if the homeserver should do a backfill over federation
 Additional Outputs:
  - whether there are more events on the local HS / over federation.
 What data flows does it address:
@@ -313,7 +313,7 @@ Additional Outputs:
 Room Alias API ``[Draft]``
 --------------------------
 This provides mechanisms for creating and removing room aliases for a room on a
-home server. Typically, any user in a room can make an alias for that room. The
+homeserver. Typically, any user in a room can make an alias for that room. The
 alias creator (or anyone in the room?) can delete that alias. Server admins can
 also delete any alias on their server.
 
@@ -323,7 +323,7 @@ Inputs:
  - Room Alias
 Output:
  - Room ID
- - List of home servers to join via.
+ - List of homeservers to join via.
 
 Mapping a room to an alias:
  
@@ -334,7 +334,7 @@ Inputs:
 Output:
  - Room alias
 Notes:
- - The home server may add restrictions e.g. the user must be in the room.
+ - The homeserver may add restrictions e.g. the user must be in the room.
  
 Deleting a mapping:
 
@@ -347,11 +347,11 @@ Output:
 
 Published room list API ``[Draft]``
 -----------------------------------
-This provides mechanisms for searching for published rooms on a home server.
+This provides mechanisms for searching for published rooms on a homeserver.
 
 Inputs:
  - Search text (e.g. room alias/name/topic to search on)
- - Home server to search on (this may just be the URL hit for HTTP)
+ - Homeserver to search on (this may just be the URL hit for HTTP)
  - Any existing pagination token, can be missing if this is the first hit.
  - Limit for pagination
 Output:
@@ -378,7 +378,7 @@ Notes:
 
 User Profile API ``[Draft]``
 ----------------------------
-Every user on a home server has a profile. This profile is effectively a
+Every user on a homeserver has a profile. This profile is effectively a
 key-value store scoped to a user ID. It can include an ``avatar_url``, 
 ``displayname`` and other metadata. Updates to a profile should propagate to
 other interested users.
@@ -435,7 +435,7 @@ This had a number of problems associated with it:
   flicker.
 - Name/avatar changes created more ``m.room.member`` events which meant
   they needed to be included in the auth chains for federation. This
-  created long auth chains which is suboptimal since home servers need
+  created long auth chains which is suboptimal since homeservers need
   to store the auth chains forever.
 
 These problems can be resolved by creating an ``m.room.member.profile``
@@ -448,7 +448,7 @@ However, this introduces its own set of problems, namely flicker. The
 client would receive the ``m.room.member`` event first, followed by
 the ``m.room.member.profile`` event, which could cause a flicker. In
 addition, federation may not send both events in a single transaction,
-resulting in missing information on the receiving home server.
+resulting in missing information on the receiving homeserver.
 
 For federation, these problems can be resolved by sending the 
 ``m.room.member`` event as they are in v1 (with ``displayname`` and 
@@ -457,7 +457,7 @@ they cannot be in the ``unsigned`` part of the event. The receiving home
 server will then extract these keys and create a server-generated 
 ``m.room.member.profile`` event. To avoid confusion with duplicate 
 information, the ``avatar_url`` and ``displayname`` keys should be 
-removed from the ``m.room.member`` event by the receiving home server.
+removed from the ``m.room.member`` event by the receiving homeserver.
 When a client requests these events (either from the event stream
 or from an initial sync), the server will send the generated
 ``m.room.member.profile`` event under the ``unsigned.profile`` key of the
@@ -840,17 +840,17 @@ information per device to all other users just redirects the union problem to
 the client, which will commonly be presenting this information as an icon 
 alongside the user.
 
-When a client hits the event stream, the home server can treat the user as 
+When a client hits the event stream, the homeserver can treat the user as 
 "online". This behaviour should be able to be overridden to avoid flicker 
 during connection losses when the client is appear offline (e.g. device is
 appear offline > goes into a tunnel > server times out > device regains 
 connection and hits the event stream forcing the device online before the
 "appear offline" state can be set). When the client has not hit the event 
-stream for a certain period of time, the home server can treat the user as 
+stream for a certain period of time, the homeserver can treat the user as 
 "offline". The user can also set a global *per-user* appear offline flag.
 
 The user should also be able to set their presence state via a direct API, 
-without having to hit the event stream. The home server will set a timer when 
+without having to hit the event stream. The homeserver will set a timer when 
 the connection ends, after which it will set that device to offline.
 
 As the idle flag and online state is determined per device, there needs to be a
@@ -970,12 +970,12 @@ the hashes the same is the best as that means clients do not need to request
 the capabilities for the given hash.
 
 On first signup, the client will attempt to send the hash and be most likely 
-refused by the home server as it does not know the full capability set for that 
+refused by the homeserver as it does not know the full capability set for that 
 hash. The client will then have to upload the full capability set to the home 
 server. The client will then be able to send the hash as normal.
 
 When a client receives a hash, the client will either recognise the hash or 
-will have to request the capability set from their home server:
+will have to request the capability set from their homeserver:
 
 Inputs:
  - Hash
@@ -1070,7 +1070,7 @@ Main use cases for ``updates``:
  - Call signalling (child events are ICE candidates, answer to the offer, and 
    termination)
  - *Local* Delivery/Read receipts : "Local" means they are not shared with other
-   users on the same home server or via federation but *are* shared between 
+   users on the same homeserver or via federation but *are* shared between 
    clients for the same user; useful for push notifications, read count markers,
    etc. This is done to avoid the ``n^2`` problem for sending receipts, where 
    the vast majority of traffic tends towards sending more receipts.
@@ -1168,11 +1168,11 @@ Events (breaking changes; event version 2) ``[Draft]``
   when dealing with custom event types. E.g. ``_custom.event`` would allow 
   anything in the state key, ``_@custom.event`` would only allow user IDs in 
   the state key, etc.
-- s/user_id/sender/g given that home servers can send events, not just users.
+- s/user_id/sender/g given that homeservers can send events, not just users.
 
 Server-generated events ``[Draft]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Home servers may want to send events to their local clients or to other home
+Homeservers may want to send events to their local clients or to other home
 servers e.g. for server status notifications.
 
 These events look like regular events but have a server domain name as the

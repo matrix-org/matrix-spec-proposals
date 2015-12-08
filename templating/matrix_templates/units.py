@@ -8,6 +8,7 @@ For the actual conversion of data -> RST (including templates), see the sections
 file instead.
 """
 from batesian.units import Units
+import logging
 import inspect
 import json
 import os
@@ -16,41 +17,107 @@ import subprocess
 import urllib
 import yaml
 
-V1_CLIENT_API = "../api/client-server/v1"
-V1_EVENT_EXAMPLES = "../event-schemas/examples/v1"
-V1_EVENT_SCHEMA = "../event-schemas/schema/v1"
-V2_CLIENT_API = "../api/client-server/v2_alpha"
-CORE_EVENT_SCHEMA = "../event-schemas/schema/v1/core-event-schema"
-CHANGELOG = "../CHANGELOG.rst"
+HTTP_APIS = ("../api/application-service", "../api/client-server",)
+EVENT_EXAMPLES = "../event-schemas/examples"
+EVENT_SCHEMA = "../event-schemas/schema"
+CORE_EVENT_SCHEMA = "../event-schemas/schema/core-event-schema"
+CHANGELOG_DIR = "../changelogs"
 TARGETS = "../specification/targets.yaml"
 
-ROOM_EVENT = "core-event-schema/room_event.json"
-STATE_EVENT = "core-event-schema/state_event.json"
+ROOM_EVENT = "core-event-schema/room_event.yaml"
+STATE_EVENT = "core-event-schema/state_event.yaml"
+
+logger = logging.getLogger(__name__)
+
+def resolve_references(path, schema):
+    if isinstance(schema, dict):
+        result = {}
+        for key, value in schema.items():
+            if key == "$ref":
+                path = os.path.join(os.path.dirname(path), value)
+                with open(path) as f:
+                    schema = yaml.load(f)
+                return resolve_references(path, schema)
+            else:
+                result[key] = resolve_references(path, value)
+        return result
+    elif isinstance(schema, list):
+        return [resolve_references(path, value) for value in schema]
+    else:
+        return schema
 
 
-def get_json_schema_object_fields(obj, enforce_title=False):
+def inherit_parents(obj):
+    """
+    Recurse through the 'allOf' declarations in the object
+    """
+    logger.debug("inherit_parents %r" % obj)
+    parents = obj.get("allOf", [])
+    if not parents:
+        return obj
+
+    result = {}
+
+    # settings defined in the child take priority over the parents, so we
+    # iterate through the parents first, and then overwrite with the settings
+    # from the child.
+    for p in map(inherit_parents, parents) + [obj]:
+        for key in ('title', 'type', 'required'):
+            if p.get(key):
+                result[key] = p[key]
+
+        for key in ('properties', 'additionalProperties', 'patternProperties'):
+            if p.get(key):
+                result.setdefault(key, {}).update(p[key])
+
+    return result
+
+
+def get_json_schema_object_fields(obj, enforce_title=False, include_parents=False):
     # Algorithm:
     # f.e. property => add field info (if field is object then recurse)
     if obj.get("type") != "object":
         raise Exception(
             "get_json_schema_object_fields: Object %s isn't an object." % obj
         )
+
+    obj = inherit_parents(obj)
+
+    logger.debug("Processing object with title '%s'", obj.get("title"))
+
     if enforce_title and not obj.get("title"):
-        raise Exception(
-            "get_json_schema_object_fields: Nested object %s doesn't have a title." % obj
-        )
+        # Force a default titile of "NO_TITLE" to make it obvious in the
+        # specification output which parts of the schema are missing a title
+        obj["title"] = 'NO_TITLE'
 
-    required_keys = obj.get("required")
-    if not required_keys:
-        required_keys = []
+    additionalProps = obj.get("additionalProperties")
+    if additionalProps:
+        # not "really" an object, just a KV store
+        logger.debug("%s is a pseudo-object", obj.get("title"))
 
-    fields = {
-        "title": obj.get("title"),
-        "rows": []
-    }
-    tables = [fields]
+        key_type = additionalProps.get("x-pattern", "string")
 
-    parents = obj.get("allOf")
+        value_type = additionalProps["type"]
+        if value_type == "object":
+            nested_objects = get_json_schema_object_fields(
+                additionalProps,
+                enforce_title=True,
+                include_parents=include_parents,
+            )
+            value_type = nested_objects[0]["title"]
+            tables = [x for x in nested_objects if not x.get("no-table")]
+        else:
+            key_type = "string"
+            tables = []
+
+        tables = [{
+            "title": "{%s: %s}" % (key_type, value_type),
+            "no-table": True
+        }]+tables
+
+        logger.debug("%s done: returning %s", obj.get("title"), tables)
+        return tables
+
     props = obj.get("properties")
     if not props:
         props = obj.get("patternProperties")
@@ -61,66 +128,68 @@ def get_json_schema_object_fields(obj, enforce_title=False):
                 if pretty_key:
                     props[pretty_key] = props[key_name]
                     del props[key_name]
-    if not props and not parents:
-        # Sometimes you just want to specify that a thing is an object without
-        # doing all the keys. Allow people to do that if they set a 'title'.
-        if obj.get("title"):
-            parents = [{
-                "$ref": obj.get("title")
-            }]
-    if not props and not parents:
-        raise Exception(
-            "Object %s has no properties or parents." % obj
-        )
-    if not props:  # parents only
+
+    # Sometimes you just want to specify that a thing is an object without
+    # doing all the keys. Allow people to do that if they set a 'title'.
+    if not props and obj.get("title"):
         return [{
             "title": obj["title"],
-            "parent": parents[0]["$ref"],
             "no-table": True
         }]
 
+    if not props:
+        raise Exception(
+            "Object %s has no properties and no title" % obj
+        )
+
+    required_keys = set(obj.get("required", []))
+
+    fields = {
+        "title": obj.get("title"),
+        "rows": []
+    }
+
+    tables = [fields]
+
     for key_name in sorted(props):
+        logger.debug("Processing property %s.%s", obj.get('title'), key_name)
         value_type = None
         required = key_name in required_keys
         desc = props[key_name].get("description", "")
+        prop_type = props[key_name].get('type')
 
-        if props[key_name]["type"] == "object":
-            if props[key_name].get("additionalProperties"):
-                # not "really" an object, just a KV store
-                prop_val = props[key_name]["additionalProperties"]["type"]
-                if prop_val == "object":
-                    nested_object = get_json_schema_object_fields(
-                        props[key_name]["additionalProperties"],
-                        enforce_title=True
-                    )
-                    key = props[key_name]["additionalProperties"].get(
-                        "x-pattern", "string"
-                    )
-                    value_type = "{%s: %s}" % (key, nested_object[0]["title"])
-                    if not nested_object[0].get("no-table"):
-                        tables += nested_object
-                else:
-                    value_type = "{string: %s}" % prop_val
-            else:
-                nested_object = get_json_schema_object_fields(
-                    props[key_name], 
-                    enforce_title=True
-                )
-                value_type = "{%s}" % nested_object[0]["title"]
+        if prop_type is None:
+            raise KeyError("Property '%s' of object '%s' missing 'type' field"
+                           % (key_name, obj))
+        logger.debug("%s is a %s", key_name, prop_type)
 
-                if not nested_object[0].get("no-table"):
-                    tables += nested_object
-        elif props[key_name]["type"] == "array":
+        if prop_type == "object":
+            nested_objects = get_json_schema_object_fields(
+                props[key_name],
+                enforce_title=True,
+                include_parents=include_parents,
+            )
+            value_type = nested_objects[0]["title"]
+            value_id = value_type
+
+            tables += [x for x in nested_objects if not x.get("no-table")]
+        elif prop_type == "array":
             # if the items of the array are objects then recurse
             if props[key_name]["items"]["type"] == "object":
-                nested_object = get_json_schema_object_fields(
-                    props[key_name]["items"], 
-                    enforce_title=True
+                nested_objects = get_json_schema_object_fields(
+                    props[key_name]["items"],
+                    enforce_title=True,
+                    include_parents=include_parents,
                 )
-                value_type = "[%s]" % nested_object[0]["title"]
-                tables += nested_object
+                value_id = nested_objects[0]["title"]
+                value_type = "[%s]" % value_id
+                tables += nested_objects
             else:
-                value_type = "[%s]" % props[key_name]["items"]["type"]
+                value_type = props[key_name]["items"]["type"]
+                if isinstance(value_type, list):
+                    value_type = " or ".join(value_type)
+                value_id = value_type
+                value_type = "[%s]" % value_type
                 array_enums = props[key_name]["items"].get("enum")
                 if array_enums:
                     if len(array_enums) > 1:
@@ -133,16 +202,21 @@ def get_json_schema_object_fields(obj, enforce_title=False):
                             " Must be '%s'." % array_enums[0]
                         )
         else:
-            value_type = props[key_name]["type"]
+            value_type = prop_type
+            value_id = prop_type
             if props[key_name].get("enum"):
                 if len(props[key_name].get("enum")) > 1:
                     value_type = "enum"
+                    if desc:
+                        desc += " "
                     desc += (
-                        " One of: %s" % json.dumps(props[key_name]["enum"])
+                        "One of: %s" % json.dumps(props[key_name]["enum"])
                     )
                 else:
+                    if desc:
+                        desc += " "
                     desc += (
-                        " Must be '%s'." % props[key_name]["enum"][0]
+                        "Must be '%s'." % props[key_name]["enum"][0]
                     )
             if isinstance(value_type, list):
                 value_type = " or ".join(value_type)
@@ -150,16 +224,44 @@ def get_json_schema_object_fields(obj, enforce_title=False):
         fields["rows"].append({
             "key": key_name,
             "type": value_type,
+            "id": value_id,
             "required": required,
             "desc": desc,
             "req_str": "**Required.** " if required else ""
         })
+        logger.debug("Done property %s" % key_name)
+
     return tables
+
+
+def get_tables_for_schema(path, schema, include_parents=False):
+    resolved_schema = resolve_references(path, schema)
+    tables = get_json_schema_object_fields(resolved_schema,
+        include_parents=include_parents,
+    )
+
+    # the result may contain duplicates, if objects are referred to more than
+    # once. Filter them out.
+    #
+    # Go through the tables backwards so that we end up with a breadth-first
+    # rather than depth-first ordering.
+
+    titles = set()
+    filtered = []
+    for table in reversed(tables):
+        if table.get("title") in titles:
+            continue
+
+        titles.add(table.get("title"))
+        filtered.append(table)
+    filtered.reverse()
+
+    return filtered
 
 
 class MatrixUnits(Units):
 
-    def _load_swagger_meta(self, api, group_name):
+    def _load_swagger_meta(self, filepath, api, group_name):
         endpoints = []
         for path in api["paths"]:
             for method in api["paths"][path]:
@@ -262,14 +364,21 @@ class MatrixUnits(Units):
                             if is_array_of_objects:
                                 req_obj = req_obj["items"]
 
-                            req_tables = get_json_schema_object_fields(req_obj)
+                            req_tables = get_tables_for_schema(
+                                filepath, req_obj, include_parents=True)
 
                             if req_tables > 1:
                                 for table in req_tables[1:]:
-                                    nested_key_name = [
-                                        s["key"] for s in req_tables[0]["rows"] if
-                                        s["type"] == ("{%s}" % (table["title"],))
-                                    ][0]
+                                    nested_key_name = {
+                                        "key": s["key"]
+                                        for rtable in req_tables
+                                        for s in rtable["rows"]
+                                        if s["id"] == table["title"]
+                                    }.get("key", None)
+
+                                    if nested_key_name is None:
+                                        raise Exception("Failed to find table for %r" % (table["title"],))
+
                                     for row in table["rows"]:
                                         row["key"] = "%s.%s" % (nested_key_name, row["key"])
 
@@ -322,7 +431,7 @@ class MatrixUnits(Units):
                 ]
                 if len(params_missing_examples) == 0:
                     path_template = api.get("basePath", "").rstrip("/") + path
-                    qps = {}
+                    qps = []
                     body = ""
                     for param in single_api.get("parameters", []):
                         if param["in"] == "path":
@@ -334,7 +443,12 @@ class MatrixUnits(Units):
                         elif param["in"] == "body":
                             body = param["schema"]["example"]
                         elif param["in"] == "query":
-                            qps[param["name"]] = param["x-example"]
+                            example = param["x-example"]
+                            if type(example) == list:
+                                for value in example:
+                                    qps.append((param["name"], value))
+                            else:
+                                qps.append((param["name"], example))
                     query_string = "" if len(qps) == 0 else "?"+urllib.urlencode(qps)
                     if body:
                         endpoint["example"]["req"] = "%s %s%s HTTP/1.1\nContent-Type: application/json\n\n%s" % (
@@ -379,7 +493,9 @@ class MatrixUnits(Units):
                     elif res_type and Units.prop(good_response, "schema/properties"):
                         # response is an object:
                         schema = good_response["schema"]
-                        res_tables = get_json_schema_object_fields(schema)
+                        res_tables = get_tables_for_schema(filepath, schema,
+                            include_parents=True,
+                        )
                         for table in res_tables:
                             if "no-table" not in table:
                                 endpoint["res_tables"].append(table)
@@ -432,26 +548,21 @@ class MatrixUnits(Units):
         }
 
     def load_swagger_apis(self):
-        paths = [
-            V1_CLIENT_API, V2_CLIENT_API
-        ]
         apis = {}
-        for path in paths:
-            is_v2 = (path == V2_CLIENT_API)
-            if not os.path.exists(V2_CLIENT_API):
-                self.log("Skipping v2 apis: %s does not exist." % V2_CLIENT_API)
-                continue
+        for path in HTTP_APIS:
             for filename in os.listdir(path):
                 if not filename.endswith(".yaml"):
                     continue
                 self.log("Reading swagger API: %s" % filename)
-                with open(os.path.join(path, filename), "r") as f:
+                filepath = os.path.join(path, filename)
+                with open(filepath, "r") as f:
                     # strip .yaml
                     group_name = filename[:-5].replace("-", "_")
-                    if is_v2:
-                        group_name = "v2_" + group_name
                     api = yaml.load(f.read())
-                    api["__meta"] = self._load_swagger_meta(api, group_name)
+                    api = resolve_references(filepath, api)
+                    api["__meta"] = self._load_swagger_meta(
+                        filepath, api, group_name
+                    )
                     apis[group_name] = api
         return apis
 
@@ -461,14 +572,14 @@ class MatrixUnits(Units):
 
         for (root, dirs, files) in os.walk(path):
             for filename in files:
-                if not filename.endswith(".json"):
+                if not filename.endswith(".yaml"):
                     continue
 
-                event_type = filename[:-5]  # strip the ".json"
+                event_type = filename[:-5]  # strip the ".yaml"
                 filepath = os.path.join(root, filename)
                 with open(filepath) as f:
                     try:
-                        event_info = json.load(f)
+                        event_info = yaml.load(f)
                     except Exception as e:
                         raise ValueError(
                             "Error reading file %r" % (filepath,), e
@@ -495,27 +606,33 @@ class MatrixUnits(Units):
         return event_types
 
     def load_event_examples(self):
-        path = V1_EVENT_EXAMPLES
+        path = EVENT_EXAMPLES
         examples = {}
         for filename in os.listdir(path):
             if not filename.startswith("m."):
                 continue
             with open(os.path.join(path, filename), "r") as f:
-                examples[filename] = json.loads(f.read())
-                if filename == "m.room.message#m.text":
-                    examples["m.room.message"] = examples[filename]
+                event_name = filename.split("#")[0]
+                example = json.loads(f.read())
+
+                examples[filename] = examples.get(filename, [])
+                examples[filename].append(example)
+                if filename != event_name:
+                    examples[event_name] = examples.get(event_name, [])
+                    examples[event_name].append(example)
         return examples
 
     def load_event_schemas(self):
-        path = V1_EVENT_SCHEMA
+        path = EVENT_SCHEMA
         schemata = {}
 
         for filename in os.listdir(path):
             if not filename.startswith("m."):
                 continue
-            self.log("Reading %s" % os.path.join(path, filename))
-            with open(os.path.join(path, filename), "r") as f:
-                json_schema = json.loads(f.read())
+            filepath = os.path.join(path, filename)
+            self.log("Reading %s" % filepath)
+            with open(filepath, "r") as f:
+                json_schema = yaml.load(f)
                 schema = {
                     "typeof": None,
                     "typeof_info": "",
@@ -556,15 +673,15 @@ class MatrixUnits(Units):
                 schema["desc"] = json_schema.get("description", "")
 
                 # walk the object for field info
-                schema["content_fields"] = get_json_schema_object_fields(
+                schema["content_fields"] = get_tables_for_schema(filepath,
                     Units.prop(json_schema, "properties/content")
                 )
 
                 # This is horrible because we're special casing a key on m.room.member.
                 # We need to do this because we want to document a non-content object.
                 if schema["type"] == "m.room.member":
-                    invite_room_state = get_json_schema_object_fields(
-                        json_schema["properties"]["invite_room_state"]["items"]
+                    invite_room_state = get_tables_for_schema(filepath,
+                        json_schema["properties"]["invite_room_state"]["items"],
                     )
                     schema["content_fields"].extend(invite_room_state)
 
@@ -595,14 +712,21 @@ class MatrixUnits(Units):
                 schemata[filename] = schema
         return schemata
 
-    def load_spec_meta(self):
-        path = CHANGELOG
-        title_part = None
-        version = None
-        changelog_lines = []
-        with open(path, "r") as f:
+    def load_changelogs(self):
+        changelogs = {}
+
+        for f in os.listdir(CHANGELOG_DIR):
+            if not f.endswith(".rst"):
+                continue
+            path = os.path.join(CHANGELOG_DIR, f)
+            name = f[:-4]
+
+            title_part = None
+            changelog_lines = []
+            with open(path, "r") as f:
+                lines = f.readlines()
             prev_line = None
-            for line in f.readlines():
+            for line in lines:
                 if line.strip().startswith(".. "):
                     continue  # comment
                 if prev_line is None:
@@ -620,23 +744,10 @@ class MatrixUnits(Units):
                         # then bail out.
                         changelog_lines.pop()
                         break
-                    changelog_lines.append(line)
+                    changelog_lines.append("    " + line)
+            changelogs[name] = "\n".join(changelog_lines)
 
-        # parse out version from title
-        for word in title_part.split():
-            if re.match("^v[0-9\.]+$", word):
-                version = word[1:]  # strip the 'v'
-
-        self.log("Version: %s Title part: %s Changelog line count: %s" % (
-            version, title_part, len(changelog_lines)
-        ))
-        if not version or len(changelog_lines) == 0:
-            raise Exception("Failed to parse CHANGELOG.rst")
-
-        return {
-            "version": version,
-            "changelog": "".join(changelog_lines)
-        }
+        return changelogs
 
 
     def load_spec_targets(self):
