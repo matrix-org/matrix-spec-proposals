@@ -67,6 +67,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - Presence
     get:
       summary: Get this user's presence state.
       description: |-
@@ -106,6 +108,8 @@ paths:
           description: |-
             There is no presence state for this user. This user may not exist or
             isn't exposing presence information to you.
+      tags:
+        - Presence
   "/presence/list/{userId}":
     post:
       summary: Add or remove users from this presence list.
@@ -160,6 +164,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - Presence
     get:
       summary: Get presence events for this presence list.
       description: |-
@@ -204,4 +210,6 @@ paths:
               type: object
               title: PresenceEvent
               allOf:
-                - "$ref": "../../event-schemas/schema/core-event-schema/event.json"
+                - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
+      tags:
+        - Presence

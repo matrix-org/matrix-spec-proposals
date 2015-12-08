@@ -10,6 +10,18 @@ local persistent copy of server state.
 .. contents:: Table of Contents
 .. sectnum::
 
+Changelog
+---------
+
+.. topic:: Version: %CLIENT_RELEASE_LABEL%
+{{client_server_changelog}}
+
+For the full historical changelog, see
+https://github.com/matrix-org/matrix-doc/blob/master/changelogs/client-server.rst
+
+If this is an unstable snapshot, any changes since the last release may be
+viewed using ``git log``.
+
 API Standards
 -------------
 
@@ -569,6 +581,15 @@ Where $streamtoken is an opaque token which can be used in another query to
 get the next set of results. The "start" and "end" keys can only be omitted if
 the complete dataset is provided in "chunk".
 
+Filtering
+---------
+
+Filters can be created on the server and can be passed as as a parameter to APIs
+which return events. These filters alter the data returned from those APIs.
+Not all APIs accept filters.
+
+{{filter_http_api}}
+
 Events
 ------
 
@@ -779,7 +800,7 @@ one of the following event types:
 - ``m.room.create`` allows key ``creator``
 - ``m.room.join_rules`` allows key ``join_rule``
 - ``m.room.power_levels`` allows keys ``ban``, ``events``, ``events_default``,
-   ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
+  ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
 - ``m.room.aliases`` allows key ``aliases``
 
 The redaction event should be added under the key ``redacted_because``. When a

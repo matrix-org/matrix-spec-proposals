@@ -65,4 +65,5 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
-
+      tags:
+        - VOIP

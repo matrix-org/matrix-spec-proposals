@@ -111,7 +111,7 @@ paths:
                                 title: Event
                                 description: The event that matched.
                                 allOf:
-                                  - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
+                                  - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
           examples:
             application/json: |-
                {
@@ -144,3 +144,5 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - Search

@@ -84,9 +84,11 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
         400:
           description: "Bad pagination ``from`` parameter."
+      tags:
+        - Room participation
   "/initialSync":
     get:
       summary: Get the user's current state.
@@ -284,7 +286,7 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/event.json"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
               rooms:
                 type: array
                 items:
@@ -331,7 +333,7 @@ paths:
                             type: object
                             title: RoomEvent
                             allOf:
-                              - "$ref": "../../event-schemas/schema/core-event-schema/room_event.json"
+                              - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
                       required: ["start", "end", "chunk"]
                     state:
                       type: array
@@ -344,7 +346,7 @@ paths:
                         title: StateEvent
                         type: object
                         allOf:
-                          - "$ref": "../../event-schemas/schema/core-event-schema/state_event.json"
+                          - "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
                     visibility:
                       type: string
                       enum: ["private", "public"]
@@ -360,11 +362,13 @@ paths:
                         title: Event
                         type: object
                         allOf:
-                          - "$ref": "../../event-schemas/schema/core-event-schema/event.json"
+                          - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
                   required: ["room_id", "membership"]
             required: ["end", "rooms", "presence"]
         404:
           description: There is no avatar URL for this user or this user does not exist.
+      tags:
+        - Room participation
   "/events/{eventId}":
     get:
       summary: Get a single event by event ID.
@@ -397,6 +401,8 @@ paths:
               }
           schema:
             allOf:
-              - "$ref": "../../event-schemas/schema/core-event-schema/event.json"
+              - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
         404:
           description: The event was not found or you do not have permission to read this event.
+      tags:
+        - Room participation

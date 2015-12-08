@@ -43,6 +43,8 @@ paths:
               {
                 "content_uri": "mxc://example.com/AQwafuaFswefuhsfAFAgsw"
               }
+      tags:
+        - Media
   "/download/{serverName}/{mediaId}":
     get:
       summary: "Download content from the content repository."
@@ -74,6 +76,8 @@ paths:
               type: "string"
           schema:
             type: file
+      tags:
+        - Media
   "/thumbnail/{serverName}/{mediaId}":
     get:
       summary: "Download a thumbnail of the content from the content repository."
@@ -123,5 +127,5 @@ paths:
               enum: ["image/jpeg", "image/png"]
           schema:
             type: file
-            
-
+      tags:
+        - Media

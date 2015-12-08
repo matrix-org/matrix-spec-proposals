@@ -45,14 +45,14 @@ paths:
                     description: The ruleset for this profile tag.
                     title: Ruleset
                     allOf: [
-                      "$ref": "definitions/push_ruleset.json"
+                      "$ref": "definitions/push_ruleset.yaml"
                     ]
               global:
                 type: object
                 description: The global ruleset.
                 title: Ruleset
                 allOf: [
-                  "$ref": "definitions/push_ruleset.json"
+                  "$ref": "definitions/push_ruleset.yaml"
                 ]
           examples:
             application/json: |-
@@ -245,6 +245,8 @@ paths:
                     ]
                 }
               }
+      tags:
+        - Push notifications
   "/pushrules/{scope}/{kind}/{ruleId}":
     get:
       summary: Retrieve a push rule.
@@ -295,8 +297,10 @@ paths:
             description: The push rule.
             title: PushRule
             allOf: [
-              "$ref": "definitions/push_rule.json"
+              "$ref": "definitions/push_rule.yaml"
             ]
+      tags:
+        - Push notifications
     delete:
       summary: Delete a push rule.
       description: |-
@@ -335,6 +339,8 @@ paths:
               {}
           schema:
             type: object  # empty json object
+      tags:
+        - Push notifications
     put:
       summary: Add or change a push rule.
       description: |-
@@ -414,7 +420,7 @@ paths:
                 items:
                   type: object
                   title: conditions
-                  allOf: [ "$ref": "definitions/push_condition.json" ]
+                  allOf: [ "$ref": "definitions/push_condition.yaml" ]
             required: ["actions"]
       responses:
         200:
@@ -438,6 +444,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - Push notifications
   "/pushrules/{scope}/{kind}/{ruleId}/enabled":
     put:
       summary: "Enable or disable a push rule."
@@ -470,14 +478,21 @@ paths:
           description: |
             The identifier for the rule.
         - in: body
-          name: <body>
+          name: body
           description: |
             Whether the push rule is enabled or not.
           required: true
           schema:
-            type: boolean
+            type: object
+            properties:
+              enabled:
+                type: boolean
+                description: Whether the push rule is enabled or not.
+            required: ["enabled"]
             example: |-
-              true
+              {
+                "enabled": true
+              }
       responses:
         200:
           description: The push rule was enabled or disabled.
@@ -485,4 +500,6 @@ paths:
             application/json: |-
               {}
           schema:
-            type: object  # empty json object
+            type: object
+      tags:
+        - Push notifications

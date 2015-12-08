@@ -95,3 +95,5 @@ paths:
         400:
           description: >
             The request body is malformed or the room alias specified is already taken.
+      tags:
+        - Room discovery

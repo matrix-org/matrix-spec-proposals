@@ -54,6 +54,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/error.yaml"
+      tags:
+        - User data
   "/account/3pid":
     get:
       summary: Gets a list of a user's third party identifiers.
@@ -97,6 +99,8 @@ paths:
                     address:
                       type: string
                       description: The third party identifier address.
+      tags:
+        - User data
     post:
       summary: Adds contact information to the user's account.
       description: Adds contact information to the user's account.
@@ -155,3 +159,5 @@ paths:
                 "errcode": "M_THREEPID_AUTH_FAILED",
                 "error": "The third party credentials could not be verified by the identity server."
               }
+      tags:
+        - User data

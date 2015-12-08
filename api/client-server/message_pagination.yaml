@@ -129,3 +129,5 @@ paths:
         403:
           description: >
             You aren't a member of the room.
+      tags:
+        - Room participation
