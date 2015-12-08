@@ -74,7 +74,7 @@ paths:
                         type: object
                         title: Filter
                         description: |-
-                          This takes a <a href="https://matrix.org/docs/spec/%CLIENT_RELEASE_LABEL%/client_server.html#filtering">filter</a>
+                          This takes a `filter <https://matrix.org/docs/spec/%CLIENT_RELEASE_LABEL%/client_server.html#filtering>`_.
                       order_by:
                         title: "Ordering"
                         type: string
