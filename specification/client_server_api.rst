@@ -29,12 +29,11 @@ API Standards
   Need to specify any HMAC or access_token lifetime/ratcheting tricks
   We need to specify capability negotiation for extensible transports
 
-The mandatory baseline for communication in Matrix is exchanging JSON objects
-over HTTP APIs. HTTPS is mandated as the baseline for server-server
-(federation) communication.  HTTPS is recommended for client-server
-communication, although HTTP may be supported as a fallback to support basic
-HTTP clients. More efficient optional transports for client-server
-communication will in future be supported as optional extensions - e.g. a
+The mandatory baseline for client-server communication in Matrix is exchanging
+JSON objects over HTTP APIs. HTTPS is recommended for communication, although
+HTTP may be supported as a fallback to support basic
+HTTP clients. More efficient optional transports
+will in future be supported as optional extensions - e.g. a
 packed binary encoding over stream-cipher encrypted TCP socket for
 low-bandwidth/low-roundtrip mobile usage. For the default HTTP transport, all
 API calls use a Content-Type of ``application/json``.  In addition, all strings
@@ -95,7 +94,7 @@ Some requests have unique error codes:
 
 .. _sect:txn_ids:
 
-The Client-Server API typically uses ``HTTP PUT`` to submit requests with a
+The client-server API typically uses ``HTTP PUT`` to submit requests with a
 client-generated transaction identifier. This means that these requests are
 idempotent. The scope of a transaction identifier is a particular access token.
 It **only** serves to identify new
