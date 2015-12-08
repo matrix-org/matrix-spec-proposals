@@ -230,6 +230,10 @@ paths:
                       state:
                         type: object
                         title: Current state
+                        description: |-
+                          The current state for every room in the results.
+                          This is included if the request had the the
+                          ``include_state`` key set with a value of ``true``.
                         additionalProperties:
                           type: array
                           title: Room State
