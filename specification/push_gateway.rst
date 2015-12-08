@@ -16,7 +16,7 @@ and the gateway submits a push notification to the push notification provider
                                    |                    |  |                   |
            +-------------------+   | +----------------+ |  | +---------------+ |
            |                   |   | |                | |  | |               | |
-           | Matrix homeserver+----->  Push Gateway  +------> Push Provider | |
+           | Matrix homeserver +----->  Push Gateway  +------> Push Provider | |
            |                   |   | |                | |  | |               | |
            +-^-----------------+   | +----------------+ |  | +----+----------+ |
              |                     |                    |  |      |            |
