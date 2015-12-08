@@ -74,7 +74,7 @@ paths:
                         type: object
                         title: Filter
                         description: |-
-                            This has the same format as v2 filter API.
+                          This takes a <a href="https://matrix.org/docs/spec/%CLIENT_RELEASE_LABEL%/client_server.html#filtering">filter</a>
                       order_by:
                         title: "Ordering"
                         type: string
