@@ -15,8 +15,13 @@ The following APIs are documented in this specification:
 
 There are also some `appendices <appendices.html>`_.
 
+Any developments since the latest release can be found `here`__.
+
 Before we formally started releasing the specification, the last working copy
-we had can be found `here <https://matrix.org/docs/spec/legacy/>`_.
+we had can be found `here`__.
+
+.. __: https://matrix.org/speculator/spec/head/
+.. __: https://matrix.org/docs/spec/legacy/
 
 .. contents:: Table of Contents
 .. sectnum::
