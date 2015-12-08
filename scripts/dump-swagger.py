@@ -33,7 +33,7 @@ if match:
 apis = MatrixUnits().load_swagger_apis()
 
 output = {
-    "basePath": "/matrix/client/" + major_version,
+    "basePath": "/_matrix/client/" + major_version,
     "consumes": ["application/json"],
     "produces": ["application/json"],
     "host": "localhost:8008",
