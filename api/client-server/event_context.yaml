@@ -45,7 +45,7 @@ paths:
           name: limit
           description: |-
             The maximum number of events to return. Default: 10.
-          x-example: "3"
+          x-example: 3
       responses:
         200:
           description: The events and state surrounding the requested event.
