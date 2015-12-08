@@ -630,8 +630,6 @@ the resident homeserver. The required fields are:
 ``content``          Object   The event content
 ``depth``            Integer  (this field must be present but is ignored; it
                               may be 0)
-``event_id``         String   A new event ID specified by the resident
-                              homeserver
 ``origin``           String   The name of the resident homeserver
 ``origin_server_ts`` Integer  A timestamp added by the resident homeserver
 ``prev_events``      List     An event-reference list containing the immediate
@@ -660,10 +658,6 @@ adding (or replacing) the following fields:
 ``origin``           String  The name of the joining homeserver
 ``origin_server_ts`` Integer A timestamp added by the joining homeserver
 ==================== ======= ============
-
-.. TODO-spec
-  - Why does the protoevent have an event_id, only for the real event to ignore
-    it and specify a different one? We should definitely pick one or the other.
 
 This will be a true event, so the joining server should apply the event-signing
 algorithm to it, resulting in the addition of the ``hashes`` and ``signatures``
