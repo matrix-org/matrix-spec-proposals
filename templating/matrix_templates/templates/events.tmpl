@@ -3,7 +3,7 @@
 ``{{event.type}}``
 {{(4 + event.type | length) * title_kind}}
 *{{event.typeof}}*
-  {{event.typeof_info}}
+    {{event.typeof_info}}
 
 {{event.desc | wrap(80)}}
 {% for table in event.content_fields -%}
