@@ -33,11 +33,12 @@ paths:
           type: string
           description: |-
             The ID of a filter created using the filter API or a filter JSON
-            object. The server will detect whether it is an ID or a JSON object
-            by whether the first character is a ``"{"`` open brace. Passing the
-            JSON inline is best suited to one off requests. Creating a filter
-            using the filter API is recommended for clients that reuse the same
-            filter multiple times, for example in long poll requests.
+            object enocoded as a string. The server will detect whether it is
+            an ID or a JSON object by whether the first character is a ``"{"``
+            open brace. Passing the JSON inline is best suited to one off
+            requests. Creating a filter using the filter API is recommended for
+            clients that reuse the same filter multiple times, for example in
+            long poll requests.
           x-example: "66696p746572"
         - in: query
           name: since
