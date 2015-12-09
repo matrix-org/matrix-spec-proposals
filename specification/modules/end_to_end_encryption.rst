@@ -7,7 +7,7 @@ Matrix optionally supports end-to-end encryption, allowing rooms to be created
 whose conversation contents is not decryptable or interceptable on any of the
 participating homeservers.
 
-.. WARNING:
+.. WARNING::
   End-to-end crypto is still being designed and prototyped. The following is
   subject to change as the design evolves. Parts of the specification are not
   yet implemented by the reference implementations. See
@@ -402,6 +402,12 @@ The following is an outline proposal for how this might work. There remain a
 number of unanswered questions. Work on this part of the specification is being
 tracked at https://matrix.org/jira/browse/SPEC-292.
 
+The algorithm that follows is based on that implemented by Moxie Marlinspike in
+TextSecure (see `GroupCipher.java
+<https://github.com/WhisperSystems/libaxolotl-java/blob/master/java/src/main/java/org/whispersystems/libaxolotl/groups/GroupCipher.java>`_
+and `SenderChainKey.java <https://github.com/WhisperSystems/libaxolotl-java/blob/master/java/src/main/java/org/whispersystems/libaxolotl/groups/ratchet/SenderChainKey.java>`_). The use of four separate ratchets
+:math:`R_{i,0...3}` to reduce the number of hash calculations which must be
+performed is an extension designed by the matrix.org team.
 
 Protecting the secrecy of history
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
