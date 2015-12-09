@@ -1,6 +1,9 @@
 targets:
   index:
-    files:  # the sort order of files to cat
+    files:
+      - index.rst
+  intro:
+    files:
       - intro.rst
   client_server:
     files:
