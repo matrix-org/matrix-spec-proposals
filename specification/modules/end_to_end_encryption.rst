@@ -21,7 +21,7 @@ Matrix optionally supports end-to-end encryption, allowing rooms to be created
 whose conversation contents is not decryptable or interceptable on any of the
 participating homeservers.
 
-.. WARNING:
+.. WARNING::
   End-to-end crypto is still being designed and prototyped. The following is
   subject to change as the design evolves. Parts of the specification are not
   yet implemented by the reference implementations. See
