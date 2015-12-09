@@ -20,7 +20,7 @@ for f in "${include_dir}"/{head,nav,footer}.html; do
 done
 
 perl -MFile::Slurp -pi -e 'BEGIN { $header = read_file("'$HEADER'") } s#<head>#<head>$header
-  <link rel="stylesheet" href="//matrix.org/docs/guides/css/docs_overrides.css">
+  <link rel="stylesheet" href="/docs/guides/css/docs_overrides.css">
 #' "$@"
 
 perl -MFile::Slurp -pi -e 'BEGIN { $nav = read_file("'$NAV_BAR'") } s#<body>#  <body class="blog et_fixed_nav et_cover_background et_right_sidebar">
