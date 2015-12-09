@@ -1,6 +1,11 @@
 .. contents:: Table of Contents
 .. sectnum::
 
+.. Note that this file is specifically unversioned because we don't want to
+.. have to add Yet Another version number, and the commentary on what specs we
+.. have should hopefully not get complex enough that we need to worry about
+.. versioning it.
+
 Introduction
 ------------
 .. WARNING::

@@ -1,6 +1,11 @@
 Matrix Specification
 ====================
 
+.. Note that this file is specifically unversioned because we don't want to
+.. have to add Yet Another version number, and the commentary on what specs we
+.. have should hopefully not get complex enough that we need to worry about
+.. versioning it.
+
 This specification has been generated from
 https://github.com/matrix-org/matrix-doc using
 https://github.com/matrix-org/matrix-doc/blob/master/scripts/gendoc.py as of
