@@ -189,5 +189,3 @@ paths:
                 items:
                   type: string
                   description: A pushkey
-      tags:
-        - Push notifications

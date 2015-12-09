@@ -404,12 +404,6 @@ sender and content rules)::
 Server behaviour
 ----------------
 
-This describes the format used by "HTTP" pushers to send notifications of
-events to Push Gateways. If the endpoint returns an HTTP error code, the
-homeserver SHOULD retry for a reasonable amount of time using exponential-backoff.
-
-{{push_notifier_http_api}}
-
 Push Gateway behaviour
 ----------------------
 
