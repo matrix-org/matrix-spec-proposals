@@ -429,7 +429,7 @@ def main(requested_target_name, keep_intermediates, substitutions):
 
 def extract_major(s):
     major_version = s
-    match = re.match("^(r\d)+(\.\d+)?$", s)
+    match = re.match("^(r\d)+(\.\d+)*$", s)
     if match:
         major_version = match.group(1)
     return major_version
