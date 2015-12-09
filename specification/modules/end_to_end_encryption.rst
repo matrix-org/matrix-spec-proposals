@@ -402,6 +402,14 @@ The following is an outline proposal for how this might work. There remain a
 number of unanswered questions. Work on this part of the specification is being
 tracked at https://matrix.org/jira/browse/SPEC-292.
 
+The algorithm that follows is based on that implemented by Moxie Marlinspike in
+TextSecure (see `GroupCipher.java`_ and `SenderChainKey.java`_).  The use of
+four separate ratchets :math:`R_{i,0...3}` to reduce the number of hash
+calculations which must be performed is an extension designed by the matrix.org
+team.
+
+.. _`GroupCipher.java`: https://github.com/WhisperSystems/libaxolotl-java/blob/master/java/src/main/java/org/whispersystems/libaxolotl/groups/GroupCipher.java
+.. _`SenderChainKey.java`: https://github.com/WhisperSystems/libaxolotl-java/blob/master/java/src/main/java/org/whispersystems/libaxolotl/groups/ratchet/SenderChainKey.java
 
 Protecting the secrecy of history
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
