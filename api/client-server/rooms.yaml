@@ -432,6 +432,7 @@ paths:
             member of the room.
       tags:
         - Room participation
+      deprecated: true
   "/rooms/{roomId}/members":
     get:
       summary: Get the m.room.member events for the room.
