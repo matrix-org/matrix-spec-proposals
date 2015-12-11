@@ -394,7 +394,7 @@ paths:
                   "body": "Hello world!",
                   "msgtype": "m.text"
                 },
-                "room_id:": "!wfgy43Sg4a:matrix.org",
+                "room_id": "!wfgy43Sg4a:matrix.org",
                 "sender": "@bob:matrix.org",
                 "event_id": "$asfDuShaf7Gafaw:matrix.org",
                 "type": "m.room.message"
