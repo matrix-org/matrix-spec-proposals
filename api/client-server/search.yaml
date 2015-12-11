@@ -157,7 +157,7 @@ paths:
                     properties:
                       count:
                         type: number
-                        description: Total number of results found
+                        description: An approximate count of number of results found.
                       results:
                         type: array
                         title: Results
@@ -298,7 +298,7 @@ paths:
                         }
                       },
                       "next_batch": "5FdgFsd234dfgsdfFD",
-                      "count": 24,
+                      "count": 1224,
                       "results": [
                         {
                           "rank": 0.00424866,
