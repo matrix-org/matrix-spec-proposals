@@ -512,7 +512,6 @@ To backfill events on a given room::
 Retrieves a sliding-window history of previous PDUs that occurred on the given
 room. Starting from the PDU ID(s) given in the "v" argument, the PDUs that
 preceded it are retrieved, up to a total number given by the "limit" argument.
-These are then returned in a new Transaction containing all of the PDUs.
 
 
 To stream events all the events::
@@ -690,11 +689,42 @@ following keys:
 
 Backfilling
 -----------
-.. NOTE::
-  This section is a work in progress.
 
-.. TODO-doc
-  - What it is, when is it used, how is it done
+Once a homeserver has joined a room, it receives all the events emitted by
+other homeservers in that room, and is thus aware of the entire history of the
+room from that moment onwards. Since users in that room are able to request the
+history by the ``/messages`` client API endpoint, it's possible that they might
+step backwards far enough into history before the homeserver itself was a
+member of that room.
+
+To cover this case, the federation API provides a server-to-server analog of
+the ``/messages`` client API, allowing one homeserver to fetch history from
+another. This is the ``/backfill`` API.
+
+To request more history, the requesting homeserver picks another homeserver
+that it thinks may have more (most likely this should be a homeserver for some
+of the existing users in the room at the earliest point in history it has
+currently), and makes a ``/backfill`` request. The parameters of this request
+give an event ID that the requesting homeserver wishes to obtain, and a number
+specifying how many more events of history before that one to return at most.
+
+The response to this request is an object with the following keys:
+
+==================== ======== ============
+ Key                  Type     Description
+==================== ======== ============
+``pdus``             List     A list of events
+``origin``           String   The name of the resident homeserver
+``origin_server_ts`` Integer  A timestamp added by the resident homeserver
+==================== ======== ============
+
+The list of events given in ``pdus`` is returned in reverse chronological
+order; having the most recent event first (i.e. the event whose event ID is
+that requested by the requestor in the ``v`` parameter).
+
+.. TODO-spec
+  Specify (or remark that it is unspecified) how the server handles divergent
+  history. DFS? BFS? Anything weirder?
 
 
 Authentication
