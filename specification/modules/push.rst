@@ -11,7 +11,7 @@ Push Notifications
                                    |                    |  |                   |
            +-------------------+   | +----------------+ |  | +---------------+ |
            |                   |   | |                | |  | |               | |
-           | Matrix homeserver+----->  Push Gateway  +------> Push Provider | |
+           | Matrix homeserver +----->  Push Gateway  +------> Push Provider | |
            |                   |   | |                | |  | |               | |
            +-^-----------------+   | +----------------+ |  | +----+----------+ |
              |                     |                    |  |      |            |
