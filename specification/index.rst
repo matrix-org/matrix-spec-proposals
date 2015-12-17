@@ -26,6 +26,12 @@ Any developments since the latest release can be found `here`__.
 
 .. __: https://matrix.org/speculator/spec/head/
 
+Old releases of the spec:
+
+- Client-Server API: `r0.0.0`__
+
+.. __: https://matrix.org/docs/spec/r0.0.0
+
 Before we formally started releasing the specification, the last working copy
 we had can be found `here`__.
 
