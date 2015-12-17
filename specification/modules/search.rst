@@ -8,6 +8,10 @@ rooms that the user has been in, including those that they have left. Only
 events that the user is allowed to see will be searched, e.g. it won't include
 events in rooms that happened after you left.
 
+Client behaviour
+----------------
+There is a single HTTP API for performing server-side search, documented below.
+
 {{search_http_api}}
 
 Search Categories
