@@ -20,12 +20,19 @@ securityDefinitions:
 paths:
   "/search":
     post:
-      summary: Search server side for things.
+      summary: Perform a server-side search.
       description: |-
         Performs a full text search across different categories.
       security:
         - accessToken: []
       parameters:
+        - in: query
+          name: next_batch
+          type: string
+          description: |-
+            The point to return events from. If given, this should be a
+            `next_batch` result from a previous call to this endpoint.
+          x-example: "YWxsCgpOb25lLDM1ODcwOA"
         - in: body
           name: body
           schema:
@@ -260,8 +267,11 @@ paths:
                                 type: string
                                 title: Next Batch in Group
                                 description: |-
-                                  Token that can be used to get the next
-                                  batch of results in the group, if exists.
+                                  Token that can be used to get the next batch
+                                  of results in the group, by passing as the
+                                  `next_batch` parameter to the next call. If
+                                  this field is absent, there are no more
+                                  results in this group.
                               order:
                                 type: integer
                                 title: Group Order
@@ -280,7 +290,9 @@ paths:
                         title: Next Batch
                         description: |-
                           Token that can be used to get the next batch of
-                          results, if exists.
+                          results, by passing as the `next_batch` parameter to
+                          the next call. If this field is absent, there are no
+                          more results.
           examples:
             application/json: |-
                {
