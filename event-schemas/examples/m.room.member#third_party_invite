@@ -5,6 +5,7 @@
     "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF#auto",
     "displayname": "Alice Margatroid",
     "third_party_invite": {
+      "display_name": "alice",
       "signed": {
         "mxid": "@alice:localhost",
         "signatures": {
