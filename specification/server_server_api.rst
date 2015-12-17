@@ -503,6 +503,17 @@ Retrieves a snapshot of the entire current state of the given room. The
 response will contain a single Transaction, inside which will be a list of PDUs
 that encode the state.
 
+
+To fetch a particular event::
+
+  GET .../event/<event_id>/
+    Response: JSON encoding of a partial Transaction containing the event
+
+Retrieves a single event. The response will contain a partial Transaction,
+having just the ``origin``, ``origin_server_ts`` and ``pdus`` fields; the
+event will be encoded as the only PDU in the ``pdus`` list.
+
+
 To backfill events on a given room::
 
   GET .../backfill/<room_id>/
