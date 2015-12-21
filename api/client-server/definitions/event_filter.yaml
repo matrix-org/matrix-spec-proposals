@@ -5,7 +5,7 @@ properties:
   not_senders:
     description: A list of sender IDs to exclude. If this list is absent then no senders
       are excluded. A matching sender will be excluded even if it is listed in the
-      'senders' filter. A '*' can be used as a wildcard to match any sequence of characters.
+      'senders' filter.
     items:
       type: string
     type: array
@@ -19,8 +19,7 @@ properties:
     type: array
   senders:
     description: A list of senders IDs to include. If this list is absent then all
-      senders are included. A '*' can be used as a wildcard to match any sequence
-      of characters.
+      senders are included.
     items:
       type: string
     type: array
