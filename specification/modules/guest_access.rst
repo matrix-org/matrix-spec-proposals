@@ -26,7 +26,23 @@ Events
 
 Client behaviour
 ----------------
-The following API endpoints are allowed to be accessed by guest accounts for
+
+Guest accounts retrieve events by calling /sync, passing a filter listing
+the word readable room ids it wants events for in the query string.
+
+* `GET /sync <#get-matrix-client-%CLIENT_MAJOR_VERSION%-sync>`_
+
+The filter must list the room ids in ``room.rooms``. For example:
+
+.. code:: json
+
+    {
+      "room": {
+        "rooms": ["!6578616q706p65@example.com"]
+      }
+    }
+
+For convenience the following API endpoints can also be accessed by guest accounts for
 retrieving events:
 
 * `GET /rooms/:room_id/state <#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state>`_
