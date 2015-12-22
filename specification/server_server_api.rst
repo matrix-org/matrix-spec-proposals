@@ -485,15 +485,6 @@ The destination name will be set to that of the receiving server itself. Each
 embedded PDU in the transaction body will be processed.
 
 
-To fetch a particular PDU::
-
-  GET .../pdu/<origin>/<pdu_id>/
-    Response: JSON encoding of a single Transaction containing one PDU
-
-Retrieves a given PDU from the server. The response will contain a single new
-Transaction, inside which will be the requested PDU.
-
-
 To fetch all the state of a given room::
 
   GET .../state/<room_id>/
