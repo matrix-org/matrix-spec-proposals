@@ -16,6 +16,12 @@ of the API as described the Client behaviour subsection below.
 Homeservers may choose not to allow this access at all to their local users, but
 have no information about whether users on other homeservers are guests or not.
 
+Guest users can also upgrade their account by going through the ordinary
+``register`` flow, but specifying the additional POST parameter
+``guest_access_token`` containing the guest's access token. They are also
+required to specify the ``username`` parameter to the value of the local part of
+their username, which is otherwise optional.
+
 This module does not fully factor in federation; it relies on individual
 homeservers properly adhering to the rules set out in this module, rather than
 allowing all homeservers to enforce the rules on each other.
