@@ -33,7 +33,7 @@ paths:
             type: object
             example: |-
               {
-                "type": "m.login.pasword",
+                "type": "m.login.password",
                 "user": "cheeky_monkey",
                 "password": "ilovebananas"
               }
