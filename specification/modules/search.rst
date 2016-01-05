@@ -10,6 +10,8 @@ events in rooms that happened after you left.
 
 Client behaviour
 ----------------
+There is a single HTTP API for performing server-side search, documented below.
+
 {{search_http_api}}
 
 Search Categories
@@ -36,9 +38,9 @@ The search will *not* include rooms that are end to end encrypted.
 The results include a ``rank`` key that can be used to sort the results by
 relevancy. The higher the ``rank`` the more relevant the result is.
 
-The value of ``count`` may not match the number of results. For example due to
-the search query matching 1000s of results and the server truncating the
-response.
+The value of ``count`` gives an approximation of the total number of
+results. Homeservers may give an estimate rather than an exact value for this
+field.
 
 Ordering
 --------
@@ -84,7 +86,7 @@ The currently supported locations for the ``next_batch`` token are:
 - ``search_categories.<category>.groups.<group_key>.<group_id>.next_batch``
 
 A server need not support pagination, even if there are more matching results.
-In which case they must not return a ``next_batch`` token in the response.
+In that case, they must not return a ``next_batch`` token in the response.
 
 
 Security considerations
