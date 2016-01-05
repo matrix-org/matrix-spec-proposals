@@ -80,6 +80,25 @@ paths:
                   server to invite everyone in the list to the newly created room.
                 items:
                   type: string
+              invite_3pid:
+                type: array
+                description: |-
+                  A list of objects representing third party IDs to invite into
+                  the room.
+                items:
+                  type: object
+                  properties:
+                    id_server:
+                      type: string
+                      description: The hostname+port of the identity server which should be used for third party identifier lookups.
+                    medium:
+                      type: string
+                      # TODO: Link to identity service spec when it eixsts
+                      description: The kind of address being passed in the address field, for example ``email``.
+                    address:
+                      type: string
+                      description: The invitee's third party identifier.
+                  required: ["id_server", "medium", "address"]
               creation_content:
                 title: CreationContent
                 type: object
