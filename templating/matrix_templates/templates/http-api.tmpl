@@ -2,6 +2,11 @@
 
 ``{{endpoint.method}} {{endpoint.path}}``
 {{(5 + (endpoint.path | length) + (endpoint.method | length)) * title_kind}}
+{% if "deprecated" in endpoint and endpoint.deprecated -%}
+.. WARNING::
+  This API is deprecated and will be removed from a future release.
+
+{% endif -%}
 {% if "alias_for_path" in endpoint -%}
 ``{{endpoint.path}}`` is an alias for `{{endpoint.alias_for_path}}`_.
 

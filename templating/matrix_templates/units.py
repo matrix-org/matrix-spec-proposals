@@ -269,6 +269,7 @@ class MatrixUnits(Units):
                 full_path = api.get("basePath", "").rstrip("/") + path
                 endpoint = {
                     "title": single_api.get("summary", ""),
+                    "deprecated": single_api.get("deprecated", False),
                     "desc": single_api.get("description", single_api.get("summary", "")),
                     "method": method.upper(),
                     "path": full_path.strip(),

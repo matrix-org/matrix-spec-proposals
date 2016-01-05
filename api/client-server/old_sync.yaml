@@ -89,6 +89,7 @@ paths:
           description: "Bad pagination ``from`` parameter."
       tags:
         - Room participation
+      deprecated: true
   "/initialSync":
     get:
       summary: Get the user's current state.
@@ -369,6 +370,7 @@ paths:
           description: There is no avatar URL for this user or this user does not exist.
       tags:
         - Room participation
+      deprecated: true
   "/events/{eventId}":
     get:
       summary: Get a single event by event ID.
@@ -406,3 +408,4 @@ paths:
           description: The event was not found or you do not have permission to read this event.
       tags:
         - Room participation
+      deprecated: true
