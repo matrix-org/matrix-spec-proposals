@@ -33,6 +33,24 @@ retrieving events:
 * `GET /rooms/:room_id/state/:event_type/:state_key <#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state-eventtype-statekey>`_
 * `GET /rooms/:room_id/messages <#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-messages>`_
 * `GET /rooms/:room_id/initialSync <#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-initialsync>`_
+* `GET /rooms/:room_id/sync <#get-matrix-client-%CLIENT_MAJOR_VERSION%-sync>`_
+
+Note that the ``/sync`` API requires an inline filter to be specified which lists
+the desired room IDs.
+
+The following API endpoints are allowed to be accessed by guest accounts for
+sending events:
+
+* `POST /rooms/:room_id/join <#post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-join>`_
+* `POST /rooms/:room_id/leave <#post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-leave>`_
+* `PUT /rooms/:room_id/send/m.room.message/:txn_id <#put-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-send-eventtype-txnid>`_
+
+Guest clients *do* need to join rooms in order to send events to them.
+
+The following API endpoints are allowed to be accessed by guest accounts for
+their own account maintenance:
+
+* `PUT /profile/:user_id/displayname <#put-matrix-client-%CLIENT_MAJOR_VERSION%-profile-userid-displayname>`_
 
 There is also a special version of the
 `GET /events <#get-matrix-client-%CLIENT_MAJOR_VERSION%-events>`_ endpoint:
@@ -43,19 +61,6 @@ They will only return events which happened while the room state had the
 ``m.room.history_visibility`` state event present with ``history_visibility``
 value ``world_readable``. Guest clients do not need to join rooms in order to
 receive events for them.
-
-The following API endpoints are allowed to be accessed by guest accounts for
-sending events:
-
-* `POST /rooms/:room_id/join <#post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-join>`_
-* `PUT /rooms/:room_id/send/m.room.message/:txn_id <#put-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-send-eventtype-txnid>`_
-
-Guest clients *do* need to join rooms in order to send events to them.
-
-The following API endpoints are allowed to be accessed by guest accounts for
-their own account maintenance:
-
-* `PUT /profile/:user_id/displayname <#put-matrix-client-%CLIENT_MAJOR_VERSION%-profile-userid-displayname>`_
 
 Server behaviour
 ----------------
