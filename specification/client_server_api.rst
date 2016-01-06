@@ -106,6 +106,8 @@ Some API endpoints may allow or require the use of ``POST`` requests without a
 transaction ID. Where this is optional, the use of a ``PUT`` request is strongly
 recommended.
 
+{{versions_http_api}}
+
 Client Authentication
 ---------------------
 Most API endpoints require the user to identify themselves by presenting

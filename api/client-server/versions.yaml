@@ -1,0 +1,41 @@
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Versions API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client
+produces:
+  - application/json
+paths:
+  "/versions":
+    get:
+      summary: Gets the versions of the specification supported by the server.
+      description: |-
+        Gets the versions of the specification supported by the server.
+
+        Values will take the form ``rX.Y.Z``.
+
+        Only the latest ``Z`` value will be reported for each supported ``X.Y`` value.
+        i.e. if the server implements ``r0.0.0``, ``r0.0.1``, and ``r1.2.0``, it will report ``r0.0.1`` and ``r1.2.0``.
+      responses:
+        200:
+          description: The versions supported by the server.
+          examples:
+            application/json: |-
+              {
+                "versions": ["r0.0.1"]
+              }
+          schema:
+            type: object
+            properties:
+              versions:
+                type: array
+                description: The supported versions.
+                items:
+                  type: string
+                  description: The supported versions
+      tags:
+        - Server administration

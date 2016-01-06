@@ -36,3 +36,14 @@ Before we formally started releasing the specification, the last working copy
 we had can be found `here`__.
 
 .. __: https://matrix.org/docs/spec/legacy/
+
+Versioning
+----------
+
+The specifications are each versioned in the form ``rX.Y.Z``.
+
+Changes to ``X`` and ``Y`` should not be assumed to be compatible with any other version.
+
+For a fixed ``X`` and ``Y``, any ``Z`` should be assumed to be compatible with any lesser ``Z``.
+
+For example, it is safe to assume that a server which claims to implement ``r0.1.2`` supports ``r0.1.0``, but not vice-versa.
