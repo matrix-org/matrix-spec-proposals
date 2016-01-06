@@ -35,9 +35,6 @@ retrieving events:
 * `GET /rooms/:room_id/initialSync <#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-initialsync>`_
 * `GET /rooms/:room_id/sync <#get-matrix-client-%CLIENT_MAJOR_VERSION%-sync>`_
 
-Note that the ``/sync`` API requires an inline filter to be specified which lists
-the desired room IDs.
-
 The following API endpoints are allowed to be accessed by guest accounts for
 sending events:
 
