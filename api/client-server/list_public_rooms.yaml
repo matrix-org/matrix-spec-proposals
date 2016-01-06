@@ -67,6 +67,9 @@ paths:
                         Whether guest users may join the room and participate in it.
                         If they can, they will be subject to ordinary power level
                         rules like any other user.
+                    avatar_url:
+                      type: string
+                      description: The URL for the room's avatar, if one is set.
               start:
                 type: string
                 description: |-
@@ -81,6 +84,7 @@ paths:
                 "chunk": [
                   {
                     "aliases": ["#murrays:cheese.bar"],
+                    "avatar_url": "mxc://bleeker.street/CHEDDARandBRIE",
                     "guest_can_join": false,
                     "name": "CHEESE",
                     "num_joined_members": 37,
