@@ -73,7 +73,8 @@ def inherit_parents(obj):
     return result
 
 
-def get_json_schema_object_fields(obj, enforce_title=False, include_parents=False):
+def get_json_schema_object_fields(obj, enforce_title=False, include_parents=False,
+                                  mark_required=True):
     # Algorithm:
     # f.e. property => add field info (if field is object then recurse)
     if obj.get("type") != "object":
@@ -151,7 +152,7 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
 
     tables = [fields]
 
-    for key_name in sorted(props):
+    for key_name in props:
         logger.debug("Processing property %s.%s", obj.get('title'), key_name)
         value_type = None
         required = key_name in required_keys
@@ -168,6 +169,7 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
                 props[key_name],
                 enforce_title=True,
                 include_parents=include_parents,
+                mark_required=mark_required,
             )
             value_type = nested_objects[0]["title"]
             value_id = value_type
@@ -180,6 +182,7 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
                     props[key_name]["items"],
                     enforce_title=True,
                     include_parents=include_parents,
+                    mark_required=mark_required,
                 )
                 value_id = nested_objects[0]["title"]
                 value_type = "[%s]" % value_id
@@ -221,24 +224,27 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
             if isinstance(value_type, list):
                 value_type = " or ".join(value_type)
 
+        if required and mark_required:
+            desc = "**Required.** " + desc
         fields["rows"].append({
             "key": key_name,
             "type": value_type,
             "id": value_id,
             "required": required,
             "desc": desc,
-            "req_str": "**Required.** " if required else ""
         })
         logger.debug("Done property %s" % key_name)
 
     return tables
 
 
-def get_tables_for_schema(path, schema, include_parents=False):
+def get_tables_for_schema(path, schema, include_parents=False,
+                          mark_required=True):
     resolved_schema = resolve_references(path, schema)
-    tables = get_json_schema_object_fields(resolved_schema,
+    tables = get_json_schema_object_fields(
+        resolved_schema,
         include_parents=include_parents,
-    )
+        mark_required=mark_required)
 
     # the result may contain duplicates, if objects are referred to more than
     # once. Filter them out.
@@ -401,6 +407,7 @@ class MatrixUnits(Units):
                         schema = good_response["schema"]
                         res_tables = get_tables_for_schema(filepath, schema,
                             include_parents=True,
+                            mark_required=False,
                         )
                         for table in res_tables:
                             if "no-table" not in table:
