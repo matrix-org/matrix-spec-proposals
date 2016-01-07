@@ -470,7 +470,7 @@ class MatrixUnits(Units):
 
         # put the top-level parameters into 'req_param_by_loc', and the others
         # into 'req_body_tables'
-        body_params = endpoint_data['req_param_by_loc'].setdefault("body",[])
+        body_params = endpoint_data['req_param_by_loc'].setdefault("JSON body",[])
         body_params.extend(req_body_tables[0]["rows"])
 
         body_tables = req_body_tables[1:]
