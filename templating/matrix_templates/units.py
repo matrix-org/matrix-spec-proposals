@@ -653,11 +653,14 @@ class MatrixUnits(Units):
                     ROOM_EVENT: "Message Event",
                     STATE_EVENT: "State Event"
                 }
+                if type(json_schema.get("allOf")) == list:
+                    schema["typeof"] = base_defs.get(
+                        json_schema["allOf"][0].get("$ref")
+                    )
+                elif json_schema.get("title"):
+                    schema["typeof"] = json_schema["title"]
 
                 json_schema = resolve_references(filepath, json_schema)
-
-                if json_schema.get("title"):
-                    schema["typeof"] = json_schema["title"]
 
                 # add type
                 schema["type"] = Units.prop(
