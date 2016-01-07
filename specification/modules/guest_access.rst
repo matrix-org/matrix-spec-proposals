@@ -59,6 +59,11 @@ They will only return events which happened while the room state had the
 value ``world_readable``. Guest clients do not need to join rooms in order to
 receive events for them.
 
+The intention is that guest users will call ``/events`` once per room in
+parallel for rooms they wish to view without joining. For rooms they wish to
+join, they will call ``/join`` and receive events by calling ``/sync`` as
+non-guest users do.
+
 Server behaviour
 ----------------
 Servers are required to only return events to guest accounts for rooms where
