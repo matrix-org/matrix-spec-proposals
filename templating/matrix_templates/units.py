@@ -366,8 +366,7 @@ class MatrixUnits(Units):
                             if is_array_of_objects:
                                 req_obj = req_obj["items"]
 
-                            req_tables = get_tables_for_schema(
-                                filepath, req_obj, include_parents=True)
+                            req_tables = get_tables_for_schema(req_obj)
 
                             if req_tables > 1:
                                 for table in req_tables[1:]:
