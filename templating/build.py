@@ -224,6 +224,8 @@ if __name__ == '__main__':
 
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
 
     if not args.input:
         raise Exception("Missing [i]nput python module.")

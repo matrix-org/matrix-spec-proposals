@@ -275,7 +275,8 @@ class MatrixUnits(Units):
                     "path": full_path.strip(),
                     "requires_auth": "security" in single_api,
                     "rate_limited": 429 in single_api.get("responses", {}),
-                    "req_params": [],
+                    "req_param_by_loc": {},
+                    "req_body_tables": [],
                     "res_tables": [],
                     "example": {
                         "req": "",
@@ -285,6 +286,13 @@ class MatrixUnits(Units):
                 }
                 self.log(" ------- Endpoint: %s %s ------- " % (method, path))
                 for param in single_api.get("parameters", []):
+                    param_loc = param["in"]
+                    if param_loc == "body":
+                        self._handle_body_param(filepath, param, endpoint)
+                        continue
+
+                    param_name = param["name"]
+
                     # description
                     desc = param.get("description", "")
                     if param.get("required"):
@@ -299,115 +307,12 @@ class MatrixUnits(Units):
                             " One of: %s" % json.dumps(param.get("enum"))
                         )
 
-                    refType = Units.prop(param, "schema/$ref/") # Error,Event
-                    schemaFmt = Units.prop(param, "schema/format") # bytes e.g. uploads
-                    if not val_type and refType:
-                        val_type = refType  # TODO: Resolve to human-readable.
-                    if not val_type and schemaFmt:
-                        val_type = schemaFmt
-                    # handle top-level strings/bools
-                    if not val_type and Units.prop(param, "schema/type") == "string":
-                        val_type = "string"
-                    if not val_type and Units.prop(param, "schema/type") == "boolean":
-                        val_type = "boolean"
-                    if val_type:
-                        endpoint["req_params"].append({
-                            "key": param["name"],
-                            "loc": param["in"],
-                            "type": val_type,
-                            "desc": desc
-                        })
-                        continue
-                    # If we're here, either the param has no value or it is an
-                    # object which we haven't $reffed (so probably just a json
-                    # object with some keys; we'll add entries f.e one)
-                    if "schema" not in param:
-                        raise Exception(
-                            ("API endpoint group=%s path=%s method=%s param=%s"+
-                            " has no valid parameter value.") % (
-                                group_name, path, method, param
-                            )
-                        )
-                    if Units.prop(param, "schema/type") != "object":
-                        raise Exception(
-                            ("API endpoint group=%s path=%s method=%s defines a"+
-                            " param with a schema which isn't an object. Array?")
-                            % (group_name, path, method)
-                        )
-                    # loop top-level json keys
-                    json_body = Units.prop(param, "schema/properties")
-                    required_params = []
-                    if Units.prop(param, "schema/required"):
-                        required_params = Units.prop(param, "schema/required")
-                    for key in json_body:
-                        req_obj = json_body[key]
-                        pdesc = req_obj["description"]
-                        if key in required_params:
-                            pdesc = "**Required.** " + pdesc
-
-                        is_array = req_obj["type"] == "array"
-                        is_array_of_objects = (
-                            is_array and req_obj["items"]["type"] == "object"
-                        )
-                        endpoint["req_params"].append({
-                            "key": key,
-                            "loc": "JSON body",
-                            "type": (
-                                req_obj["type"] if not is_array else
-                                "array[%s]" % req_obj["items"]["type"]
-                            ),
-                            "desc": pdesc
-                        })
-                        if not is_array_of_objects and req_obj["type"] == "array":
-                            continue
-                        # Put in request.dot.notation for nested keys
-                        if req_obj["type"] in ["object", "array"]:
-                            if is_array_of_objects:
-                                req_obj = req_obj["items"]
-
-                            req_tables = get_tables_for_schema(
-                                filepath, req_obj, include_parents=True)
-
-                            if req_tables > 1:
-                                for table in req_tables[1:]:
-                                    nested_key_name = {
-                                        "key": s["key"]
-                                        for rtable in req_tables
-                                        for s in rtable["rows"]
-                                        if s["id"] == table["title"]
-                                    }.get("key", None)
-
-                                    if nested_key_name is None:
-                                        raise Exception("Failed to find table for %r" % (table["title"],))
-
-                                    for row in table["rows"]:
-                                        row["key"] = "%s.%s" % (nested_key_name, row["key"])
-
-                            key_sep = "[0]." if is_array else "."
-                            for table in req_tables:
-                                if table.get("no-table"):
-                                    continue
-                                for row in table["rows"]:
-                                    nested_key = key + key_sep + row["key"]
-                                    endpoint["req_params"].append({
-                                        "key": nested_key,
-                                        "loc": "JSON body",
-                                        "type": row["type"],
-                                        "desc": row["req_str"] + row["desc"]
-                                    })
-
+                    endpoint["req_param_by_loc"].setdefault(param_loc, []).append({
+                        "key": param_name,
+                        "type": val_type,
+                        "desc": desc
+                    })
                 # endfor[param]
-                for row in endpoint["req_params"]:
-                    self.log("Request parameter: %s" % row)
-
-                # group params by location to ease templating
-                endpoint["req_param_by_loc"] = {
-                    #   path: [...], query: [...], body: [...]
-                }
-                for p in endpoint["req_params"]:
-                    if p["loc"] not in endpoint["req_param_by_loc"]:
-                        endpoint["req_param_by_loc"][p["loc"]] = []
-                    endpoint["req_param_by_loc"][p["loc"]].append(p)
 
                 good_response = None
                 for code, res in single_api.get("responses", {}).items():
@@ -547,6 +452,32 @@ class MatrixUnits(Units):
             "group": group_name,
             "endpoints": endpoints,
         }
+
+
+    def _handle_body_param(self, filepath, param, endpoint_data):
+        """Update endpoint_data object with the details of the body param
+        :param string filepath       path to the yaml
+        :param dict   param          the parameter data from the yaml
+        :param dict   endpoint_data  dictionary of endpoint data to be updated
+        """
+        try:
+            req_body_tables = get_tables_for_schema(filepath, param["schema"])
+        except Exception, e:
+            logger.warning("Error decoding body of API endpoint %s %s: %s",
+                           endpoint_data["method"], endpoint_data["path"],
+                           e.args[0])
+            return
+
+        # put the top-level parameters into 'req_param_by_loc', and the others
+        # into 'req_body_tables'
+        body_params = endpoint_data['req_param_by_loc'].setdefault("body",[])
+        body_params.extend(req_body_tables[0]["rows"])
+
+        body_tables = req_body_tables[1:]
+        # TODO: remove this when PR #255 has landed
+        body_tables = (t for t in body_tables if not t.get('no-table'))
+        endpoint_data['req_body_tables'].extend(body_tables)
+
 
     def load_swagger_apis(self):
         apis = {}
