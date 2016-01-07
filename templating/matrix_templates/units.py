@@ -151,7 +151,7 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
 
     tables = [fields]
 
-    for key_name in sorted(props):
+    for key_name in props:
         logger.debug("Processing property %s.%s", obj.get('title'), key_name)
         value_type = None
         required = key_name in required_keys
