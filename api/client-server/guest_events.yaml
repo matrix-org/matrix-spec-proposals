@@ -28,6 +28,10 @@ paths:
 
         This API is the same as the non-guest /events endpoint, but can be
         called by guest users.
+
+        Note that the non-guest ``/events`` endpoint has been deprecated. This
+        API will also be deprecated at some point, but its replacement is not
+        yet known.
       security:
         - accessToken: []
       parameters:
