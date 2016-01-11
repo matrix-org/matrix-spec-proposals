@@ -152,16 +152,17 @@ def main(input_module, files=None, out_dir=None, verbose=False, substitutions={}
         return
 
     # check the input files and substitute in sections where required
-    for filename in (files):
-        output_filename = os.path.join(out_dir, os.path.basename(filename))
-        process_file(env, sections, filename, output_filename)
+    for input_filename in files:
+        output_filename = os.path.join(out_dir, 
+                                       os.path.basename(input_filename))
+        process_file(env, sections, input_filename, output_filename)
 
     check_unaccessed("units", units)
 
 def process_file(env, sections, filename, output_filename):
     log("Parsing input template: %s" % filename)
 
-    with open(filename, 'r') as file_stream:
+    with open(filename, "r") as file_stream:
         temp_str = file_stream.read().decode("utf-8")
 
     # do sanity checking on the template to make sure they aren't reffing things
