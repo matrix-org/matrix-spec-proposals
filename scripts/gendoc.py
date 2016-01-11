@@ -151,6 +151,7 @@ def get_rst(file_info, title_level, title_styles, spec_dir, adjust_titles):
 
 
 def build_spec(target, out_filename):
+    log("Building templated file %s" % out_filename)
     with open(out_filename, "wb") as outfile:
         for file_info in target["files"]:
             section = get_rst(
@@ -174,6 +175,7 @@ This function replaces these relative titles with actual title styles from the
 array in targets.yaml.
 """
 def fix_relative_titles(target, filename, out_filename):
+    log("Fix relative titles, %s -> %s" % (filename, out_filename))
     title_styles = target["title_styles"]
     relative_title_chars = [
         target["relative_title_styles"]["subtitle"],
@@ -226,6 +228,7 @@ def fix_relative_titles(target, filename, out_filename):
 
 
 def rst2html(i, o):
+    log("rst2html %s -> %s" % (i, o))
     with open(i, "r") as in_file:
         with open(o, "w") as out_file:
             publish_file(
@@ -239,6 +242,8 @@ def rst2html(i, o):
 
 
 def addAnchors(path):
+    log("add anchors %s" % path)
+
     with open(path, "r") as f:
         lines = f.readlines()
 
@@ -250,34 +255,27 @@ def addAnchors(path):
             f.write(line + "\n")
 
 
-def run_through_template(input, set_verbose, substitutions):
-    tmpfile = './tmp/output'
-    try:
-        with open(tmpfile, 'w') as out:
-            args = [
-                'python', 'build.py',
-                "-i", "matrix_templates",
-                "-o", "../scripts/tmp",
-                "../scripts/"+input
-            ]
-            for k, v in substitutions.items():
-                args.append("--substitution=%s=%s" % (k, v))
+def run_through_template(input_files, set_verbose, substitutions):
+    args = [
+        'python', 'build.py',
+        "-o", "../scripts/tmp",
+        "-i", "matrix_templates",
+    ]
 
-            if set_verbose:
-                args.insert(2, "-v")
-            log("EXEC: %s" % " ".join(args))
-            log(" ==== build.py output ==== ")
-            print subprocess.check_output(
-                args,
-                stderr=out,
-                cwd="../templating"
-            )
-    except subprocess.CalledProcessError as e:
-        print e.output
-        with open(tmpfile, 'r') as f:
-            sys.stderr.write(f.read() + "\n")
-        raise
+    for k, v in substitutions.items():
+        args.append("--substitution=%s=%s" % (k, v))
 
+    if set_verbose:
+        args.insert(2, "-v")
+
+    args.extend("../scripts/"+f for f in input_files)
+
+    log("EXEC: %s" % " ".join(args))
+    log(" ==== build.py output ==== ")
+    subprocess.check_call(
+        args,
+        cwd="../templating"
+    )
 
 def get_build_targets(targets_listing):
     with open(targets_listing, "r") as targ_file:
@@ -401,27 +399,33 @@ def main(requested_target_name, keep_intermediates, substitutions):
 
     targets = [requested_target_name]
     if requested_target_name == "all":
-        targets = get_build_targets("../specification/targets.yaml")
+        targets = get_build_targets("../specification/targets.yaml") + ["howtos"]
+
+    templated_files = []
+    for target_name in targets:
+        templated_file = "tmp/templated_%s.rst" % (target_name,)
+
+        if target_name == "howtos":
+            shutil.copy("../supporting-docs/howtos/client-server.rst", templated_file)
+        else:
+            target = get_build_target("../specification/targets.yaml", target_name)
+            build_spec(target=target, out_filename=templated_file)
+        templated_files.append(templated_file)
+
+    # we do all the templating at once, because it's slow
+    run_through_template(templated_files, VERBOSE, substitutions)
 
     for target_name in targets:
         templated_file = "tmp/templated_%s.rst" % (target_name,)
         rst_file = "tmp/spec_%s.rst" % (target_name,)
         html_file = "gen/%s.html" % (target_name,)
 
-        target = get_build_target("../specification/targets.yaml", target_name)
-        build_spec(target=target, out_filename=templated_file)
-        run_through_template(templated_file, VERBOSE, substitutions)
         fix_relative_titles(
             target=target, filename=templated_file,
             out_filename=rst_file,
         )
         rst2html(rst_file, html_file)
         addAnchors(html_file)
-
-    if requested_target_name == "all":
-        shutil.copy("../supporting-docs/howtos/client-server.rst", "tmp/howto.rst")
-        run_through_template("tmp/howto.rst", False, substitutions)  # too spammy to mark -v on this
-        rst2html("tmp/howto.rst", "gen/howtos.html")
 
     if not keep_intermediates:
         cleanup_env()

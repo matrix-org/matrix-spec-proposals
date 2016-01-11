@@ -57,7 +57,7 @@ def check_unaccessed(name, store):
         log("Found %s unused %s keys." % (len(unaccessed_keys), name))
         log(unaccessed_keys)
 
-def main(input_module, file_stream=None, out_dir=None, verbose=False, substitutions={}):
+def main(input_module, files=None, out_dir=None, verbose=False, substitutions={}):
     if out_dir and not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
@@ -138,7 +138,7 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False, substituti
     sections = in_mod.exports["sections"](env, units, debug=verbose).get_sections()
 
     # print out valid section keys if no file supplied
-    if not file_stream:
+    if not files:
         print "\nValid template variables:"
         for key in sections.keys():
             sec_text = "" if (len(sections[key]) > 75) else (
@@ -152,8 +152,19 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False, substituti
         return
 
     # check the input files and substitute in sections where required
-    log("Parsing input template: %s" % file_stream.name)
-    temp_str = file_stream.read().decode("utf-8")
+    for input_filename in files:
+        output_filename = os.path.join(out_dir, 
+                                       os.path.basename(input_filename))
+        process_file(env, sections, input_filename, output_filename)
+
+    check_unaccessed("units", units)
+
+def process_file(env, sections, filename, output_filename):
+    log("Parsing input template: %s" % filename)
+
+    with open(filename, "r") as file_stream:
+        temp_str = file_stream.read().decode("utf-8")
+
     # do sanity checking on the template to make sure they aren't reffing things
     # which will never be replaced with a section.
     ast = env.parse(temp_str)
@@ -166,7 +177,6 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False, substituti
         )
     # process the template
     temp = Template(temp_str)
-    log("Creating output for: %s" % file_stream.name)
     output = create_from_template(temp, sections)
 
     # Do these substitutions outside of the ordinary templating system because
@@ -174,12 +184,11 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False, substituti
     # generate the templates, not just the top-level sections.
     for old, new in substitutions.items():
         output = output.replace(old, new)
-    with open(
-            os.path.join(out_dir, os.path.basename(file_stream.name)), "w"
-            ) as f:
+
+    with open(output_filename, "w") as f:
         f.write(output.encode("utf-8"))
-    log("Output file for: %s" % file_stream.name)
-    check_unaccessed("units", units)
+    log("Output file for: %s" % output_filename)
+
 
 def log(line):
     print "batesian: %s" % line
@@ -191,8 +200,8 @@ if __name__ == '__main__':
         "list of possible template variables, add --show-template-vars."
     )
     parser.add_argument(
-        "file", nargs="?", type=FileType('r'),
-        help="The input file to process. This will be passed through Jinja "+
+        "files", nargs="+",
+        help="The input files to process. These will be passed through Jinja "+
         "then output under the same name to the output directory."
     )
     parser.add_argument(
@@ -232,11 +241,6 @@ if __name__ == '__main__':
         main(args.input, verbose=args.verbose)
         sys.exit(0)
 
-    if not args.file:
-        log("No file supplied.")
-        parser.print_help()
-        sys.exit(1)
-
     substitutions = {}
     for substitution in args.substitution:
         parts = substitution.split("=", 1)
@@ -245,6 +249,6 @@ if __name__ == '__main__':
         substitutions[parts[0]] = parts[1]
 
     main(
-        args.input, file_stream=args.file, out_dir=args.out_directory,
+        args.input, files=args.files, out_dir=args.out_directory,
         substitutions=substitutions, verbose=args.verbose
     )
