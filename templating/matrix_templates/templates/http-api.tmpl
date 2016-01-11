@@ -21,6 +21,13 @@
 Request format:
 {% if (endpoint.req_param_by_loc | length) %}
 {{ tables.split_paramtable(endpoint.req_param_by_loc) }}
+{% if (endpoint.req_body_tables) %}
+{% for table in endpoint.req_body_tables -%}
+{{"``"+table.title+"``" if table.title else "" }}
+{{ tables.paramtable(table.rows) }}
+{% endfor -%}
+{% endif -%}
+
 {% else %}
 `No parameters`
 {% endif %}
