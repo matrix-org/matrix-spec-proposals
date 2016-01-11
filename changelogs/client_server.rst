@@ -14,6 +14,7 @@ This release includes the following changes since r0.0.0:
   - ``/rooms/:roomId/initialSync``
 - Spec clarifications
   - Document inter-version compatibility
+  - Document the parameters to the ``/user/:userId/filter`` API
   - Document the ``next_batch`` parameter on ``/search``
   - Document the membership states on ``m.room.member`` events
   - Minor clarifications/corrections to:
@@ -21,6 +22,7 @@ This release includes the following changes since r0.0.0:
     - Search module
     - ``/login`` API
     - ``/rooms/:roomId/send/:eventType/:txnId`` API
+    - ``/rooms/:roomId/context/:eventId`` API
 
 r0.0.0
 ======
