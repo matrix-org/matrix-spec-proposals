@@ -1,3 +1,4 @@
+title: Filter
 properties:
   limit:
     description: The maximum number of events to return.

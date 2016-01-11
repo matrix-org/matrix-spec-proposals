@@ -62,7 +62,7 @@ def inherit_parents(obj):
     # iterate through the parents first, and then overwrite with the settings
     # from the child.
     for p in map(inherit_parents, parents) + [obj]:
-        for key in ('title', 'type', 'required'):
+        for key in ('title', 'type', 'required', 'description'):
             if p.get(key):
                 result[key] = p[key]
 
@@ -73,7 +73,7 @@ def inherit_parents(obj):
     return result
 
 
-def get_json_schema_object_fields(obj, enforce_title=False, include_parents=False,
+def get_json_schema_object_fields(obj, enforce_title=False,
                                   mark_required=True):
     # Algorithm:
     # f.e. property => add field info (if field is object then recurse)
@@ -81,8 +81,6 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
         raise Exception(
             "get_json_schema_object_fields: Object %s isn't an object." % obj
         )
-
-    obj = inherit_parents(obj)
 
     logger.debug("Processing object with title '%s'", obj.get("title"))
 
@@ -93,6 +91,8 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
 
     additionalProps = obj.get("additionalProperties")
     if additionalProps:
+        additionalProps = inherit_parents(additionalProps)
+
         # not "really" an object, just a KV store
         logger.debug("%s is a pseudo-object", obj.get("title"))
 
@@ -103,7 +103,6 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
             nested_objects = get_json_schema_object_fields(
                 additionalProps,
                 enforce_title=True,
-                include_parents=include_parents,
             )
             value_type = nested_objects[0]["title"]
             tables = [x for x in nested_objects if not x.get("no-table")]
@@ -154,10 +153,12 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
 
     for key_name in props:
         logger.debug("Processing property %s.%s", obj.get('title'), key_name)
+        prop = inherit_parents(props[key_name])
+
         value_type = None
         required = key_name in required_keys
-        desc = props[key_name].get("description", "")
-        prop_type = props[key_name].get('type')
+        desc = prop.get("description", "")
+        prop_type = prop.get('type')
 
         if prop_type is None:
             raise KeyError("Property '%s' of object '%s' missing 'type' field"
@@ -166,9 +167,8 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
 
         if prop_type == "object":
             nested_objects = get_json_schema_object_fields(
-                props[key_name],
+                prop,
                 enforce_title=True,
-                include_parents=include_parents,
                 mark_required=mark_required,
             )
             value_type = nested_objects[0]["title"]
@@ -176,24 +176,24 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
 
             tables += [x for x in nested_objects if not x.get("no-table")]
         elif prop_type == "array":
+            items = inherit_parents(prop["items"])
             # if the items of the array are objects then recurse
-            if props[key_name]["items"]["type"] == "object":
+            if items["type"] == "object":
                 nested_objects = get_json_schema_object_fields(
-                    props[key_name]["items"],
+                    items,
                     enforce_title=True,
-                    include_parents=include_parents,
                     mark_required=mark_required,
                 )
                 value_id = nested_objects[0]["title"]
                 value_type = "[%s]" % value_id
                 tables += nested_objects
             else:
-                value_type = props[key_name]["items"]["type"]
+                value_type = items["type"]
                 if isinstance(value_type, list):
                     value_type = " or ".join(value_type)
                 value_id = value_type
                 value_type = "[%s]" % value_type
-                array_enums = props[key_name]["items"].get("enum")
+                array_enums = items.get("enum")
                 if array_enums:
                     if len(array_enums) > 1:
                         value_type = "[enum]"
@@ -207,19 +207,19 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
         else:
             value_type = prop_type
             value_id = prop_type
-            if props[key_name].get("enum"):
-                if len(props[key_name].get("enum")) > 1:
+            if prop.get("enum"):
+                if len(prop["enum"]) > 1:
                     value_type = "enum"
                     if desc:
                         desc += " "
                     desc += (
-                        "One of: %s" % json.dumps(props[key_name]["enum"])
+                        "One of: %s" % json.dumps(prop["enum"])
                     )
                 else:
                     if desc:
                         desc += " "
                     desc += (
-                        "Must be '%s'." % props[key_name]["enum"][0]
+                        "Must be '%s'." % prop["enum"][0]
                     )
             if isinstance(value_type, list):
                 value_type = " or ".join(value_type)
@@ -238,12 +238,9 @@ def get_json_schema_object_fields(obj, enforce_title=False, include_parents=Fals
     return tables
 
 
-def get_tables_for_schema(path, schema, include_parents=False,
-                          mark_required=True):
-    resolved_schema = resolve_references(path, schema)
-    tables = get_json_schema_object_fields(
-        resolved_schema,
-        include_parents=include_parents,
+def get_tables_for_schema(schema, mark_required=True):
+    schema = inherit_parents(schema)
+    tables = get_json_schema_object_fields(schema,
         mark_required=mark_required)
 
     # the result may contain duplicates, if objects are referred to more than
@@ -255,6 +252,9 @@ def get_tables_for_schema(path, schema, include_parents=False,
     titles = set()
     filtered = []
     for table in reversed(tables):
+        if table.get("no-table"):
+            continue
+
         if table.get("title") in titles:
             continue
 
@@ -267,7 +267,7 @@ def get_tables_for_schema(path, schema, include_parents=False,
 
 class MatrixUnits(Units):
 
-    def _load_swagger_meta(self, filepath, api, group_name):
+    def _load_swagger_meta(self, api, group_name):
         endpoints = []
         for path in api["paths"]:
             for method in api["paths"][path]:
@@ -294,7 +294,7 @@ class MatrixUnits(Units):
                 for param in single_api.get("parameters", []):
                     param_loc = param["in"]
                     if param_loc == "body":
-                        self._handle_body_param(filepath, param, endpoint)
+                        self._handle_body_param(param, endpoint)
                         continue
 
                     param_name = param["name"]
@@ -405,13 +405,10 @@ class MatrixUnits(Units):
                     elif res_type and Units.prop(good_response, "schema/properties"):
                         # response is an object:
                         schema = good_response["schema"]
-                        res_tables = get_tables_for_schema(filepath, schema,
-                            include_parents=True,
+                        res_tables = get_tables_for_schema(schema,
                             mark_required=False,
                         )
-                        for table in res_tables:
-                            if "no-table" not in table:
-                                endpoint["res_tables"].append(table)
+                        endpoint["res_tables"].extend(res_tables)
                     elif res_type and Units.prop(good_response, "schema/items"):
                         # response is an array:
                         # FIXME: Doesn't recurse at all.
@@ -461,14 +458,14 @@ class MatrixUnits(Units):
         }
 
 
-    def _handle_body_param(self, filepath, param, endpoint_data):
+    def _handle_body_param(self, param, endpoint_data):
         """Update endpoint_data object with the details of the body param
         :param string filepath       path to the yaml
         :param dict   param          the parameter data from the yaml
         :param dict   endpoint_data  dictionary of endpoint data to be updated
         """
         try:
-            req_body_tables = get_tables_for_schema(filepath, param["schema"])
+            req_body_tables = get_tables_for_schema(param["schema"])
         except Exception, e:
             logger.warning("Error decoding body of API endpoint %s %s: %s",
                            endpoint_data["method"], endpoint_data["path"],
@@ -500,7 +497,7 @@ class MatrixUnits(Units):
                     api = yaml.load(f.read())
                     api = resolve_references(filepath, api)
                     api["__meta"] = self._load_swagger_meta(
-                        filepath, api, group_name
+                        api, group_name
                     )
                     apis[group_name] = api
         return apis
@@ -602,6 +599,8 @@ class MatrixUnits(Units):
                 elif json_schema.get("title"):
                     schema["typeof"] = json_schema["title"]
 
+                json_schema = resolve_references(filepath, json_schema)
+
                 # add type
                 schema["type"] = Units.prop(
                     json_schema, "properties/type/enum"
@@ -612,14 +611,14 @@ class MatrixUnits(Units):
                 schema["desc"] = json_schema.get("description", "")
 
                 # walk the object for field info
-                schema["content_fields"] = get_tables_for_schema(filepath,
+                schema["content_fields"] = get_tables_for_schema(
                     Units.prop(json_schema, "properties/content")
                 )
 
                 # This is horrible because we're special casing a key on m.room.member.
                 # We need to do this because we want to document a non-content object.
                 if schema["type"] == "m.room.member":
-                    invite_room_state = get_tables_for_schema(filepath,
+                    invite_room_state = get_tables_for_schema(
                         json_schema["properties"]["invite_room_state"]["items"],
                     )
                     schema["content_fields"].extend(invite_room_state)

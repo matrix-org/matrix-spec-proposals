@@ -1,5 +1,29 @@
-r0
-===
+r0.0.1
+======
+
+This release includes the following changes since r0.0.0:
+
+- API changes:
+  - Added new ``/versions`` API
+  - ``/createRoom`` takes an optional ``invite_3pid`` parameter
+  - ``/publicRooms`` returns an ``avatar_url`` result
+- The following APIs are now deprecated:
+  - ``/initialSync``
+  - ``/events``
+  - ``/events/:eventId``
+  - ``/rooms/:roomId/initialSync``
+- Spec clarifications
+  - Document inter-version compatibility
+  - Document the ``next_batch`` parameter on ``/search``
+  - Document the membership states on ``m.room.member`` events
+  - Minor clarifications/corrections to:
+    - Guest access module
+    - Search module
+    - ``/login`` API
+    - ``/rooms/:roomId/send/:eventType/:txnId`` API
+
+r0.0.0
+======
 
 This is the first release of the client-server specification. It is largely a dump of what has currently been implemented, and there are several inconsistencies.
 
