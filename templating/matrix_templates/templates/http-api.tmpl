@@ -7,11 +7,6 @@
   This API is deprecated and will be removed from a future release.
 
 {% endif -%}
-{% if "alias_for_path" in endpoint -%}
-``{{endpoint.path}}`` is an alias for `{{endpoint.alias_for_path}}`_.
-
-.. _`{{endpoint.alias_for_path}}`: #{{endpoint.alias_link}}
-{% else -%}
 
 {{endpoint.desc | wrap(80)}}
 
@@ -67,4 +62,4 @@ Example
   {{res["example"] | indent_block(2)}}
 
 {% endfor %}
-{% endif -%}
+
