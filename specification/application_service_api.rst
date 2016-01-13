@@ -71,6 +71,7 @@ traffic to the AS is:
 
 .. code-block:: yaml
 
+    id: <user-defined unique ID of AS which will never change>
     url: <base url of AS>
     as_token: <token AS will add to requests to HS>
     hs_token: <token HS will add to requests to AS>
@@ -85,8 +86,8 @@ traffic to the AS is:
 
 .. WARNING::
   If the homeserver in question has multiple application services, each
-  ``as_token`` MUST be unique per application service as this token is used to
-  identify the application service. The homeserver MUST enforce this.
+  ``as_token`` and ``id`` MUST be unique per application service as these are
+  used to identify the application service. The homeserver MUST enforce this.
 
 
 Homeserver -> Application Service API
