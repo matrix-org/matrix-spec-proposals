@@ -605,8 +605,8 @@ point in time::
   
 Clients can add to the stream by PUTing message or state events, and can read
 from the stream via the
-|initialSync|_,
-|events|_,
+|/initialSync|_,
+|/events|_,
 |/rooms/<room_id>/initialSync|_, and
 |/rooms/<room_id>/messages|_
 APIs.
@@ -922,7 +922,7 @@ Leaving rooms
 A user can leave a room to stop receiving events for that room. A user must
 have been invited to or have joined the room before they are eligible to leave
 the room. Leaving a room to which the user has been invited rejects the invite.
-Once a user leaves a room, it will no longer appear on the |initialSync|_ API.
+Once a user leaves a room, it will no longer appear on the |/initialSync|_ API.
 
 Whether or not they actually joined the room, if the room is
 an "invite-only" room they will need to be re-invited before they can re-join
@@ -1012,11 +1012,14 @@ have to wait in milliseconds before they can try again.
 .. Links through the external API docs are below
 .. =============================================
 
-.. |initialSync| replace:: ``/initialSync``
-.. _initialSync: #get-matrix-client-%CLIENT_MAJOR_VERSION%-initialsync
+.. |/initialSync| replace:: ``/initialSync``
+.. _/initialSync: #get-matrix-client-%CLIENT_MAJOR_VERSION%-initialsync
 
-.. |events| replace:: ``/events``
-.. _events: #get-matrix-client-%CLIENT_MAJOR_VERSION%-events
+.. |/sync| replace:: ``/sync``
+.. _/sync: #get-matrix-client-%CLIENT_MAJOR_VERSION%-sync
+
+.. |/events| replace:: ``/events``
+.. _/events: #get-matrix-client-%CLIENT_MAJOR_VERSION%-events
 
 .. |/rooms/<room_id>/initialSync| replace:: ``/rooms/<room_id>/initialSync``
 .. _/rooms/<room_id>/initialSync: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-initialsync
