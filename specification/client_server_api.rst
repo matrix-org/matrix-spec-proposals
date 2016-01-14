@@ -86,6 +86,9 @@ Some requests have unique error codes:
 :``M_USER_IN_USE``:
   Encountered when trying to register a user ID which has been taken.
 
+:``M_INVALID_USER_NAME``:
+  Encountered when trying to register a user ID which is not valid.
+
 :``M_ROOM_IN_USE``:
   Encountered when trying to create a room which has been taken.
 
