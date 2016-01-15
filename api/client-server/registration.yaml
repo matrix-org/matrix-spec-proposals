@@ -100,6 +100,7 @@ paths:
             Part of the request was invalid. This may include one of the following error codes:
 
             * ``M_USER_IN_USE`` : The desired user ID is already taken.
+            * ``M_INVALID_USERNAME`` : The desired user ID is not a valid user name.
             * ``M_EXCLUSIVE`` : The desired user ID is in the exclusive namespace
               claimed by an application service.
 
