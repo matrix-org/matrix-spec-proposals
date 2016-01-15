@@ -914,9 +914,41 @@ following values:
 ``invite``
   This room can only be joined if you were invited.
 
+The allowable state transitions of membership are::
+
+                                       /ban
+                  +------------------------------------------------------+
+                  |                                                      |
+                  |  +----------------+  +----------------+              |
+                  |  |    /leave      |  |                |              |
+                  |  |                v  v                |              |
+    /invite    +--------+           +-------+             |              |
+  ------------>| invite |<----------| leave |----+        |              |
+               +--------+  /invite  +-------+    |        |              |
+                 |                   |    ^      |        |              |
+                 |                   |    |      |        |              |
+           /join |   +---------------+    |      |        |              |
+                 |   | /join if           |      |        |              |
+                 |   | join_rules         |      | /ban   | /unban       |
+                 |   | public      /leave |      |        |              |
+                 v   v               or   |      |        |              |
+               +------+            /kick  |      |        |              |
+  ------------>| join |-------------------+      |        |              |
+   /join       +------+                          v        |              |
+   if             |                           +-----+     |              |
+   join_rules     +-------------------------->| ban |-----+              |
+   public                   /ban              +-----+                    |
+                                                ^ ^                      |
+                                                | |                      |
+  ----------------------------------------------+ +----------------------+
+                  /ban
+
+
 {{inviting_http_api}}
 
 {{joining_http_api}}
+
+{{kicking_http_api}}
 
 {{banning_http_api}}
 
@@ -947,8 +979,7 @@ to |/rooms/<room_id>/ban|_ with::
     "reason": "string: <reason for the ban>"
   }
 
-Banning a user adjusts the banned member's membership state to ``ban`` and
-adjusts the power level of this event to a level higher than the banned person.
+Banning a user adjusts the banned member's membership state to ``ban``.
 Like with other membership changes, a user can directly adjust the target
 member's state, by making a request to
 ``/rooms/<room id>/state/m.room.member/<user id>``::
@@ -956,6 +987,9 @@ member's state, by making a request to
   {
     "membership": "ban"
   }
+
+A user must be explicitly unbanned with a request to |/rooms/<room_id>/unban|_
+before they can re-join the room or be re-invited.
 
 Listing rooms
 ~~~~~~~~~~~~~
@@ -1047,4 +1081,7 @@ have to wait in milliseconds before they can try again.
 
 .. |/rooms/<room_id>/ban| replace:: ``/rooms/<room_id>/ban``
 .. _/rooms/<room_id>/ban: #post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-ban
+
+.. |/rooms/<room_id>/unban| replace:: ``/rooms/<room_id>/unban``
+.. _/rooms/<room_id>/unban: #post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-unban
 

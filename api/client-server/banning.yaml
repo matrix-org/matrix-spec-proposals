@@ -24,7 +24,7 @@ paths:
       description: |-
         Ban a user in the room. If the user is currently in the room, also kick them.
 
-        When a user is banned from a room, they may not join it until they are unbanned.
+        When a user is banned from a room, they may not join it or be invited to it until they are unbanned.
 
         The caller must have the required power level in order to perform this operation.
       security:
@@ -73,6 +73,58 @@ paths:
               {
                 "errcode": "M_FORBIDDEN",
                 "error": "You do not have a high enough power level to ban from this room."
+              }
+      tags:
+        - Room membership
+  "/rooms/{roomId}/unban":
+    post:
+      summary: Unban a user from the room.
+      description: |-
+        Unban a user from the room. This allows them to be invited to the room,
+        and join if they would otherwise be allowed to join according to its join rules.
+
+        The caller must have the required power level in order to perform this operation.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room identifier (not alias) from which the user should be unbanned.
+          required: true
+          x-example: "!e42d8c:matrix.org"
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            example: |-
+              {
+                "user_id": "@cheeky_monkey:matrix.org"
+              }
+            properties:
+              user_id:
+                type: string
+                description: The fully qualified user ID of the user being unbanned.
+            required: ["user_id"]
+      responses:
+        200:
+          description: The user has been unbanned from the room.
+          examples:
+            application/json: |-
+              {}
+          schema:
+            type: object
+        403:
+          description: |-
+            You do not have permission to unban the user from the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejections are:
+
+            - The unbanner's power level is insufficient to unban users from the room.
+          examples:
+            application/json: |-
+              {
+                "errcode": "M_FORBIDDEN",
+                "error": "You do not have a high enough power level to unban from this room."
               }
       tags:
         - Room membership
