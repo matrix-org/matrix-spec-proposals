@@ -112,7 +112,7 @@ paths:
           schema:
             type: object
             properties:
-              threePidCreds:
+              three_pid_creds:
                 title: "ThreePidCredentials"
                 type: object
                 description: The third party credentials to associate with the account.
@@ -134,10 +134,10 @@ paths:
                   identifier to the account's Matrix ID with the passed identity
                   server. Default: ``false``.
                 x-example: true
-            required: ["threePidCreds"]
+            required: ["three_pid_creds"]
             example: |-
               {
-                "threePidCreds": {
+                "three_pid_creds": {
                   "id_server": "matrix.org",
                   "sid": "abc123987",
                   "client_secret": "d0n'tT3ll"
