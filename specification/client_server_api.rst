@@ -42,7 +42,9 @@ MUST be encoded as UTF-8. Clients are authenticated using opaque
 query string parameter on all requests.
 
 Any errors which occur at the Matrix API level MUST return a "standard error
-response". This is a JSON object which looks like::
+response". This is a JSON object which looks like:
+
+.. code:: json
 
   {
     "errcode": "<error code>",
@@ -151,7 +153,9 @@ authentication. A request to an endpoint that uses User-Interactive
 Authentication never succeeds without auth. Homeservers may allow requests that
 don't require auth by offering a stage with only the ``m.login.dummy`` auth
 type. The homeserver returns a response with HTTP status 401 and a JSON object
-as follows::
+as follows:
+
+.. code:: json
 
   {
     "flows": [
@@ -190,14 +194,16 @@ value is the name of the stage type that the client is attempting to complete.
 It must also contains a ``session`` key with the value of the session key given
 by the homeserver, if one was given. It also contains other keys dependent on
 the stage type being attempted. For example, if the client is attempting to
-complete login type ``example.type.foo``, it might submit something like this::
+complete login type ``example.type.foo``, it might submit something like this:
+
+.. code:: json
 
   {
     "a_request_parameter": "something",
     "another_request_parameter": "something else",
     "auth": {
         "type": "example.type.foo",
-        "session", "xxxxxx",
+        "session": "xxxxxx",
         "example_credential": "verypoorsharedsecret"
     }
   }
@@ -206,7 +212,9 @@ If the homeserver deems the authentication attempt to be successful but still
 requires more stages to be completed, it returns HTTP status 401 along with the
 same object as when no authentication was attempted, with the addition of the
 ``completed`` key which is an array of stage type the client has completed
-successfully::
+successfully:
+
+.. code:: json
 
   {
     "completed": [ "example.type.foo" ],
@@ -227,7 +235,9 @@ successfully::
   }
 
 If the homeserver decides the attempt was unsuccessful, it returns an error
-message in the standard format::
+message in the standard format:
+
+.. code:: json
 
   {
     "errcode": "M_EXAMPLE_ERROR",
@@ -299,11 +309,26 @@ Password-based
 :Description:
   The client submits a username and secret password, both sent in plain-text.
 
-To respond to this type, reply with an auth dict as follows::
+To respond to this type, reply with an auth dict as follows:
+
+.. code:: json
 
   {
     "type": "m.login.password",
     "user": "<user_id or user localpart>",
+    "password": "<password>"
+  }
+
+Alternatively reply using a 3pid bound to the user's account on the homeserver
+using the |/account/3pid|_ API rather then giving the ``user`` explicitly as
+follows:
+
+.. code:: json
+
+  {
+    "type": "m.login.password",
+    "medium": "<The medium of the third party identifier. Must be 'email'>",
+    "address": "<The third party address of the user>",
     "password": "<password>"
   }
 
@@ -320,7 +345,9 @@ Google ReCaptcha
 :Description:
   The user completes a Google ReCaptcha 2.0 challenge
 
-To respond to this type, reply with an auth dict as follows::
+To respond to this type, reply with an auth dict as follows:
+
+.. code:: json
 
   {
     "type": "m.login.recaptcha",
@@ -334,7 +361,9 @@ Token-based
 :Description:
   The client submits a username and token.
 
-To respond to this type, reply with an auth dict as follows::
+To respond to this type, reply with an auth dict as follows:
+
+.. code:: json
 
   {
     "type": "m.login.token",
@@ -394,7 +423,9 @@ Prior to submitting this, the client should authenticate with an identity
 server. After authenticating, the session information should be submitted to
 the homeserver.
 
-To respond to this type, reply with an auth dict as follows::
+To respond to this type, reply with an auth dict as follows:
+
+.. code:: json
 
   {
     "type": "m.login.email.identity",
@@ -417,10 +448,12 @@ Dummy Auth
   Authentication to perform a request.
 
 To respond to this type, reply with an auth dict with just the type and session,
-if provided::
+if provided:
+
+.. code:: json
 
   {
-    "type": "m.login.dummy",
+    "type": "m.login.dummy"
   }
 
 
@@ -1085,3 +1118,5 @@ have to wait in milliseconds before they can try again.
 .. |/rooms/<room_id>/unban| replace:: ``/rooms/<room_id>/unban``
 .. _/rooms/<room_id>/unban: #post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-unban
 
+.. |/account/3pid| replace:: ``/account/3pid``
+.. _/account/3pid: #post-matrix-client-%CLIENT_MAJOR_VERSION%-account-3pid
