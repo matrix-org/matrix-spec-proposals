@@ -332,6 +332,9 @@ follows:
     "password": "<password>"
   }
 
+In the case that the homeserver does not know about the supplied 3pid, the
+homeserver must respond with 403 Forbidden.
+
 .. WARNING::
   Clients SHOULD enforce that the password provided is suitably complex. The
   password SHOULD include a lower-case letter, an upper-case letter, a number
