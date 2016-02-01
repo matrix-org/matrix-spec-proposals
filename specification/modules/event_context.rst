@@ -9,6 +9,8 @@ specified event. This allows clients to get the context surrounding an event.
 Client behaviour
 ----------------
 
+There is a single HTTP API for retrieving event context, documented below.
+
 {{event_context_http_api}}
 
 Security considerations
