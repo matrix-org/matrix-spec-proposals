@@ -104,7 +104,7 @@ paths:
                       "origin_server_ts": 1446030608551,
                       "room_id": "!sCDvXTtzjpiPxaqkkt:localhost:8480",
                       "type": "m.room.message",
-                      "user_id": "@test:localhost:8480"
+                      "sender": "@test:localhost:8480"
                     }
                   ],
                   "events_before": [
@@ -118,7 +118,7 @@ paths:
                       "origin_server_ts": 1446030607984,
                       "room_id": "!sCDvXTtzjpiPxaqkkt:localhost:8480",
                       "type": "m.room.message",
-                      "user_id": "@test:localhost:8480"
+                      "sender": "@test:localhost:8480"
                     }
                   ],
                   "start": "t27-54_2_0_2",
@@ -133,7 +133,7 @@ paths:
                       "room_id": "!sCDvXTtzjpiPxaqkkt:localhost:8480",
                       "state_key": "",
                       "type": "m.room.create",
-                      "user_id": "@test:localhost:8480"
+                      "sender": "@test:localhost:8480"
                     },
                     {
                       "age": 2067105053,
@@ -148,7 +148,7 @@ paths:
                       "room_id": "!sCDvXTtzjpiPxaqkkt:localhost:8480",
                       "state_key": "@test:localhost:8480",
                       "type": "m.room.member",
-                      "user_id": "@test:localhost:8480"
+                      "sender": "@test:localhost:8480"
                     }
                   ]
                 }
