@@ -87,7 +87,7 @@ paths:
             properties:
               displayname:
                 type: string
-                description: The user's display name if they have set one, otherwise null.
+                description: The user's display name if they have set one, otherwise not present.
         404:
           description: There is no display name for this user or this user does not exist.
       tags:
@@ -161,7 +161,7 @@ paths:
             properties:
               avatar_url:
                 type: string
-                description: The user's avatar URL if they have set one, otherwise null.
+                description: The user's avatar URL if they have set one, otherwise not present.
         404:
           description: There is no avatar URL for this user or this user does not exist.
       tags:
@@ -195,10 +195,10 @@ paths:
             properties:
               avatar_url:
                 type: string
-                description: The user's avatar URL if they have set one, otherwise null.
+                description: The user's avatar URL if they have set one, otherwise not present.
               displayname:
                 type: string
-                description: The user's display name if they have set one, otherwise null.
+                description: The user's display name if they have set one, otherwise not present.
         404:
           description: There is no profile information for this user or this user does not exist.
       tags:
