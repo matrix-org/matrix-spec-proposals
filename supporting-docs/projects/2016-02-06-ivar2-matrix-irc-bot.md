@@ -2,6 +2,7 @@
 layout: project
 title: ivar2 Matrix/IRC Bot 
 categories: projects other
+description: IRC bot with native Matrix support
 author: haste / Tor
 maturity: Beta
 ---

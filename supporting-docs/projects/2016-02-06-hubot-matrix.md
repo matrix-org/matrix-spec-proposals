@@ -2,6 +2,7 @@
 layout: project
 title: Hubot-Matrix
 categories: projects other
+description: A Matrix-adapter for Hubot
 author: David A Roberts
 maturity: Alpha
 ---

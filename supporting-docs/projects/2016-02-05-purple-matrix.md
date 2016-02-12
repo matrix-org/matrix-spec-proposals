@@ -2,6 +2,7 @@
 layout: project
 title: purple-matrix
 categories: projects other
+description: A plugin for libpurple
 author: Matrix.org team
 maturity: Early beta
 ---
