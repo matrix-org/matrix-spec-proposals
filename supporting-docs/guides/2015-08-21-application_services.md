@@ -95,6 +95,9 @@ NB: Note the "-" at the start; this indicates a list element. The registration f
 
         # registration.yaml
         
+	# An ID which is unique across all application services on your homeserver. This should never be changed once set.
+	id: "something-good"
+
         # this is the base URL of the application service
         url: "http://localhost:5000"
         
