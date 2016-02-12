@@ -36,11 +36,11 @@ The easiest way to get started is to pick a client that appeals and join #matrix
       </a>
     </td>
     <td class='bigproject'>
-      <a href='./client/matrix-console-web.html' class='font18 bold'>
+      <a href='./client/matrix-console.html' class='font18 bold'>
         Matrix Console Web
       </a><br />
       Console Web is the oldest and has most features, but has performance problems.<br /><br />
-      <a href='./client/matrix-console-web.html'>
+      <a href='./client/matrix-console.html'>
         <img src='https://matrix.org/blog/wp-content/uploads/2015/04/Screen-Shot-2015-08-07-at-13.28.53-300x195.png'>
       </a>
     </td>
