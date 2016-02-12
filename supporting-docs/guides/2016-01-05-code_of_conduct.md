@@ -4,7 +4,7 @@ version: v1.0
 title: Code of Conduct
 categories: guides
 ---
-<link href="/docs/guides/css/faq.css" type="text/css" rel="stylesheet" />
+<link href="/docs/css/faq.css" type="text/css" rel="stylesheet" />
 
 
 # Matrix Code of Conduct
