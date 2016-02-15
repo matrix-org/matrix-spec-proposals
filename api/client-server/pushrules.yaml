@@ -380,7 +380,8 @@ paths:
           x-example: someRuleId
           description: |-
             Use 'before' with a ``rule_id`` as its value to make the new rule the
-            next-most important rule with respect to the given rule.
+            next-most important rule with respect to the given user defined rule.
+            It is not possible to add a rule relative to a predefined server rule.
         - in: query
           type: string
           name: after
@@ -388,7 +389,8 @@ paths:
           x-example: anotherRuleId
           description: |-
             This makes the new rule the next-less important rule relative to the
-            given rule.
+            given user defined rule. It is not possible to add a rule relative
+            to a predefined server rule.
         - in: body
           name: pushrule
           description: |-
