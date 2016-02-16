@@ -57,6 +57,7 @@ type User struct {
 var (
 	port            = flag.Int("port", 9000, "Port on which to listen for HTTP")
 	includesDir     = flag.String("includes_dir", "", "Directory containing include files for styling like matrix.org")
+	accessToken     = flag.String("access_token", "", "github.com access token")
 	allowedMembers  map[string]bool
 	specCache       *lru.Cache // string -> map[string][]byte filename -> contents
 	styledSpecCache *lru.Cache // string -> map[string][]byte filename -> contents
@@ -73,6 +74,13 @@ const (
 )
 
 var numericRegex = regexp.MustCompile(`^\d+$`)
+
+func accessTokenQuerystring() string {
+	if *accessToken == "" {
+		return ""
+	}
+	return fmt.Sprintf("?access_token=%s", *accessToken)
+}
 
 func gitClone(url string, shared bool) (string, error) {
 	directory := path.Join("/tmp/matrix-doc", strconv.FormatInt(rand.Int63(), 10))
@@ -105,7 +113,7 @@ func runGitCommand(path string, args []string) error {
 }
 
 func lookupPullRequest(prNumber string) (*PullRequest, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/%s", pullsPrefix, prNumber))
+	resp, err := http.Get(fmt.Sprintf("%s/%s%s", pullsPrefix, prNumber, accessTokenQuerystring()))
 	defer resp.Body.Close()
 	if err != nil {
 		return nil, fmt.Errorf("error getting pulls: %v", err)
@@ -513,7 +521,7 @@ func findHTMLDiffer() (string, error) {
 }
 
 func getPulls() ([]PullRequest, error) {
-	resp, err := http.Get(pullsPrefix)
+	resp, err := http.Get(fmt.Sprintf("%s%s", pullsPrefix, accessTokenQuerystring()))
 	if err != nil {
 		return nil, err
 	}
@@ -584,7 +592,7 @@ func (srv *server) makeIndex(w http.ResponseWriter, req *http.Request) {
 	}
 	branchNames = append(branchNames, "HEAD")
 	for _, branch := range branchNames {
-		href := "spec/"+url.QueryEscape(branch)+"/"
+		href := "spec/" + url.QueryEscape(branch) + "/"
 		s += fmt.Sprintf(`<li><a href="%s">%s</a></li>`, href, branch)
 		if *includesDir != "" {
 			s += fmt.Sprintf(`<li><a href="%s?matrixdotorgstyle=1">%s, styled like matrix.org</a></li>`,
@@ -622,7 +630,7 @@ func main() {
 		"Kegsay":        true,
 		"NegativeMjark": true,
 		"richvdh":       true,
-                "ara4n":         true,
+		"ara4n":         true,
 		"leonerd":       true,
 	}
 	if err := initCache(); err != nil {
