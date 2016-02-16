@@ -14,7 +14,8 @@ Matrix is a whole ecosystem of matrix-enabled clients, servers, gateways, applic
 The easiest way to get started is to pick a client that appeals and join #matrix:matrix.org:
 </div>
 
-&nbsp;
+<p>&nbsp;</p>
+
 <table class='bigtable'>
   <tr>
     <td class='bigproject'>
@@ -23,7 +24,7 @@ The easiest way to get started is to pick a client that appeals and join #matrix
       </a><br />
       If you like command line clients, try the Weechat plugin.<br /><br />
       <a href='./client/weechat.html'>
-        <img src='https://matrix.org/blog/wp-content/uploads/2015/04/Screen-Shot-2015-08-07-at-13.31.29-300x209.png'>
+        <img src='https://matrix.org/blog/wp-content/uploads/2015/04/Screen-Shot-2015-08-07-at-13.31.29-300x209.png' class='featured_screenshot'>
       </a>
     </td>
     <td class='bigproject'>
@@ -32,16 +33,25 @@ The easiest way to get started is to pick a client that appeals and join #matrix
       </a><br />
       If you like glossy (but beta) web clients, try Vector.<br /><br />
       <a href='./client/vector.html'>
-        <img src='https://matrix.org/blog/wp-content/uploads/2015/04/vector030216-300x204.png'>
+        <img src='https://matrix.org/blog/wp-content/uploads/2015/04/vector030216-300x204.png' class='featured_screenshot'>
       </a>
     </td>
     <td class='bigproject'>
-      <a href='./client/matrix-console.html' class='font18 bold'>
-        Matrix Console Web
+      <a href='./client/matrix-console-ios.html' class='font18 bold'>
+        Matrix Console iOS
       </a><br />
-      Console Web is the oldest and has most features, but has performance problems.<br /><br />
-      <a href='./client/matrix-console.html'>
-        <img src='https://matrix.org/blog/wp-content/uploads/2015/04/Screen-Shot-2015-08-07-at-13.28.53-300x195.png'>
+      Access the Matrix on your iOS phone via Matrix Console iOS.<br /><br />
+      <a href='./client/matrix-console-ios.html'>
+        <img src='https://github.com/matrix-org/matrix-doc/tree/master/supporting-docs/projects/images/matrix-console-android-2016-02-16-small.png' class='featured_screenshot'>
+      </a>
+    </td>
+    <td class='bigproject'>
+      <a href='./client/matrix-console-android.html' class='font18 bold'>
+        Matrix Console Android
+      </a><br />
+      Similarly, for Android, there is Matrix Console Android!<br /><br />
+      <a href='./client/matrix-console-android.html'>
+        <img src='https://github.com/matrix-org/matrix-doc/tree/master/supporting-docs/projects/images/matrix-console-android-2016-02-16-small.png' class='featured_screenshot'>
       </a>
     </td>
   </tr>

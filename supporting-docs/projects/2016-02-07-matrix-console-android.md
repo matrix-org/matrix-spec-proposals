@@ -2,13 +2,13 @@
 layout: project
 title: Matrix Console Android
 categories: projects client
-thumbnail: https://matrix.org/blog/wp-content/uploads/2015/04/android-400x284.png
+thumbnail: https://github.com/matrix-org/matrix-doc/tree/master/supporting-docs/projects/images/matrix-console-android-2016-02-16-cropped.png
 description: A neutral Android client showcasing Matrix capabilities and implementation.
 author: Matrix.org team
 maturity: Late beta
 ---
 
-![screenshot](https://matrix.org/blog/wp-content/uploads/2015/04/android.png "{{ page.title }}")
+![screenshot](https://github.com/matrix-org/matrix-doc/tree/master/supporting-docs/projects/images/matrix-consoleandroid-2016-02-16-large.png "{{ page.title }}")
 
 # {{ page.title }}
 Matrix.org’s reference Android client.

@@ -2,16 +2,16 @@
 layout: project
 title: Matrix Console iOS
 categories: projects client
-thumbnail: https://matrix.org/blog/wp-content/uploads/2015/04/matrix-ios-322x284.jpeg
+thumbnail: https://github.com/matrix-org/matrix-doc/tree/master/supporting-docs/projects/images/matrix-console-ios-2016-02-16-cropped.png
 description: A neutral iOS client showcasing Matrix capabilities and implementation.
 author: Matrix.org team
 maturity: Late beta
 ---
 
-![screenshot](https://matrix.org/blog/wp-content/uploads/2015/04/matrix-ios.jpeg "{{ page.title }}")
+![screenshot](https://github.com/matrix-org/matrix-doc/tree/master/supporting-docs/projects/images/matrix-console-android-2016-02-16-large.png "{{ page.title }}")
 
 # {{ page.title }}
-Matrix.org’s reference iOS client.
+Matrix.org's reference iOS client.
 
 This client is meant to be a showcase of Matrix capabilities, a reference implementation of the Matrix standard and an easy entry to the Matrix ecosystem from iOS devices for less techy users,  with a relatively neutral branding. This client is built using [MatrixKit](http://matrix.org/blog/project/matrix-ios-matrixkit/).
 
