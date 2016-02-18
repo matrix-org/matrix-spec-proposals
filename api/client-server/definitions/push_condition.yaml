@@ -2,7 +2,6 @@ properties:
   kind:
     enum:
     - event_match
-    - profile_tag
     - contains_display_name
     - room_member_count
     type: string
