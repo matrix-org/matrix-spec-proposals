@@ -354,13 +354,13 @@ Definition:
 .. code:: json
 
     {
-        "rule_id": ".m.rule.room_two_members",
+        "rule_id": ".m.rule.room_one_to_one",
         "default": true,
         "enabled": true,
         "conditions": [
             {
-                "kind": "room_member_count"
-                "is": "2",
+                "kind": "room_member_count",
+                "is": "2"
             }
         ],
         "actions": [
@@ -402,7 +402,7 @@ Definition:
             {
                 "key": "state_key",
                 "kind": "event_match",
-                "pattern": "@alice:example.com"
+                "pattern": "[the user's Matrix ID]"
             }
         ],
         "actions": [
@@ -418,34 +418,6 @@ Definition:
         ]
     }
 
-``.m.rule.member_event``
-````````````````````````
-Matches membership change events.
-
-Definition:
-
-.. code:: json
-
-   {
-        "rule_id": ".m.rule.member_event",
-        "default": true,
-        "enabled": true,
-        "conditions": [
-            {
-                "key": "type",
-                "kind": "event_match",
-                "pattern": "m.room.member"
-            }
-        ],
-        "actions": [
-            "notify",
-            {
-                "set_tweak": "highlight",
-                "value": false
-            }
-        ]
-   }
-
 ``.m.rule.message``
 ```````````````````
 Matches all chat messages.
@@ -455,7 +427,7 @@ Definition:
 .. code:: json
 
    {
-        "rule_id": ".m.rule.member_event",
+        "rule_id": ".m.rule.message",
         "default": true,
         "enabled": true,
         "conditions": [
