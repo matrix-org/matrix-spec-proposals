@@ -65,7 +65,7 @@ paths:
                 type: array
                 description: |-
                   A list of room events that happened just before the
-                  requested event.
+                  requested event, in reverse-chronological order.
                 items:
                   allOf:
                     - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
@@ -78,7 +78,7 @@ paths:
                 type: array
                 description: |-
                   A list of room events that happened just after the
-                  requested event.
+                  requested event, in chronological order.
                 items:
                   allOf:
                     - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
