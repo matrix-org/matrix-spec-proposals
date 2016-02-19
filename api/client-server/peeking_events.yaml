@@ -26,10 +26,10 @@ paths:
         them to the caller. This will block until an event is received, or until
         the ``timeout`` is reached.
 
-        This API is the same as the non-guest /events endpoint, but can be
-        called by guest users.
+        This API is the same as the normal ``/events`` endpoint, but can be
+        called by users who have not joined the room.
 
-        Note that the non-guest ``/events`` endpoint has been deprecated. This
+        Note that the normal ``/events`` endpoint has been deprecated. This
         API will also be deprecated at some point, but its replacement is not
         yet known.
       security:
@@ -50,15 +50,12 @@ paths:
           required: false
           x-example: "35000"
         - in: query
-          type: array
-          items:
-            type: string
+          type: string
           name: room_id
           description: |-
-            The room IDs for which events should be returned.
+            The room ID for which events should be returned.
           x-example:
-            - "!somewhere:over"
-            - "!the:rainbow"
+            - "!somewhere:over.the.rainbow"
       responses:
         200:
           description: "The events received, which may be none."
@@ -105,4 +102,4 @@ paths:
                     - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
         400:
           description: "Bad pagination ``from`` parameter."
-        # No tags to exclude this from the swagger UI - use the non-guest version instead.
+        # No tags to exclude this from the swagger UI - use the normal version instead.
