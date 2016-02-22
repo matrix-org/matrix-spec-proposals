@@ -31,6 +31,10 @@ paths:
 
         After a user has joined a room, the room will appear as an entry in the
         response of the |/initialSync|_ and |/sync|_ APIs.
+
+        If a ``third_party_signed`` was supplied, the homeserver must verify
+        that it matches a pending ``m.room.third_party_invite`` event in the
+        room, and perform key validity checking if required by the event.
       security:
         - accessToken: []
       parameters:
@@ -40,6 +44,50 @@ paths:
           description: The room identifier (not alias) to join.
           required: true
           x-example: "!d41d8cd:matrix.org"
+        - in: body
+          name: third_party_signed
+          schema:
+            type: object
+            example: |-
+              {
+                "third_party_signed": {
+                  "signed": {
+                    "sender": "@cat:the.hat",
+                    "mxid": "@green:eggs.ham",
+                    "token": "random8nonce",
+                    "signatures": {
+                      "horton.hears": {
+                        "ed25519:0": "some9signature"
+                      }
+                    }
+                  }
+                }
+              }
+            properties:
+              third_party_signed:
+                type: object
+                title: ThirdPartySigned
+                description: A signature of an ``m.third_party_invite`` token to prove that this user owns a third party identity which has been invited to the room.
+                properties:
+                  signed:
+                    type: object
+                    title: Signed
+                    properties:
+                      sender:
+                        type: string
+                        description: The Matrix ID of the user who issued the invite.
+                      mxid:
+                        type: string
+                        description: The Matrix ID of the invitee.
+                      token:
+                        type: string
+                        description: The state key of the m.third_party_invite event.
+                      signatures:
+                        type: object
+                        description: A signatures object containing a signature of the entire signed object.
+                        title: Signatures
+                    required: ["sender", "mxid", "token", "signatures"]
+                required: ["signed"]
       responses:
         200:
           description: |-
@@ -79,6 +127,10 @@ paths:
 
         After a user has joined a room, the room will appear as an entry in the
         response of the |/initialSync|_ and |/sync|_ APIs.
+
+        If a ``third_party_signed`` was supplied, the homeserver must verify
+        that it matches a pending ``m.room.third_party_invite`` event in the
+        room, and perform key validity checking if required by the event.
       security:
         - accessToken: []
       parameters:
@@ -88,6 +140,50 @@ paths:
           description: The room identifier or alias to join.
           required: true
           x-example: "#monkeys:matrix.org"
+        - in: body
+          name: third_party_signed
+          schema:
+            type: object
+            example: |-
+              {
+                "third_party_signed": {
+                  "signed": {
+                    "sender": "@cat:the.hat",
+                    "mxid": "@green:eggs.ham",
+                    "token": "random8nonce",
+                    "signatures": {
+                      "horton.hears": {
+                        "ed25519:0": "some9signature"
+                      }
+                    }
+                  }
+                }
+              }
+            properties:
+              third_party_signed:
+                type: object
+                title: ThirdPartySigned
+                description: A signature of an ``m.third_party_invite`` token to prove that this user owns a third party identity which has been invited to the room.
+                properties:
+                  signed:
+                    type: object
+                    title: Signed
+                    properties:
+                      sender:
+                        type: string
+                        description: The Matrix ID of the user who issued the invite.
+                      mxid:
+                        type: string
+                        description: The Matrix ID of the invitee.
+                      token:
+                        type: string
+                        description: The state key of the m.third_party_invite event.
+                      signatures:
+                        type: object
+                        description: A signatures object containing a signature of the entire signed object.
+                        title: Signatures
+                    required: ["sender", "mxid", "token", "signatures"]
+                required: ["signed"]
       responses:
         200:
           description: |-
