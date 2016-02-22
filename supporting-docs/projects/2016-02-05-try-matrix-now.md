@@ -42,7 +42,7 @@ The easiest way to get started is to pick a client that appeals and join #matrix
       </a><br />
       Access the Matrix on your iOS phone via Matrix Console iOS.<br /><br />
       <a href='./client/matrix-console-ios.html'>
-        <img src='https://raw.githubusercontent.com/matrix-org/matrix-doc/master/supporting-docs/projects/images/matrix-console-ios-2016-02-16-small.png' class='featured_screenshot'>
+        <img src='/docs/projects/images/matrix-console-ios-2016-02-16-small.png' class='featured_screenshot'>
       </a>
     </td>
     <td class='bigproject'>
@@ -51,7 +51,7 @@ The easiest way to get started is to pick a client that appeals and join #matrix
       </a><br />
       Similarly, for Android, there is Matrix Console Android!<br /><br />
       <a href='./client/matrix-console-android.html'>
-        <img src='https://raw.githubusercontent.com/matrix-org/matrix-doc/master/supporting-docs/projects/images/matrix-console-android-2016-02-16-small.png' class='featured_screenshot'>
+        <img src='/docs/projects/images/matrix-console-android-2016-02-16-small.png' class='featured_screenshot'>
       </a>
     </td>
   </tr>
