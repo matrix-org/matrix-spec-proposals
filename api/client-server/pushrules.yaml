@@ -431,6 +431,51 @@ paths:
       tags:
         - Push notifications
   "/pushrules/{scope}/{kind}/{ruleId}/enabled":
+    get:
+      summary: "Get whether a push rule is enabled"
+      description:
+        This endpoint gets whether the specified push rule is enabled.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: scope
+          required: true
+          x-example: "global"
+          description: |-
+            Either ``global`` or ``device/<profile_tag>`` to specify global
+            rules or device rules for the given ``profile_tag``.
+        - in: path
+          type: string
+          name: kind
+          required: true
+          x-example: room
+          enum: ["override", "underride", "sender", "room", "content"]
+          description: |
+            The kind of rule
+        - in: path
+          type: string
+          name: ruleId
+          required: true
+          x-example: "#spam:example.com"
+          description: |
+            The identifier for the rule.
+      responses:
+        200:
+          description: Whether the push rule is enabled.
+          examples:
+            application/json: |-
+              {
+                "enabled": true
+              }
+          schema:
+            type: object
+            properties:
+              enabled:
+                type: boolean
+                description: Whether the push rule is enabled or not.
+            required: ["enabled"]
     put:
       summary: "Enable or disable a push rule."
       description: |-
