@@ -531,3 +531,107 @@ paths:
             type: object
       tags:
         - Push notifications
+  "/pushrules/{scope}/{kind}/{ruleId}/actions":
+    get:
+      summary: "The actions for a push rule"
+      description:
+        This endpoint get the actions for the specified push rule.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: scope
+          required: true
+          x-example: "global"
+          description: |-
+            Either ``global`` or ``device/<profile_tag>`` to specify global
+            rules or device rules for the given ``profile_tag``.
+        - in: path
+          type: string
+          name: kind
+          required: true
+          x-example: room
+          enum: ["override", "underride", "sender", "room", "content"]
+          description: |
+            The kind of rule
+        - in: path
+          type: string
+          name: ruleId
+          required: true
+          x-example: "#spam:example.com"
+          description: |
+            The identifier for the rule.
+      responses:
+        200:
+          description: The actions for this push rule.
+          examples:
+            application/json: |-
+              {
+                "actions": ["notify"]
+              }
+          schema:
+            type: object
+            properties:
+              actions:
+                type: array
+                description:  The action(s) to perform for this rule.
+                items:
+                  type: string
+            required: ["actions"]
+    put:
+      summary: "Set the actions for a push rule."
+      description: |-
+        This endpoint allows clients to change the actions of a push rule.
+        This can be used to change the actions of builtin rules.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: scope
+          required: true
+          x-example: "global"
+          description: |-
+            ``global`` to specify global rules.
+        - in: path
+          type: string
+          name: kind
+          required: true
+          x-example: room
+          enum: ["override", "underride", "sender", "room", "content"]
+          description: |
+            The kind of rule
+        - in: path
+          type: string
+          name: ruleId
+          required: true
+          x-example: "#spam:example.com"
+          description: |
+            The identifier for the rule.
+        - in: body
+          name: body
+          description: |
+            Whether the push rule is enabled or not.
+          required: true
+          schema:
+            type: object
+            properties:
+              actions:
+                type: array
+                description: The action(s) to perform for this rule.
+            required: ["actions"]
+            example: |-
+              {
+                "actions": ["notify"]
+              }
+      responses:
+        200:
+          description: The actions for the push rule were set.
+          examples:
+            application/json: |-
+              {}
+          schema:
+            type: object
+      tags:
+        - Push notifications
