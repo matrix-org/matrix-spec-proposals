@@ -75,10 +75,10 @@ Idle timeout
 ~~~~~~~~~~~~
 
 The server will automatically set a user's presence to ``unavailable`` if their
-last active time was over 5 minutes ago. Clients can manually set a user's
-presence to ``unavailable``. Any activity that bumps the last active time on any
-of the user's clients will cause the server to automatically set their presence
-to ``online``.
+last active time was over a threshold value (e.g. 5 minutes). Clients can
+manually set a user's presence to ``unavailable``. Any activity that bumps the
+last active time on any of the user's clients will cause the server to
+automatically set their presence to ``online``.
 
 Security considerations
 -----------------------
