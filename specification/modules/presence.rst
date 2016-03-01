@@ -66,10 +66,10 @@ b) a presence state other than ``online``. During this period clients must
 consider the user to be currently active, irrespective of the last active time.
 
 The last active time must be up to date whenever the server gives a presence
-event to the client; the ``currently_active`` mechanism should purely be used to
-disable as opposed to disabling last active tracking. Thus clients can fetch up
-to date last active times by explicitly requesting the presence for a given
-user.
+event to the client. The ``currently_active`` mechanism should purely be used by
+servers to stop sending continuous presence updates, as opposed to disabling
+last active tracking entirely. Thus clients can fetch up to date last active
+times by explicitly requesting the presence for a given user.
 
 Idle timeout
 ~~~~~~~~~~~~
