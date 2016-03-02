@@ -87,6 +87,7 @@ paths:
                   the room.
                 items:
                   type: object
+                  title: Invite3pid
                   properties:
                     id_server:
                       type: string
