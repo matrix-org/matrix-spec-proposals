@@ -27,6 +27,7 @@
                     "description": "Keys with which the token may be signed.",
                     "items": {
                         "type": "object",
+                        "title": "PublicKeys",
                         "properties": {
                             "public_key": {
                                 "type": "string",

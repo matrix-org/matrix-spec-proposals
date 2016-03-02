@@ -90,6 +90,7 @@ paths:
                   A dictionary of information for the pusher implementation
                   itself. If ``kind`` is ``http``, this should contain ``url``
                   which is the URL to use to send notifications to.
+                title: PusherData
                 properties:
                   url:
                     type: string
