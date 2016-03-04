@@ -36,7 +36,7 @@
                             "key_validity_url": {
                                 "type": "string",
                                 "description": "An optional URL which can be fetched, with querystring public_key=public_key, to validate whether the key has been revoked. The URL must return a JSON object containing a boolean property named 'valid'. If this URL is absent, the key must be considered valid indefinitely."
-                            },
+                            }
                         },
                         "required": ["public_key"]
                     }
