@@ -188,7 +188,7 @@ session
   API call.
 
 The client then chooses a flow and attempts to complete one of the stages. It
-does this by resubmitting the same request with the the addition of an 'auth'
+does this by resubmitting the same request with the addition of an 'auth'
 key in the object that it submits. This dictionary contains a ``type`` key whose
 value is the name of the stage type that the client is attempting to complete.
 It must also contains a ``session`` key with the value of the session key given
@@ -873,7 +873,7 @@ includes:
 - ``m.room.join_rules`` : Whether the room is "invite-only" or not.
 
 See `Room Events`_ for more information on these events. To create a room, a
-client has to use the the following API.
+client has to use the following API.
 
 {{create_room_http_api}}
 
