@@ -111,7 +111,7 @@ Some API endpoints may allow or require the use of ``POST`` requests without a
 transaction ID. Where this is optional, the use of a ``PUT`` request is strongly
 recommended.
 
-{{versions_http_api}}
+{{versions_cs_http_api}}
 
 Client Authentication
 ---------------------
@@ -481,9 +481,9 @@ API calls using the User-Interactive Authentication mechanism
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. _User-Interactive Authentication: `sect:auth-api`_
 
-{{registration_http_api}}
+{{registration_cs_http_api}}
 
-{{login_http_api}}
+{{login_cs_http_api}}
 
 Login Fallback
 ++++++++++++++
@@ -525,7 +525,7 @@ Adding Account Administrative Contact Information
 A homeserver may keep some contact information for administrative use.
 This is independent of any information kept by any Identity Servers.
 
-{{administrative_contact_http_api}}
+{{administrative_contact_cs_http_api}}
 
 Pagination
 ----------
@@ -628,7 +628,7 @@ Filters can be created on the server and can be passed as as a parameter to APIs
 which return events. These filters alter the data returned from those APIs.
 Not all APIs accept filters.
 
-{{filter_http_api}}
+{{filter_cs_http_api}}
 
 Events
 ------
@@ -750,9 +750,9 @@ When the client first logs in, they will need to initially synchronise with
 their homeserver. This is achieved via the initial sync API described below.
 This API also returns an ``end`` token which can be used with the event stream.
 
-{{old_sync_http_api}}
+{{old_sync_cs_http_api}}
 
-{{sync_http_api}}
+{{sync_cs_http_api}}
 
 
 Getting events for a room
@@ -760,16 +760,16 @@ Getting events for a room
 
 There are several APIs provided to ``GET`` events for a room:
 
-{{rooms_http_api}}
+{{rooms_cs_http_api}}
 
 
-{{message_pagination_http_api}}
+{{message_pagination_cs_http_api}}
 
 
 Sending events to a room
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-{{room_state_http_api}}
+{{room_state_cs_http_api}}
 
 
 **Examples**
@@ -806,7 +806,7 @@ In some cases, there may be no need for a ``state_key``, so it can be omitted::
   PUT /rooms/!roomid:domain/state/m.room.bgd.color
   { "color": "red", "hex": "#ff0000" }
 
-{{room_send_http_api}}
+{{room_send_cs_http_api}}
 
 
 Redactions
@@ -855,7 +855,7 @@ Events
 Client behaviour
 ++++++++++++++++
 
-{{redaction_http_api}}
+{{redaction_cs_http_api}}
 
 Rooms
 -----
@@ -875,7 +875,7 @@ includes:
 See `Room Events`_ for more information on these events. To create a room, a
 client has to use the following API.
 
-{{create_room_http_api}}
+{{create_room_cs_http_api}}
 
 Room aliases
 ~~~~~~~~~~~~
@@ -901,7 +901,7 @@ request.
 Homeservers can respond to resolve requests for aliases on other domains than
 their own by using the federation API to ask other domain name homeservers.
 
-{{directory_http_api}}
+{{directory_cs_http_api}}
 
 
 Permissions
@@ -980,13 +980,13 @@ The allowable state transitions of membership are::
                   /ban
 
 
-{{inviting_http_api}}
+{{inviting_cs_http_api}}
 
-{{joining_http_api}}
+{{joining_cs_http_api}}
 
-{{kicking_http_api}}
+{{kicking_cs_http_api}}
 
-{{banning_http_api}}
+{{banning_cs_http_api}}
 
 Leaving rooms
 ~~~~~~~~~~~~~
@@ -999,7 +999,7 @@ Whether or not they actually joined the room, if the room is
 an "invite-only" room they will need to be re-invited before they can re-join
 the room.
 
-{{leaving_http_api}}
+{{leaving_cs_http_api}}
 
 Banning users in a room
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -1030,12 +1030,12 @@ before they can re-join the room or be re-invited.
 Listing rooms
 ~~~~~~~~~~~~~
 
-{{list_public_rooms_http_api}}
+{{list_public_rooms_cs_http_api}}
 
 Profiles
 --------
 
-{{profile_http_api}}
+{{profile_cs_http_api}}
 
 Events on Change of Profile Information
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

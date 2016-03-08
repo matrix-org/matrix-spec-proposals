@@ -11,7 +11,7 @@ Client behaviour
 
 There is a single HTTP API for retrieving event context, documented below.
 
-{{event_context_http_api}}
+{{event_context_cs_http_api}}
 
 Security considerations
 -----------------------

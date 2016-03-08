@@ -24,4 +24,4 @@ the tags are for.
 Client Behaviour
 ----------------
 
-{{account_data_http_api}}
+{{account_data_cs_http_api}}

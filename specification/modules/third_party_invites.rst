@@ -36,7 +36,7 @@ Client behaviour
 
 A client asks a server to invite a user by their third party identifier.
 
-{{third_party_membership_http_api}}
+{{third_party_membership_cs_http_api}}
 
 Server behaviour
 ----------------

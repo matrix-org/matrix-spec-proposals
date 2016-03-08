@@ -44,7 +44,7 @@ Client behaviour
 Clients can manually set/get their presence/presence list using the HTTP APIs
 listed below.
 
-{{presence_http_api}}
+{{presence_cs_http_api}}
 
 Idle timeout
 ~~~~~~~~~~~~

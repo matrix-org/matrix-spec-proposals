@@ -12,7 +12,7 @@ Client behaviour
 ----------------
 There is a single HTTP API for performing server-side search, documented below.
 
-{{search_http_api}}
+{{search_cs_http_api}}
 
 Search Categories
 -----------------

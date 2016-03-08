@@ -9,4 +9,4 @@ and data.
 Client Behaviour
 ----------------
 
-{{admin_http_api}}
+{{admin_cs_http_api}}
