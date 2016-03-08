@@ -340,9 +340,9 @@ using the APIs below.
 Push Rules: Events
 ~~~~~~~~~~~~~~~~~~
 
-A user changes their push rules a ``m.push_rules`` event is sent to all clients
-in the ``account_data`` section of their next /sync request. The content of the
-event is the current push rules for the user.
+When a user changes their push rules a ``m.push_rules`` event is sent to all
+clients in the ``account_data`` section of their next ``/sync`` request. The
+content of the event is the current push rules for the user.
 
 Examples
 ++++++++
