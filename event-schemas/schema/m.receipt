@@ -2,6 +2,9 @@
     "type": "object",
     "title": "Receipt Event",
     "description": "Informs the client of new receipts.",
+    "allOf": [{
+        "$ref": "core-event-schema/event.yaml"
+    }],
     "properties": {
         "content": {
             "type": "object",

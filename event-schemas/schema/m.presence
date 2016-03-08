@@ -2,6 +2,9 @@
     "type": "object",
     "title": "Presence Event",
     "description": "Informs the client of a user's presence state change.",
+    "allOf": [{
+        "$ref": "core-event-schema/event.yaml"
+    }],
     "properties": {
         "content": {
             "type": "object",

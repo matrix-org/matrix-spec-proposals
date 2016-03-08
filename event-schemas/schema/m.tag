@@ -2,6 +2,9 @@
   "type": "object",
   "title": "Tag Event",
   "description": "Informs the client of tags on a room.",
+  "allOf": [{
+    "$ref": "core-event-schema/event.yaml"
+  }],
   "properties": {
     "type": {
       "type": "string",
