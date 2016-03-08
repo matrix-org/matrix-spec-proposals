@@ -89,7 +89,7 @@ Client behaviour
 Clients MUST configure a Pusher before they will receive push notifications.
 There is a single API endpoint for this, as described below.
 
-{{pusher_http_api}}
+{{pusher_cs_http_api}}
 
 .. _pushers: `def:pushers`_
 
@@ -334,7 +334,7 @@ Push Rules: API
 Clients can retrieve, add, modify and remove push rules globally or per-device
 using the APIs below.
 
-{{pushrules_http_api}}
+{{pushrules_cs_http_api}}
 
 Examples
 ++++++++

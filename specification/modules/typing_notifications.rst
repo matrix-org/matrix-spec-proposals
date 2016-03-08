@@ -32,7 +32,7 @@ expected timeout runs out is recommended. When the user stops typing, the
 state change of the ``boolean`` to ``false`` should trigger another HTTP request
 to inform the server that the user has stopped typing.
 
-{{typing_http_api}}
+{{typing_cs_http_api}}
 
 Security considerations
 -----------------------

@@ -17,7 +17,10 @@ import subprocess
 import urllib
 import yaml
 
-HTTP_APIS = ("../api/application-service", "../api/client-server",)
+HTTP_APIS = {
+    "../api/application-service": "as",
+    "../api/client-server": "cs",
+}
 EVENT_EXAMPLES = "../event-schemas/examples"
 EVENT_SCHEMA = "../event-schemas/schema"
 CORE_EVENT_SCHEMA = "../event-schemas/schema/core-event-schema"
@@ -474,7 +477,7 @@ class MatrixUnits(Units):
 
     def load_swagger_apis(self):
         apis = {}
-        for path in HTTP_APIS:
+        for path, suffix in HTTP_APIS.items():
             for filename in os.listdir(path):
                 if not filename.endswith(".yaml"):
                     continue
@@ -483,6 +486,7 @@ class MatrixUnits(Units):
                 with open(filepath, "r") as f:
                     # strip .yaml
                     group_name = filename[:-5].replace("-", "_")
+                    group_name = "%s_%s" % (group_name, suffix)
                     api = yaml.load(f.read())
                     api = resolve_references(filepath, api)
                     api["__meta"] = self._load_swagger_meta(

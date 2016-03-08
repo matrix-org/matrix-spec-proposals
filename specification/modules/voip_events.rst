@@ -90,7 +90,7 @@ The homeserver MAY provide a TURN server which clients can use to contact the
 remote party. The following HTTP API endpoints will be used by clients in order
 to get information about the TURN server.
 
-{{voip_http_api}}
+{{voip_cs_http_api}}
 
 
 Security considerations

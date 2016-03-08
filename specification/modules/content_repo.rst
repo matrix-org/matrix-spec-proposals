@@ -24,7 +24,7 @@ Client behaviour
 
 Clients can upload and download content using the following HTTP APIs.
 
-{{content_repo_http_api}}
+{{content_repo_cs_http_api}}
 
 Thumbnails
 ~~~~~~~~~~

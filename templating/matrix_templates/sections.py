@@ -57,7 +57,7 @@ class MatrixSections(Sections):
                 rest = [
                     e for e in http_api["endpoints"] if e not in sorted_endpoints
                 ]
-                endpoints = sorted_endpoints + rest
+                endpoints = sorted_endpoints + sorted(rest, key=lambda k: k["path"])
             else:
                 # guess it's a func, call it.
                 endpoints = sortFnOrPathList(http_api["endpoints"])
@@ -81,9 +81,9 @@ class MatrixSections(Sections):
         renders = {}
         for group in swagger_groups:
             sortFnOrPathList = None
-            if group == "presence":
+            if group == "presence_cs":
                 sortFnOrPathList = ["status"]
-            elif group == "profile":
+            elif group == "profile_cs":
                 sortFnOrPathList=["displayname", "avatar_url"]
             renders[group + "_http_api"] = self._render_http_api_group(
                 group, sortFnOrPathList

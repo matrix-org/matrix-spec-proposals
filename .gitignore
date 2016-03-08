@@ -3,6 +3,7 @@ scripts/continuserv/continuserv
 scripts/speculator/speculator
 templating/out
 *.pyc
+*.swp
 supporting-docs/_site
 supporting-docs/.sass-cache
 api/node_modules

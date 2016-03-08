@@ -52,7 +52,7 @@ dismissing a notification in order for the event to count as "read".
 A client can update the markers for its user by interacting with the following
 HTTP APIs.
 
-{{receipts_http_api}}
+{{receipts_cs_http_api}}
 
 Server behaviour
 ----------------

@@ -27,7 +27,7 @@ events outside the ``/events`` stream.
 
 .. _peeking_events_api:
 
-{{peeking_events_http_api}}
+{{peeking_events_cs_http_api}}
 
 Server behaviour
 ----------------

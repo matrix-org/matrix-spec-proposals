@@ -149,7 +149,7 @@ HTTP APIs
 This contains application service APIs which are used by the homeserver. All
 application services MUST implement these APIs. These APIs are defined below.
 
-{{application_service_http_api}}
+{{application_service_as_http_api}}
 
 
 .. _create the user: `sect:asapi-permissions`_

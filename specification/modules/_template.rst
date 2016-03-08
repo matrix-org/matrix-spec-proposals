@@ -31,10 +31,10 @@ Client behaviour
 ----------------
 List any new HTTP endpoints. These endpoints should be documented using Swagger.
 Once there is Swagger, there will be a template variable based on the name of
-the YAML file with the suffix ``_http_api``. You can insert a template for
+the YAML file with the suffix ``_cs_http_api``. You can insert a template for
 swagger docs like so:
 
-{{name-of-yaml-file-without-file-ext_http_api}}
+{{name-of-yaml-file-without-file-ext_cs_http_api}}
 
 List the steps the client needs to take to
 correctly process this module. List what data structures the client should be
