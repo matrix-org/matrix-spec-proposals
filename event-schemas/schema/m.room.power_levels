@@ -25,6 +25,10 @@
                     "type": "number",
                     "description": "The level required to redact an event."
                 },
+                "invite": {
+                    "type": "number",
+                    "description": "The level required to invite a user."
+                },
                 "state_default": { 
                     "type": "number",
                     "description": "The default level required to send state events. Can be overridden by the ``events`` key."
