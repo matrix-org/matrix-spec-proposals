@@ -19,6 +19,9 @@ targets:
     files:
       - server_server_api.rst
       - { 1: event_signing.rst }
+  identity_service:
+    files:
+      - identity_service_api.rst
   appendices:
     files:
       - appendices.rst
