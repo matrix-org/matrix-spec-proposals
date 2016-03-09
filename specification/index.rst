@@ -19,6 +19,7 @@ The following APIs are documented in this specification:
 - `Client-Server API <client_server.html>`_ version %CLIENT_RELEASE_LABEL% for writing Matrix clients.
 - `Server-Server API <server_server.html>`_ version %SERVER_RELEASE_LABEL% for writing servers which can federate with Matrix.
 - `Application Service API <application_service.html>`_ version %CLIENT_RELEASE_LABEL% for writing privileged plugins to servers.
+- `Identity Service API <identity_service.html>`_ version unstable for mapping third party identifiers (e.g. email addresses) to Matrix IDs.
 
 There are also some `appendices <appendices.html>`_.
 

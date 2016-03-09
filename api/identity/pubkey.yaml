@@ -1,0 +1,97 @@
+swagger: '2.0'
+info:
+  title: "Matrix Identity Service Public Key API"
+  version: "1.0.0"
+host: localhost:8090
+schemes:
+  - https
+  - http
+basePath: /_matrix/identity/v1/api
+produces:
+  - application/json
+paths:
+  "/pubkey/{keyId}":
+    get:
+      summary: Get a public key.
+      description: |-
+        Get the public key for the passed key ID.
+      parameters:
+        - in: path
+          type: string
+          name: keyId
+          required: true
+          description: |-
+            The ID of the key. This should take the form algorithm:identifier
+            where algorithm identifies the signing algorithm, and the identifier
+            is an opaque string.
+          x-example: "ed25519:0"
+      responses:
+        200:
+          description:
+            The public key exists.
+          examples:
+            application/json: |-
+              {
+                "public_key": "VXuGitF39UH5iRfvbIknlvlAVKgD1BsLDMvBf0pmp7c"
+              }
+          schema:
+            type: object
+            properties:
+              public_key:
+                type: string
+  "/pubkey/isvalid":
+    get:
+      summary: Check whether a long-term public key is valid.
+      description: |-
+        Check whether a long-term public key is valid.
+      parameters:
+        - in: query
+          type: string
+          name: public_key
+          required: true
+          description: |-
+            The unpadded base64-encoded public key to check.
+          x-example: "VXuGitF39UH5iRfvbIknlvlAVKgD1BsLDMvBf0pmp7c"
+      responses:
+        200:
+          description:
+            The validity of the public key.
+          examples:
+            application/json: |-
+              {
+                "valid": true
+              }
+          schema:
+            type: object
+            properties:
+              valid:
+                type: boolean
+                description: Whether the public key is recognised and is currently valid.
+  "/pubkey/ephemeral/isvalid":
+    get:
+      summary: Check whether a short-term public key is valid.
+      description: |-
+        Check whether a short-term public key is valid.
+      parameters:
+        - in: query
+          type: string
+          name: public_key
+          required: true
+          description: |-
+            The unpadded base64-encoded public key to check.
+          x-example: "VXuGitF39UH5iRfvbIknlvlAVKgD1BsLDMvBf0pmp7c"
+      responses:
+        200:
+          description:
+            The validity of the public key.
+          examples:
+            application/json: |-
+              {
+                "valid": true
+              }
+          schema:
+            type: object
+            properties:
+              valid:
+                type: boolean
+                description: Whether the public key is recognised and is currently valid.

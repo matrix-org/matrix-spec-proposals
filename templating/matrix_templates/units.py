@@ -20,6 +20,7 @@ import yaml
 HTTP_APIS = {
     "../api/application-service": "as",
     "../api/client-server": "cs",
+    "../api/identity": "is",
 }
 EVENT_EXAMPLES = "../event-schemas/examples"
 EVENT_SCHEMA = "../event-schemas/schema"
