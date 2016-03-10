@@ -116,3 +116,27 @@ At a later point, if the owner of that particular 3pid binds it with a Matrix us
 Where the signature is produced using a long-term private key.
 
 Also, the generated ephemeral public key will be listed as valid on requests to ``/_matrix/identity/v1/api/pubkey/ephemeral/isvalid``.
+
+Ephemeral invitation signing
+----------------------------
+
+To aid clients who may not be able to perform crypto themselves, the identity service offers some crypto functionality to help in accepting invitations.
+This is less secure than the client doing it itself, but may be useful where this isn't possible.
+
+The identity service will happily sign invitation details with a request-specified ed25519 private key for you, if you want it to. It takes URL-encoded POST parameters:
+- mxid (string, required)
+- token (string, required)
+- private_key (string, required): The unpadded base64-encoded private key.
+
+It will look up ``token`` which was stored in a call to ``store-invite``, and fetch the sender of the invite. It will then respond with JSON which looks something like::
+
+ {
+   "mxid": "@foo:bar.com",
+   "sender": "@baz:bar.com",
+   "signatures" {
+     "my.id.server": {
+       "ed25519:0": "def987"
+     }
+   },
+   "token": "abc123"
+ }
