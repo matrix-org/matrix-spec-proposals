@@ -1,7 +1,7 @@
 {
     "type": "object",
     "title": "The current membership state of a user in the room.",
-    "description": "Adjusts the membership state for a user in a room. It is preferable to use the membership APIs (``/rooms/<room id>/invite`` etc) when performing membership actions rather than adjusting the state directly as there are a restricted set of valid transformations. For example, user A cannot force user B to join a room, and trying to force this state change directly will fail. \n\nThe following membership states are specified:\n\n- ``invite`` - The user has been invited to join a room, but has not yet joined it. They may not participate in the room until they join.\n\n- ``join`` - The user has joined the room (possibly after accepting an invite), and may participate in it.\n\n- ``leave`` - The user was once joined to the room, but has since left (possibly by choice, or possibly by being kicked).\n\n- ``ban`` - The user has been banned from the room, and is no longer allowed to join it until they are un-banned from the room (by having their membership state set to a value other than ``ban``).\n\n- ``knock`` - This is a reserved word, which currently has no meaning.\n\nThe ``third_party_invite`` property will be set if this invite is an ``invite`` event and is the successor of an ``m.room.third_party_invite`` event, and absent otherwise.\n\nThis event may also include an ``invite_room_state`` key **outside the** ``content`` **key**. If present, this contains an array of ``StrippedState`` Events. These events provide information on a few select state events such as the room name.",
+    "description": "Adjusts the membership state for a user in a room. It is preferable to use the membership APIs (``/rooms/<room id>/invite`` etc) when performing membership actions rather than adjusting the state directly as there are a restricted set of valid transformations. For example, user A cannot force user B to join a room, and trying to force this state change directly will fail. \n\nThe following membership states are specified:\n\n- ``invite`` - The user has been invited to join a room, but has not yet joined it. They may not participate in the room until they join.\n\n- ``join`` - The user has joined the room (possibly after accepting an invite), and may participate in it.\n\n- ``leave`` - The user was once joined to the room, but has since left (possibly by choice, or possibly by being kicked).\n\n- ``ban`` - The user has been banned from the room, and is no longer allowed to join it until they are un-banned from the room (by having their membership state set to a value other than ``ban``).\n\n- ``knock`` - This is a reserved word, which currently has no meaning.\n\nThe ``third_party_invite`` property will be set if this invite is an ``invite`` event and is the successor of an ``m.room.third_party_invite`` event, and absent otherwise.\n\nThis event may also include an ``invite_room_state`` key **outside the** ``content`` **key**. If present, this contains an array of ``StrippedState`` Events. These events provide information on a subset of state events such as the room name.",
     "allOf": [{
         "$ref": "core-event-schema/state_event.yaml"
     }],
@@ -68,7 +68,7 @@
         },
         "invite_room_state": {
             "type": "array",
-            "description": "A subset of the state of the room at the time of the invite, if ``membership`` is ``invite``",
+            "description": "A subset of the state of the room at the time of the invite, if ``membership`` is ``invite``. Note that this state is informational, and SHOULD NOT be trusted; once the client has joined the room, it SHOULD SHOULD fetch the live state from the server and discard the invite_room_state. Also, clients must not rely on any particular state being present here; they SHOULD behave properly (with possibly a degraded but not a broken experience) in the absence of any particular events here. If they are set on the room, at least the state for ``m.room.avatar``, ``m.room.canonical_alias``, ``m.room.join_rules``, and ``m.room.name`` SHOULD be included.",
             "items": {
                 "type": "object",
                 "title": "StrippedState",
@@ -77,8 +77,7 @@
                 "properties": {
                     "type": {
                         "type": "string",
-                        "description": "The ``type`` for the event.",
-                        "enum": ["m.room.join_rules", "m.room.canonical_alias", "m.room.avatar", "m.room.name"]
+                        "description": "The ``type`` for the event."
                     },
                     "state_key": {
                         "type": "string",
