@@ -59,6 +59,11 @@ service's long-term keys.
 
 {{pubkey_is_http_api}}
 
+Association Lookup
+------------------
+
+{{lookup_is_http_api}}
+
 Invitation Storage
 ------------------
 

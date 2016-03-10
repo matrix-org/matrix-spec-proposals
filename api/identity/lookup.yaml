@@ -1,0 +1,73 @@
+swagger: '2.0'
+info:
+  title: "Matrix Identity Service Public Key API"
+  version: "1.0.0"
+host: localhost:8090
+schemes:
+  - https
+  - http
+basePath: /_matrix/identity/v1/api
+produces:
+  - application/json
+paths:
+  "/lookup":
+    get:
+      summary: Look up the Matrix user ID for a 3pid.
+      description: Look up the Matrix user ID for a 3pid.
+      parameters:
+        - in: query
+          type: string
+          name: medium
+          required: true
+          description: The literal string "email".
+          x-example: "email"
+        - in: query
+          type: string
+          name: address
+          required: true
+          description: The email address being looked up.
+          x-example: "louise@bobs.burgers"
+      responses:
+        200:
+          description:
+            The association for that 3pid, or the empty object if no association is known.
+          examples:
+            application/json: |-
+              {
+                "address": "louise@bobs.burgers",
+                "medium": "email",
+                "mxid": "@ears:matrix.org",
+                "not_before": 1428825849161,
+                "not_after": 4582425849161,
+                "ts": 1428825849161,
+
+                "signatures": {
+                  "matrix.org": {
+                    "ed25519:0": "ENiU2YORYUJgE6WBMitU0mppbQjidDLanAusj8XS2nVRHPu+0t42OKA/r6zV6i2MzUbNQ3c3MiLScJuSsOiVDQ"
+                  }
+                }
+              }
+          schema:
+            type: object
+            properties:
+              address:
+                type: string
+                description: The 3pid address of the user being looked up.
+              medium:
+                type: string
+                description: The literal string "email".
+              mxid:
+                type: string
+                description: The Matrix user ID associated with the 3pid.
+              not_before:
+                type: integer
+                description: A unix timestamp before which the association is not known to be valid.
+              not_after:
+                type: integer
+                description: A unix timestamp after which the association is not known to be valid.
+              ts:
+                type: integer
+                description: The unix timestamp at which the association was verified.
+              signatures:
+                type: object
+                description: The signatures of the verifying identity service which show that the association should be trusted, if you trust the verifying identity service.
