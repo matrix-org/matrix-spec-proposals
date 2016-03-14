@@ -29,24 +29,9 @@
                     "type": "object",
                     "title": "ImageInfo",
                     "description": "Metadata about the image referred to in ``url``.",
-                    "properties": {
-                        "size": {
-                            "type": "integer",
-                            "description": "Size of the image in bytes."
-                        },
-                        "w": {
-                            "type": "integer",
-                            "description": "The width of the image in pixels."
-                        },
-                        "h": {
-                            "type": "integer",
-                            "description": "The height of the image in pixels."
-                        },
-                        "mimetype": {
-                            "type": "string",
-                            "description": "The mimetype of the image, e.g. ``image/jpeg``."
-                        }
-                    }
+                    "allOf": [{
+                        "$ref": "core-event-schema/msgtype_infos/image_info.yaml"
+                    }]
                 }
             },
             "required": ["url"]
