@@ -1,6 +1,12 @@
-======================
+---
+layout: post
+title: Let's Encrypt Matrix
+categories: guides
+---
+
+====================
 Let's Encrypt Matrix
-======================
+====================
 
 0: Prerequisites
 ================
