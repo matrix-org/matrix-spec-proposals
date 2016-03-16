@@ -62,6 +62,10 @@
             "type": "string",
             "description": "The ``user_id`` this membership event relates to."
         },
+        "room_id": {
+            "type": "string",
+            "description": "The ID of the room associated with this event. This key may not be present on some APIs if they reside under a key marked with the room ID."
+        },
         "type": {
             "type": "string",
             "enum": ["m.room.member"]
