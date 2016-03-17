@@ -8,7 +8,7 @@ categories: guides
 Let's Encrypt Matrix
 ====================
 
-Let's Encrypt is a free Certificate Authority that makes it easy to secure your server's internet traffic. This makes it really easy to secure your Matrix homeserver, and this guide will explain exactly how you do this.
+Let's Encrypt is a free Certificate Authority that makes it easy to secure your server's internet traffic. This makes it really easy to secure your Matrix homeserver, and this guide will explain exactly how you do this. Guide written by William A Stevens - thanks!
 
 0: Prerequisites
 ================
