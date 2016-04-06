@@ -1,8 +1,9 @@
 <Next release>
 ==============
 
-No changes yet.
+- Spec clarifications:
 
+  - Clarify the behaviour of the "Room History Visibility" module; in particular, the behaviour of the ``shared`` history visibilty, and how events at visibility boundaries should be handled.
 
 r0.0.1
 ======
