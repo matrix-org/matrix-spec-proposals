@@ -26,7 +26,7 @@ paths:
         alerted in some way. It is therefore necessary to perform duplicate
         suppression for such notifications using the `event_id` field to avoid
         retries of this HTTP API causing duplicate alerts. The operation of
-	updating counts of unread notifications should be and therefore do not
+        updating counts of unread notifications should be and therefore do not
         require duplicate suppression.
         *NB: Notifications are sent to the URL configured when the pusher is
         created. This means that the HTTP path may be different depending on the
@@ -75,7 +75,6 @@ paths:
               notification:
                 type: object
                 description: Information about the push notification
-                required: []
                 properties:
                   event_id:
                     type: string
