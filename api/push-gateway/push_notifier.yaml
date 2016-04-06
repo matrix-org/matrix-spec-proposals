@@ -17,7 +17,17 @@ paths:
       summary: Notify a push gateway about an event.
       description: |-
         This endpoint is invoked by HTTP pushers to notify a push gateway about
-        an event.
+        an event or update the number of unread notifications a user has.
+        In the former case it will contain selected information about the event.
+        In either case it may contain numeric counts of the number of unread
+        events of different types the user has. The counts may be sent along
+        with a notification about an event or by themselves.
+        Notifications about a particular event will normally cause the user to be
+        alerted in some way. It is therefore necessary to perform duplicate
+        suppression for such notifications using the `event_id` field to avoid
+        retries of this HTTP API causing duplicate alerts. The operation of
+	updating counts of unread notifications should be and therefore do not
+        require duplicate suppression.
         *NB: Notifications are sent to the URL configured when the pusher is
         created. This means that the HTTP path may be different depending on the
         push gateway.*
@@ -65,24 +75,34 @@ paths:
               notification:
                 type: object
                 description: Information about the push notification
-                required: ["id", "room_id", "type", "sender"]
+                required: []
                 properties:
-                  id:
+                  event_id:
                     type: string
                     description: |-
-                      An identifier for this notification that may be used to
-                      detect duplicate notification requests. This is not
-                      necessarily the ID of the event that triggered the
-                      notification.
+                      The Matrix event ID of the event being notified about.
+                      This is required if the notification is about a
+                      particular Matrix event. It may be omitted for notifications
+                      that only contain updated badge counts. This ID can and
+                      should be used to detect duplicate notification requests.
                   room_id:
                     type: string
-                    description: The ID of the room in which this event occurred.
+                    description: |-
+                      The ID of the room in which this event occurred.
+                      Required if the notification relates to a specific
+                      Matrix event.
                   type:
                     type: string
-                    description: The type of the event as in the event's ``type`` field.
+                    description: |-
+                      The type of the event as in the event's ``type`` field.
+                      Required if the notification relates to a specific
+                      Matrix event.
                   sender:
                     type: string
-                    description: The sender of the event as in the corresponding event field.
+                    description: |-
+                      The sender of the event as in the corresponding event field.
+                      Required if the notification relates to a specific
+                      Matrix event.
                   sender_display_name:
                     type: string
                     description: |-
