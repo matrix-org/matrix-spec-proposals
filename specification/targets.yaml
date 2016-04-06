@@ -22,6 +22,9 @@ targets:
   identity_service:
     files:
       - identity_service_api.rst
+  push_gateway:
+    files:
+      - push_gateway.rst
   appendices:
     files:
       - appendices.rst

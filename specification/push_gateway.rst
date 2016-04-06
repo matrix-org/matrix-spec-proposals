@@ -39,4 +39,4 @@ This describes the format used by "HTTP" pushers to send notifications of
 events to Push Gateways. If the endpoint returns an HTTP error code, the
 homeserver SHOULD retry for a reasonable amount of time using exponential backoff.
 
-{{push_notifier_http_api}}
+{{push_notifier_push_http_api}}

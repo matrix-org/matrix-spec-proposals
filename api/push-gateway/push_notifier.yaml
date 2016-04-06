@@ -17,10 +17,23 @@ paths:
       summary: Notify a push gateway about an event.
       description: |-
         This endpoint is invoked by HTTP pushers to notify a push gateway about
-        an event.
-        *NB: Notifications are sent to the URL configured when the pusher is
+        an event or update the number of unread notifications a user has.
+        In the former case it will contain selected information about the event.
+        In either case it may contain numeric counts of the number of unread
+        events of different types the user has. The counts may be sent along
+        with a notification about an event or by themselves.
+
+        Notifications about a particular event will normally cause the user to be
+        alerted in some way. It is therefore necessary to perform duplicate
+        suppression for such notifications using the `event_id` field to avoid
+        retries of this HTTP API causing duplicate alerts. The operation of
+        updating counts of unread notifications should be idempotent and
+        therefore do not require duplicate suppression.
+
+        Notifications are sent to the URL configured when the pusher is
         created. This means that the HTTP path may be different depending on the
-        push gateway.*
+        push gateway.
+
       parameters:
         - in: body
           name: notification
@@ -42,47 +55,58 @@ paths:
                   "content": {
                     "msgtype": "m.text",
                     "body": "I'm floating in a most peculiar way."
-                  }
-                },
-                "counts": {
-                   "unread" : 2,
-                   "missed_calls": 1
-                },
-                "devices": [
-                  {
-                     "app_id": "org.matrix.matrixConsole.ios",
-                     "pushkey": "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/",
-                     "pushkey_ts": 12345678,
-                     "data" : {},
-                     "tweaks": {
-                       "sound": "bing"
-                      }
-                  }
-                ]
+                  },
+                  "counts": {
+                     "unread" : 2,
+                     "missed_calls": 1
+                  },
+                  "devices": [
+                    {
+                       "app_id": "org.matrix.matrixConsole.ios",
+                       "pushkey": "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/",
+                       "pushkey_ts": 12345678,
+                       "data" : {},
+                       "tweaks": {
+                         "sound": "bing"
+                        }
+                    }
+                  ]
+                }
               }
-            required: ["notification", "counts", "devices"]
+            required: ["notification"]
             properties:
               notification:
                 type: object
+                title: Notification
                 description: Information about the push notification
-                required: ["id", "room_id", "type", "sender"]
+                required: ["devices"]
                 properties:
-                  id:
+                  event_id:
                     type: string
                     description: |-
-                      An identifier for this notification that may be used to
-                      detect duplicate notification requests. This is not
-                      necessarily the ID of the event that triggered the
-                      notification.
+                      The Matrix event ID of the event being notified about.
+                      This is required if the notification is about a
+                      particular Matrix event. It may be omitted for notifications
+                      that only contain updated badge counts. This ID can and
+                      should be used to detect duplicate notification requests.
                   room_id:
                     type: string
-                    description: The ID of the room in which this event occurred.
+                    description: |-
+                      The ID of the room in which this event occurred.
+                      Required if the notification relates to a specific
+                      Matrix event.
                   type:
                     type: string
-                    description: The type of the event as in the event's ``type`` field.
+                    description: |-
+                      The type of the event as in the event's ``type`` field.
+                      Required if the notification relates to a specific
+                      Matrix event.
                   sender:
                     type: string
-                    description: The sender of the event as in the corresponding event field.
+                    description: |-
+                      The sender of the event as in the corresponding event field.
+                      Required if the notification relates to a specific
+                      Matrix event.
                   sender_display_name:
                     type: string
                     description: |-
@@ -114,56 +138,58 @@ paths:
                     description: |-
                       The ``content`` field from the event, if present. If the
                       event had no content field, this field is omitted.
-              counts:
-                type: object
-                description: |-
-                  This is a dictionary of the current number of unacknowledged
-                  communications for the recipient user. Counts whose value is
-                  zero are omitted.
-                properties:
-                  unread:
-                    type: integer
+                  counts:
+                    type: object
+                    title: Counts
                     description: |-
-                      The number of unread messages a user has across all of the
-                      rooms they are a member of.
-                  missed_calls:
-                    type: integer
+                      This is a dictionary of the current number of unacknowledged
+                      communications for the recipient user. Counts whose value is
+                      zero are omitted.
+                    properties:
+                      unread:
+                        type: integer
+                        description: |-
+                          The number of unread messages a user has across all of the
+                          rooms they are a member of.
+                      missed_calls:
+                        type: integer
+                        description: |-
+                          The number of unacknowledged missed calls a user has
+                          across all rooms of which they are a member.
+                  devices:
+                    type: array
+                    title: Devices
                     description: |-
-                      The number of unacknowledged missed calls a user has
-                      across all rooms of which they are a member.
-              devices:
-                type: array
-                title: Devices
-                description: |-
-                  This is an array of devices that the notification should be sent to.
-                items:
-                  type: object
-                  properties:
-                    app_id:
-                      type: string
-                      description: |-
-                        The app_id given when the pusher was created.
-                    pushkey:
-                      type: string
-                      description: The pushkey given when the pusher was created.
-                    pushkey_ts:
-                      type: integer
-                      description: |-
-                        The unix timestamp (in seconds) when the
-                        pushkey was last updated.
-                    data:
+                      This is an array of devices that the notification should be sent to.
+                    items:
                       type: object
-                      title: PusherData
-                      description: |-
-                        A dictionary of additional pusher-specific data. For
-                        'http' pushers, this is the data dictionary passed in at
-                        pusher creation minus the ``url`` key.
-                    tweaks:
-                      type: object
-                      title: Tweaks
-                      description: |-
-                        A dictionary of customisations made to the way this
-                        notification is to be presented. These are added by push rules.
+                      title: Device
+                      properties:
+                        app_id:
+                          type: string
+                          description: |-
+                            The app_id given when the pusher was created.
+                        pushkey:
+                          type: string
+                          description: The pushkey given when the pusher was created.
+                        pushkey_ts:
+                          type: integer
+                          description: |-
+                            The unix timestamp (in seconds) when the
+                            pushkey was last updated.
+                        data:
+                          type: object
+                          title: PusherData
+                          description: |-
+                            A dictionary of additional pusher-specific data. For
+                            'http' pushers, this is the data dictionary passed in at
+                            pusher creation minus the ``url`` key.
+                        tweaks:
+                          type: object
+                          title: Tweaks
+                          description: |-
+                            A dictionary of customisations made to the way this
+                            notification is to be presented. These are added by push rules.
       responses:
         200:
           description: A list of rejected push keys.
