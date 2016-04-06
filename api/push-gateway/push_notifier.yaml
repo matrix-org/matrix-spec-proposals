@@ -31,9 +31,10 @@ paths:
         therefore do not require duplicate suppression.
 
 
-        *NB: Notifications are sent to the URL configured when the pusher is
+        Notifications are sent to the URL configured when the pusher is
         created. This means that the HTTP path may be different depending on the
-        push gateway.*
+        push gateway.
+
       parameters:
         - in: body
           name: notification
