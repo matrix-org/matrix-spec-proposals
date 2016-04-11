@@ -42,8 +42,8 @@ paths:
                   "data": {
                       "url": "https://example.com/_matrix/push/v1/notify"
                   }
-              }
-            ]
+                }
+              ]
           schema:
             type: object
             properties:
