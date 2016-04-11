@@ -50,7 +50,13 @@ func main() {
 		}
 	}
 
-	filepath.Walk(dir, makeWalker(w))
+	walker := makeWalker(dir, w)
+	paths := []string{"api", "changelogs", "event-schemas", "scripts",
+		"specification", "templating"}
+
+	for _, p := range paths {
+		filepath.Walk(path.Join(dir, p), walker)
+	}
 
 	wg.Add(1)
 	populateOnce(dir)
@@ -77,11 +83,25 @@ func watchFS(ch chan struct{}, w *fsnotify.Watcher) {
 	}
 }
 
-func makeWalker(w *fsnotify.Watcher) filepath.WalkFunc {
+func makeWalker(base string, w *fsnotify.Watcher) filepath.WalkFunc {
 	return func(path string, _ os.FileInfo, err error) error {
 		if err != nil {
 			log.Fatalf("Error walking: %v", err)
 		}
+
+		rel, err := filepath.Rel(base, path)
+		if err != nil {
+			log.Fatalf("Failed to get relative path of %s: %v", path, err)
+		}
+
+		// skip a few things that we know don't form part of the spec
+		if rel == "api/node_modules" ||
+			rel == "scripts/gen" ||
+			rel == "scripts/tmp" {
+			return filepath.SkipDir
+		}
+
+		// log.Printf("Adding watch on %s", path)
 		if err := w.Add(path); err != nil {
 			log.Fatalf("Failed to add watch: %v", err)
 		}
@@ -95,20 +115,12 @@ func filter(e fsnotify.Event) bool {
 	if e.Op != fsnotify.Write {
 		return false
 	}
+
 	// Avoid some temp files that vim writes
 	if strings.HasSuffix(e.Name, "~") || strings.HasSuffix(e.Name, ".swp") || strings.HasPrefix(e.Name, ".") {
 		return false
 	}
 
-	// Ignore the .git directory - It's very noisy
-	if strings.Contains(e.Name, "/.git/") {
-		return false
-	}
-
-	// Avoid infinite cycles being caused by writing actual output
-	if strings.Contains(e.Name, "/tmp/") || strings.Contains(e.Name, "/gen/") {
-		return false
-	}
 	return true
 }
 
