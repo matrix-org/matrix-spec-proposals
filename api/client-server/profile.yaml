@@ -178,7 +178,7 @@ paths:
         - in: path
           type: string
           name: userId
-          description: The user whose avatar URL to get.
+          description: The user whose profile information to get.
           required: true
           x-example: "@alice:example.com"
       responses:
