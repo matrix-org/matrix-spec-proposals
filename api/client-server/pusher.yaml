@@ -46,6 +46,7 @@ paths:
               ]
           schema:
             type: array
+            title: Pushers
             items:
               type: object
               title: Pusher
