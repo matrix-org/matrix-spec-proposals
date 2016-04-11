@@ -18,6 +18,91 @@ securityDefinitions:
     name: access_token
     in: query
 paths:
+  "/pushers":
+    get:
+      summary: Gets the current pushers for the authenticated user
+      description: |-
+          Gets all currently active pushers for the authenticated user
+      security:
+        - accessToken: []
+      responses:
+        200:
+          description: The pushers for this user
+          examples:
+            application/json: |-
+              [
+                {
+                  "pushkey": "Xp/MzCt8/9DcSNE9cuiaoT5Ac55job3TdLSSmtmYl4A=",
+                  "kind": "http",
+                  "app_id": "face.mcapp.appy.prod",
+                  "app_display_name": "Appy McAppface",
+                  "device_display_name": "Alice's Phone",
+                  "profile_tag": "xyz",
+                  "lang": "en-US",
+                  "data": {
+                      "url": "https://example.com/_matrix/push/v1/notify"
+                  }
+              }
+            ]
+          schema:
+            type: object
+            properties:
+              pushkey:
+                type: string
+                description: |-
+                  This is a unique identifier for this pusher. The value you
+                  should use for this is the routing or destination address
+                  information for the notification, for example, the APNS token
+                  for APNS or the Registration ID for GCM. If your notification
+                  client has no such concept, use any unique identifier.
+                  Max length, 512 bytes.
+              kind:
+                type: string
+                description: |-
+                  The kind of pusher to configure. ``"http"`` makes a pusher that
+                  sends HTTP pokes. ``null`` deletes the pusher.
+              app_id:
+                type: string
+                description: |-
+                  This is a reverse-DNS style identifier for the application.
+                  It is recommended that this end with the platform, such that
+                  different platform versions get different app identifiers.
+                  Max length, 64 chars.
+              app_display_name:
+                type: string
+                description: |-
+                  A string that will allow the user to identify what application
+                  owns this pusher.
+              device_display_name:
+                type: string
+                description: |-
+                  a string that will allow the user to identify what device owns
+                  this pusher.
+              profile_tag:
+                type: string
+                description: |-
+                  This string determines which set of device specific rules this
+                  pusher executes.
+              lang:
+                type: string
+                description: |-
+                  The preferred language for receiving notifications (e.g. 'en'
+                  or 'en-US')
+              data:
+                type: object
+                description: |-
+                  A dictionary of information for the pusher implementation
+                  itself. If ``kind`` is ``http``, this should contain ``url``
+                  which is the URL to use to send notifications to.
+                title: PusherData
+                properties:
+                  url:
+                    type: string
+                    description: |-
+                      Required if ``kind`` is ``http``. The URL to use to send
+                      notifications to.
+      tags:
+        - Push notifications
   "/pushers/set":
     post:
       summary: Modify a pusher for this user on the homeserver.
@@ -40,6 +125,7 @@ paths:
                 "kind": "http",
                 "app_display_name": "Mat Rix",
                 "device_display_name": "iPhone 9",
+                "profile_tag": "xxyyzz",
                 "app_id": "com.example.app.ios",
                 "pushkey": "APA91bHPRgkF3JUikC4ENAHEeMrd41Zxv3hVZjC9KtT8OvPVGJ-hQMRKRrZuJAEcl7B338qju59zJMjw2DELjzEvxwYv7hH5Ynpc1ODQ0aT4U4OFEeco8ohsN5PjL1iC2dNtk2BAokeMCg2ZXKqpc8FXKmhX94kIxQ",
                 "data": {
@@ -77,8 +163,13 @@ paths:
               device_display_name:
                 type: string
                 description: |-
-                  A string that will allow the user to identify what device owns
+                  a string that will allow the user to identify what device owns
                   this pusher.
+              profile_tag:
+                type: string
+                description: |-
+                  This string determines which set of device specific rules this
+                  pusher executes.
               lang:
                 type: string
                 description: |-
