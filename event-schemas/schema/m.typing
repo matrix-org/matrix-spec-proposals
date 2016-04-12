@@ -2,6 +2,9 @@
     "type": "object",
     "title": "Typing Event",
     "description": "Informs the client of the list of users currently typing.",
+    "allOf": [{
+        "$ref": "core-event-schema/event.yaml"
+    }],
     "properties": {
         "content": {
             "type": "object",
