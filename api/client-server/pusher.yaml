@@ -61,23 +61,18 @@ paths:
                     pushkey:
                       type: string
                       description: |-
-                        This is a unique identifier for this pusher. The value you
-                        should use for this is the routing or destination address
-                        information for the notification, for example, the APNS token
-                        for APNS or the Registration ID for GCM. If your notification
-                        client has no such concept, use any unique identifier.
+                        This is a unique identifier for this pusher. See /set for
+                        more detail.
                         Max length, 512 bytes.
                     kind:
                       type: string
                       description: |-
-                        The kind of pusher to configure. ``"http"`` makes a pusher that
-                        sends HTTP pokes. ``null`` deletes the pusher.
+                        The kind of pusher. ``"http"`` is a pusher that
+                        sends HTTP pokes.
                     app_id:
                       type: string
                       description: |-
                         This is a reverse-DNS style identifier for the application.
-                        It is recommended that this end with the platform, such that
-                        different platform versions get different app identifiers.
                         Max length, 64 chars.
                     app_display_name:
                       type: string
@@ -87,7 +82,7 @@ paths:
                     device_display_name:
                       type: string
                       description: |-
-                        a string that will allow the user to identify what device owns
+                        A string that will allow the user to identify what device owns
                         this pusher.
                     profile_tag:
                       type: string
@@ -174,7 +169,7 @@ paths:
               device_display_name:
                 type: string
                 description: |-
-                  a string that will allow the user to identify what device owns
+                  A string that will allow the user to identify what device owns
                   this pusher.
               profile_tag:
                 type: string
