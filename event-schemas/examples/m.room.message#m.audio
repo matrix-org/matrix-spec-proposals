@@ -6,7 +6,8 @@
     "info": {
       "duration": 2140786,
       "size": 1563685,
-      "mimetype": "audio/mpeg"
+      "mimetype": "audio/mpeg",
+      "autoplay": true
     },
     "msgtype": "m.audio"
   },
@@ -15,4 +16,4 @@
   "room_id": "!jEsUZKDJdhlrceRyVU:localhost",
   "type": "m.room.message",
   "sender": "@example:localhost"
-} 
+}
