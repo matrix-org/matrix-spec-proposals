@@ -61,7 +61,7 @@ paths:
                     pushkey:
                       type: string
                       description: |-
-                        This is a unique identifier for this pusher. See /set for
+                        This is a unique identifier for this pusher. See `/set` for
                         more detail.
                         Max length, 512 bytes.
                     kind:
@@ -98,8 +98,7 @@ paths:
                       type: object
                       description: |-
                         A dictionary of information for the pusher implementation
-                        itself. If ``kind`` is ``http``, this should contain ``url``
-                        which is the URL to use to send notifications to.
+                        itself.
                       title: PusherData
                       properties:
                         url:
