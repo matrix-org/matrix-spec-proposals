@@ -34,7 +34,7 @@ Registration
 The aim of registration is to get a user ID and access token which you will need
 when accessing other APIs::
 
-    curl -XPOST -d '{"user":"example", "password":"wordpass", "type":"m.login.password"}' "https://localhost:8008/_matrix/client/api/v1/register"
+    curl -XPOST -d '{"user":"example", "password":"wordpass", "auth": {"type":"m.login.dummy"}}' "https://localhost:8008/_matrix/client/r0/register"
 
     {
         "access_token": "QGV4YW1wbGU6bG9jYWxob3N0.AqdSzFmFYrLrTmteXc", 
