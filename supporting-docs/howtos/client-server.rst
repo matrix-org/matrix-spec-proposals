@@ -1,8 +1,6 @@
 .. TODO kegan
   Room config (specifically: message history,
-  public rooms). /register seems super simplistic compared to /login, maybe it
-  would be better if /register used the same technique as /login? /register should
-  be "user" not "user_id".
+  public rooms). 
 
 How to use the client-server API
 ================================
