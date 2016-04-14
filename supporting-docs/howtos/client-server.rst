@@ -16,7 +16,7 @@ implementation, there may be variations in relation to registering/logging in
 which are not covered in extensive detail in this guide.
 
 If you haven't already, get a homeserver up and running on 
-``http://localhost:8008``.
+``https://localhost:8008``.
 
 
 Accounts
@@ -34,7 +34,7 @@ Registration
 The aim of registration is to get a user ID and access token which you will need
 when accessing other APIs::
 
-    curl -XPOST -d '{"user":"example", "password":"wordpass", "type":"m.login.password"}' "http://localhost:8008/_matrix/client/api/v1/register"
+    curl -XPOST -d '{"user":"example", "password":"wordpass", "type":"m.login.password"}' "https://localhost:8008/_matrix/client/api/v1/register"
 
     {
         "access_token": "QGV4YW1wbGU6bG9jYWxob3N0.AqdSzFmFYrLrTmteXc", 
@@ -56,7 +56,7 @@ Login
 -----
 The aim when logging in is to get an access token for your existing user ID::
 
-    curl -XGET "http://localhost:8008/_matrix/client/api/v1/login"
+    curl -XGET "https://localhost:8008/_matrix/client/api/v1/login"
 
     {
         "flows": [
@@ -66,7 +66,7 @@ The aim when logging in is to get an access token for your existing user ID::
         ]
     }
 
-    curl -XPOST -d '{"type":"m.login.password", "user":"example", "password":"wordpass"}' "http://localhost:8008/_matrix/client/api/v1/login"
+    curl -XPOST -d '{"type":"m.login.password", "user":"example", "password":"wordpass"}' "https://localhost:8008/_matrix/client/api/v1/login"
 
     {
         "access_token": "QGV4YW1wbGU6bG9jYWxob3N0.vRDLTgxefmKWQEtgGd", 
@@ -99,7 +99,7 @@ Creating a room
 If you want to send a message to someone, you have to be in a room with them. To
 create a room::
 
-    curl -XPOST -d '{"room_alias_name":"tutorial"}' "http://localhost:8008/_matrix/client/api/v1/createRoom?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{"room_alias_name":"tutorial"}' "https://localhost:8008/_matrix/client/api/v1/createRoom?access_token=YOUR_ACCESS_TOKEN"
 
     {
         "room_alias": "#tutorial:localhost", 
@@ -118,7 +118,7 @@ Sending messages
 ----------------
 You can now send messages to this room::
 
-    curl -XPOST -d '{"msgtype":"m.text", "body":"hello"}' "http://localhost:8008/_matrix/client/api/v1/rooms/%21CvcvRuDYDzTOzfKKgh%3Alocalhost/send/m.room.message?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{"msgtype":"m.text", "body":"hello"}' "https://localhost:8008/_matrix/client/api/v1/rooms/%21CvcvRuDYDzTOzfKKgh%3Alocalhost/send/m.room.message?access_token=YOUR_ACCESS_TOKEN"
     
     {
         "event_id": "YUwRidLecu"
@@ -149,7 +149,7 @@ Inviting a user to a room
 -------------------------
 You can directly invite a user to a room like so::
 
-    curl -XPOST -d '{"user_id":"@myfriend:localhost"}' "http://localhost:8008/_matrix/client/api/v1/rooms/%21CvcvRuDYDzTOzfKKgh%3Alocalhost/invite?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{"user_id":"@myfriend:localhost"}' "https://localhost:8008/_matrix/client/api/v1/rooms/%21CvcvRuDYDzTOzfKKgh%3Alocalhost/invite?access_token=YOUR_ACCESS_TOKEN"
     
 This informs ``@myfriend:localhost`` of the room ID 
 ``!CvcvRuDYDzTOzfKKgh:localhost`` and allows them to join the room.
@@ -158,7 +158,7 @@ Joining a room via an invite
 ----------------------------
 If you receive an invite, you can join the room::
 
-    curl -XPOST -d '{}' "http://localhost:8008/_matrix/client/api/v1/rooms/%21CvcvRuDYDzTOzfKKgh%3Alocalhost/join?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{}' "https://localhost:8008/_matrix/client/api/v1/rooms/%21CvcvRuDYDzTOzfKKgh%3Alocalhost/join?access_token=YOUR_ACCESS_TOKEN"
     
 NB: Only the person invited (``@myfriend:localhost``) can change the membership
 state to ``"join"``. Repeatedly joining a room does nothing.
@@ -168,7 +168,7 @@ Joining a room via an alias
 Alternatively, if you know the room alias for this room and the room config 
 allows it, you can directly join a room via the alias::
 
-    curl -XPOST -d '{}' "http://localhost:8008/_matrix/client/api/v1/join/%23tutorial%3Alocalhost?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{}' "https://localhost:8008/_matrix/client/api/v1/join/%23tutorial%3Alocalhost?access_token=YOUR_ACCESS_TOKEN"
     
     {
         "room_id": "!CvcvRuDYDzTOzfKKgh:localhost"
@@ -197,7 +197,7 @@ Getting all state
 If the client doesn't know any information on the rooms the user is 
 invited/joined on, they can get all the user's state for all rooms::
 
-    curl -XGET "http://localhost:8008/_matrix/client/api/v1/initialSync?access_token=YOUR_ACCESS_TOKEN"
+    curl -XGET "https://localhost:8008/_matrix/client/api/v1/initialSync?access_token=YOUR_ACCESS_TOKEN"
     
     {
         "end": "s39_18_0", 
@@ -460,7 +460,7 @@ all of the presences relevant for these rooms. This can be a LOT of data. You
 may just want the most recent event for each room. This can be achieved by 
 applying query parameters to ``limit`` this request::
 
-    curl -XGET "http://localhost:8008/_matrix/client/api/v1/initialSync?limit=1&access_token=YOUR_ACCESS_TOKEN"
+    curl -XGET "https://localhost:8008/_matrix/client/api/v1/initialSync?limit=1&access_token=YOUR_ACCESS_TOKEN"
     
     {
         "end": "s39_18_0", 
@@ -608,7 +608,7 @@ Getting live state
 Once you know which rooms the client has previously interacted with, you need to
 listen for incoming events. This can be done like so::
 
-    curl -XGET "http://localhost:8008/_matrix/client/api/v1/events?access_token=YOUR_ACCESS_TOKEN"
+    curl -XGET "https://localhost:8008/_matrix/client/api/v1/events?access_token=YOUR_ACCESS_TOKEN"
     
     {
         "chunk": [], 
@@ -620,7 +620,7 @@ This will block waiting for an incoming event, timing out after several seconds.
 Even if there are no new events (as in the example above), there will be some
 pagination stream response keys. The client should make subsequent requests 
 using the value of the ``"end"`` key (in this case ``s39_18_0``) as the ``from`` 
-query parameter e.g. ``http://localhost:8008/_matrix/client/api/v1/events?access
+query parameter e.g. ``https://localhost:8008/_matrix/client/api/v1/events?access
 _token=YOUR_ACCESS_TOKEN&from=s39_18_0``. This value should be stored so when the 
 client reopens your app after a period of inactivity, you can resume from where 
 you got up to in the event stream. If it has been a long period of inactivity, 
