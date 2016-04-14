@@ -97,7 +97,7 @@ Creating a room
 If you want to send a message to someone, you have to be in a room with them. To
 create a room::
 
-    curl -XPOST -d '{"room_alias_name":"tutorial"}' "https://localhost:8008/_matrix/client/api/v1/createRoom?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{"room_alias_name":"tutorial"}' "https://localhost:8008/_matrix/client/r0/createRoom?access_token=YOUR_ACCESS_TOKEN"
 
     {
         "room_alias": "#tutorial:localhost", 
@@ -116,7 +116,7 @@ Sending messages
 ----------------
 You can now send messages to this room::
 
-    curl -XPOST -d '{"msgtype":"m.text", "body":"hello"}' "https://localhost:8008/_matrix/client/api/v1/rooms/%21CvcvRuDYDzTOzfKKgh%3Alocalhost/send/m.room.message?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{"msgtype":"m.text", "body":"hello"}' "https://localhost:8008/_matrix/client/r0/rooms/%21CvcvRuDYDzTOzfKKgh%3Alocalhost/send/m.room.message?access_token=YOUR_ACCESS_TOKEN"
     
     {
         "event_id": "YUwRidLecu"
@@ -147,7 +147,7 @@ Inviting a user to a room
 -------------------------
 You can directly invite a user to a room like so::
 
-    curl -XPOST -d '{"user_id":"@myfriend:localhost"}' "https://localhost:8008/_matrix/client/api/v1/rooms/%21CvcvRuDYDzTOzfKKgh%3Alocalhost/invite?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{"user_id":"@myfriend:localhost"}' "https://localhost:8008/_matrix/client/r0/rooms/%21CvcvRuDYDzTOzfKKgh%3Alocalhost/invite?access_token=YOUR_ACCESS_TOKEN"
     
 This informs ``@myfriend:localhost`` of the room ID 
 ``!CvcvRuDYDzTOzfKKgh:localhost`` and allows them to join the room.
@@ -156,7 +156,7 @@ Joining a room via an invite
 ----------------------------
 If you receive an invite, you can join the room::
 
-    curl -XPOST -d '{}' "https://localhost:8008/_matrix/client/api/v1/rooms/%21CvcvRuDYDzTOzfKKgh%3Alocalhost/join?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{}' "https://localhost:8008/_matrix/client/r0/rooms/%21CvcvRuDYDzTOzfKKgh%3Alocalhost/join?access_token=YOUR_ACCESS_TOKEN"
     
 NB: Only the person invited (``@myfriend:localhost``) can change the membership
 state to ``"join"``. Repeatedly joining a room does nothing.
@@ -166,7 +166,7 @@ Joining a room via an alias
 Alternatively, if you know the room alias for this room and the room config 
 allows it, you can directly join a room via the alias::
 
-    curl -XPOST -d '{}' "https://localhost:8008/_matrix/client/api/v1/join/%23tutorial%3Alocalhost?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{}' "https://localhost:8008/_matrix/client/r0/join/%23tutorial%3Alocalhost?access_token=YOUR_ACCESS_TOKEN"
     
     {
         "room_id": "!CvcvRuDYDzTOzfKKgh:localhost"
