@@ -62,8 +62,9 @@ Updated Version In Path
 =======================
 
 The new version of the API is ``r0``; this should be used in paths where
-``v1`` appears::
+``v1`` appears. Additionally, the ``/api`` path component has now been removed.
+API endpoint paths are now::
 
-  POST /_matrix/client/api/r0/register
-  GET /_matrix/client/api/r0/login
+  POST /_matrix/client/r0/register
+  GET /_matrix/client/r0/login
   etc...
