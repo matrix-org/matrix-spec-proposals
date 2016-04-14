@@ -54,7 +54,7 @@ Login
 -----
 The aim when logging in is to get an access token for your existing user ID::
 
-    curl -XGET "https://localhost:8008/_matrix/client/api/v1/login"
+    curl -XGET "https://localhost:8008/_matrix/client/r0/login"
 
     {
         "flows": [
@@ -64,7 +64,7 @@ The aim when logging in is to get an access token for your existing user ID::
         ]
     }
 
-    curl -XPOST -d '{"type":"m.login.password", "user":"example", "password":"wordpass"}' "https://localhost:8008/_matrix/client/api/v1/login"
+    curl -XPOST -d '{"type":"m.login.password", "user":"example", "password":"wordpass"}' "https://localhost:8008/_matrix/client/r0/login"
 
     {
         "access_token": "QGV4YW1wbGU6bG9jYWxob3N0.vRDLTgxefmKWQEtgGd", 
