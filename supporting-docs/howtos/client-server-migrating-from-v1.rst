@@ -31,14 +31,18 @@ The following endpoints are now deprecated and replaced by the ``/sync`` API::
 
 The new ``/sync`` API takes an optional ``since`` parameter to distinguish the
 initial sync from subsequent updates for more events. These return data in a
-different format.
+different format. Instead of the ``limit`` parameter, supply an ad-hoc filter
+that provides the required event count::
+
+  GET .../sync?filter={"room":{"timeline":{"limit:$limit}}}
 
 There is no direct replacement for the per-room ``/rooms/:roomId/initialSync``
 endpoint, but the behaviour can be recreated by applying an ad-hoc filter using
-the ``filter`` parameter to ``/sync`` that selects only the required room ID.
+the ``filter`` parameter to ``/sync`` that selects only the required room ID::
 
-See the new API documentation for details on the new return
-value.
+  GET .../sync?filter={"room":{"rooms":[$room_id]}}
+
+See the new API documentation for details on the new return value.
 
 The following endpoint is deprecated and has no direct replacement:: 
 
