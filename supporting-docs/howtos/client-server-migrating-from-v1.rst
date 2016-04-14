@@ -16,8 +16,9 @@ information in the form of the ``params`` object, and that a sequence of
 multiple calls may be statefully chained together by the ``session`` parameter.
 
 Additionally, whereas in ``v1`` the client can perform a ``GET`` request to
-discover the list of supported flows, in ``r0`` this is done by sending a
-``POST`` request with an empty data body.
+discover the list of supported flows for ``/register``, in ``r0`` this is done
+by sending a ``POST`` request with an empty data body. The ``/login`` endpoint
+continues to use the ``GET`` method as before.
 
 Deprecated Endpoints
 ====================
