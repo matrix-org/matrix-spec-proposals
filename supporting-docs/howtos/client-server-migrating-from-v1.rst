@@ -49,13 +49,13 @@ following summary may be useful to compare with ``v1``:
    only contains keys that have changed since the basis given in the ``since``
    parameter, rather than containing a full set values.
 
- * In ``/initialSync`` if the requested range contains more events than the
-   ``limit`` parameter allows, then events from the start of this range were
+ * In ``/events`` if more events occurred since the ``since`` token than the
+   ``limit`` parameter allowed, then events from the start of this range were
    returned and the client must perform another fetch to incrementally obtain
-   more of them. In the ``/sync`` API the result always contains the end of the
-   requested range (i.e. the most recent events); possibly creating a gap. If
-   this occurs then the client can use the ``prev_batch`` token as a reference
-   to obtaining more.
+   more of them. In the ``/sync`` API the result always contains up to the most
+   recent event; creating a gap if this would be more events than the requested
+   limit. If this occurs then the client can use the ``prev_batch`` token as a
+   reference to obtaining more.
 
 There is no direct replacement for the per-room ``/rooms/:roomId/initialSync``
 endpoint, but the behaviour can be recreated by applying an ad-hoc filter using
