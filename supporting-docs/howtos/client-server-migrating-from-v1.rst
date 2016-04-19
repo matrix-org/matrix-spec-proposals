@@ -36,7 +36,27 @@ that provides the required event count::
 
   GET .../sync?filter={"room":{"timeline":{"limit:$limit}}}
 
-See the new API documentation for details on the new return value.
+The return value takes a different structure to that from the previous
+``/initialSync`` API. For full details see the API documentation, but the
+following summary may be useful to compare with ``v1``:
+
+ * The ``/initialSync`` returned a ``state`` key containing the most recent
+   state in the room, whereas the new ``/sync`` API's ``state`` corresponds to
+   the room state at the start of the returned timeline. This makes it easier
+   for clients to represent state changes that occur within the region of
+   returned timeline.
+
+ * Additionally, the ``state`` contained in the ``/sync`` response by default
+   only contains keys that have changed since the basis given in the ``since``
+   parameter, rather than containing a full set values.
+
+ * In ``/initialSync`` if the requested range contains more events than the
+   ``limit`` parameter allows, then events from the start of this range were
+   returned and the client must perform another fetch to incrementally obtain
+   more of them. In the ``/sync`` API the result always contains the end of the
+   requested range (i.e. the most recent events); possibly creating a gap. If
+   this occurs then the client can use the ``prev_batch`` token as a reference
+   to obtaining more.
 
 There is no direct replacement for the per-room ``/rooms/:roomId/initialSync``
 endpoint, but the behaviour can be recreated by applying an ad-hoc filter using
