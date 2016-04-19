@@ -36,13 +36,19 @@ that provides the required event count::
 
   GET .../sync?filter={"room":{"timeline":{"limit:$limit}}}
 
+See the new API documentation for details on the new return value.
+
 There is no direct replacement for the per-room ``/rooms/:roomId/initialSync``
 endpoint, but the behaviour can be recreated by applying an ad-hoc filter using
 the ``filter`` parameter to ``/sync`` that selects only the required room ID::
 
   GET .../sync?filter={"room":{"rooms":[$room_id]}}
 
-See the new API documentation for details on the new return value.
+However, the way that the new ``/sync`` API works should remove any need to do
+this kind of query, in the situations where the ``v1`` API needed it.
+Specifically, on joining a new room the initial information about that room is
+sent in the next ``/sync`` batch, so it should not be necessary to query that
+one room specially.
 
 The following endpoint is deprecated and has no direct replacement:: 
 
