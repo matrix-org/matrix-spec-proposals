@@ -15,7 +15,7 @@ new API works. In brief, the changes are that the new version returns extra
 information in the form of the ``params`` object, and that a sequence of
 multiple calls may be statefully chained together by the ``session`` parameter.
 
-Additionally, whereas in ``v1`` the client can perform a ``GET`` request to
+Additionally, whereas in ``v1`` the client performed a ``GET`` request to
 discover the list of supported flows for ``/register``, in ``r0`` this is done
 by sending a ``POST`` request with an empty data body. The ``/login`` endpoint
 continues to use the ``GET`` method as before.
@@ -30,9 +30,8 @@ The following endpoints are now deprecated and replaced by the ``/sync`` API::
   /rooms/:roomId/initialSync
 
 The new ``/sync`` API takes an optional ``since`` parameter to distinguish the
-initial sync from subsequent updates for more events. These return data in a
-different format. Instead of the ``limit`` parameter, supply an ad-hoc filter
-that provides the required event count::
+initial sync from subsequent updates for more events. Instead of the ``limit``
+parameter, supply an ad-hoc filter that provides the required event count::
 
   GET .../sync?filter={"room":{"timeline":{"limit:$limit}}}
 
@@ -97,8 +96,8 @@ Updated Version In Path
 =======================
 
 The new version of the API is ``r0``; this should be used in paths where
-``v1`` appears. Additionally, the ``/api`` path component has now been removed.
-API endpoint paths are now::
+``v1`` used to appear. Additionally, the ``/api`` path component has now been
+removed. API endpoint paths are now::
 
   POST /_matrix/client/r0/register
   GET /_matrix/client/r0/login
