@@ -18,7 +18,7 @@ securityDefinitions:
     name: access_token
     in: query
 paths:
-  "/room/{roomAlias}":
+  "/directory/room/{roomAlias}":
     put:
       summary: Create a new mapping from room alias to room ID.
       security:
