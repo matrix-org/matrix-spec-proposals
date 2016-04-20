@@ -45,10 +45,6 @@ following summary may be useful to compare with ``v1``:
    for clients to represent state changes that occur within the region of
    returned timeline.
 
- * Additionally, the ``state`` contained in the ``/sync`` response by default
-   only contains keys that have changed since the basis given in the ``since``
-   parameter, rather than containing a full set values.
-
  * In ``/events`` if more events occurred since the ``since`` token than the
    ``limit`` parameter allowed, then events from the start of this range were
    returned and the client had to perform another fetch to incrementally obtain
@@ -56,6 +52,11 @@ following summary may be useful to compare with ``v1``:
    recent events, creating a gap if this would be more events than the
    requested limit. If this occurs then the client can use the ``prev_batch``
    token as a reference to obtaining more.
+
+ * Additionally, the ``state`` contained in the ``/sync`` response that has a
+   ``since`` parameter will contains only keys that have changed since the
+   basis given in the ``since`` parameter, rather than containing a full set
+   values.
 
 There is no direct replacement for the per-room ``/rooms/:roomId/initialSync``
 endpoint, but the behaviour can be recreated by applying an ad-hoc filter using
