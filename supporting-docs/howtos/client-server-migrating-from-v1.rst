@@ -6,6 +6,17 @@ the API to migrate their code to the later ``r0``. It does not aim to introduce
 new concepts that were added in ``r0`` except where these replace things that
 were removed since ``v1``.
 
+Updated Version In Path
+=======================
+
+The new version of the API is ``r0``; this should be used in paths where
+``v1`` used to appear. Additionally, the ``/api`` path component has now been
+removed. API endpoint paths are now::
+
+  POST /_matrix/client/r0/register
+  GET /_matrix/client/r0/login
+  etc...
+
 New Registration and Login Endpoints
 ====================================
 
@@ -30,22 +41,19 @@ The following endpoints are now deprecated and replaced by the ``/sync`` API::
   /rooms/:roomId/initialSync
 
 The new ``/sync`` API takes an optional ``since`` parameter to distinguish the
-initial sync from subsequent updates for more events. Instead of the ``limit``
-parameter, supply an ad-hoc filter that provides the required event count::
-
-  GET .../sync?filter={"room":{"timeline":{"limit:$limit}}}
+initial sync from subsequent updates for more events.
 
 The return value takes a different structure to that from the previous
 ``/initialSync`` API. For full details see the API documentation, but the
 following summary may be useful to compare with ``v1``:
 
- * The ``/initialSync`` returned a ``state`` key containing the most recent
-   state in the room, whereas the new ``/sync`` API's ``state`` corresponds to
-   the room state at the start of the returned timeline. This makes it easier
-   for clients to represent state changes that occur within the region of
-   returned timeline.
+ * ``/initialSync`` returned a ``state`` key containing the most recent state
+   in the room, whereas the new ``/sync`` API's ``state`` corresponds to the
+   room state at the start of the returned timeline. This makes it easier for
+   clients to represent state changes that occur within the region of returned
+   timeline.
 
- * In ``/events`` if more events occurred since the ``since`` token than the
+ * In ``/events``, if more events occurred since the ``since`` token than the
    ``limit`` parameter allowed, then events from the start of this range were
    returned and the client had to perform another fetch to incrementally obtain
    more of them. In the ``/sync`` API the result always contains the most
@@ -53,10 +61,16 @@ following summary may be useful to compare with ``v1``:
    requested limit. If this occurs then the client can use the ``prev_batch``
    token as a reference to obtaining more.
 
- * Additionally, the ``state`` contained in the ``/sync`` response that has a
-   ``since`` parameter will contains only keys that have changed since the
+ * The ``state`` contained in the response to a ``/sync`` request that has a
+   ``since`` parameter will contain only keys that have changed since the
    basis given in the ``since`` parameter, rather than containing a full set
    values.
+
+The ``/initialSync`` API allowed a parameter called ``limit`` to limit the
+number of events returned. To apply this limit to the new ``/sync`` API, you
+can supply an ad-hoc filter::
+
+  GET .../sync?filter={"room":{"timeline":{"limit:$limit}}}
 
 There is no direct replacement for the per-room ``/rooms/:roomId/initialSync``
 endpoint, but the behaviour can be recreated by applying an ad-hoc filter using
@@ -74,11 +88,11 @@ The following endpoint is deprecated and has no direct replacement::
 
   /events/:eventId
 
-However, if the client is aware of the room ID the event is in, it can use the
-``/rooms/:roomId/context/:eventId`` request to fetch the event itself. By
-giving the ``limit`` parameter of ``0`` the client can save using extra
-bandwidth by actually returning additional context events around the requested
-one.
+However, if the client knows the room ID of the room that the event is in, it
+can use the ``/rooms/:roomId/context/:eventId`` request to fetch the event
+itself. By giving the ``limit`` parameter of ``0`` the client can save using
+extra bandwidth by actually returning additional context events around the
+requested one.
 
 Removed POST Endpoint
 =====================
@@ -92,14 +106,3 @@ to generate these IDs locally.
 The following URLs have therefore been removed::
 
   POST .../rooms/:roomId/send/:messageType
-
-Updated Version In Path
-=======================
-
-The new version of the API is ``r0``; this should be used in paths where
-``v1`` used to appear. Additionally, the ``/api`` path component has now been
-removed. API endpoint paths are now::
-
-  POST /_matrix/client/r0/register
-  GET /_matrix/client/r0/login
-  etc...
