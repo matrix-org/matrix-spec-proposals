@@ -14,7 +14,7 @@ implementation, there may be variations in relation to registering/logging in
 which are not covered in extensive detail in this guide.
 
 If you haven't already, get a homeserver up and running on 
-``https://localhost:8008``.
+``https://localhost:8448``.
 
 
 Accounts
@@ -32,7 +32,7 @@ Registration
 The aim of registration is to get a user ID and access token which you will need
 when accessing other APIs::
 
-    curl -XPOST -d '{"username":"example", "password":"wordpass", "auth": {"type":"m.login.dummy"}}' "https://localhost:8008/_matrix/client/r0/register"
+    curl -XPOST -d '{"username":"example", "password":"wordpass", "auth": {"type":"m.login.dummy"}}' "https://localhost:8448/_matrix/client/r0/register"
 
     {
         "access_token": "QGV4YW1wbGU6bG9jYWxob3N0.AqdSzFmFYrLrTmteXc", 
@@ -54,7 +54,7 @@ Login
 -----
 The aim when logging in is to get an access token for your existing user ID::
 
-    curl -XGET "https://localhost:8008/_matrix/client/r0/login"
+    curl -XGET "https://localhost:8448/_matrix/client/r0/login"
 
     {
         "flows": [
@@ -64,7 +64,7 @@ The aim when logging in is to get an access token for your existing user ID::
         ]
     }
 
-    curl -XPOST -d '{"type":"m.login.password", "user":"example", "password":"wordpass"}' "https://localhost:8008/_matrix/client/r0/login"
+    curl -XPOST -d '{"type":"m.login.password", "user":"example", "password":"wordpass"}' "https://localhost:8448/_matrix/client/r0/login"
 
     {
         "access_token": "QGV4YW1wbGU6bG9jYWxob3N0.vRDLTgxefmKWQEtgGd", 
@@ -97,7 +97,7 @@ Creating a room
 If you want to send a message to someone, you have to be in a room with them. To
 create a room::
 
-    curl -XPOST -d '{"room_alias_name":"tutorial"}' "https://localhost:8008/_matrix/client/r0/createRoom?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{"room_alias_name":"tutorial"}' "https://localhost:8448/_matrix/client/r0/createRoom?access_token=YOUR_ACCESS_TOKEN"
 
     {
         "room_alias": "#tutorial:localhost", 
@@ -116,7 +116,7 @@ Sending messages
 ----------------
 You can now send messages to this room::
 
-    curl -XPOST -d '{"msgtype":"m.text", "body":"hello"}' "https://localhost:8008/_matrix/client/r0/rooms/%21asfLdzLnOdGRkdPZWu:localhost:8080/send/m.room.message?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{"msgtype":"m.text", "body":"hello"}' "https://localhost:8448/_matrix/client/r0/rooms/%21asfLdzLnOdGRkdPZWu:localhost:8080/send/m.room.message?access_token=YOUR_ACCESS_TOKEN"
     
     {
         "event_id": "YUwRidLecu"
@@ -147,7 +147,7 @@ Inviting a user to a room
 -------------------------
 You can directly invite a user to a room like so::
 
-    curl -XPOST -d '{"user_id":"@myfriend:localhost"}' "https://localhost:8008/_matrix/client/r0/rooms/%21asfLdzLnOdGRkdPZWu:localhost:8080/invite?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{"user_id":"@myfriend:localhost"}' "https://localhost:8448/_matrix/client/r0/rooms/%21asfLdzLnOdGRkdPZWu:localhost:8080/invite?access_token=YOUR_ACCESS_TOKEN"
     
 This informs ``@myfriend:localhost`` of the room ID 
 ``!CvcvRuDYDzTOzfKKgh:localhost`` and allows them to join the room.
@@ -156,7 +156,7 @@ Joining a room via an invite
 ----------------------------
 If you receive an invite, you can join the room::
 
-    curl -XPOST -d '{}' "https://localhost:8008/_matrix/client/r0/rooms/%21asfLdzLnOdGRkdPZWu:localhost:8080/join?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{}' "https://localhost:8448/_matrix/client/r0/rooms/%21asfLdzLnOdGRkdPZWu:localhost:8080/join?access_token=YOUR_ACCESS_TOKEN"
     
 NB: Only the person invited (``@myfriend:localhost``) can change the membership
 state to ``"join"``. Repeatedly joining a room does nothing.
@@ -166,7 +166,7 @@ Joining a room via an alias
 Alternatively, if you know the room alias for this room and the room config 
 allows it, you can directly join a room via the alias::
 
-    curl -XPOST -d '{}' "https://localhost:8008/_matrix/client/r0/join/%21asfLdzLnOdGRkdPZWu:localhost:8080?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{}' "https://localhost:8448/_matrix/client/r0/join/%21asfLdzLnOdGRkdPZWu:localhost:8080?access_token=YOUR_ACCESS_TOKEN"
     
     {
         "room_id": "!CvcvRuDYDzTOzfKKgh:localhost"
@@ -195,7 +195,7 @@ Getting all state
 If the client doesn't know any information on the rooms the user is 
 invited/joined on, they can get all the user's state for all rooms::
 
-    curl -XGET "https://localhost:8008/_matrix/client/r0/sync?access_token=YOUR_ACCESS_TOKEN"
+    curl -XGET "https://localhost:8448/_matrix/client/r0/sync?access_token=YOUR_ACCESS_TOKEN"
     
     {
         "account_data": {
@@ -280,7 +280,7 @@ all of the presences relevant for these rooms. This can be a LOT of data. You
 may just want the most recent event for each room. This can be achieved by 
 applying a filter that asks for a limit of 1 timeline event per room::
 
-    curl --globoff -XGET "https://localhost:8008/_matrix/client/r0/sync?filter={'room':{'timeline':{'limit':1}}}&access_token=YOUR_ACCESS_TOKEN"
+    curl --globoff -XGET "https://localhost:8448/_matrix/client/r0/sync?filter={'room':{'timeline':{'limit':1}}}&access_token=YOUR_ACCESS_TOKEN"
 
     {
         ...
@@ -325,7 +325,7 @@ be used to obtain updates since this point under the object key ``next_batch``.
 To use this token, specify its value as the ``since`` parameter to another
 ``/sync`` request.::
 
-    curl -XGET "https://localhost:8008/_matrix/client/r0/sync?since=s9_7_0_1_1_1&access_token=YOUR_ACCESS_TOKEN"
+    curl -XGET "https://localhost:8448/_matrix/client/r0/sync?since=s9_7_0_1_1_1&access_token=YOUR_ACCESS_TOKEN"
     
     {
         "account_data": {
@@ -358,7 +358,7 @@ query parameter, which gives a duration in miliseconds, we can ask the server
 to wait for up to that amount of time before it returns. If no interesting
 events have happened since then, the response will be relatively empty.::
 
-    curl -XGET "https://localhost:8008/_matrix/client/r0/sync?since=s9_13_0_1_1_1&access_token=YOUR_ACCESS_TOKEN"
+    curl -XGET "https://localhost:8448/_matrix/client/r0/sync?since=s9_13_0_1_1_1&access_token=YOUR_ACCESS_TOKEN"
     {
         "account_data": {
             "events": []
