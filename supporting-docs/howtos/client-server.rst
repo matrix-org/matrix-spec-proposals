@@ -101,7 +101,7 @@ create a room::
 
     {
         "room_alias": "#tutorial:localhost", 
-        "room_id": "!asfLdzLnOdGRkdPZWu:localhost:8080"
+        "room_id": "!asfLdzLnOdGRkdPZWu:localhost"
     }
     
 The "room alias" is a human-readable string which can be shared with other users
@@ -116,7 +116,7 @@ Sending messages
 ----------------
 You can now send messages to this room::
 
-    curl -XPOST -d '{"msgtype":"m.text", "body":"hello"}' "https://localhost:8448/_matrix/client/r0/rooms/%21asfLdzLnOdGRkdPZWu:localhost:8080/send/m.room.message?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{"msgtype":"m.text", "body":"hello"}' "https://localhost:8448/_matrix/client/r0/rooms/%21asfLdzLnOdGRkdPZWu:localhost/send/m.room.message?access_token=YOUR_ACCESS_TOKEN"
     
     {
         "event_id": "YUwRidLecu"
@@ -147,7 +147,7 @@ Inviting a user to a room
 -------------------------
 You can directly invite a user to a room like so::
 
-    curl -XPOST -d '{"user_id":"@myfriend:localhost"}' "https://localhost:8448/_matrix/client/r0/rooms/%21asfLdzLnOdGRkdPZWu:localhost:8080/invite?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{"user_id":"@myfriend:localhost"}' "https://localhost:8448/_matrix/client/r0/rooms/%21asfLdzLnOdGRkdPZWu:localhost/invite?access_token=YOUR_ACCESS_TOKEN"
     
 This informs ``@myfriend:localhost`` of the room ID 
 ``!CvcvRuDYDzTOzfKKgh:localhost`` and allows them to join the room.
@@ -156,7 +156,7 @@ Joining a room via an invite
 ----------------------------
 If you receive an invite, you can join the room::
 
-    curl -XPOST -d '{}' "https://localhost:8448/_matrix/client/r0/rooms/%21asfLdzLnOdGRkdPZWu:localhost:8080/join?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{}' "https://localhost:8448/_matrix/client/r0/rooms/%21asfLdzLnOdGRkdPZWu:localhost/join?access_token=YOUR_ACCESS_TOKEN"
     
 NB: Only the person invited (``@myfriend:localhost``) can change the membership
 state to ``"join"``. Repeatedly joining a room does nothing.
@@ -166,7 +166,7 @@ Joining a room via an alias
 Alternatively, if you know the room alias for this room and the room config 
 allows it, you can directly join a room via the alias::
 
-    curl -XPOST -d '{}' "https://localhost:8448/_matrix/client/r0/join/%21asfLdzLnOdGRkdPZWu:localhost:8080?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{}' "https://localhost:8448/_matrix/client/r0/join/%21asfLdzLnOdGRkdPZWu:localhost?access_token=YOUR_ACCESS_TOKEN"
     
     {
         "room_id": "!CvcvRuDYDzTOzfKKgh:localhost"
@@ -214,7 +214,7 @@ invited/joined on, they can get all the user's state for all rooms::
                         "last_active_ago": 19,
                         "presence": "online"
                     },
-                    "sender": "@example:localhost:8080",
+                    "sender": "@example:localhost",
                     "type": "m.presence"
                 }
             ]
@@ -222,7 +222,7 @@ invited/joined on, they can get all the user's state for all rooms::
         "rooms": {
             "invite": {},
             "join": {
-                "!asfLdzLnOdGRkdPZWu:localhost:8080": {
+                "!asfLdzLnOdGRkdPZWu:localhost": {
                     "account_data": {
                         "events": []
                     },
@@ -236,11 +236,11 @@ invited/joined on, they can get all the user's state for all rooms::
                         "events": [
                             {
                                 "content": {
-                                    "creator": "@example:localhost:8080"
+                                    "creator": "@example:localhost"
                                 },
-                                "event_id": "$14606534990LhqHt:localhost:8080",
+                                "event_id": "$14606534990LhqHt:localhost",
                                 "origin_server_ts": 1460653499699,
-                                "sender": "@example:localhost:8080",
+                                "sender": "@example:localhost",
                                 "state_key": "",
                                 "type": "m.room.create",
                                 "unsigned": {
@@ -253,11 +253,11 @@ invited/joined on, they can get all the user's state for all rooms::
                                     "displayname": null,
                                     "membership": "join"
                                 },
-                                "event_id": "$14606534991nsZKk:localhost:8080",
+                                "event_id": "$14606534991nsZKk:localhost",
                                 "membership": "join",
                                 "origin_server_ts": 1460653499727,
-                                "sender": "@example:localhost:8080",
-                                "state_key": "@example:localhost:8080",
+                                "sender": "@example:localhost",
+                                "state_key": "@example:localhost",
                                 "type": "m.room.member",
                                 "unsigned": {
                                     "age": 239164
@@ -287,7 +287,7 @@ applying a filter that asks for a limit of 1 timeline event per room::
         "rooms": {
             "invite": {},
             "join": {
-                "!asfLdzLnOdGRkdPZWu:localhost:8080": {
+                "!asfLdzLnOdGRkdPZWu:localhost": {
                     ...
                     "timeline": {
                         "events": [
@@ -296,9 +296,9 @@ applying a filter that asks for a limit of 1 timeline event per room::
                                     "body": "hello",
                                     "msgtype": "m.text"
                                 },
-                                "event_id": "$14606535757KCGXo:localhost:8080",
+                                "event_id": "$14606535757KCGXo:localhost",
                                 "origin_server_ts": 1460653575105,
-                                "sender": "@example:localhost:8080",
+                                "sender": "@example:localhost",
                                 "type": "m.room.message",
                                 "unsigned": {
                                     "age": 800348
@@ -340,7 +340,7 @@ To use this token, specify its value as the ``since`` parameter to another
                         "last_active_ago": 12,
                         "presence": "online"
                     },
-                    "sender": "@example:localhost:8080",
+                    "sender": "@example:localhost",
                     "type": "m.presence"
                 }
             ]
