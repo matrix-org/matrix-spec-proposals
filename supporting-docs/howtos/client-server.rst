@@ -1,8 +1,6 @@
 .. TODO kegan
   Room config (specifically: message history,
-  public rooms). /register seems super simplistic compared to /login, maybe it
-  would be better if /register used the same technique as /login? /register should
-  be "user" not "user_id".
+  public rooms). 
 
 How to use the client-server API
 ================================
@@ -16,7 +14,7 @@ implementation, there may be variations in relation to registering/logging in
 which are not covered in extensive detail in this guide.
 
 If you haven't already, get a homeserver up and running on 
-``http://localhost:8008``.
+``https://localhost:8448``.
 
 
 Accounts
@@ -34,7 +32,7 @@ Registration
 The aim of registration is to get a user ID and access token which you will need
 when accessing other APIs::
 
-    curl -XPOST -d '{"user":"example", "password":"wordpass", "type":"m.login.password"}' "http://localhost:8008/_matrix/client/api/v1/register"
+    curl -XPOST -d '{"username":"example", "password":"wordpass", "auth": {"type":"m.login.dummy"}}' "https://localhost:8448/_matrix/client/r0/register"
 
     {
         "access_token": "QGV4YW1wbGU6bG9jYWxob3N0.AqdSzFmFYrLrTmteXc", 
@@ -56,7 +54,7 @@ Login
 -----
 The aim when logging in is to get an access token for your existing user ID::
 
-    curl -XGET "http://localhost:8008/_matrix/client/api/v1/login"
+    curl -XGET "https://localhost:8448/_matrix/client/r0/login"
 
     {
         "flows": [
@@ -66,7 +64,7 @@ The aim when logging in is to get an access token for your existing user ID::
         ]
     }
 
-    curl -XPOST -d '{"type":"m.login.password", "user":"example", "password":"wordpass"}' "http://localhost:8008/_matrix/client/api/v1/login"
+    curl -XPOST -d '{"type":"m.login.password", "user":"example", "password":"wordpass"}' "https://localhost:8448/_matrix/client/r0/login"
 
     {
         "access_token": "QGV4YW1wbGU6bG9jYWxob3N0.vRDLTgxefmKWQEtgGd", 
@@ -99,11 +97,11 @@ Creating a room
 If you want to send a message to someone, you have to be in a room with them. To
 create a room::
 
-    curl -XPOST -d '{"room_alias_name":"tutorial"}' "http://localhost:8008/_matrix/client/api/v1/createRoom?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{"room_alias_name":"tutorial"}' "https://localhost:8448/_matrix/client/r0/createRoom?access_token=YOUR_ACCESS_TOKEN"
 
     {
         "room_alias": "#tutorial:localhost", 
-        "room_id": "!CvcvRuDYDzTOzfKKgh:localhost"
+        "room_id": "!asfLdzLnOdGRkdPZWu:localhost"
     }
     
 The "room alias" is a human-readable string which can be shared with other users
@@ -118,7 +116,7 @@ Sending messages
 ----------------
 You can now send messages to this room::
 
-    curl -XPOST -d '{"msgtype":"m.text", "body":"hello"}' "http://localhost:8008/_matrix/client/api/v1/rooms/%21CvcvRuDYDzTOzfKKgh%3Alocalhost/send/m.room.message?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{"msgtype":"m.text", "body":"hello"}' "https://localhost:8448/_matrix/client/r0/rooms/%21asfLdzLnOdGRkdPZWu:localhost/send/m.room.message?access_token=YOUR_ACCESS_TOKEN"
     
     {
         "event_id": "YUwRidLecu"
@@ -149,7 +147,7 @@ Inviting a user to a room
 -------------------------
 You can directly invite a user to a room like so::
 
-    curl -XPOST -d '{"user_id":"@myfriend:localhost"}' "http://localhost:8008/_matrix/client/api/v1/rooms/%21CvcvRuDYDzTOzfKKgh%3Alocalhost/invite?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{"user_id":"@myfriend:localhost"}' "https://localhost:8448/_matrix/client/r0/rooms/%21asfLdzLnOdGRkdPZWu:localhost/invite?access_token=YOUR_ACCESS_TOKEN"
     
 This informs ``@myfriend:localhost`` of the room ID 
 ``!CvcvRuDYDzTOzfKKgh:localhost`` and allows them to join the room.
@@ -158,7 +156,7 @@ Joining a room via an invite
 ----------------------------
 If you receive an invite, you can join the room::
 
-    curl -XPOST -d '{}' "http://localhost:8008/_matrix/client/api/v1/rooms/%21CvcvRuDYDzTOzfKKgh%3Alocalhost/join?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{}' "https://localhost:8448/_matrix/client/r0/rooms/%21asfLdzLnOdGRkdPZWu:localhost/join?access_token=YOUR_ACCESS_TOKEN"
     
 NB: Only the person invited (``@myfriend:localhost``) can change the membership
 state to ``"join"``. Repeatedly joining a room does nothing.
@@ -168,7 +166,7 @@ Joining a room via an alias
 Alternatively, if you know the room alias for this room and the room config 
 allows it, you can directly join a room via the alias::
 
-    curl -XPOST -d '{}' "http://localhost:8008/_matrix/client/api/v1/join/%23tutorial%3Alocalhost?access_token=YOUR_ACCESS_TOKEN"
+    curl -XPOST -d '{}' "https://localhost:8448/_matrix/client/r0/join/%21asfLdzLnOdGRkdPZWu:localhost?access_token=YOUR_ACCESS_TOKEN"
     
     {
         "room_id": "!CvcvRuDYDzTOzfKKgh:localhost"
@@ -197,439 +195,184 @@ Getting all state
 If the client doesn't know any information on the rooms the user is 
 invited/joined on, they can get all the user's state for all rooms::
 
-    curl -XGET "http://localhost:8008/_matrix/client/api/v1/initialSync?access_token=YOUR_ACCESS_TOKEN"
+    curl -XGET "https://localhost:8448/_matrix/client/r0/sync?access_token=YOUR_ACCESS_TOKEN"
     
     {
-        "end": "s39_18_0", 
-        "presence": [
-            {
-                "content": {
-                    "last_active_ago": 1061436, 
-                    "user_id": "@example:localhost"
-                }, 
-                "type": "m.presence"
-            }
-        ], 
-        "rooms": [
-            {
-                "membership": "join", 
-                "messages": {
-                    "chunk": [
-                        {
-                            "content": {
-                                "@example:localhost": 10, 
-                                "default": 0
-                            }, 
-                            "event_id": "wAumPSTsWF", 
-                            "required_power_level": 10, 
-                            "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                            "state_key": "", 
-                            "ts": 1409665585188, 
-                            "type": "m.room.power_levels", 
-                            "user_id": "@example:localhost"
-                        }, 
-                        {
-                            "content": {
-                                "join_rule": "public"
-                            }, 
-                            "event_id": "jrLVqKHKiI", 
-                            "required_power_level": 10, 
-                            "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                            "state_key": "", 
-                            "ts": 1409665585188, 
-                            "type": "m.room.join_rules", 
-                            "user_id": "@example:localhost"
-                        }, 
-                        {
-                            "content": {
-                                "level": 10
-                            }, 
-                            "event_id": "WpmTgsNWUZ", 
-                            "required_power_level": 10, 
-                            "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                            "state_key": "", 
-                            "ts": 1409665585188, 
-                            "type": "m.room.add_state_level", 
-                            "user_id": "@example:localhost"
-                        }, 
-                        {
-                            "content": {
-                                "level": 0
-                            }, 
-                            "event_id": "qUMBJyKsTQ", 
-                            "required_power_level": 10, 
-                            "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                            "state_key": "", 
-                            "ts": 1409665585188, 
-                            "type": "m.room.send_event_level", 
-                            "user_id": "@example:localhost"
-                        }, 
-                        {
-                            "content": {
-                                "ban_level": 5, 
-                                "kick_level": 5
-                            }, 
-                            "event_id": "YAaDmKvoUW", 
-                            "required_power_level": 10, 
-                            "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                            "state_key": "", 
-                            "ts": 1409665585188, 
-                            "type": "m.room.ops_levels", 
-                            "user_id": "@example:localhost"
-                        }, 
-                        {
-                            "content": {
-                                "avatar_url": null, 
-                                "displayname": null, 
-                                "membership": "join"
-                            }, 
-                            "event_id": "RJbPMtCutf", 
-                            "membership": "join", 
-                            "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                            "state_key": "@example:localhost", 
-                            "ts": 1409665586730, 
-                            "type": "m.room.member", 
-                            "user_id": "@example:localhost"
-                        }, 
-                        {
-                            "content": {
-                                "body": "hello", 
-                                "hsob_ts": 1409665660439, 
-                                "msgtype": "m.text"
-                            }, 
-                            "event_id": "YUwRidLecu", 
-                            "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                            "ts": 1409665660439, 
-                            "type": "m.room.message", 
-                            "user_id": "@example:localhost"
-                        }, 
-                        {
-                            "content": {
-                                "membership": "invite"
-                            }, 
-                            "event_id": "YjNuBKnPsb", 
-                            "membership": "invite", 
-                            "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                            "state_key": "@myfriend:localhost", 
-                            "ts": 1409666426819, 
-                            "type": "m.room.member", 
-                            "user_id": "@example:localhost"
-                        }, 
-                        {
-                            "content": {
-                                "avatar_url": null, 
-                                "displayname": null, 
-                                "membership": "join", 
-                                "prev": "join"
-                            }, 
-                            "event_id": "KWwdDjNZnm", 
-                            "membership": "join", 
-                            "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                            "state_key": "@example:localhost", 
-                            "ts": 1409666551582, 
-                            "type": "m.room.member", 
-                            "user_id": "@example:localhost"
-                        }, 
-                        {
-                            "content": {
-                                "avatar_url": null, 
-                                "displayname": null, 
-                                "membership": "join"
-                            }, 
-                            "event_id": "JFLVteSvQc", 
-                            "membership": "join", 
-                            "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                            "state_key": "@example:localhost", 
-                            "ts": 1409666587265, 
-                            "type": "m.room.member", 
-                            "user_id": "@example:localhost"
-                        }
-                    ], 
-                    "end": "s39_18_0", 
-                    "start": "t1-11_18_0"
-                }, 
-                "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                "state": [
-                    {
-                        "content": {
-                            "creator": "@example:localhost"
-                        }, 
-                        "event_id": "dMUoqVTZca", 
-                        "required_power_level": 10, 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "", 
-                        "ts": 1409665585188, 
-                        "type": "m.room.create", 
-                        "user_id": "@example:localhost"
-                    }, 
-                    {
-                        "content": {
-                            "@example:localhost": 10, 
-                            "default": 0
-                        }, 
-                        "event_id": "wAumPSTsWF", 
-                        "required_power_level": 10, 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "", 
-                        "ts": 1409665585188, 
-                        "type": "m.room.power_levels", 
-                        "user_id": "@example:localhost"
-                    }, 
-                    {
-                        "content": {
-                            "join_rule": "public"
-                        }, 
-                        "event_id": "jrLVqKHKiI", 
-                        "required_power_level": 10, 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "", 
-                        "ts": 1409665585188, 
-                        "type": "m.room.join_rules", 
-                        "user_id": "@example:localhost"
-                    }, 
-                    {
-                        "content": {
-                            "level": 10
-                        }, 
-                        "event_id": "WpmTgsNWUZ", 
-                        "required_power_level": 10, 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "", 
-                        "ts": 1409665585188, 
-                        "type": "m.room.add_state_level", 
-                        "user_id": "@example:localhost"
-                    }, 
-                    {
-                        "content": {
-                            "level": 0
-                        }, 
-                        "event_id": "qUMBJyKsTQ", 
-                        "required_power_level": 10, 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "", 
-                        "ts": 1409665585188, 
-                        "type": "m.room.send_event_level", 
-                        "user_id": "@example:localhost"
-                    }, 
-                    {
-                        "content": {
-                            "ban_level": 5, 
-                            "kick_level": 5
-                        }, 
-                        "event_id": "YAaDmKvoUW", 
-                        "required_power_level": 10, 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "", 
-                        "ts": 1409665585188, 
-                        "type": "m.room.ops_levels", 
-                        "user_id": "@example:localhost"
-                    }, 
-                    {
-                        "content": {
-                            "membership": "invite"
-                        }, 
-                        "event_id": "YjNuBKnPsb", 
-                        "membership": "invite", 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "@myfriend:localhost", 
-                        "ts": 1409666426819, 
-                        "type": "m.room.member", 
-                        "user_id": "@example:localhost"
-                    }, 
-                    {
-                        "content": {
-                            "avatar_url": null, 
-                            "displayname": null, 
-                            "membership": "join"
-                        }, 
-                        "event_id": "JFLVteSvQc", 
-                        "membership": "join", 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "@example:localhost", 
-                        "ts": 1409666587265, 
-                        "type": "m.room.member", 
-                        "user_id": "@example:localhost"
-                    }
-                ]
-            }
-        ]
+        "account_data": {
+            "events": [
+                {
+                    ...
+                }
+            ]
+        },
+        "next_batch": "s9_3_0_1_1_1",
+        "presence": {
+            "events": [
+                {
+                    "content": {
+                        "currently_active": true,
+                        "last_active_ago": 19,
+                        "presence": "online"
+                    },
+                    "sender": "@example:localhost",
+                    "type": "m.presence"
+                }
+            ]
+        },
+        "rooms": {
+            "invite": {},
+            "join": {
+                "!asfLdzLnOdGRkdPZWu:localhost": {
+                    "account_data": {
+                        "events": []
+                    },
+                    "ephemeral": {
+                        "events": []
+                    },
+                    "state": {
+                        "events": []
+                    },
+                    "timeline": {
+                        "events": [
+                            {
+                                "content": {
+                                    "creator": "@example:localhost"
+                                },
+                                "event_id": "$14606534990LhqHt:localhost",
+                                "origin_server_ts": 1460653499699,
+                                "sender": "@example:localhost",
+                                "state_key": "",
+                                "type": "m.room.create",
+                                "unsigned": {
+                                    "age": 239192
+                                }
+                            },
+                            {
+                                "content": {
+                                    "avatar_url": null,
+                                    "displayname": null,
+                                    "membership": "join"
+                                },
+                                "event_id": "$14606534991nsZKk:localhost",
+                                "membership": "join",
+                                "origin_server_ts": 1460653499727,
+                                "sender": "@example:localhost",
+                                "state_key": "@example:localhost",
+                                "type": "m.room.member",
+                                "unsigned": {
+                                    "age": 239164
+                                }
+                            },
+                            ...
+                        ],
+                        "limited": false,
+                        "prev_batch": "s9_3_0_1_1_1"
+                    },
+                    "unread_notifications": {}
+                }
+            },
+            "leave": {}
+        }
     }
-    
+
 This returns all the room information the user is invited/joined on, as well as
 all of the presences relevant for these rooms. This can be a LOT of data. You
 may just want the most recent event for each room. This can be achieved by 
-applying query parameters to ``limit`` this request::
+applying a filter that asks for a limit of 1 timeline event per room::
 
-    curl -XGET "http://localhost:8008/_matrix/client/api/v1/initialSync?limit=1&access_token=YOUR_ACCESS_TOKEN"
-    
+    curl --globoff -XGET "https://localhost:8448/_matrix/client/r0/sync?filter={'room':{'timeline':{'limit':1}}}&access_token=YOUR_ACCESS_TOKEN"
+
     {
-        "end": "s39_18_0", 
-        "presence": [
-            {
-                "content": {
-                    "last_active_ago": 1279484, 
-                    "user_id": "@example:localhost"
-                }, 
-                "type": "m.presence"
-            }
-        ], 
-        "rooms": [
-            {
-                "membership": "join", 
-                "messages": {
-                    "chunk": [
-                        {
-                            "content": {
-                                "avatar_url": null, 
-                                "displayname": null, 
-                                "membership": "join"
-                            }, 
-                            "event_id": "JFLVteSvQc", 
-                            "membership": "join", 
-                            "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                            "state_key": "@example:localhost", 
-                            "ts": 1409666587265, 
-                            "type": "m.room.member", 
-                            "user_id": "@example:localhost"
-                        }
-                    ], 
-                    "end": "s39_18_0", 
-                    "start": "t10-30_18_0"
-                }, 
-                "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                "state": [
-                    {
-                        "content": {
-                            "creator": "@example:localhost"
-                        }, 
-                        "event_id": "dMUoqVTZca", 
-                        "required_power_level": 10, 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "", 
-                        "ts": 1409665585188, 
-                        "type": "m.room.create", 
-                        "user_id": "@example:localhost"
-                    }, 
-                    {
-                        "content": {
-                            "@example:localhost": 10, 
-                            "default": 0
-                        }, 
-                        "event_id": "wAumPSTsWF", 
-                        "required_power_level": 10, 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "", 
-                        "ts": 1409665585188, 
-                        "type": "m.room.power_levels", 
-                        "user_id": "@example:localhost"
-                    }, 
-                    {
-                        "content": {
-                            "join_rule": "public"
-                        }, 
-                        "event_id": "jrLVqKHKiI", 
-                        "required_power_level": 10, 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "", 
-                        "ts": 1409665585188, 
-                        "type": "m.room.join_rules", 
-                        "user_id": "@example:localhost"
-                    }, 
-                    {
-                        "content": {
-                            "level": 10
-                        }, 
-                        "event_id": "WpmTgsNWUZ", 
-                        "required_power_level": 10, 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "", 
-                        "ts": 1409665585188, 
-                        "type": "m.room.add_state_level", 
-                        "user_id": "@example:localhost"
-                    }, 
-                    {
-                        "content": {
-                            "level": 0
-                        }, 
-                        "event_id": "qUMBJyKsTQ", 
-                        "required_power_level": 10, 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "", 
-                        "ts": 1409665585188, 
-                        "type": "m.room.send_event_level", 
-                        "user_id": "@example:localhost"
-                    }, 
-                    {
-                        "content": {
-                            "ban_level": 5, 
-                            "kick_level": 5
-                        }, 
-                        "event_id": "YAaDmKvoUW", 
-                        "required_power_level": 10, 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "", 
-                        "ts": 1409665585188, 
-                        "type": "m.room.ops_levels", 
-                        "user_id": "@example:localhost"
-                    }, 
-                    {
-                        "content": {
-                            "membership": "invite"
-                        }, 
-                        "event_id": "YjNuBKnPsb", 
-                        "membership": "invite", 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "@myfriend:localhost", 
-                        "ts": 1409666426819, 
-                        "type": "m.room.member", 
-                        "user_id": "@example:localhost"
-                    }, 
-                    {
-                        "content": {
-                            "avatar_url": null, 
-                            "displayname": null, 
-                            "membership": "join"
-                        }, 
-                        "event_id": "JFLVteSvQc", 
-                        "membership": "join", 
-                        "room_id": "!MkDbyRqnvTYnoxjLYx:localhost", 
-                        "state_key": "@example:localhost", 
-                        "ts": 1409666587265, 
-                        "type": "m.room.member", 
-                        "user_id": "@example:localhost"
-                    }
-                ]
-            }
-        ]
+        ...
+        "rooms": {
+            "invite": {},
+            "join": {
+                "!asfLdzLnOdGRkdPZWu:localhost": {
+                    ...
+                    "timeline": {
+                        "events": [
+                            {
+                                "content": {
+                                    "body": "hello",
+                                    "msgtype": "m.text"
+                                },
+                                "event_id": "$14606535757KCGXo:localhost",
+                                "origin_server_ts": 1460653575105,
+                                "sender": "@example:localhost",
+                                "type": "m.room.message",
+                                "unsigned": {
+                                    "age": 800348
+                                }
+                            }
+                        ],
+                        "limited": true,
+                        "prev_batch": "t8-8_7_0_1_1_1"
+                    },
+                    "unread_notifications": {}
+                }
+            },
+            "leave": {}
+        }
     }
+
+(additionally we have to ask ``curl`` not to try to interpret any ``{}``
+characters in the URL, which is what the ``--globoff`` option is for)
 
 Getting live state
 ------------------
-Once you know which rooms the client has previously interacted with, you need to
-listen for incoming events. This can be done like so::
+In the response to this ``sync`` request the server includes a token that can
+be used to obtain updates since this point under the object key ``next_batch``.
+To use this token, specify its value as the ``since`` parameter to another
+``/sync`` request.::
 
-    curl -XGET "http://localhost:8008/_matrix/client/api/v1/events?access_token=YOUR_ACCESS_TOKEN"
+    curl -XGET "https://localhost:8448/_matrix/client/r0/sync?since=s9_7_0_1_1_1&access_token=YOUR_ACCESS_TOKEN"
     
     {
-        "chunk": [], 
-        "end": "s39_18_0", 
-        "start": "s39_18_0"
+        "account_data": {
+            "events": []
+        },
+        "next_batch": "s9_9_0_1_1_1",
+        "presence": {
+            "events": [
+                {
+                    "content": {
+                        "currently_active": true,
+                        "last_active_ago": 12,
+                        "presence": "online"
+                    },
+                    "sender": "@example:localhost",
+                    "type": "m.presence"
+                }
+            ]
+        },
+        "rooms": {
+            "invite": {},
+            "join": {},
+            "leave": {}
+        }
     }
     
-This will block waiting for an incoming event, timing out after several seconds.
-Even if there are no new events (as in the example above), there will be some
-pagination stream response keys. The client should make subsequent requests 
-using the value of the ``"end"`` key (in this case ``s39_18_0``) as the ``from`` 
-query parameter e.g. ``http://localhost:8008/_matrix/client/api/v1/events?access
-_token=YOUR_ACCESS_TOKEN&from=s39_18_0``. This value should be stored so when the 
-client reopens your app after a period of inactivity, you can resume from where 
-you got up to in the event stream. If it has been a long period of inactivity, 
-there may be LOTS of events waiting for the user. In this case, you may wish to 
-get all state instead and then resume getting live state from a newer end token.
+By default this request will not wait in the server, always returning a value
+even if nothing interesting happened. However, by applying the ``timeout``
+query parameter, which gives a duration in miliseconds, we can ask the server
+to wait for up to that amount of time before it returns. If no interesting
+events have happened since then, the response will be relatively empty.::
 
-NB: The timeout can be changed by adding a ``timeout`` query parameter, which is
-in milliseconds. A timeout of 0 will not block.
-
+    curl -XGET "https://localhost:8448/_matrix/client/r0/sync?since=s9_13_0_1_1_1&access_token=YOUR_ACCESS_TOKEN"
+    {
+        "account_data": {
+            "events": []
+        },
+        "next_batch": "s9_13_0_1_1_1",
+        "presence": {
+            "events": []
+        },
+        "rooms": {
+            "invite": {},
+            "join": {},
+            "leave": {}
+        }
+    }
 
 Example application
 -------------------
