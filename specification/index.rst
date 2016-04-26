@@ -17,14 +17,10 @@ Matrix APIs
 
 The following APIs are documented in this specification:
 
-- `Client-Server API <client_server.html>`_ (%CLIENT_RELEASE_LABEL%) Interaction between clients and servers
-- `Server-Server API <server_server.html>`_ (%SERVER_RELEASE_LABEL%) Federation between servers
-- `Application Service API <application_service.html>`_ (%CLIENT_RELEASE_LABEL%) Privileged server plugins
-- `Identity Service API <identity_service.html>`_ (unstable) Mapping of third party IDs with Matrix IDs
-- `Push Gateway API <push_gateway.html>`_ (unstable) Push notifications for Matrix events
+{{apis}}
 
 `Appendices <appendices.html>`_ with supplemental information not specific to
-of the above APIs is also available.
+one of the above APIs is also available.
 
 Specification Version
 ---------------------

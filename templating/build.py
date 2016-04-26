@@ -131,7 +131,10 @@ def main(input_module, files=None, out_dir=None, verbose=False, substitutions={}
     # which spec section will use it, we just need it there in memory for when
     # they want it.
     units = AccessKeyStore(
-        existing_data=in_mod.exports["units"](debug=verbose).get_units()
+        existing_data=in_mod.exports["units"](
+            debug=verbose,
+            substitutions=substitutions,
+        ).get_units()
     )
 
     # use the units to create RST sections
