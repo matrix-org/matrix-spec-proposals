@@ -116,7 +116,7 @@ paths:
       description: |-
         Remove a tag from the room.
       security:
-        - access_token: []
+        - accessToken: []
       parameters:
         - in: path
           type: string
