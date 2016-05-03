@@ -12,11 +12,7 @@ consumes:
 produces:
   - application/json
 securityDefinitions:
-  accessToken:
-    type: apiKey
-    description: The user_id or application service access_token
-    name: access_token
-    in: query
+  $ref: definitions/security.yaml
 paths:
   "/rooms/{roomId}/ban":
     post:

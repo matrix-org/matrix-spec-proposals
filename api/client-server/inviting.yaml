@@ -12,11 +12,7 @@ consumes:
 produces:
   - application/json
 securityDefinitions:
-  accessToken:
-    type: apiKey
-    description: The user_id or application service access_token
-    name: access_token
-    in: query
+  $ref: definitions/security.yaml
 paths:
   # With an extra " " to disambiguate from the 3pid invite endpoint
   # The extra space makes it sort first for what I'm sure is a good reason.

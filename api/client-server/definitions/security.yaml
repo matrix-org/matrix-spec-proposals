@@ -1,0 +1,5 @@
+accessToken:
+  type: apiKey
+  description: The access_token returned by a call to ``/login`` or ``/tokenrefresh``
+  name: access_token
+  in: query

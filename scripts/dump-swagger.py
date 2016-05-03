@@ -12,9 +12,12 @@ import os.path
 import re
 import shutil
 import sys
+import yaml
 
 scripts_dir = os.path.dirname(os.path.abspath(__file__))
 templating_dir = os.path.join(os.path.dirname(scripts_dir), "templating")
+api_dir = os.path.join(os.path.dirname(scripts_dir), "api")
+
 sys.path.insert(0, templating_dir)
 
 from matrix_templates.units import resolve_references, MatrixUnits
@@ -50,9 +53,14 @@ output = {
         "title": "Matrix Client-Server API",
         "version": release_label,
     },
+    "securityDefinitions": {},
     "paths": {},
     "swagger": "2.0",
 }
+
+with open(os.path.join(api_dir, 'client-server', 'definitions',
+                       'security.yaml')) as f:
+    output['securityDefinitions'] = yaml.load(f)
 
 for file, contents in apis.items():
     for path, methods in contents["paths"].items():
@@ -61,6 +69,8 @@ for file, contents in apis.items():
                 if path not in output["paths"]:
                     output["paths"][path] = {}
                 output["paths"][path][method] = spec
+
+
 
 print "Generating %s" % output_file
 
