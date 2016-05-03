@@ -7,22 +7,27 @@
 
 import errno
 import json
+import logging
 import os.path
 import re
 import shutil
 import sys
 
-templating_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templating")
+scripts_dir = os.path.dirname(os.path.abspath(__file__))
+templating_dir = os.path.join(os.path.dirname(scripts_dir), "templating")
 sys.path.insert(0, templating_dir)
-os.chdir(templating_dir)
 
 from matrix_templates.units import resolve_references, MatrixUnits
 
-if len(sys.argv) < 2 or len(sys.argv) > 3:
-    sys.stderr.write("usage: %s output_directory [client_release_label]\n" % (sys.argv[0],))
+if len(sys.argv) > 3:
+    sys.stderr.write("usage: %s [output_file] [client_release_label]\n" % (sys.argv[0],))
     sys.exit(1)
 
-output_directory = sys.argv[1]
+if len(sys.argv) > 1:
+    output_file = os.path.abspath(sys.argv[1])
+else:
+    output_file = os.path.join(scripts_dir, "swagger", "api-docs.json")
+
 release_label = sys.argv[2] if len(sys.argv) > 2 else "unstable"
 
 major_version = release_label
@@ -30,6 +35,10 @@ match = re.match("^(r\d)+(\.\d+)*$", major_version)
 if match:
     major_version = match.group(1)
 
+
+logging.basicConfig()
+
+os.chdir(templating_dir)
 apis = MatrixUnits().load_swagger_apis()
 
 output = {
@@ -53,14 +62,15 @@ for file, contents in apis.items():
                     output["paths"][path] = {}
                 output["paths"][path][method] = spec
 
-path = os.path.join(output_directory, "api-docs")
+print "Generating %s" % output_file
+
 try:
-    os.makedirs(os.path.dirname(path))
+    os.makedirs(os.path.dirname(output_file))
 except OSError as e:
     if e.errno != errno.EEXIST:
         raise
 
-with open(path, "w") as f:
+with open(output_file, "w") as f:
     text = json.dumps(output, sort_keys=True, indent=4)
     text = text.replace("%CLIENT_RELEASE_LABEL%", release_label)
     text = text.replace("%CLIENT_MAJOR_VERSION%", major_version)

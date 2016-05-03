@@ -1,6 +1,7 @@
 scripts/gen
 scripts/continuserv/continuserv
 scripts/speculator/speculator
+/scripts/swagger
 templating/out
 *.pyc
 *.swp
