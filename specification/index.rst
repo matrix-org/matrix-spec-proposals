@@ -20,7 +20,7 @@ The following APIs are documented in this specification:
 {{apis}}
 
 `Appendices <appendices.html>`_ with supplemental information not specific to
-one of the above APIs is also available.
+one of the above APIs are also available.
 
 Specification Version
 ---------------------
