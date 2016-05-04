@@ -34,6 +34,6 @@ To make use of the generated file, there are a number of options:
  * You can host the swagger UI yourself:
    * download the latest release from https://github.com/swagger-api/swagger-ui
    * copy the contents of the 'dist' directory alongside `api-docs.json`
-   * View the UI via your browser at http://<hostname>?url=api-docs.json
+   * View the UI via your browser at http://\<hostname>?url=api-docs.json
 
 [1] http://swagger.io/
