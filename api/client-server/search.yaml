@@ -134,7 +134,7 @@ paths:
                                 key:
                                   type: string
                                   title: Group Key
-                                  description: |- 
+                                  description: |-
                                     Key that defines the group.
                                   enum: ["room_id", "sender"]
                     required: ["search_term"]
@@ -179,8 +179,7 @@ paths:
                               type: object
                               title: Event
                               description: The event that matched.
-                              allOf:
-                                - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                              "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
                             context:
                               type: object
                               title: Event Context
@@ -217,19 +216,17 @@ paths:
                                   title: Events Before
                                   description: Events just before the result.
                                   items:
-                                    type: object
                                     title: Event
-                                    allOf:
-                                      - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                                    type: object
+                                    "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
                                 events_after:
                                   type: array
                                   title: Events After
                                   description: Events just after the result.
                                   items:
-                                    type: object
                                     title: Event
-                                    allOf:
-                                      - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                                    type: object
+                                    "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
                       state:
                         type: object
                         title: Current state
@@ -241,10 +238,7 @@ paths:
                           type: array
                           title: Room State
                           items:
-                            type: object
-                            title: Event
-                            allOf:
-                              - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                            "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
                       groups:
                         type: object
                         title: Groups
