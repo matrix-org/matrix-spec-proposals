@@ -36,15 +36,19 @@ logger = logging.getLogger(__name__)
 
 def resolve_references(path, schema):
     if isinstance(schema, dict):
-        result = {}
+        # do $ref first
+        if '$ref' in schema:
+            value = schema['$ref']
+            path = os.path.join(os.path.dirname(path), value)
+            with open(path) as f:
+                ref = yaml.load(f)
+            result = resolve_references(path, ref)
+            del schema['$ref']
+        else:
+            result = {}
+
         for key, value in schema.items():
-            if key == "$ref":
-                path = os.path.join(os.path.dirname(path), value)
-                with open(path) as f:
-                    schema = yaml.load(f)
-                return resolve_references(path, schema)
-            else:
-                result[key] = resolve_references(path, value)
+            result[key] = resolve_references(path, value)
         return result
     elif isinstance(schema, list):
         return [resolve_references(path, value) for value in schema]
@@ -342,7 +346,7 @@ class MatrixUnits(Units):
                 # have either "x-example" or a "schema" with an "example".
                 params_missing_examples = [
                     p for p in single_api.get("parameters", []) if (
-                        "x-example" not in p and 
+                        "x-example" not in p and
                         not Units.prop(p, "schema/example")
                     )
                 ]
@@ -600,7 +604,7 @@ class MatrixUnits(Units):
                     # {
                     #   title: "<title> key"
                     #   rows: [
-                    #       { key: <key_name>, type: <string>, 
+                    #       { key: <key_name>, type: <string>,
                     #         desc: <desc>, required: <bool> }
                     #   ]
                     # }
