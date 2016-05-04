@@ -176,3 +176,8 @@ class MatrixSections(Sections):
     def render_common_state_event_fields(self):
         return self._render_ce_type("state_event")
 
+    def render_apis(self):
+        template = self.env.get_template("apis.tmpl")
+        apis = self.units.get("apis")
+        return template.render(apis=apis)
+

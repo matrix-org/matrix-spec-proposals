@@ -17,8 +17,13 @@ class Units(object):
         return val
 
 
-    def __init__(self, debug=False):
+    def __init__(self, debug=False, substitutions=None):
         self.debug = debug
+
+        if substitutions is None:
+            self.substitutions = {}
+        else:
+            self.substitutions = substitutions
 
     def log(self, text):
         if self.debug:
@@ -35,7 +40,10 @@ class Units(object):
             if not func_name.startswith("load_"):
                 continue
             unit_key = func_name[len("load_"):]
-            unit_dict[unit_key] = func()
+            if len(inspect.getargs(func.func_code).args) > 1:
+                unit_dict[unit_key] = func(self.substitutions)
+            else:
+                unit_dict[unit_key] = func()
             self.log("Generated unit '%s' : %s" % (
                 unit_key, json.dumps(unit_dict[unit_key])[:50].replace(
                     "\n",""

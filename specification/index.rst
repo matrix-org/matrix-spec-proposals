@@ -6,45 +6,39 @@ Matrix Specification
 .. have should hopefully not get complex enough that we need to worry about
 .. versioning it.
 
-This specification has been generated from
-https://github.com/matrix-org/matrix-doc using
-https://github.com/matrix-org/matrix-doc/blob/master/scripts/gendoc.py as of
-revision ``{{git_version}}`` -
-https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}.
+Matrix is a set of APIs for open-federated Instant Messaging (IM), Voice
+over IP (VoIP) and Internet of Things (IoT) communication, designed to create
+and support a new global real-time communication ecosystem.
 
-There is an `introduction and overview to the specification here <intro.html>`_.
+For a more complete introduction to Matrix, see `Introduction <intro.html>`_.
+
+Matrix APIs
+-----------
 
 The following APIs are documented in this specification:
 
-- `Client-Server API <client_server.html>`_ version %CLIENT_RELEASE_LABEL% for writing Matrix clients.
-- `Server-Server API <server_server.html>`_ version %SERVER_RELEASE_LABEL% for writing servers which can federate with Matrix.
-- `Application Service API <application_service.html>`_ version %CLIENT_RELEASE_LABEL% for writing privileged plugins to servers.
-- `Identity Service API <identity_service.html>`_ version unstable for mapping third party identifiers (e.g. email addresses) to Matrix IDs.
-- `Push Gateway API <push_gateway.html>`_ version unstable for implementing a server that receives notifications about Matrix events a user is interested in.
+{{apis}}
 
-There are also some `appendices <appendices.html>`_.
+`Appendices <appendices.html>`_ with supplemental information not specific to
+one of the above APIs are also available.
 
-Any developments since the latest release can be found `here`__.
+Specification Version
+---------------------
 
-.. __: https://matrix.org/speculator/spec/head/
+The documents in this version of the specification are generated from
+`matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
+`{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
 
-Old releases of the spec:
+The following other versions of the specification are also available,
+in reverse chronological order:
 
+- `HEAD <https://matrix.org/speculator/spec/head/>`_: Includes all changes since the latest versioned release.
 - `r0.0.1 <https://matrix.org/docs/spec/r0.0.1>`_
 - `r0.0.0 <https://matrix.org/docs/spec/r0.0.0>`_
+- `Legacy <https://matrix.org/docs/spec/legacy/>`_: The last draft before the spec was formally released in version r0.0.0.
 
-Before we formally started releasing the specification, the last working copy
-we had can be found `here`__.
-
-.. __: https://matrix.org/docs/spec/legacy/
-
-Versioning
-----------
-
-The specifications are each versioned in the form ``rX.Y.Z``.
-
-Changes to ``X`` and ``Y`` should not be assumed to be compatible with any other version.
-
-For a fixed ``X`` and ``Y``, any ``Z`` should be assumed to be compatible with any lesser ``Z``.
-
-For example, it is safe to assume that a server which claims to implement ``r0.1.2`` supports ``r0.1.0``, but not vice-versa.
+The specification for each API is versioned in the form ``rX.Y.Z``. Changes to
+``X`` and ``Y`` should not be assumed to be compatible with any other version.
+For a fixed ``X`` and ``Y``, any ``Z`` should be assumed to be compatible with
+any lesser ``Z``. For example, it is safe to assume that a server which claims
+to implement ``r0.1.2`` supports ``r0.1.0``, but not vice-versa.

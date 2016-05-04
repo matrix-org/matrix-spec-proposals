@@ -536,6 +536,31 @@ class MatrixUnits(Units):
                 event_types[event_type] = table
         return event_types
 
+    def load_apis(self, substitutions):
+        return {
+            "rows": [{
+                "key": "`Client-Server API <client_server.html>`_",
+                "type": substitutions["%CLIENT_RELEASE_LABEL%"],
+                "desc": "Interaction between clients and servers",
+            }, {
+                "key": "`Server-Server API <server_server.html>`_",
+                "type": substitutions["%SERVER_RELEASE_LABEL%"],
+                "desc": "Federation between servers",
+            }, {
+                "key": "`Application Service API <application_service.html>`_",
+                "type": substitutions["%CLIENT_RELEASE_LABEL%"],
+                "desc": "Privileged server plugins",
+            }, {
+                "key": "`Identity Service API <identity_service.html>`_",
+                "type": "unstable",
+                "desc": "Mapping of third party IDs with Matrix ID",
+            }, {
+                "key": "`Push Gateway API <push_gateway.html>`_",
+                "type": "unstable",
+                "desc": "Push notifications for Matrix events",
+            }]
+        }
+
     def load_event_examples(self):
         path = EVENT_EXAMPLES
         examples = {}
