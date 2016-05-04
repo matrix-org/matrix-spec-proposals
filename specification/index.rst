@@ -25,7 +25,7 @@ one of the above APIs are also available.
 Specification Version
 ---------------------
 
-The documents in the specification are generated from
+The documents in this version of the specification are generated from
 `matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
 `{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
 
