@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" 
+"""
 Batesian: A simple templating system using Jinja.
 
 Architecture
@@ -156,7 +156,7 @@ def main(input_module, files=None, out_dir=None, verbose=False, substitutions={}
 
     # check the input files and substitute in sections where required
     for input_filename in files:
-        output_filename = os.path.join(out_dir, 
+        output_filename = os.path.join(out_dir,
                                        os.path.basename(input_filename))
         process_file(env, sections, input_filename, output_filename)
 
@@ -208,7 +208,7 @@ if __name__ == '__main__':
         "then output under the same name to the output directory."
     )
     parser.add_argument(
-        "--input", "-i", 
+        "--input", "-i",
         help="The python module (not file) which contains the sections/units "+
         "classes. This module must have an 'exports' dict which has "+
         "{ 'units': UnitClass, 'sections': SectionClass, "+
@@ -230,7 +230,8 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--substitution", action="append",
-        help="Substitutions to apply to the generated output, of form NEEDLE=REPLACEMENT."
+        help="Substitutions to apply to the generated output, of form NEEDLE=REPLACEMENT.",
+        default=[],
     )
     args = parser.parse_args()
 

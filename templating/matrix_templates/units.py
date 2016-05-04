@@ -544,15 +544,15 @@ class MatrixUnits(Units):
         return {
             "rows": [{
                 "key": "`Client-Server API <client_server.html>`_",
-                "type": substitutions["%CLIENT_RELEASE_LABEL%"],
+                "type": substitutions.get("%CLIENT_RELEASE_LABEL%", "unstable"),
                 "desc": "Interaction between clients and servers",
             }, {
                 "key": "`Server-Server API <server_server.html>`_",
-                "type": substitutions["%SERVER_RELEASE_LABEL%"],
+                "type": substitutions.get("%SERVER_RELEASE_LABEL%", "unstable"),
                 "desc": "Federation between servers",
             }, {
                 "key": "`Application Service API <application_service.html>`_",
-                "type": substitutions["%CLIENT_RELEASE_LABEL%"],
+                "type": substitutions.get("%CLIENT_RELEASE_LABEL%", "unstable"),
                 "desc": "Privileged server plugins",
             }, {
                 "key": "`Identity Service API <identity_service.html>`_",
