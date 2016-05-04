@@ -180,7 +180,7 @@ paths:
                               title: Event
                               description: The event that matched.
                               allOf:
-                                - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
+                                - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
                             context:
                               type: object
                               title: Event Context
@@ -220,7 +220,7 @@ paths:
                                     type: object
                                     title: Event
                                     allOf:
-                                      - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
+                                      - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
                                 events_after:
                                   type: array
                                   title: Events After
@@ -229,7 +229,7 @@ paths:
                                     type: object
                                     title: Event
                                     allOf:
-                                      - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
+                                      - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
                       state:
                         type: object
                         title: Current state
@@ -244,7 +244,7 @@ paths:
                             type: object
                             title: Event
                             allOf:
-                              - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
+                              - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
                       groups:
                         type: object
                         title: Groups

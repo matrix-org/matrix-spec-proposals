@@ -210,7 +210,7 @@ paths:
               title: StateEvent
               type: object
               allOf:
-                - "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
+                - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
         403:
           description: >
             You aren't a member of the room and weren't previously a
@@ -392,7 +392,7 @@ paths:
                       type: object
                       title: RoomEvent
                       allOf:
-                        - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
+                        - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
                 required: ["start", "end", "chunk"]
               state:
                 type: array
@@ -405,7 +405,7 @@ paths:
                   title: StateEvent
                   type: object
                   allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
+                    - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
               visibility:
                 type: string
                 enum: ["private", "public"]
@@ -420,7 +420,7 @@ paths:
                   title: Event
                   type: object
                   allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
+                    - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
             required: ["room_id"]
         403:
           description: >
@@ -491,7 +491,7 @@ paths:
                   title: MemberEvent
                   type: object
                   allOf:
-                    - "$ref": "../../event-schemas/schema/m.room.member"
+                    - "$ref": "definitions/event-schemas/schema/m.room.member"
         403:
           description: >
             You aren't a member of the room and weren't previously a

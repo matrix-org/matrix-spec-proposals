@@ -206,6 +206,6 @@ paths:
               type: object
               title: PresenceEvent
               allOf:
-                - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
+                - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
       tags:
         - Presence
