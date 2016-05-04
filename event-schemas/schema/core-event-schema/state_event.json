@@ -1,0 +1,22 @@
+{
+    "description" : "In addition to the Room Event fields, State Events have the following additional fields.",
+    "allOf" : [{
+        "$ref": "room_event.json"
+    }],
+    "title" : "State Event",
+    "properties" : {
+        "state_key" : {
+            "description" : "A unique key which defines the overwriting semantics for this piece\nof room state. This value is often a zero-length string. The presence of this\nkey makes this event a State Event. The key MUST NOT start with '_'.",
+            "type" : "string"
+        },
+        "prev_content" : {
+            "type" : "object",
+            "title" : "EventContent",
+            "description" : "Optional. The previous ``content`` for this event. If there is no previous content, this key will be missing."
+        }
+    },
+    "type" : "object",
+    "required" : [
+        "state_key"
+    ]
+}

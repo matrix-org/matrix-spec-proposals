@@ -179,7 +179,7 @@ paths:
                               type: object
                               title: Event
                               description: The event that matched.
-                              "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                              "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.json"
                             context:
                               type: object
                               title: Event Context
@@ -218,7 +218,7 @@ paths:
                                   items:
                                     title: Event
                                     type: object
-                                    "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                                    "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.json"
                                 events_after:
                                   type: array
                                   title: Events After
@@ -226,7 +226,7 @@ paths:
                                   items:
                                     title: Event
                                     type: object
-                                    "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                                    "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.json"
                       state:
                         type: object
                         title: Current state
@@ -238,7 +238,7 @@ paths:
                           type: array
                           title: Room State
                           items:
-                            "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
+                            "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.json"
                       groups:
                         type: object
                         title: Groups

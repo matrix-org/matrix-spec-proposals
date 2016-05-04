@@ -3,7 +3,7 @@
     "title": "Presence Event",
     "description": "Informs the client of a user's presence state change.",
     "allOf": [{
-        "$ref": "core-event-schema/event.yaml"
+        "$ref": "core-event-schema/event.json"
     }],
     "properties": {
         "content": {

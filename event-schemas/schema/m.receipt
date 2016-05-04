@@ -3,7 +3,7 @@
     "title": "Receipt Event",
     "description": "Informs the client of new receipts.",
     "allOf": [{
-        "$ref": "core-event-schema/event.yaml"
+        "$ref": "core-event-schema/event.json"
     }],
     "properties": {
         "content": {

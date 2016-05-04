@@ -1,0 +1,16 @@
+{
+    "properties" : {
+        "content" : {
+            "description" : "The fields in this object will vary depending on the type of event.\nWhen interacting with the REST API, this is the HTTP body.",
+            "title" : "EventContent",
+            "type" : "object"
+        },
+        "type" : {
+            "description" : "The type of event. This SHOULD be namespaced similar to Java package\nnaming conventions e.g. 'com.example.subdomain.event.type'",
+            "type" : "string"
+        }
+    },
+    "description" : "The basic set of fields all events must have.",
+    "title" : "Event",
+    "type" : "object"
+}

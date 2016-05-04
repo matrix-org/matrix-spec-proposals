@@ -2,7 +2,7 @@
     "type": "object",
     "description": "This event is sent by the callee when they wish to answer the call.",
     "allOf": [{
-        "$ref": "core-event-schema/room_event.yaml"
+        "$ref": "core-event-schema/room_event.json"
     }],
     "properties": {
         "content": {

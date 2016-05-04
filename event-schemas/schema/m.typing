@@ -3,7 +3,7 @@
     "title": "Typing Event",
     "description": "Informs the client of the list of users currently typing.",
     "allOf": [{
-        "$ref": "core-event-schema/event.yaml"
+        "$ref": "core-event-schema/event.json"
     }],
     "properties": {
         "content": {
