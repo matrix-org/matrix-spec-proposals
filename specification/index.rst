@@ -25,8 +25,8 @@ The following APIs are documented in this specification:
 `Appendices <appendices.html>`_ with supplemental information not specific to
 one of the above APIs are also available.
 
-Specification Version
----------------------
+Specification Versions
+----------------------
 
 The documents in this version of the specification are generated from
 `matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
@@ -40,8 +40,16 @@ in reverse chronological order:
 - `r0.0.0 <https://matrix.org/docs/spec/r0.0.0>`_
 - `Legacy <https://matrix.org/docs/spec/legacy/>`_: The last draft before the spec was formally released in version r0.0.0.
 
-The specification for each API is versioned in the form ``rX.Y.Z``. Changes to
-``X`` and ``Y`` should not be assumed to be compatible with any other version.
-For a fixed ``X`` and ``Y``, any ``Z`` should be assumed to be compatible with
-any lesser ``Z``. For example, it is safe to assume that a server which claims
-to implement ``r0.1.2`` supports ``r0.1.0``, but not vice-versa.
+
+The specification for each API is versioned in the form ``rX.Y.Z``.
+ * A change to ``X`` reflects a breaking change: a client implemented against
+   ``r1.0.0`` may need changes to work with a server which supports (only)
+   ``r2.0.0``.
+ * A change to ``Y`` represents a change which is backwards-compatible for
+   existing clients, but not necessarily exisitng servers: a client implemented
+   against ``r1.1.0`` will work without changes against a server which supports
+   ``r1.2.0``; but a client which requires ``r1.2.0`` may not work correctly
+   with a server which implements only ``r1.1.0``.
+ * A change to ``Z`` represents a change which is backwards-compatible on both
+   sides. Typically this implies a clarification to the specification, rather
+   than a change which must be implemented.
