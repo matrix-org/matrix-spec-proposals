@@ -393,13 +393,13 @@ def cleanup_env():
     shutil.rmtree("./tmp")
 
 
-def main(requested_target_name, keep_intermediates, substitutions):
+def main(targets, keep_intermediates, substitutions):
     prepare_env()
-    log("Building spec [target=%s]" % requested_target_name)
 
-    targets = [requested_target_name]
-    if requested_target_name == "all":
+    if targets == ["all"]:
         targets = get_build_targets("../specification/targets.yaml") + ["howtos"]
+
+    log("Building spec [target=%s]" % targets)
 
     templated_files = []
     for target_name in targets:
@@ -448,7 +448,7 @@ if __name__ == '__main__':
         help="Do not delete intermediate files. They will be found in tmp/"
     )
     parser.add_argument(
-        "--target", "-t", default="all",
+        "--target", "-t", action="append",
         help="Specify the build target to build from specification/targets.yaml. " +
              "The value 'all' will build all of the targets therein."
     )
@@ -465,9 +465,6 @@ if __name__ == '__main__':
         help="The server-server release tag to generate, e.g. r1.2"
     )
     args = parser.parse_args()
-    if not args.target:
-        parser.print_help()
-        sys.exit(1)
     VERBOSE = args.verbose
     substitutions = {
         "%CLIENT_RELEASE_LABEL%": args.client_release,
@@ -475,4 +472,4 @@ if __name__ == '__main__':
         "%SERVER_RELEASE_LABEL%": args.server_release,
         "%SERVER_MAJOR_VERSION%": extract_major(args.server_release),
     }
-    main(args.target, args.nodelete, substitutions)
+    main(args.target or ["all"], args.nodelete, substitutions)
