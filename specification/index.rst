@@ -6,11 +6,14 @@ Matrix Specification
 .. have should hopefully not get complex enough that we need to worry about
 .. versioning it.
 
-Matrix is a set of APIs for open-federated Instant Messaging (IM), Voice
-over IP (VoIP) and Internet of Things (IoT) communication, designed to create
-and support a new global real-time communication ecosystem.
+Matrix defines a set of open APIs for decentralised communication, suitable for
+securely publishing, persisting and subscribing to data over a global open
+federation of servers with no single point of control.  Uses include Instant Messaging (IM),
+Voice over IP (VoIP) signalling, Internet of Things (IoT) communication, and bridging
+together existing communication silos - providing the basis of a new open real-time
+communication ecosystem.
 
-For a more complete introduction to Matrix, see `Introduction <intro.html>`_.
+`Introduction to Matrix <intro.html>`_ provides a full introduction to Matrix and the spec.
 
 Matrix APIs
 -----------
