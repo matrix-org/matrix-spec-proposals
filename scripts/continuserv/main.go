@@ -103,7 +103,7 @@ func makeWalker(base string, w *fsnotify.Watcher) filepath.WalkFunc {
 
 		// log.Printf("Adding watch on %s", path)
 		if err := w.Add(path); err != nil {
-			log.Fatalf("Failed to add watch: %v", err)
+			log.Fatalf("Failed to add watch on %s: %v", path, err)
 		}
 		return nil
 	}
@@ -166,19 +166,34 @@ func populateOnce(dir string) {
 		toServe.Store(bytesOrErr{nil, fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())})
 		return
 	}
-	fis, err := ioutil.ReadDir(path.Join(dir, "scripts", "gen"))
-	if err != nil {
-		toServe.Store(bytesOrErr{nil, err})
-		return
-	}
+
 	files := make(map[string][]byte)
-	for _, fi := range fis {
-		bytes, err := ioutil.ReadFile(path.Join(dir, "scripts", "gen", fi.Name()))
+	base := path.Join(dir, "scripts", "gen")
+	walker := func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			toServe.Store(bytesOrErr{nil, fmt.Errorf("error reading spec: %v", err)})
-			return
+			return err
 		}
-		files[fi.Name()] = bytes
+		if info.IsDir() {
+			return nil
+		}
+
+		rel, err := filepath.Rel(base, path)
+		if err != nil {
+			return fmt.Errorf("Failed to get relative path of %s: %v", path, err)
+		}
+
+		bytes, err := ioutil.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		files[rel] = bytes
+		return nil
+	}
+
+	err = filepath.Walk(base, walker)
+	if err != nil {
+		toServe.Store(bytesOrErr{nil, fmt.Errorf("error reading spec: %v", err)})
+		return
 	}
 	toServe.Store(bytesOrErr{files, nil})
 }

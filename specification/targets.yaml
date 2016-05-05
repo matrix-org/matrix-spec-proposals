@@ -12,19 +12,24 @@ targets:
       - { 1: modules.rst }
       - { 2: feature_profiles.rst }
       - { 2: "group:modules" }  # reference a group of files
+    version_label: "%CLIENT_RELEASE_LABEL%"
   application_service:
     files:
       - application_service_api.rst
+    version_label: unstable
   server_server:
     files:
       - server_server_api.rst
       - { 1: event_signing.rst }
+    version_label: "%SERVER_RELEASE_LABEL%"
   identity_service:
     files:
       - identity_service_api.rst
+    version_label: unstable
   push_gateway:
     files:
       - push_gateway.rst
+    version_label: unstable
   appendices:
     files:
       - appendices.rst
