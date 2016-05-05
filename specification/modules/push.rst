@@ -122,9 +122,16 @@ Underride rules ``underride``
   These are identical to ``override`` rules, but have a lower priority than
   ``content``, ``room`` and ``sender`` rules.
 
-This means that the full list of rule kinds, in descending priority order, is
-as follows:
+Push rules may be either global or device-specific. Device specific rules only
+affect delivery of notifications via pushers with a matching ``profile_tag``.
+All device-specific rules have a higher priority than global rules. This means
+that the full list of rule kinds, in descending priority order, is as follows:
 
+* Device-specific Override
+* Device-specific Content
+* Device-specific Room
+* Device-specific Sender
+* Device-specific Underride
 * Global Override
 * Global Content
 * Global Room
@@ -313,6 +320,12 @@ rule determines its behaviour. The following conditions are defined:
   * ``pattern``: The glob-style pattern to match against. Patterns with no
     special glob characters should be treated as having asterisks
     prepended and appended when testing the condition.
+
+``profile_tag``
+  Matches the ``profile_tag`` of the device that the notification would be
+  delivered to. Parameters:
+
+  * ``profile_tag``: The profile_tag to match with.
 
 ``contains_display_name``
   This matches unencrypted messages where ``content.body`` contains the owner's

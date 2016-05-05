@@ -29,8 +29,20 @@ paths:
           description: All the push rulesets for this user.
           schema:
             type: object
-            required: ["global"]
+            required: ["device", "global"]
             properties:
+              device:
+                type: object
+                title: Devices
+                description: A dictionary of profile tags to rulesets.
+                additionalProperties:
+                    x-pattern: "$PROFILE_TAG"
+                    type: object
+                    description: The ruleset for this profile tag.
+                    title: Ruleset
+                    allOf: [
+                      "$ref": "definitions/push_ruleset.yaml"
+                    ]
               global:
                 type: object
                 description: The global ruleset.
@@ -41,6 +53,7 @@ paths:
           examples:
             application/json: |-
               {
+                "device": {},
                 "global": {
                     "content": [
                         {
@@ -244,7 +257,8 @@ paths:
           required: true
           x-example: "global"
           description: |-
-            ``global`` to specify global rules.
+            Either ``global`` or ``device/<profile_tag>`` to specify global
+            rules or device rules for the given ``profile_tag``.
         - in: path
           type: string
           name: kind
@@ -296,7 +310,8 @@ paths:
           required: true
           x-example: "global"
           description: |-
-            ``global`` to specify global rules.
+            Either ``global`` or ``device/<profile_tag>`` to specify global
+            rules or device rules for the given ``profile_tag``.
         - in: path
           type: string
           name: kind
@@ -337,7 +352,8 @@ paths:
           required: true
           x-example: "global"
           description: |-
-            ``global`` to specify global rules.
+            Either ``global`` or ``device/<profile_tag>`` to specify global
+            rules or device rules for the given ``profile_tag``.
         - in: path
           type: string
           name: kind
@@ -485,7 +501,8 @@ paths:
           required: true
           x-example: "global"
           description: |-
-            ``global`` to specify global rules.
+            Either ``global`` or ``device/<profile_tag>`` to specify global
+            rules or device rules for the given ``profile_tag``.
         - in: path
           type: string
           name: kind
