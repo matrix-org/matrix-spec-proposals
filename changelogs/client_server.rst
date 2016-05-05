@@ -1,9 +1,56 @@
-<Next release>
-==============
+r0.1.0
+======
 
-- Spec clarifications:
+This release includes the following changes since r0.0.1:
 
-  - Clarify the behaviour of the "Room History Visibility" module; in particular, the behaviour of the ``shared`` history visibilty, and how events at visibility boundaries should be handled.
+- Breaking changes to the API:
+
+  - ``POST /rooms/{roomId}/join`` no longer permits use of a room alias instead
+    of a room id. (``POST /join/{roomIdOrAlias}`` continues to allow either.)
+
+  - ``POST /account/3pid``: correct the name of the ``three_pid_creds``
+    parameter
+
+  - The "Push Rules" module no longer supports device-specific rules:
+
+    - ``GET /pushrules`` no longer returns a ``device`` property
+    - ``device/{profile_tag}`` is no longer a valid ``scope`` for push rules
+    - ``profile_tag`` is no longer a valid kind of condition on push rules.
+
+- Changes to the API which will be backwards-compatible for clients:
+
+  - New endpoints:
+
+    - ``POST /rooms/{roomId}/unban``
+    - ``POST /rooms/{roomId}/kick``
+    - ``GET /pushers``
+    - ``GET /pushrules/{scope}/{kind}/{ruleId}/enabled``
+      (previously ``PUT``-only)
+    - ``GET`` and ``PUT /pushrules/{scope}/{kind}/{ruleId}/actions``
+
+  - Add ``third_party_signed`` parameter to ``POST /rooms/{roomId}/join``
+  - Add ``M_INVALID_USERNAME`` as valid response to ``POST /register``
+  - Add ``unread_notifications`` field to ``GET /sync`` response
+  - Add optional ``invite`` property to ``m.room.power_levels`` state event
+  - Add optional ``public_key`` and ``public_keys`` to
+    ``m.room.third_party_invite`` state event
+  - Password-based ``/login`` may now use a third-party identifier instead of
+    a matrix user id.
+
+- Spec clarifications
+
+  - Make the state diagram for room membership explicit
+  - Note that a user may not be invited to a room while banned
+  - Clarify the expected order of events in the response to
+    ``GET /rooms/{roomId}/context/{eventId}``, as well as correcting the
+    example for that API
+  - Clarify the behaviour of the "Room History Visibility" module; in
+    particular, the behaviour of the ``shared`` history visibilty, and how
+    events at visibility boundaries should be handled
+  - Separate the "Room Previews" module from "Guest access"
+  - Reword the description of the ``profile_tag`` property in
+    ``PUT /pushers/set``, and note that it is not mandatory.
+
 
 r0.0.1
 ======
