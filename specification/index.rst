@@ -28,19 +28,6 @@ one of the above APIs are also available.
 Specification Versions
 ----------------------
 
-The documents in this version of the specification are generated from
-`matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
-`{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
-
-The following other versions of the specification are also available,
-in reverse chronological order:
-
-- `HEAD <https://matrix.org/speculator/spec/head/>`_: Includes all changes since the latest versioned release.
-- `r0.0.1 <https://matrix.org/docs/spec/r0.0.1>`_
-- `r0.0.0 <https://matrix.org/docs/spec/r0.0.0>`_
-- `Legacy <https://matrix.org/docs/spec/legacy/>`_: The last draft before the spec was formally released in version r0.0.0.
-
-
 The specification for each API is versioned in the form ``rX.Y.Z``.
  * A change to ``X`` reflects a breaking change: a client implemented against
    ``r1.0.0`` may need changes to work with a server which supports (only)

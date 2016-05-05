@@ -16,7 +16,7 @@ Changelog
 .. topic:: Version: %CLIENT_RELEASE_LABEL%
 {{client_server_changelog}}
 
-The documents in this version of the specification are generated from
+This version of the specification is generated from
 `matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
 `{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
 
