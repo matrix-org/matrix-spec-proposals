@@ -16,11 +16,26 @@ Changelog
 .. topic:: Version: %CLIENT_RELEASE_LABEL%
 {{client_server_changelog}}
 
+The documents in this version of the specification are generated from
+`matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
+`{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
+
 For the full historical changelog, see
 https://github.com/matrix-org/matrix-doc/blob/master/changelogs/client_server.rst
 
 If this is an unstable snapshot, any changes since the last release may be
 viewed using ``git log``.
+
+Other versions of this specification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following other versions are also available, in reverse chronological order:
+
+- `HEAD <https://matrix.org/speculator/spec/head/client_server.html>`_: Includes all changes since the latest versioned release.
+- `r0.0.1 <https://matrix.org/docs/spec/r0.0.1/client_server.html>`_
+- `r0.0.0 <https://matrix.org/docs/spec/r0.0.0/client_server.html>`_
+- `Legacy <https://matrix.org/docs/spec/legacy/#client-server-api>`_: The last draft before the spec was formally released in version r0.0.0.
+
 
 API Standards
 -------------
