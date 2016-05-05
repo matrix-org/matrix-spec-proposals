@@ -7,15 +7,18 @@ This release includes the following changes since r0.0.1:
 
   - ``POST /rooms/{roomId}/join`` no longer permits use of a room alias instead
     of a room id. (``POST /join/{roomIdOrAlias}`` continues to allow either.)
-
   - ``POST /account/3pid``: correct the name of the ``three_pid_creds``
     parameter
-
   - The "Push Rules" module no longer supports device-specific rules:
 
     - ``GET /pushrules`` no longer returns a ``device`` property
     - ``device/{profile_tag}`` is no longer a valid ``scope`` for push rules
     - ``profile_tag`` is no longer a valid kind of condition on push rules.
+
+    (Device-specific push rules will be reintroduced in the future; in the
+    meantime, their specification has been moved to a `draft branch`__.)
+
+    __ https://matrix.org/speculator/spec/drafts%2Freinstate_device_push_rules/
 
 - Changes to the API which will be backwards-compatible for clients:
 
