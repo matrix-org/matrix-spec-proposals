@@ -46,7 +46,7 @@ The specification for each API is versioned in the form ``rX.Y.Z``.
    ``r1.0.0`` may need changes to work with a server which supports (only)
    ``r2.0.0``.
  * A change to ``Y`` represents a change which is backwards-compatible for
-   existing clients, but not necessarily exisitng servers: a client implemented
+   existing clients, but not necessarily existing servers: a client implemented
    against ``r1.1.0`` will work without changes against a server which supports
    ``r1.2.0``; but a client which requires ``r1.2.0`` may not work correctly
    with a server which implements only ``r1.1.0``.
