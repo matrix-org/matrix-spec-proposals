@@ -1,4 +1,4 @@
-r0.1.0
+r1.0.0
 ======
 
 This release includes the following changes since r0.0.1:
