@@ -707,7 +707,7 @@ class MatrixUnits(Units):
                         changelog_lines.pop()
                         break
                     changelog_lines.append("    " + line)
-            changelogs[name] = "\n".join(changelog_lines)
+            changelogs[name] = "".join(changelog_lines)
 
         return changelogs
 
