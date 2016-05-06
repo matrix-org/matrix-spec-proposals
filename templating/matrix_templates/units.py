@@ -276,7 +276,14 @@ def get_tables_for_schema(schema, mark_required=True):
 def get_example_for_schema(schema):
     """Returns a python object representing a suitable example for this object"""
     if 'example' in schema:
-        return schema['example']
+        example = schema['example']
+        if isinstance(example, basestring):
+            try:
+                example = json.loads(example)
+            except ValueError:
+                # not json, just use the string
+                pass
+        return example
     if 'properties' in schema:
         res = {}
         for prop_name, prop in schema['properties'].iteritems():
@@ -293,8 +300,7 @@ def get_example_for_param(param):
         return param['x-example']
     if 'schema' not in param:
         return None
-    return json.dumps(get_example_for_schema(param['schema']),
-                      indent=2)
+    return get_example_for_schema(param['schema'])
 
 class MatrixUnits(Units):
     def _load_swagger_meta(self, api, group_name):
@@ -366,26 +372,30 @@ class MatrixUnits(Units):
                 qps = []
                 body = ""
                 for param in single_api.get("parameters", []):
-                    example = get_example_for_param(param)
+                    try:
+                        example = get_example_for_param(param)
 
-                    if not example:
-                        self.log(
-                            "The parameter %s is missing an example." %
-                            param["name"])
-                        continue
+                        if not example:
+                            self.log(
+                                "The parameter %s is missing an example." %
+                                param["name"])
+                            continue
 
-                    if param["in"] == "path":
-                        path_template = path_template.replace(
-                            "{%s}" % param["name"], urllib.quote(example)
-                        )
-                    elif param["in"] == "body":
-                        body = example
-                    elif param["in"] == "query":
-                        if type(example) == list:
-                            for value in example:
-                                qps.append((param["name"], value))
-                            else:
-                                qps.append((param["name"], example))
+                        if param["in"] == "path":
+                            path_template = path_template.replace(
+                                "{%s}" % param["name"], urllib.quote(example)
+                            )
+                        elif param["in"] == "body":
+                            body = json.dumps(example, indent=2)
+                        elif param["in"] == "query":
+                            if type(example) == list:
+                                for value in example:
+                                    qps.append((param["name"], value))
+                                else:
+                                    qps.append((param["name"], example))
+                    except Exception, e:
+                        raise Exception("Error handling parameter %s" % param["name"],
+                                        e)
 
                 query_string = "" if len(qps) == 0 else "?"+urllib.urlencode(qps)
                 if body:
