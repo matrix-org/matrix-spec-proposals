@@ -37,7 +37,7 @@ class MatrixSections(Sections):
             ))
         return "\n\n".join(sections)
 
-    def _render_http_api_group(self, group, sortFnOrPathList=None):
+    def _render_http_api_group(self, group, sortPathList=None):
         template = self.env.get_template("http-api.tmpl")
         http_api = self.units.get("swagger_apis")[group]["__meta"]
         subtitle_title_char = self.units.get("spec_targets")[
@@ -45,11 +45,10 @@ class MatrixSections(Sections):
         ]["subtitle"]
         sections = []
         endpoints = []
-        if sortFnOrPathList:
-            if isinstance(sortFnOrPathList, list):
+        if sortPathList:
                 # list of substrings to sort by
                 sorted_endpoints = []
-                for path_substr in sortFnOrPathList:
+                for path_substr in sortPathList:
                     for e in http_api["endpoints"]:
                         if path_substr in e["path"]:
                             sorted_endpoints.append(e)  # could have multiple
@@ -57,13 +56,10 @@ class MatrixSections(Sections):
                 rest = [
                     e for e in http_api["endpoints"] if e not in sorted_endpoints
                 ]
-                endpoints = sorted_endpoints + sorted(rest, key=lambda k: k["path"])
-            else:
-                # guess it's a func, call it.
-                endpoints = sortFnOrPathList(http_api["endpoints"])
+                endpoints = sorted_endpoints + rest
         else:
             # sort alphabetically based on path
-            endpoints = sorted(http_api["endpoints"], key=lambda k: k["path"])
+            endpoints = http_api["endpoints"]
 
         for endpoint in endpoints:
             sections.append(template.render(
@@ -106,7 +102,7 @@ class MatrixSections(Sections):
     def render_room_events(self):
         def filterFn(eventType):
             return (
-                eventType.startswith("m.room") and 
+                eventType.startswith("m.room") and
                 not eventType.startswith("m.room.message#m.")
             )
         return self._render_events(filterFn, sorted)
@@ -180,4 +176,3 @@ class MatrixSections(Sections):
         template = self.env.get_template("apis.tmpl")
         apis = self.units.get("apis")
         return template.render(apis=apis)
-
