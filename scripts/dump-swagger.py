@@ -45,7 +45,7 @@ os.chdir(templating_dir)
 apis = MatrixUnits().load_swagger_apis()
 
 output = {
-    "basePath": "/_matrix/client/" + major_version,
+    "basePath": "/",
     "consumes": ["application/json"],
     "produces": ["application/json"],
     "host": "localhost:8008",
@@ -63,13 +63,15 @@ with open(os.path.join(api_dir, 'client-server', 'definitions',
     output['securityDefinitions'] = yaml.load(f)
 
 for file, contents in apis.items():
+    basePath = contents['basePath']
     for path, methods in contents["paths"].items():
+        path = (basePath + path).replace('%CLIENT_MAJOR_VERSION%',
+                                         major_version)
         for method, spec in methods.items():
             if "tags" in spec.keys():
                 if path not in output["paths"]:
                     output["paths"][path] = {}
                 output["paths"][path][method] = spec
-
 
 
 print "Generating %s" % output_file
