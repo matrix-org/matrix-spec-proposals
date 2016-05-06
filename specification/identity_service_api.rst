@@ -12,6 +12,13 @@ practice has only been applied specifically to email addresses.
 .. contents:: Table of Contents
 .. sectnum::
 
+Specification version
+---------------------
+
+This version of the specification is generated from
+`matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
+`{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
+
 General principles
 ------------------
 

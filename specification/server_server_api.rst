@@ -44,6 +44,13 @@ request.
 .. contents:: Table of Contents
 .. sectnum::
 
+Specification version
+---------------------
+
+This version of the specification is generated from
+`matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
+`{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
+
 Server Discovery
 ----------------
 
@@ -188,9 +195,9 @@ servers. Either way the response is a list of JSON objects containing the
 JSON published by the server under ``_matrix/key/v2/server/`` signed by
 both the originating server and by this server.
 
-The ``minimum_valid_until_ts`` is a millisecond POSIX timestamp indicating 
-when the returned certificate will need to be valid until to be useful to the 
-requesting server. This can be set using the maximum ``origin_server_ts`` of 
+The ``minimum_valid_until_ts`` is a millisecond POSIX timestamp indicating
+when the returned certificate will need to be valid until to be useful to the
+requesting server. This can be set using the maximum ``origin_server_ts`` of
 an batch of events that a requesting server is trying to validate. This allows
 an intermediate notary server to give a prompt cached response even if the
 originating server is offline.
@@ -832,7 +839,7 @@ State Conflict Resolution
 -------------------------
 .. NOTE::
   This section is a work in progress.
-  
+
 .. TODO-doc
   - How do conflicts arise (diagrams?)
   - How are they resolved (incl tie breaks)
@@ -953,4 +960,3 @@ The list of join candidates is a list of server names that are likely to hold
 the given room; these are servers that the requesting server may wish to use as
 resident servers as part of the remote join handshake. This list may or may not
 include the server answering the query.
-
