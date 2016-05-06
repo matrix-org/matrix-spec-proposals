@@ -141,9 +141,7 @@ return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
 User-Interactive Authentication API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. _sect:auth-api:
-
-Some API endpoints such as ``login`` or ``register`` require authentication that
+Some API endpoints require authentication that
 interacts with the user. The homeserver may provide many different ways of
 authenticating, such as user/password auth, login via a social network (OAuth2),
 login by confirming a token sent to their email address, etc. This specification
@@ -194,7 +192,7 @@ information:
 
 params
   This section contains any information that the client will need to know in
-  order to use a given type of authentication. For each login stage type
+  order to use a given type of authentication. For each login type
   presented, that type may be present as a key in this dictionary. For example,
   the public part of an OAuth client ID could be given here.
 session
@@ -203,12 +201,12 @@ session
   API call.
 
 The client then chooses a flow and attempts to complete one of the stages. It
-does this by resubmitting the same request with the addition of an 'auth'
+does this by resubmitting the same request with the addition of an ``auth``
 key in the object that it submits. This dictionary contains a ``type`` key whose
-value is the name of the stage type that the client is attempting to complete.
-It must also contains a ``session`` key with the value of the session key given
+value is the name of the login type that the client is attempting to complete.
+It must also contain a ``session`` key with the value of the session key given
 by the homeserver, if one was given. It also contains other keys dependent on
-the stage type being attempted. For example, if the client is attempting to
+the login type being attempted. For example, if the client is attempting to
 complete login type ``example.type.foo``, it might submit something like this:
 
 .. code:: json
@@ -226,7 +224,7 @@ complete login type ``example.type.foo``, it might submit something like this:
 If the homeserver deems the authentication attempt to be successful but still
 requires more stages to be completed, it returns HTTP status 401 along with the
 same object as when no authentication was attempted, with the addition of the
-``completed`` key which is an array of stage type the client has completed
+``completed`` key which is an array of login types the client has completed
 successfully:
 
 .. code:: json
@@ -272,17 +270,17 @@ clicks on the link in the email. In this case, the client retries the request
 with an auth dict containing only the session key. The response to this will be
 the same as if the client were attempting to complete an auth state normally,
 i.e. the request will either complete or request auth, with the presence or
-absence of that login stage type in the 'completed' array indicating whether
+absence of that login type in the 'completed' array indicating whether
 that stage is complete.
 
 Example
 +++++++
 At a high level, the requests made for an API call completing an auth flow with
 three stages will resemble the following diagram::
-  
+
    _______________________
   |       Stage 1         |
-  | type: "<stage type1>" |
+  | type: "<login type1>" |
   |  ___________________  |
   | |_Request_1_________| | <-- Returns "session" key which is used throughout.
   |  ___________________  |
@@ -292,7 +290,7 @@ three stages will resemble the following diagram::
             |
    _________V_____________
   |       Stage 2         |
-  | type: "<stage type2>" |
+  | type: "<login type2>" |
   |  ___________________  |
   | |_Request_1_________| |
   |  ___________________  |
@@ -304,10 +302,14 @@ three stages will resemble the following diagram::
             |
    _________V_____________
   |       Stage 3         |
-  | type: "<stage type3>" |
+  | type: "<login type3>" |
   |  ___________________  |
   | |_Request_1_________| | <-- Returns API response
   |_______________________|
+
+
+Login types
++++++++++++
 
 This specification defines the following login types:
  - ``m.login.password``
@@ -318,7 +320,7 @@ This specification defines the following login types:
  - ``m.login.dummy``
 
 Password-based
-++++++++++++++
+<<<<<<<<<<<<<<
 :Type:
   ``m.login.password``
 :Description:
@@ -357,7 +359,7 @@ homeserver must respond with 403 Forbidden.
   weak passwords with an error code ``M_WEAK_PASSWORD``.
 
 Google ReCaptcha
-++++++++++++++++
+<<<<<<<<<<<<<<<<
 :Type:
   ``m.login.recaptcha``
 :Description:
@@ -373,7 +375,7 @@ To respond to this type, reply with an auth dict as follows:
   }
 
 Token-based
-+++++++++++
+<<<<<<<<<<<
 :Type:
   ``m.login.token``
 :Description:
@@ -406,7 +408,7 @@ newly provisioned access_token).
 The ``token`` must be a macaroon.
 
 OAuth2-based
-++++++++++++
+<<<<<<<<<<<<
 :Type:
   ``m.login.oauth2``
 :Description:
@@ -430,7 +432,7 @@ the OAuth flow has completed, the client retries the request with the session
 only, as above.
 
 Email-based (identity server)
-+++++++++++++++++++++++++++++
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 :Type:
   ``m.login.email.identity``
 :Description:
@@ -457,7 +459,7 @@ To respond to this type, reply with an auth dict as follows:
   }
 
 Dummy Auth
-++++++++++
+<<<<<<<<<<
 :Type:
   ``m.login.dummy``
 :Description:
@@ -476,7 +478,7 @@ if provided:
 
 
 Fallback
-++++++++
+<<<<<<<<
 Clients cannot be expected to be able to know how to process every single login
 type. If a client does not know how to handle a given login type, it can direct
 the user to a web browser with the URL of a fallback page which will allow the
@@ -492,16 +494,42 @@ This MUST return an HTML page which can perform this authentication stage. This
 page must attempt to call the JavaScript function ``window.onAuthDone`` when
 the authentication has been completed.
 
-API calls using the User-Interactive Authentication mechanism
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. _User-Interactive Authentication: `sect:auth-api`_
+Login
+~~~~~
 
-{{registration_cs_http_api}}
+A client can obtain access tokens using the ``/login`` API.
+
+For a simple username/password login, a client should submit an auth dict as
+follows:
+
+.. code:: json
+
+  {
+    "type": "m.login.password",
+    "user": "<user_id or user localpart>",
+    "password": "<password>"
+  }
+
+Alternatively, a client can use a 3pid bound to the user's account on the
+homeserver using the |/account/3pid|_ API rather then giving the ``user``
+explicitly, as follows:
+
+.. code:: json
+
+  {
+    "type": "m.login.password",
+    "medium": "<The medium of the third party identifier. Must be 'email'>",
+    "address": "<The third party address of the user>",
+    "password": "<password>"
+  }
+
+In the case that the homeserver does not know about the supplied 3pid, the
+homeserver must respond with 403 Forbidden.
 
 {{login_cs_http_api}}
 
 Login Fallback
-++++++++++++++
+<<<<<<<<<<<<<<
 
 If a client does not recognize any or all login flows it can use the fallback
 login API::
@@ -512,30 +540,23 @@ This returns an HTML and JavaScript page which can perform the entire login
 process. The page will attempt to call the JavaScript function
 ``window.onLogin`` when login has been successfully completed.
 
-Changing Password
-+++++++++++++++++
-Request::
+Account registration and management
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  POST /_matrix/client/%CLIENT_MAJOR_VERSION%/account/password
+{{registration_cs_http_api}}
 
-This API endpoint uses the User-Interactive Authentication API. An access token
-should be submitted to this endpoint if the client has an active session. The
-homeserver may change the flows available depending on whether a valid access
-token is provided.
+Notes on password management
+++++++++++++++++++++++++++++
 
-The body of the POST request is a JSON object containing:
+.. WARNING::
+  Clients SHOULD enforce that the password provided is suitably complex. The
+  password SHOULD include a lower-case letter, an upper-case letter, a number
+  and a symbol and be at a minimum 8 characters in length. Servers MAY reject
+  weak passwords with an error code ``M_WEAK_PASSWORD``.
 
-new_password
-  The new password for the account.
-
-On success, an empty JSON object is returned.
-
-The error code M_NOT_FOUND is returned if the user authenticated with a third
-party identifier but the homeserver could not find a matching account in its
-database.
 
 Adding Account Administrative Contact Information
-+++++++++++++++++++++++++++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A homeserver may keep some contact information for administrative use.
 This is independent of any information kept by any Identity Servers.
@@ -566,16 +587,16 @@ outlined here: see the specific endpoint in question for more information.
 
 Pagination Request Query Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-       
+
 Query parameters:
   from:
     $streamtoken - The opaque token to start streaming from.
   to:
     $streamtoken - The opaque token to end streaming at. Typically,
-    clients will not know the item of data to end at, so this will usually be 
+    clients will not know the item of data to end at, so this will usually be
     omitted.
   limit:
-    integer - An integer representing the maximum number of items to 
+    integer - An integer representing the maximum number of items to
     return.
   dir:
     f|b - The direction to return events in. Typically this is ``b`` to paginate
@@ -587,7 +608,7 @@ start and end of the dataset respectively.
 Unless specified, the default pagination parameters are ``from=START``,
 ``to=END``, without a limit set.
 
-For example, if an endpoint had events E1 -> E15. The client wants the last 5 
+For example, if an endpoint had events E1 -> E15. The client wants the last 5
 events and doesn't know any previous events::
 
     S                                                    E
@@ -601,7 +622,7 @@ events and doesn't know any previous events::
        E15,E14,E13,E12,E11
 
 
-Another example: a public room list has rooms R1 -> R17. The client is showing 5 
+Another example: a public room list has rooms R1 -> R17. The client is showing 5
 rooms at a time on screen, and is on page 2. They want to
 now show page 3 (rooms R11 -> 15)::
 
@@ -615,8 +636,8 @@ now show page 3 (rooms R11 -> 15)::
                                              |
                              GET /roomslist?from=9&to=END&limit=5
                              Returns: R11,R12,R13,R14,R15
-                         
-Note that tokens are treated in an *exclusive*, not inclusive, manner. The end 
+
+Note that tokens are treated in an *exclusive*, not inclusive, manner. The end
 token from the initial request was '9' which corresponded to R10. When the 2nd
 request was made, R10 did not appear again, even though from=9 was specified. If
 you know the token, you already have the data.
@@ -656,7 +677,7 @@ eventually-consistent event graph of events into an 'event stream' at any given
 point in time::
 
   [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]
-  
+
 Clients can add to the stream by PUTing message or state events, and can read
 from the stream via the
 |/initialSync|_,
@@ -682,7 +703,7 @@ You can visualise the range of events being returned as::
                               ^                             ^
                               |                             |
                         start: '1-2-3'                end: 'a-b-c'
-                             
+
 Now, to receive future events in real-time on the event stream, you simply GET
 /_matrix/client/%CLIENT_MAJOR_VERSION%/events with a ``from`` parameter of
 'a-b-c': in other words passing in the
