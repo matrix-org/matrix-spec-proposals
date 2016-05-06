@@ -6,6 +6,7 @@ import copy
 import fileinput
 import glob
 import os
+import os.path
 import re
 import shutil
 import subprocess
@@ -112,7 +113,7 @@ def load_with_adjusted_titles(filename, file_stream, title_level, title_styles):
             line_title_style,
             title_styles[adjusted_level]
         ))
-            
+
     return "".join(rst_lines)
 
 
@@ -277,16 +278,10 @@ def run_through_template(input_files, set_verbose, substitutions):
         cwd="../templating"
     )
 
-def get_build_targets(targets_listing):
-    with open(targets_listing, "r") as targ_file:
-        all_targets = yaml.load(targ_file.read())
-    return all_targets["targets"].keys()
-
-
 """
 Extract and resolve groups for the given target in the given targets listing.
 Args:
-    targets_listing (str): The path to a YAML file containing a list of targets
+    all_targets (dict): The parsed YAML file containing a list of targets
     target_name (str): The name of the target to extract from the listings.
 Returns:
     dict: Containing "filees" (a list of file paths), "relative_title_styles"
@@ -294,14 +289,12 @@ Returns:
           (a list of characters which represent the global title style to follow,
            with the top section title first, the second section second, and so on.)
 """
-def get_build_target(targets_listing, target_name):
+def get_build_target(all_targets, target_name):
     build_target = {
         "title_styles": [],
         "relative_title_styles": {},
         "files": []
     }
-    with open(targets_listing, "r") as targ_file:
-        all_targets = yaml.load(targ_file.read())
 
     build_target["title_styles"] = all_targets["title_styles"]
     build_target["relative_title_styles"] = all_targets["relative_title_styles"]
@@ -396,8 +389,11 @@ def cleanup_env():
 def main(targets, keep_intermediates, substitutions):
     prepare_env()
 
+    with open("../specification/targets.yaml", "r") as targ_file:
+        target_defs = yaml.load(targ_file.read())
+
     if targets == ["all"]:
-        targets = get_build_targets("../specification/targets.yaml") + ["howtos"]
+        targets = target_defs["targets"].keys() + ["howtos"]
 
     log("Building spec [target=%s]" % targets)
 
@@ -408,7 +404,7 @@ def main(targets, keep_intermediates, substitutions):
         if target_name == "howtos":
             shutil.copy("../supporting-docs/howtos/client-server.rst", templated_file)
         else:
-            target = get_build_target("../specification/targets.yaml", target_name)
+            target = get_build_target(target_defs, target_name)
             build_spec(target=target, out_filename=templated_file)
         templated_files.append(templated_file)
 
@@ -416,12 +412,26 @@ def main(targets, keep_intermediates, substitutions):
     run_through_template(templated_files, VERBOSE, substitutions)
 
     for target_name in targets:
+        target = target_defs["targets"].get(target_name)
+        version_label = None
+        if target:
+            version_label = target.get("version_label")
+            if version_label:
+                for old, new in substitutions.items():
+                    version_label = version_label.replace(old, new)
+
         templated_file = "tmp/templated_%s.rst" % (target_name,)
         rst_file = "tmp/spec_%s.rst" % (target_name,)
-        html_file = "gen/%s.html" % (target_name,)
+        if version_label:
+            d = os.path.join("gen", target_name)
+            if not os.path.exists(d):
+                os.mkdir(d)
+            html_file = os.path.join(d, "%s.html" % version_label)
+        else:
+            html_file = "gen/%s.html" % (target_name, )
 
         fix_relative_titles(
-            target=target, filename=templated_file,
+            target=target_defs, filename=templated_file,
             out_filename=rst_file,
         )
         rst2html(rst_file, html_file)

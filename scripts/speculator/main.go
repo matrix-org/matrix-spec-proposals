@@ -21,6 +21,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -353,29 +354,44 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		if styleLikeMatrixDotOrg {
-			cmd := exec.Command("./add-matrix-org-stylings.sh", *includesDir)
-			cmd.Dir = path.Join(dst, "scripts")
-			var b bytes.Buffer
-			cmd.Stderr = &b
-			if err := cmd.Run(); err != nil {
-				writeError(w, 500, fmt.Errorf("error styling spec: %v\nOutput:\n%v", err, b.String()))
-				return
+		pathToContent = make(map[string][]byte)
+		scriptsdir := path.Join(dst, "scripts")
+		base := path.Join(scriptsdir, "gen")
+		walker := func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
 			}
+			if info.IsDir() {
+				return nil
+			}
+
+			rel, err := filepath.Rel(base, path)
+			if err != nil {
+				return fmt.Errorf("Failed to get relative path of %s: %v", path, err)
+			}
+
+			if styleLikeMatrixDotOrg {
+				cmd := exec.Command("./add-matrix-org-stylings.pl", *includesDir, path)
+				cmd.Dir = scriptsdir
+				var b bytes.Buffer
+				cmd.Stderr = &b
+				if err := cmd.Run(); err != nil {
+					return fmt.Errorf("error styling spec: %v\nOutput:\n%v", err, b.String())
+				}
+			}
+
+			bytes, err := ioutil.ReadFile(path)
+			if err != nil {
+				return fmt.Errorf("Error reading spec: %v", err)
+			}
+			pathToContent[rel] = bytes
+			return nil
 		}
 
-		fis, err := ioutil.ReadDir(path.Join(dst, "scripts", "gen"))
+		err = filepath.Walk(base, walker)
 		if err != nil {
-			writeError(w, 500, fmt.Errorf("Error reading directory: %v", err))
-		}
-		pathToContent = make(map[string][]byte)
-		for _, fi := range fis {
-			b, err := ioutil.ReadFile(path.Join(dst, "scripts", "gen", fi.Name()))
-			if err != nil {
-				writeError(w, 500, fmt.Errorf("Error reading spec: %v", err))
-				return
-			}
-			pathToContent[fi.Name()] = b
+			writeError(w, 500, err)
+			return
 		}
 		cache.Add(sha, pathToContent)
 	}
@@ -499,13 +515,15 @@ func (s *server) serveHTMLDiff(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	cmd := exec.Command(htmlDiffer, path.Join(base, "scripts", "gen", requestedPath), path.Join(head, "scripts", "gen", requestedPath))
-	var b bytes.Buffer
-	cmd.Stdout = &b
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
-		writeError(w, 500, fmt.Errorf("error running HTML differ: %v", err))
+		writeError(w, 500, fmt.Errorf("error running HTML differ: %v\nOutput:\n%v", err, stderr.String()))
 		return
 	}
-	w.Write(b.Bytes())
+	w.Write(stdout.Bytes())
 }
 
 func findHTMLDiffer() (string, error) {

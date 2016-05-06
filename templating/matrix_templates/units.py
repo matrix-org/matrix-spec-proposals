@@ -541,25 +541,27 @@ class MatrixUnits(Units):
         return event_types
 
     def load_apis(self, substitutions):
+        cs_ver = substitutions.get("%CLIENT_RELEASE_LABEL%", "unstable")
+        fed_ver = substitutions.get("%SERVER_RELEASE_LABEL%", "unstable")
         return {
             "rows": [{
-                "key": "`Client-Server API <client_server.html>`_",
-                "type": substitutions.get("%CLIENT_RELEASE_LABEL%", "unstable"),
+                "key": "`Client-Server API <client_server/"+cs_ver+".html>`_",
+                "type": cs_ver,
                 "desc": "Interaction between clients and servers",
             }, {
-                "key": "`Server-Server API <server_server.html>`_",
-                "type": substitutions.get("%SERVER_RELEASE_LABEL%", "unstable"),
+                "key": "`Server-Server API <server_server/"+fed_ver+".html>`_",
+                "type": fed_ver,
                 "desc": "Federation between servers",
             }, {
-                "key": "`Application Service API <application_service.html>`_",
-                "type": substitutions.get("%CLIENT_RELEASE_LABEL%", "unstable"),
+                "key": "`Application Service API <application_service/unstable.html>`_",
+                "type": "unstable",
                 "desc": "Privileged server plugins",
             }, {
-                "key": "`Identity Service API <identity_service.html>`_",
+                "key": "`Identity Service API <identity_service/unstable.html>`_",
                 "type": "unstable",
                 "desc": "Mapping of third party IDs with Matrix ID",
             }, {
-                "key": "`Push Gateway API <push_gateway.html>`_",
+                "key": "`Push Gateway API <push_gateway/unstable.html>`_",
                 "type": "unstable",
                 "desc": "Push notifications for Matrix events",
             }]
