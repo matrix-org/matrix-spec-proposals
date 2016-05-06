@@ -13,6 +13,10 @@ You have a few options when it comes to getting involved: if you just want to us
 
 |
 
+We very much welcome [contributions](https://github.com/matrix-org/synapse/blob/master/CONTRIBUTING.rst) to any of our projects, which you can find in our [github space](https://github.com/matrix-org/).
+
+|
+
 <a class="anchor" id="reg"></a>
 
 ## Access Matrix via a public webclient/server
