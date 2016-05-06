@@ -1,0 +1,20 @@
+title: Authentication Data
+description: |-
+  Used by clients to submit authentication information to the interactive-authentication API
+type: object
+properties:
+  type:
+    description: The login type that the client is attempting to complete.
+    type: string
+  session:
+    description: The value of the session key given by the homeserver.
+    type: string
+additionalProperties:
+  description: Keys dependent on the login type
+  type: object
+required:
+  - type
+example:
+  type: "example.type.foo"
+  session: "xxxxx"
+  example_credential: "verypoorsharedsecret"
