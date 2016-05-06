@@ -99,10 +99,11 @@ def get_json_schema_object_fields(obj, enforce_title=False,
         obj["title"] = 'NO_TITLE'
 
     additionalProps = obj.get("additionalProperties")
-    if additionalProps:
+    props = obj.get("properties")
+    if additionalProps and not props:
+        # not "really" an object, just a KV store
         additionalProps = inherit_parents(additionalProps)
 
-        # not "really" an object, just a KV store
         logger.debug("%s is a pseudo-object", obj.get("title"))
 
         key_type = additionalProps.get("x-pattern", "string")
@@ -127,7 +128,6 @@ def get_json_schema_object_fields(obj, enforce_title=False,
         logger.debug("%s done: returning %s", obj.get("title"), tables)
         return tables
 
-    props = obj.get("properties")
     if not props:
         props = obj.get("patternProperties")
         if props:
@@ -277,12 +277,6 @@ def get_example_for_schema(schema):
     """Returns a python object representing a suitable example for this object"""
     if 'example' in schema:
         example = schema['example']
-        if isinstance(example, basestring):
-            try:
-                example = json.loads(example)
-            except ValueError:
-                # not json, just use the string
-                pass
         return example
     if 'properties' in schema:
         res = {}
@@ -298,9 +292,13 @@ def get_example_for_schema(schema):
 def get_example_for_param(param):
     if 'x-example' in param:
         return param['x-example']
-    if 'schema' not in param:
+    schema = param.get('schema')
+    if not schema:
         return None
-    return get_example_for_schema(param['schema'])
+    if 'example' in schema:
+        return schema['example']
+    return json.dumps(get_example_for_schema(param['schema']),
+                      indent=2)
 
 class MatrixUnits(Units):
     def _load_swagger_meta(self, api, group_name):
@@ -386,7 +384,7 @@ class MatrixUnits(Units):
                                 "{%s}" % param["name"], urllib.quote(example)
                             )
                         elif param["in"] == "body":
-                            body = json.dumps(example, indent=2)
+                            body = example
                         elif param["in"] == "query":
                             if type(example) == list:
                                 for value in example:
@@ -486,9 +484,9 @@ class MatrixUnits(Units):
         try:
             req_body_tables = get_tables_for_schema(param["schema"])
         except Exception, e:
-            logger.warning("Error decoding body of API endpoint %s %s: %s",
-                           endpoint_data["method"], endpoint_data["path"],
-                           e.args[0])
+            logger.warning("Error decoding body of API endpoint %s %s" %
+                           (endpoint_data["method"], endpoint_data["path"]),
+                           exc_info=1)
             return
 
         # put the top-level parameters into 'req_param_by_loc', and the others
