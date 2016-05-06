@@ -44,16 +44,18 @@ Example request:
 
   {{endpoint.example.req | indent_block(2)}}
 
-{% if endpoint.example.responses|length > 0 -%}
-Response{{"s" if endpoint.example.responses|length > 1 else "" }}:
+{% if endpoint.responses|length > 0 -%}
+Response{{"s" if endpoint.responses|length > 1 else "" }}:
 
 {% endif -%}
 
-{% for res in endpoint.example.responses -%}
+{% for res in endpoint.responses -%}
 
 **Status code {{res["code"]}}:**
 
 {{res["description"]}}
+
+{% if res["example"] -%}
 
 Example
 
@@ -61,5 +63,6 @@ Example
 
   {{res["example"] | indent_block(2)}}
 
-{% endfor %}
+{% endif -%}
 
+{% endfor %}

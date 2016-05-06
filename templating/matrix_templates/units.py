@@ -273,9 +273,30 @@ def get_tables_for_schema(schema, mark_required=True):
 
     return filtered
 
+def get_example_for_schema(schema):
+    """Returns a python object representing a suitable example for this object"""
+    if 'example' in schema:
+        return schema['example']
+    if 'properties' in schema:
+        res = {}
+        for prop_name, prop in schema['properties'].iteritems():
+            logger.debug("Parsing property %r" % prop_name)
+            prop_example = get_example_for_schema(prop)
+            res[prop_name] = prop_example
+        return res
+    if 'items' in schema:
+        return [get_example_for_schema(schema['items'])]
+    return schema.get('type', '??')
+
+def get_example_for_param(param):
+    if 'x-example' in param:
+        return param['x-example']
+    if 'schema' not in param:
+        return None
+    return json.dumps(get_example_for_schema(param['schema']),
+                      indent=2)
 
 class MatrixUnits(Units):
-
     def _load_swagger_meta(self, api, group_name):
         endpoints = []
         for path in api["paths"]:
@@ -293,10 +314,9 @@ class MatrixUnits(Units):
                     "req_param_by_loc": {},
                     "req_body_tables": [],
                     "res_tables": [],
+                    "responses": [],
                     "example": {
                         "req": "",
-                        "responses": [],
-                        "good_response": ""
                     }
                 }
                 self.log(" ------- Endpoint: %s %s ------- " % (method, path))
@@ -330,60 +350,51 @@ class MatrixUnits(Units):
                 # endfor[param]
 
                 good_response = None
-                for code, res in single_api.get("responses", {}).items():
+                for code in sorted(single_api.get("responses", {}).keys()):
+                    res = single_api["responses"][code]
                     if not good_response and code == 200:
                         good_response = res
                     description = res.get("description", "")
                     example = res.get("examples", {}).get("application/json", "")
-                    if description and example:
-                        endpoint["example"]["responses"].append({
-                            "code": code,
-                            "description": description,
-                            "example": example,
-                        })
+                    endpoint["responses"].append({
+                        "code": code,
+                        "description": description,
+                        "example": example,
+                    })
 
-                # form example request if it has one. It "has one" if all params
-                # have either "x-example" or a "schema" with an "example".
-                params_missing_examples = [
-                    p for p in single_api.get("parameters", []) if (
-                        "x-example" not in p and
-                        not Units.prop(p, "schema/example")
-                    )
-                ]
-                if len(params_missing_examples) == 0:
-                    path_template = api.get("basePath", "").rstrip("/") + path
-                    qps = []
-                    body = ""
-                    for param in single_api.get("parameters", []):
-                        if param["in"] == "path":
-                            path_template = path_template.replace(
-                                "{%s}" % param["name"], urllib.quote(
-                                    param["x-example"]
-                                )
-                            )
-                        elif param["in"] == "body":
-                            body = param["schema"]["example"]
-                        elif param["in"] == "query":
-                            example = param["x-example"]
-                            if type(example) == list:
-                                for value in example:
-                                    qps.append((param["name"], value))
+                path_template = api.get("basePath", "").rstrip("/") + path
+                qps = []
+                body = ""
+                for param in single_api.get("parameters", []):
+                    example = get_example_for_param(param)
+
+                    if not example:
+                        self.log(
+                            "The parameter %s is missing an example." %
+                            param["name"])
+                        continue
+
+                    if param["in"] == "path":
+                        path_template = path_template.replace(
+                            "{%s}" % param["name"], urllib.quote(example)
+                        )
+                    elif param["in"] == "body":
+                        body = example
+                    elif param["in"] == "query":
+                        if type(example) == list:
+                            for value in example:
+                                qps.append((param["name"], value))
                             else:
                                 qps.append((param["name"], example))
-                    query_string = "" if len(qps) == 0 else "?"+urllib.urlencode(qps)
-                    if body:
-                        endpoint["example"]["req"] = "%s %s%s HTTP/1.1\nContent-Type: application/json\n\n%s" % (
-                            method.upper(), path_template, query_string, body
-                        )
-                    else:
-                        endpoint["example"]["req"] = "%s %s%s HTTP/1.1\n\n" % (
-                            method.upper(), path_template, query_string
-                        )
 
+                query_string = "" if len(qps) == 0 else "?"+urllib.urlencode(qps)
+                if body:
+                    endpoint["example"]["req"] = "%s %s%s HTTP/1.1\nContent-Type: application/json\n\n%s" % (
+                        method.upper(), path_template, query_string, body
+                    )
                 else:
-                    self.log(
-                        "The following parameters are missing examples :( \n %s" %
-                        [ p["name"] for p in params_missing_examples ]
+                    endpoint["example"]["req"] = "%s %s%s HTTP/1.1\n\n" % (
+                        method.upper(), path_template, query_string
                     )
 
                 # add response params if this API has any.
