@@ -18,10 +18,8 @@ paths:
     post:
       summary: Authenticates the user.
       description: |-
-        Authenticates the user by password, and issues an access token they can
+        Authenticates the user, and issues an access token they can
         use to authorize themself in subsequent requests.
-      security:
-        - accessToken: []
       parameters:
         - in: body
           name: body
@@ -40,10 +38,17 @@ paths:
               user:
                 type: string
                 description: The fully qualified user ID or just local part of the user ID, to log in.
+              medium:
+                type: string
+                description: When logging in using a third party identifier, the medium of the identifier. Must be 'email'.
+              address:
+                type: string
+                description: Third party identifier for the user.
               password:
                 type: string
                 description: The user's password.
-            required: ["type", "user", "password"]
+            required: ["type", "password"]
+
       responses:
         200:
           description: The user has been authenticated.
