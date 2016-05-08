@@ -24,6 +24,7 @@ This release includes the following changes since r0.0.1:
 
   - New endpoints:
 
+    - ``POST /logout``
     - ``POST /rooms/{roomId}/unban``
     - ``POST /rooms/{roomId}/kick``
     - ``GET /pushers``

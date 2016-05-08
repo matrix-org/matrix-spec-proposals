@@ -528,6 +528,8 @@ homeserver must respond with 403 Forbidden.
 
 {{login_cs_http_api}}
 
+{{logout_cs_http_api}}
+
 Login Fallback
 <<<<<<<<<<<<<<
 
