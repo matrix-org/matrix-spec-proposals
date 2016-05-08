@@ -27,6 +27,6 @@ paths:
           description: The access token used in the request was succesfully invalidated.
           schema:
             type: object
-            properties: []
+            properties: {}
       tags:
         - Session management
