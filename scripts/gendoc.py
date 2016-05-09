@@ -441,6 +441,13 @@ def main(targets, keep_intermediates, substitutions):
         cleanup_env()
 
 
+def list_targets():
+    with open("../specification/targets.yaml", "r") as targ_file:
+        target_defs = yaml.load(targ_file.read())
+    targets = target_defs["targets"].keys() + ["howtos"]
+    print "\n".join(targets)
+
+
 def extract_major(s):
     major_version = s
     match = re.match("^(r\d)+(\.\d+)*$", s)
@@ -474,8 +481,18 @@ if __name__ == '__main__':
         "--server_release", "-s", action="store", default="unstable",
         help="The server-server release tag to generate, e.g. r1.2"
     )
+    parser.add_argument(
+        "--list_targets", action="store_true",
+        help="Do not update the specification. Instead print a list of targets.",
+    )
+
     args = parser.parse_args()
     VERBOSE = args.verbose
+
+    if args.list_targets:
+        list_targets()
+        exit(0)
+
     substitutions = {
         "%CLIENT_RELEASE_LABEL%": args.client_release,
         "%CLIENT_MAJOR_VERSION%": extract_major(args.client_release),
