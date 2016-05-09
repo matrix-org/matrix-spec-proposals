@@ -1,9 +1,9 @@
-r1.0.0
+r0.1.0
 ======
 
 This release includes the following changes since r0.0.1:
 
-- Breaking changes to the API:
+- Breaking changes to the API [#]_:
 
   - ``POST /rooms/{roomId}/join`` no longer permits use of a room alias instead
     of a room id. (``POST /join/{roomIdOrAlias}`` continues to allow either.)
@@ -55,6 +55,12 @@ This release includes the following changes since r0.0.1:
   - Reword the description of the ``profile_tag`` property in
     ``PUT /pushers/set``, and note that it is not mandatory.
 
+
+.. [#] Our `versioning policy <../index.html#specification-versions>`_ would
+   strictly require that a breaking change be denoted by a new major
+   specification version. However we are not aware of any clients which
+   rely on the old behaviour here, nor server implementations which offer
+   it, so we have chosen to retain the r0 designation on this occasion.
 
 r0.0.1
 ======
