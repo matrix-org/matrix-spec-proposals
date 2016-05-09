@@ -710,8 +710,6 @@ class MatrixUnits(Units):
                 lines = f.readlines()
             prev_line = None
             for line in lines:
-                if line.strip().startswith(".. "):
-                    continue  # comment
                 if prev_line is None:
                     prev_line = line
                     continue
