@@ -41,16 +41,16 @@ The easiest way to get started is to pick a client that appeals and join #matrix
         Vector iOS
       </a><br />
       You can also access Matrix on your iOS phone via Vector iOS.<br /><br />
-      <a href='./client/vector-android.html'>
+      <a href='./client/vector-ios.html'>
         <img src='/docs/projects/images/vector-iOS-featured.png' class='featured_screenshot'>
       </a>
     </td>
     <td class='bigproject'>
-      <a href='./client/matrix-console-android.html' class='font18 bold'>
+      <a href='./client/vector-android.html' class='font18 bold'>
         Vector Android
       </a><br />
       Vector is also available on Android devices!<br /><br />
-      <a href='./client/matrix-console-android.html'>
+      <a href='./client/vector-android.html'>
         <img src='/docs/projects/images/vector-android-featured.png' class='featured_screenshot'>
       </a>
     </td>
