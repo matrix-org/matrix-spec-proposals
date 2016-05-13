@@ -1,6 +1,6 @@
 ---
 layout: project
-title: Vector
+title: Try Matrix Now!
 categories: projects
 ---
 
@@ -37,21 +37,21 @@ The easiest way to get started is to pick a client that appeals and join #matrix
       </a>
     </td>
     <td class='bigproject'>
-      <a href='./client/matrix-console-ios.html' class='font18 bold'>
-        Matrix Console iOS
+      <a href='./client/vector-ios.html' class='font18 bold'>
+        Vector iOS
       </a><br />
-      Access the Matrix on your iOS phone via Matrix Console iOS.<br /><br />
-      <a href='./client/matrix-console-ios.html'>
-        <img src='/docs/projects/images/matrix-console-ios-2016-02-16-small.png' class='featured_screenshot'>
+      You can also access Matrix on your iOS phone via Vector iOS.<br /><br />
+      <a href='./client/vector-android.html'>
+        <img src='/docs/projects/images/vector-iOS-featured.png' class='featured_screenshot'>
       </a>
     </td>
     <td class='bigproject'>
       <a href='./client/matrix-console-android.html' class='font18 bold'>
-        Matrix Console Android
+        Vector Android
       </a><br />
-      Similarly, for Android, there is Matrix Console Android!<br /><br />
+      Vector is also available on Android devices!<br /><br />
       <a href='./client/matrix-console-android.html'>
-        <img src='/docs/projects/images/matrix-console-android-2016-02-16-small.png' class='featured_screenshot'>
+        <img src='/docs/projects/images/vector-android-featured.png' class='featured_screenshot'>
       </a>
     </td>
   </tr>
