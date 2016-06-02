@@ -1,7 +1,7 @@
 {
     "type": "object",
-    "title": "Typing Event",
-    "description": "Informs the client of the list of users currently typing.",
+    "title": "Activity Event",
+    "description": "Informs the client of the list of active users (typing, recording, etc)",
     "allOf": [{
         "$ref": "core-event-schema/event.yaml"
     }],
@@ -14,8 +14,22 @@
                     "items": {
                         "type": "string"
                     },
+                    "description": "The list of user IDs active in this room, if any."
+                },
+                "typing": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
                     "description": "The list of user IDs typing in this room, if any."
-                }
+                },
+                "recording": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "The list of user IDs recording an audio message in this room, if any."
+                },
             },
             "required": ["user_ids"]
         },
