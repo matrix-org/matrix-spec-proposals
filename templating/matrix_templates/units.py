@@ -578,7 +578,7 @@ class MatrixUnits(Units):
             }, {
                 "key": "`Identity Service API <identity_service/unstable.html>`_",
                 "type": "unstable",
-                "desc": "Mapping of third party IDs with Matrix ID",
+                "desc": "Mapping of third party IDs to Matrix IDs",
             }, {
                 "key": "`Push Gateway API <push_gateway/unstable.html>`_",
                 "type": "unstable",
