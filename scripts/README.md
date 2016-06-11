@@ -4,6 +4,7 @@ Generating the HTML for the specification
 Requirements:
  - docutils (for converting RST to HTML)
  - Jinja2 (for templating)
+ - PyYAML (for reading YAML files)
 
 To generate the complete specification along with supporting documentation, run:
     python gendoc.py
