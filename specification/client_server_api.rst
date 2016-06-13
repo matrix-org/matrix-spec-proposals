@@ -962,12 +962,10 @@ The keys contained in ``m.room.power_levels`` determine the levels required for
 certain operations such as kicking, banning and sending state events. See
 `m.room.power_levels`_ for more information.
 
-A standard mapping between powerlevel Names and Values has evolved with the following mapping
+Clients may wish to assign names to particular power levels. A suggested mapping is as follows:
 - 0   User
 - 50  Moderator
 - 100 Admin
-
-These names are used for convenience and clarity within most User Interfaces
 
 
 Joining rooms
