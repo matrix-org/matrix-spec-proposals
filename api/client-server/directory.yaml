@@ -48,10 +48,25 @@ paths:
               {}
           schema:
             type: object
+        409:
+          description: A room alias with that name already exists.
+          examples:
+            application/json: |-
+              {
+                "errcode": "M_UNKNOWN",
+                "error": "Room alias #monkeys:matrix.org already exists."
+              }
       tags:
         - Room directory
     get:
       summary: Get the room ID corresponding to this room alias.
+      description: |-
+        Requests that the server resolve a room alias to a room ID.
+
+        The server will use the federation API to resolve the alias if the
+        domain part of the alias does not correspond to the server's own
+        domain.
+
       parameters:
         - in: path
           type: string
@@ -91,14 +106,6 @@ paths:
               {
                 "errcode": "M_NOT_FOUND",
                 "error": "Room ID !abnjk1jdasj98:capuchins.com not found."
-              }
-        409:
-          description: A room alias with that name already exists.
-          examples:
-            application/json: |-
-              {
-                "errcode": "M_UNKNOWN",
-                "error": "Room alias #monkeys:matrix.org already exists."
               }
       tags:
         - Room directory
