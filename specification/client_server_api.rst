@@ -925,7 +925,9 @@ form ``#friendlyname:server.name``.
 As room aliases are scoped to a particular homeserver domain name, it is
 likely that a homeserver will reject attempts to maintain aliases on other
 domain names. This specification does not provide a way for homeservers to
-send update requests to other servers.
+send update requests to other servers. However, homeservers MUST handle
+``GET`` requests to resolve aliases on other servers; they should do this using
+the federation API if necessary.
 
 Rooms store a *partial* list of room aliases via the ``m.room.aliases`` state
 event. This alias list is partial because it cannot guarantee that the alias
@@ -936,9 +938,6 @@ be checked before they are used or shared with another user. If a room
 appears to have a room alias of ``#alias:example.com``, this SHOULD be checked
 to make sure that the room's ID matches the ``room_id`` returned from the
 request.
-
-Homeservers can respond to resolve requests for aliases on other domains than
-their own by using the federation API to ask other domain name homeservers.
 
 {{directory_cs_http_api}}
 

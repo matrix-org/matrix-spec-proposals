@@ -1,3 +1,13 @@
+<Unreleased changes>
+====================
+
+- Spec clarifications
+
+  - Make it clear that ``GET /directory/room/{roomAlias}`` must work for
+    federated aliases
+  - ``GET /directory/room/{roomAlias}`` cannot return a 409; the ``PUT``
+    endpoint can, however.
+
 r0.1.0
 ======
 
