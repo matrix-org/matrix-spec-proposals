@@ -31,7 +31,7 @@ The easiest way to get started is to pick a client that appeals and join #matrix
       <a href='./client/vector.html' class='font18 bold'>
         Vector
       </a><br />
-      If you like glossy (but beta) web clients, try Vector.<br /><br />
+      If you like glossy and feature-rich web clients, try Vector.<br /><br />
       <a href='./client/vector.html'>
         <img src='https://matrix.org/blog/wp-content/uploads/2015/04/vector030216-300x204.png' class='featured_screenshot'>
       </a>
