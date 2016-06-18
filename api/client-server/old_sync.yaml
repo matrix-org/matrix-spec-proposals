@@ -80,7 +80,7 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                    - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.json"
         400:
           description: "Bad pagination ``from`` parameter."
       tags:
@@ -283,7 +283,7 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
+                    - "$ref": "definitions/event-schemas/schema/core-event-schema/event.json"
               rooms:
                 type: array
                 items:
@@ -330,7 +330,7 @@ paths:
                             type: object
                             title: RoomEvent
                             allOf:
-                              - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                              - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.json"
                       required: ["start", "end", "chunk"]
                     state:
                       type: array
@@ -343,7 +343,7 @@ paths:
                         title: StateEvent
                         type: object
                         allOf:
-                          - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
+                          - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.json"
                     visibility:
                       type: string
                       enum: ["private", "public"]
@@ -359,7 +359,7 @@ paths:
                         title: Event
                         type: object
                         allOf:
-                          - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
+                          - "$ref": "definitions/event-schemas/schema/core-event-schema/event.json"
                   required: ["room_id", "membership"]
             required: ["end", "rooms", "presence"]
         404:
@@ -399,7 +399,7 @@ paths:
               }
           schema:
             allOf:
-              - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
+              - "$ref": "definitions/event-schemas/schema/core-event-schema/event.json"
         404:
           description: The event was not found or you do not have permission to read this event.
       tags:

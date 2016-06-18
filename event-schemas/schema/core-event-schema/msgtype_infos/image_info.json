@@ -1,0 +1,23 @@
+{
+    "title" : "ImageInfo",
+    "description" : "Metadata about an image.",
+    "$schema" : "http://json-schema.org/draft-04/schema#",
+    "properties" : {
+        "h" : {
+            "description" : "The height of the image in pixels.",
+            "type" : "integer"
+        },
+        "mimetype" : {
+            "description" : "The mimetype of the image, e.g. ``image/jpeg``.",
+            "type" : "string"
+        },
+        "w" : {
+            "description" : "The width of the image in pixels.",
+            "type" : "integer"
+        },
+        "size" : {
+            "description" : "Size of the image in bytes.",
+            "type" : "integer"
+        }
+    }
+}

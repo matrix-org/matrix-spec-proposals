@@ -526,14 +526,14 @@ class MatrixUnits(Units):
 
         for (root, dirs, files) in os.walk(path):
             for filename in files:
-                if not filename.endswith(".yaml"):
+                if not filename.endswith(".json"):
                     continue
 
-                event_type = filename[:-5]  # strip the ".yaml"
+                event_type = filename[:-5]  # strip the ".json"
                 filepath = os.path.join(root, filename)
                 with open(filepath) as f:
                     try:
-                        event_info = yaml.load(f)
+                        event_info = json.load(f)
                     except Exception as e:
                         raise ValueError(
                             "Error reading file %r" % (filepath,), e

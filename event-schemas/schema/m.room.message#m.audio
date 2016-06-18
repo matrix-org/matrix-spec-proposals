@@ -3,7 +3,7 @@
     "title": "AudioMessage",
     "description": "This message represents a single audio clip.",
     "allOf": [{
-        "$ref": "core-event-schema/room_event.yaml"
+        "$ref": "core-event-schema/room_event.json"
     }],
     "properties": {
         "content": {

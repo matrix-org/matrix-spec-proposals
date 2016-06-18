@@ -1,0 +1,46 @@
+{
+    "type" : "object",
+    "properties" : {
+        "room_id" : {
+            "type" : "string",
+            "description" : "Required. The ID of the room associated with this event."
+        },
+        "sender" : {
+            "description" : "Required. Contains the fully-qualified ID of the user who *sent* this event.",
+            "type" : "string"
+        },
+        "event_id" : {
+            "description" : "Required. The globally unique event identifier.",
+            "type" : "string"
+        },
+        "unsigned" : {
+            "type" : "object",
+            "properties" : {
+                "redacted_because" : {
+                    "type" : "string",
+                    "description" : "The reason this event was redacted, if it was redacted"
+                },
+                "age" : {
+                    "description" : "The time in milliseconds that has elapsed since the event was sent",
+                    "type" : "integer"
+                },
+                "transaction_id" : {
+                    "description" : "The client-supplied transaction ID, if the client being given the event is the same one which sent it.",
+                    "type" : "string"
+                }
+            },
+            "description" : "Contains optional extra information about the event.",
+            "title" : "UnsignedData"
+        }
+    },
+    "description" : "In addition to the Event fields, Room Events may have the following additional fields.",
+    "title" : "Room Event",
+    "required" : [
+        "event_id",
+        "room_id",
+        "sender"
+    ],
+    "allOf" : [{
+        "$ref": "event.json"
+    }]
+}

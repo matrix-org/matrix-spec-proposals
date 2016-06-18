@@ -64,12 +64,12 @@ paths:
                   requested event, in reverse-chronological order.
                 items:
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                    - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.json"
               event:
                 description: |-
                   Details of the requested event.
                 allOf:
-                  - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                  - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.json"
               events_after:
                 type: array
                 description: |-
@@ -77,14 +77,14 @@ paths:
                   requested event, in chronological order.
                 items:
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                    - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.json"
               state:
                 type: array
                 description: |-
                   The state of the room at the last event returned.
                 items:
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
+                    - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.json"
           examples:
             application/json: |-
                 {

@@ -3,7 +3,7 @@
     "title": "Controls whether guest users are allowed to join rooms.",
     "description": "This event controls whether guest users are allowed to join rooms. If this event is absent, servers should act as if it is present and has the guest_access value \"forbidden\".",
     "allOf": [{
-        "$ref": "core-event-schema/state_event.yaml"
+        "$ref": "core-event-schema/state_event.json"
     }],
     "properties": {
         "content": {
