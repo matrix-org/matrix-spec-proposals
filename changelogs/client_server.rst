@@ -7,6 +7,7 @@
     federated aliases
   - ``GET /directory/room/{roomAlias}`` cannot return a 409; the ``PUT``
     endpoint can, however.
+  - Clarify the behaviour of the ``m.room.power_levels`` event.
 
 r0.1.0
 ======

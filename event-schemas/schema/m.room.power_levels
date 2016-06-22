@@ -15,14 +15,25 @@ description: |-
   ``events``, then the user must have at least the level specified in order to
   send that event. If the event type is not supplied, it defaults to
   ``events_default`` for Message Events and ``state_default`` for State
-  Events. If there is no ``state_default`` in the ``power_levels`` event, the
-  ``state_default`` is 50. If the room contains no ``power_levels`` event, the
-  ``state_default`` is 0. The ``events_default`` is 0 in either of these cases.
+  Events.
+
+  If there is no ``state_default`` in the ``m.room.power_levels`` event, the
+  ``state_default`` is 50. If there is no ``events_default`` in the
+  ``m.room.power_levels`` event, the ``events_default`` is 0. If the room
+  contains no ``m.room.power_levels`` event, *both* the ``state_default`` and
+  ``events_default`` are 0.
+
+  The power level required to invite a user to the room, kick a user from the
+  room, ban a user from the room, or redact an event, is defined by ``invite``,
+  ``kick``, ``ban``, and ``redact``, respectively. Each of these levels defaults
+  to 50 if they are not specified in the ``m.room.power_levels`` event, or if
+  the room contains no ``m.room.power_levels`` event.
+
 properties:
   content:
     properties:
       ban:
-        description: The level required to ban a user.
+        description: The level required to ban a user. Defaults to 50 if unspecified.
         type: number
       events:
         additionalProperties:
@@ -31,19 +42,24 @@ properties:
         title: Event power levels
         type: object
       events_default:
-        description: The default level required to send message events. Can be overridden by the ``events`` key.
+        description: |-
+            The default level required to send message events. Can be
+            overridden by the ``events`` key.  Defaults to 0 if unspecified.
         type: number
       invite:
-        description: The level required to invite a user.
+        description: The level required to invite a user. Defaults to 50 if unspecified.
         type: number
       kick:
-        description: The level required to kick a user.
+        description: The level required to kick a user. Defaults to 50 if unspecified.
         type: number
       redact:
-        description: The level required to redact an event.
+        description: The level required to redact an event. Defaults to 50 if unspecified.
         type: number
       state_default:
-        description: The default level required to send state events. Can be overridden by the ``events`` key.
+        description: |-
+            The default level required to send state events. Can be overridden
+            by the ``events`` key. Defaults to 50 if unspecified, but 0 if
+            there is no ``m.room.power_levels`` event at all.
         type: number
       users:
         additionalProperties:
@@ -52,16 +68,11 @@ properties:
         title: User power levels
         type: object
       users_default:
-        description: 'The default power level for every user in the room, unless their ``user_id`` is mentioned in the ``users`` key.'
+        description: |-
+            The default power level for every user in the room, unless their
+            ``user_id`` is mentioned in the ``users`` key. Defaults to 0 if
+            unspecified.
         type: number
-    required:
-      - ban
-      - events
-      - events_default
-      - kick
-      - redact
-      - state_default
-      - users
     type: object
   state_key:
     description: A zero-length string.
