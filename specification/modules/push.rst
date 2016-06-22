@@ -245,6 +245,73 @@ Definition:
         ]
     }
 
+``.m.rule.invite_for_me``
+`````````````````````````
+Matches any invites to a new room for this user.
+
+Definition:
+
+.. code:: json
+
+    {
+        "rule_id": ".m.rule.invite_for_me",
+        "default": true,
+        "enabled": true,
+        "conditions": [
+            {
+                "key": "type",
+                "kind": "event_match",
+                "pattern": "m.room.member"
+            },
+            {
+                "key": "content.membership",
+                "kind": "event_match",
+                "pattern": "invite"
+            },
+            {
+                "key": "state_key",
+                "kind": "event_match",
+                "pattern": "[the user's Matrix ID]"
+            }
+        ],
+        "actions": [
+           "notify",
+            {
+                "set_tweak": "sound",
+                "value": "default"
+            },
+            {
+                "set_tweak": "highlight",
+                "value": false
+            }
+        ]
+    }
+
+``.m.rule.member_event``
+````````````````````````
+
+Matches any ``m.room.member_event``.
+
+Definition:
+
+.. code:: json
+
+    {
+        "rule_id": ".m.rule.member_event",
+        "default": true,
+        "enabled": true,
+        "conditions": [
+            {
+                "key": "type",
+                "kind": "event_match",
+                "pattern": "m.room.member"
+            }
+        ],
+        "actions": [
+            "dont_notify"
+        ]
+    }
+
 
 Default Content Rules
 ^^^^^^^^^^^^^^^^^^^^^
@@ -358,48 +425,6 @@ Definition:
         ],
         "actions": [
             "notify",
-            {
-                "set_tweak": "sound",
-                "value": "default"
-            },
-            {
-                "set_tweak": "highlight",
-                "value": false
-            }
-        ]
-    }
-
-``.m.rule.invite_for_me``
-`````````````````````````
-Matches any invites to a new room for this user.
-
-Definition:
-
-.. code:: json
-
-    {
-        "rule_id": ".m.rule.invite_for_me",
-        "default": true,
-        "enabled": true,
-        "conditions": [
-            {
-                "key": "type",
-                "kind": "event_match",
-                "pattern": "m.room.member"
-            },
-            {
-                "key": "content.membership",
-                "kind": "event_match",
-                "pattern": "invite"
-            },
-            {
-                "key": "state_key",
-                "kind": "event_match",
-                "pattern": "[the user's Matrix ID]"
-            }
-        ],
-        "actions": [
-           "notify",
             {
                 "set_tweak": "sound",
                 "value": "default"
