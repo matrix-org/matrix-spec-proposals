@@ -1,67 +1,54 @@
-{
-    "type": "object",
-    "title": "ImageMessage",
-    "description": "This message represents a single image and an optional thumbnail.",
-    "allOf": [{
-        "$ref": "core-event-schema/room_event.yaml"
-    }],
-    "properties": {
-        "content": {
-            "type": "object",
-            "properties": {
-                "msgtype": {
-                    "type": "string",
-                    "enum": ["m.image"]
-                },
-                "body": {
-                    "type": "string",
-                    "description": "A textual representation of the image. This could be the alt text of the image, the filename of the image, or some kind of content description for accessibility e.g. 'image attachment'."
-                },
-                "url": {
-                    "type": "string",
-                    "description": "The URL to the image."
-                },
-                "thumbnail_url": {
-                    "type": "string",
-                    "description": "The URL to the thumbnail of the image."
-                },
-                "thumbnail_info": {
-                    "type": "object",
-                    "title": "ImageInfo",
-                    "description": "Metadata about the image referred to in ``thumbnail_url``.",
-                    "allOf": [{
-                        "$ref": "core-event-schema/msgtype_infos/image_info.yaml"
-                    }]
-                },
-                "info": {
-                    "type": "object",
-                    "title": "ImageInfo",
-                    "description": "Metadata about the image referred to in ``url``.",
-                    "properties": {
-                        "size": {
-                            "type": "integer",
-                            "description": "Size of the image in bytes."
-                        },
-                        "w": {
-                            "type": "integer",
-                            "description": "The width of the image in pixels."
-                        },
-                        "h": {
-                            "type": "integer",
-                            "description": "The height of the image in pixels."
-                        },
-                        "mimetype": {
-                            "type": "string",
-                            "description": "The mimetype of the image, e.g. ``image/jpeg``."
-                        }
-                    }
-                }
-            },
-            "required": ["msgtype", "body", "url"]
-        },
-        "type": {
-            "type": "string",
-            "enum": ["m.room.message"]
-        }
-    }
-}
+---
+allOf:
+  - $ref: core-event-schema/room_event.yaml
+description: This message represents a single image and an optional thumbnail.
+properties:
+  content:
+    properties:
+      body:
+        description: "A textual representation of the image. This could be the alt text of the image, the filename of the image, or some kind of content description for accessibility e.g. 'image attachment'."
+        type: string
+      info:
+        description: Metadata about the image referred to in ``url``.
+        properties:
+          h:
+            description: The height of the image in pixels.
+            type: integer
+          mimetype:
+            description: 'The mimetype of the image, e.g. ``image/jpeg``.'
+            type: string
+          size:
+            description: Size of the image in bytes.
+            type: integer
+          w:
+            description: The width of the image in pixels.
+            type: integer
+        title: ImageInfo
+        type: object
+      msgtype:
+        enum:
+          - m.image
+        type: string
+      thumbnail_info:
+        allOf:
+          - $ref: core-event-schema/msgtype_infos/image_info.yaml
+        description: Metadata about the image referred to in ``thumbnail_url``.
+        title: ImageInfo
+        type: object
+      thumbnail_url:
+        description: The URL to the thumbnail of the image.
+        type: string
+      url:
+        description: The URL to the image.
+        type: string
+    required:
+      - msgtype
+      - body
+      - url
+    type: object
+  type:
+    enum:
+      - m.room.message
+    type: string
+title: ImageMessage
+type: object

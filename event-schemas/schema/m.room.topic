@@ -1,29 +1,23 @@
-{
-    "type": "object",
-    "title": "Topic",
-    "description": "A topic is a short message detailing what is currently being discussed in the room.  It can also be used as a way to display extra information about the room, which may not be suitable for the room name. The room topic can also be set when creating a room using ``/createRoom`` with the ``topic`` key.",
-    "allOf": [{
-        "$ref": "core-event-schema/state_event.yaml"
-    }],
-    "properties": {
-        "content": {
-            "type": "object",
-            "properties": {
-                "topic": {
-                    "type": "string",
-                    "description": "The topic text."
-                }
-            },
-            "required": ["topic"]
-        },
-        "state_key": {
-            "type": "string",
-            "description": "A zero-length string.",
-            "pattern": "^$"
-        },
-        "type": {
-            "type": "string",
-            "enum": ["m.room.topic"]
-        }
-    }
-}
+---
+allOf:
+  - $ref: core-event-schema/state_event.yaml
+description: 'A topic is a short message detailing what is currently being discussed in the room.  It can also be used as a way to display extra information about the room, which may not be suitable for the room name. The room topic can also be set when creating a room using ``/createRoom`` with the ``topic`` key.'
+properties:
+  content:
+    properties:
+      topic:
+        description: The topic text.
+        type: string
+    required:
+      - topic
+    type: object
+  state_key:
+    description: A zero-length string.
+    pattern: '^$'
+    type: string
+  type:
+    enum:
+      - m.room.topic
+    type: string
+title: Topic
+type: object

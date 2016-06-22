@@ -1,28 +1,24 @@
-{
-    "type": "object",
-    "title": "EmoteMessage",
-    "description": "This message is similar to ``m.text`` except that the sender is 'performing' the action contained in the ``body`` key, similar to ``/me`` in IRC. This message should be prefixed by the name of the sender. This message could also be represented in a different colour to distinguish it from regular ``m.text`` messages.",
-    "allOf": [{
-        "$ref": "core-event-schema/room_event.yaml"
-    }],
-    "properties": {
-        "content": {
-            "type": "object",
-            "properties": {
-                "msgtype": {
-                    "type": "string",
-                    "enum": ["m.emote"]
-                },
-                "body": {
-                    "type": "string",
-                    "description": "The emote action to perform."
-                }
-            },
-            "required": ["msgtype", "body"]
-        },
-        "type": {
-            "type": "string",
-            "enum": ["m.room.message"]
-        }
-    }
-}
+---
+allOf:
+  - $ref: core-event-schema/room_event.yaml
+description: "This message is similar to ``m.text`` except that the sender is 'performing' the action contained in the ``body`` key, similar to ``/me`` in IRC. This message should be prefixed by the name of the sender. This message could also be represented in a different colour to distinguish it from regular ``m.text`` messages."
+properties:
+  content:
+    properties:
+      body:
+        description: The emote action to perform.
+        type: string
+      msgtype:
+        enum:
+          - m.emote
+        type: string
+    required:
+      - msgtype
+      - body
+    type: object
+  type:
+    enum:
+      - m.room.message
+    type: string
+title: EmoteMessage
+type: object

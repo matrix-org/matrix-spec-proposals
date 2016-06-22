@@ -1,49 +1,38 @@
-{
-    "title": "RoomAvatar",
-    "description": "A picture that is associated with the room. This can be displayed alongside the room information.",
-    "type": "object",
-    "allOf": [{
-        "$ref": "core-event-schema/state_event.yaml"
-    }],
-    "properties": {
-        "content": {
-            "type": "object",
-            "properties": {
-                "url": {
-                    "type": "string",
-                    "description": "The URL to the image."
-                },
-                "thumbnail_url": {
-                    "type": "string",
-                    "description": "The URL to the thumbnail of the image."
-                },
-                "thumbnail_info": {
-                    "type": "object",
-                    "title": "ImageInfo",
-                    "description": "Metadata about the image referred to in ``thumbnail_url``.",
-                    "allOf": [{
-                        "$ref": "core-event-schema/msgtype_infos/image_info.yaml"
-                    }]
-                },
-                "info": {
-                    "type": "object",
-                    "title": "ImageInfo",
-                    "description": "Metadata about the image referred to in ``url``.",
-                    "allOf": [{
-                        "$ref": "core-event-schema/msgtype_infos/image_info.yaml"
-                    }]
-                }
-            },
-            "required": ["url"]
-        },
-        "state_key": {
-            "type": "string",
-            "description": "A zero-length string.",
-            "pattern": "^$"
-        },
-        "type": {
-            "type": "string",
-            "enum": ["m.room.avatar"]
-        }
-    }
-}
+---
+allOf:
+  - $ref: core-event-schema/state_event.yaml
+description: A picture that is associated with the room. This can be displayed alongside the room information.
+properties:
+  content:
+    properties:
+      info:
+        allOf:
+          - $ref: core-event-schema/msgtype_infos/image_info.yaml
+        description: Metadata about the image referred to in ``url``.
+        title: ImageInfo
+        type: object
+      thumbnail_info:
+        allOf:
+          - $ref: core-event-schema/msgtype_infos/image_info.yaml
+        description: Metadata about the image referred to in ``thumbnail_url``.
+        title: ImageInfo
+        type: object
+      thumbnail_url:
+        description: The URL to the thumbnail of the image.
+        type: string
+      url:
+        description: The URL to the image.
+        type: string
+    required:
+      - url
+    type: object
+  state_key:
+    description: A zero-length string.
+    pattern: '^$'
+    type: string
+  type:
+    enum:
+      - m.room.avatar
+    type: string
+title: RoomAvatar
+type: object

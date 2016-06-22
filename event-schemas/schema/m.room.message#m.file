@@ -1,63 +1,52 @@
-{
-    "type": "object",
-    "title": "FileMessage",
-    "description": "This message represents a generic file.",
-    "allOf": [{
-        "$ref": "core-event-schema/room_event.yaml"
-    }],
-    "properties": {
-        "content": {
-            "type": "object",
-            "properties": {
-                "msgtype": {
-                    "type": "string",
-                    "enum": ["m.file"]
-                },
-                "filename": {
-                    "type": "string",
-                    "description": "The original filename of the uploaded file."
-                },
-                "body": {
-                    "type": "string",
-                    "description": "A human-readable description of the file. This is recommended to be the filename of the original upload."
-                },
-                "url": {
-                    "type": "string",
-                    "description": "The URL to the file."
-                },
-                "info": {
-                    "type": "object",
-                    "title": "FileInfo",
-                    "description": "Information about the file referred to in ``url``.",
-                    "properties": {
-                        "size": {
-                            "type": "integer",
-                            "description": "The size of the file in bytes."
-                        },
-                        "mimetype": {
-                            "type": "string",
-                            "description": "The mimetype of the file e.g. ``application/msword``."
-                        }
-                    }
-                },
-                "thumbnail_url": {
-                    "type": "string",
-                    "description": "The URL to the thumbnail of the file."
-                },
-                "thumbnail_info": {
-                    "type": "object",
-                    "title": "ImageInfo",
-                    "description": "Metadata about the image referred to in ``thumbnail_url``.",
-                    "allOf": [{
-                        "$ref": "core-event-schema/msgtype_infos/image_info.yaml"
-                    }]
-                }
-            },
-            "required": ["msgtype", "body", "url", "filename"]
-        },
-        "type": {
-            "type": "string",
-            "enum": ["m.room.message"]
-        }
-    }
-}
+---
+allOf:
+  - $ref: core-event-schema/room_event.yaml
+description: This message represents a generic file.
+properties:
+  content:
+    properties:
+      body:
+        description: A human-readable description of the file. This is recommended to be the filename of the original upload.
+        type: string
+      filename:
+        description: The original filename of the uploaded file.
+        type: string
+      info:
+        description: Information about the file referred to in ``url``.
+        properties:
+          mimetype:
+            description: The mimetype of the file e.g. ``application/msword``.
+            type: string
+          size:
+            description: The size of the file in bytes.
+            type: integer
+        title: FileInfo
+        type: object
+      msgtype:
+        enum:
+          - m.file
+        type: string
+      thumbnail_info:
+        allOf:
+          - $ref: core-event-schema/msgtype_infos/image_info.yaml
+        description: Metadata about the image referred to in ``thumbnail_url``.
+        title: ImageInfo
+        type: object
+      thumbnail_url:
+        description: The URL to the thumbnail of the file.
+        type: string
+      url:
+        description: The URL to the file.
+        type: string
+    required:
+      - msgtype
+      - body
+      - url
+      - filename
+    type: object
+  type:
+    enum:
+      - m.room.message
+    type: string
+title: FileMessage
+type: object
