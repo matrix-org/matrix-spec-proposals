@@ -45,11 +45,14 @@ paths:
             properties:
               presence:
                 type: string
-                enum: ["online", "offline", "unavailable", "free_for_chat"]
+                enum: ["online", "offline", "unavailable"]
                 description: The new presence state.
               status_msg:
                 type: string
                 description: "The status message to attach to this state."
+              currently_active:
+                type: boolean
+                description: "Whether the user is currently active"
             required: ["presence"]
       responses:
         200:
@@ -90,7 +93,7 @@ paths:
             properties:
               presence:
                 type: string
-                enum: ["online", "offline", "unavailable", "free_for_chat"]
+                enum: ["online", "offline", "unavailable"]
                 description: This user's presence.
               last_active_ago:
                 type: integer
@@ -181,8 +184,6 @@ paths:
               [
                 {
                   "content": {
-                    "avatar_url": "mxc://matrix.org/AfwefuigfWEfhuiPP",
-                    "displayname": "Alice Margatroid",
                     "last_active_ago": 395,
                     "presence": "offline",
                     "user_id": "@alice:matrix.org"
@@ -191,11 +192,10 @@ paths:
                 },
                 {
                   "content": {
-                    "avatar_url": "mxc://matrix.org/FWEhuiwegfWEfhuiwf",
-                    "displayname": "Marisa Kirisame",
                     "last_active_ago": 16874,
                     "presence": "online",
-                    "user_id": "@marisa:matrix.org"
+                    "user_id": "@marisa:matrix.org",
+                    "currently_active": true
                   },
                   "type": "m.presence"
                 }
