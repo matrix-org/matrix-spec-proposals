@@ -1,28 +1,24 @@
-{
-    "type": "object",
-    "title": "NoticeMessage",
-    "description": "A m.notice message should be considered similar to a plain m.text message except that clients should visually distinguish it in some way. It is intended to be used by automated clients, such as bots, bridges, and other entities, rather than humans. Additionally, such automated agents which watch a room for messages and respond to them ought to ignore m.notice messages. This helps to prevent infinite-loop situations where two automated clients continuously exchange messages, as each responds to the other.",
-    "allOf": [{
-        "$ref": "core-event-schema/room_event.yaml"
-    }],
-    "properties": {
-        "content": {
-            "type": "object",
-            "properties": {
-                "msgtype": {
-                    "type": "string",
-                    "enum": ["m.notice"]
-                },
-                "body": {
-                    "type": "string",
-                    "description": "The notice text to send."
-                }
-            },
-            "required": ["msgtype", "body"]
-        },
-        "type": {
-            "type": "string",
-            "enum": ["m.room.message"]
-        }
-    }
-}
+---
+allOf:
+  - $ref: core-event-schema/room_event.yaml
+description: 'A m.notice message should be considered similar to a plain m.text message except that clients should visually distinguish it in some way. It is intended to be used by automated clients, such as bots, bridges, and other entities, rather than humans. Additionally, such automated agents which watch a room for messages and respond to them ought to ignore m.notice messages. This helps to prevent infinite-loop situations where two automated clients continuously exchange messages, as each responds to the other.'
+properties:
+  content:
+    properties:
+      body:
+        description: The notice text to send.
+        type: string
+      msgtype:
+        enum:
+          - m.notice
+        type: string
+    required:
+      - msgtype
+      - body
+    type: object
+  type:
+    enum:
+      - m.room.message
+    type: string
+title: NoticeMessage
+type: object
