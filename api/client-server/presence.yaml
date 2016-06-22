@@ -54,7 +54,7 @@ paths:
               status_msg:
                 type: string
                 description: "The status message to attach to this state."
-              currently_online:
+              currently_active:
                 type: boolean
                 description: "Whether the user is currently active"
             required: ["presence"]
