@@ -172,8 +172,9 @@ def get_json_schema_object_fields(obj, enforce_title=False,
         except Exception, e:
             e2 = Exception("Error reading property %s.%s: %s" %
                            (obj_title, key_name, str(e)))
+            # throw the new exception with the old stack trace, so that
+            # we don't lose information about where the error occurred.
             raise e2, None, sys.exc_info()[2]
-
 
     tables.insert(0, {
         "title": obj_title,
@@ -639,6 +640,8 @@ class MatrixUnits(Units):
             except Exception, e:
                 e2 = Exception("Error reading event schema "+filepath+": "+
                                str(e))
+                # throw the new exception with the old stack trace, so that
+                # we don't lose information about where the error occurred.
                 raise e2, None, sys.exc_info()[2]
 
         return schemata
