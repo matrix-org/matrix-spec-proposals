@@ -14,6 +14,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 import urllib
 import yaml
 
@@ -153,98 +154,121 @@ def get_json_schema_object_fields(obj, enforce_title=False,
 
     required_keys = set(obj.get("required", []))
 
-    fields = {
-        "title": obj.get("title"),
-        "rows": []
-    }
-
-    tables = [fields]
+    obj_title = obj.get("title")
+    first_table_rows = []
+    tables = []
 
     for key_name in props:
-        logger.debug("Processing property %s.%s", obj.get('title'), key_name)
-        prop = inherit_parents(props[key_name])
+        try:
+            logger.debug("Processing property %s.%s", obj_title, key_name)
+            required = key_name in required_keys
+            res = process_prop(key_name, props[key_name], required,
+                               mark_required)
 
-        value_type = None
-        required = key_name in required_keys
-        desc = prop.get("description", "")
-        prop_type = prop.get('type')
+            first_table_rows.append(res["row"])
+            tables.extend(res["tables"])
+            logger.debug("Done property %s" % key_name)
 
-        if prop_type is None:
-            raise KeyError("Property '%s' of object '%s' missing 'type' field"
-                           % (key_name, obj))
-        logger.debug("%s is a %s", key_name, prop_type)
+        except Exception, e:
+            e2 = Exception("Error reading property %s.%s: %s" %
+                           (obj_title, key_name, str(e)))
+            # throw the new exception with the old stack trace, so that
+            # we don't lose information about where the error occurred.
+            raise e2, None, sys.exc_info()[2]
 
-        if prop_type == "object":
+    tables.insert(0, {
+        "title": obj_title,
+        "rows": first_table_rows,
+    })
+
+    return tables
+
+def process_prop(key_name, prop, required, mark_required):
+    prop = inherit_parents(prop)
+
+    value_type = None
+    desc = prop.get("description", "")
+    prop_type = prop.get('type')
+    tables = []
+
+    if prop_type is None:
+        raise KeyError("Property '%s' of object '%s' missing 'type' field"
+                       % (key_name, obj))
+    logger.debug("%s is a %s", key_name, prop_type)
+
+    if prop_type == "object":
+        nested_objects = get_json_schema_object_fields(
+            prop,
+            enforce_title=True,
+            mark_required=mark_required,
+        )
+        value_type = nested_objects[0]["title"]
+        value_id = value_type
+
+        tables += [x for x in nested_objects if not x.get("no-table")]
+    elif prop_type == "array":
+        items = inherit_parents(prop["items"])
+        # if the items of the array are objects then recurse
+        if items["type"] == "object":
             nested_objects = get_json_schema_object_fields(
-                prop,
+                items,
                 enforce_title=True,
                 mark_required=mark_required,
             )
-            value_type = nested_objects[0]["title"]
-            value_id = value_type
-
-            tables += [x for x in nested_objects if not x.get("no-table")]
-        elif prop_type == "array":
-            items = inherit_parents(prop["items"])
-            # if the items of the array are objects then recurse
-            if items["type"] == "object":
-                nested_objects = get_json_schema_object_fields(
-                    items,
-                    enforce_title=True,
-                    mark_required=mark_required,
-                )
-                value_id = nested_objects[0]["title"]
-                value_type = "[%s]" % value_id
-                tables += nested_objects
-            else:
-                value_type = items["type"]
-                if isinstance(value_type, list):
-                    value_type = " or ".join(value_type)
-                value_id = value_type
-                value_type = "[%s]" % value_type
-                array_enums = items.get("enum")
-                if array_enums:
-                    if len(array_enums) > 1:
-                        value_type = "[enum]"
-                        desc += (
-                            " One of: %s" % json.dumps(array_enums)
-                        )
-                    else:
-                        desc += (
-                            " Must be '%s'." % array_enums[0]
-                        )
+            value_id = nested_objects[0]["title"]
+            value_type = "[%s]" % value_id
+            tables += nested_objects
         else:
-            value_type = prop_type
-            value_id = prop_type
-            if prop.get("enum"):
-                if len(prop["enum"]) > 1:
-                    value_type = "enum"
-                    if desc:
-                        desc += " "
-                    desc += (
-                        "One of: %s" % json.dumps(prop["enum"])
-                    )
-                else:
-                    if desc:
-                        desc += " "
-                    desc += (
-                        "Must be '%s'." % prop["enum"][0]
-                    )
+            value_type = items["type"]
             if isinstance(value_type, list):
                 value_type = " or ".join(value_type)
+            value_id = value_type
+            value_type = "[%s]" % value_type
+            array_enums = items.get("enum")
+            if array_enums:
+                if len(array_enums) > 1:
+                    value_type = "[enum]"
+                    desc += (
+                        " One of: %s" % json.dumps(array_enums)
+                    )
+                else:
+                    desc += (
+                        " Must be '%s'." % array_enums[0]
+                    )
+    else:
+        value_type = prop_type
+        value_id = prop_type
+        if prop.get("enum"):
+            if len(prop["enum"]) > 1:
+                value_type = "enum"
+                if desc:
+                    desc += " "
+                desc += (
+                    "One of: %s" % json.dumps(prop["enum"])
+                )
+            else:
+                if desc:
+                    desc += " "
+                desc += (
+                    "Must be '%s'." % prop["enum"][0]
+                )
+        if isinstance(value_type, list):
+            value_type = " or ".join(value_type)
 
-        if required and mark_required:
-            desc = "**Required.** " + desc
-        fields["rows"].append({
+
+    if required and mark_required:
+        desc = "**Required.** " + desc
+
+    return {
+        "row": {
             "key": key_name,
             "type": value_type,
             "id": value_id,
             "required": required,
             "desc": desc,
-        })
-        logger.debug("Done property %s" % key_name)
-
-    return tables
+        },
+        "tables": tables,
+    }
 
 
 def get_tables_for_schema(schema, mark_required=True):
@@ -611,89 +635,102 @@ class MatrixUnits(Units):
             if not filename.startswith("m."):
                 continue
             filepath = os.path.join(path, filename)
-            self.log("Reading %s" % filepath)
-            with open(filepath, "r") as f:
-                json_schema = yaml.load(f)
-                schema = {
-                    "typeof": None,
-                    "typeof_info": "",
-                    "type": None,
-                    "title": None,
-                    "desc": None,
-                    "msgtype": None,
-                    "content_fields": [
-                    # {
-                    #   title: "<title> key"
-                    #   rows: [
-                    #       { key: <key_name>, type: <string>,
-                    #         desc: <desc>, required: <bool> }
-                    #   ]
-                    # }
-                    ]
-                }
+            try:
+                schemata[filename] = self.read_event_schema(filepath)
+            except Exception, e:
+                e2 = Exception("Error reading event schema "+filepath+": "+
+                               str(e))
+                # throw the new exception with the old stack trace, so that
+                # we don't lose information about where the error occurred.
+                raise e2, None, sys.exc_info()[2]
 
-                # add typeof
-                base_defs = {
-                    ROOM_EVENT: "Message Event",
-                    STATE_EVENT: "State Event"
-                }
-                if type(json_schema.get("allOf")) == list:
-                    schema["typeof"] = base_defs.get(
-                        json_schema["allOf"][0].get("$ref")
-                    )
-                elif json_schema.get("title"):
-                    schema["typeof"] = json_schema["title"]
-
-                json_schema = resolve_references(filepath, json_schema)
-
-                # add type
-                schema["type"] = Units.prop(
-                    json_schema, "properties/type/enum"
-                )[0]
-
-                # add summary and desc
-                schema["title"] = json_schema.get("title")
-                schema["desc"] = json_schema.get("description", "")
-
-                # walk the object for field info
-                schema["content_fields"] = get_tables_for_schema(
-                    Units.prop(json_schema, "properties/content")
-                )
-
-                # This is horrible because we're special casing a key on m.room.member.
-                # We need to do this because we want to document a non-content object.
-                if schema["type"] == "m.room.member":
-                    invite_room_state = get_tables_for_schema(
-                        json_schema["properties"]["invite_room_state"]["items"],
-                    )
-                    schema["content_fields"].extend(invite_room_state)
-
-
-                # grab msgtype if it is the right kind of event
-                msgtype = Units.prop(
-                    json_schema, "properties/content/properties/msgtype/enum"
-                )
-                if msgtype:
-                    schema["msgtype"] = msgtype[0]  # enum prop
-
-                # link to msgtypes for m.room.message
-                if schema["type"] == "m.room.message" and not msgtype:
-                    schema["desc"] += (
-                        " For more information on ``msgtypes``, see "+
-                        "`m.room.message msgtypes`_."
-                    )
-
-                # Assign state key info if it has some
-                if schema["typeof"] == "State Event":
-                    skey_desc = Units.prop(
-                        json_schema, "properties/state_key/description"
-                    )
-                    if not skey_desc:
-                        raise Exception("Missing description for state_key")
-                    schema["typeof_info"] = "``state_key``: %s" % skey_desc
-
-                schemata[filename] = schema
         return schemata
+
+    def read_event_schema(self, filepath):
+        self.log("Reading %s" % filepath)
+
+        with open(filepath, "r") as f:
+            json_schema = yaml.load(f)
+
+        schema = {
+            "typeof": None,
+            "typeof_info": "",
+            "type": None,
+            "title": None,
+            "desc": None,
+            "msgtype": None,
+            "content_fields": [
+                # {
+                #   title: "<title> key"
+                #   rows: [
+                #       { key: <key_name>, type: <string>,
+                #         desc: <desc>, required: <bool> }
+                #   ]
+                # }
+            ]
+        }
+
+        # add typeof
+        base_defs = {
+            ROOM_EVENT: "Message Event",
+            STATE_EVENT: "State Event"
+        }
+        if type(json_schema.get("allOf")) == list:
+            schema["typeof"] = base_defs.get(
+                json_schema["allOf"][0].get("$ref")
+            )
+        elif json_schema.get("title"):
+            schema["typeof"] = json_schema["title"]
+
+        json_schema = resolve_references(filepath, json_schema)
+
+        # add type
+        schema["type"] = Units.prop(
+            json_schema, "properties/type/enum"
+        )[0]
+
+        # add summary and desc
+        schema["title"] = json_schema.get("title")
+        schema["desc"] = json_schema.get("description", "")
+
+        # walk the object for field info
+        schema["content_fields"] = get_tables_for_schema(
+            Units.prop(json_schema, "properties/content")
+        )
+
+        # This is horrible because we're special casing a key on m.room.member.
+        # We need to do this because we want to document a non-content object.
+        if schema["type"] == "m.room.member":
+            invite_room_state = get_tables_for_schema(
+                json_schema["properties"]["invite_room_state"]["items"],
+            )
+            schema["content_fields"].extend(invite_room_state)
+
+
+        # grab msgtype if it is the right kind of event
+        msgtype = Units.prop(
+            json_schema, "properties/content/properties/msgtype/enum"
+        )
+        if msgtype:
+            schema["msgtype"] = msgtype[0]  # enum prop
+
+        # link to msgtypes for m.room.message
+        if schema["type"] == "m.room.message" and not msgtype:
+            schema["desc"] += (
+                " For more information on ``msgtypes``, see "+
+                "`m.room.message msgtypes`_."
+            )
+
+        # Assign state key info if it has some
+        if schema["typeof"] == "State Event":
+            skey_desc = Units.prop(
+                json_schema, "properties/state_key/description"
+            )
+            if not skey_desc:
+                raise Exception("Missing description for state_key")
+            schema["typeof_info"] = "``state_key``: %s" % skey_desc
+
+        return schema
 
     def load_changelogs(self):
         changelogs = {}
