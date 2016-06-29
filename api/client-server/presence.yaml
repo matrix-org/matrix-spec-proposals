@@ -54,9 +54,6 @@ paths:
               status_msg:
                 type: string
                 description: "The status message to attach to this state."
-              currently_active:
-                type: boolean
-                description: "Whether the user is currently active"
             required: ["presence"]
       responses:
         200:
@@ -107,6 +104,10 @@ paths:
               status_msg:
                 type: [string, "null"]
                 description: The state message for this user if one was set.
+              currently_active:
+                type: boolean
+                description: "Whether the user is currently active"
+            required: ["presence"]
         404:
           description: |-
             There is no presence state for this user. This user may not exist or
