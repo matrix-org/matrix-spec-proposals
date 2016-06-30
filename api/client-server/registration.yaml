@@ -148,6 +148,10 @@ paths:
           schema:
             type: object
             properties:
+              id_server:
+                type: string
+                description: The ID server to send the onward request to as a hostname with an appended colon and port number if the port is not the default.
+                example: "id.matrix.org"
               client_secret:
                 type: string
                 description: Client-generated secret string used to protect this session
