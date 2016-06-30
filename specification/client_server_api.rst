@@ -113,6 +113,9 @@ Some requests have unique error codes:
 :``M_BAD_PAGINATION``:
   Encountered when specifying bad pagination query parameters.
 
+:``M_THREEPID_IN_USE``:
+  Sent when a threepid given to an API cannot be used because the same threepid is already in use.
+
 .. _sect:txn_ids:
 
 The client-server API typically uses ``HTTP PUT`` to submit requests with a
