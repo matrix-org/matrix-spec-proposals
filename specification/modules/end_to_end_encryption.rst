@@ -5,5 +5,4 @@ End-to-End Encryption
 
 End to end encryption is being worked on and will be coming soon.
 
-You can read about what's underway at http://matrix.org/speculator/spec/drafts%2Fe2e/client_server.html#end-to-end-encryption.
-
+You can read about what's underway at http://matrix.org/speculator/spec/drafts%2Fe2e/client_server/unstable.html#end-to-end-encryption.
