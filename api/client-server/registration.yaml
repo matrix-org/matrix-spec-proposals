@@ -136,8 +136,8 @@ paths:
     post:
       summary: Requests a validation token be sent to the given email address
       description: |-
-        Proxies the identity server API `validate/email/requestToken`, but
-        additionally inform the user if the given email is already associated
+        Proxies the identity server API ``validate/email/requestToken``, but
+        first checks that the given email address is not already associated
         with an account on this Home Server. Note that, for consistency,
         this API takes JSON objects, though the Identity Server API takes
         ``x-www-form-urlencoded`` parameters. See the Identity Server API for
