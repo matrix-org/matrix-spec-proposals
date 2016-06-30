@@ -181,6 +181,8 @@ paths:
             that the email address is already registered to an account on this server, however,
             if the home server has the ability to send email, it is recommended that the server
             instead send an email to the user with instructions on how to reset their password.
+            This prevents malicious parties from being able to determine if a given email address
+            has an account on the Home Server in question.
           examples:
             application/json: |-
               {
