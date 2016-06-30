@@ -177,13 +177,16 @@ paths:
             type: object
         400:
           description: |-
-            Returns an error object indicating the nature of the error. A Home Server may use
-            ``M_THREEPID_IN_USE`` to inform the user that the email address is already registered
-            to an account on this server, however, if the home server has the ability to send email,
-            it is recommended that the server instead send an email to the user with instructions
-            on how to reset their password.
+            The request was invalid. An errcode of ``M_THREEPID_IN_USE`` is used to inform the user
+            that the email address is already registered to an account on this server, however,
+            if the home server has the ability to send email, it is recommended that the server
+            instead send an email to the user with instructions on how to reset their password.
           examples:
-            application/json: '{"errcode": "M_THREEPID_IN_USE", "error": "The specified address is already in use"}'
+            application/json: |-
+              {
+                "errcode": "M_THREEPID_IN_USE",
+                "error": "The specified address is already in use"
+              }
           schema:
             type: object
   "/account/password":
