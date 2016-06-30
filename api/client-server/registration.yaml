@@ -177,12 +177,15 @@ paths:
             type: object
         400:
           description: |-
-            The request was invalid. An errcode of ``M_THREEPID_IN_USE`` is used to inform the user
-            that the email address is already registered to an account on this server, however,
-            if the home server has the ability to send email, it is recommended that the server
-            instead send an email to the user with instructions on how to reset their password.
-            This prevents malicious parties from being able to determine if a given email address
-            has an account on the Home Server in question.
+            Part of the request was invalid. This may include one of the following error codes:
+
+            * ``M_THREEPID_IN_USE`` : The email address is already registered to an account on this server.
+              however, if the home server has the ability to send email, it is recommended that the server
+              instead send an email to the user with instructions on how to reset their password.
+              This prevents malicious parties from being able to determine if a given email address
+              has an account on the Home Server in question.
+            * ``M_SERVER_NOT_TRUSTED`` : The ``id_server`` parameter refers to an ID server
+              that is not trusted by this Home Server.
           examples:
             application/json: |-
               {
