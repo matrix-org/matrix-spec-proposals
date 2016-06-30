@@ -24,7 +24,11 @@
                 "presence": {
                     "type": "string",
                     "description": "The presence state for this user.",
-                    "enum": ["online", "offline", "unavailable", "free_for_chat", "hidden"]
+                    "enum": ["online", "offline", "unavailable"]
+                },
+                "currently_active": {
+                    "type": boolean,
+                    "description": "Whether the user is currently active"
                 },
                 "user_id": {
                     "type": "string",

@@ -1,43 +1,36 @@
-{
-    "type": "object",
-    "title": "LocationMessage",
-    "description": "This message represents a real-world location.",
-    "allOf": [{
-        "$ref": "core-event-schema/room_event.yaml"
-    }],
-    "properties": {
-        "content": {
-            "type": "object",
-            "properties": {
-                "msgtype": {
-                    "type": "string",
-                    "enum": ["m.location"]
-                },
-                "body": {
-                    "type": "string",
-                    "description": "A description of the location e.g. 'Big Ben, London, UK', or some kind of content description for accessibility e.g. 'location attachment'."
-                },
-                "geo_uri": {
-                    "type": "string",
-                    "description": "A geo URI representing this location."
-                },
-                "thumbnail_url": {
-                    "type": "string",
-                    "description": "The URL to a thumbnail of the location being represented."
-                },
-                "thumbnail_info": {
-                    "type": "object",
-                    "title": "ImageInfo",
-                    "allOf": [{
-                        "$ref": "core-event-schema/msgtype_infos/image_info.yaml"
-                    }]
-                }
-            },
-            "required": ["msgtype", "body", "geo_uri"]
-        },
-        "type": {
-            "type": "string",
-            "enum": ["m.room.message"]
-        }
-    }
-}
+---
+allOf:
+  - $ref: core-event-schema/room_event.yaml
+description: This message represents a real-world location.
+properties:
+  content:
+    properties:
+      body:
+        description: "A description of the location e.g. 'Big Ben, London, UK', or some kind of content description for accessibility e.g. 'location attachment'."
+        type: string
+      geo_uri:
+        description: A geo URI representing this location.
+        type: string
+      msgtype:
+        enum:
+          - m.location
+        type: string
+      thumbnail_info:
+        allOf:
+          - $ref: core-event-schema/msgtype_infos/image_info.yaml
+        title: ImageInfo
+        type: object
+      thumbnail_url:
+        description: The URL to a thumbnail of the location being represented.
+        type: string
+    required:
+      - msgtype
+      - body
+      - geo_uri
+    type: object
+  type:
+    enum:
+      - m.room.message
+    type: string
+title: LocationMessage
+type: object

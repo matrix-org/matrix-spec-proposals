@@ -1,51 +1,42 @@
-{
-    "type": "object",
-    "title": "AudioMessage",
-    "description": "This message represents a single audio clip.",
-    "allOf": [{
-        "$ref": "core-event-schema/room_event.yaml"
-    }],
-    "properties": {
-        "content": {
-            "type": "object",
-            "properties": {
-                "msgtype": {
-                    "type": "string",
-                    "enum": ["m.audio"]
-                },
-                "body": {
-                    "type": "string",
-                    "description": "A description of the audio e.g. 'Bee Gees - Stayin' Alive', or some kind of content description for accessibility e.g. 'audio attachment'."
-                },
-                "url": {
-                    "type": "string",
-                    "description": "The URL to the audio clip."
-                },
-                "info": {
-                    "type": "object",
-                    "title": "AudioInfo",
-                    "description": "Metadata for the audio clip referred to in ``url``.",
-                    "properties": {
-                        "mimetype": {
-                            "type": "string",
-                            "description": "The mimetype of the audio e.g. ``audio/aac``."
-                        },
-                        "size": {
-                            "type": "integer",
-                            "description": "The size of the audio clip in bytes."
-                        },
-                        "duration": {
-                            "type": "integer",
-                            "description": "The duration of the audio in milliseconds."
-                        }
-                    }
-                }
-            },
-            "required": ["msgtype", "body", "url"]
-        },
-        "type": {
-            "type": "string",
-            "enum": ["m.room.message"]
-        }
-    }
-}
+---
+allOf:
+  - $ref: core-event-schema/room_event.yaml
+description: This message represents a single audio clip.
+properties:
+  content:
+    properties:
+      body:
+        description: "A description of the audio e.g. 'Bee Gees - Stayin' Alive', or some kind of content description for accessibility e.g. 'audio attachment'."
+        type: string
+      info:
+        description: Metadata for the audio clip referred to in ``url``.
+        properties:
+          duration:
+            description: The duration of the audio in milliseconds.
+            type: integer
+          mimetype:
+            description: The mimetype of the audio e.g. ``audio/aac``.
+            type: string
+          size:
+            description: The size of the audio clip in bytes.
+            type: integer
+        title: AudioInfo
+        type: object
+      msgtype:
+        enum:
+          - m.audio
+        type: string
+      url:
+        description: The URL to the audio clip.
+        type: string
+    required:
+      - msgtype
+      - body
+      - url
+    type: object
+  type:
+    enum:
+      - m.room.message
+    type: string
+title: AudioMessage
+type: object
