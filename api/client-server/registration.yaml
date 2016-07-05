@@ -141,7 +141,7 @@ paths:
         with an account on this Home Server. Note that, for consistency,
         this API takes JSON objects, though the Identity Server API takes
         ``x-www-form-urlencoded`` parameters. See the Identity Server API for
-        further information, including the full list of response coes.
+        further information.
       parameters:
         - in: body
           name: body
@@ -180,7 +180,7 @@ paths:
             Part of the request was invalid. This may include one of the following error codes:
 
             * ``M_THREEPID_IN_USE`` : The email address is already registered to an account on this server.
-              however, if the home server has the ability to send email, it is recommended that the server
+              However, if the home server has the ability to send email, it is recommended that the server
               instead send an email to the user with instructions on how to reset their password.
               This prevents malicious parties from being able to determine if a given email address
               has an account on the Home Server in question.
