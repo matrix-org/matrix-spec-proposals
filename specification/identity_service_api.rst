@@ -124,6 +124,11 @@ This is to avoid repeatedly sending the same email in the case of request
 retries between the POSTing user and the identity service. The client should
 increment this value if they desire a new email (e.g. a reminder) to be sent.
 
+Note that Home Servers offer APIs that proxy this API, adding additional
+behaviour on top, for example, ``/register/email/requestToken`` is designed
+specifically for use when registering an account and therefore will inform
+the user if the email address given is already registered on the server.
+
 Validating ownership of an email
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

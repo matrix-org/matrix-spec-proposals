@@ -113,6 +113,12 @@ Some requests have unique error codes:
 :``M_BAD_PAGINATION``:
   Encountered when specifying bad pagination query parameters.
 
+:``M_THREEPID_IN_USE``:
+  Sent when a threepid given to an API cannot be used because the same threepid is already in use.
+
+:``M_SERVER_NOT_TRUSTED``:
+  The client's request used a third party server, eg. ID server, that this server does not trust.
+
 .. _sect:txn_ids:
 
 The client-server API typically uses ``HTTP PUT`` to submit requests with a

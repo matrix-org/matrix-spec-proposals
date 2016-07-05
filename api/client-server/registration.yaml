@@ -132,9 +132,71 @@ paths:
             "$ref": "definitions/error.yaml"
       tags:
         - User data
+  "/register/email/requestToken":
+    post:
+      summary: Requests a validation token be sent to the given email address
+      description: |-
+        Proxies the identity server API ``validate/email/requestToken``, but
+        first checks that the given email address is not already associated
+        with an account on this Home Server. Note that, for consistency,
+        this API takes JSON objects, though the Identity Server API takes
+        ``x-www-form-urlencoded`` parameters. See the Identity Server API for
+        further information.
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              id_server:
+                type: string
+                description: The ID server to send the onward request to as a hostname with an appended colon and port number if the port is not the default.
+                example: "id.matrix.org"
+              client_secret:
+                type: string
+                description: Client-generated secret string used to protect this session
+                example: "this_is_my_secret_string"
+              email:
+                type: string
+                description: The email address
+                example: "example@example.com"
+              send_attempt:
+                type: number
+                description: Used to distinguish protocol level retries from requests to re-send the email.
+                example: "1"
+            required: ["client_secret", "email", "send_attempt"]
+      responses:
+        200:
+          description: |-
+            An email has been sent to the specified address.
+            Note that this may be an email containing the validation token or it may be informing
+            the user of an error.
+          examples:
+            application/json: "{}"
+          schema:
+            type: object
+        400:
+          description: |-
+            Part of the request was invalid. This may include one of the following error codes:
+
+            * ``M_THREEPID_IN_USE`` : The email address is already registered to an account on this server.
+              However, if the home server has the ability to send email, it is recommended that the server
+              instead send an email to the user with instructions on how to reset their password.
+              This prevents malicious parties from being able to determine if a given email address
+              has an account on the Home Server in question.
+            * ``M_SERVER_NOT_TRUSTED`` : The ``id_server`` parameter refers to an ID server
+              that is not trusted by this Home Server.
+          examples:
+            application/json: |-
+              {
+                "errcode": "M_THREEPID_IN_USE",
+                "error": "The specified address is already in use"
+              }
+          schema:
+            type: object
   "/account/password":
     post:
-      summary: Changes a user's password.
+      summary: "Changes a user's password."
       description: |-
         Changes the password for an account on this homeserver.
 
