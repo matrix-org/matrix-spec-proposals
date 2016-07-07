@@ -127,4 +127,4 @@ paths:
         first checks that the given email address is not already associated
         with an account on this Home Server. This API should be used to request
         validation tokens when adding an email address to an account. This API
-	behaves identically to `/register/email/requestToken`
+        behaves identically to `/register/email/requestToken`
