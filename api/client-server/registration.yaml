@@ -255,3 +255,6 @@ paths:
         returned if no account matching the given email address could be found.
         The server may instead send an email to the given address prompting
         the user to create an account. `M_THREEPID_IN_USE` may not be returned.
+      responses:
+        200:
+          description: An email was sent to the given address
