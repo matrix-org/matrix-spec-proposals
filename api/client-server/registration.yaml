@@ -134,7 +134,7 @@ paths:
         - User data
   "/register/email/requestToken":
     post:
-      summary: Requests a validation token be sent to the given email address
+      summary: Requests a validation token be sent to the given email address for the purpose of registering an account
       description: |-
         Proxies the identity server API ``validate/email/requestToken``, but
         first checks that the given email address is not already associated
@@ -244,7 +244,7 @@ paths:
         - User data
   "/account/password/email/requestToken":
     post:
-      summary: Requests a validation token be sent to the given email address
+      summary: Requests a validation token be sent to the given email address for the purpose of resetting a user's password
       description: |-
         Proxies the identity server API ``validate/email/requestToken``, but
         first checks that the given email address is associated with an account

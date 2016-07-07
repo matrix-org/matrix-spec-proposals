@@ -121,7 +121,7 @@ paths:
         - User data
   "/account/3pid/email/requestToken":
     post:
-      summary: Requests a validation token be sent to the given email address
+      summary: Requests a validation token be sent to the given email address for the purpose of adding an email address to an account
       description: |-
         Proxies the identity server API ``validate/email/requestToken``, but
         first checks that the given email address is not already associated
