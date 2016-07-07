@@ -117,7 +117,7 @@ Some requests have unique error codes:
   Sent when a threepid given to an API cannot be used because the same threepid is already in use.
 
 :``M_THREEPID_NOT_FOUND``:
-  Sent when a threepid given to an API cannot be used because no record matching the threepid was found
+  Sent when a threepid given to an API cannot be used because no record matching the threepid was found.
 
 :``M_SERVER_NOT_TRUSTED``:
   The client's request used a third party server, eg. ID server, that this server does not trust.
