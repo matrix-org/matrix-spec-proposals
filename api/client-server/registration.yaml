@@ -242,3 +242,16 @@ paths:
             "$ref": "definitions/error.yaml"
       tags:
         - User data
+  "/account/password/email/requestToken":
+    post:
+      summary: Requests a validation token be sent to the given email address
+      description: |-
+        Proxies the identity server API ``validate/email/requestToken``, but
+        first checks that the given email address is associated with an account
+        on this Home Server. This API should be used to request
+        validation tokens when authenticating for the
+        `account/password` endpoint. This API behaves identically to
+        `/register/email/requestToken` except that `M_THREEPID_NOT_FOUND` may be
+        returned if no account matching the given email address could be found.
+        The server may instead send an email to the given address prompting
+        the user to create an account. `M_THREEPID_IN_USE` may not be returned.
