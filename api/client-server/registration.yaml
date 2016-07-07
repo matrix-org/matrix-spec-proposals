@@ -250,11 +250,12 @@ paths:
         first checks that the given email address is associated with an account
         on this Home Server. This API should be used to request
         validation tokens when authenticating for the
-        `account/password` endpoint. This API behaves identically to
-        `/register/email/requestToken` except that `M_THREEPID_NOT_FOUND` may be
-        returned if no account matching the given email address could be found.
-        The server may instead send an email to the given address prompting
-        the user to create an account. `M_THREEPID_IN_USE` may not be returned.
+        `account/password` endpoint. This API's parameters and response are
+        identical to that of `/register/email/requestToken` except that
+        `M_THREEPID_NOT_FOUND` may be returned if no account matching the
+        given email address could be found. The server may instead send an
+        email to the given address prompting the user to create an account.
+        `M_THREEPID_IN_USE` may not be returned.
       responses:
         200:
           description: An email was sent to the given address

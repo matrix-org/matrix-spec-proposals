@@ -126,8 +126,8 @@ paths:
         Proxies the identity server API ``validate/email/requestToken``, but
         first checks that the given email address is not already associated
         with an account on this Home Server. This API should be used to request
-        validation tokens when adding an email address to an account. This API
-        behaves identically to `/register/email/requestToken`
+        validation tokens when adding an email address to an account. This API's
+        parameters and response is identical to that of `/register/email/requestToken`.
       responses:
         200:
           description: An email was sent to the given address
