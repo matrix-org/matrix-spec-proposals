@@ -129,10 +129,6 @@ paths:
         validation tokens when adding an email address to an account. This API's
         parameters and response is identical to that of the HS API
         |/register/email/requestToken|_ endpoint.
-
-        .. |/register/email/requestToken| replace:: ``/register/email/requestToken``
-
-        .. _/register/email/requestToken: #post-matrix-client-%CLIENT_MAJOR_VERSION%-register-email-requesttoken
       responses:
         200:
           description: An email was sent to the given address
