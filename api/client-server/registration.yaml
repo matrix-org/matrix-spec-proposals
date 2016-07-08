@@ -136,6 +136,8 @@ paths:
     post:
       summary: Requests a validation token be sent to the given email address for the purpose of registering an account
       description: |-
+        .. _register-email-requestToken-endpoint:
+
         Proxies the identity server API ``validate/email/requestToken``, but
         first checks that the given email address is not already associated
         with an account on this Home Server. Note that, for consistency,
@@ -247,7 +249,7 @@ paths:
       summary: Requests a validation token be sent to the given email address for the purpose of resetting a user's password
       description: |-
         Proxies the identity server API ``validate/email/requestToken``, but
-        first checks that the given email address is associated with an account
+        first checks that the given email address **is** associated with an account
         on this Home Server. This API should be used to request
         validation tokens when authenticating for the
         `account/password` endpoint. This API's parameters and response are
