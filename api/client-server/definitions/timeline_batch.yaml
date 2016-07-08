@@ -6,7 +6,7 @@ properties:
       on the filter
     type: boolean
   prev_batch:
-    description: If the batch was limited then this is a token that can be supplied
-      to the server to retrieve earlier events
+    description: A token that can be supplied to to the ``from`` parameter of the
+      rooms/{roomId}/messages endpoint
     type: string
 type: object
