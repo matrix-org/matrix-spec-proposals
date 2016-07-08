@@ -8,7 +8,7 @@
 
 {% endif -%}
 
-{{endpoint.desc | wrap(80)}}
+{{endpoint.desc}}
 
 {{":Rate-limited: Yes." if endpoint.rate_limited else "" }}
 {{":Requires auth: Yes." if endpoint.requires_auth else "" }}
