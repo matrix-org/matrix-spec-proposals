@@ -237,10 +237,10 @@ choose a name:
 
 #. If the room has no ``m.room.name`` or ``m.room.canonical_alias`` events, and
    no active members other than the current user, clients should consider
-   ``m.room.member`` events with ``membership: leave``. If such events exist, a
-   display name such as "Empty room (was <user1> and <N> others)" (or a
-   localised variant thereof) should be used, following similar rules as for
-   active members (see `above <active_members_>`_).
+   ``m.room.member`` events with any ``membership`` value. If such events exist,
+   a display name such as "Empty room (was <user>)" (or a localised variant
+   thereof) should be used, where <user> is the `disambiguated display name`_ of
+   the subject of the most recent ``m.room.member`` event.
 
 #. A complete absence of ``m.room.name``, ``m.room.canonical_alias``, and
    ``m.room.member`` events is likely to indicate a problem with creating the
