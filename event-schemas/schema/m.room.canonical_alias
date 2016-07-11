@@ -1,7 +1,14 @@
 ---
 allOf:
   - $ref: core-event-schema/state_event.yaml
-description: This event is used to inform the room about which alias should be considered the canonical one. This could be for display purposes or as suggestion to users which alias to use to advertise the room.
+description: |-
+    This event is used to inform the room about which alias should be
+    considered the canonical one. This could be for display purposes or as
+    suggestion to users which alias to use to advertise the room.
+
+    A room with an ``m.room.canonical_alias`` event with an empty or absent
+    ``alias`` field should be treated the same as a room with no
+    ``m.room.canonical_alias`` event.
 properties:
   content:
     properties:
@@ -9,6 +16,8 @@ properties:
         description: The canonical alias.
         type: string
     type: object
+  required:
+    - alias
   state_key:
     description: A zero-length string.
     pattern: '^$'
