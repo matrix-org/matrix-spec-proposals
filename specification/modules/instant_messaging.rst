@@ -235,7 +235,7 @@ choose a name:
 
      See https://matrix.org/jira/browse/SPEC-267 for further discussion.
 
-#. If the room has no non-empty ``m.room.name`` or ``m.room.canonical_alias``
+#. If the room has no valid ``m.room.name`` or ``m.room.canonical_alias``
    event, and no active members other than the current user, clients should
    consider ``m.room.member`` events with ``membership: leave``. If such events
    exist, a display name such as "Empty room (was <user1> and <N> others)" (or
