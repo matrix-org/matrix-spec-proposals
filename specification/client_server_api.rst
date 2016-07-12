@@ -688,64 +688,8 @@ considered as a list of events. The server 'linearises' the
 eventually-consistent event graph of events into an 'event stream' at any given
 point in time::
 
-  [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]
+  [E0]->[E1]->[E2]->[E3]->[E4]->[E5]
 
-Clients can add to the stream by PUTing message or state events, and can read
-from the stream via the
-|/initialSync|_,
-|/events|_,
-|/rooms/<room_id>/initialSync|_, and
-|/rooms/<room_id>/messages|_
-APIs.
-
-For reading events, the intended flow of operation is to call
-/_matrix/client/%CLIENT_MAJOR_VERSION%/initialSync, which returns all of the
-state and the last N events in the
-event stream for each room, including ``start`` and ``end`` values describing the
-pagination of each room's event stream. For instance,
-/_matrix/client/%CLIENT_MAJOR_VERSION%/initialSync?limit=5 might return the
-events for a room in the
-rooms[0].messages.chunk[] array, with tokens describing the start and end of the
-range in rooms[0].messages.start as '1-2-3' and rooms[0].messages.end as
-'a-b-c'.
-
-You can visualise the range of events being returned as::
-
-  [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]
-                              ^                             ^
-                              |                             |
-                        start: '1-2-3'                end: 'a-b-c'
-
-Now, to receive future events in real-time on the event stream, you simply GET
-/_matrix/client/%CLIENT_MAJOR_VERSION%/events with a ``from`` parameter of
-'a-b-c': in other words passing in the
-``end`` token returned by initial sync. The request blocks until new events are
-available or until your specified timeout elapses, and then returns a
-new paginatable chunk of events alongside new start and end parameters::
-
-  [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
-                                                            ^      ^
-                                                            |      |
-                                                            |  end: 'x-y-z'
-                                                      start: 'a-b-c'
-
-To resume polling the events stream, you pass in the new ``end`` token as the
-``from`` parameter of /_matrix/client/%CLIENT_MAJOR_VERSION%/events and poll again.
-
-Similarly, to paginate events backwards in order to lazy-load in previous
-history from the room, you simply
-GET /_matrix/client/%CLIENT_MAJOR_VERSION%/rooms/<room_id>/messages
-specifying the ``from`` token to paginate backwards from and a limit of the number
-of messages to retrieve. For instance, calling this API with a ``from`` parameter
-of '1-2-3' and a limit of 5 would return::
-
-  [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
-  ^                            ^
-  |                            |
-  start: 'u-v-w'          end: '1-2-3'
-
-To continue paginating backwards, one calls the /messages API again, supplying
-the new ``start`` value as the ``from`` parameter.
 
 
 Types of room events
@@ -775,14 +719,56 @@ namespaced for each application and reduces the risk of clashes.
 Syncing
 ~~~~~~~
 
-Clients receive new events by "long-polling" the homeserver via the events API.
-This involves specifying a timeout in the request which will hold
-open the HTTP connection for a short period of time waiting for new events,
-returning early if an event occurs. Only the events API supports long-polling.
-All events which are visible to the client will appear in the
-events API. When the request returns, an ``end`` token is included in the
-response. This token can be used in the next request to continue where the
-last request left off. Multiple events can be returned per long-poll.
+To read events, the intended flow of operation is for clients to first call the
+|/sync|_ API without a ``since`` parameter. This returns the most recent
+message events for each room, as well as the state of the room at the start of
+the returned timeline. The response also includes a ``next_batch`` field, which
+should be used as the value of the ``since`` parameter in the next call to
+``/sync``. Finally, the response includes, for each room, a ``prev_batch``
+field, which can be passed as a ``start`` parameter to the
+|/rooms/<room_id>/messages|_ API to retrieve earlier messages.
+
+You can visualise the range of events being returned as::
+
+  [E0]->[E1]->[E2]->[E3]->[E4]->[E5]
+             ^                      ^
+             |                      |
+       prev_batch: '1-2-3'        next_batch: 'a-b-c'
+
+
+Clients then receive new events by "long-polling" the homeserver via the
+``/sync`` API, passing the value of the ``next_batch`` field from the response
+to the previous call as the ``since`` parameter. This involves specifying a
+timeout in the request which will hold open the HTTP connection for a short
+period of time waiting for new events, returning early if an event occurs. Only
+the ``/sync`` API (and the deprecated ``/events`` API) support long-polling in
+this way.
+
+The response for such an incremental sync can be visualised as::
+
+  [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]
+                                    ^     ^
+                                    |     |
+                                    |  next_batch: 'x-y-z'
+                                  prev_batch: 'a-b-c'
+
+
+Normally, all new events which are visible to the client will appear in the
+response to the ``/sync`` API. However, if a large number of events arrive
+between calls to ``/sync``, a "limited" timeline is returned, containing only
+the most recent message events. A state "delta" is also returned, summarising
+any state changes in the omitted part of the timeline. The client may therefore
+end up with "gaps" in its knowledge of the message timeline. The client can
+fill these gaps using the |/rooms/<room_id>/messages|_ API. This situation
+looks like this::
+
+                                     | gap |
+                                     | <-> |
+   [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
+                                           ^                        ^
+                                           |                        |
+                                      prev_batch: 'd-e-f'       next_batch: 'u-v-w'
+
 
 .. Warning::
   Events are ordered in this API according to the arrival time of the event on
@@ -791,16 +777,31 @@ last request left off. Multiple events can be returned per long-poll.
   being received (once per distinct API called). Clients SHOULD de-duplicate
   events based on the event ID when this happens.
 
+.. NOTE::
+
+  The ``/sync`` API returns a ``state`` list which is separate from the
+  ``timeline``. This ``state`` list allows clients to keep their model of the
+  room state in sync with that on the server. In the case of an intial
+  (``since``-less) sync, the ``state`` list represents the complete state of
+  the room at the **start** of the returned timeline (so in the case of a
+  recently-created room whose state fits entirely in the ``timeline``, the
+  ``state`` list will be empty).
+
+  In the case of an incremental sync, the ``state`` list gives a delta
+  between the state of the room at the ``since`` parameter and that at the
+  start of the returned ``timeline``. (It will therefore be empty
+  unless the timeline was ``limited``.)
+
+  In both cases, it should be noted that the events returned in the ``state``
+  list did **not** necessarily take place just before the returned
+  ``timeline``, so clients should not display them to the user in the timeline.
+
 .. TODO-spec
   Do we ever support streaming requests? Why not websockets?
 
-When the client first logs in, they will need to initially synchronise with
-their homeserver. This is achieved via the initial sync API described below.
-This API also returns an ``end`` token which can be used with the event stream.
+{{sync_cs_http_api}}
 
 {{old_sync_cs_http_api}}
-
-{{sync_cs_http_api}}
 
 
 Getting events for a room
@@ -1046,7 +1047,9 @@ Leaving rooms
 A user can leave a room to stop receiving events for that room. A user must
 have been invited to or have joined the room before they are eligible to leave
 the room. Leaving a room to which the user has been invited rejects the invite.
-Once a user leaves a room, it will no longer appear on the |/initialSync|_ API.
+Once a user leaves a room, it will no longer appear in the response to the
+|/sync|_ API unless it is explicitly requested via a filter with the
+``include_leave`` field set to ``true``.
 
 Whether or not they actually joined the room, if the room is
 an "invite-only" room they will need to be re-invited before they can re-join
