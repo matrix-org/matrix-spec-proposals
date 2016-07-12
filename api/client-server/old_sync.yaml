@@ -20,6 +20,11 @@ paths:
       description: |-
         This will listen for new events and return them to the caller. This will
         block until an event is received, or until the ``timeout`` is reached.
+
+        This endpoint was deprecated in r0 of this specification. Clients
+        should instead call the |/sync|_ API with a ``since`` parameter. See
+        the `migration guide
+        <https://matrix.org/docs/guides/client-server-migrating-from-v1.html#deprecated-endpoints>`_.
       security:
         - accessToken: []
       parameters:
@@ -92,6 +97,11 @@ paths:
       description: |-
         This returns the full state for this user, with an optional limit on the
         number of messages per room to return.
+
+        This endpoint was deprecated in r0 of this specification. Clients
+        should instead call the |/sync|_ API with no ``since`` parameter. See
+        the `migration guide
+        <https://matrix.org/docs/guides/client-server-migrating-from-v1.html#deprecated-endpoints>`_.
       security:
         - accessToken: []
       parameters:
@@ -373,6 +383,9 @@ paths:
       description: |-
         Get a single event based on ``event_id``. You must have permission to
         retrieve this event e.g. by being a member in the room for this event.
+
+        This endpoint was deprecated in r0 of this specification. Clients
+        should instead call the |/rooms/{roomId}/context/{eventId}|_ API.
       security:
         - accessToken: []
       parameters:

@@ -222,6 +222,11 @@ paths:
       summary: Snapshot the current state of a room and its most recent messages.
       description: |-
         Get a copy of the current state and the most recent messages in a room.
+
+        This endpoint was deprecated in r0 of this specification. There is no
+        direct replacement; the relevant information is returned by the
+        |/sync|_ API. See the `migration guide
+        <https://matrix.org/docs/guides/client-server-migrating-from-v1.html#deprecated-endpoints>`_.
       security:
         - accessToken: []
       parameters:
