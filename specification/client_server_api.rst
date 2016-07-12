@@ -796,6 +796,20 @@ looks like this::
   list did **not** necessarily take place just before the returned
   ``timeline``, so clients should not display them to the user in the timeline.
 
+.. admonition:: Rationale
+
+  An early design of this specification made the ``state`` list represent the
+  room state at the end of the returned timeline, instead of the start. This
+  was unsatisfactory because it led to duplication of events between the
+  ``state`` list and the ``timeline``, but more importantly, it made it
+  difficult for clients to show the timeline correctly.
+
+  In particular, consider a returned timeline [M0, S1, M2], where M0 and M2 are
+  both messages sent by the same user, and S1 is a state event where that user
+  changes their displayname. If the ``state`` list represents the room state at
+  the end of the timeline, the client must take a copy of the state dictionary,
+  and *rewind* S1, in order to correctly calculate the display name for M0.
+
 .. TODO-spec
   Do we ever support streaming requests? Why not websockets?
 
