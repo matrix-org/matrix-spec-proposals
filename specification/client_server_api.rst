@@ -781,7 +781,7 @@ looks like this::
 
   The ``/sync`` API returns a ``state`` list which is separate from the
   ``timeline``. This ``state`` list allows clients to keep their model of the
-  room state in sync with that on the server. In the case of an intial
+  room state in sync with that on the server. In the case of an initial
   (``since``-less) sync, the ``state`` list represents the complete state of
   the room at the **start** of the returned timeline (so in the case of a
   recently-created room whose state fits entirely in the ``timeline``, the
