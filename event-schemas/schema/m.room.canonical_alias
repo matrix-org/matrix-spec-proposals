@@ -16,8 +16,8 @@ properties:
         description: The canonical alias.
         type: string
     type: object
-  required:
-    - alias
+    required:
+      - alias
   state_key:
     description: A zero-length string.
     pattern: '^$'
