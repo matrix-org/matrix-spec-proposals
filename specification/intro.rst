@@ -1,3 +1,17 @@
+.. Copyright 2016 OpenMarket Ltd
+..
+.. Licensed under the Apache License, Version 2.0 (the "License");
+.. you may not use this file except in compliance with the License.
+.. You may obtain a copy of the License at
+..
+..     http://www.apache.org/licenses/LICENSE-2.0
+..
+.. Unless required by applicable law or agreed to in writing, software
+.. distributed under the License is distributed on an "AS IS" BASIS,
+.. WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+.. See the License for the specific language governing permissions and
+.. limitations under the License.
+
 .. contents:: Table of Contents
 .. sectnum::
 
@@ -10,11 +24,11 @@ Introduction
 ------------
 .. WARNING::
   The Matrix specification is still evolving: the APIs are not yet frozen
-  and this document is in places a work in progress or stale. We have made every 
+  and this document is in places a work in progress or stale. We have made every
   effort to clearly flag areas which are still being finalised.
   We're publishing it at this point because it's complete enough to be more than
   useful and provide a canonical reference to how Matrix is evolving. Our end
-  goal is to mirror WHATWG's `Living Standard   
+  goal is to mirror WHATWG's `Living Standard
   <http://wiki.whatwg.org/wiki/FAQ#What_does_.22Living_Standard.22_mean.3F>`_.
 
 Matrix is a set of open APIs for open-federated Instant Messaging (IM), Voice
@@ -227,7 +241,7 @@ They are case-sensitive. The following conceptual diagram shows an
                          PKI signature from matrix.org
                          Transaction-layer metadata
                          PKI Authorization header
-                         
+
                      ...................................
                     |           Shared Data             |
                     | State:                            |
@@ -244,7 +258,7 @@ They are case-sensitive. The following conceptual diagram shows an
 Federation maintains *shared data structures* per-room between multiple home
 servers. The data is split into ``message events`` and ``state events``.
 
-Message events: 
+Message events:
   These describe transient 'once-off' activity in a room such as an
   instant messages, VoIP call setups, file transfers, etc. They generally
   describe communication activity.
@@ -346,3 +360,9 @@ dedicated API.  The API is symmetrical to managing Profile data.
   Would it really be overengineered to use the same API for both profile &
   private user data, but with different ACLs?
 
+
+License
+-------
+
+The Matrix specification is licensed under the `Apache License, Version 2.0
+<http://www.apache.org/licenses/LICENSE-2.0>`_.
