@@ -256,8 +256,8 @@ change unexpectedly.
 
 .. TODO-spec
   How can we make this less painful for clients to implement, without forcing
-  an English-language implementation on them all?
-
+  an English-language implementation on them all? See
+  https://matrix.org/jira/browse/SPEC-425.
 
 Server behaviour
 ----------------
