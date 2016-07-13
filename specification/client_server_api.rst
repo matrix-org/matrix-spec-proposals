@@ -839,8 +839,9 @@ There are several APIs provided to ``GET`` events for a room:
 
 {{rooms_cs_http_api}}
 
-
 {{message_pagination_cs_http_api}}
+
+{{room_initial_sync_cs_http_api}}
 
 
 Sending events to a room
