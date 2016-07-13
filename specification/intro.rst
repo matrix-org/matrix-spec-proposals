@@ -150,8 +150,8 @@ Users
 ~~~~~
 
 Each client is associated with a user account, which is identified in Matrix
-using a unique identifier, or "user ID". This ID is namespaced to the homeserver
-which allocated the account and has the form::
+using a unique "user ID". This ID is namespaced to the homeserver which
+allocated the account and has the form::
 
   @localpart:domain
 
