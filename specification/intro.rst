@@ -150,13 +150,13 @@ Users
 ~~~~~
 
 Each client is associated with a user account, which is identified in Matrix
-using a unique identifier, or "MXID". This ID is namespaced to the homeserver
+using a unique identifier, or "user ID". This ID is namespaced to the homeserver
 which allocated the account and has the form::
 
   @localpart:domain
 
 See the `Identifier Grammar`_ section for full details of the structure of
-an MXID.
+user IDs.
 
 Events
 ~~~~~~
@@ -317,14 +317,14 @@ that are in the room that can be used to join via.
 Identity
 ~~~~~~~~
 
-Users in Matrix are identified via their matrix user ID (MXID). However,
+Users in Matrix are identified via their Matrix user ID. However,
 existing 3rd party ID namespaces can also be used in order to identify Matrix
 users. A Matrix "Identity" describes both the user ID and any other existing IDs
 from third party namespaces *linked* to their account.
 Matrix users can *link* third-party IDs (3PIDs) such as email addresses, social
 network accounts and phone numbers to their user ID. Linking 3PIDs creates a
 mapping from a 3PID to a user ID. This mapping can then be used by Matrix
-users in order to discover the MXIDs of their contacts.
+users in order to discover the user IDs of their contacts.
 In order to ensure that the mapping from 3PID to user ID is genuine, a globally
 federated cluster of trusted "Identity Servers" (IS) are used to verify the 3PID
 and persist and replicate the mappings.
@@ -376,12 +376,14 @@ be reached by other homeservers. The complete grammar is::
 where ``host`` is as defined by `RFC3986, section 3.2.2
 <https://tools.ietf.org/html/rfc3986#section-3.2.2>`_.
 
-.. NOTE::
+Examples of valid server names are:
 
-  The RFC3986 specification of a "host", allows IPv4 literals (``1.2.3.4``), and
-  IPv6 literals (``[1234:5678::abcd]``), as well as registered domain
-  names. Similarly, all of these formats are valid in Matrix server names and
-  identifiers.
+* ``matrix.org``
+* ``matrix.org:8888``
+* ``1.2.3.4`` (IPv4 literal)
+* ``1.2.3.4:1234`` (IPv4 literal with explicit port)
+* ``[1234:5678::abcd]`` (IPv6 literal)
+* ``[1234:5678::abcd]:5678`` (IPv6 literal with explicit port)
 
 
 Common Identifier Format
@@ -393,21 +395,16 @@ the form::
 
   &localpart:domain
 
-where ``&`` represents a 'sigil' character; ``domain`` is the server name of
+where ``&`` represents a 'sigil' character; ``domain`` is the `server name`_ of
 the homeserver which allocated the identifier, and ``localpart`` is an
 identifier allocated by that homeserver.
 
 The sigil characters are as follows:
 
-* ``@``: User ID (MXID)
+* ``@``: User ID
 * ``!``: Room ID
 * ``$``: Event ID
 * ``#``: Room alias
-
-In some cases (such as Room IDs and Event IDs), the ``domain`` is present only
-for namespacing, to avoid clashes of identifiers between different
-homeservers. In other cases (User IDs and Room aliases), it defines the
-authoritative homeserver for contacting the user or room in question.
 
 The precise grammar defining the allowable format of an identifier depends on
 the type of identifier.
@@ -415,90 +412,93 @@ the type of identifier.
 User Identifiers
 ++++++++++++++++
 
-Users within Matrix are uniquely identified by their MXID. The MXID is
-namespaced to the homeserver which allocated the account and has the form::
+Users within Matrix are uniquely identified by their Matrix user ID. The user
+ID is namespaced to the homeserver which allocated the account and has the
+form::
 
   @localpart:domain
 
-The ``localpart`` of an MXID is an opaque identifier for that user. It MUST NOT
-be empty, and MUST contain only the characters ``a-z``, ``0-9``, ``.``, ``_``,
-``=``, and ``-``.
+The ``localpart`` of a user ID is an opaque identifier for that user. It MUST
+NOT be empty, and MUST contain only the characters ``a-z``, ``0-9``, ``.``,
+``_``, ``=``, and ``-``.
 
-The ``domain`` of an MXID is the server name of the homeserver which allocated
-the account.
+The ``domain`` of a user ID is the `server name`_ of the homeserver which
+allocated the account.
 
-The length of an MXID, including the ``@`` sigil and the domain, MUST NOT
+The length of a user ID, including the ``@`` sigil and the domain, MUST NOT
 exceed 255 characters.
 
-The complete grammar for a legal MXID is::
+The complete grammar for a legal user ID is::
 
-  mxid = "@" mxid_localpart ":" server_name
-  mxid_localpart = 1*mxid_char
-  mxid_char = DIGIT
-                / %x61-7A                   ; a-z
-                / "-" / "." / "=" / "_"
+  user_id = "@" user_id_localpart ":" server_name
+  user_id_localpart = 1*user_id_char
+  user_id_char = DIGIT
+               / %x61-7A                   ; a-z
+               / "-" / "." / "=" / "_"
 
 .. admonition:: Rationale
 
   A number of factors were considered when defining the allowable characters
-  for an MXID.
+  for a user ID.
 
   Firstly, we chose to exclude characters outside the basic US-ASCII character
-  set. MXIDs are primarily intended for use as an identifier at the protocol
+  set. User IDs are primarily intended for use as an identifier at the protocol
   level, and their use as a human-readable handle is of secondary
   benefit. Furthermore, they are useful as a last-resort differentiator between
   users with similar display names. Allowing the full unicode character set
-  would make very difficult for a human to distinguish two similar MXIDs. The
+  would make very difficult for a human to distinguish two similar user IDs. The
   limited character set used has the advantage that even a user unfamiliar with
-  the Latin alphabet should be able to distinguish similar MXIDs manually, if
+  the Latin alphabet should be able to distinguish similar user IDs manually, if
   somewhat laboriously.
 
   We chose to disallow upper-case characters because we do not consider it
-  valid to have two MXIDs which differ only in case: indeed it should be
+  valid to have two user IDs which differ only in case: indeed it should be
   possible to reach ``@user:matrix.org`` as ``@USER:matrix.org``. However,
-  MXIDs are necessarily used in a number of situations which are inherently
+  user IDs are necessarily used in a number of situations which are inherently
   case-sensitive (notably in the ``state_key`` of ``m.room.member``
   events). Forbidding upper-case characters (and requiring homeservers to
-  downcase usernames when creating MXIDs for new users) is a relatively simple
+  downcase usernames when creating user IDs for new users) is a relatively simple
   way to ensure that ``@USER:matrix.org`` cannot refer to a different user to
   ``@user:matrix.org``.
 
   Finally, we decided to restrict the allowable punctuation to a very basic set
   to ensure that the identifier can be used as-is in as wide a number of
   situations as possible, without requiring escaping. For instance, allowing
-  "%" or "/" would make it harder to use an MXID in a URI. "*" is used as a
+  "%" or "/" would make it harder to use a user ID in a URI. "*" is used as a
   wildcard in some APIs (notably the filter API), so it also cannot be a legal
-  MXID character.
+  user ID character.
 
   The length restriction is derived from the limit on the length of the
-  ``sender`` key on events; since the MXID appears in every event sent by the
-  user, it is limited to ensure that the MXID does not dominate over the actual
+  ``sender`` key on events; since the user ID appears in every event sent by the
+  user, it is limited to ensure that the user ID does not dominate over the actual
   content of the events.
 
-Historical MXIDs
-<<<<<<<<<<<<<<<<
+Matrix user IDs are sometimes informally referred to as MXIDs.
+
+Historical User IDs
+<<<<<<<<<<<<<<<<<<<
 
 Older versions of this specification were more tolerant of the characters
-permitted in MXID localparts. There are currently active users whose MXIDs do
-not conform to the permitted character set, and a number of rooms whose history
-includes events with a ``sender`` which does not conform. In order to handle
-these rooms successfully, clients and servers MUST accept MXIDs with localparts
-from the expanded character set::
+permitted in user ID localparts. There are currently active users whose user
+IDs do not conform to the permitted character set, and a number of rooms whose
+history includes events with a ``sender`` which does not conform. In order to
+handle these rooms successfully, clients and servers MUST accept user IDs with
+localparts from the expanded character set::
 
-  extended_mxid_char = %x21-7E
+  extended_user_id_char = %x21-7E
 
 Mapping from other character sets
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 In certain circumstances it will be desirable to map from a wider character set
-onto the limited character set allowed in an MXID localpart. Examples include a
-homeserver creating an MXID for a new user based on their chosen login ID, or a
-bridge mapping user ids from another protocol.
+onto the limited character set allowed in a user ID localpart. Examples include
+a homeserver creating a user ID for a new user based on their chosen login ID,
+or a bridge mapping user ids from another protocol.
 
-Implmentations are free to do this mapping however they choose. Since the MXID
-is opaque except to the implementation which created it, the only requirement
-is that the implemention can perform the mapping consistently. However, we
-suggest the following algorithm:
+Implmentations are free to do this mapping however they choose. Since the user
+ID is opaque except to the implementation which created it, the only
+requirement is that the implemention can perform the mapping
+consistently. However, we suggest the following algorithm:
 
 1. Encode character strings as UTF-8.
 
@@ -528,16 +528,18 @@ A room has exactly one room ID. A room ID has the format::
 
   !opaque_id:domain
 
-An event thas exactly one event ID. An event ID has the format::
+An event has exactly one event ID. An event ID has the format::
 
   $opaque_id:domain
 
-The ``domain`` of a room/event ID is the server name of the homeserver which created
-the room/event. Note that the domain is used only for namespacing - there is no
+The ``domain`` of a room/event ID is the `server name`_ of the homeserver which
+created the room/event. The domain is used only for namespacing to avoid the
+risk of clashes of identifiers between different homeservers. There is no
 implication that the room or event in question is still available at the
 corresponding homeserver.
 
-Event IDs and Room IDs are case-sensitive. They are not mant to be human readable.
+Event IDs and Room IDs are case-sensitive. They are not meant to be human
+readable.
 
 .. TODO-spec
   What is the grammar for the opaque part? https://matrix.org/jira/browse/SPEC-389
@@ -549,10 +551,12 @@ A room may have zero or more aliases. A room alias has the format::
 
       #room_alias:domain
 
-The ``domain`` of a room alias is the server of the homeserver which created
-the alias. Other servers may contact this homeserver to look up the alias.
+The ``domain`` of a room alias is the `server name`_ of the homeserver which
+created the alias. Other servers may contact this homeserver to look up the
+alias.
 
-Room aliases MUST NOT exceed 255 bytes (including the ``#`` sigil and the domain).
+Room aliases MUST NOT exceed 255 bytes (including the ``#`` sigil and the
+domain).
 
 .. TODO-spec
   - Need to specify precise grammar for Room Aliases. https://matrix.org/jira/browse/SPEC-391
