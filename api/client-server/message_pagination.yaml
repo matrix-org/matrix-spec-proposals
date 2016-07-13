@@ -1,3 +1,16 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 swagger: '2.0'
 info:
   title: "Matrix Client-Server Rooms API"
@@ -34,9 +47,20 @@ paths:
           name: from
           description: |-
             The token to start returning events from. This token can be obtained
-            from the initial sync API.
+            from a ``prev_batch`` token returned for each room by the sync API,
+            or from a ``start`` or ``end`` token returned by a previous request
+            to this endpoint.
           required: true
           x-example: "s345_678_333"
+        - in: query
+          type: string
+          name: to
+          description: |-
+            The token to stop returning events at. This token can be obtained from
+            a ``prev_batch`` token returned for each room by the sync endpoint,
+            or from a ``start`` or ``end`` token returned by a previous request to
+            this endpoint.
+          required: false
         - in: query
           type: string
           enum: ["b", "f"]
@@ -61,7 +85,7 @@ paths:
               start:
                 type: string
                 description: |-
-                  The token to start paginating from. If ``dir=b`` this will be
+                  The token the pagination starts from. If ``dir=b`` this will be
                   the token supplied in ``from``.
               end:
                 type: string

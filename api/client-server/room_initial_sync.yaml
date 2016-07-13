@@ -1,0 +1,233 @@
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Rooms API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/rooms/{roomId}/initialSync":
+    get:
+      summary: Snapshot the current state of a room and its most recent messages.
+      description: |-
+        Get a copy of the current state and the most recent messages in a room.
+
+        This endpoint was deprecated in r0 of this specification. There is no
+        direct replacement; the relevant information is returned by the
+        |/sync|_ API. See the `migration guide
+        <https://matrix.org/docs/guides/client-server-migrating-from-v1.html#deprecated-endpoints>`_.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room to get the data.
+          required: true
+          x-example: "!636q39766251:example.com"
+      responses:
+        200:
+          description: The current state of the room
+          examples:
+            application/json: |-
+              {
+                "membership": "join",
+                "messages": {
+                  "chunk": [
+                    {
+                      "age": 343513403,
+                      "content": {
+                        "body": "foo",
+                        "msgtype": "m.text"
+                      },
+                      "event_id": "$14328044851tzTJS:example.com",
+                      "origin_server_ts": 1432804485886,
+                      "room_id": "!636q39766251:example.com",
+                      "type": "m.room.message",
+                      "sender": "@alice:example.com"
+                    },
+                    {
+                      "age": 343511809,
+                      "content": {
+                        "body": "bar",
+                        "msgtype": "m.text"
+                      },
+                      "event_id": "$14328044872spjFg:example.com",
+                      "origin_server_ts": 1432804487480,
+                      "room_id": "!636q39766251:example.com",
+                      "type": "m.room.message",
+                      "sender": "@bob:example.com"
+                    }
+                  ],
+                  "end": "s3456_9_0",
+                  "start": "t44-3453_9_0"
+                },
+                "room_id": "!636q39766251:example.com",
+                "state": [
+                  {
+                    "age": 7148266897,
+                    "content": {
+                      "join_rule": "public"
+                    },
+                    "event_id": "$14259997323TLwtb:example.com",
+                    "origin_server_ts": 1425999732392,
+                    "room_id": "!636q39766251:example.com",
+                    "state_key": "",
+                    "type": "m.room.join_rules",
+                    "sender": "@alice:example.com"
+                  },
+                  {
+                    "age": 6547561012,
+                    "content": {
+                      "avatar_url": "mxc://example.com/fzysBrHpPEeTGANCVLXWXNMI#auto",
+                      "membership": "join"
+                    },
+                    "event_id": "$1426600438280zExKY:example.com",
+                    "membership": "join",
+                    "origin_server_ts": 1426600438277,
+                    "room_id": "!636q39766251:example.com",
+                    "state_key": "@alice:example.com",
+                    "type": "m.room.member",
+                    "sender": "@alice:example.com"
+                  },
+                  {
+                    "age": 7148267200,
+                    "content": {
+                        "creator": "@alice:example.com"
+                    },
+                    "event_id": "$14259997320KhbwJ:example.com",
+                    "origin_server_ts": 1425999732089,
+                    "room_id": "!636q39766251:example.com",
+                    "state_key": "",
+                    "type": "m.room.create",
+                    "sender": "@alice:example.com"
+                  },
+                  {
+                    "age": 1622568720,
+                    "content": {
+                        "avatar_url": "mxc://example.com/GCmhgzMPRjqgpODLsNQzVuHZ#auto",
+                        "displayname": "Bob",
+                        "membership": "join"
+                    },
+                    "event_id": "$1431525430134MxlLX:example.com",
+                    "origin_server_ts": 1431525430569,
+                    "replaces_state": "$142652023736BSXcM:example.com",
+                    "room_id": "!636q39766251:example.com",
+                    "state_key": "@bob:example.com",
+                    "type": "m.room.member",
+                    "sender": "@bob:example.com"
+                  },
+                  {
+                    "age": 7148267004,
+                    "content": {
+                      "ban": 50,
+                      "events": {
+                        "m.room.name": 100,
+                        "m.room.power_levels": 100
+                      },
+                      "events_default": 0,
+                      "kick": 50,
+                      "redact": 50,
+                      "state_default": 50,
+                      "users": {
+                        "@alice:example.com": 100
+                      },
+                      "users_default": 0
+                    },
+                    "event_id": "$14259997322mqfaq:example.com",
+                    "origin_server_ts": 1425999732285,
+                    "room_id": "!636q39766251:example.com",
+                    "state_key": "",
+                    "type": "m.room.power_levels",
+                    "sender": "@alice:example.com"
+                  }
+                ],
+                "visibility": "private",
+                "account_data": [{
+                    "type": "m.tag",
+                    "content": {"tags": {"work": {"order": "1"}}}
+                }]
+              }
+          schema:
+            title: RoomInfo
+            type: object
+            properties:
+              room_id:
+                type: string
+                description: "The ID of this room."
+              membership:
+                type: string
+                description: "The user's membership state in this room."
+                enum: ["invite", "join", "leave", "ban"]
+              messages:
+                type: object
+                title: PaginationChunk
+                description: "The pagination chunk for this room."
+                properties:
+                  start:
+                    type: string
+                    description: |-
+                      A token which correlates to the first value in ``chunk``.
+                      Used for pagination.
+                  end:
+                    type: string
+                    description: |-
+                      A token which correlates to the last value in ``chunk``.
+                      Used for pagination.
+                  chunk:
+                    type: array
+                    description: |-
+                      If the user is a member of the room this will be a
+                      list of the most recent messages for this room. If
+                      the user has left the room this will be the
+                      messages that preceeded them leaving. This array
+                      will consist of at most ``limit`` elements.
+                    items:
+                      type: object
+                      title: RoomEvent
+                      allOf:
+                        - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                required: ["start", "end", "chunk"]
+              state:
+                type: array
+                description: |-
+                  If the user is a member of the room this will be the
+                  current state of the room as a list of events. If the
+                  user has left the room this will be the state of the
+                  room when they left it.
+                items:
+                  title: StateEvent
+                  type: object
+                  allOf:
+                    - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
+              visibility:
+                type: string
+                enum: ["private", "public"]
+                description: |-
+                  Whether this room is visible to the ``/publicRooms`` API
+                  or not."
+              account_data:
+                type: array
+                description: |-
+                  The private data that this user has attached to this room.
+                items:
+                  title: Event
+                  type: object
+                  allOf:
+                    - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
+            required: ["room_id"]
+        403:
+          description: >
+            You aren't a member of the room and weren't previously a
+            member of the room.
+      tags:
+        - Room participation
+      deprecated: true
