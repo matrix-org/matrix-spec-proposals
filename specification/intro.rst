@@ -94,11 +94,8 @@ instant messages, VoIP call setups, or any other objects that need to be
 reliably and persistently pushed from A to B in an inter-operable and federated
 manner.
 
-Overview
---------
-
 Architecture
-~~~~~~~~~~~~
+------------
 
 Matrix defines APIs for synchronising extensible JSON objects known as
 "events" between compatible clients, servers and services. Clients are
@@ -142,7 +139,7 @@ a long-lived GET request.
            |          V                                    |          V
        +------------------+                            +------------------+
        |                  |---------( HTTPS )--------->|                  |
-       |   homeserver    |                            |   homeserver    |
+       |   homeserver     |                            |   homeserver     |
        |                  |<--------( HTTPS )----------|                  |
        +------------------+      Server-Server API     +------------------+
                               History Synchronisation
@@ -150,22 +147,19 @@ a long-lived GET request.
 
 
 Users
-+++++
+~~~~~
 
 Each client is associated with a user account, which is identified in Matrix
-using a unique "User ID". This ID is namespaced to the homeserver which
-allocated the account and has the form::
+using a unique identifier, or "MXID". This ID is namespaced to the homeserver
+which allocated the account and has the form::
 
   @localpart:domain
 
-The ``localpart`` of a user ID may be a user name, or an opaque ID identifying
-this user. The ``domain`` of a user ID is the domain of the homeserver.
-
-.. TODO-spec
-    - Need to specify precise grammar for Matrix IDs
+See the `Identifier Grammar`_ section for full details of the structure of
+an MXID.
 
 Events
-++++++
+~~~~~~
 
 All data exchanged over Matrix is expressed as an "event". Typically each client
 action (e.g. sending a message) correlates with exactly one event. Each event
@@ -180,7 +174,7 @@ of a "Room".
 .. _package naming conventions: https://en.wikipedia.org/wiki/Java_package#Package_naming_conventions
 
 Event Graphs
-++++++++++++
+~~~~~~~~~~~~
 
 .. _sect:event-graph:
 
@@ -204,7 +198,7 @@ of its parents. The root event should have a depth of 1. Thus if one event is
 before another, then it must have a strictly smaller depth.
 
 Room structure
-++++++++++++++
+~~~~~~~~~~~~~~
 
 A room is a conceptual place where users can send and receive events. Events are
 sent to a room, and all participants in that room with sufficient access will
@@ -215,8 +209,12 @@ which have the form::
 
 There is exactly one room ID for each room. Whilst the room ID does contain a
 domain, it is simply for globally namespacing room IDs. The room does NOT
-reside on the domain specified. Room IDs are not meant to be human readable.
-They are case-sensitive. The following conceptual diagram shows an
+reside on the domain specified.
+
+See the `Identifier Grammar`_ section for full details of the structure of
+a room ID.
+
+The following conceptual diagram shows an
 ``m.room.message`` event being sent to the room ``!qporfwt:matrix.org``::
 
        { @alice:matrix.org }                             { @bob:domain.com }
@@ -229,7 +227,7 @@ They are case-sensitive. The following conceptual diagram shows an
                |                                                 |
                V                                                 |
        +------------------+                          +------------------+
-       |   homeserver    |                          |   homeserver    |
+       |   homeserver     |                          |   homeserver     |
        |   matrix.org     |                          |   domain.com     |
        +------------------+                          +------------------+
                |                                                 ^
@@ -283,23 +281,21 @@ from the other servers participating in a room.
 
 
 Room Aliases
-^^^^^^^^^^^^
+++++++++++++
 
 Each room can also have multiple "Room Aliases", which look like::
 
   #room_alias:domain
 
-.. TODO
-  - Need to specify precise grammar for Room Aliases
+See the `Identifier Grammar`_ section for full details of the structure of
+a room alias.
 
 A room alias "points" to a room ID and is the human-readable label by which
 rooms are publicised and discovered.  The room ID the alias is pointing to can
 be obtained by visiting the domain specified. Note that the mapping from a room
 alias to a room ID is not fixed, and may change over time to point to a
 different room ID. For this reason, Clients SHOULD resolve the room alias to a
-room ID once and then use that ID on subsequent requests. Room aliases MUST NOT
-exceed 255 bytes (including the domain).
-
+room ID once and then use that ID on subsequent requests.
 
 When resolving a room alias the server will also respond with a list of servers
 that are in the room that can be used to join via.
@@ -319,7 +315,7 @@ that are in the room that can be used to join via.
    |________________________________|
 
 Identity
-++++++++
+~~~~~~~~
 
 Users in Matrix are identified via their matrix user ID (MXID). However,
 existing 3rd party ID namespaces can also be used in order to identify Matrix
@@ -339,7 +335,7 @@ user IDs using 3PIDs.
 
 
 Profiles
-++++++++
+~~~~~~~~
 
 Users may publish arbitrary key/value data associated with their account - such
 as a human readable display name, a profile photo URL, contact information
@@ -350,7 +346,7 @@ as a human readable display name, a profile photo URL, contact information
   names allowed to be?
 
 Private User Data
-+++++++++++++++++
+~~~~~~~~~~~~~~~~~
 
 Users may also store arbitrary private key/value data in their account - such as
 client preferences, or server configuration settings which lack any other
@@ -359,6 +355,207 @@ dedicated API.  The API is symmetrical to managing Profile data.
 .. TODO
   Would it really be overengineered to use the same API for both profile &
   private user data, but with different ACLs?
+
+
+Identifier Grammar
+------------------
+
+Server Name
+~~~~~~~~~~~
+
+A homeserver is uniquely identified by its server name. This value is used in a
+number of identifiers, as described below.
+
+The server name represents the address at which the homeserver in question can
+be reached by other homeservers. The complete grammar is::
+
+    server_name = dns_name [ ":" port]
+    dns_name = host
+    port = *DIGIT
+
+where ``host`` is as defined by `RFC3986, section 3.2.2
+<https://tools.ietf.org/html/rfc3986#section-3.2.2>`_.
+
+.. NOTE::
+
+  The RFC3986 specification of a "host", allows IPv4 literals (``1.2.3.4``), and
+  IPv6 literals (``[1234:5678::abcd]``), as well as registered domain
+  names. Similarly, all of these formats are valid in Matrix server names and
+  identifiers.
+
+
+Common Identifier Format
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Matrix protocol uses a common format to assign unique identifiers to a
+number of entities, including users, events and rooms. Each identifier takes
+the form::
+
+  &localpart:domain
+
+where ``&`` represents a 'sigil' character; ``domain`` is the server name of
+the homeserver which allocated the identifier, and ``localpart`` is an
+identifier allocated by that homeserver.
+
+The sigil characters are as follows:
+
+* ``@``: User ID (MXID)
+* ``!``: Room ID
+* ``$``: Event ID
+* ``#``: Room alias
+
+In some cases (such as Room IDs and Event IDs), the ``domain`` is present only
+for namespacing, to avoid clashes of identifiers between different
+homeservers. In other cases (User IDs and Room aliases), it defines the
+authoritative homeserver for contacting the user or room in question.
+
+The precise grammar defining the allowable format of an identifier depends on
+the type of identifier.
+
+User Identifiers
+++++++++++++++++
+
+Users within Matrix are uniquely identified by their MXID. The MXID is
+namespaced to the homeserver which allocated the account and has the form::
+
+  @localpart:domain
+
+The ``localpart`` of an MXID is an opaque identifier for that user. It MUST NOT
+be empty, and MUST contain only the characters ``a-z``, ``0-9``, ``.``, ``_``,
+``=``, and ``-``.
+
+The ``domain`` of an MXID is the server name of the homeserver which allocated
+the account.
+
+The length of an MXID, including the ``@`` sigil and the domain, MUST NOT
+exceed 255 characters.
+
+The complete grammar for a legal MXID is::
+
+  mxid = "@" mxid_localpart ":" server_name
+  mxid_localpart = 1*mxid_char
+  mxid_char = DIGIT
+                / %x61-7A                   ; a-z
+                / "-" / "." / "=" / "_"
+
+.. admonition:: Rationale
+
+  A number of factors were considered when defining the allowable characters
+  for an MXID.
+
+  Firstly, we chose to exclude characters outside the basic US-ASCII character
+  set. MXIDs are primarily intended for use as an identifier at the protocol
+  level, and their use as a human-readable handle is of secondary
+  benefit. Furthermore, they are useful as a last-resort differentiator between
+  users with similar display names. Allowing the full unicode character set
+  would make very difficult for a human to distinguish two similar MXIDs. The
+  limited character set used has the advantage that even a user unfamiliar with
+  the Latin alphabet should be able to distinguish similar MXIDs manually, if
+  somewhat laboriously.
+
+  We chose to disallow upper-case characters because we do not consider it
+  valid to have two MXIDs which differ only in case: indeed it should be
+  possible to reach ``@user:matrix.org`` as ``@USER:matrix.org``. However,
+  MXIDs are necessarily used in a number of situations which are inherently
+  case-sensitive (notably in the ``state_key`` of ``m.room.member``
+  events). Forbidding upper-case characters (and requiring homeservers to
+  downcase usernames when creating MXIDs for new users) is a relatively simple
+  way to ensure that ``@USER:matrix.org`` cannot refer to a different user to
+  ``@user:matrix.org``.
+
+  Finally, we decided to restrict the allowable punctuation to a very basic set
+  to ensure that the identifier can be used as-is in as wide a number of
+  situations as possible, without requiring escaping. For instance, allowing
+  "%" or "/" would make it harder to use an MXID in a URI. "*" is used as a
+  wildcard in some APIs (notably the filter API), so it also cannot be a legal
+  MXID character.
+
+  The length restriction is derived from the limit on the length of the
+  ``sender`` key on events; since the MXID appears in every event sent by the
+  user, it is limited to ensure that the MXID does not dominate over the actual
+  content of the events.
+
+Historical MXIDs
+<<<<<<<<<<<<<<<<
+
+Older versions of this specification were more tolerant of the characters
+permitted in MXID localparts. There are currently active users whose MXIDs do
+not conform to the permitted character set, and a number of rooms whose history
+includes events with a ``sender`` which does not conform. In order to handle
+these rooms successfully, clients and servers MUST accept MXIDs with localparts
+from the expanded character set::
+
+  extended_mxid_char = %x21-7E
+
+Mapping from other character sets
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+In certain circumstances it will be desirable to map from a wider character set
+onto the limited character set allowed in an MXID localpart. Examples include a
+homeserver creating an MXID for a new user based on their chosen login ID, or a
+bridge mapping user ids from another protocol.
+
+Implmentations are free to do this mapping however they choose. Since the MXID
+is opaque except to the implementation which created it, the only requirement
+is that the implemention can perform the mapping consistently. However, we
+suggest the following algorithm:
+
+1. Encode character strings as UTF-8.
+
+2. Convert the bytes ``A-Z`` to lower-case.
+
+   * In the case where a bridge must be able to distinguish two different users
+     with ids which differ only by case, escape upper-case characters by
+     prefixing with ``_`` before downcasing. For example, ``A`` becomes
+     ``_a``. Escape a real ``_`` with a second ``_``.
+
+3. Encode any remaining bytes outside the allowed character set, as well
+   as ``=``, as their  hexadecimal value, prefixed with ``=``. For
+   example, ``#`` becomes ``=23``; ``á`` becomes ``=c3=a1``.
+
+.. admonition:: Rationale
+
+  The suggested mapping is an attempt to preserve human-readability of simple
+  ASCII identifiers (unlike, for example, base-32), whilst still allowing
+  representation of *any* character (unlike punycode, which provides no way to
+  encode ASCII punctuation).
+
+
+Room IDs and Event IDs
+++++++++++++++++++++++
+
+A room has exactly one room ID. A room ID has the format::
+
+  !opaque_id:domain
+
+An event thas exactly one event ID. An event ID has the format::
+
+  $opaque_id:domain
+
+The ``domain`` of a room/event ID is the server name of the homeserver which created
+the room/event. Note that the domain is used only for namespacing - there is no
+implication that the room or event in question is still available at the
+corresponding homeserver.
+
+Event IDs and Room IDs are case-sensitive. They are not mant to be human readable.
+
+.. TODO-spec
+  What is the grammar for the opaque part? https://matrix.org/jira/browse/SPEC-389
+
+Room Aliases
+++++++++++++
+
+A room may have zero or more aliases. A room alias has the format::
+
+      #room_alias:domain
+
+The ``domain`` of a room alias is the server of the homeserver which created
+the alias. Other servers may contact this homeserver to look up the alias.
+
+Room aliases MUST NOT exceed 255 bytes (including the ``#`` sigil and the domain).
+
+.. TODO-spec
+  - Need to specify precise grammar for Room Aliases. https://matrix.org/jira/browse/SPEC-391
 
 
 License
