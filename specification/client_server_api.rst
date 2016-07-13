@@ -1006,8 +1006,8 @@ Clients may wish to assign names to particular power levels. A suggested mapping
 - 100 Admin
 
 
-Joining rooms
-~~~~~~~~~~~~~
+Room membership
+~~~~~~~~~~~~~~~
 Users need to be a member of a room in order to send and receive events in that
 room. There are several states in which a user may be, in relation to a room:
 
@@ -1063,16 +1063,15 @@ The allowable state transitions of membership are::
                   /ban
 
 
+Joining rooms
++++++++++++++
+
 {{inviting_cs_http_api}}
 
 {{joining_cs_http_api}}
 
-{{kicking_cs_http_api}}
-
-{{banning_cs_http_api}}
-
 Leaving rooms
-~~~~~~~~~~~~~
++++++++++++++
 A user can leave a room to stop receiving events for that room. A user must
 have been invited to or have joined the room before they are eligible to leave
 the room. Leaving a room to which the user has been invited rejects the invite.
@@ -1080,14 +1079,25 @@ Once a user leaves a room, it will no longer appear in the response to the
 |/sync|_ API unless it is explicitly requested via a filter with the
 ``include_leave`` field set to ``true``.
 
-Whether or not they actually joined the room, if the room is
-an "invite-only" room they will need to be re-invited before they can re-join
-the room.
+Whether or not they actually joined the room, if the room is an "invite-only"
+room the user will need to be re-invited before they can re-join the room.
+
+A user can also forget a room which they have left. Rooms which have been
+forgotten will never appear the response to the |/sync|_ API, until the user
+re-joins or is re-invited.
+
+A user may wish to force another user to leave a room. This can be done by
+'kicking' the other user. To do so, the user performing the kick MUST have the
+required power level. Once a user has been kicked, the behaviour is the same as
+if they had left of their own accord. In particular, the user is free to
+re-join if the room is not "invite-only".
 
 {{leaving_cs_http_api}}
 
+{{kicking_cs_http_api}}
+
 Banning users in a room
-~~~~~~~~~~~~~~~~~~~~~~~
++++++++++++++++++++++++
 A user may decide to ban another user in a room. 'Banning' forces the target
 user to leave the room and prevents them from re-joining the room. A banned
 user will not be treated as a joined user, and so will not be able to send or
@@ -1111,6 +1121,10 @@ member's state, by making a request to
 
 A user must be explicitly unbanned with a request to |/rooms/<room_id>/unban|_
 before they can re-join the room or be re-invited.
+
+{{banning_cs_http_api}}
+
+
 
 Listing rooms
 ~~~~~~~~~~~~~
