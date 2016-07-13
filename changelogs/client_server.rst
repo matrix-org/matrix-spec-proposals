@@ -3,11 +3,65 @@
 
 - Spec clarifications
 
-  - Make it clear that ``GET /directory/room/{roomAlias}`` must work for
-    federated aliases
-  - ``GET /directory/room/{roomAlias}`` cannot return a 409; the ``PUT``
-    endpoint can, however.
-  - Clarify the behaviour of the ``m.room.power_levels`` event.
+  - Room aliases (`#337 <https://github.com/matrix-org/matrix-doc/pull/337>`_):
+
+    - Make it clear that ``GET /directory/room/{roomAlias}`` must work for
+      federated aliases.
+
+    - ``GET /directory/room/{roomAlias}`` cannot return a 409; the ``PUT``
+      endpoint can, however.
+
+  - Power levels:
+
+    - Clarify the defaults to be used for various fields of the
+      ``m.room.power_levels`` event
+      (`#286 <https://github.com/matrix-org/matrix-doc/pull/286>`_,
+      `#341 <https://github.com/matrix-org/matrix-doc/pull/341>`_).
+
+    - Add suggestions for mapping of names to power levels
+      (`#336 <https://github.com/matrix-org/matrix-doc/pull/336>`_).
+
+  - Clarify the room naming algorithm in certain edge cases
+    (`#351 <https://github.com/matrix-org/matrix-doc/pull/351>`_).
+
+  - Remove outdated references to the pre-r0 ``/events`` API, and clarify the
+    section on syncing
+    (`#352 <https://github.com/matrix-org/matrix-doc/pull/352>`_).
+
+
+- Changes to the API which will be backwards-compatible for clients:
+
+  - New endpoints:
+
+    - ``POST /register/email/requestToken``
+      (`#343 <https://github.com/matrix-org/matrix-doc/pull/343>`_).
+
+    - ``POST /account/3pid/email/requestToken``
+      (`#346 <https://github.com/matrix-org/matrix-doc/pull/346>`_).
+
+    - ``POST /account/password/email/requestToken``
+      (`#346 <https://github.com/matrix-org/matrix-doc/pull/346>`_).
+
+  - Updates to the Presence module
+    (`#278 <https://github.com/matrix-org/matrix-doc/pull/278>`_,
+    `#342 <https://github.com/matrix-org/matrix-doc/pull/342>`_):
+
+    - Remove unused ``free_for_chat`` presence state
+    - Add ``currently_active`` flag to the ``m.presence`` event and the ``GET
+      /presence/{userId}/status`` response.
+    - Make idle timeout the responsibility of the server
+    - Remove requirements on servers to propagate profile information via
+      ``m.presence`` events.
+
+  - Add new predefined push rules
+    (`#274 <https://github.com/matrix-org/matrix-doc/pull/274>`_,
+    `#340 <https://github.com/matrix-org/matrix-doc/pull/340/files>`_).
+
+  - ``/sync`` should always return a ``prev_batch`` token
+    (`#345 <https://github.com/matrix-org/matrix-doc/pull/345>`_).
+
+  - add ``to`` parameter to ``GET /rooms/{roomId}/messages`` API
+    (`#348 <https://github.com/matrix-org/matrix-doc/pull/348>`_).
 
 r0.1.0
 ======
