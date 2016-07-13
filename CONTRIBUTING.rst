@@ -28,8 +28,9 @@ workflow:
    is practical at this stage.
 
    The Matrix Core Team's preferred tool for such discussion documents is
-   `Google Sheets <https://docs.google.com>`_ thanks to its support for comment
-   threads.
+   `Google Docs <https://docs.google.com>`_ thanks to its support for comment
+   threads. Works in progress are kept in a folder at
+   https://drive.google.com/drive/folders/0B4wHq8qP86r2ck15MHEwMmlNVUk.
 
 2. Seek feedback on the proposal. `#matrix-dev:matrix.org
    <http://matrix.to/#/#matrix-dev:matrix.org>`_ is a good place to reach the
