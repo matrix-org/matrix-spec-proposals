@@ -34,9 +34,20 @@ paths:
           name: from
           description: |-
             The token to start returning events from. This token can be obtained
-            from the initial sync API.
+            from a ``prev_batch`` token returned for each room by the sync API,
+            or from a ``start`` or ``end`` token returned by a previous request
+            to this endpoint.
           required: true
           x-example: "s345_678_333"
+        - in: query
+          type: string
+          name: to
+          description: |-
+            The token to stop returning events at. This token can be obtained from
+            a ``prev_batch`` token returned for each room by the sync endpoint,
+            or from a ``start`` or ``end`` token returned by a previous request to
+            this endpoint.
+          required: false
         - in: query
           type: string
           enum: ["b", "f"]
@@ -61,7 +72,7 @@ paths:
               start:
                 type: string
                 description: |-
-                  The token to start paginating from. If ``dir=b`` this will be
+                  The token the pagination starts from. If ``dir=b`` this will be
                   the token supplied in ``from``.
               end:
                 type: string
