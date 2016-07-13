@@ -908,7 +908,7 @@ the following list:
 - ``room_id``
 - ``user_id``
 - ``state_key``
-- ``prev_state``
+- ``prev_content``
 - ``content``
 
 The content object should also be stripped of all keys, unless it is one of
