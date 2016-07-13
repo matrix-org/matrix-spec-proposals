@@ -36,8 +36,12 @@ workflow:
    <http://matrix.to/#/#matrix-dev:matrix.org>`_ is a good place to reach the
    core team and others who may be interested in your proposal.
 
-3. Prototype the changes in servers and clients. Refer to the CONTRIBUTING files
+3. Implement the changes in servers and clients. Refer to the CONTRIBUTING files
    of the relevant projects for details of how best to do this.
+
+   In general we will be unable to publish specification updates until the
+   reference server implements them, and they have been proven by a working
+   client implementation.
 
 4. Iterate steps 1-3 as necessary.
 
@@ -56,9 +60,15 @@ put new requirements on servers. This category of changes includes the
 following:
 
 * changes to supporting documentation
+
 * changes to the scripts used to generate the specification
+
 * clarifications to the specification which do not change the behaviour of
-  Matrix servers.
+  Matrix servers or clients in a way which might introduce compatibility
+  problems for existing deployments. For example, recommendations for UI
+  behaviour do not require a proposal document. On the other hand, changes to
+  event contents would be best discussed in a proposal document even though no
+  changes would be necessary to server implementations.
 
 For such changes, please do just open a `pull request`_.
 
