@@ -495,7 +495,7 @@ onto the limited character set allowed in a user ID localpart. Examples include
 a homeserver creating a user ID for a new user based on their chosen login ID,
 or a bridge mapping user ids from another protocol.
 
-Implmentations are free to do this mapping however they choose. Since the user
+Implementations are free to do this mapping however they choose. Since the user
 ID is opaque except to the implementation which created it, the only
 requirement is that the implemention can perform the mapping
 consistently. However, we suggest the following algorithm:
@@ -509,9 +509,9 @@ consistently. However, we suggest the following algorithm:
      prefixing with ``_`` before downcasing. For example, ``A`` becomes
      ``_a``. Escape a real ``_`` with a second ``_``.
 
-3. Encode any remaining bytes outside the allowed character set, as well
-   as ``=``, as their  hexadecimal value, prefixed with ``=``. For
-   example, ``#`` becomes ``=23``; ``á`` becomes ``=c3=a1``.
+3. Encode any remaining bytes outside the allowed character set, as well as
+   ``=``, as their hexadecimal value, prefixed with ``=``. For example, ``#``
+   becomes ``=23``; ``á`` becomes ``=c3=a1``.
 
 .. admonition:: Rationale
 
