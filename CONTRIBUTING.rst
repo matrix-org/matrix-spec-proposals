@@ -87,6 +87,9 @@ matrix-doc should be based on the ``master`` branch.)
 Code style
 ~~~~~~~~~~
 
+The documentation style is described at
+https://github.com/matrix-org/matrix-doc/blob/master/meta/documentation_style.rst.
+
 Python code within the ``matrix-doc`` project should follow the same style as
 synapse, which is documented at
 https://github.com/matrix-org/synapse/tree/master/docs/code_style.rst.
