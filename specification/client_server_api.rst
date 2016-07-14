@@ -1220,7 +1220,7 @@ have to wait in milliseconds before they can try again.
 .. |/rooms/<room_id>/unban| replace:: ``/rooms/<room_id>/unban``
 .. _/rooms/<room_id>/unban: #post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-unban
 
-.. |/rooms/{roomId}/context/{eventId}| replace:: ``/_matrix/client/unstable/rooms/{roomId}/context/{eventId}``
+.. |/rooms/{roomId}/context/{eventId}| replace:: ``/rooms/{roomId}/context/{eventId}``
 .. _/rooms/{roomId}/context/{eventId}: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-context-eventid
 
 .. |/account/3pid| replace:: ``/account/3pid``
