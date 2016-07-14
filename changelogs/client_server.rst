@@ -1,6 +1,12 @@
 <Unreleased changes>
 ====================
 
+- Changes to the API which will be backwards-compatible for clients:
+
+  - New endpoints:
+
+    - ``POST /account/deactivate``
+
 - Spec clarifications
 
   - Make it clear that ``GET /directory/room/{roomAlias}`` must work for
