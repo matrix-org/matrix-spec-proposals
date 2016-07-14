@@ -68,6 +68,7 @@ The principles that Matrix attempts to follow are:
   + Trying to take the best aspects of XMPP, SIP, IRC, SMTP, IMAP and NNTP
     whilst trying to avoid their failings
 
+
 The functionality that Matrix provides includes:
 
 - Creation and management of fully distributed chat rooms with no
@@ -88,10 +89,11 @@ The functionality that Matrix provides includes:
   + Publishing user public keys for PKI
   + Mapping of 3PIDs to Matrix IDs
 
+
 The end goal of Matrix is to be a ubiquitous messaging layer for synchronising
 arbitrary data between sets of people, devices and services - be that for
 instant messages, VoIP call setups, or any other objects that need to be
-reliably and persistently pushed from A to B in an inter-operable and federated
+reliably and persistently pushed from A to B in an interoperable and federated
 manner.
 
 Architecture
