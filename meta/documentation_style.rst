@@ -19,11 +19,17 @@ RST support lots of different punctuation characters for underlines on sections.
 Content in the specification MUST use the same characters in order for the
 complete specification to be merged correctly. These characters are:
 
-- ``=`` : Top-level sections
-- ``-`` : Second-level sections
-- ``~`` : Third-level sections
-- ``+`` : Fourth-level sections
-- You should rethink your document layout if you require a fifth level.
+- ``=``
+- ``-``
+- ``~``
+- ``+``
+- ``^``
+- `````
+- ``@``
+- ``:``
+
+If you find yourself using ``^`` or beyond, you should rethink your document
+layout if possible.
 
 TODOs
 -----
