@@ -1,9 +1,5 @@
-<Unreleased changes>
-====================
-
-- Changes to the API which will be backwards-compatible for clients:
-
-  - New endpoints:
+r0.2.0
+======
 
 - Spec clarifications
 
