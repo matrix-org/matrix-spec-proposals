@@ -498,7 +498,11 @@ a homeserver creating a user ID for a new user based on the username passed to
 .. TODO-spec
 
    We need to better define the mechanism by which homeservers can allow users
-   to have non-Latin usernames.
+   to have non-Latin login credentials. The general idea is for clients to pass
+   the non-Latin in the ``username`` field to ``/register`` and ``/login``, and
+   the HS then maps it onto the MXID space when turning it into the
+   fully-qualified ``user_id`` which is returned to the client and used in
+   events.
 
 Implementations are free to do this mapping however they choose. Since the user
 ID is opaque except to the implementation which created it, the only
