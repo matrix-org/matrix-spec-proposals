@@ -276,3 +276,47 @@ paths:
       responses:
         200:
           description: An email was sent to the given address
+  "/account/deactivate":
+    post:
+      summary: "Deactivate a user's account."
+      description: |-
+        Deactivate the user's account, removing all ability for the user to
+        login again.
+
+        This API endpoint uses the `User-Interactive Authentication API`_.
+
+        An access token should be submitted to this endpoint if the client has
+        an active session.
+
+        The homeserver may change the flows available depending on whether a
+        valid access token is provided.
+      security:
+        - accessToken: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              auth:
+                description: |-
+                  Additional authentication information for the user-interactive authentication API.
+                "$ref": "definitions/auth_data.yaml"
+      responses:
+        200:
+          description: The account has been deactivated.
+          examples:
+            application/json: "{}"
+          schema:
+            type: object
+        401:
+          description: |-
+            The homeserver requires additional authentication information.
+          schema:
+            "$ref": "definitions/auth_response.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/error.yaml"
+      tags:
+        - User data

@@ -1,6 +1,10 @@
 <Unreleased changes>
 ====================
 
+- Changes to the API which will be backwards-compatible for clients:
+
+  - New endpoints:
+
 - Spec clarifications
 
   - Room aliases (`#337 <https://github.com/matrix-org/matrix-doc/pull/337>`_):
@@ -41,6 +45,9 @@
 
     - ``POST /account/password/email/requestToken``
       (`#346 <https://github.com/matrix-org/matrix-doc/pull/346>`_).
+
+    - ``POST /account/deactivate``
+      (`#361 <https://github.com/matrix-org/matrix-doc/pull/361>`_).
 
   - Updates to the Presence module
     (`#278 <https://github.com/matrix-org/matrix-doc/pull/278>`_,
