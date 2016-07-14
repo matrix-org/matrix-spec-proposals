@@ -492,8 +492,13 @@ Mapping from other character sets
 
 In certain circumstances it will be desirable to map from a wider character set
 onto the limited character set allowed in a user ID localpart. Examples include
-a homeserver creating a user ID for a new user based on their chosen login ID,
-or a bridge mapping user ids from another protocol.
+a homeserver creating a user ID for a new user based on the username passed to
+``/register``, or a bridge mapping user ids from another protocol.
+
+.. TODO-spec
+
+   We need to better define the mechanism by which homeservers can allow users
+   to have non-Latin usernames.
 
 Implementations are free to do this mapping however they choose. Since the user
 ID is opaque except to the implementation which created it, the only
