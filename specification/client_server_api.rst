@@ -123,7 +123,10 @@ Some requests have unique error codes:
   Encountered when trying to register a user ID which is not valid.
 
 :``M_ROOM_IN_USE``:
-  Encountered when trying to create a room which has been taken.
+  Sent when the room alias given to the ``createRoom`` API is already in use.
+
+:``M_INVALID_ROOM_STATE``:
+  Sent when the intial state given to the ``createRoom`` API is invalid.
 
 :``M_BAD_PAGINATION``:
   Encountered when specifying bad pagination query parameters.
