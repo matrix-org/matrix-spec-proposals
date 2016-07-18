@@ -32,6 +32,20 @@ paths:
       summary: Create a new room
       description: |-
         Create a new room with various configuration options.
+
+        The server MUST apply the normal state resolution rules when creating
+        the new room, including checking power levels for each event. It MUST
+        apply the events implied by the request in the following order:
+
+        1. Events set by ``presets``.
+
+        2. Events listed in ``initial_state``, in the order that they are
+           listed.
+
+        3. Events implied by ``name`` and ``topic``.
+
+        4. Invite events implied by ``invite`` and ``invite_3pid``.
+
       security:
         - accessToken: []
       parameters:
@@ -114,7 +128,7 @@ paths:
                 type: object
                 description: |-
                   Extra keys to be added to the content of the ``m.room.create``.
-                  The server will clober the following keys: ``creator``. Future
+                  The server will clobber the following keys: ``creator``. Future
                   versions of the specification may allow the server to clobber
                   other keys.
               initial_state:
@@ -124,6 +138,7 @@ paths:
                   the user to override the default state events set in the new
                   room. The expected format of the state events are an object
                   with type, state_key and content keys set.
+
                   Takes precedence over events set by ``presets``, but gets
                   overriden by ``name`` and ``topic`` keys.
                 items:
@@ -173,7 +188,21 @@ paths:
                 "room_id": "!sefiuhWgwghwWgh:example.com"
               }
         400:
-          description: >
-            The request body is malformed or the room alias specified is already taken.
+          description: |-
+
+            The request is invalid. A meaningful ``errcode`` and description
+            error text will be returned. Example reasons for rejection include:
+
+            - The request body is malformed (``errcode`` set to ``M_BAD_JSON``
+              or ``M_NOT_JSON``).
+
+            - The room alias specified is already taken (``errcode`` set to
+              ``M_ROOM_IN_USE``).
+
+            - The initial state implied by the parameters to the request is
+              invalid: for example, the user's ``power_level`` is set below
+              that necessary to set the room name (``errcode`` set to
+              ``M_INVALID_ROOM_STATE``).
+
       tags:
         - Room creation

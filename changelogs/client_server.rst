@@ -1,12 +1,15 @@
 <Unreleased changes>
 ====================
 
-Nothing yet!
+- Spec clarifications:
+
+  - Spell out the way that state is handled by ``POST /createRoom``
+    (`#362 <https://github.com/matrix-org/matrix-doc/pull/362>`_).
 
 r0.2.0
 ======
 
-- Spec clarifications
+- Spec clarifications:
 
   - Room aliases (`#337 <https://github.com/matrix-org/matrix-doc/pull/337>`_):
 
