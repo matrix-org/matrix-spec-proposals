@@ -1191,6 +1191,9 @@ have to wait in milliseconds before they can try again.
 .. |/initialSync| replace:: ``/initialSync``
 .. _/initialSync: #get-matrix-client-%CLIENT_MAJOR_VERSION%-initialsync
 
+.. |/tokenrefresh| replace:: ``/tokenrefresh``
+.. _/tokenrefresh: #post-matrix-client-%CLIENT_MAJOR_VERSION%-tokenrefresh
+
 .. |/sync| replace:: ``/sync``
 .. _/sync: #get-matrix-client-%CLIENT_MAJOR_VERSION%-sync
 

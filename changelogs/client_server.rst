@@ -5,6 +5,8 @@
 
   - Spell out the way that state is handled by ``POST /createRoom``
     (`#362 <https://github.com/matrix-org/matrix-doc/pull/362>`_).
+  - Emphasise that ``POST /tokenrefresh`` should expire the access token
+    (`#363 <https://github.com/matrix-org/matrix-doc/pull/363>`_).
 
 r0.2.0
 ======

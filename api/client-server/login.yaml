@@ -90,9 +90,8 @@ paths:
                   refresh for a new token on failure, and retry the request with the new token.
               refresh_token:
                 type: string
-                # TODO: Work out how to linkify /tokenrefresh
                 description: |-
-                  (optional) A ``refresh_token`` may be exchanged for a new ``access_token`` using the /tokenrefresh API endpoint.
+                  Optional. A ``refresh_token`` may be exchanged for a new ``access_token`` using the |/tokenrefresh|_ API endpoint.
               home_server:
                 type: string
                 description: The hostname of the homeserver on which the account has been registered.
@@ -123,6 +122,11 @@ paths:
       description: |-
         Exchanges a refresh token for a new access token.
         This is intended to be used if the access token has expired.
+
+        The server MUST invalidate the supplied ``refresh_token`` if the
+        request is successful. It MUST also invalidate the ``access_token``
+        which was issued at the same time as the ``refresh_token``, if it
+        has not already expired.
       security:
         - accessToken: []
       parameters:
@@ -163,7 +167,7 @@ paths:
                   The access token may expire at some point, and if so, it SHOULD come with a ``refresh_token``.
               refresh_token:
                 type: string
-                description: (optional) A ``refresh_token`` may be exchanged for a new ``access_token`` using the TODO Linkify /tokenrefresh API endpoint.
+                description: Optional. A new ``refresh_token`` which may be exchanged for another new ``access_token``.
         403:
           description: |-
             The exchange attempt failed. For example, the refresh token may have already been used.
