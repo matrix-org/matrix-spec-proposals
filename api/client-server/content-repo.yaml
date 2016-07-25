@@ -35,7 +35,7 @@ paths:
           x-example: "Content-Type: audio/mpeg"
         - in: query
           type: string
-          x-example: "War%20and%20Peace.pdf"
+          x-example: "War and Peace.pdf"
           name: filename
           description: The name of the file being uploaded
         - in: body
