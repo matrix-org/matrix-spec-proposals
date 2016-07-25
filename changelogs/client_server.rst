@@ -8,6 +8,12 @@
   - Emphasise that ``POST /tokenrefresh`` should expire the access token
     (`#363 <https://github.com/matrix-org/matrix-doc/pull/363>`_).
 
+- Changes to the API which will be backwards-compatible for clients:
+
+  - Add ``filename`` parameter to ``POST /_matrix/media/r0/upload``
+    (`#364 <https://github.com/matrix-org/matrix-doc/pull/364>`_).
+
+
 r0.2.0
 ======
 
