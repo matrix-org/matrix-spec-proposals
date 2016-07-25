@@ -33,6 +33,11 @@ paths:
           type: string
           description: The content type of the file being uploaded
           x-example: "Content-Type: audio/mpeg"
+        - in: query
+          type: string
+          x-example: "War%20and%20Peace.pdf"
+          name: filename
+          description: The name of the file being uploaded
         - in: body
           name: "<content>"
           description: The content to be uploaded.
