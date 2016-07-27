@@ -7,6 +7,8 @@
     (`#362 <https://github.com/matrix-org/matrix-doc/pull/362>`_).
   - Emphasise that ``POST /tokenrefresh`` should expire the access token
     (`#363 <https://github.com/matrix-org/matrix-doc/pull/363>`_).
+  - Clarify the fields which are applicable to different types of push rule
+    (`#365 <https://github.com/matrix-org/matrix-doc/pull/365>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 

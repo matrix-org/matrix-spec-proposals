@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+title: PushRule
+type: object
 properties:
   actions:
     items:
@@ -18,11 +21,36 @@ properties:
       - object
       - string
     type: array
+    description: |-
+      The actions to perform when this rule is matched.
   default:
     type: boolean
+    description: |-
+      Whether this is a default rule, or has been set explicitly.
   enabled:
     type: boolean
+    description: |-
+      Whether the push rule is enabled or not.
   rule_id:
     type: string
-title: PushRule
-type: object
+    description: |-
+      The ID of this rule.
+  conditions:
+    type: array
+    items:
+      allOf:
+      - $ref: push_condition.yaml
+    description: |-
+      The conditions that must hold true for an event in order for a rule to be
+      applied to an event. A rule with no conditions always matches. Only
+      applicable to ``underride`` and ``override`` rules.
+  pattern:
+    type: string
+    description: |-
+      The glob-style pattern to match against.  Only applicable to ``content``
+      rules.
+required:
+  - actions
+  - default
+  - enabled
+  - rule_id
