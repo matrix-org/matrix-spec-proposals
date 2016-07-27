@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+title: PushCondition
+type: object
 properties:
   kind:
     enum:
@@ -18,4 +21,25 @@ properties:
     - contains_display_name
     - room_member_count
     type: string
-type: object
+  key:
+    type: string
+    description: |-
+      Required for ``event_match`` conditions. The dot-separated field of the
+      event to match.
+    x-example: content.body
+  pattern:
+    type: string
+    description: |-
+      Required for ``event_match`` conditions. The glob-style pattern to
+      match against. Patterns with no special glob characters should be
+      treated as having asterisks prepended and appended when testing the
+      condition.
+  is:
+    type: string
+    description: |-
+      Required for ``room_member_count`` conditions. A decimal integer
+      optionally prefixed by one of, ==, <, >, >= or <=. A prefix of < matches
+      rooms where the member count is strictly less than the given number and
+      so forth. If no prefix is present, this parameter defaults to ==.
+required:
+  - kind

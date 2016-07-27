@@ -262,7 +262,7 @@ paths:
           type: string
           name: kind
           required: true
-          x-example: room
+          x-example: content
           enum: ["override", "underride", "sender", "room", "content"]
           description: |
             The kind of rule
@@ -270,7 +270,7 @@ paths:
           type: string
           name: ruleId
           required: true
-          x-example: "#spam:example.com"
+          x-example: "nocake"
           description: |
             The identifier for the rule.
       responses:
@@ -284,13 +284,13 @@ paths:
                 "actions": [
                     "dont_notify"
                 ],
-                "rule_id": "#spam:matrix.org",
+                "pattern": "cake*lie",
+                "rule_id": "nocake",
                 "enabled": true
               }
           schema:
             type: object
             description: The push rule.
-            title: PushRule
             allOf: [
               "$ref": "definitions/push_rule.yaml"
             ]
@@ -314,7 +314,7 @@ paths:
           type: string
           name: kind
           required: true
-          x-example: room
+          x-example: content
           enum: ["override", "underride", "sender", "room", "content"]
           description: |
             The kind of rule
@@ -322,7 +322,7 @@ paths:
           type: string
           name: ruleId
           required: true
-          x-example: "#spam:example.com"
+          x-example: "nocake"
           description: |
             The identifier for the rule.
       responses:
@@ -355,7 +355,7 @@ paths:
           type: string
           name: kind
           required: true
-          x-example: room
+          x-example: content
           enum: ["override", "underride", "sender", "room", "content"]
           description: |
             The kind of rule
@@ -363,7 +363,7 @@ paths:
           type: string
           name: ruleId
           required: true
-          x-example: "#spam:example.com"
+          x-example: "nocake"
           description: |
             The identifier for the rule.
         - in: query
@@ -411,11 +411,14 @@ paths:
                 description: |-
                   The conditions that must hold true for an event in order for a
                   rule to be applied to an event. A rule with no conditions
-                  always matches.
+                  always matches. Only applicable to ``underride`` and ``override`` rules.
                 items:
                   type: object
-                  title: conditions
                   allOf: [ "$ref": "definitions/push_condition.yaml" ]
+              pattern:
+                type: string
+                description: |-
+                  Only applicable to ``content`` rules. The glob-style pattern to match against.
             required: ["actions"]
       responses:
         200:
@@ -461,7 +464,7 @@ paths:
           type: string
           name: kind
           required: true
-          x-example: room
+          x-example: cake
           enum: ["override", "underride", "sender", "room", "content"]
           description: |
             The kind of rule
@@ -469,7 +472,7 @@ paths:
           type: string
           name: ruleId
           required: true
-          x-example: "#spam:example.com"
+          x-example: nocake
           description: |
             The identifier for the rule.
       responses:
@@ -505,7 +508,7 @@ paths:
           type: string
           name: kind
           required: true
-          x-example: room
+          x-example: content
           enum: ["override", "underride", "sender", "room", "content"]
           description: |
             The kind of rule
@@ -513,7 +516,7 @@ paths:
           type: string
           name: ruleId
           required: true
-          x-example: "#spam:example.com"
+          x-example: "nocake"
           description: |
             The identifier for the rule.
         - in: body
@@ -562,7 +565,7 @@ paths:
           type: string
           name: kind
           required: true
-          x-example: room
+          x-example: content
           enum: ["override", "underride", "sender", "room", "content"]
           description: |
             The kind of rule
@@ -570,7 +573,7 @@ paths:
           type: string
           name: ruleId
           required: true
-          x-example: "#spam:example.com"
+          x-example: nocake
           description: |
             The identifier for the rule.
       responses:
