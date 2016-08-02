@@ -1,7 +1,5 @@
 #! /bin/bash
 
-git rev-parse --abbrev-ref HEAD 2>/dev/null; git describe --exact-match 2>/dev/null; git rev-parse --short HEAD 2>/dev/null; 
-
 set -ex
 
 (cd event-schemas/ && ./check_examples.py)
