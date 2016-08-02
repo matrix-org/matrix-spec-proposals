@@ -96,7 +96,7 @@ paths:
             type: file
       tags:
         - Media
-  "/download/{serverName}/{mediaId}/{fileName}"
+  "/download/{serverName}/{mediaId}/{fileName}":
     get:
       summary: "Download content from the content repository as a given filename."
       produces: ["*/*"]
@@ -119,8 +119,8 @@ paths:
           type: string
           name: fileName
           x-example: filename.jpg
-          requrired: true
-          description:
+          required: true
+          description: |
             The filename to give in the Content-Disposition
       responses:
         200:
