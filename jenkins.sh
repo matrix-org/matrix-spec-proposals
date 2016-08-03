@@ -15,3 +15,4 @@ go get gopkg.in/fsnotify.v1
 
 (cd scripts/continuserv && go build)
 (cd scripts/speculator && go build)
+

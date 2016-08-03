@@ -286,7 +286,8 @@ paths:
                 ],
                 "pattern": "cake*lie",
                 "rule_id": "nocake",
-                "enabled": true
+                "enabled": true,
+                "default": false
               }
           schema:
             type: object

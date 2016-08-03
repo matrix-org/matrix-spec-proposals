@@ -96,6 +96,46 @@ paths:
             type: file
       tags:
         - Media
+  "/download/{serverName}/{mediaId}/{fileName}":
+    get:
+      summary: "Download content from the content repository as a given filename."
+      produces: ["*/*"]
+      parameters:
+        - in: path
+          type: string
+          name: serverName
+          x-example: matrix.org
+          required: true
+          description: |
+            The server name from the ``mxc://`` URI (the authoritory component)
+        - in: path
+          type: string
+          name: mediaId
+          x-example: ascERGshawAWawugaAcauga
+          required: true
+          description: |
+            The media ID from the ``mxc://`` URI (the path component)
+        - in: path
+          type: string
+          name: fileName
+          x-example: filename.jpg
+          required: true
+          description: |
+            The filename to give in the Content-Disposition
+      responses:
+        200:
+          description: "The content that was previously uploaded."
+          headers:
+            Content-Type:
+              description: "The content type of the file that was previously uploaded."
+              type: "string"
+            Content-Disposition:
+              description: "The name of file given in the request"
+              type: "string"
+          schema:
+            type: file
+      tags:
+        - Media
   "/thumbnail/{serverName}/{mediaId}":
     get:
       summary: "Download a thumbnail of the content from the content repository."
