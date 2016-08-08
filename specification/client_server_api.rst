@@ -554,6 +554,15 @@ explicitly, as follows:
 In the case that the homeserver does not know about the supplied 3pid, the
 homeserver must respond with 403 Forbidden.
 
+To log in using a login token, a client should submit an auth dict as follows:
+
+.. code:: json
+
+  {
+    "type": "m.login.token",
+    "token": "<login token>"
+  }
+
 {{login_cs_http_api}}
 
 {{logout_cs_http_api}}

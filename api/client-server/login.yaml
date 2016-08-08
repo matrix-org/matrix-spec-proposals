@@ -47,7 +47,9 @@ paths:
             properties:
               type:
                 type: string
-                description: The login type being used. Currently only "m.login.password" is supported.
+                description: |-
+                  The login type being used. One of ``m.login.password`` or
+                  ``m.login.token``.
               user:
                 type: string
                 description: The fully qualified user ID or just local part of the user ID, to log in.
@@ -59,8 +61,14 @@ paths:
                 description: Third party identifier for the user.
               password:
                 type: string
-                description: The user's password.
-            required: ["type", "password"]
+                description: |-
+                  Required when ``type`` is ``m.login.password``. The user's
+                  password.
+              token:
+                type: string
+                description: |-
+                  Required when ``type`` is ``m.login.token``. The login token.
+            required: ["type"]
 
       responses:
         200:

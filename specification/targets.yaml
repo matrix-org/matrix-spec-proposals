@@ -52,6 +52,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/account_data.rst
     - modules/admin.rst
     - modules/event_context.rst
+    - modules/cas_login.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`", "@", ":"]
