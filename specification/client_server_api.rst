@@ -552,7 +552,7 @@ explicitly, as follows:
   }
 
 In the case that the homeserver does not know about the supplied 3pid, the
-homeserver must respond with 403 Forbidden.
+homeserver must respond with ``403 Forbidden``.
 
 To log in using a login token, a client should submit an auth dict as follows:
 
@@ -564,7 +564,8 @@ To log in using a login token, a client should submit an auth dict as follows:
   }
 
 As with `token-based`_ interactive login, the ``token`` must be a macroon with
-a caveat which includes the user id.
+a caveat which includes the user id. In the case that the token is not valid, the
+homeserver must respond with ``403 Forbidden`` and an error code of ``M_FORBIDDEN``.
 
 {{login_cs_http_api}}
 
