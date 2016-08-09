@@ -53,6 +53,16 @@ The client starts the process by instructing the browser to navigate to
 |/login/cas/redirect|_ with an appropriate ``redirectUrl``. Once authentication
 is successful, the browser will be redirected to that ``redirectUrl``.
 
+.. TODO-spec
+
+   Should we recommend some sort of CSRF protection here (specifically, we
+   should guard against people accidentally logging in by sending them a link
+   to ``/login/cas/redirect``.
+
+   Maybe we should recommend that the ``redirectUrl`` should contain a CSRF
+   token which the client should then check before sending the login token to
+   ``/login``?
+
 {{cas_login_redirect_cs_http_api}}
 {{cas_login_ticket_cs_http_api}}
 
@@ -71,6 +81,12 @@ described above, and add a ``service`` query-parameter. This parameter MUST be
 the URI of the ``/login/cas/ticket`` endpoint, including the ``redirectUrl``
 query-parameter. Because the homeserver may not know its base URI, this may
 also require manual configuration.
+
+.. TODO-spec:
+
+   It might be nice if the server did some validation of the ``redirectUrl``
+   parameter, so that we could give more meaningful errors in the case of
+   faulty/poorly-configured clients.
 
 Handling the authentication endpoint
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
