@@ -407,7 +407,7 @@ Token-based
 :Type:
   ``m.login.token``
 :Description:
-  The client submits a username and token.
+  The client submits a login token.
 
 To respond to this type, reply with an auth dict as follows:
 
@@ -415,7 +415,6 @@ To respond to this type, reply with an auth dict as follows:
 
   {
     "type": "m.login.token",
-    "user": "<user_id or user localpart>",
     "token": "<token>",
     "txn_id": "<client generated nonce>"
   }
@@ -433,7 +432,8 @@ server side, as well as potentially invalidating the token completely once the
 device has successfully logged in (e.g. when we receive a request from the
 newly provisioned access_token).
 
-The ``token`` must be a macaroon.
+The ``token`` must be a macaroon, with a caveat encoding the user id. There is
+therefore no need for the client to submit a separate username.
 
 OAuth2-based
 <<<<<<<<<<<<
@@ -562,6 +562,9 @@ To log in using a login token, a client should submit an auth dict as follows:
     "type": "m.login.token",
     "token": "<login token>"
   }
+
+As with `token-based`_ interactive login, the ``token`` must be a macroon with
+a caveat which includes the user id.
 
 {{login_cs_http_api}}
 

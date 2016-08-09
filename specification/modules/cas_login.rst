@@ -33,7 +33,7 @@ An overview of the process, as used in Matrix, is as follows:
 
 4. The CAS server responds to the user's browser with a redirect back to the
    |/login/cas/ticket|_ endpoint on the homeserver, which the browser
-   follows. A 'ticket' identifier is passed as a query-parameter in the
+   follows. A 'ticket' identifier is passed as a query parameter in the
    redirect.
 
 5. The homeserver receives the ticket ID from the user's browser, and makes a
@@ -41,7 +41,7 @@ An overview of the process, as used in Matrix, is as follows:
 
 6. Having validated the ticket, the homeserver responds to the browser with a
    third HTTP redirect, back to the Matrix client application. A login token
-   is passed as a query-parameter in the redirect.
+   is passed as a query parameter in the redirect.
 
 7. The Matrix client receives the login token and passes it to the |/login|_
    API.
@@ -77,15 +77,16 @@ Handling the redirect endpoint
 
 When responding to the ``/login/cas/redirect`` endpoint, the server must
 generate a URI for the CAS login page. The server should take the base CAS URI
-described above, and add a ``service`` query-parameter. This parameter MUST be
+described above, and add a ``service`` query parameter. This parameter MUST be
 the URI of the ``/login/cas/ticket`` endpoint, including the ``redirectUrl``
-query-parameter. Because the homeserver may not know its base URI, this may
+query parameter. Because the homeserver may not know its base URI, this may
 also require manual configuration.
 
 .. TODO-spec:
 
    It might be nice if the server did some validation of the ``redirectUrl``
-   parameter, so that we could give more meaningful errors in the case of
+   parameter, so that we could check that aren't going to redirect to a non-TLS
+   endpoint, and to give more meaningful errors in the case of
    faulty/poorly-configured clients.
 
 Handling the authentication endpoint
@@ -97,7 +98,7 @@ check for certain user attributes in the response. Any required attributes
 should be configured by the server administrator.
 
 Once the ticket has been validated, the server MUST map the CAS ``user_id``
-to a valid `Matrix user idenitifier <../intro.html#user-identifiers>`_. The
+to a valid `Matrix user identifier <../intro.html#user-identifiers>`_. The
 guidance in `Mapping from other character sets
 <../intro.html#mapping-from-other-character-sets>`_ may be useful.
 
