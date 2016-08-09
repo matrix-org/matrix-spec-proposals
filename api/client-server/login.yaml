@@ -47,9 +47,8 @@ paths:
             properties:
               type:
                 type: string
-                description: |-
-                  The login type being used. One of ``m.login.password`` or
-                  ``m.login.token``.
+                enum: ["m.login.password", "m.login.token"]
+                description: The login type being used.
               user:
                 type: string
                 description: The fully qualified user ID or just local part of the user ID, to log in.

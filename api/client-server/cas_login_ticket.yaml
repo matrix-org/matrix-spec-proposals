@@ -60,6 +60,6 @@ paths:
             Location:
               type: "string"
               x-example: |-
-                 redirectUrl=https://client.example.com/?hs=https%3A%2F%2Fserver.example.com&loginToken=secrettoken
+                 https://client.example.com/?q=p&loginToken=secrettoken
         401:
           description: The server was unable to validate the CAS ticket.

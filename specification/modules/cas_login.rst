@@ -17,10 +17,9 @@ CAS-based client login
 
 .. _module:cas_login:
 
-Central Authentication Service (CAS) is a web-based single sign-on protocol.
-
-Client behaviour
-----------------
+`Central Authentication Service
+<https://github.com/apereo/cas/blob/master/cas-server-documentation/protocol/CAS-Protocol-Specification.md>`_
+(CAS) is a web-based single sign-on protocol.
 
 An overview of the process, as used in Matrix, is as follows:
 
@@ -47,14 +46,52 @@ An overview of the process, as used in Matrix, is as follows:
 7. The Matrix client receives the login token and passes it to the |/login|_
    API.
 
-If successful, the user is redirected back to the client via the redirectUrl given to the
-homeserver on the initial redirect request. In the url will be a loginToken query parameter
-which contains a Matrix login token which the client should then use to complete the login
-via the Token-based process described above.
+Client behaviour
+----------------
 
+The client starts the process by instructing the browser to navigate to
+|/login/cas/redirect|_ with an appropriate ``redirectUrl``. Once authentication
+is successful, the browser will be redirected to that ``redirectUrl``.
 
 {{cas_login_redirect_cs_http_api}}
 {{cas_login_ticket_cs_http_api}}
+
+Server behaviour
+----------------
+
+The URI for the CAS system to be used should be configured on the server by the
+server administrator.
+
+Handling the redirect endpoint
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When responding to the ``/login/cas/redirect`` endpoint, the server must
+generate a URI for the CAS login page. The server should take the base CAS URI
+described above, and add a ``service`` query-parameter. This parameter MUST be
+the URI of the ``/login/cas/ticket`` endpoint, including the ``redirectUrl``
+query-parameter. Because the homeserver may not know its base URI, this may
+also require manual configuration.
+
+Handling the authentication endpoint
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When responding to the ``/login/cas/ticket`` endpoint, the server MUST make a
+request to the CAS server to validate the provided ticket. The server MAY also
+check for certain user attributes in the response. Any required attributes
+should be configured by the server administrator.
+
+Once the ticket has been validated, the server MUST map the CAS ``user_id``
+to a valid `Matrix user idenitifier <../intro.html#user-identifiers>`_. The
+guidance in `Mapping from other character sets
+<../intro.html#mapping-from-other-character-sets>`_ may be useful.
+
+If the generated user identifier represents a new user, it should be registered
+as a new user.
+
+Finally, the server should generate a short-term login token. The generated
+token should be a macaroon, suitable for use with the ``m.login.token`` type of
+the |/login|_ API, and `token-based interactive login <#token-based>`_. The
+lifetime of this token SHOULD be limited to around five seconds.
 
 
 .. |/login| replace:: ``/login``
