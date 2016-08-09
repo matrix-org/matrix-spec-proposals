@@ -14,6 +14,8 @@
 
   - Add ``filename`` parameter to ``POST /_matrix/media/r0/upload``
     (`#364 <https://github.com/matrix-org/matrix-doc/pull/364>`_).
+  - Document CAS-based client login and the use of ``m.login.token`` in
+    ``/login`` (`#367 <https://github.com/matrix-org/matrix-doc/pull/367>`_).
 
 
 r0.2.0
