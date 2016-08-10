@@ -255,7 +255,7 @@ including the AS token on a ``/register`` request, along with a login type of
   Content:
   {
     type: "m.login.application_service",
-    user: "<desired user localpart in AS namespace>"
+    username: "<desired user localpart in AS namespace>"
   }
 
 Application services which attempt to create users or aliases *outside* of
