@@ -76,7 +76,7 @@ Clients
 
 <table>
   {% assign post_nr = '0' %}
-  {% for post in site.categories.client limit:100 %}
+  {% for post in site.categories.client reversed limit:100 %}
     {% assign add_new_row_test = post_nr | modulo:6 %}
     {% if add_new_row_test == 0 %}<tr>{% endif %}
       <td class='project'>
@@ -108,7 +108,7 @@ Servers
 
 <table>
   {% assign post_nr = '0' %}
-  {% for post in site.categories.server limit:100 %}
+  {% for post in site.categories.server reversed limit:100 %}
     {% assign add_new_row_test = post_nr | modulo:6 %}
     {% if add_new_row_test == 0 %}<tr>{% endif %}
       <td class='project'>
@@ -137,7 +137,7 @@ Application Services
 
 <table>
   {% assign post_nr = '0' %}
-  {% for post in site.categories.as limit:100 %}
+  {% for post in site.categories.as reversed limit:100 %}
     {% assign add_new_row_test = post_nr | modulo:6 %}
     {% if add_new_row_test == 0 %}<tr>{% endif %}
       <td class='project'>
@@ -165,7 +165,7 @@ Client SDKs
 
 <table>
   {% assign post_nr = '0' %}
-  {% for post in site.categories.sdk limit:100 %}
+  {% for post in site.categories.sdk reversed limit:100 %}
     {% assign add_new_row_test = post_nr | modulo:6 %}
     {% if add_new_row_test == 0 %}<tr>{% endif %}
       <td class='project'>
@@ -193,7 +193,7 @@ Other
 
 <table>
   {% assign post_nr = '0' %}
-  {% for post in site.categories.other limit:100 %}
+  {% for post in site.categories.other reversed limit:100 %}
     {% assign add_new_row_test = post_nr | modulo:6 %}
     {% if add_new_row_test == 0 %}<tr>{% endif %}
       <td class='project'>
