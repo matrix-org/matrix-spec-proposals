@@ -169,6 +169,9 @@ return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
 User-Interactive Authentication API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Overview
+<<<<<<<<
+
 Some API endpoints require authentication that
 interacts with the user. The homeserver may provide many different ways of
 authenticating, such as user/password auth, login via a social network (OAuth2),
@@ -177,26 +180,31 @@ does not define how homeservers should authorise their users but instead
 defines the standard interface which implementations should follow so that ANY
 client can login to ANY homeserver.
 
-The process takes the form of one or more stages, where at each stage the client
-submits a set of data for a given stage type and awaits a response from the
-server, which will either be a final success or a request to perform an
-additional stage. This exchange continues until the final success.
+The process takes the form of one or more 'stages'. At each stage the client
+submits a set of data for a given authentication type and awaits a response
+from the server, which will either be a final success or a request to perform
+an additional stage. This exchange continues until the final success.
 
-Authentication works by client and server exchanging dictionaries. This
-specification covers how this is done over JSON HTTP POST.
+For each endpoint, a server offers one or more 'flows' that the client can use
+to authenticate itself. Each flow comprises a series of stages, as described
+above. The client is free to choose which flow it follows. When all stages in a
+flow are complete, authentication is complete and the API call succeeds.
 
-For each endpoint, a server offers one of more 'flows' that the client can use
-to authenticate itself. Each flow comprises one or more 'stages'. Flows may have
-more than one stage to implement n-factor auth. When all stages are complete,
-authentication is complete and the API call succeeds. To establish what flows a
-server supports for an endpoint, a client sends the request with no
-authentication. A request to an endpoint that uses User-Interactive
-Authentication never succeeds without auth. Homeservers may allow requests that
-don't require auth by offering a stage with only the ``m.login.dummy`` auth
-type. The homeserver returns a response with HTTP status 401 and a JSON object
-as follows:
+User-interactive API in the REST API
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-.. code:: json
+In the REST API described in this specification, authentication works by the
+client and server exchanging JSON dictionaries. The server indicates what
+authentication data it requires via the body of an HTTP 401 response, and the
+client submits that authentication data via the ``auth`` request parameter.
+
+A client should first make a request with no ``auth`` parameter [#]_. The
+homeserver returns an HTTP 401 response, with a JSON body, as follows:
+
+.. code::
+
+  HTTP/1.1 401 Unauthorized
+  Content-Type: application/json
 
   {
     "flows": [
@@ -220,7 +228,7 @@ information:
 
 params
   This section contains any information that the client will need to know in
-  order to use a given type of authentication. For each login type
+  order to use a given type of authentication. For each authentication type
   presented, that type may be present as a key in this dictionary. For example,
   the public part of an OAuth client ID could be given here.
 session
@@ -231,14 +239,17 @@ session
 The client then chooses a flow and attempts to complete one of the stages. It
 does this by resubmitting the same request with the addition of an ``auth``
 key in the object that it submits. This dictionary contains a ``type`` key whose
-value is the name of the login type that the client is attempting to complete.
+value is the name of the authentication type that the client is attempting to complete.
 It must also contain a ``session`` key with the value of the session key given
 by the homeserver, if one was given. It also contains other keys dependent on
-the login type being attempted. For example, if the client is attempting to
-complete login type ``example.type.foo``, it might submit something like this:
+the auth type being attempted. For example, if the client is attempting to
+complete auth type ``example.type.foo``, it might submit something like this:
 
-.. code:: json
+.. code::
 
+  POST /_matrix/client/r0/endpoint HTTP/1.1
+  Content-Type: application/json
+  
   {
     "a_request_parameter": "something",
     "another_request_parameter": "something else",
@@ -252,10 +263,13 @@ complete login type ``example.type.foo``, it might submit something like this:
 If the homeserver deems the authentication attempt to be successful but still
 requires more stages to be completed, it returns HTTP status 401 along with the
 same object as when no authentication was attempted, with the addition of the
-``completed`` key which is an array of login types the client has completed
+``completed`` key which is an array of auth types the client has completed
 successfully:
 
-.. code:: json
+.. code::
+
+  HTTP/1.1 401 Unauthorized
+  Content-Type: application/json
 
   {
     "completed": [ "example.type.foo" ],
@@ -278,7 +292,10 @@ successfully:
 If the homeserver decides the attempt was unsuccessful, it returns an error
 message in the standard format:
 
-.. code:: json
+.. code::
+
+  HTTP/1.1 400 Bad request
+  Content-Type: application/json
 
   {
     "errcode": "M_EXAMPLE_ERROR",
@@ -287,7 +304,7 @@ message in the standard format:
 
 Individual stages may require more than one request to complete, in which case
 the response will be as if the request was unauthenticated with the addition of
-any other keys as defined by the login type.
+any other keys as defined by the auth type.
 
 If the client has completed all stages of a flow, the homeserver performs the
 API call and returns the result as normal.
@@ -298,8 +315,13 @@ clicks on the link in the email. In this case, the client retries the request
 with an auth dict containing only the session key. The response to this will be
 the same as if the client were attempting to complete an auth state normally,
 i.e. the request will either complete or request auth, with the presence or
-absence of that login type in the 'completed' array indicating whether
+absence of that auth type in the 'completed' array indicating whether
 that stage is complete.
+
+.. [#] A request to an endpoint that uses User-Interactive Authentication never
+       succeeds without auth. Homeservers may allow requests that don't require
+       auth by offering a stage with only the ``m.login.dummy`` auth type, but
+       they must still give a 401 response to requests with no auth data.
 
 Example
 +++++++
@@ -307,18 +329,24 @@ At a high level, the requests made for an API call completing an auth flow with
 three stages will resemble the following diagram::
 
    _______________________
-  |       Stage 1         |
-  | type: "<login type1>" |
+  |       Stage 0         |
+  | No auth               |
   |  ___________________  |
   | |_Request_1_________| | <-- Returns "session" key which is used throughout.
+  |_______________________|
+            |
+            |
+   _________V_____________
+  |       Stage 1         |
+  | type: "<auth type1>"  |
   |  ___________________  |
-  | |_Request_2_________| |
+  | |_Request_1_________| |
   |_______________________|
             |
             |
    _________V_____________
   |       Stage 2         |
-  | type: "<login type2>" |
+  | type: "<auth type2>"  |
   |  ___________________  |
   | |_Request_1_________| |
   |  ___________________  |
@@ -330,16 +358,16 @@ three stages will resemble the following diagram::
             |
    _________V_____________
   |       Stage 3         |
-  | type: "<login type3>" |
+  | type: "<auth type3>"  |
   |  ___________________  |
   | |_Request_1_________| | <-- Returns API response
   |_______________________|
 
 
-Login types
-+++++++++++
+Authentication types
+++++++++++++++++++++
 
-This specification defines the following login types:
+This specification defines the following auth types:
  - ``m.login.password``
  - ``m.login.recaptcha``
  - ``m.login.oauth2``
@@ -354,7 +382,7 @@ Password-based
 :Description:
   The client submits a username and secret password, both sent in plain-text.
 
-To respond to this type, reply with an auth dict as follows:
+To use this authentication type, clients should submit an auth dict as follows:
 
 .. code:: json
 
@@ -393,7 +421,7 @@ Google ReCaptcha
 :Description:
   The user completes a Google ReCaptcha 2.0 challenge
 
-To respond to this type, reply with an auth dict as follows:
+To use this authentication type, clients should submit an auth dict as follows:
 
 .. code:: json
 
@@ -409,7 +437,7 @@ Token-based
 :Description:
   The client submits a login token.
 
-To respond to this type, reply with an auth dict as follows:
+To use this authentication type, clients should submit an auth dict as follows:
 
 .. code:: json
 
@@ -471,7 +499,7 @@ Prior to submitting this, the client should authenticate with an identity
 server. After authenticating, the session information should be submitted to
 the homeserver.
 
-To respond to this type, reply with an auth dict as follows:
+To use this authentication type, clients should submit an auth dict as follows:
 
 .. code:: json
 
@@ -495,8 +523,8 @@ Dummy Auth
   purpose is to allow servers to not require any form of User-Interactive
   Authentication to perform a request.
 
-To respond to this type, reply with an auth dict with just the type and session,
-if provided:
+To use this authentication type, clients should submit an auth dict with just
+the type and session, if provided:
 
 .. code:: json
 
@@ -513,9 +541,9 @@ the user to a web browser with the URL of a fallback page which will allow the
 user to complete that login step out-of-band in their web browser. The URL it
 should open is::
 
-  /_matrix/client/%CLIENT_MAJOR_VERSION%/auth/<stage type>/fallback/web?session=<session ID>
+  /_matrix/client/%CLIENT_MAJOR_VERSION%/auth/<auth type>/fallback/web?session=<session ID>
 
-Where ``stage type`` is the type name of the stage it is attempting and
+Where ``auth type`` is the type name of the stage it is attempting and
 ``session id`` is the ID of the session given by the homeserver.
 
 This MUST return an HTML page which can perform this authentication stage. This
@@ -527,8 +555,11 @@ Login
 
 A client can obtain access tokens using the ``/login`` API.
 
-For a simple username/password login, a client should submit an auth dict as
-follows:
+Note that this endpoint does `not` currently use the user-interactive
+authentication API.
+
+For a simple username/password login, clients should submit a ``/login``
+request as follows:
 
 .. code:: json
 
@@ -554,7 +585,8 @@ explicitly, as follows:
 In the case that the homeserver does not know about the supplied 3pid, the
 homeserver must respond with ``403 Forbidden``.
 
-To log in using a login token, a client should submit an auth dict as follows:
+To log in using a login token, clients should submit a ``/login`` request as
+follows:
 
 .. code:: json
 
