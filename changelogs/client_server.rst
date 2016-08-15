@@ -9,6 +9,8 @@
     (`#363 <https://github.com/matrix-org/matrix-doc/pull/363>`_).
   - Clarify the fields which are applicable to different types of push rule
     (`#365 <https://github.com/matrix-org/matrix-doc/pull/365>`_).
+  - A number of clarifications to authentication
+    (`#371 <https://github.com/matrix-org/matrix-doc/pull/371>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
@@ -16,6 +18,8 @@
     (`#364 <https://github.com/matrix-org/matrix-doc/pull/364>`_).
   - Document CAS-based client login and the use of ``m.login.token`` in
     ``/login`` (`#367 <https://github.com/matrix-org/matrix-doc/pull/367>`_).
+  - Make ``origin_server_ts`` a mandatory field of room events
+    (`#379 <https://github.com/matrix-org/matrix-doc/pull/370>`_).
 
 
 r0.2.0
