@@ -29,7 +29,7 @@ paths:
     post:
       summary: Register for an account on this homeserver.
       description: |-
-        This API endpoint uses the `User-Interactive Authentication API`.
+        This API endpoint uses the `User-Interactive Authentication API`_.
 
         Register for an account on this homeserver.
 
@@ -57,7 +57,13 @@ paths:
             properties:
               auth:
                 description: |-
-                  Additional authentication information for the user-interactive authentication API.
+                    Additional authentication information for the
+                    user-interactive authentication API. Note that this
+                    information is *not* used to define how the registered user
+                    should be authenticated, but is instead used to
+                    authenticate the ``register`` call itself. It should be
+                    left empty, or omitted, unless an earlier call returned an
+                    response with status code 401.
                 "$ref": "definitions/auth_data.yaml"
               bind_email:
                 type: boolean
