@@ -1,6 +1,13 @@
 <Unreleased changes>
 ====================
 
+- Breaking changes:
+  - Change the rule kind of `.m.rule.contains_display_name` from
+    `underride` to `override`. This works with all known clients
+    which support push rules, but any other clients implementing
+    the push rules API should be aware of this change. This
+    makes it simple to mute rooms correctly in the API.
+
 - Spec clarifications:
 
   - Spell out the way that state is handled by ``POST /createRoom``
