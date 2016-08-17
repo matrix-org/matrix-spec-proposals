@@ -2,6 +2,7 @@
 ====================
 
 - Breaking changes:
+
   - Change the rule kind of `.m.rule.contains_display_name` from
     `underride` to `override`. This works with all known clients
     which support push rules, but any other clients implementing
