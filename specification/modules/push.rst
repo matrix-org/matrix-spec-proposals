@@ -327,6 +327,37 @@ Definition:
     }
 
 
+``.m.rule.contains_display_name``
+`````````````````````````````````
+Matches any message whose content is unencrypted and contains the user's
+current display name in the room in which it was sent.
+
+Definition:
+
+.. code:: json
+
+    {
+        "rule_id": ".m.rule.contains_display_name",
+        "default": true,
+        "enabled": true,
+        "conditions": [
+            {
+                "kind": "contains_display_name"
+            }
+        ],
+        "actions": [
+            "notify",
+            {
+                "set_tweak": "sound",
+                "value": "default"
+            },
+            {
+                "set_tweak": "highlight"
+            }
+        ]
+    }
+
+
 Default Content Rules
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -387,37 +418,6 @@ Definition:
             }
         ]
     },
-
-
-``.m.rule.contains_display_name``
-`````````````````````````````````
-Matches any message whose content is unencrypted and contains the user's
-current display name in the room in which it was sent.
-
-Definition:
-
-.. code:: json
-
-    {
-        "rule_id": ".m.rule.contains_display_name",
-        "default": true,
-        "enabled": true,
-        "conditions": [
-            {
-                "kind": "contains_display_name"
-            }
-        ],
-        "actions": [
-            "notify",
-            {
-                "set_tweak": "sound",
-                "value": "default"
-            },
-            {
-                "set_tweak": "highlight"
-            }
-        ]
-    }
 
 ``.m.rule.room_one_to_one``
 ```````````````````````````
