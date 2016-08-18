@@ -31,10 +31,9 @@ paths:
     put:
       summary: Send a state event to the given room.
       description: |
-        State events can be sent using this endpoint. This endpoint is
-        equivalent to calling `/rooms/{roomId}/state/{eventType}/{stateKey}`
-        with an empty `stateKey`. Previous state events with matching
-        `<roomId>` and `<eventType>`, and empty `<stateKey>`, will be overwritten.
+        State events can be sent using this endpoint.  These events will be
+        overwritten if ``<room id>``, ``<event type>`` and ``<state key>`` all
+        match.
 
         Requests to this endpoint **cannot use transaction IDs**
         like other ``PUT`` paths because they cannot be differentiated from the
@@ -93,9 +92,10 @@ paths:
     put:
       summary: Send a state event to the given room.
       description: |
-        State events can be sent using this endpoint.  These events will be
-        overwritten if ``<room id>``, ``<event type>`` and ``<state key>`` all
-        match. This endpoint forces the state key to be the empty string.
+        State events can be sent using this endpoint. This endpoint is
+        equivalent to calling `/rooms/{roomId}/state/{eventType}/{stateKey}`
+        with an empty `stateKey`. Previous state events with matching
+        `<roomId>` and `<eventType>`, and empty `<stateKey>`, will be overwritten.
 
         Requests to this endpoint **cannot use transaction IDs**
         like other ``PUT`` paths because they cannot be differentiated from the
