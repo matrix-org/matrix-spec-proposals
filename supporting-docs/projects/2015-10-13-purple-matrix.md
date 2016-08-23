@@ -1,10 +1,10 @@
 ---
 layout: project
 title: purple-matrix
-categories: projects other
+categories: projects client
 description: A plugin for libpurple
 author: Matrix.org team
-maturity: Early beta
+maturity: Alpha
 ---
 
 # {{ page.title }}
