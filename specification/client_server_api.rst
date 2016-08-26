@@ -1123,7 +1123,7 @@ ban MUST have the required power level. To ban a user, a request should be made
 to |/rooms/<room_id>/ban|_ with::
 
   {
-    "user_id": "<user id to ban"
+    "user_id": "<user id to ban>"
     "reason": "string: <reason for the ban>"
   }
 
