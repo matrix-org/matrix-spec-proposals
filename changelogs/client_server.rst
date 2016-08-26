@@ -19,6 +19,8 @@
     (`#365 <https://github.com/matrix-org/matrix-doc/pull/365>`_).
   - A number of clarifications to authentication
     (`#371 <https://github.com/matrix-org/matrix-doc/pull/371>`_).
+  - Correct references to ``user_id`` which should have been ``sender``
+    (`#376 <https://github.com/matrix-org/matrix-doc/pull/376>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
