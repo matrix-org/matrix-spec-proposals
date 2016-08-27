@@ -21,6 +21,8 @@
     (`#371 <https://github.com/matrix-org/matrix-doc/pull/371>`_).
   - Correct references to ``user_id`` which should have been ``sender``
     (`#376 <https://github.com/matrix-org/matrix-doc/pull/376>`_).
+  - Correct inconsistent specification of ``redacted_because`` fields and their
+    values (`#378 <https://github.com/matrix-org/matrix-doc/pull/378>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 

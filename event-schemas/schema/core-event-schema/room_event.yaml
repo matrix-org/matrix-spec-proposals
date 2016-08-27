@@ -25,8 +25,9 @@ properties:
           sent
         type: integer
       redacted_because:
-        description: The reason this event was redacted, if it was redacted
-        type: string
+        description: Optional. The event that redacted this event, if any.
+        title: Event
+        type: object
       transaction_id:
         description: The client-supplied transaction ID, if the client being given
           the event is the same one which sent it.
