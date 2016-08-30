@@ -384,6 +384,15 @@ paths:
                         allOf:
                           - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
                   required: ["room_id", "membership"]
+              account_data:
+                type: array
+                description: |-
+                  The global private data created by this user.
+                items:
+                  title: Event
+                  type: object
+                  allOf:
+                    - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
             required: ["end", "rooms", "presence"]
         404:
           description: There is no avatar URL for this user or this user does not exist.
