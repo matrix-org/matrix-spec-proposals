@@ -955,7 +955,7 @@ the following list:
 - ``event_id``
 - ``type``
 - ``room_id``
-- ``user_id``
+- ``sender``
 - ``state_key``
 - ``prev_content``
 - ``content``

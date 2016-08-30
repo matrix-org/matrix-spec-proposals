@@ -107,7 +107,7 @@ paths:
                 "chunk": [
                   {
                     "origin_server_ts": 1444812213737,
-                    "user_id": "@alice:example.com",
+                    "sender": "@alice:example.com",
                     "event_id": "$1444812213350496Caaaa:example.com",
                     "content": {
                       "body": "hello world",
@@ -119,7 +119,7 @@ paths:
                   },
                   {
                     "origin_server_ts": 1444812194656 ,
-                    "user_id": "@bob:example.com",
+                    "sender": "@bob:example.com",
                     "event_id": "$1444812213350496Cbbbb:example.com",
                     "content": {
                       "body": "the world is big",
@@ -131,7 +131,7 @@ paths:
                   },
                   {
                     "origin_server_ts": 1444812163990,
-                    "user_id": "@bob:example.com",
+                    "sender": "@bob:example.com",
                     "event_id": "$1444812213350496Ccccc:example.com",
                     "content": {
                       "name": "New room name"
