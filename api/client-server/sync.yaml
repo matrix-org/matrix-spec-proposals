@@ -229,6 +229,13 @@ paths:
                   The updates to the presence status of other users.
                 allOf:
                   - $ref: "definitions/event_batch.yaml"
+              account_data:
+                title: Account Data
+                type: object
+                description: |-
+                  The global private data created by this user.
+                allOf:
+                  - $ref: "definitions/event_batch.yaml"
           examples:
             application/json: |-
               {

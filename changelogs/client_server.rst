@@ -30,7 +30,9 @@
     ``/login`` (`#367 <https://github.com/matrix-org/matrix-doc/pull/367>`_).
   - Make ``origin_server_ts`` a mandatory field of room events
     (`#379 <https://github.com/matrix-org/matrix-doc/pull/370>`_).
-
+  - Add top-level ``account_data`` key to the responses to ``GET /sync`` and
+    ``GET /initialSync``
+    (`#380 <https://github.com/matrix-org/matrix-doc/pull/380>`_).
 
 r0.2.0
 ======
