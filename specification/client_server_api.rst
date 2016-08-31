@@ -970,9 +970,10 @@ one of the following event types:
   ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
 - ``m.room.aliases`` allows key ``aliases``
 
-The redaction event should be added under the key ``redacted_because``. When a
-client receives a redaction event it should change the redacted event
-in the same way a server does.
+The server should add the event causing the redaction to the ``unsigned``
+property of the redacted event, under the ``redacted_because`` key. When a
+client receives a redaction event it should change the redacted event in the
+same way a server does.
 
 Events
 ++++++
