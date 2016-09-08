@@ -189,14 +189,16 @@ tweaks are defined:
 
 ``sound``
   A string representing the sound to be played when this notification arrives.
-  A value of ``default`` means to play a default sound.
+  A value of ``default`` means to play a default sound. A device may choose to
+  alert the user by some other means if appropriate, eg. vibration.
 ``highlight``
   A boolean representing whether or not this message should be highlighted in
   the UI. This will normally take the form of presenting the message in a
   different colour and/or style. The UI might also be adjusted to draw
-  particular attention to the room in which the event occurred. The ``value``
-  may be omitted from the highlight tweak, in which case it should default to
-  ``true``.
+  particular attention to the room in which the event occurred. If a
+  ``highlight`` tweak is given with no value, its value is defined to be
+  ``true``. If no highlight tweak is given at all then the value of
+  ``highlight`` is defined to be false.
 
 Tweaks are passed transparently through the homeserver so client applications
 and Push Gateways may agree on additional tweaks. For example, a tweak may be
