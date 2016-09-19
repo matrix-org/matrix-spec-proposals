@@ -28,29 +28,29 @@ The easiest way to get started is to pick a client that appeals and join #matrix
       </a>
     </td>
     <td class='bigproject'>
-      <a href='./client/vector.html' class='font18 bold'>
-        Vector
+      <a href='./client/riot.html' class='font18 bold'>
+        Riot
       </a><br />
-      If you like glossy and feature-rich web clients, try Vector.<br /><br />
-      <a href='./client/vector.html'>
+      If you like glossy and feature-rich web clients, try Riot.<br /><br />
+      <a href='./client/riot.html'>
         <img src='https://matrix.org/blog/wp-content/uploads/2015/04/vector030216-300x204.png' class='featured_screenshot'>
       </a>
     </td>
     <td class='bigproject'>
-      <a href='./client/vector-ios.html' class='font18 bold'>
-        Vector iOS
+      <a href='./client/riot-ios.html' class='font18 bold'>
+        Riot iOS
       </a><br />
-      You can also access Matrix on your iOS phone via Vector iOS.<br /><br />
-      <a href='./client/vector-ios.html'>
+      You can also access Matrix on your iOS phone via Riot iOS.<br /><br />
+      <a href='./client/riot-ios.html'>
         <img src='/docs/projects/images/vector-iOS-featured.png' class='featured_screenshot'>
       </a>
     </td>
     <td class='bigproject'>
-      <a href='./client/vector-android.html' class='font18 bold'>
-        Vector Android
+      <a href='./client/riot-android.html' class='font18 bold'>
+        Riot Android
       </a><br />
-      Vector is also available on Android devices!<br /><br />
-      <a href='./client/vector-android.html'>
+      Riot is also available on Android devices!<br /><br />
+      <a href='./client/riot-android.html'>
         <img src='/docs/projects/images/vector-android-featured.png' class='featured_screenshot'>
       </a>
     </td>
