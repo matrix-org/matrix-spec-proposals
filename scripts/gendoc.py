@@ -407,7 +407,7 @@ def main(targets, keep_intermediates, substitutions):
         target_defs = yaml.load(targ_file.read())
 
     if targets == ["all"]:
-        targets = target_defs["targets"].keys() + ["howtos"]
+        targets = target_defs["targets"].keys()
 
     log("Building spec [target=%s]" % targets)
 
@@ -415,11 +415,8 @@ def main(targets, keep_intermediates, substitutions):
     for target_name in targets:
         templated_file = "tmp/templated_%s.rst" % (target_name,)
 
-        if target_name == "howtos":
-            shutil.copy("../supporting-docs/howtos/client-server.rst", templated_file)
-        else:
-            target = get_build_target(target_defs, target_name)
-            build_spec(target=target, out_filename=templated_file)
+        target = get_build_target(target_defs, target_name)
+        build_spec(target=target, out_filename=templated_file)
         templated_files.append(templated_file)
 
     # we do all the templating at once, because it's slow
@@ -458,7 +455,7 @@ def main(targets, keep_intermediates, substitutions):
 def list_targets():
     with open("../specification/targets.yaml", "r") as targ_file:
         target_defs = yaml.load(targ_file.read())
-    targets = target_defs["targets"].keys() + ["howtos"]
+    targets = target_defs["targets"].keys()
     print "\n".join(targets)
 
 
