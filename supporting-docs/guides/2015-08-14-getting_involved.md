@@ -21,17 +21,10 @@ We very much welcome [contributions](https://github.com/matrix-org/synapse/blob/
 
 ## Access Matrix via a public webclient/server
 
-The easiest thing to do if you want to just have a play, is to use our reference webclient and create a user on the matrix.org homeserver. You do that by visiting http://matrix.org/beta/, selecting "Create account" and choosing your userID and password on the next page. You can also add your email, but this is optional (adding it will make it easier for your friends to find your Matrix user in the future). 
-
-| 
-
-At the bottom of the account creation page, you can pick the homeserver and identity server you want to use. In this case, we are using matrix.org's homeserver, so just leave it as-is. Your full Matrix-userID will be formed partly from the hostname your server is running as, and partly from an userID you specify when you create the account. For example, if you put bob as your userID, your full Matrix-userID will be @bob:matrix.org ("bob on matrix.org"). 
-
-| 
-
-You can use multiple clients with the same user, so you might want to also look at our [Android](https://github.com/matrix-org/matrix-android-console) or [iOS](https://github.com/matrix-org/matrix-ios-console) clients for your mobile phone!
-
-|
+The easiest thing to do if you want to just have a play, is to use the [Riot.im
+webclient](https://riot.im). You can use it as a guest, or register for an
+account. For details of other clients, see
+[https://matrix.org/blog/try-matrix-now](https://matrix.org/blog/try-matrix-now).
 
 <a class="anchor" id="run"></a>
 
@@ -41,9 +34,10 @@ You can clone our open source projects and run clients and servers yourself. Her
 
 ### Running your own client:
 
-You can run your own Matrix client; there are [numerous clients available](https://matrix.org/blog/try-matrix-now/). You can take Matrix.org's [reference client](https://github.com/matrix-org/matrix-angular-sdk) and use it as-is - or modify it any way you want! Since it's written in JavaScript, running a client is [really easy](https://github.com/matrix-org/matrix-angular-sdk#running)!
-
-|
+You can run your own Matrix client; there are [numerous clients
+available](https://matrix.org/blog/try-matrix-now/). You can easily [run your
+own copy](https://github.com/vector-im/vector-web#getting-started) of the
+Riot.im web client.
 
 ### Running your own homeserver:
 
@@ -69,16 +63,23 @@ You can also implement your own client or server - after all, Matrix is at its c
 
 ### Write your own client:
 
-The [client-server API spec](http://matrix.org/docs/howtos/client-server.html) describes what API calls are available to clients, but a quick step-by-step guide would include:
+The [client-server API
+spec](http://matrix.org/docs/spec/client_server/latest.html) describes what API
+calls are available to clients, and there is a [HOWTO
+guide](http://matrix.org/docs/guides/client-server.html) which provides an
+introduction to using the API along with some common operations. A quick
+step-by-step guide would include:
 
 |
 
 1. Get a user either by registering your user in an existing client or running the [new-user script](https://github.com/matrix-org/synapse/blob/master/scripts/register_new_matrix_user) if you are running your own Synapse homeserver.
 
-2. Assuming the homeserver you are using allows logins by password, log in via the login API: 
-```
-curl -XPOST -d '{"type":"m.login.password", "user":"example", "password":"wordpass"}' "http://localhost:8008/_matrix/client/api/v1/login"
-```
+2. Assuming the homeserver you are using allows logins by password, log in via the login API:
+
+   ```
+   curl -XPOST -d '{"type":"m.login.password", "user":"example", "password":"wordpass"}' "http://localhost:8008/_matrix/client/api/v1/login"
+   ```
+
 3. If successful, this returns the following, including an `access_token`:
 
         {
@@ -87,38 +88,49 @@ curl -XPOST -d '{"type":"m.login.password", "user":"example", "password":"wordpa
             "user_id": "@example:localhost"
         }
 
-4. This ``access_token`` will be used for authentication for the rest of your API calls. Potentially the next step you want is to make a call to the initialSync API and get the last x events from each room your user is in (via the limit parameter):
-```
-curl -XGET "http://localhost:8008/_matrix/client/api/v1/initialSync?limit=1&access_token=YOUR_ACCESS_TOKEN"
-```
+4. This ``access_token`` will be used for authentication for the rest of your API calls. Potentially the next step you want is to make a call to the sync API and get the last few events from each room your user is in:
 
-5. In addition to the last x events for all the rooms the user is interested in, this returns all the presences relevant for these rooms. Once you know which rooms the client has previously interacted with, you need to listen for incoming events. This can be done like so:
-```
-curl -XGET "http://localhost:8008/_matrix/client/api/v1/events?access_token=YOUR_ACCESS_TOKEN"
-```
+   ```
+   curl -XGET "http://localhost:8008/_matrix/client/r0/sync?access_token=YOUR_ACCESS_TOKEN"
+   ```
 
-6. This request will block waiting for an incoming event, timing out after several seconds if there is no event, returning something like this:
+5. The above will return something like this:
 
         {
-            "chunk": [],
-            "end": "s39_18_0",
-            "start": "s39_18_0"
+            "next_batch": "s72595_4483_1934",
+            "rooms": {
+                "join": {
+                    "!726s6s6q:example.com": {
+                        "state": {
+                            "events": [
+                                ...
+                            ]
+                        },
+                        "timeline": {
+                            "events": [
+                                ...
+                            ]
+                        }
+                    },
+                    ...
+                }
+            }
         }
 
-7. Even if there are no new events (as in the example above), there will be some pagination stream response keys. The client should make subsequent requests using the value of the "end" key (in this case s39_18_0) as the from query parameter e.g.
-```
-http://localhost:8008/_matrix/client/api/v1/events?access _token=YOUR_ACCESS_TOKEN&from=s39_18_0
-```
 
-8. This ensures that you only get new events. Now you have initial rooms and presence, and a stream of events - a good client should be able to process all these events and present them to the user. And potentially you might want to add functionality to generate events as well (such as messages from the user, for example) - again please consult the [client-server API spec](http://matrix.org/docs/howtos/client-server.html)!
+   You can then use the "next_batch" token to start listening for new events like so:
 
-| 
+   ```
+   curl -XGET "http://localhost:8008/_matrix/client/r0/sync?access_token=YOUR_ACCESS_TOKEN&since=s72595_4483_1934"
+   ```
+
+6. This request will block waiting for an incoming event, timing out after several seconds if there is no event. This ensures that you only get new events. Now you have the initial room states, and a stream of events - a good client should be able to process all these events and present them to the user. And potentially you might want to add functionality to generate events as well (such as messages from the user, for example)!
 
 ### Write your own server:
 
-We are still working on the server-server spec, so the best thing to do if you are interested in writing a server, is to come talk to us in [#matrix:matrix.org](https://matrix.org/beta/#/room/%23matrix:matrix.org).
- 
-If you are interested in how federation works, please see the [federation API chapter in the spec](http://matrix.org/docs/spec/#federation-api).
+We are still working on the server-server spec, so the best thing to do if you are interested in writing a server, is to come talk to us in [#matrix:matrix.org](https://matrix.to/#/#matrix:matrix.org).
+
+If you are interested in how federation works, please see the [Server-Server API spec](http://matrix.org/docs/spec/server_server/unstable.html).
 
 |
 
