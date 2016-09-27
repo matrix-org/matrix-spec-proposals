@@ -22,8 +22,6 @@ import os
 import SimpleHTTPServer
 import SocketServer
 
-PORT = 8000
-
 # Thanks to http://stackoverflow.com/a/13354482
 class MyHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     def end_headers(self):
@@ -37,12 +35,21 @@ class MyHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 if __name__ == '__main__':
     scripts_dir = os.path.dirname(os.path.abspath(__file__))
     parser = argparse.ArgumentParser()
-    parser.add_argument('swagger_dir', nargs='?',
-                        default=os.path.join(scripts_dir, 'swagger'))
+    parser.add_argument(
+        '--port', '-p', nargs=1,
+        type=int, default=8000,
+        help='TCP port to listen on (default: %(default)s)',
+    )
+    parser.add_argument(
+        'swagger_dir', nargs='?',
+        default=os.path.join(scripts_dir, 'swagger'),
+        help='directory to serve (default: %(default)s)',
+    )
     args = parser.parse_args()
 
     os.chdir(args.swagger_dir)
 
-    httpd = SocketServer.TCPServer(("localhost", PORT), MyHTTPRequestHandler)
-    print "Serving at http://localhost:%i/api-docs.json" % PORT
+    httpd = SocketServer.TCPServer(("localhost", args.port),
+                                   MyHTTPRequestHandler)
+    print "Serving at http://localhost:%i/api-docs.json" % args.port
     httpd.serve_forever()
