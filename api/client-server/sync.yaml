@@ -236,6 +236,12 @@ paths:
                   The global private data created by this user.
                 allOf:
                   - $ref: "definitions/event_batch.yaml"
+              to_device:
+                title: ToDevice
+                type: object
+                description: |-
+                  Information on the store-and-forward messages for the client device, as defined in
+                  |store_and_forward_sync|_.
           examples:
             application/json: |-
               {
