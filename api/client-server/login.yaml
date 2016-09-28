@@ -31,8 +31,12 @@ paths:
     post:
       summary: Authenticates the user.
       description: |-
-        Authenticates the user, and issues an access token they can
-        use to authorize themself in subsequent requests.
+
+        Authenticates the user, and issues an access token they can use to
+        authorize themself in subsequent requests. May also return a refresh
+        token. See `Authentication via access token`_ for details on access
+        tokens and refresh tokens.
+
       parameters:
         - in: body
           name: body
@@ -89,16 +93,11 @@ paths:
                 type: string
                 description: |-
                   An access token for the account.
-                  This access token can then be used to authorize other requests.
-                  The access token may expire at some point, and if so, it SHOULD come with a ``refresh_token``.
-                  There is no specific error message to indicate that a request has failed because
-                  an access token has expired; instead, if a client has reason to believe its
-                  access token is valid, and it receives an auth error, they should attempt to
-                  refresh for a new token on failure, and retry the request with the new token.
               refresh_token:
                 type: string
                 description: |-
-                  Optional. A ``refresh_token`` may be exchanged for a new ``access_token`` using the |/tokenrefresh|_ API endpoint.
+                  Optional. A refresh token which may be exchanged for a new
+                  access token using the |/tokenrefresh|_ API endpoint.
               home_server:
                 type: string
                 description: The hostname of the homeserver on which the account has been registered.
