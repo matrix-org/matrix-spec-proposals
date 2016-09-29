@@ -143,9 +143,11 @@ paths:
     post:
       summary: Lists the public rooms on the server with optional filter.
       description: |-
-        Lists the public rooms on the server.
+        Lists the public rooms on the server, with optional filter.
 
         This API returns paginated responses.
+      security:
+        - accessToken: []
       parameters:
         - in: query
           name: server
@@ -173,6 +175,7 @@ paths:
                   get the next batch of rooms.
               filter:
                 type: object
+                title: "Filter"
                 description: |-
                   Optional filtering of the returned rooms.
                 properties:
