@@ -28,4 +28,8 @@ properties:
     items:
       type: string
     type: array
+  contains_url:
+    type: boolean
+    description: If specified will filter events based on if they have a url key in their
+      content.
 type: object
