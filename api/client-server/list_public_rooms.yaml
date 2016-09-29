@@ -123,7 +123,8 @@ paths:
               total_room_count_estimate:
                 type: number
                 description: |-
-                   An estimate on the total number of public rooms.
+                   An estimate on the total number of public rooms, if the
+                   server has an estimate.
           examples:
             application/json: |-
               {
@@ -264,7 +265,8 @@ paths:
               total_room_count_estimate:
                 type: number
                 description: |-
-                   An estimate on the total number of public rooms.
+                   An estimate on the total number of public rooms, if the
+                   server has an estimate.
           examples:
             application/json: |-
               {
