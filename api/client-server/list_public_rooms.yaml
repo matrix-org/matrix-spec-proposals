@@ -57,6 +57,7 @@ paths:
           schema:
             type: object
             description: A list of the rooms on the server.
+            required: ["chunk"]
             properties:
               chunk:
                 title: "PublicRoomsChunks"
@@ -66,6 +67,7 @@ paths:
                 items:
                   type: object
                   title: "PublicRoomsChunk"
+                  required: ["room_id"]
                   properties:
                     aliases:
                       type: array
@@ -187,7 +189,7 @@ paths:
                       type: string
                       description: |-
                         A string to search for in the room metadata, e.g. name,
-                        topic, canonical alias etc.
+                        topic, canonical alias etc. (Optional).
             example: |-
               {"limit": 10, "filter": {"generic_search_term": "foo"}}
       responses:
@@ -196,6 +198,7 @@ paths:
           schema:
             type: object
             description: A list of the rooms on the server.
+            required: ["chunk"]
             properties:
               chunk:
                 title: "PublicRoomsChunks"
@@ -205,6 +208,7 @@ paths:
                 items:
                   type: object
                   title: "PublicRoomsChunk"
+                  required: ["room_id"]
                   properties:
                     aliases:
                       type: array
