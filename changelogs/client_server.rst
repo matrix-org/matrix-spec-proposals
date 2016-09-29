@@ -35,7 +35,7 @@
   - Add top-level ``account_data`` key to the responses to ``GET /sync`` and
     ``GET /initialSync``
     (`#380 <https://github.com/matrix-org/matrix-doc/pull/380>`_).
-  - Add "Store-and-Forward messaging" module
+  - Add "Send-to-Device messaging" module
     (`#386 <https://github.com/matrix-org/matrix-doc/pull/386>`_).
 
 r0.2.0
