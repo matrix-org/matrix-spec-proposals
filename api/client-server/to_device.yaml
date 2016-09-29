@@ -30,9 +30,9 @@ securityDefinitions:
 paths:
   "/sendToDevice/{eventType}/{txnId}":
     put:
-      summary: Send to-device event to a given set of devices.
+      summary: Send an event to a given set of devices.
       description: |-
-        This endpoint is used to send store-and-forward events to a set of
+        This endpoint is used to send send-to-device events to a set of
         client devices.
       security:
         - accessToken: []
@@ -73,7 +73,7 @@ paths:
                     description: Message content
                 example: {
                     "@alice:example.com": {
-                      "tLLbenaag": {
+                      "TLLBEANAAG": {
                         "example_content_key": "value"
                       }
                     }
@@ -86,4 +86,4 @@ paths:
             application/json: |-
               {}
       tags:
-        - Store-and-forward messaging
+        - Send-to-Device messaging

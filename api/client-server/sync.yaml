@@ -240,8 +240,8 @@ paths:
                 title: ToDevice
                 type: object
                 description: |-
-                  Information on the store-and-forward messages for the client device, as defined in
-                  |store_and_forward_sync|_.
+                  Information on the send-to-device messages for the client
+                  device, as defined in |send_to_device_sync|_.
           examples:
             application/json: |-
               {

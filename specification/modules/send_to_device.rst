@@ -12,14 +12,20 @@
 .. See the License for the specific language governing permissions and
 .. limitations under the License.
 
-Store-and-Forward messaging
-===========================
+Send-to-Device messaging
+========================
 
 .. _module:to_device:
 
 This module provides a means by which clients can exchange signalling messages
 without them being stored permanently as part of a shared communication
 history. A message is delivered exactly once to each client device.
+
+The primary motivation for this API is exchanging data that is meaningless or
+undesirable to persist in the room DAG - for example, one-time authentication
+tokens or key data. It is not intended for conversational data, which should be
+sent using the normal |/rooms/<room_id>/send|_ API for consistency throughout
+Matrix.
 
 Client behaviour
 ----------------
@@ -28,7 +34,7 @@ Only one message can be sent to each device per transaction, and they must all
 have the same event type. The device ID in the request body can be set to ``*``
 to request that the message be sent to all known devices.
 
-If there are store-and-forward messages waiting for a client, they will be
+If there are send-to-device messages waiting for a client, they will be
 returned by |/sync|_, as detailed in `Extensions to /sync`_. Clients should
 inspect the ``type`` of each returned event, and ignore any they do not
 understand.
@@ -42,10 +48,10 @@ server should list the pending messages, in order of arrival, in the response
 body.
 
 When the client calls ``/sync`` again with the ``next_batch`` token from the
-first response, the server should infer that any store-and-forward messages in
+first response, the server should infer that any send-to-device messages in
 that response have been delivered successfully, and delete them from the store.
 
-If there is a large queue of store-and-forward messages, the server should
+If there is a large queue of send-to-device messages, the server should
 limit the number sent in each ``/sync`` response. 100 messages is recommended
 as a reasonable limit.
 
@@ -53,7 +59,7 @@ If the client sends messages to users on remote domains, those messages should
 be sent on to the remote servers via
 `federation`_.
 
-.. _`federation`: ../server_server/latest.html#store-and-forward-messages
+.. _`federation`: ../server_server/latest.html#send-to-device-messages
 
 .. TODO-spec:
 
@@ -76,8 +82,8 @@ Protocol definitions
      may be valid. Should we add something to the response?
 
 .. anchor for link from /sync api spec
-.. |store_and_forward_sync| replace:: Store-and-Forward messaging
-.. _store_and_forward_sync:
+.. |send_to_device_sync| replace:: Send-to-Device messaging
+.. _send_to_device_sync:
 
 Extensions to /sync
 ~~~~~~~~~~~~~~~~~~~
@@ -89,7 +95,7 @@ This module adds the following properties to the |/sync|_ response:
 ========= ========= =======================================================
 Parameter Type      Description
 ========= ========= =======================================================
-to_device ToDevice  Optional. Information on the store-and-forward messages
+to_device ToDevice  Optional. Information on the send-to-device messages
                     for the client device.
 ========= ========= =======================================================
 
@@ -98,7 +104,7 @@ to_device ToDevice  Optional. Information on the store-and-forward messages
 ========= ========= =============================================
 Parameter Type      Description
 ========= ========= =============================================
-events    [Event]   List of store-and-forward messages
+events    [Event]   List of send-to-device messages
 ========= ========= =============================================
 
 ``Event``

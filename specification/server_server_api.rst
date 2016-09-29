@@ -975,15 +975,15 @@ the given room; these are servers that the requesting server may wish to use as
 resident servers as part of the remote join handshake. This list may or may not
 include the server answering the query.
 
-Store-and-forward messages
---------------------------
+Send-to-device messaging
+------------------------
 
 .. TODO: add modules to the federation spec and make this a module
 
-The server API for store-and-forward messaging is based on the following
+The server API for send-to-device messaging is based on the following
 EDU. There are no PDUs or Federation Queries involved.
 
-Each store-and-forward message should be sent to the destination server using
+Each send-to-device message should be sent to the destination server using
 the following EDU::
 
   EDU type: m.direct_to_device

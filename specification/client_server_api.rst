@@ -1258,6 +1258,9 @@ have to wait in milliseconds before they can try again.
 .. |/rooms/<room_id>/state| replace:: ``/rooms/<room_id>/state``
 .. _/rooms/<room_id>/state: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state
 
+.. |/rooms/<room_id>/send| replace:: ``/rooms/<room_id>/send``
+.. _/rooms/<room_id>/send: #put-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-send-eventtype-txnid
+
 .. |/rooms/<room_id>/invite| replace:: ``/rooms/<room_id>/invite``
 .. _/rooms/<room_id>/invite: #post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-invite
 
