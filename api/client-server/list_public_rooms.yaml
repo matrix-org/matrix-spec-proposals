@@ -109,11 +109,15 @@ paths:
               next_batch:
                 type: string
                 description: |-
-                  A pagination token for the response, if there are any more results.
+                  A pagination token for the response. The absence of this token
+                  means there are no more results to fetch and the client should
+                  stop paginating.
               prev_batch:
                 type: string
                 description: |-
-                  A pagination token for the response, if there are any more results.
+                  A pagination token that allows fetching previous results. The
+                  absence of this token means there are no results before this
+                  batch, i.e. this is the first batch.
               total_room_count_estimate:
                 type: number
                 description: |-
@@ -244,11 +248,15 @@ paths:
               next_batch:
                 type: string
                 description: |-
-                  A pagination token for the response, if there are any more results.
+                  A pagination token for the response. The absence of this token
+                  means there are no more results to fetch and the client should
+                  stop paginating.
               prev_batch:
                 type: string
                 description: |-
-                  A pagination token for the response, if there are any more results.
+                  A pagination token that allows fetching previous results. The
+                  absence of this token means there are no results before this
+                  batch, i.e. this is the first batch.
               total_room_count_estimate:
                 type: number
                 description: |-
