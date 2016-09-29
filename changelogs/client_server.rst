@@ -35,6 +35,8 @@
   - Add top-level ``account_data`` key to the responses to ``GET /sync`` and
     ``GET /initialSync``
     (`#380 <https://github.com/matrix-org/matrix-doc/pull/380>`_).
+  - Add pagination and filter support to ``/publicRooms``
+    (`#388 <https://github.com/matrix-org/matrix-doc/pull/388>`_).
 
 r0.2.0
 ======
