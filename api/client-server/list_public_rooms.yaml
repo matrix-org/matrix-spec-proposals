@@ -140,5 +140,137 @@ paths:
         400:
           description: >
             The request body is malformed or the room alias specified is already taken.
+    post:
+      summary: Lists the public rooms on the server with optional filter.
+      description: |-
+        Lists the public rooms on the server.
+
+        This API returns paginated responses.
+      parameters:
+        - in: query
+          name: server
+          type: string
+          description: |-
+            The server to fetch the public room lists from. Defaults to the
+            local server.
+        - in: body
+          name: body
+          required: true
+          description: |-
+            Options for which rooms to return.
+          schema:
+            type: object
+            properties:
+              limit:
+                type: number
+                description: |-
+                  Limit the number of results returned, ordered by number of
+                  memebers in the room. Defaults to no limit.
+              since:
+                type: string
+                description: |-
+                  A pagination token from a previous request, allowing clients to
+                  get the next batch of rooms.
+              filter:
+                type: object
+                description: |-
+                  Optional filtering of the returned rooms.
+                properties:
+                    generic_search_term:
+                      type: string
+                      description: |-
+                        A string to search for in the room metadata, e.g. name,
+                        topic, canonical alias etc.
+            example: |-
+              {"limit": 10, "filter": {"generic_search_term": "foo"}}
+      responses:
+        200:
+          description: A list of the rooms on the server.
+          schema:
+            type: object
+            description: A list of the rooms on the server.
+            properties:
+              chunk:
+                title: "PublicRoomsChunks"
+                type: array
+                description: |-
+                  A paginated chunk of public rooms.
+                items:
+                  type: object
+                  title: "PublicRoomsChunk"
+                  properties:
+                    aliases:
+                      type: array
+                      description: |-
+                        Aliases of the room. May be empty.
+                      items:
+                        type: string
+                    canonical_alias:
+                      type: string
+                      description: |-
+                        The canonical alias of the room, if any. May be null.
+                    name:
+                      type: string
+                      description: |-
+                        The name of the room, if any. May be null.
+                    num_joined_members:
+                      type: number
+                      description: |-
+                        The number of members joined to the room.
+                    room_id:
+                      type: string
+                      description: |-
+                        The ID of the room.
+                    topic:
+                      type: string
+                      description: |-
+                        The topic of the room, if any. May be null.
+                    world_readable:
+                      type: boolean
+                      description: |-
+                        Whether the room may be viewed by guest users without joining.
+                    guest_can_join:
+                      type: boolean
+                      description: |-
+                        Whether guest users may join the room and participate in it.
+                        If they can, they will be subject to ordinary power level
+                        rules like any other user.
+                    avatar_url:
+                      type: string
+                      description: The URL for the room's avatar, if one is set.
+              next_batch:
+                type: string
+                description: |-
+                  A pagination token for the response, if there are any more results.
+              prev_batch:
+                type: string
+                description: |-
+                  A pagination token for the response, if there are any more results.
+              total_room_count_estimate:
+                type: number
+                description: |-
+                   An estimate on the total number of public rooms.
+          examples:
+            application/json: |-
+              {
+                "chunk": [
+                  {
+                    "aliases": ["#murrays:cheese.bar"],
+                    "avatar_url": "mxc://bleeker.street/CHEDDARandBRIE",
+                    "guest_can_join": false,
+                    "name": "CHEESE",
+                    "num_joined_members": 37,
+                    "room_id": "!ol19s:bleecker.street",
+                    "topic": "Tasty tasty cheese",
+                    "world_readable": true
+                  }
+                ],
+                "next_batch": "p190q",
+                "prev_batch": "p1902",
+                "total_room_count_estimate": 115
+              }
+        400:
+          description: >
+            The request body is malformed or the room alias specified is already taken.
       tags:
         - Room discovery
