@@ -170,7 +170,15 @@ paths:
                   ``public_chat``: =>
                       ``join_rules`` is set to ``public``.
                       ``history_visibility`` is set to ``shared``.
-
+              is_direct:
+                type: boolean
+                description: |-
+                  This flag  shows that the intent for this room is to be a
+                  one-to-one 'direct' conversation with the invitee. The
+                  invitee's client should indicate this in the UI to the user,
+                  as should the inviter. This is to keep the intent for new rooms
+                  synchronised at first. Both users may subsequently choose to
+                  tag the room differently.
       responses:
         200:
           description: Information about the newly created room.
