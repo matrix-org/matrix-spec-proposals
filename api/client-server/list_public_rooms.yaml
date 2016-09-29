@@ -54,6 +54,10 @@ paths:
                         Aliases of the room. May be empty.
                       items:
                         type: string
+                    canonical_alias:
+                      type: string
+                      description: |-
+                        The canonical alias of the room, if any. May be null.
                     name:
                       type: string
                       description: |-
