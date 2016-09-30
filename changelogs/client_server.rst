@@ -35,9 +35,9 @@
   - Add top-level ``account_data`` key to the responses to ``GET /sync`` and
     ``GET /initialSync``
     (`#380 <https://github.com/matrix-org/matrix-doc/pull/380>`_).
-  - Add ``contains_url`` to ``RoomEventFilter``.
+  - Add ``contains_url`` option to ``RoomEventFilter``.
     (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
-  - Add ``filter`` query param to ``/messages``
+  - Add ``filter`` optional query param to ``/messages``
     (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
 
 r0.2.0
