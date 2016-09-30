@@ -69,7 +69,7 @@ paths:
                   title: "PublicRoomsChunk"
                   required:
                     - room_id
-                    - num_joined_users
+                    - num_joined_members
                     - world_readable
                     - guest_can_join
                   properties:
@@ -213,7 +213,11 @@ paths:
                 items:
                   type: object
                   title: "PublicRoomsChunk"
-                  required: ["room_id"]
+                  required:
+                    - room_id
+                    - num_joined_members
+                    - world_readable
+                    - guest_can_join
                   properties:
                     aliases:
                       type: array
@@ -224,11 +228,11 @@ paths:
                     canonical_alias:
                       type: string
                       description: |-
-                        The canonical alias of the room, if any. May be null.
+                        The canonical alias of the room, if any.
                     name:
                       type: string
                       description: |-
-                        The name of the room, if any. May be null.
+                        The name of the room, if any.
                     num_joined_members:
                       type: number
                       description: |-
@@ -240,7 +244,7 @@ paths:
                     topic:
                       type: string
                       description: |-
-                        The topic of the room, if any. May be null.
+                        The topic of the room, if any.
                     world_readable:
                       type: boolean
                       description: |-
