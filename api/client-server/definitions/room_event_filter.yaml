@@ -30,6 +30,6 @@ properties:
     type: array
   contains_url:
     type: boolean
-    description: If specified will filter events based on if they have a url key in their
-      content.
+    description: If ``true``, includes only events with a url key in their content. If
+      ``false``, excludes those events.
 type: object
