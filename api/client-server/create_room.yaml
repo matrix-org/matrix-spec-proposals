@@ -179,6 +179,8 @@ paths:
                   as should the inviter. This is to keep the intent for new rooms
                   synchronised at first. Both users may subsequently choose to
                   tag the room differently.
+                  This adds an ``is_direct`` flag to the content of any invites
+                  sent.
       responses:
         200:
           description: Information about the newly created room.
