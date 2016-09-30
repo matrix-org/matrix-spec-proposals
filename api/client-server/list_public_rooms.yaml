@@ -124,6 +124,8 @@ paths:
                   A pagination token that allows fetching previous results. The
                   absence of this token means there are no results before this
                   batch, i.e. this is the first batch.
+                  The direction of pagination is specified solely by which token
+                  is supplied, rather than via an explicit flag.
               total_room_count_estimate:
                 type: number
                 description: |-
@@ -270,6 +272,8 @@ paths:
                   A pagination token that allows fetching previous results. The
                   absence of this token means there are no results before this
                   batch, i.e. this is the first batch.
+                  The direction of pagination is specified solely by which token
+                  is supplied, rather than via an explicit flag.
               total_room_count_estimate:
                 type: number
                 description: |-
