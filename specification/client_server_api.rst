@@ -158,13 +158,108 @@ recommended.
 
 Client Authentication
 ---------------------
+
+Authentication via access token
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Most API endpoints require the user to identify themselves by presenting
 previously obtained credentials in the form of an ``access_token`` query
-parameter.
+parameter. An access token is typically obtained via the `Login`_ or
+`Registration`_ processes.
 
 When credentials are required but missing or invalid, the HTTP call will
 return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
 ``M_UNKNOWN_TOKEN`` respectively.
+
+Access tokens may have a limited lifetime. The validity period of an access
+token is defined by the server, and may depend on the level of permissions
+granted by the access token, but an hour would be a reasonable
+default.
+
+When a server issues an access token, it may also issue a refresh
+token. Refresh tokens are used to obtain a new access token when the current
+access token expires. This is done via the |/tokenrefresh|_ API. A refresh
+token can only be used once - a server may issue a new refresh token when the
+access token is refreshed.
+
+The complete flow is as follows:
+
+::
+
+       +--------+                                       +--------+
+       |        | --(A)-- Auth request (eg /login) ---> |        |
+       |        |                                       |        |
+       |        | <-(B)--- Access & refresh tokens ---- |        |
+       |        |                                       |        |
+       |        |                                       |        |
+       |        | --(C)-- Request with access_token --> |        |
+       |        |                                       |        |
+       |        | <-(D)--------- Response ------------- |        |
+       |        |                                       |        |
+       |        |                                       |        |
+       |        | --(E)-- Request with access_token --> |        |
+       | Client |                                       | Server |
+       |        | <-(F)------ M_UNKNOWN_TOKEN --------- |        |
+       |        |                                       |        |
+       |        |                                       |        |
+       |        | --(G)------ Token refresh ---- -----> |        |
+       |        |                                       |        |
+       |        | <-(H)- New access & refresh tokens -- |        |
+       |        |                                       |        |
+       |        |                                       |        |
+       |        | --(I)-- Request with access_token --> |        |
+       |        |                                       |        |
+       |        | <-(J)--------- Response ------------- |        |
+       +--------+                                       +--------+
+
+The flow above includes the following steps:
+
+A. The client requests an access token via the the `Login`_ or
+   `Registration`_ processes.
+
+B. The server responds with an access token and, optionally, a refresh token.
+
+C. The client makes a request to the server and passes the access token as the
+   ``access_token`` query parameter.
+
+D. The server sees that the access token is valid and responds to the request.
+
+E. Steps C and D repeat until the access token expires. The client does not
+   know that the access token has expires, so makes another request.
+
+F. The server sees that the access token has expired, so responds with a status
+   of 401 and the error code ``M_UNKNOWN_TOKEN``.
+
+G. The client makes a request to |/tokenrefresh|_, using the refresh token
+   which was returned in step B.
+
+H. The server checks that the refresh token is still valid and responds with
+   another access token, and, optionally, a new refresh token.
+
+I. The client repeats the request made in step E, this time using the new
+   access token.
+
+J. The access token is now valid and the server responds accordingly.
+
+.. admonition:: Rationale
+
+  Limiting the lifetime of an access token serves two purposes. Firstly, it
+  limits the exposure should an access token be compromised, since an attacker
+  has a limited window in which to exploit the compromise.
+
+  Secondly, it allows servers to authorise access to certain resources, and
+  later revoke it, without having to consult the authorisation system for each
+  request. There will be a period up to the lifetime of the access token where
+  the access should have been revoked but is still permitted, but this is
+  limited by the lifetime of the access token and may be an acceptable
+  tradeoff.
+
+.. NOTE::
+
+   This specification does not mandate a particular format for the access
+   tokens and refresh tokens. Clients should treat both tokens as opaque byte
+   sequences. Servers are free to choose an appropriate format. Server
+   implementors may like to investigate `macaroons <macaroon_>`_.
 
 User-Interactive Authentication API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -249,7 +344,7 @@ complete auth type ``example.type.foo``, it might submit something like this:
 
   POST /_matrix/client/r0/endpoint HTTP/1.1
   Content-Type: application/json
-  
+
   {
     "a_request_parameter": "something",
     "another_request_parameter": "something else",
@@ -460,7 +555,7 @@ server side, as well as potentially invalidating the token completely once the
 device has successfully logged in (e.g. when we receive a request from the
 newly provisioned access_token).
 
-The ``token`` must be a macaroon, with a caveat encoding the user id. There is
+The ``token`` must be a `macaroon`_, with a caveat encoding the user id. There is
 therefore no need for the client to submit a separate username.
 
 OAuth2-based
@@ -595,7 +690,7 @@ follows:
     "token": "<login token>"
   }
 
-As with `token-based`_ interactive login, the ``token`` must be a macroon with
+As with `token-based`_ interactive login, the ``token`` must be a `macaroon`_ with
 a caveat which includes the user id. In the case that the token is not valid, the
 homeserver must respond with ``403 Forbidden`` and an error code of ``M_FORBIDDEN``.
 
@@ -614,6 +709,8 @@ login API::
 This returns an HTML and JavaScript page which can perform the entire login
 process. The page will attempt to call the JavaScript function
 ``window.onLogin`` when login has been successfully completed.
+
+.. _Registration:
 
 Account registration and management
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1230,6 +1327,9 @@ have to wait in milliseconds before they can try again.
     homeserver come up with their own idea, causing totally unpredictable performance over
     federated rooms?
 
+.. References
+
+.. _`macaroon`: http://research.google.com/pubs/pub41892.html
 
 .. Links through the external API docs are below
 .. =============================================
