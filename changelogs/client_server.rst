@@ -8,23 +8,11 @@
     which support push rules, but any other clients implementing
     the push rules API should be aware of this change. This
     makes it simple to mute rooms correctly in the API.
-
-- Spec clarifications:
-
-  - Spell out the way that state is handled by ``POST /createRoom``
-    (`#362 <https://github.com/matrix-org/matrix-doc/pull/362>`_).
-  - Emphasise that ``POST /tokenrefresh`` should expire the access token
-    (`#363 <https://github.com/matrix-org/matrix-doc/pull/363>`_).
-  - Clarify the fields which are applicable to different types of push rule
-    (`#365 <https://github.com/matrix-org/matrix-doc/pull/365>`_).
-  - A number of clarifications to authentication
-    (`#371 <https://github.com/matrix-org/matrix-doc/pull/371>`_).
-  - Correct references to ``user_id`` which should have been ``sender``
-    (`#376 <https://github.com/matrix-org/matrix-doc/pull/376>`_).
-  - Correct inconsistent specification of ``redacted_because`` fields and their
-    values (`#378 <https://github.com/matrix-org/matrix-doc/pull/378>`_).
-  - Mark required fields in response objects as such
-    (`#394 <https://github.com/matrix-org/matrix-doc/pull/394>`_).
+    (`#373 <https://github.com/matrix-org/matrix-doc/pull/373>`_).
+  - Remove ``/tokenrefresh`` from the API.
+    (`#395 <https://github.com/matrix-org/matrix-doc/pull/395>`_).
+  - Remove requirement that tokens used in token-based login be macaroons.
+    (`#395 <https://github.com/matrix-org/matrix-doc/pull/395>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
@@ -41,6 +29,21 @@
     (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
   - Add ``filter`` optional query param to ``/messages``
     (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
+
+- Spec clarifications:
+
+  - Spell out the way that state is handled by ``POST /createRoom``
+    (`#362 <https://github.com/matrix-org/matrix-doc/pull/362>`_).
+  - Clarify the fields which are applicable to different types of push rule
+    (`#365 <https://github.com/matrix-org/matrix-doc/pull/365>`_).
+  - A number of clarifications to authentication
+    (`#371 <https://github.com/matrix-org/matrix-doc/pull/371>`_).
+  - Correct references to ``user_id`` which should have been ``sender``
+    (`#376 <https://github.com/matrix-org/matrix-doc/pull/376>`_).
+  - Correct inconsistent specification of ``redacted_because`` fields and their
+    values (`#378 <https://github.com/matrix-org/matrix-doc/pull/378>`_).
+  - Mark required fields in response objects as such
+    (`#394 <https://github.com/matrix-org/matrix-doc/pull/394>`_).
 
 r0.2.0
 ======
