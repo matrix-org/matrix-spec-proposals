@@ -180,7 +180,8 @@ paths:
                   synchronised at first. Both users may subsequently choose to
                   tag the room differently.
                   This adds an ``is_direct`` flag to the content of any invites
-                  sent.
+                  sent, which will appear in the content of the `m.room.member`_
+                  event.
       responses:
         200:
           description: Information about the newly created room.
