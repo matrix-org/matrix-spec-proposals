@@ -23,6 +23,8 @@
     (`#376 <https://github.com/matrix-org/matrix-doc/pull/376>`_).
   - Correct inconsistent specification of ``redacted_because`` fields and their
     values (`#378 <https://github.com/matrix-org/matrix-doc/pull/378>`_).
+  - Mark required fields in response objects as such
+    (`#394 <https://github.com/matrix-org/matrix-doc/pull/394>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
