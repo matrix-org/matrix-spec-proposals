@@ -27,6 +27,7 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"text/template"
 	"time"
 
 	"github.com/hashicorp/golang-lru"
@@ -83,19 +84,15 @@ func accessTokenQuerystring() string {
 	return fmt.Sprintf("?access_token=%s", *accessToken)
 }
 
-func gitClone(url string, shared bool) (string, error) {
-	directory := path.Join("/tmp/matrix-doc", strconv.FormatInt(rand.Int63(), 10))
-	if err := os.MkdirAll(directory, permissionsOwnerFull); err != nil {
-		return "", fmt.Errorf("error making directory %s: %v", directory, err)
-	}
+func gitClone(url string, directory string, shared bool) error {
 	args := []string{"clone", url, directory}
 	if shared {
 		args = append(args, "--shared")
 	}
 	if err := runGitCommand(directory, args); err != nil {
-		return "", err
+		return err
 	}
-	return directory, nil
+	return nil
 }
 
 func gitCheckout(path, sha string) error {
@@ -159,6 +156,16 @@ func generate(dir string) error {
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())
 	}
+
+	// cheekily dump the swagger docs into the gen directory so they can be
+	// served by serveSpec
+	cmd = exec.Command("python", "dump-swagger.py", "gen/api-docs.json")
+	cmd.Dir = path.Join(dir, "scripts")
+	cmd.Stderr = &b
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("error generating api docs: %v\nOutput from dump-swagger:\n%v", err, b.String())
+	}
+
 	return nil
 }
 
@@ -195,8 +202,14 @@ func (s *server) generateAt(sha string) (dst string, err error) {
 			return
 		}
 	}
+
+	dst, err = makeTempDir()
+	if err != nil {
+		return
+	}
+	log.Printf("Generating %s in %s\n", sha, dst)
 	s.mu.Lock()
-	dst, err = gitClone(s.matrixDocCloneURL, true)
+	err = gitClone(s.matrixDocCloneURL, dst, true)
 	s.mu.Unlock()
 	if err != nil {
 		return
@@ -219,7 +232,7 @@ func (s *server) getSHAOf(ref string) (string, error) {
 	err := cmd.Run()
 	s.mu.Unlock()
 	if err != nil {
-		return "", fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())
+		return "", fmt.Errorf("error generating spec: %v\nOutput from git:\n%v", err, b.String())
 	}
 	return strings.TrimSpace(b.String()), nil
 }
@@ -394,6 +407,11 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 		cache.Add(sha, pathToContent)
+	}
+
+	if requestedPath == "api-docs.json" {
+		// allow other swagger UIs access to our swagger
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
 
 	if b, ok := pathToContent[requestedPath]; ok {
@@ -588,12 +606,6 @@ func (srv *server) makeIndex(w http.ResponseWriter, req *http.Request) {
 		writeError(w, 500, err)
 		return
 	}
-	s := "<body><ul>"
-	for _, pull := range pulls {
-		s += fmt.Sprintf(`<li>%d: <a href="%s">%s</a>: <a href="%s">%s</a>: <a href="spec/%d/">spec</a> <a href="diff/html/%d/">spec diff</a> <a href="diff/rst/%d/">rst diff</a></li>`,
-			pull.Number, pull.User.HTMLURL, pull.User.Login, pull.HTMLURL, pull.Title, pull.Number, pull.Number, pull.Number)
-	}
-	s += "</ul>"
 
 	branches, err := srv.getBranches()
 	if err != nil {
@@ -601,7 +613,48 @@ func (srv *server) makeIndex(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	s += `<div>View the spec at:<ul>`
+	// write our stuff into a buffer so that we can change our minds
+	// and write a 500 if it all goes wrong.
+	var b bytes.Buffer
+	b.Write([]byte(`
+<head>
+<script>
+function redirectToApiDocs(relativePath) {
+    var url = new URL(window.location);
+    url.pathname += relativePath;
+    var newLoc = "http://matrix.org/docs/api/client-server/?url=" + encodeURIComponent(url);
+    window.location = newLoc;
+}
+</script>
+</head>
+<body><ul>
+`))
+
+	tmpl, err := template.New("pr entry").Parse(`
+<li>{{.Number}}:
+ <a href="{{.User.HTMLURL}}">{{.User.Login}}</a>:
+ <a href="{{.HTMLURL}}">{{.Title}}</a>:
+ <a href="spec/{{.Number}}/">spec</a>
+ <a href="#" onclick="redirectToApiDocs('spec/{{.Number}}/api-docs.json')">api docs</a>
+ <a href="diff/html/{{.Number}}/">spec diff</a>
+ <a href="diff/rst/{{.Number}}/">rst diff</a>
+</li>
+`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, pull := range pulls {
+		err = tmpl.Execute(&b, pull)
+		if err != nil {
+			writeError(w, 500, err)
+			return
+		}
+	}
+	b.Write([]byte(`
+</ul>
+<div>View the spec at:<ul>
+`))
 	branchNames := []string{}
 	for _, branch := range branches {
 		if strings.HasPrefix(branch, "drafts/") {
@@ -611,15 +664,14 @@ func (srv *server) makeIndex(w http.ResponseWriter, req *http.Request) {
 	branchNames = append(branchNames, "HEAD")
 	for _, branch := range branchNames {
 		href := "spec/" + url.QueryEscape(branch) + "/"
-		s += fmt.Sprintf(`<li><a href="%s">%s</a></li>`, href, branch)
+		fmt.Fprintf(&b, `<li><a href="%s">%s</a></li>`, href, branch)
 		if *includesDir != "" {
-			s += fmt.Sprintf(`<li><a href="%s?matrixdotorgstyle=1">%s, styled like matrix.org</a></li>`,
+			fmt.Fprintf(&b, `<li><a href="%s?matrixdotorgstyle=1">%s, styled like matrix.org</a></li>`,
 				href, branch)
 		}
 	}
-	s += "</ul></div></body>"
-
-	io.WriteString(w, s)
+	b.Write([]byte("</ul></div></body>"))
+	b.WriteTo(w)
 }
 
 func ignoreExitCodeOne(err error) error {
@@ -655,8 +707,12 @@ func main() {
 		log.Fatal(err)
 	}
 	rand.Seed(time.Now().Unix())
-	masterCloneDir, err := gitClone(matrixDocCloneURL, false)
+	masterCloneDir, err := makeTempDir()
 	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Creating master clone dir %s\n", masterCloneDir)
+	if err = gitClone(matrixDocCloneURL, masterCloneDir, false); err != nil {
 		log.Fatal(err)
 	}
 	s := server{matrixDocCloneURL: masterCloneDir}
@@ -690,4 +746,12 @@ func initCache() error {
 	c2, err := lru.New(50) // Evict after 50 entries (i.e. 50 sha1s)
 	styledSpecCache = c2
 	return err
+}
+
+func makeTempDir() (string, error) {
+	directory := path.Join("/tmp/matrix-doc", strconv.FormatInt(rand.Int63(), 10))
+	if err := os.MkdirAll(directory, permissionsOwnerFull); err != nil {
+		return "", fmt.Errorf("error making directory %s: %v", directory, err)
+	}
+	return directory, nil
 }
