@@ -173,7 +173,7 @@ paths:
               is_direct:
                 type: boolean
                 description: |-
-                  This flag  shows that the intent for this room is to be a
+                  This flag shows that the intent for this room is to be a
                   one-to-one 'direct' conversation with the invitee. The
                   invitee's client should indicate this in the UI to the user,
                   as should the inviter. This is to keep the intent for new rooms
