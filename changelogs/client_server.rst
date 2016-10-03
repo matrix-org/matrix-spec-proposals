@@ -23,6 +23,8 @@
     (`#376 <https://github.com/matrix-org/matrix-doc/pull/376>`_).
   - Correct inconsistent specification of ``redacted_because`` fields and their
     values (`#378 <https://github.com/matrix-org/matrix-doc/pull/378>`_).
+  - Mark required fields in response objects as such
+    (`#394 <https://github.com/matrix-org/matrix-doc/pull/394>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
@@ -37,6 +39,10 @@
     (`#380 <https://github.com/matrix-org/matrix-doc/pull/380>`_).
   - Add ``is_direct`` flag to ``/createRoom``.
     (`#389 <https://github.com/matrix-org/matrix-doc/pull/389>`_).
+  - Add ``contains_url`` option to ``RoomEventFilter``.
+    (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
+  - Add ``filter`` optional query param to ``/messages``
+    (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
 
 r0.2.0
 ======
