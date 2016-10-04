@@ -158,13 +158,22 @@ recommended.
 
 Client Authentication
 ---------------------
+
 Most API endpoints require the user to identify themselves by presenting
 previously obtained credentials in the form of an ``access_token`` query
-parameter.
+parameter. An access token is typically obtained via the `Login`_ or
+`Registration`_ processes.
 
 When credentials are required but missing or invalid, the HTTP call will
 return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
 ``M_UNKNOWN_TOKEN`` respectively.
+
+.. NOTE::
+
+   This specification does not mandate a particular format for the access
+   token. Clients should treat it as an opaque byte sequence. Servers are free
+   to choose an appropriate format. Server implementors may like to investigate
+   `macaroons <macaroon_>`_.
 
 User-Interactive Authentication API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -249,7 +258,7 @@ complete auth type ``example.type.foo``, it might submit something like this:
 
   POST /_matrix/client/r0/endpoint HTTP/1.1
   Content-Type: application/json
-  
+
   {
     "a_request_parameter": "something",
     "another_request_parameter": "something else",
@@ -460,8 +469,8 @@ server side, as well as potentially invalidating the token completely once the
 device has successfully logged in (e.g. when we receive a request from the
 newly provisioned access_token).
 
-The ``token`` must be a macaroon, with a caveat encoding the user id. There is
-therefore no need for the client to submit a separate username.
+The server must encode the user id in the ``token``. There is therefore no need
+for the client to submit a separate username.
 
 OAuth2-based
 <<<<<<<<<<<<
@@ -595,9 +604,9 @@ follows:
     "token": "<login token>"
   }
 
-As with `token-based`_ interactive login, the ``token`` must be a macroon with
-a caveat which includes the user id. In the case that the token is not valid, the
-homeserver must respond with ``403 Forbidden`` and an error code of ``M_FORBIDDEN``.
+As with `token-based`_ interactive login, the ``token`` must encode the
+user id. In the case that the token is not valid, the homeserver must respond
+with ``403 Forbidden`` and an error code of ``M_FORBIDDEN``.
 
 {{login_cs_http_api}}
 
@@ -614,6 +623,8 @@ login API::
 This returns an HTML and JavaScript page which can perform the entire login
 process. The page will attempt to call the JavaScript function
 ``window.onLogin`` when login has been successfully completed.
+
+.. _Registration:
 
 Account registration and management
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1230,15 +1241,15 @@ have to wait in milliseconds before they can try again.
     homeserver come up with their own idea, causing totally unpredictable performance over
     federated rooms?
 
+.. References
+
+.. _`macaroon`: http://research.google.com/pubs/pub41892.html
 
 .. Links through the external API docs are below
 .. =============================================
 
 .. |/initialSync| replace:: ``/initialSync``
 .. _/initialSync: #get-matrix-client-%CLIENT_MAJOR_VERSION%-initialsync
-
-.. |/tokenrefresh| replace:: ``/tokenrefresh``
-.. _/tokenrefresh: #post-matrix-client-%CLIENT_MAJOR_VERSION%-tokenrefresh
 
 .. |/sync| replace:: ``/sync``
 .. _/sync: #get-matrix-client-%CLIENT_MAJOR_VERSION%-sync

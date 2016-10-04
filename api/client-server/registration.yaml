@@ -39,6 +39,9 @@ paths:
 
         - `guest` accounts. These accounts may have limited permissions and may not be supported by all servers.
 
+        If registration is successful, this endpoint will issue an access token
+        the client can use to authorize itself in subsequent requests.
+
       parameters:
         - in: query
           name: kind
@@ -90,8 +93,7 @@ paths:
               {
                 "user_id": "@cheeky_monkey:matrix.org",
                 "access_token": "abc123",
-                "home_server": "matrix.org",
-                "refresh_token": "def456"
+                "home_server": "matrix.org"
               }
           schema:
             type: object
@@ -104,16 +106,6 @@ paths:
                 description: |-
                   An access token for the account.
                   This access token can then be used to authorize other requests.
-                  The access token may expire at some point, and if so, it SHOULD come with a ``refresh_token``.
-                  There is no specific error message to indicate that a request has failed because
-                  an access token has expired; instead, if a client has reason to believe its
-                  access token is valid, and it receives an auth error, they should attempt to
-                  refresh for a new token on failure, and retry the request with the new token.
-              refresh_token:
-                type: string
-                # TODO: Work out how to linkify /tokenrefresh
-                description: |-
-                  (optional) A ``refresh_token`` may be exchanged for a new ``access_token`` using the /tokenrefresh API endpoint.
               home_server:
                 type: string
                 description: The hostname of the homeserver on which the account has been registered.
