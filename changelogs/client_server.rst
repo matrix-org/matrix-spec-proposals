@@ -41,6 +41,8 @@
     (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
   - Add ``filter`` optional query param to ``/messages``
     (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
+  - Add "Send-to-Device messaging" module
+    (`#386 <https://github.com/matrix-org/matrix-doc/pull/386>`_).
 
 r0.2.0
 ======
