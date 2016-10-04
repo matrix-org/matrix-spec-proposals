@@ -23,6 +23,8 @@
     (`#376 <https://github.com/matrix-org/matrix-doc/pull/376>`_).
   - Correct inconsistent specification of ``redacted_because`` fields and their
     values (`#378 <https://github.com/matrix-org/matrix-doc/pull/378>`_).
+  - Mark required fields in response objects as such
+    (`#394 <https://github.com/matrix-org/matrix-doc/pull/394>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
@@ -35,6 +37,10 @@
   - Add top-level ``account_data`` key to the responses to ``GET /sync`` and
     ``GET /initialSync``
     (`#380 <https://github.com/matrix-org/matrix-doc/pull/380>`_).
+  - Add ``contains_url`` option to ``RoomEventFilter``.
+    (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
+  - Add ``filter`` optional query param to ``/messages``
+    (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
   - Add "Send-to-Device messaging" module
     (`#386 <https://github.com/matrix-org/matrix-doc/pull/386>`_).
 

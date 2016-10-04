@@ -75,6 +75,13 @@ paths:
           description: |-
             The maximum number of events to return. Default: 10.
           x-example: "3"
+        - in: query
+          type: string
+          name: filter
+          description: |-
+            A JSON RoomEventFilter to filter returned events with.
+          x-example: |-
+            {"contains_url":true}
       responses:
         200:
           description: A list of messages with a new token to request more.
