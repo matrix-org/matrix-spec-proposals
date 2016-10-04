@@ -40,7 +40,7 @@ properties:
           - ban
         type: string
       is_direct:
-        description: Flag indicating if this room was created with the intention of being a direct chat
+        description: Flag indicating if the room containing this event was created with the intention of being a direct chat.
         type: boolean
       third_party_invite:
         properties:
