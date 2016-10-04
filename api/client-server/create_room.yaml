@@ -173,15 +173,9 @@ paths:
               is_direct:
                 type: boolean
                 description: |-
-                  This flag shows that the intent for this room is to be a
-                  one-to-one 'direct' conversation with the invitee. The
-                  invitee's client should indicate this in the UI to the user,
-                  as should the inviter. This is to keep the intent for new rooms
-                  synchronised at first. Both users may subsequently choose to
-                  tag the room differently.
-                  This adds an ``is_direct`` flag to the content of any invites
-                  sent, which will appear in the content of the `m.room.member`_
-                  event.
+                  This flag makes the server set the is_direct flag on the
+                  m.room.member events sent to the users in invite and
+                  invite_3pid. See (Direct Messaging) for more information.
       responses:
         200:
           description: Information about the newly created room.

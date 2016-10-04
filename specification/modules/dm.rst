@@ -17,7 +17,7 @@ Direct Messaging
 
 .. _module:dm:
 
-All communications over Matrix happens within a room. It is sometimes
+All communication over Matrix happens within a room. It is sometimes
 desireable to offer users the concept of speaking directly to one
 particular person. This module defines a way of marking certain rooms
 as 'direct chats' with a given person. This does not restrict the chat
