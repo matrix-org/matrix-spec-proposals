@@ -1,0 +1,44 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+type: object
+description: A client device
+title: Device
+properties:
+  device_id:
+    type: string
+    description: Identifier of this device.
+    example: QBUAZIFURK
+  display_name:
+    type: string
+    description: |-
+      Display name set by the user for this device. Absent if no name has been
+      set.
+    example: android
+  last_seen_ip:
+    type: string
+    description: |-
+      The IP address where this device was last seen. (May be a few minutes out
+      of date, for efficiency reasons).
+    example: 1.2.3.4
+  last_seen_ts:
+    type: integer
+    format: int64
+    description: |-
+      The timestamp (in milliseconds since the unix epoch) when this devices
+      was last seen. (May be a few minutes out of date, for efficiency
+      reasons).
+    example: 1474491775024
+required:
+  - device_id

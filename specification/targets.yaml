@@ -42,6 +42,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/presence.rst
     - modules/content_repo.rst
     - modules/send_to_device.rst
+    - modules/device_management.rst
     - modules/end_to_end_encryption.rst
     - modules/history_visibility.rst
     - modules/push.rst
