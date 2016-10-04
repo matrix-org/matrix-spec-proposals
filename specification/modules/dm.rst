@@ -38,9 +38,9 @@ content of this event is an object where the keys are the user IDs
 and values are lists of room ID strings of the 'direct' rooms for
 that user ID.
 
-When creating a room, the ``is_direct`` flag may be specified to signal
-to the invitee that this is a direct chat. See
-`GET /_matrix/client/unstable/initialSync`_. This flag appears as
+When creating a room, the ``is_direct`` flag may be specified to signal to the
+invitee that this is a direct chat. See `POST
+/_matrix/client/%CLIENT_MAJOR_VERSION%/createRoom`_. This flag appears as
 ``is_direct`` in the member event: see `m.room.member`_.
 
 {{m_direct_event}}
