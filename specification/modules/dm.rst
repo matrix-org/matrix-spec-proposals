@@ -27,10 +27,7 @@ able to answer direct messages on behalf of the user in their absence.
 
 A room may not necessarily be considered 'direct' by all members of the
 room, but a signalling mechanism exists to propagate the information of
-whether a chat is 'direct' to an invitee. The invitee's client may
-use this flag to automatically mark the room as a direct message but
-this is not required: it may for example, prompt the user, ignore the
-flag altogether.
+whether a chat is 'direct' to an invitee.
 
 Events
 ------
@@ -41,17 +38,27 @@ content of this event is an object where the keys are the user IDs
 and values are lists of room ID strings of the 'direct' rooms for
 that user ID.
 
-Example::
-
-    {
-        "@bob:example.com": [
-            "!abcdefgh:example.com",
-            "!hgfedcba:example.com"
-        ]
-    }
-
-
 When creating a room, the ``is_direct`` flag may be specified to signal
 to the invitee that this is a direct chat. See
 `GET /_matrix/client/unstable/initialSync`_. This flag appears as
 ``is_direct`` in the member event: see `m.room.member`_.
+
+{{m_direct_event}}
+
+Client behaviour
+----------------
+The invitee's client may use the ``is_direct`` flag to automatically mark the
+room as a direct message but this is not required: it may for example, prompt
+the user, ignore the flag altogether.
+
+The inviter's client should set the ``is_direct`` flag to  ``createRoom``
+whenever the flow the user has followed is one where their intention is to
+speak directly with another person, as opposed to bringing that person in to a
+shared room. For example, clicking on, 'Start Chat' beside a person's profile
+picture would imply the ``is_direct`` flag should be set.
+
+Server behaviour
+----------------
+When the ``is_direct`` flag is given to ``createRoom``, the home server must
+set the ``is_direct`` flag in the invite member event for any users invited
+in the ``createRoom`` call.
