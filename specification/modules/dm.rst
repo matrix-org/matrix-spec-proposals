@@ -36,11 +36,6 @@ Events
 
 Client behaviour
 ----------------
-When creating a room, the ``is_direct`` flag may be specified to signal to the
-invitee that this is a direct chat. See `POST
-/_matrix/client/%CLIENT_MAJOR_VERSION%/createRoom`_. This flag appears as
-``is_direct`` in the member event: see `m.room.member`_.
-
 The invitee's client may use the ``is_direct`` flag to automatically mark the
 room as a direct message but this is not required: it may for example, prompt
 the user, ignore the flag altogether.
