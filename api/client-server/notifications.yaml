@@ -91,6 +91,7 @@ paths:
               }
           schema:
             type: object
+            required: ["notifications"]
             properties:
               next_token:
                 type: string
@@ -102,6 +103,7 @@ paths:
                 type: array
                 items:
                   type: object
+                  required: ["actions", "event", "read", "room_id", "ts"]
                   title: Notification
                   properties:
                     actions:
