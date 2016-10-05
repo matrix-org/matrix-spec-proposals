@@ -32,21 +32,15 @@ whether a chat is 'direct' to an invitee.
 Events
 ------
 
-A map of which rooms are considered 'direct' rooms for specific users
-is kept in  ``account_data`` in an event of type ``m.direct``. The
-content of this event is an object where the keys are the user IDs
-and values are lists of room ID strings of the 'direct' rooms for
-that user ID.
+{{m_direct_event}}
 
+Client behaviour
+----------------
 When creating a room, the ``is_direct`` flag may be specified to signal to the
 invitee that this is a direct chat. See `POST
 /_matrix/client/%CLIENT_MAJOR_VERSION%/createRoom`_. This flag appears as
 ``is_direct`` in the member event: see `m.room.member`_.
 
-{{m_direct_event}}
-
-Client behaviour
-----------------
 The invitee's client may use the ``is_direct`` flag to automatically mark the
 room as a direct message but this is not required: it may for example, prompt
 the user, ignore the flag altogether.

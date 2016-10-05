@@ -1,23 +1,21 @@
-{
-  "type": "object",
-  "title": "Direct Message Map Event",
-  "description": "Account Data event used to store which rooms are 'direct chats' for which users.",
-  "allOf": [{
-    "$ref": "core-event-schema/event.yaml"
-  }],
-  "properties": {
-    "type": {
-      "type": "string",
-      "enum": ["m.direct"]
-    },
-    "content": {
-      "type": "object",
-      "description": "Object mapping user IDs to lists of room IDs.",
-      "additionalProperties": {
-        "title": "User ID",
-        "type": "array"
-      }
-    }
-  },
-  "required": ["type", "content"]
-}
+---
+allOf:
+  - $ref: core-event-schema/event.yaml
+description: |-
+  A map of which rooms are considered 'direct' rooms for specific users
+  is kept in  ``account_data`` in an event of type ``m.direct``. The
+  content of this event is an object where the keys are the user IDs
+  and values are lists of room ID strings of the 'direct' rooms for
+  that user ID.
+properties:
+  content:
+    additionalProperties:
+      type: array
+      title: User ID
+    type: object
+  type:
+    enum:
+      - m.direct
+    type: string
+title: Direct Chat Mapping
+type: object
