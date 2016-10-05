@@ -98,13 +98,14 @@ paths:
                 description: |-
                   The token to supply in the ``from`` param of the next
                   ``/notifications`` request in order to request more
-                  events.
+                  events. If this is absent, there are no more results.
               notifications:
                 type: array
                 required: true
                 items:
                   type: object
-                  title: notification
+                  title: Notification
+                  required: true
                   properties:
                     actions:
                       type: array
@@ -136,11 +137,11 @@ paths:
                       required: true
                       description: The ID of the room in which the event was posted.
                     ts:
-                      type: number
+                      type: integer
                       required: true
                       description: |-
                         The unix timestamp at which the event notification was sent,
                         in milliseconds.
                 description: The list of events that triggered notifications.
       tags:
-        - Notifications API
+        - Push notifications
