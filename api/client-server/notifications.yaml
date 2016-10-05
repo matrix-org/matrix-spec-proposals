@@ -69,11 +69,11 @@ paths:
                   "actions": [
                     "notify"
                   ],
-                  "profile_tag", null,
-                  "read", true,
-                  "room_id", "!abcdefg:example.com",
-                  "ts", "1475508881945",
-                  "event", {
+                  "profile_tag": null,
+                  "read": true,
+                  "room_id": "!abcdefg:example.com",
+                  "ts": "1475508881945",
+                  "event": {
                   }
                 }
               }
