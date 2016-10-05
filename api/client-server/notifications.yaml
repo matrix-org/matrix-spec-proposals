@@ -93,7 +93,6 @@ paths:
             type: object
             properties:
               next_token:
-                required: false
                 type: string
                 description: |-
                   The token to supply in the ``from`` param of the next
@@ -101,15 +100,12 @@ paths:
                   events. If this is absent, there are no more results.
               notifications:
                 type: array
-                required: true
                 items:
                   type: object
                   title: Notification
-                  required: true
                   properties:
                     actions:
                       type: array
-                      required: true
                       description: |-
                         The action(s) to perform when the conditions for this rule are met.
                         See `Push Rules: API`_.
@@ -117,28 +113,23 @@ paths:
                         type: string
                     event:
                       type: object
-                      required: true
                       title: Event
                       description: The Event object for the event that triggered the notification.
                       allOf:
                         - "$ref": "definitions/event.yaml"
                     profile_tag:
                       type: string
-                      required: false
                       description: The profile tag of the rule that matched this event.
                     read:
                       type: boolean
-                      required: true
                       description: |-
                         Indicates whether the user has sent a read receipt indicating
                         that they have read this message.
                     room_id:
                       type: string
-                      required: true
                       description: The ID of the room in which the event was posted.
                     ts:
                       type: integer
-                      required: true
                       description: |-
                         The unix timestamp at which the event notification was sent,
                         in milliseconds.
