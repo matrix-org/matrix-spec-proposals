@@ -1246,6 +1246,9 @@ have to wait in milliseconds before they can try again.
 .. |/events| replace:: ``/events``
 .. _/events: #get-matrix-client-%CLIENT_MAJOR_VERSION%-events
 
+.. |/createRoom| replace:: ``/createRoom``
+.. _/createRoom: #post-matrix-client-%CLIENT_MAJOR_VERSION%-createroom
+
 .. |/rooms/<room_id>/initialSync| replace:: ``/rooms/<room_id>/initialSync``
 .. _/rooms/<room_id>/initialSync: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-initialsync
 
