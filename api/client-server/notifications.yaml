@@ -37,19 +37,19 @@ paths:
       security:
         - accessToken: []
       parameters:
-        - in: path
+        - in: query
           type: string
           name: from
           description: Pagination token given to retrieve the next set of events.
           required: false
           x-example: "xxxxx"
-        - in: path
+        - in: query
           type: number
           name: limit
           description: Limit on the number of events to return in this request.
           required: false
           x-example: "20"
-        - in: path
+        - in: query
           name: only
           type: string
           description: |-
