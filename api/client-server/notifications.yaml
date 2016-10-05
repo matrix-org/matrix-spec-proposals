@@ -70,10 +70,10 @@ paths:
                     "actions": [
                       "notify"
                     ],
-                    "profile_tag": null,
+                    "profile_tag": "hcbvkzxhcvb",
                     "read": true,
                     "room_id": "!abcdefg:example.com",
-                    "ts": "1475508881945",
+                    "ts": 1475508881945,
                     "event": {
                       "sender": "@alice:example.com",
                       "type": "m.room.message",
