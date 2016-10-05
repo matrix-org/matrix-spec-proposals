@@ -298,8 +298,42 @@ successfully:
     "session": "xxxxxx"
   }
 
-If the homeserver decides the attempt was unsuccessful, it returns an error
-message in the standard format:
+Individual stages may require more than one request to complete, in which case
+the response will be as if the request was unauthenticated with the addition of
+any other keys as defined by the auth type.
+
+If the homeserver decides that an attempt on a stage was unsuccessful, but the
+client may make a second attempt, it returns the same HTTP status 401 response
+as above, with the addition of the standard ``errcode`` and ``error`` fields
+describing the error. For example:
+
+.. code::
+
+  HTTP/1.1 401 Unauthorized
+  Content-Type: application/json
+
+  {
+    "errcode": "M_FORBIDDEN",
+    "error": "Invalid password",
+    "completed": [ "example.type.foo" ],
+    "flows": [
+      {
+        "stages": [ "example.type.foo", "example.type.bar" ]
+      },
+      {
+        "stages": [ "example.type.foo", "example.type.baz" ]
+      }
+    ],
+    "params": {
+        "example.type.baz": {
+            "example_key": "foobar"
+        }
+    },
+    "session": "xxxxxx"
+  }
+
+If the request fails for a reason other than authentication, the server returns an error
+message in the standard format. For example:
 
 .. code::
 
@@ -310,10 +344,6 @@ message in the standard format:
     "errcode": "M_EXAMPLE_ERROR",
     "error": "Something was wrong"
   }
-
-Individual stages may require more than one request to complete, in which case
-the response will be as if the request was unauthenticated with the addition of
-any other keys as defined by the auth type.
 
 If the client has completed all stages of a flow, the homeserver performs the
 API call and returns the result as normal.
@@ -416,12 +446,6 @@ follows:
 
 In the case that the homeserver does not know about the supplied 3pid, the
 homeserver must respond with 403 Forbidden.
-
-.. WARNING::
-  Clients SHOULD enforce that the password provided is suitably complex. The
-  password SHOULD include a lower-case letter, an upper-case letter, a number
-  and a symbol and be at a minimum 8 characters in length. Servers MAY reject
-  weak passwords with an error code ``M_WEAK_PASSWORD``.
 
 Google ReCaptcha
 <<<<<<<<<<<<<<<<
