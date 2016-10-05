@@ -109,6 +109,8 @@ paths:
                       description: |-
                         The action(s) to perform when the conditions for this rule are met.
                         See `Push Rules: API`_.
+                      items:
+                        type: string
                     event:
                       type: object
                       title: Event
