@@ -36,17 +36,20 @@ Events
 
 Client behaviour
 ----------------
-The invitee's client may use the ``is_direct`` flag in the `m.room.member`_
-event to automatically mark the room as a direct message but this is not
-required: it may for example, prompt the user, ignore the flag altogether. To
-do this, it stores this event in account data using the
-|/user/<user_id>/account_data/<type>|_ API.
-
-The inviter's client should set the ``is_direct`` flag to |/createRoom|_
-whenever the flow the user has followed is one where their
+To start a direct chat with another user, the inviting user's client
+should set the ``is_direct`` flag to |/createRoom|_. The client should do 
+this whenever the flow the user has followed is one where their
 intention is to speak directly with another person, as opposed to bringing that
-person in to a shared room. For example, clicking on, 'Start Chat' beside a
+person in to a shared room. For example, clicking on 'Start Chat' beside a
 person's profile picture would imply the ``is_direct`` flag should be set.
+
+The invitee's client may use the ``is_direct`` flag in the `m.room.member`_
+event to automatically mark the room as a direct chat but this is not
+required: it may for example, prompt the user, or ignore the flag altogether.
+
+Both the inviting client and the invitee's client should record the fact that
+the room is a direct chat by storing an ``m.direct`` event in the account data
+using |/user/<user_id>/account_data/<type>|_.
 
 Server behaviour
 ----------------
