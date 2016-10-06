@@ -112,7 +112,9 @@ paths:
                         The action(s) to perform when the conditions for this rule are met.
                         See `Push Rules: API`_.
                       items:
-                        type: string
+                        type:
+                        - object
+                        - string
                     event:
                       type: object
                       title: Event
