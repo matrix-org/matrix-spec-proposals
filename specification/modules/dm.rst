@@ -36,10 +36,11 @@ Events
 
 Client behaviour
 ----------------
-The invitee's client may use the ``is_direct`` flag in `m.room.member`_ to
-automatically mark the room as a direct message but this is not required: it
-may for example, prompt the user, ignore the flag altogether. To do this, it
-stores this event in account data using the |/user/<user_id>/account_data/<type>|_ API.
+The invitee's client may use the ``is_direct`` flag in the `m.room.member`_
+event to automatically mark the room as a direct message but this is not
+required: it may for example, prompt the user, ignore the flag altogether. To
+do this, it stores this event in account data using the
+|/user/<user_id>/account_data/<type>|_ API.
 
 The inviter's client should set the ``is_direct`` flag to |/createRoom|_
 whenever the flow the user has followed is one where their
