@@ -1281,6 +1281,9 @@ have to wait in milliseconds before they can try again.
 .. |/events| replace:: ``/events``
 .. _/events: #get-matrix-client-%CLIENT_MAJOR_VERSION%-events
 
+.. |/createRoom| replace:: ``/createRoom``
+.. _/createRoom: #post-matrix-client-%CLIENT_MAJOR_VERSION%-createroom
+
 .. |/rooms/<room_id>/initialSync| replace:: ``/rooms/<room_id>/initialSync``
 .. _/rooms/<room_id>/initialSync: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-initialsync
 
@@ -1316,3 +1319,6 @@ have to wait in milliseconds before they can try again.
 
 .. |/account/3pid| replace:: ``/account/3pid``
 .. _/account/3pid: #post-matrix-client-%CLIENT_MAJOR_VERSION%-account-3pid
+
+.. |/user/<user_id>/account_data/<type>| replace:: ``/user/<user_id>/account_data/<type>``
+.. _/user/<user_id>/account_data/<type>: #put-matrix-client-%CLIENT_MAJOR_VERSION%-user-userid-account-data-type
