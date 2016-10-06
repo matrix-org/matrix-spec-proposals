@@ -37,7 +37,7 @@
   - Add top-level ``account_data`` key to the responses to ``GET /sync`` and
     ``GET /initialSync``
     (`#380 <https://github.com/matrix-org/matrix-doc/pull/380>`_).
-  - Add ``is_direct`` flag to .. |/createRoom|_ and invite member event.
+  - Add ``is_direct`` flag to |/createRoom|_ and invite member event.
     Add 'Direct Messaging' module.
     (`#389 <https://github.com/matrix-org/matrix-doc/pull/389>`_).
   - Add ``contains_url`` option to ``RoomEventFilter``.

@@ -1281,3 +1281,6 @@ have to wait in milliseconds before they can try again.
 
 .. |/account/3pid| replace:: ``/account/3pid``
 .. _/account/3pid: #post-matrix-client-%CLIENT_MAJOR_VERSION%-account-3pid
+
+.. |/user/<user_id>/account_data/<type>| replace:: ``/user/<user_id>/account_data/<type>``
+.. _/user/<user_id>/account_data/<type>: #put-matrix-client-%CLIENT_MAJOR_VERSION%-user-userid-account-data-type
