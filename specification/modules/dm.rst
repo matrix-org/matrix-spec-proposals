@@ -52,4 +52,4 @@ Server behaviour
 ----------------
 When the ``is_direct`` flag is given to |/createRoom|_, the home
 server must set the ``is_direct`` flag in the invite member event for any users
-invited in the ``createRoom`` call.
+invited in the |/createRoom|_ call.
