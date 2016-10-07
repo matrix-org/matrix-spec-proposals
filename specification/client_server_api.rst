@@ -637,10 +637,11 @@ handle unknown login types:
       var popupWindow;
 
       var eventListener = function(ev) {
-          if (ev.data !== "authDone" ) {
+          // check it's the right message from the right place.
+          if (ev.data !== "authDone" || ev.origin !== homeserverUrl) {
               return;
           }
-
+          
           // close the popup
           popupWindow.close();
           window.removeEventListener("message", eventListener);
