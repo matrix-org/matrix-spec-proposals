@@ -44,7 +44,7 @@ paths:
           type: string
           description: |-
             A pagination token from a previous request, allowing clients to
-            get the next batch of rooms.
+            get the next (or previous) batch of rooms.
         - in: query
           name: server
           type: string
@@ -190,7 +190,7 @@ paths:
                 type: object
                 title: "Filter"
                 description: |-
-                  Optional filtering of the returned rooms.
+                  Filter to apply to the results.
                 properties:
                     generic_search_term:
                       type: string
