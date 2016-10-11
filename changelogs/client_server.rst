@@ -8,21 +8,11 @@
     which support push rules, but any other clients implementing
     the push rules API should be aware of this change. This
     makes it simple to mute rooms correctly in the API.
-
-- Spec clarifications:
-
-  - Spell out the way that state is handled by ``POST /createRoom``
-    (`#362 <https://github.com/matrix-org/matrix-doc/pull/362>`_).
-  - Emphasise that ``POST /tokenrefresh`` should expire the access token
-    (`#363 <https://github.com/matrix-org/matrix-doc/pull/363>`_).
-  - Clarify the fields which are applicable to different types of push rule
-    (`#365 <https://github.com/matrix-org/matrix-doc/pull/365>`_).
-  - A number of clarifications to authentication
-    (`#371 <https://github.com/matrix-org/matrix-doc/pull/371>`_).
-  - Correct references to ``user_id`` which should have been ``sender``
-    (`#376 <https://github.com/matrix-org/matrix-doc/pull/376>`_).
-  - Correct inconsistent specification of ``redacted_because`` fields and their
-    values (`#378 <https://github.com/matrix-org/matrix-doc/pull/378>`_).
+    (`#373 <https://github.com/matrix-org/matrix-doc/pull/373>`_).
+  - Remove ``/tokenrefresh`` from the API.
+    (`#395 <https://github.com/matrix-org/matrix-doc/pull/395>`_).
+  - Remove requirement that tokens used in token-based login be macaroons.
+    (`#395 <https://github.com/matrix-org/matrix-doc/pull/395>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
@@ -35,8 +25,35 @@
   - Add top-level ``account_data`` key to the responses to ``GET /sync`` and
     ``GET /initialSync``
     (`#380 <https://github.com/matrix-org/matrix-doc/pull/380>`_).
+  - Add ``is_direct`` flag to |/createRoom|_ and invite member event.
+    Add 'Direct Messaging' module.
+    (`#389 <https://github.com/matrix-org/matrix-doc/pull/389>`_).
+  - Add ``contains_url`` option to ``RoomEventFilter``.
+    (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
+  - Add ``filter`` optional query param to ``/messages``
+    (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
+  - Add "Send-to-Device messaging" module
+    (`#386 <https://github.com/matrix-org/matrix-doc/pull/386>`_).
+  - Require that User-Interactive auth fallback pages call
+    ``window.postMessage`` to notify apps of completion
+    (`#398 <https://github.com/matrix-org/matrix-doc/pull/398>`_).
   - Add room ``/report/`` event API.
     (`#391 <https://github.com/matrix-org/matrix-doc/pull/391>_`).
+
+- Spec clarifications:
+
+  - Spell out the way that state is handled by ``POST /createRoom``
+    (`#362 <https://github.com/matrix-org/matrix-doc/pull/362>`_).
+  - Clarify the fields which are applicable to different types of push rule
+    (`#365 <https://github.com/matrix-org/matrix-doc/pull/365>`_).
+  - A number of clarifications to authentication
+    (`#371 <https://github.com/matrix-org/matrix-doc/pull/371>`_).
+  - Correct references to ``user_id`` which should have been ``sender``
+    (`#376 <https://github.com/matrix-org/matrix-doc/pull/376>`_).
+  - Correct inconsistent specification of ``redacted_because`` fields and their
+    values (`#378 <https://github.com/matrix-org/matrix-doc/pull/378>`_).
+  - Mark required fields in response objects as such
+    (`#394 <https://github.com/matrix-org/matrix-doc/pull/394>`_).
 
 r0.2.0
 ======

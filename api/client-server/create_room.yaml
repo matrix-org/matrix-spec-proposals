@@ -170,7 +170,12 @@ paths:
                   ``public_chat``: =>
                       ``join_rules`` is set to ``public``.
                       ``history_visibility`` is set to ``shared``.
-
+              is_direct:
+                type: boolean
+                description: |-
+                  This flag makes the server set the ``is_direct`` flag on the
+                  ``m.room.member`` events sent to the users in ``invite`` and
+                  ``invite_3pid``. See `Direct Messaging`_ for more information.
       responses:
         200:
           description: Information about the newly created room.

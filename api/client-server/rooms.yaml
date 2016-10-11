@@ -246,7 +246,7 @@ paths:
         200:
           description: |-
             A list of members of the room. If you are joined to the room then
-            this will be the current members of the room. If you have left te
+            this will be the current members of the room. If you have left the
             room then this will be the members of the room when you left.
           examples:
             application/json: |-

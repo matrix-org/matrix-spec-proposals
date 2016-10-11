@@ -39,6 +39,9 @@ properties:
           - leave
           - ban
         type: string
+      is_direct:
+        description: Flag indicating if the room containing this event was created with the intention of being a direct chat. See `Direct Messaging`_.
+        type: boolean
       third_party_invite:
         properties:
           display_name:

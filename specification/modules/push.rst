@@ -107,6 +107,15 @@ There is a single API endpoint for this, as described below.
 
 .. _pushers: `def:pushers`_
 
+Listing Notifications
+~~~~~~~~~~~~~~~~~~~~~
+
+A client can retrieve a list of events that it has been notified about. This
+may be useful so that users can see a summary of what important messages they
+have received.
+
+{{notifications_cs_http_api}}
+
 Push Rules
 ~~~~~~~~~~
 A push rule is a single rule that states under what *conditions* an event should

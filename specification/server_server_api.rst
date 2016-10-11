@@ -974,3 +974,27 @@ The list of join candidates is a list of server names that are likely to hold
 the given room; these are servers that the requesting server may wish to use as
 resident servers as part of the remote join handshake. This list may or may not
 include the server answering the query.
+
+Send-to-device messaging
+------------------------
+
+.. TODO: add modules to the federation spec and make this a module
+
+The server API for send-to-device messaging is based on the following
+EDU. There are no PDUs or Federation Queries involved.
+
+Each send-to-device message should be sent to the destination server using
+the following EDU::
+
+  EDU type: m.direct_to_device
+
+  Content keys:
+    sender: user ID of the sender
+
+    type: event type for the message
+
+    message_id: unique id for the message: used for idempotence
+
+    messages: The messages to send. A map from user ID, to a map from device ID
+        to message body. The device ID may also be *, meaning all known devices
+        for the user.

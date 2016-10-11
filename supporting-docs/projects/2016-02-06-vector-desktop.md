@@ -1,7 +1,6 @@
 ---
 layout: project
 title: Vector Desktop
-categories: projects client
 description: Desktop version of Vector
 author: Steven Hammerton
 maturity: Alpha
