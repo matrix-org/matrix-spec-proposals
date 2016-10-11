@@ -30,7 +30,8 @@ import yaml
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 stylesheets = {
-    "stylesheet_path": glob.glob("css/*.css"),
+    "stylesheet": glob.glob("css/*.css"),
+    "stylesheet_path": None,
 }
 
 VERBOSE = False
