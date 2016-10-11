@@ -45,6 +45,8 @@ paths:
           description: |-
             A pagination token from a previous request, allowing clients to
             get the next (or previous) batch of rooms.
+            The direction of pagination is specified solely by which token
+            is supplied, rather than via an explicit flag.
         - in: query
           name: server
           type: string
@@ -124,8 +126,6 @@ paths:
                   A pagination token that allows fetching previous results. The
                   absence of this token means there are no results before this
                   batch, i.e. this is the first batch.
-                  The direction of pagination is specified solely by which token
-                  is supplied, rather than via an explicit flag.
               total_room_count_estimate:
                 type: number
                 description: |-
