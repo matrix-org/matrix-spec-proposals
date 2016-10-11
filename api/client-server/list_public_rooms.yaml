@@ -153,6 +153,8 @@ paths:
         400:
           description: >
             The request body is malformed or the room alias specified is already taken.
+      tags:
+        - Room discovery
     post:
       summary: Lists the public rooms on the server with optional filter.
       description: |-
