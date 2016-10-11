@@ -150,9 +150,6 @@ paths:
                 "prev_batch": "p1902",
                 "total_room_count_estimate": 115
               }
-        400:
-          description: >
-            The request body is malformed or the room alias specified is already taken.
       tags:
         - Room discovery
     post:
@@ -300,8 +297,5 @@ paths:
                 "prev_batch": "p1902",
                 "total_room_count_estimate": 115
               }
-        400:
-          description: >
-            The request body is malformed or the room alias specified is already taken.
       tags:
         - Room discovery
