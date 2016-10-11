@@ -96,8 +96,7 @@ def inherit_parents(obj):
     return result
 
 
-def get_json_schema_object_fields(obj, enforce_title=False,
-                                  mark_required=True):
+def get_json_schema_object_fields(obj, enforce_title=False):
     # Algorithm:
     # f.e. property => add field info (if field is object then recurse)
     if obj.get("type") != "object":
@@ -175,8 +174,7 @@ def get_json_schema_object_fields(obj, enforce_title=False,
         try:
             logger.debug("Processing property %s.%s", obj_title, key_name)
             required = key_name in required_keys
-            res = process_prop(key_name, props[key_name], required,
-                               mark_required)
+            res = process_prop(key_name, props[key_name], required)
 
             first_table_rows.append(res["row"])
             tables.extend(res["tables"])
@@ -196,7 +194,7 @@ def get_json_schema_object_fields(obj, enforce_title=False,
 
     return tables
 
-def process_prop(key_name, prop, required, mark_required):
+def process_prop(key_name, prop, required):
     prop = inherit_parents(prop)
 
     value_type = None
@@ -213,7 +211,6 @@ def process_prop(key_name, prop, required, mark_required):
         nested_objects = get_json_schema_object_fields(
             prop,
             enforce_title=True,
-            mark_required=mark_required,
         )
         value_type = nested_objects[0]["title"]
         value_id = value_type
@@ -226,7 +223,6 @@ def process_prop(key_name, prop, required, mark_required):
             nested_objects = get_json_schema_object_fields(
                 items,
                 enforce_title=True,
-                mark_required=mark_required,
             )
             value_id = nested_objects[0]["title"]
             value_type = "[%s]" % value_id
@@ -269,7 +265,7 @@ def process_prop(key_name, prop, required, mark_required):
             value_type = " or ".join(value_type)
 
 
-    if required and mark_required:
+    if required:
         desc = "**Required.** " + desc
 
     return {
@@ -284,10 +280,9 @@ def process_prop(key_name, prop, required, mark_required):
     }
 
 
-def get_tables_for_schema(schema, mark_required=True):
+def get_tables_for_schema(schema):
     schema = inherit_parents(schema)
-    tables = get_json_schema_object_fields(schema,
-        mark_required=mark_required)
+    tables = get_json_schema_object_fields(schema)
 
     # the result may contain duplicates, if objects are referred to more than
     # once. Filter them out.
@@ -470,9 +465,7 @@ class MatrixUnits(Units):
                     elif res_type and Units.prop(good_response, "schema/properties"):
                         # response is an object:
                         schema = good_response["schema"]
-                        res_tables = get_tables_for_schema(schema,
-                            mark_required=False,
-                        )
+                        res_tables = get_tables_for_schema(schema)
                         endpoint["res_tables"].extend(res_tables)
                     elif res_type and Units.prop(good_response, "schema/items"):
                         # response is an array:
