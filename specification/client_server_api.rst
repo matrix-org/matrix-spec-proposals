@@ -73,7 +73,8 @@ MUST be encoded as UTF-8. Clients are authenticated using opaque
 query string parameter on all requests.
 
 The names of the API endponts for the HTTP transport follow a convention of
-using underscores to separate words (for example ``/delete_devices``).
+using underscores to separate words (for example ``/delete_devices``). The key
+names in JSON objects passed over the API also follow this convention.
 
 .. NOTE::
    There are a few historical exceptions to this rule, such as
