@@ -152,17 +152,12 @@ def get_json_schema_object_fields(obj, enforce_title=False):
                     del props[key_name]
 
     # Sometimes you just want to specify that a thing is an object without
-    # doing all the keys. Allow people to do that if they set a 'title'.
-    if not props and obj.get("title"):
+    # doing all the keys.
+    if not props:
         return [{
-            "title": obj["title"],
+            "title": obj.get("title"),
             "no-table": True
         }]
-
-    if not props:
-        raise Exception(
-            "Object %s has no properties and no title" % obj
-        )
 
     required_keys = set(obj.get("required", []))
 
@@ -279,11 +274,7 @@ def process_prop(key_name, prop, required):
         "tables": tables,
     }
 
-
-def get_tables_for_schema(schema):
-    schema = inherit_parents(schema)
-    tables = get_json_schema_object_fields(schema)
-
+def deduplicate_tables(tables):
     # the result may contain duplicates, if objects are referred to more than
     # once. Filter them out.
     #
@@ -304,6 +295,64 @@ def get_tables_for_schema(schema):
     filtered.reverse()
 
     return filtered
+
+def get_tables_for_schema(schema):
+    schema = inherit_parents(schema)
+    tables = get_json_schema_object_fields(schema)
+    return deduplicate_tables(tables)
+
+def get_tables_for_response(api, schema):
+    schema = inherit_parents(schema)
+    resp_type = schema.get("type")
+
+    if resp_type is None:
+        raise KeyError("Response definition for api '%s' missing 'type' field"
+                       % (api))
+
+    resp_title = schema.get("title", "")
+    resp_description = schema.get("description", "")
+
+    logger.debug("Found a 200 response for this API; type %s" % resp_type)
+
+    if resp_type == "object":
+        tables = get_json_schema_object_fields(
+            schema,
+            enforce_title=False,
+        )
+
+    else:
+        nested_items = []
+        if resp_type == "array":
+            items = inherit_parents(schema["items"])
+            if items["type"] == "object":
+                nested_items = get_json_schema_object_fields(
+                    items,
+                    enforce_title=True,
+                )
+                value_id = nested_items[0]["title"]
+                resp_type = "[%s]" % value_id
+            else:
+                raise Exception("Unsupported array response type [%s] for %s" %
+                            (items["type"], api))
+
+        tables = [{
+            "title": resp_title,
+            "rows": [{
+                "key": "<body>",
+                "type": resp_type,
+                "desc": resp_description,
+            }]
+        }] + nested_items
+
+    res = deduplicate_tables(tables)
+
+    if len(res) == 0:
+        logger.warn(
+            "This API appears to have no response table. Are you " +
+            "sure this API returns no parameters?"
+        )
+
+    return res
 
 def get_example_for_schema(schema):
     """Returns a python object representing a suitable example for this object"""
@@ -349,13 +398,14 @@ class MatrixUnits(Units):
                     "rate_limited": 429 in single_api.get("responses", {}),
                     "req_param_by_loc": {},
                     "req_body_tables": [],
+                    "res_headers": [],
                     "res_tables": [],
                     "responses": [],
                     "example": {
                         "req": "",
                     }
                 }
-                self.log(" ------- Endpoint: %s %s ------- " % (method, path))
+                logger.info(" ------- Endpoint: %s %s ------- " % (method, path))
                 for param in single_api.get("parameters", []):
                     param_loc = param["in"]
                     if param_loc == "body":
@@ -398,6 +448,24 @@ class MatrixUnits(Units):
                         "example": example,
                     })
 
+                # add response params if this API has any.
+                if good_response:
+                    if "schema" in good_response:
+                        endpoint["res_tables"] = get_tables_for_response(
+                            "%s %s" % (method, path),
+                            good_response["schema"]
+                        )
+                    if "headers" in good_response:
+                        headers = []
+                        for (header_name, header) in good_response["headers"].iteritems():
+                            headers.append({
+                                "key": header_name,
+                                "type": header["type"],
+                                "desc": header["description"],
+                            })
+                        endpoint["res_headers"] = headers
+
+                # calculate the example request
                 path_template = api.get("basePath", "").rstrip("/") + path
                 qps = []
                 body = ""
@@ -406,7 +474,7 @@ class MatrixUnits(Units):
                         example = get_example_for_param(param)
 
                         if not example:
-                            self.log(
+                            logger.warn(
                                 "The parameter %s is missing an example." %
                                 param["name"])
                             continue
@@ -437,65 +505,6 @@ class MatrixUnits(Units):
                         method.upper(), path_template, query_string
                     )
 
-                # add response params if this API has any.
-                if good_response:
-                    self.log("Found a 200 response for this API")
-                    res_type = Units.prop(good_response, "schema/type")
-                    res_name = Units.prop(good_response, "schema/name")
-                    if res_type and res_type not in ["object", "array"]:
-                        # response is a raw string or something like that
-                        good_table = {
-                            "title": None,
-                            "rows": [{
-                                "key": "<" + res_type + ">" if not res_name else res_name,
-                                "type": res_type,
-                                "desc": res.get("description", ""),
-                                "req_str": ""
-                            }]
-                        }
-                        if good_response.get("headers"):
-                            for (header_name, header) in good_response.get("headers").iteritems():
-                                good_table["rows"].append({
-                                    "key": header_name,
-                                    "type": "Header<" + header["type"] + ">",
-                                    "desc": header["description"],
-                                    "req_str": ""
-                                })
-                        endpoint["res_tables"].append(good_table)
-                    elif res_type and Units.prop(good_response, "schema/properties"):
-                        # response is an object:
-                        schema = good_response["schema"]
-                        res_tables = get_tables_for_schema(schema)
-                        endpoint["res_tables"].extend(res_tables)
-                    elif res_type and Units.prop(good_response, "schema/items"):
-                        # response is an array:
-                        # FIXME: Doesn't recurse at all.
-                        schema = good_response["schema"]
-                        array_type = Units.prop(schema, "items/type")
-                        if Units.prop(schema, "items/allOf"):
-                            array_type = (
-                                Units.prop(schema, "items/title")
-                            )
-                        endpoint["res_tables"].append({
-                            "title": schema.get("title", ""),
-                            "rows": [{
-                                "key": "N/A",
-                                "type": ("[%s]" % array_type),
-                                "desc": schema.get("description", ""),
-                                "req_str": ""
-                            }]
-                        })
-
-                for response_table in endpoint["res_tables"]:
-                    self.log("Response: %s" % response_table["title"])
-                    for r in response_table["rows"]:
-                        self.log("Row: %s" % r)
-                if len(endpoint["res_tables"]) == 0:
-                    self.log(
-                        "This API appears to have no response table. Are you " +
-                        "sure this API returns no parameters?"
-                    )
-
                 endpoints.append(endpoint)
 
         return {
@@ -512,22 +521,34 @@ class MatrixUnits(Units):
         :param dict   endpoint_data  dictionary of endpoint data to be updated
         """
         try:
-            req_body_tables = get_tables_for_schema(param["schema"])
+            schema = inherit_parents(param["schema"])
+            if schema["type"] != "object":
+                logger.warn(
+                    "Unsupported body type %s for %s %s", schema["type"],
+                    endpoint_data["method"], endpoint_data["path"]
+                )
+                return
+
+            req_body_tables = get_tables_for_schema(schema)
+
+            if req_body_tables == []:
+                # no fields defined for the body.
+                return
+
+            # put the top-level parameters into 'req_param_by_loc', and the others
+            # into 'req_body_tables'
+            body_params = endpoint_data['req_param_by_loc'].setdefault("JSON body",[])
+            body_params.extend(req_body_tables[0]["rows"])
+
+            body_tables = req_body_tables[1:]
+            endpoint_data['req_body_tables'].extend(body_tables)
+
         except Exception, e:
-            logger.warning("Error decoding body of API endpoint %s %s" %
-                           (endpoint_data["method"], endpoint_data["path"]),
-                           exc_info=1)
-            return
-
-        # put the top-level parameters into 'req_param_by_loc', and the others
-        # into 'req_body_tables'
-        body_params = endpoint_data['req_param_by_loc'].setdefault("JSON body",[])
-        body_params.extend(req_body_tables[0]["rows"])
-
-        body_tables = req_body_tables[1:]
-        # TODO: remove this when PR #255 has landed
-        body_tables = (t for t in body_tables if not t.get('no-table'))
-        endpoint_data['req_body_tables'].extend(body_tables)
+            e2 = Exception(
+                "Error decoding body of API endpoint %s %s: %s" %
+                (endpoint_data["method"], endpoint_data["path"], e)
+            )
+            raise e2, None, sys.exc_info()[2]
 
 
     def load_swagger_apis(self):
@@ -536,7 +557,7 @@ class MatrixUnits(Units):
             for filename in os.listdir(path):
                 if not filename.endswith(".yaml"):
                     continue
-                self.log("Reading swagger API: %s" % filename)
+                logger.info("Reading swagger API: %s" % filename)
                 filepath = os.path.join(path, filename)
                 with open(filepath, "r") as f:
                     # strip .yaml
@@ -653,7 +674,7 @@ class MatrixUnits(Units):
         return schemata
 
     def read_event_schema(self, filepath):
-        self.log("Reading %s" % filepath)
+        logger.info("Reading %s" % filepath)
 
         with open(filepath, "r") as f:
             json_schema = yaml.load(f)
