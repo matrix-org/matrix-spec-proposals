@@ -21,6 +21,7 @@ For the actual conversion of data -> RST (including templates), see the sections
 file instead.
 """
 from batesian.units import Units
+from collections import OrderedDict
 import logging
 import inspect
 import json
@@ -48,6 +49,20 @@ STATE_EVENT = "core-event-schema/state_event.yaml"
 
 logger = logging.getLogger(__name__)
 
+# a yaml Loader which loads mappings into OrderedDicts instead of regular
+# dicts, so that we preserve the ordering of properties from the api files.
+#
+# with thanks to http://stackoverflow.com/a/21912744/637864
+class OrderedLoader(yaml.Loader):
+    pass
+def construct_mapping(loader, node):
+    loader.flatten_mapping(node)
+    pairs = loader.construct_pairs(node)
+    return OrderedDict(pairs)
+OrderedLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+    construct_mapping)
+
 def resolve_references(path, schema):
     if isinstance(schema, dict):
         # do $ref first
@@ -55,11 +70,11 @@ def resolve_references(path, schema):
             value = schema['$ref']
             path = os.path.join(os.path.dirname(path), value)
             with open(path) as f:
-                ref = yaml.load(f)
+                ref = yaml.load(f, OrderedLoader)
             result = resolve_references(path, ref)
             del schema['$ref']
         else:
-            result = {}
+            result = OrderedDict()
 
         for key, value in schema.items():
             result[key] = resolve_references(path, value)
@@ -194,12 +209,9 @@ def process_prop(key_name, prop, required):
 
     value_type = None
     desc = prop.get("description", "")
-    prop_type = prop.get('type')
+    prop_type = prop['type']
     tables = []
 
-    if prop_type is None:
-        raise KeyError("Property '%s' of object '%s' missing 'type' field"
-                       % (key_name, obj))
     logger.debug("%s is a %s", key_name, prop_type)
 
     if prop_type == "object":
@@ -380,6 +392,7 @@ def get_example_for_param(param):
         return schema['example']
     return json.dumps(get_example_for_schema(param['schema']),
                       indent=2)
+
 
 class MatrixUnits(Units):
     def _load_swagger_meta(self, api, group_name):
@@ -563,7 +576,7 @@ class MatrixUnits(Units):
                     # strip .yaml
                     group_name = filename[:-5].replace("-", "_")
                     group_name = "%s_%s" % (group_name, suffix)
-                    api = yaml.load(f.read())
+                    api = yaml.load(f.read(), OrderedLoader)
                     api = resolve_references(filepath, api)
                     api["__meta"] = self._load_swagger_meta(
                         api, group_name
@@ -584,7 +597,7 @@ class MatrixUnits(Units):
                 filepath = os.path.join(root, filename)
                 with open(filepath) as f:
                     try:
-                        event_info = yaml.load(f)
+                        event_info = yaml.load(f, OrderedLoader)
                     except Exception as e:
                         raise ValueError(
                             "Error reading file %r" % (filepath,), e
@@ -677,7 +690,7 @@ class MatrixUnits(Units):
         logger.info("Reading %s" % filepath)
 
         with open(filepath, "r") as f:
-            json_schema = yaml.load(f)
+            json_schema = yaml.load(f, OrderedLoader)
 
         schema = {
             "typeof": "",
