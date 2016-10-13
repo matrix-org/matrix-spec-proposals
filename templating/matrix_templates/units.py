@@ -106,7 +106,7 @@ def inherit_parents(obj):
 
         for key in ('properties', 'additionalProperties', 'patternProperties'):
             if p.get(key):
-                result.setdefault(key, {}).update(p[key])
+                result.setdefault(key, OrderedDict()).update(p[key])
 
     return result
 
@@ -368,11 +368,12 @@ def get_tables_for_response(api, schema):
 
 def get_example_for_schema(schema):
     """Returns a python object representing a suitable example for this object"""
+    schema = inherit_parents(schema)
     if 'example' in schema:
         example = schema['example']
         return example
     if 'properties' in schema:
-        res = {}
+        res = OrderedDict()
         for prop_name, prop in schema['properties'].iteritems():
             logger.debug("Parsing property %r" % prop_name)
             prop_example = get_example_for_schema(prop)
