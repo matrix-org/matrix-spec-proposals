@@ -680,7 +680,7 @@ class MatrixUnits(Units):
             json_schema = yaml.load(f)
 
         schema = {
-            "typeof": None,
+            "typeof": "",
             "typeof_info": "",
             "type": None,
             "title": None,
@@ -703,11 +703,9 @@ class MatrixUnits(Units):
             STATE_EVENT: "State Event"
         }
         if type(json_schema.get("allOf")) == list:
-            schema["typeof"] = base_defs.get(
-                json_schema["allOf"][0].get("$ref")
-            )
-        elif json_schema.get("title"):
-            schema["typeof"] = json_schema["title"]
+            firstRef = json_schema["allOf"][0]["$ref"]
+            if firstRef in base_defs:
+                schema["typeof"] = base_defs[firstRef]
 
         json_schema = resolve_references(filepath, json_schema)
 
