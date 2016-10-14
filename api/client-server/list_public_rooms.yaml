@@ -31,14 +31,14 @@ paths:
       description: |-
         Lists the public rooms on the server.
 
-        This API returns paginated responses.
+        This API returns paginated responses. The rooms are ordered by the number
+        of members, with the largest rooms first.
       parameters:
         - in: query
           name: limit
           type: number
           description: |-
-            Limit the number of results returned, ordered by number of
-            memebers in the room. Defaults to no limit.
+            Limit the number of results returned.
         - in: query
           name: since
           type: string
@@ -157,7 +157,8 @@ paths:
       description: |-
         Lists the public rooms on the server, with optional filter.
 
-        This API returns paginated responses.
+        This API returns paginated responses. The rooms are ordered by the number
+        of members, with the largest rooms first.
       security:
         - accessToken: []
       parameters:
@@ -178,13 +179,12 @@ paths:
               limit:
                 type: number
                 description: |-
-                  Limit the number of results returned, ordered by number of
-                  memebers in the room. Defaults to no limit.
+                  Limit the number of results returned.
               since:
                 type: string
                 description: |-
                   A pagination token from a previous request, allowing clients to
-                  get the next batch of rooms.
+                  get the next or previous batch of rooms.
               filter:
                 type: object
                 title: "Filter"
