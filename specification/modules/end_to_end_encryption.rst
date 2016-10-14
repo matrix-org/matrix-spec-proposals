@@ -23,9 +23,9 @@ participating homeservers.
 
 .. WARNING::
   End-to-end crypto is still being designed and prototyped. The following is
-  subject to change as the design evolves. Parts of the specification are not
-  yet implemented by the reference implementations. See
-  https://matrix.org/jira/browse/SPEC-162 for a summary of the remaining work.
+  subject to change as the design evolves.
+
+{{keys_cs_http_api}}
 
 Key Distribution
 ----------------

@@ -1,0 +1,264 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Client Config API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/keys/upload":
+    post:
+      summary: Upload end-to-end encryption keys
+      description: |-
+        Publishes end-to-end encryption keys for the device.
+      security:
+        - accessToken: []
+      parameters:
+        - in: body
+          name: keys
+          description: |-
+            The keys to be published
+          schema:
+            type: object
+            properties:
+              device_keys:
+                description: |-
+                  Identity keys for the device. May be absent if no new
+                  identity keys are required.
+                allOf:
+                  - $ref: definitions/device_keys.yaml
+              one_time_keys:
+                type: object
+                description: |-
+                  Base64-encoded one-time public keys for "pre-key" messages.  The
+                  names of the properties should be in the format
+                  ``<algorithm>:<key_id>``.
+
+                  May be absent if no new one-time keys are required.
+                additionalProperties:
+                  type: string
+                example:
+                  "curve25519:AAAAAQ": "/qyvZvwjiTxGdGU0RCguDCLeR+nmsb3FfNG3/Ve4vU8"
+                  "curve25519:AAAAAg": "2TqFeTSnOqtoMhcdCsGmb6iBj1jyrtMlJpHBEXGf3TQ"
+                  "curve25519:AAAAAw": "L+DXGwZkSMQm3D+Cv+Zj3QRc8+tVVNDKkuBxbZGGtjY"
+                  "curve25519:AAAABA": "eO9UIr4p1gBdQRxUZn5JBGIIXb+9i/Hyr9WgHaCceFE"
+                  "curve25519:AAAABQ": "rkK4ZafPKHbRwIl/H4w2gy5IwZuI2wsVoaOm++zwJ3c"
+      responses:
+        200:
+          description:
+            The provided keys were sucessfully uploaded.
+          schema:
+            type: object
+            properties:
+              one_time_key_counts:
+                type: integer
+                description: |-
+                  The number of unclaimed one-time keys currently held on the server
+                  for this device.
+                example: 10
+            required:
+              - one_time_key_counts
+
+      tags:
+        - End-to-end encryption
+  "/keys/query":
+    post:
+      summary: Download device identity keys
+      description: |-
+        Returns the current devices and identity keys for the given users.
+      security:
+        - accessToken: []
+      parameters:
+        - in: body
+          name: query
+          description: |-
+            Query defining the keys to be downloaded
+          schema:
+            type: object
+            properties:
+              timeout:
+                type: integer
+                description: |-
+                  The time (in milliseconds) to wait when downloading keys from
+                  remote servers. 10 seconds is the recommended default.
+                example: 10000
+              device_keys:
+                type: object
+                description: |-
+                  The keys to be downloaded. A map from user ID, to a list of
+                  device IDs, or to an empty list to indicate all devices for the
+                  corresponding user.
+                additionalProperties:
+                  type: array
+                  items:
+                    type: string
+                    description: "device ID"
+                example:
+                  "@alice:example.com": []
+            required:
+              - device_keys
+
+      responses:
+        200:
+          description:
+            The device information
+          schema:
+            type: object
+            properties:
+              failures:
+                type: object
+                description: |-
+                  If any remote homeservers could not be reached, they are
+                  recorded here. The names of the properties are the names of
+                  the unreachable servers.
+
+                  If the homeserver could be reached, but the user or device
+                  was unknown, no failure is recorded. Instead, the corresponding
+                  user or device is missing from the ``device_keys`` result.
+                additionalProperties:
+                  type: object
+                example: {}
+              device_keys:
+                type: object
+                description: |-
+                  Information on the queried devices. A map from user ID, to a
+                  map from device ID to device information.  For each device,
+                  the information returned will be the same as uploaded via
+                  ``/keys/upload``, with the addition of an ``unsigned``
+                  property.
+                additionalProperties:
+                  type: object
+                  additionalProperties:
+                    allOf:
+                      - $ref: definitions/device_keys.yaml
+                    properties:
+                      unsigned:
+                        title: UnsignedDeviceInfo
+                        type: object
+                        description: |-
+                          Additional data added to the device key information
+                          by intermediate servers, and not covered by the
+                          signatures.
+                        properties:
+                          device_display_name:
+                            type: string
+                            description:
+                              The display name which the user set on the device.
+                example:
+                  "@alice:example.com":
+                    JLAFKJWSCS: {
+                      "user_id": "@alice:example.com",
+                      "device_id": "JLAFKJWSCS",
+                      "algorithms": [
+                        "m.olm.curve25519-aes-sha256",
+                        "m.megolm.v1.aes-sha"
+                      ],
+                      "keys": {
+                        "curve25519:JLAFKJWSCS": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI",
+                        "ed25519:JLAFKJWSCS": "lEuiRJBit0IG6nUf5pUzWTUEsRVVe/HJkoKuEww9ULI"
+                      },
+                      "signatures": {
+                        "@alice:example.com": {
+                          "ed25519:JLAFKJWSCS": "dSO80A01XiigH3uBiDVx/EjzaoycHcjq9lfQX0uWsqxl2giMIiSPR8a4d291W1ihKJL/a+myXS367WT6NAIcBA"
+                        }
+                      },      
+                      "unsigned": {
+                        "device_display_name": "Alice's mobile phone"
+                      }
+                    }
+         
+      tags:
+        - End-to-end encryption
+  "/keys/claim":
+    post:
+      summary: Claim one-time encryption keys
+      description: |-
+        Claims one-time keys for use in pre-key messages.
+      security:
+        - accessToken: []
+      parameters:
+        - in: body
+          name: query
+          description: |-
+            Query defining the keys to be claimed
+          schema:
+            type: object
+            properties:
+              timeout:
+                type: integer
+                description: |-
+                  The time (in milliseconds) to wait when downloading keys from
+                  remote servers. 10 seconds is the recommended default.
+                example: 10000
+              one_time_keys:
+                type: object
+                description: |-
+                  The keys to be claimed. A map from user ID, to a map from
+                  device ID to algorithm name.
+                additionalProperties:
+                  type: object
+                  additionalProperties:
+                    type: string
+                    description: algorithm
+                    example: "curve25519"
+                example:
+                  "@alice:example.com": { "JLAFKJWSCS": "curve25519" }
+            required:
+              - one_time_keys
+      responses:
+        200:
+          description:
+            The claimed keys
+          schema:
+            type: object
+            properties:
+              failures:
+                type: object
+                description: |-
+                  If any remote homeservers could not be reached, they are
+                  recorded here. The names of the properties are the names of
+                  the unreachable servers.
+                  
+                  If the homeserver could be reached, but the user or device
+                  was unknown, no failure is recorded. Instead, the corresponding
+                  user or device is missing from the ``one_time_keys`` result.
+                additionalProperties:
+                  type: object
+                example: {}
+              one_time_keys:
+                type: object
+                description: |-
+                  One-time keys for the queried devices. A map from user ID, to a
+                  map from ``<algorithm>:<key_id>`` to base64-encoded public key.
+                additionalProperties:
+                  type: object
+                  additionalProperties:
+                    type: string
+                example:
+                  "@alice:example.com":
+                    JLAFKJWSCS: {
+                      "curve25519:AAAAAQ": "/qyvZvwjiTxGdGU0RCguDCLeR+nmsb3FfNG3/Ve4vU8"
+                    }
+      tags:
+        - End-to-end encryption
