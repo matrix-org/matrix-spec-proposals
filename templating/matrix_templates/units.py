@@ -400,33 +400,60 @@ class MatrixUnits(Units):
                     }
                 }
                 logger.info(" ------- Endpoint: %s %s ------- " % (method, path))
-                for param in single_api.get("parameters", []):
-                    param_loc = param["in"]
-                    if param_loc == "body":
-                        self._handle_body_param(param, endpoint)
-                        continue
 
+                path_template = api.get("basePath", "").rstrip("/") + path
+                example_query_params = []
+                example_body = ""
+
+                for param in single_api.get("parameters", []):
+                    # even body params should have names, otherwise the active docs don't work.
                     param_name = param["name"]
 
-                    # description
-                    desc = param.get("description", "")
-                    if param.get("required"):
-                        desc = "**Required.** " + desc
+                    try:
+                        param_loc = param["in"]
 
-                    # assign value expected for this param
-                    val_type = param.get("type") # integer/string
+                        if param_loc == "body":
+                            self._handle_body_param(param, endpoint)
+                            example_body = get_example_for_param(param)
+                            continue
 
-                    if param.get("enum"):
-                        val_type = "enum"
-                        desc += (
-                            " One of: %s" % json.dumps(param.get("enum"))
-                        )
+                        # description
+                        desc = param.get("description", "")
+                        if param.get("required"):
+                            desc = "**Required.** " + desc
 
-                    endpoint["req_param_by_loc"].setdefault(param_loc, []).append({
-                        "key": param_name,
-                        "type": val_type,
-                        "desc": desc
-                    })
+                        # assign value expected for this param
+                        val_type = param.get("type") # integer/string
+
+                        if param.get("enum"):
+                            val_type = "enum"
+                            desc += (
+                                " One of: %s" % json.dumps(param.get("enum"))
+                            )
+
+                        endpoint["req_param_by_loc"].setdefault(param_loc, []).append({
+                            "key": param_name,
+                            "type": val_type,
+                            "desc": desc
+                        })
+
+                        example = get_example_for_param(param)
+                        if example is None:
+                            continue
+
+                        if param_loc == "path":
+                            path_template = path_template.replace(
+                                "{%s}" % param_name, urllib.quote(example)
+                            )
+                        elif param_loc == "query":
+                            if type(example) == list:
+                                for value in example:
+                                    example_query_params.append((param_name, value))
+                            else:
+                                example_query_params.append((param_name, example))
+
+                    except Exception, e:
+                        raise Exception("Error handling parameter %s" % param_name, e)
                 # endfor[param]
 
                 good_response = None
@@ -458,42 +485,10 @@ class MatrixUnits(Units):
                             })
                         endpoint["res_headers"] = headers
 
-                # calculate the example request
-                path_template = api.get("basePath", "").rstrip("/") + path
-                qps = []
-                body = ""
-                for param in single_api.get("parameters", []):
-                    paramname = param.get("name")
-                    try:
-                        example = get_example_for_param(param)
-
-                        if not example:
-                            logger.warn(
-                                "The parameter %s is missing an example.",
-                                paramname
-                            )
-                            continue
-
-                        if param["in"] == "path":
-                            path_template = path_template.replace(
-                                "{%s}" % paramname, urllib.quote(example)
-                            )
-                        elif param["in"] == "body":
-                            body = example
-                        elif param["in"] == "query":
-                            if type(example) == list:
-                                for value in example:
-                                    qps.append((paramname, value))
-                                else:
-                                    qps.append((paramname, example))
-                    except Exception, e:
-                        raise Exception("Error handling parameter %s" % paramname,
-                                        e)
-
-                query_string = "" if len(qps) == 0 else "?"+urllib.urlencode(qps)
-                if body:
+                query_string = "" if len(example_query_params) == 0 else "?"+urllib.urlencode(example_query_params)
+                if example_body:
                     endpoint["example"]["req"] = "%s %s%s HTTP/1.1\nContent-Type: application/json\n\n%s" % (
-                        method.upper(), path_template, query_string, body
+                        method.upper(), path_template, query_string, example_body
                     )
                 else:
                     endpoint["example"]["req"] = "%s %s%s HTTP/1.1\n\n" % (
