@@ -63,7 +63,8 @@ output = {
     "basePath": "/",
     "consumes": ["application/json"],
     "produces": ["application/json"],
-    "host": "localhost:8008",
+    "host": "matrix.org:8448",
+    "schemes": ["https"],
     "info": {
         "title": "Matrix Client-Server API",
         "version": release_label,
