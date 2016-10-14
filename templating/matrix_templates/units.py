@@ -390,7 +390,18 @@ def get_example_for_param(param):
     schema = param.get('schema')
     if not schema:
         return None
-    return json.dumps(get_example_for_schema(schema), indent=2)
+
+    # allow examples for the top-level object to be in formatted json
+    exampleobj = None
+    if 'example' in schema:
+        exampleobj = schema['example']
+        if isinstance(exampleobj, basestring):
+           return exampleobj
+
+    if exampleobj is None:
+        exampleobj = get_example_for_schema(schema)
+
+    return json.dumps(exampleobj, indent=2)
 
 def get_example_for_response(response):
     """Returns a stringified example for a response"""
