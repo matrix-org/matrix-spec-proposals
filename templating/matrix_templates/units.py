@@ -119,42 +119,27 @@ def get_json_schema_object_fields(obj, enforce_title=False):
             "get_json_schema_object_fields: Object %s isn't an object." % obj
         )
 
-    logger.debug("Processing object with title '%s'", obj.get("title"))
+    obj_title = obj.get("title")
 
-    if enforce_title and not obj.get("title"):
+    logger.debug("Processing object with title '%s'", obj_title)
+
+    if enforce_title and not obj_title:
         # Force a default titile of "NO_TITLE" to make it obvious in the
         # specification output which parts of the schema are missing a title
-        obj["title"] = 'NO_TITLE'
+        obj_title = 'NO_TITLE'
 
     additionalProps = obj.get("additionalProperties")
     props = obj.get("properties")
     if additionalProps and not props:
         # not "really" an object, just a KV store
-        additionalProps = inherit_parents(additionalProps)
-
-        logger.debug("%s is a pseudo-object", obj.get("title"))
+        logger.debug("%s is a pseudo-object", obj_title)
 
         key_type = additionalProps.get("x-pattern", "string")
-
-        value_type = additionalProps["type"]
-        if value_type == "object":
-            nested_objects = get_json_schema_object_fields(
-                additionalProps,
-                enforce_title=True,
-            )
-            value_type = nested_objects[0]["title"]
-            tables = [x for x in nested_objects if not x.get("no-table")]
-        else:
-            key_type = "string"
-            tables = []
-
-        tables = [{
-            "title": "{%s: %s}" % (key_type, value_type),
-            "no-table": True
-        }]+tables
-
-        logger.debug("%s done: returning %s", obj.get("title"), tables)
-        return tables
+        res = process_data_type(additionalProps)
+        return {
+            "type": "{%s: %s}" % (key_type, res["type"]),
+            "tables": res["tables"],
+        }
 
     if not props:
         props = obj.get("patternProperties")
@@ -169,14 +154,13 @@ def get_json_schema_object_fields(obj, enforce_title=False):
     # Sometimes you just want to specify that a thing is an object without
     # doing all the keys.
     if not props:
-        return [{
-            "title": obj.get("title"),
-            "no-table": True
-        }]
+        return {
+            "type": obj_title,
+            "tables": [],
+        }
 
     required_keys = set(obj.get("required", []))
 
-    obj_title = obj.get("title")
     first_table_rows = []
     tables = []
 
@@ -184,9 +168,14 @@ def get_json_schema_object_fields(obj, enforce_title=False):
         try:
             logger.debug("Processing property %s.%s", obj_title, key_name)
             required = key_name in required_keys
-            res = process_prop(key_name, props[key_name], required)
+            res = process_data_type(props[key_name], required)
 
-            first_table_rows.append(res["row"])
+            first_table_rows.append({
+                "key": key_name,
+                "type": res["type"],
+                "required": required,
+                "desc": res["desc"],
+            })
             tables.extend(res["tables"])
             logger.debug("Done property %s" % key_name)
 
@@ -202,87 +191,64 @@ def get_json_schema_object_fields(obj, enforce_title=False):
         "rows": first_table_rows,
     })
 
-    return tables
+    return {
+        "type": obj_title,
+        "tables": tables,
+    }
 
-def process_prop(key_name, prop, required):
+
+# process a data type definition. returns a dictionary with the keys:
+# type:     stringified type name
+# desc:     description
+# enum_desc: description of permissible enum fields
+# is_object: true if the data type is an object
+# tables:   list of additional table definitions
+def process_data_type(prop, required=False, enforce_title=True):
     prop = inherit_parents(prop)
 
-    value_type = None
-    desc = prop.get("description", "")
     prop_type = prop['type']
     tables = []
-
-    logger.debug("%s is a %s", key_name, prop_type)
+    enum_desc = None
+    is_object = False
 
     if prop_type == "object":
-        nested_objects = get_json_schema_object_fields(
+        res = get_json_schema_object_fields(
             prop,
-            enforce_title=True,
+            enforce_title=enforce_title,
         )
-        value_type = nested_objects[0]["title"]
-        value_id = value_type
+        prop_type = res["type"]
+        tables = res["tables"]
+        is_object = True
 
-        tables += [x for x in nested_objects if not x.get("no-table")]
     elif prop_type == "array":
-        items = inherit_parents(prop["items"])
-        # if the items of the array are objects then recurse
-        if items["type"] == "object":
-            nested_objects = get_json_schema_object_fields(
-                items,
-                enforce_title=True,
+        nested = process_data_type(prop["items"])
+        prop_type = "[%s]" % nested["type"]
+        tables = nested["tables"]
+        enum_desc = nested["enum_desc"]
+
+    if prop.get("enum"):
+        if len(prop["enum"]) > 1:
+            prop_type = "enum"
+            enum_desc = (
+                "One of: %s" % json.dumps(prop["enum"])
             )
-            value_id = nested_objects[0]["title"]
-            value_type = "[%s]" % value_id
-            tables += nested_objects
         else:
-            value_type = items["type"]
-            if isinstance(value_type, list):
-                value_type = " or ".join(value_type)
-            value_id = value_type
-            value_type = "[%s]" % value_type
-            array_enums = items.get("enum")
-            if array_enums:
-                if len(array_enums) > 1:
-                    value_type = "[enum]"
-                    desc += (
-                        " One of: %s" % json.dumps(array_enums)
-                    )
-                else:
-                    desc += (
-                        " Must be '%s'." % array_enums[0]
-                    )
-    else:
-        value_type = prop_type
-        value_id = prop_type
-        if prop.get("enum"):
-            if len(prop["enum"]) > 1:
-                value_type = "enum"
-                if desc:
-                    desc += " "
-                desc += (
-                    "One of: %s" % json.dumps(prop["enum"])
-                )
-            else:
-                if desc:
-                    desc += " "
-                desc += (
-                    "Must be '%s'." % prop["enum"][0]
-                )
-        if isinstance(value_type, list):
-            value_type = " or ".join(value_type)
+            enum_desc = (
+                "Must be '%s'." % prop["enum"][0]
+            )
+
+    if isinstance(prop_type, list):
+        prop_type = " or ".join(prop_type)
 
 
-    if required:
-        desc = "**Required.** " + desc
+    rq = "**Required.**" if required else None
+    desc = " ".join(x for x in [rq, prop.get("description"), enum_desc] if x)
 
     return {
-        "row": {
-            "key": key_name,
-            "type": value_type,
-            "id": value_id,
-            "required": required,
-            "desc": desc,
-        },
+        "type": prop_type,
+        "desc": desc,
+        "enum_desc": enum_desc,
+        "is_object": is_object,
         "tables": tables,
     }
 
@@ -309,62 +275,28 @@ def deduplicate_tables(tables):
     return filtered
 
 def get_tables_for_schema(schema):
-    schema = inherit_parents(schema)
-    tables = get_json_schema_object_fields(schema)
-    return deduplicate_tables(tables)
+    pv = process_data_type(schema, enforce_title=False)
+    return deduplicate_tables(pv["tables"])
 
-def get_tables_for_response(api, schema):
-    schema = inherit_parents(schema)
-    resp_type = schema.get("type")
+def get_tables_for_response(schema):
+    pv = process_data_type(schema, enforce_title=False)
+    tables = deduplicate_tables(pv["tables"])
 
-    if resp_type is None:
-        raise KeyError("Response definition for api '%s' missing 'type' field"
-                       % (api))
-
-    resp_title = schema.get("title", "")
-    resp_description = schema.get("description", "")
-
-    logger.debug("Found a 200 response for this API; type %s" % resp_type)
-
-    if resp_type == "object":
-        tables = get_json_schema_object_fields(
-            schema,
-            enforce_title=False,
-        )
-
-    else:
-        nested_items = []
-        if resp_type == "array":
-            items = inherit_parents(schema["items"])
-            if items["type"] == "object":
-                nested_items = get_json_schema_object_fields(
-                    items,
-                    enforce_title=True,
-                )
-                value_id = nested_items[0]["title"]
-                resp_type = "[%s]" % value_id
-            else:
-                raise Exception("Unsupported array response type [%s] for %s" %
-                            (items["type"], api))
-
+    # make up the first table, with just the 'body' row in, unless the response
+    # is an object, in which case there's little point in having one.
+    if not pv["is_object"]:
         tables = [{
-            "title": resp_title,
+            "title": None,
             "rows": [{
                 "key": "<body>",
-                "type": resp_type,
-                "desc": resp_description,
+                "type": pv["type"],
+                "desc": pv["desc"],
             }]
-        }] + nested_items
+        }] + tables
 
-    res = deduplicate_tables(tables)
+    logger.debug("response: %r" % tables)
 
-    if len(res) == 0:
-        logger.warn(
-            "This API appears to have no response table. Are you " +
-            "sure this API returns no parameters?"
-        )
-
-    return res
+    return tables
 
 def get_example_for_schema(schema):
     """Returns a python object representing a suitable example for this object"""
@@ -514,7 +446,6 @@ class MatrixUnits(Units):
                 if good_response:
                     if "schema" in good_response:
                         endpoint["res_tables"] = get_tables_for_response(
-                            "%s %s" % (method, path),
                             good_response["schema"]
                         )
                     if "headers" in good_response:
