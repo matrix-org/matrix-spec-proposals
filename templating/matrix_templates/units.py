@@ -384,16 +384,33 @@ def get_example_for_schema(schema):
     return schema.get('type', '??')
 
 def get_example_for_param(param):
+    """Returns a stringified example for a parameter"""
     if 'x-example' in param:
         return param['x-example']
     schema = param.get('schema')
     if not schema:
         return None
-    if 'example' in schema:
-        return schema['example']
-    return json.dumps(get_example_for_schema(param['schema']),
-                      indent=2)
+    return json.dumps(get_example_for_schema(schema), indent=2)
 
+def get_example_for_response(response):
+    """Returns a stringified example for a response"""
+    exampleobj = None
+    if 'examples' in response:
+        exampleobj = response["examples"].get("application/json")
+        # the openapi spec suggests that examples in the 'examples' section should
+        # be formatted as raw objects rather than json-formatted strings, but we
+        # have lots of the latter in our spec, which work with the swagger UI,
+        # so grandfather them in.
+        if isinstance(exampleobj, basestring):
+            return exampleobj
+
+    if exampleobj is None:
+        schema = response.get('schema')
+        if schema:
+            exampleobj = get_example_for_schema(schema)
+    if exampleobj is None:
+        return None
+    return json.dumps(exampleobj, indent=2)
 
 class MatrixUnits(Units):
     def _load_swagger_meta(self, api, group_name):
@@ -455,7 +472,7 @@ class MatrixUnits(Units):
                     if not good_response and code == 200:
                         good_response = res
                     description = res.get("description", "")
-                    example = res.get("examples", {}).get("application/json", "")
+                    example = get_example_for_response(res)
                     endpoint["responses"].append({
                         "code": code,
                         "description": description,
