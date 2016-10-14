@@ -372,28 +372,76 @@ def get_example_for_schema(schema):
     if 'example' in schema:
         example = schema['example']
         return example
-    if 'properties' in schema:
+
+    proptype = schema['type']
+
+    if proptype == 'object':
+        if 'properties' not in schema:
+            raise Exception('"object" property has neither properties nor example')
         res = OrderedDict()
         for prop_name, prop in schema['properties'].iteritems():
             logger.debug("Parsing property %r" % prop_name)
             prop_example = get_example_for_schema(prop)
             res[prop_name] = prop_example
         return res
-    if 'items' in schema:
+
+    if proptype == 'array':
+        if 'items' not in schema:
+            raise Exception('"array" property has neither items nor example')
         return [get_example_for_schema(schema['items'])]
-    return schema.get('type', '??')
+
+    if proptype == 'integer':
+        return 0
+
+    if proptype == 'string':
+        return proptype
+
+    raise Exception("Don't know to make an example %s" % proptype)
 
 def get_example_for_param(param):
+    """Returns a stringified example for a parameter"""
     if 'x-example' in param:
         return param['x-example']
     schema = param.get('schema')
     if not schema:
         return None
-    if 'example' in schema:
-        return schema['example']
-    return json.dumps(get_example_for_schema(param['schema']),
-                      indent=2)
 
+    # allow examples for the top-level object to be in formatted json
+    exampleobj = None
+    if 'example' in schema:
+        exampleobj = schema['example']
+        if isinstance(exampleobj, basestring):
+           return exampleobj
+
+    if exampleobj is None:
+        exampleobj = get_example_for_schema(schema)
+
+    return json.dumps(exampleobj, indent=2)
+
+def get_example_for_response(response):
+    """Returns a stringified example for a response"""
+    exampleobj = None
+    if 'examples' in response:
+        exampleobj = response["examples"].get("application/json")
+        # the openapi spec suggests that examples in the 'examples' section should
+        # be formatted as raw objects rather than json-formatted strings, but we
+        # have lots of the latter in our spec, which work with the swagger UI,
+        # so grandfather them in.
+        if isinstance(exampleobj, basestring):
+            return exampleobj
+
+    if exampleobj is None:
+        schema = response.get('schema')
+        if schema:
+            if schema['type'] == 'file':
+                # no example for 'file' responses
+                return None
+            exampleobj = get_example_for_schema(schema)
+
+    if exampleobj is None:
+        return None
+
+    return json.dumps(exampleobj, indent=2)
 
 class MatrixUnits(Units):
     def _load_swagger_meta(self, api, group_name):
@@ -455,7 +503,7 @@ class MatrixUnits(Units):
                     if not good_response and code == 200:
                         good_response = res
                     description = res.get("description", "")
-                    example = res.get("examples", {}).get("application/json", "")
+                    example = get_example_for_response(res)
                     endpoint["responses"].append({
                         "code": code,
                         "description": description,
@@ -484,29 +532,31 @@ class MatrixUnits(Units):
                 qps = []
                 body = ""
                 for param in single_api.get("parameters", []):
+                    paramname = param.get("name")
                     try:
                         example = get_example_for_param(param)
 
                         if not example:
                             logger.warn(
-                                "The parameter %s is missing an example." %
-                                param["name"])
+                                "The parameter %s is missing an example.",
+                                paramname
+                            )
                             continue
 
                         if param["in"] == "path":
                             path_template = path_template.replace(
-                                "{%s}" % param["name"], urllib.quote(example)
+                                "{%s}" % paramname, urllib.quote(example)
                             )
                         elif param["in"] == "body":
                             body = example
                         elif param["in"] == "query":
                             if type(example) == list:
                                 for value in example:
-                                    qps.append((param["name"], value))
+                                    qps.append((paramname, value))
                                 else:
-                                    qps.append((param["name"], example))
+                                    qps.append((paramname, example))
                     except Exception, e:
-                        raise Exception("Error handling parameter %s" % param["name"],
+                        raise Exception("Error handling parameter %s" % paramname,
                                         e)
 
                 query_string = "" if len(qps) == 0 else "?"+urllib.urlencode(qps)
