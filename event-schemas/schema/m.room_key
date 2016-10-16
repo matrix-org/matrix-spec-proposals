@@ -1,0 +1,24 @@
+---
+allOf:
+  - $ref: core-event-schema/event.yaml
+
+description: |-
+  This event type is used to exchange keys for end-to-end encryption. Typically
+  it is encrypted as an ``m.room.encrypted`` event.
+properties:
+  content:
+    properties:
+      algorithm:
+        type: string
+        description: |-
+          The encryption algorithm the keys in this event are to be used
+          with. The value of this field determines which other properties will
+          be present.
+    required:
+      - algorithm
+    type: object
+  type:
+    enum:
+      - m.room_key
+    type: string
+type: object

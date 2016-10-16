@@ -1,0 +1,32 @@
+---
+allOf:
+  - $ref: core-event-schema/event.yaml
+
+description: |-
+  This event type is used to announce that a user has logged in with a new
+  device. It is sent as a `to-device`_ event to all
+  users which share an encrypted room with the user, to request that encryption
+  keys be shared with the new device.
+properties:
+  content:
+    properties:
+      device_id:
+        type: string
+        description: |-
+          ID of the new device
+      rooms:
+        type: list
+        items:
+          type: string
+        description: |-
+          A list of rooms that the new device is requesting encryption keys
+          for.
+    required:
+      - device_id
+      - rooms
+    type: object
+  type:
+    enum:
+      - m.new_device
+    type: string
+type: object

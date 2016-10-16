@@ -520,3 +520,14 @@ be decrypted.
 A client can discard history by advancing a ratchet to beyond the last message
 they want to discard and then forgetting all previous values of the
 ratchet.
+
+Events
+------
+
+{{m_room_encryption_event}}
+
+{{m_room_encrypted_event}}
+
+{{m_room_key_event}}
+
+{{m_new_device_event}}

@@ -1,0 +1,34 @@
+---
+allOf:
+  # this is a bit of a lie; if the event is sent as a to-device event it won't
+  # have the room event fields. We really ought to use different event types :/
+  - $ref: core-event-schema/room_event.yaml
+
+description: |-
+  This event type is used when sending encrypted events. It can be used either
+  within a room (in which case it will have all of the `Room Event fields`_), or
+  as a `to-device`_ event.
+
+properties:
+  content:
+    properties:
+      algorithm:
+        type: string
+        description: |-
+          The encryption algorithm used to encrypt this event. The
+          value of this field determines which other properties will be
+          present.
+      ciphertext:
+        type:
+          - object
+          - string
+        description: |-
+          Normally required. The encrypted content of the event. 
+    required:
+      - algorithm
+    type: object
+  type:
+    enum:
+      - m.room.encrypted
+    type: string
+type: object

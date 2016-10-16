@@ -12,10 +12,11 @@
 .. See the License for the specific language governing permissions and
 .. limitations under the License.
 
+.. _module:to_device:
+.. _`to-device`:
+
 Send-to-Device messaging
 ========================
-
-.. _module:to_device:
 
 This module provides a means by which clients can exchange signalling messages
 without them being stored permanently as part of a shared communication

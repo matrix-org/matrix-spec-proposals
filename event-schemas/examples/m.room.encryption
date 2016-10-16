@@ -1,0 +1,14 @@
+{
+  "content": {
+    "algorithm": "m.megolm.v1.aes-sha2"
+  },
+  "event_id": "$WLGTSEFJJKJ:localhost",
+  "origin_server_ts": 1476648761524,
+  "sender": "@example:localhost",
+  "state_key": "",
+  "type": "m.room.encryption",
+  "unsigned": {
+    "age": 160,
+    "transaction_id": "m1476648745605.10"
+  }
+}
