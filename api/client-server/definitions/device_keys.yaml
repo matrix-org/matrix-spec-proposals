@@ -50,7 +50,8 @@ properties:
        Base64-encoded signatures for the device key object. A map from user ID,
        to a map from ``<algorithm>:<device_id>`` to the signature.
 
-       TODO link to canonical JSON algorithm.
+       The signature is calculated using the process described at `Signing
+       JSON`_.
     additionalProperties:
       type: object
       additionalProperties:
