@@ -6,6 +6,8 @@ support for end-to-end encryption. It is highly recommended that readers
 be familiar with the Matrix protocol and the use of access tokens before
 proceeding.
 
+.. contents::
+
 The libolm library
 ------------------
 
@@ -608,8 +610,8 @@ relevant user's devices (using the wildcard ``*`` in place of the
 ``device_id``) via ``PUT
 /_matrix/client/unstable/sendToDevice/m.new_device/<txnId>.``
 
-Handling an m.new_device event
--------------------------------
+Handling an ``m.new_device`` event
+----------------------------------
 
 As with ``m.room_key`` events, these will appear in the ``to_device``
 section of the ``/sync`` response.
