@@ -41,12 +41,11 @@ response; a client is also free to generate its own ``device_id`` or, as
 above, reuse a device, in which case the client should pass the
 ``device_id`` in the request body.
 
-The lifetime of devices and ``access_token``\ s (technically: chains of
-``refresh_token``\ s and ``access_token``\ s), are closely related. In
+The lifetime of devices and ``access_token``\ s are closely related. In
 the simple case where a new device is created each time you log in,
 there is a one-to-one mapping between a ``device_id`` and an
-``access_token`` chain. If a client reuses a ``device_id`` when logging
-in, there will be several ``access_token`` chains associated with a
+``access_token``. If a client reuses a ``device_id`` when logging
+in, there will be several ``access_token``\ s associated with a
 given ``device_id`` - but still, we would expect only one of these to be
 active at once (though we do not currently enforce that in Synapse).
 
