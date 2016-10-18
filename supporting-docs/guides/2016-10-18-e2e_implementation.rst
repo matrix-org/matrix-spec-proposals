@@ -377,8 +377,8 @@ object containing information on the device, as follows:
     "algorithms": [...],
     "device_id": "<deviceId>",
     "keys": {
-      "curve25519:<deviceId>": "<curve25519\_key>",
-      "ed25519:<deviceId>": "<ed25519\_key>"
+      "curve25519:<deviceId>": "<curve25519_key>",
+      "ed25519:<deviceId>": "<ed25519_key>"
     },
     "signatures": {
       "<userId>": {
