@@ -1,3 +1,9 @@
+---
+layout: post
+title: End-to-End Encryption implementation guide
+categories: guides
+---
+
 Implementing End-to-End Encryption in Matrix clients
 ====================================================
 
