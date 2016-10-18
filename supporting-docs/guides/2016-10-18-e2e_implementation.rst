@@ -12,6 +12,8 @@ support for end-to-end encryption. It is highly recommended that readers
 be familiar with the Matrix protocol and the use of access tokens before
 proceeding.
 
+.. contents::
+
 The libolm library
 ------------------
 
@@ -45,12 +47,11 @@ response; a client is also free to generate its own ``device_id`` or, as
 above, reuse a device, in which case the client should pass the
 ``device_id`` in the request body.
 
-The lifetime of devices and ``access_token``\ s (technically: chains of
-``refresh_token``\ s and ``access_token``\ s), are closely related. In
+The lifetime of devices and ``access_token``\ s are closely related. In
 the simple case where a new device is created each time you log in,
 there is a one-to-one mapping between a ``device_id`` and an
-``access_token`` chain. If a client reuses a ``device_id`` when logging
-in, there will be several ``access_token`` chains associated with a
+``access_token``. If a client reuses a ``device_id`` when logging
+in, there will be several ``access_token``\ s associated with a
 given ``device_id`` - but still, we would expect only one of these to be
 active at once (though we do not currently enforce that in Synapse).
 
@@ -614,8 +615,8 @@ relevant user's devices (using the wildcard ``*`` in place of the
 ``device_id``) via ``PUT
 /_matrix/client/unstable/sendToDevice/m.new_device/<txnId>.``
 
-Handling an m.new_device event
--------------------------------
+Handling an ``m.new_device`` event
+----------------------------------
 
 As with ``m.room_key`` events, these will appear in the ``to_device``
 section of the ``/sync`` response.
