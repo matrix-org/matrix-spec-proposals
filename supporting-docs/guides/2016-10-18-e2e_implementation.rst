@@ -292,15 +292,30 @@ At the end of this, the client will hopefully have successfully
 decrypted the payload.
 
 As well as the ``type`` and ``content`` properties, the payload should
-contain a ``keys`` property, which should be an object with a property
-ed25519. The client should check that the value of this property matches
-the sender's fingerprint key when `marking the event as verified`_ [#]_.
+contain a number of other properties. Each of these should be checked as
+follows [#]_.
 
-.. [#] This prevents an attacker publishing someone else's curve25519 keys as
-   their own and subsequently claiming to have sent messages which they didn't
-   (see
-   https://github.com/vector-im/vector-web/issues/2215#issuecomment-247630155).
+``sender``
+  The user ID of the sender. The client should check that this matches the
+  ``sender`` in the event.
 
+``recipient``
+  The user ID of the recipient. The client should check that this matches the
+  local user ID.
+
+``keys``
+  an object with a property ``ed25519``, The client should check that the
+  value of this property matches the sender's fingerprint key when `marking
+  the event as verified`_\ .
+
+``recipient_keys``
+
+  an object with a property ``ed25519``. The client should check that the
+  value of this property matches its own fingerprint key.
+
+.. [#] These tests prevent an attacker publishing someone else's curve25519
+   keys as their own and subsequently claiming to have sent messages which they
+   didn't.
 
 ``m.megolm.v1.aes-sha2``
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -509,10 +524,15 @@ When encrypting an event using Olm, the client should:
      {
        "type": "<event type>",
        "content": "<event content>",
+       "sender": "<our user ID>",
        "sender_device": "<our device ID>",
        "keys": {
          "ed25519": "<our ed25519 fingerprint key>"
-       }
+       },
+       "recipient": "<recipient user ID>",
+       "recipient_keys": {
+         "ed25519": "<recipient's ed25519 fingerprint key>"
+       },
      }
 
 -  Check if it has an existing Olm session; if it does not, `start a new
