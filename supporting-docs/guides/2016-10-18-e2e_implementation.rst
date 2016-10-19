@@ -399,12 +399,18 @@ and the corresponding signature for the ``signature`` parameter. If the
 signature check fails, no further processing should be done on the
 device.
 
-The client should check if the ``user_id``/``device_ie`` correspond to a device
+The client must also check that the ``user_id`` and ``device_id`` fields in the
+object match those in the top-level map [#]_.
+
+The client should check if the ``user_id``/``device_id`` correspond to a device
 it had seen previously. If it did, the client **must** check that the Ed25519
 key hasn't changed. Again, if it has changed, no further processing should be
 done on the device.
 
 Otherwise the client stores the information about this device.
+
+.. [#] This prevents a malicious or compromised homeserver replacing the keys
+       for the device with those of another.
 
 Sending an encrypted event
 --------------------------
