@@ -46,6 +46,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/history_visibility.rst
     - modules/push.rst
     - modules/third_party_invites.rst
+    - modules/third_party_lookup.rst
     - modules/search.rst
     - modules/guest_access.rst
     - modules/room_previews.rst
