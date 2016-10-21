@@ -326,13 +326,13 @@ Encrypted events using this algorithm should have ``sender_key``,
 Megolm session (see `below`__), the ciphertext can be
 decrypted by passing the ciphertext into ``olm_group_decrypt``.
 
+__ `m.room_key`_
+
 In order to avoid replay attacks a client should remember the megolm
 ``message_index`` returned by ``olm_group_decrypt`` of each event they decrypt
 for each session. If the client decrypts an event with the same
-``message_index`` as one that it has already decrypted using that session then
-it should fail decryption.
-
-__ `m.room_key`_
+``message_index`` as one that it has already received using that session then
+it should treat the message as invalid.
 
 The client should check that the sender's fingerprint key matches the
 ``keys.ed25519`` property of the event which established the Megolm session
