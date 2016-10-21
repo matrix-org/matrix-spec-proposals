@@ -51,19 +51,28 @@ paths:
               one_time_keys:
                 type: object
                 description: |-
-                  Base64-encoded one-time public keys for "pre-key" messages.  The
-                  names of the properties should be in the format
-                  ``<algorithm>:<key_id>``.
+                  One-time public keys for "pre-key" messages.  The names of
+                  the properties should be in the format
+                  ``<algorithm>:<key_id>``. The format of the key is determined
+                  by the key algorithm.
 
                   May be absent if no new one-time keys are required.
                 additionalProperties:
-                  type: string
+                  type:
+                    - string
+                    - object
                 example:
                   "curve25519:AAAAAQ": "/qyvZvwjiTxGdGU0RCguDCLeR+nmsb3FfNG3/Ve4vU8"
-                  "curve25519:AAAAAg": "2TqFeTSnOqtoMhcdCsGmb6iBj1jyrtMlJpHBEXGf3TQ"
-                  "curve25519:AAAAAw": "L+DXGwZkSMQm3D+Cv+Zj3QRc8+tVVNDKkuBxbZGGtjY"
-                  "curve25519:AAAABA": "eO9UIr4p1gBdQRxUZn5JBGIIXb+9i/Hyr9WgHaCceFE"
-                  "curve25519:AAAABQ": "rkK4ZafPKHbRwIl/H4w2gy5IwZuI2wsVoaOm++zwJ3c"
+                  signed_curve25519:AAAAHg:
+                    key: "zKbLg+NrIjpnagy+pIY6uPL4ZwEG2v+8F9lmgsnlZzs"
+                    signatures:
+                      "@alice:example.com":
+                        ed25519:JLAFKJWSCS: "FLWxXqGbwrb8SM3Y795eB6OA8bwBcoMZFXBqnTn58AYWZSqiD45tlBVcDa2L7RwdKXebW/VzDlnfVJ+9jok1Bw"
+                  signed_curve25519:AAAAHQ:
+                    key: "j3fR3HemM16M7CWhoI4Sk5ZsdmdfQHsKL1xuSft6MSw"
+                    signatures:
+                      "@alice:example.com":
+                        ed25519:JLAFKJWSCS: "IQeCEPb9HFk217cU9kw9EOiusC6kMIkoIRnbnfOh5Oc63S1ghgyjShBGpu34blQomoalCyXWyhaaT3MrLZYQAA"
       responses:
         200:
           description:
@@ -72,11 +81,15 @@ paths:
             type: object
             properties:
               one_time_key_counts:
-                type: integer
+                type: object
+                additionalProperties:
+                  type: integer
                 description: |-
-                  The number of unclaimed one-time keys currently held on the server
-                  for this device.
-                example: 10
+                  For each key algorighm, the number of unclaimed one-time keys
+                  of that type currently held on the server for this device.
+                example:
+                  curve25519: 10
+                  signed_curve25519: 20
             required:
               - one_time_key_counts
 
@@ -221,7 +234,7 @@ paths:
                   additionalProperties:
                     type: string
                     description: algorithm
-                    example: "curve25519"
+                    example: "signed_curve25519"
                 example:
                   "@alice:example.com": { "JLAFKJWSCS": "curve25519" }
             required:
@@ -250,15 +263,20 @@ paths:
                 type: object
                 description: |-
                   One-time keys for the queried devices. A map from user ID, to a
-                  map from ``<algorithm>:<key_id>`` to base64-encoded public key.
+                  map from ``<algorithm>:<key_id>`` to the key object.
                 additionalProperties:
                   type: object
                   additionalProperties:
-                    type: string
+                    type:
+                      - string
+                      - object
                 example:
                   "@alice:example.com":
-                    JLAFKJWSCS: {
-                      "curve25519:AAAAAQ": "/qyvZvwjiTxGdGU0RCguDCLeR+nmsb3FfNG3/Ve4vU8"
-                    }
+                    JLAFKJWSCS:
+                      signed_curve25519:AAAAHg:
+                        key: "zKbLg+NrIjpnagy+pIY6uPL4ZwEG2v+8F9lmgsnlZzs"
+                        signatures:
+                          "@alice:example.com":
+                            ed25519:JLAFKJWSCS: "FLWxXqGbwrb8SM3Y795eB6OA8bwBcoMZFXBqnTn58AYWZSqiD45tlBVcDa2L7RwdKXebW/VzDlnfVJ+9jok1Bw"
       tags:
         - End-to-end encryption

@@ -76,6 +76,11 @@ is a Base64-encoded 32-byte Ed25519 public key.
 The name ``curve25519`` corresponds to the `Curve25519`_ ECDH algorithm. The
 key is a Base64-encoded 32-byte Curve25519 public key.
 
+The name ``signed_curve25519`` also corresponds to the Curve25519 algorithm,
+but keys using this algorithm are objects with the properties ``key`` (giving
+the Base64-encoded 32-byte Curve25519 public key), and ``signatures`` (giving a
+signature for the key object, as described in `Signing JSON`_).
+
 Device keys
 ~~~~~~~~~~~
 
@@ -261,7 +266,7 @@ Key management API
 
 .. TODO-spec:
    move json-signing algorithm out of the s2s spec
-.. _`Signing JSON`: server_server.html#signing-json
+.. _`Signing JSON`: ../server_server/unstable.html#signing-json
 
 .. |m.olm.v1.curve25519-aes-sha2| replace:: ``m.olm.v1.curve25519-aes-sha2``
 
@@ -273,4 +278,3 @@ Key management API
 
 .. |/keys/claim| replace:: ``/keys/claim``
 .. _/keys/claim: #post-matrix-client-%CLIENT_MAJOR_VERSION%-keys-claim
-
