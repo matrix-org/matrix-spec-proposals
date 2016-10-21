@@ -327,9 +327,10 @@ Megolm session (see `below`__), the ciphertext can be
 decrypted by passing the ciphertext into ``olm_group_decrypt``.
 
 In order to avoid replay attacks a client should remember the megolm
-``message_index`` of each event they decrypt for each session. If the client
-decrypts an event with the same ``message_index`` as one that it has already
-decrypted using that session then it should fail decryption.
+``message_index`` returned by ``olm_group_decrypt`` of each event they decrypt
+for each session. If the client decrypts an event with the same
+``message_index`` as one that it has already decrypted using that session then
+it should fail decryption.
 
 __ `m.room_key`_
 
