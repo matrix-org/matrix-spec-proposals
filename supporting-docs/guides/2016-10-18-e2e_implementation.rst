@@ -208,6 +208,9 @@ To enable encryption in a room, a client should send a state event of
 type ``m.room.encryption``, and content ``{ "algorithm":
 "m.megolm.v1.aes-sha2" }``.
 
+.. |m.room.encryption| replace:: ``m.room.encryption``
+.. _`m.room.encryption`:
+
 Handling an ``m.room.encryption`` state event
 ---------------------------------------------
 
@@ -219,6 +222,14 @@ This flag should **not** be cleared if a later ``m.room.encryption``
 event changes the configuration. This is to avoid a situation where a
 MITM can simply ask participants to disable encryption. In short: once
 encryption is enabled in a room, it can never be disabled.
+
+The event should contain an ``algorithm`` property which defines which
+encryption algorithm should be used for encryption. Currently only
+``m.megolm.v1-aes-sha2`` is permitted here.
+
+The event may also include other settings for how messages sent in the room
+should be encrypted (for example, ``rotation_period_ms`` to define how often
+the session should be replaced).
 
 Handling an ``m.room.encrypted`` event
 --------------------------------------
@@ -436,15 +447,16 @@ Otherwise the client stores the information about this device.
 Sending an encrypted event
 --------------------------
 
-When sending a message in a room `configured to use
-encryption`__, a client first checks to see if it has
-an active outbound Megolm session. If not, it first `creates one
-as per below`__.
+When sending a message in a room `configured to use encryption`__, a client
+first checks to see if it has an active outbound Megolm session. If not, it
+first `creates one as per below`__. If an outbound session exists, it should
+check if it is time to `rotate`__ it, and create a new one if so.
 
 __ `Configuring a room to use encryption`_
 __ `Starting a Megolm session`_
+__ `Rotating Megolm sessions`_
 
-It then builds an encryption payload as follows:
+The client then builds an encryption payload as follows:
 
 .. code:: json
 
@@ -512,6 +524,23 @@ __ `blocking`_
 Once all of the key-sharing event contents have been assembled, the
 events should be sent to the corresponding devices via
 ``PUT /_matrix/client/unstable/sendToDevice/m.room.encrypted/<txnId>``.
+
+Rotating Megolm sessions
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Megolm sessions may not be reused indefinitely.
+
+The number of messages which can be sent before a session should be rotated is
+given by the ``rotation_period_msgs`` property of the |m.room.encryption|_
+event, or ``100`` if that property isn't present.
+
+Similarly, the maximum age of a megolm session is given, in milliseconds, by
+the ``rotation_period_ms`` property of the ``m.room.encryption``
+event. ``604800000`` (a week) is the recommended default here.
+
+Once either the message limit or time limit have been reached, the client
+should start a new session before sending any more messages.
+
 
 Encrypting an event with Olm
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
