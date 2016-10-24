@@ -671,8 +671,9 @@ This will return a result as follows:
 
 The client should first check the signatures on the signed key objects. As with
 checking the signatures on the device keys, it should remove the ``signatures``
-property, format the remainder as Canonical JSON, and pass the result into
-``olm_ed25519_verify``, using the Ed25519 device key for the ``key`` parameter.
+and (if present) ``unsigned`` properties, format the remainder as Canonical
+JSON, and pass the result into ``olm_ed25519_verify``, using the Ed25519 device
+key for the ``key`` parameter.
 
 Provided the key object passes verification, the client should then pass the
 key, along with the Curve25519 Identity key for the remote device, into
