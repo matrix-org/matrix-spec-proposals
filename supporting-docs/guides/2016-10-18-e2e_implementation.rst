@@ -132,18 +132,18 @@ should construct a JSON object as follows:
 
   {
     "algorithms": ["m.olm.v1.curve25519-aes-sha2", "m.megolm.v1.aes-sha2"],
-    "device_id": "<deviceId>",
+    "device_id": "<device_id>",
     "keys": {
-      "curve25519:<deviceId>": "<curve25519_key>",
-      "ed25519:<deviceId>": "<ed25519_key>"
+      "curve25519:<device_id>": "<curve25519_key>",
+      "ed25519:<device_id>": "<ed25519_key>"
     },
-    "user_id: <userId>"
+    "user_id: <user_id>"
   }
 
 The object should be formatted as `Canonical
 JSON <http://matrix.org/docs/spec/server_server/unstable.html#canonical-json>`__,
 then signed with ``olm_account_sign``; the signature should be added to
-the JSON as ``signatures.<userId>.ed25519:<deviceId>``.
+the JSON as ``signatures.<user_id>.ed25519:<device_id>``.
 
 The signed JSON is then uploaded via
 ``POST /_matrix/client/unstable/keys/upload``.
@@ -168,7 +168,7 @@ maintain about half this number on the homeserver.
 
 To generate new one-time keys:
 
-* Call ``olm_account_generate_one_time_keys`` to generate new keys
+* Call ``olm_account_generate_one_time_keys`` to generate new keys.
 
 * Call ``olm_account_one_time_keys`` to retrieve the unpublished keys. This
   returns a JSON-formatted object with the single property ``curve25519``,
@@ -184,22 +184,60 @@ To generate new one-time keys:
       }
     }
 
-* Construct a JSON object as follows:
+* Each key should be signed with the account key. To do this:
+
+  * Construct a JSON object as follows:
+
+    .. code:: json
+
+       {
+         "key": "<curve25519_key>"
+       }
+
+  * Call ``olm_account_sign`` to calculate the signature.
+
+  * Add the signature should be added to the JSON as
+    ``signatures.<user_id>.ed25519:<device_id>``.
+
+  * The complete key object should now look like:
+
+    .. code:: json
+
+       {
+         "key": "wo76WcYtb0Vk/pBOdmduiGJ0wIEjW4IBMbbQn7aSnTo",
+         "signatures": {
+           "@alice:example.com": {
+             "ed25519:JLAFKJWSCS": "dSO80A01XiigH3uBiDVx/EjzaoycHcjq9lfQX0uWsqxl2giMIiSPR8a4d291W1ihKJL/a+myXS367WT6NAIcBA"
+           }
+         }
+       }
+
+
+* Aggregate all the signed one-time keys into a single JSON object as follows:
 
   .. code:: json
 
     {
       "one_time_keys": {
-        "curve25519:<keyId>": "<curve25519_key>",
+        "signed_curve25519:<key_id>": {
+          "key": "<curve25519_key>",
+          "signatures": {
+            "<user_id>": {
+              "ed25519:<device_id>": "<signature>"
+            }
+          }
+        },
+        "signed_curve25519:<key_id>": {
+          ...
+        },
         ...
       }
     }
 
-* Upload the object via ``POST /_matrix/client/unstable/keys/upload``. (Unlike
-  the device keys, the one-time keys are **not** signed.
+* Upload the object via ``POST /_matrix/client/unstable/keys/upload``.
 
 * Call ``olm_account_mark_keys_as_published`` to tell the olm library not to
-  return the same keys from a future call to ``olm_account_one_time_keys``\.
+  return the same keys from a future call to ``olm_account_one_time_keys``.
 
 Configuring a room to use encryption
 ------------------------------------
@@ -407,20 +445,20 @@ object containing information on the device, as follows:
 
   {
     "algorithms": [...],
-    "device_id": "<deviceId>",
+    "device_id": "<device_id>",
     "keys": {
-      "curve25519:<deviceId>": "<curve25519_key>",
-      "ed25519:<deviceId>": "<ed25519_key>"
+      "curve25519:<device_id>": "<curve25519_key>",
+      "ed25519:<device_id>": "<ed25519_key>"
     },
     "signatures": {
       "<userId>": {
-        "ed25519:<deviceId>": "<signature>"
+        "ed25519:<device_id>": "<signature>"
       },
     },
     "unsigned": {
       "device_display_name": "<display name>"
     },
-    "user_id: <userId>"
+    "user_id: <user_id>"
   }
 
 The client should first check the signature on this object. To do this,
@@ -601,7 +639,7 @@ create a query object as follows:
 
   {
     "<user id>": {
-      "<device_id>": "curve25519",
+      "<device_id>": "signed_curve25519",
       ...
     },
     ...
@@ -617,15 +655,29 @@ This will return a result as follows:
   {
     "<user id>": {
       "<device_id>": {
-        "curve25519:<key_id>": "<one-time key>"
+        "signed_curve25519:<key_id>": {
+          "key": "<curve25519_key>",
+          "signatures": {
+            "<user_id>": {
+              "ed25519:<device_id>": "<signature>"
+            }
+          }
+        },
       },
       ...
     },
     ...
   }
 
-The client should then pass this key, along with the Curve25519 Identity
-key for the remote device, into ``olm_create_outbound_session``.
+The client should first check the signatures on the signed key objects. As with
+checking the signatures on the device keys, it should remove the ``signatures``
+and (if present) ``unsigned`` properties, format the remainder as Canonical
+JSON, and pass the result into ``olm_ed25519_verify``, using the Ed25519 device
+key for the ``key`` parameter.
+
+Provided the key object passes verification, the client should then pass the
+key, along with the Curve25519 Identity key for the remote device, into
+``olm_create_outbound_session``.
 
 Handling membership changes
 ---------------------------
