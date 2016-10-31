@@ -264,9 +264,7 @@ Key management API
 .. _`Olm specification`: http://matrix.org/docs/spec/olm.html
 .. _`Megolm specification`: http://matrix.org/docs/spec/megolm.html
 
-.. TODO-spec:
-   move json-signing algorithm out of the s2s spec
-.. _`Signing JSON`: ../server_server/unstable.html#signing-json
+.. _`Signing JSON`: ../appendices.html#signing-json
 
 .. |m.olm.v1.curve25519-aes-sha2| replace:: ``m.olm.v1.curve25519-aes-sha2``
 
