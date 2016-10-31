@@ -998,3 +998,149 @@ the following EDU::
     messages: The messages to send. A map from user ID, to a map from device ID
         to message body. The device ID may also be *, meaning all known devices
         for the user.
+
+
+Signing Events
+--------------
+
+Signing events is complicated by the fact that servers can choose to redact
+non-essential parts of an event.
+
+Before signing the event, the ``unsigned`` and ``signature`` members are
+removed, it is encoded as `Canonical JSON`_, and then hashed using SHA-256. The
+resulting hash is then stored in the event JSON in a ``hash`` object under a
+``sha256`` key.
+
+.. code:: python
+
+    def hash_event(event_json_object):
+
+        # Keys under "unsigned" can be modified by other servers.
+        # They are useful for conveying information like the age of an
+        # event that will change in transit.
+        # Since they can be modifed we need to exclude them from the hash.
+        unsigned = event_json_object.pop("unsigned", None)
+
+        # Signatures will depend on the current value of the "hashes" key.
+        # We cannot add new hashes without invalidating existing signatures.
+        signatures = event_json_object.pop("signatures", None)
+
+        # The "hashes" key might contain multiple algorithms if we decide to
+        # migrate away from SHA-2. We don't want to include an existing hash
+        # output in our hash so we exclude the "hashes" dict from the hash.
+        hashes = event_json_object.pop("hashes", {})
+
+        # Encode the JSON using a canonical encoding so that we get the same
+        # bytes on every server for the same JSON object.
+        event_json_bytes = encode_canonical_json(event_json_bytes)
+
+        # Add the base64 encoded bytes of the hash to the "hashes" dict.
+        hashes["sha256"] = encode_base64(sha256(event_json_bytes).digest())
+
+        # Add the "hashes" dict back the event JSON under a "hashes" key.
+        event_json_object["hashes"] = hashes
+        if unsigned is not None:
+            event_json_object["unsigned"] = unsigned
+        return event_json_object
+
+The event is then stripped of all non-essential keys both at the top level and
+within the ``content`` object. Any top-level keys not in the following list
+MUST be removed:
+
+.. code::
+
+    auth_events
+    depth
+    event_id
+    hashes
+    membership
+    origin
+    origin_server_ts
+    prev_events
+    prev_state
+    room_id
+    sender
+    signatures
+    state_key
+    type
+
+A new ``content`` object is constructed for the resulting event that contains
+only the essential keys of the original ``content`` object. If the original
+event lacked a ``content`` object at all, a new empty JSON object is created
+for it.
+
+The keys that are considered essential for the ``content`` object depend on the
+the ``type`` of the event. These are:
+
+.. code::
+
+    type is "m.room.aliases":
+      aliases
+
+    type is "m.room.create":
+      creator
+
+    type is "m.room.history_visibility":
+      history_visibility
+
+    type is "m.room.join_rules":
+      join_rule
+
+    type is "m.room.member":
+      membership
+
+    type is "m.room.power_levels":
+      ban
+      events
+      events_default
+      kick
+      redact
+      state_default
+      users
+      users_default
+
+The resulting stripped object with the new ``content`` object and the original
+``hashes`` key is then signed using the JSON signing algorithm outlined below:
+
+.. code:: python
+
+    def sign_event(event_json_object, name, key):
+
+        # Make sure the event has a "hashes" key.
+        if "hashes" not in event_json_object:
+            event_json_object = hash_event(event_json_object)
+
+        # Strip all the keys that would be removed if the event was redacted.
+        # The hashes are not stripped and cover all the keys in the event.
+        # This means that we can tell if any of the non-essential keys are
+        # modified or removed.
+        stripped_json_object = strip_non_essential_keys(event_json_object)
+
+        # Sign the stripped JSON object. The signature only covers the
+        # essential keys and the hashes. This means that we can check the
+        # signature even if the event is redacted.
+        signed_json_object = sign_json(stripped_json_object)
+
+        # Copy the signatures from the stripped event to the original event.
+        event_json_object["signatures"] = signed_json_oject["signatures"]
+        return event_json_object
+
+Servers can then transmit the entire event or the event with the non-essential
+keys removed. If the entire event is present, receiving servers can then check
+the event by computing the SHA-256 of the event, excluding the ``hash`` object.
+If the keys have been redacted, then the ``hash`` object is included when
+calculating the SHA-256 instead.
+
+New hash functions can be introduced by adding additional keys to the ``hash``
+object. Since the ``hash`` object cannot be redacted a server shouldn't allow
+too many hashes to be listed, otherwise a server might embed illict data within
+the ``hash`` object. For similar reasons a server shouldn't allow hash values
+that are too long.
+
+.. TODO
+  [[TODO(markjh): We might want to specify a maximum number of keys for the
+  ``hash`` and we might want to specify the maximum output size of a hash]]
+  [[TODO(markjh) We might want to allow the server to omit the output of well
+  known hash functions like SHA-256 when none of the keys have been redacted]]
+
+.. _`Canonical JSON`: ../appendices.html#canonical-json
