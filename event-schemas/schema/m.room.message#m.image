@@ -23,20 +23,20 @@ properties:
           w:
             description: The width of the image in pixels.
             type: integer
+          thumbnail_info:
+            allOf:
+              - $ref: core-event-schema/msgtype_infos/image_info.yaml
+            description: Metadata about the image referred to in ``thumbnail_url``.
+            title: ImageInfo
+            type: object
+          thumbnail_url:
+            description: The URL to the thumbnail of the image.
+            type: string
         title: ImageInfo
         type: object
       msgtype:
         enum:
           - m.image
-        type: string
-      thumbnail_info:
-        allOf:
-          - $ref: core-event-schema/msgtype_infos/image_info.yaml
-        description: Metadata about the image referred to in ``thumbnail_url``.
-        title: ImageInfo
-        type: object
-      thumbnail_url:
-        description: The URL to the thumbnail of the image.
         type: string
       url:
         description: The URL to the image.
