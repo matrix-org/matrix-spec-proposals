@@ -14,3 +14,4 @@ properties:
     description: The width of the image in pixels.
     type: integer
 title: ThumbnailInfo
+type: object
