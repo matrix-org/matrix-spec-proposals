@@ -14,7 +14,7 @@ properties:
     description: The width of the image in pixels.
     type: integer
   thumbnail_url:
-    desciption: The URL to a thumbnail of the image.
+    description: The URL to a thumbnail of the image.
     type: string
   thumbnail_info:
     allOf:
