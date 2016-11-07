@@ -71,6 +71,12 @@ Events which have attachments (e.g. ``m.image``, ``m.file``) SHOULD be
 uploaded using the `content repository module`_ where available. The
 resulting ``mxc://`` URI can then be used in the ``url`` key.
 
+Clients MAY include a client generated thumbnail image for an attachment under
+a ``info.thumbnail_url`` key. The thumbnail SHOULD also be a ``mxc://`` URI.
+Clients displaying events with attachments can either use the client generated
+thumbnail or ask its homeserver to generate a thumbnail from the original
+attachment using the `content repository module`_.
+
 .. _`content repository module`: `module:content`_
 
 Recommendations when sending messages
