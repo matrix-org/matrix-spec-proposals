@@ -1,5 +1,5 @@
 $schema: http://json-schema.org/draft-04/schema#
-description: Metadata about an image.
+description: Metadata about a thumbnail image.
 properties:
   h:
     description: The height of the image in pixels.
@@ -13,13 +13,4 @@ properties:
   w:
     description: The width of the image in pixels.
     type: integer
-  thumbnail_url:
-    desciption: The URL to a thumbnail of the image.
-    type: string
-  thumbnail_info:
-    allOf:
-      - $ref: core-event-schema/msgtype_infos/thumbnail_info.yaml
-    description: Metadata about the image referred to in ``thumbnail_url``.
-    title: ThumbnailInfo
-    type: object
-title: ImageInfo
+title: ThumbnailInfo

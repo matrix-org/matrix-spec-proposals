@@ -20,8 +20,8 @@ properties:
         properties:
           thumbnail_info:
             allOf:
-              - $ref: core-event-schema/msgtype_infos/image_info.yaml
-            title: ImageInfo
+              - $ref: core-event-schema/msgtype_infos/thumbnail_info.yaml
+            title: ThumbnailInfo
             type: object
           thumbnail_url:
             description: The URL to a thumbnail of the location being represented.
