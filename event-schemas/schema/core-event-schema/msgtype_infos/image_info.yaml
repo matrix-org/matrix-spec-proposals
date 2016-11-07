@@ -18,7 +18,7 @@ properties:
     type: string
   thumbnail_info:
     allOf:
-      - $ref: core-event-schema/msgtype_infos/thumbnail_info.yaml
+      - $ref: thumbnail_info.yaml
     description: Metadata about the image referred to in ``thumbnail_url``.
     title: ThumbnailInfo
     type: object
