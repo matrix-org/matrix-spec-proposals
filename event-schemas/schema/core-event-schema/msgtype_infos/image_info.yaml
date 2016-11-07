@@ -4,14 +4,14 @@ properties:
   h:
     description: The height of the image in pixels.
     type: integer
+  w:
+    description: The width of the image in pixels.
+    type: integer
   mimetype:
     description: The mimetype of the image, e.g. ``image/jpeg``.
     type: string
   size:
     description: Size of the image in bytes.
-    type: integer
-  w:
-    description: The width of the image in pixels.
     type: integer
   thumbnail_url:
     description: The URL to a thumbnail of the image.
@@ -20,6 +20,5 @@ properties:
     allOf:
       - $ref: thumbnail_info.yaml
     description: Metadata about the image referred to in ``thumbnail_url``.
-    title: ThumbnailInfo
-    type: object
 title: ImageInfo
+type: object
