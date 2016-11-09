@@ -185,6 +185,21 @@ return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
    to choose an appropriate format. Server implementors may like to investigate
    `macaroons <macaroon_>`_.
 
+Relationship between access tokens and devices
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Client `devices`_ are closely related to access tokens.  Matrix servers should
+record which device each access token is assigned to, so that subsequent
+requests can be handled correctly.
+
+By default, the `Login`_ and `Registration`_ processes auto-generate a new
+``device_id``. A client is also free to generate its own ``device_id`` or,
+provided the user remains the same, reuse a device: in ether case the client
+should pass the ``device_id`` in the request body. If the client sets the
+``device_id``, the server will invalidate any access token previously assigned
+to that device. There is therefore at most one active access token assigned to
+each device at any one time.
+
 User-Interactive Authentication API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1366,6 +1381,7 @@ have to wait in milliseconds before they can try again.
 .. References
 
 .. _`macaroon`: http://research.google.com/pubs/pub41892.html
+.. _`devices`: ../intro.html#devices
 
 .. Links through the external API docs are below
 .. =============================================
