@@ -2,8 +2,12 @@
 
 ``{{event.type}}``
 {{(4 + event.type | length) * title_kind}}
+
+{% if (event.typeof | length) %}
 *{{event.typeof}}*
     {{event.typeof_info}}
+
+{% endif -%}
 
 {{event.desc | wrap(80)}}
 {% for table in event.content_fields %}

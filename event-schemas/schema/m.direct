@@ -12,6 +12,8 @@ properties:
     additionalProperties:
       type: array
       title: User ID
+      items:
+        type: string
     type: object
   type:
     enum:
