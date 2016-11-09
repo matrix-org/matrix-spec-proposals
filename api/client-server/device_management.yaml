@@ -95,6 +95,40 @@ paths:
           description: The current user has no device with the given ID.
       tags:
         - Device management
+    put:
+      summary: Update a device
+      description: |-
+        Updates the metadata on the given device.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: deviceId
+          description: The device to update.
+          required: true
+          x-example: "QBUAZIFURK"
+        - in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              display_name:
+                type: string
+                description: |-
+                    The new display name for this device. If not given, the
+                    display name is unchanged.
+                example: My other phone
+      responses:
+        200:
+          description: The device was successfully updated.
+          examples:
+            application/json: |-
+              {}
+          schema:
+            type: object  # empty json object
+        404:
+          description: The current user has no device with the given ID.
     delete:
       summary: Delete a device
       description: |-
@@ -107,7 +141,7 @@ paths:
         - in: path
           type: string
           name: deviceId
-          description: The device to retrieve.
+          description: The device to delete.
           required: true
           x-example: "QBUAZIFURK"
         - in: body
