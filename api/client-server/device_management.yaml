@@ -109,6 +109,7 @@ paths:
           required: true
           x-example: "QBUAZIFURK"
         - in: body
+          name: body
           required: true
           schema:
             type: object
