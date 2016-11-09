@@ -111,6 +111,7 @@ paths:
         - in: body
           name: body
           required: true
+          description: New information for the device.
           schema:
             type: object
             properties:
@@ -130,6 +131,8 @@ paths:
             type: object  # empty json object
         404:
           description: The current user has no device with the given ID.
+      tags:
+        - Device management
     delete:
       summary: Delete a device
       description: |-
