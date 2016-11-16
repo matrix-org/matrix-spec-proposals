@@ -39,6 +39,8 @@
   - Require that User-Interactive auth fallback pages call
     ``window.postMessage`` to notify apps of completion
     (`#398 <https://github.com/matrix-org/matrix-doc/pull/398>`_).
+  - Add room ``/report/`` event API.
+    (`#391 <https://github.com/matrix-org/matrix-doc/pull/391>_`).
 
 - Spec clarifications:
 

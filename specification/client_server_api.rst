@@ -1329,6 +1329,12 @@ Listing rooms
 
 {{list_public_rooms_cs_http_api}}
 
+
+Reporting events
+~~~~~~~~~~~~~~~~
+
+{{report_cs_http_api}}
+
 Profiles
 --------
 
