@@ -7,11 +7,11 @@
     `underride` to `override`. This works with all known clients
     which support push rules, but any other clients implementing
     the push rules API should be aware of this change. This
-    makes it simple to mute rooms correctly in the API.
+    makes it simple to mute rooms correctly in the API
     (`#373 <https://github.com/matrix-org/matrix-doc/pull/373>`_).
-  - Remove ``/tokenrefresh`` from the API.
+  - Remove ``/tokenrefresh`` from the API
     (`#395 <https://github.com/matrix-org/matrix-doc/pull/395>`_).
-  - Remove requirement that tokens used in token-based login be macaroons.
+  - Remove requirement that tokens used in token-based login be macaroons
     (`#395 <https://github.com/matrix-org/matrix-doc/pull/395>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
@@ -25,15 +25,17 @@
   - Add top-level ``account_data`` key to the responses to ``GET /sync`` and
     ``GET /initialSync``
     (`#380 <https://github.com/matrix-org/matrix-doc/pull/380>`_).
-  - Add ``is_direct`` flag to |/createRoom|_ and invite member event.
-    Add 'Direct Messaging' module.
+  - Add ``is_direct`` flag to ``POST /createRoom`` and invite member event.
+    Add 'Direct Messaging' module
     (`#389 <https://github.com/matrix-org/matrix-doc/pull/389>`_).
-  - Add ``contains_url`` option to ``RoomEventFilter``.
+  - Add ``contains_url`` option to ``RoomEventFilter``
     (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
   - Add ``filter`` optional query param to ``/messages``
     (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
-  - Add "Send-to-Device messaging" module
+  - Add 'Send-to-Device messaging' module
     (`#386 <https://github.com/matrix-org/matrix-doc/pull/386>`_).
+  - Add 'Device management' module
+    (`#402 <https://github.com/matrix-org/matrix-doc/pull/402>`_).
   - Require that User-Interactive auth fallback pages call
     ``window.postMessage`` to notify apps of completion
     (`#398 <https://github.com/matrix-org/matrix-doc/pull/398>`_).

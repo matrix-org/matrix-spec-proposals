@@ -20,7 +20,6 @@ targets:
   server_server:
     files:
       - server_server_api.rst
-      - { 1: event_signing.rst }
     version_label: "%SERVER_RELEASE_LABEL%"
   identity_service:
     files:
@@ -33,6 +32,9 @@ targets:
   appendices:
     files:
       - appendices.rst
+      - appendices/signing_json.rst
+      - appendices/threat_model.rst
+      - appendices/test_vectors.rst
 groups:  # reusable blobs of files when prefixed with 'group:'
   modules:
     - modules/instant_messaging.rst
@@ -42,6 +44,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/presence.rst
     - modules/content_repo.rst
     - modules/send_to_device.rst
+    - modules/device_management.rst
     - modules/end_to_end_encryption.rst
     - modules/history_visibility.rst
     - modules/push.rst

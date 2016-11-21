@@ -45,7 +45,7 @@ Other versions of this specification
 
 The following other versions are also available, in reverse chronological order:
 
-- `HEAD <https://matrix.org/speculator/spec/head/client_server.html>`_: Includes all changes since the latest versioned release.
+- `HEAD <http://matrix.org/speculator/spec/HEAD/client_server/unstable.html>`_: Includes all changes since the latest versioned release.
 - `r0.2.0 <https://matrix.org/docs/spec/client_server/r0.2.0.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/client_server/r0.1.0.html>`_
 - `r0.0.1 <https://matrix.org/docs/spec/r0.0.1/client_server.html>`_
@@ -71,6 +71,16 @@ API calls use a Content-Type of ``application/json``.  In addition, all strings
 MUST be encoded as UTF-8. Clients are authenticated using opaque
 ``access_token`` strings (see `Client Authentication`_ for details), passed as a
 query string parameter on all requests.
+
+The names of the API endponts for the HTTP transport follow a convention of
+using underscores to separate words (for example ``/delete_devices``). The key
+names in JSON objects passed over the API also follow this convention.
+
+.. NOTE::
+   There are a few historical exceptions to this rule, such as
+   ``/createRoom``. A future version of this specification will address the
+   inconsistency.
+
 
 Any errors which occur at the Matrix API level MUST return a "standard error
 response". This is a JSON object which looks like:
@@ -174,6 +184,21 @@ return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
    token. Clients should treat it as an opaque byte sequence. Servers are free
    to choose an appropriate format. Server implementors may like to investigate
    `macaroons <macaroon_>`_.
+
+Relationship between access tokens and devices
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Client `devices`_ are closely related to access tokens.  Matrix servers should
+record which device each access token is assigned to, so that subsequent
+requests can be handled correctly.
+
+By default, the `Login`_ and `Registration`_ processes auto-generate a new
+``device_id``. A client is also free to generate its own ``device_id`` or,
+provided the user remains the same, reuse a device: in ether case the client
+should pass the ``device_id`` in the request body. If the client sets the
+``device_id``, the server will invalidate any access token previously assigned
+to that device. There is therefore at most one active access token assigned to
+each device at any one time.
 
 User-Interactive Authentication API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1356,6 +1381,7 @@ have to wait in milliseconds before they can try again.
 .. References
 
 .. _`macaroon`: http://research.google.com/pubs/pub41892.html
+.. _`devices`: ../intro.html#devices
 
 .. Links through the external API docs are below
 .. =============================================

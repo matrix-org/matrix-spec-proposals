@@ -84,9 +84,13 @@ func watchFS(ch chan struct{}, w *fsnotify.Watcher) {
 }
 
 func makeWalker(base string, w *fsnotify.Watcher) filepath.WalkFunc {
-	return func(path string, _ os.FileInfo, err error) error {
+	return func(path string, i os.FileInfo, err error) error {
 		if err != nil {
 			log.Fatalf("Error walking: %v", err)
+		}
+		if !i.IsDir() {
+			// we set watches on directories, not files
+			return nil
 		}
 
 		rel, err := filepath.Rel(base, path)
@@ -129,20 +133,26 @@ func serve(w http.ResponseWriter, req *http.Request) {
 	wg.Wait()
 	wgMu.Unlock()
 
-	file := req.URL.Path
-	if file[0] == '/' {
-		file = file[1:]
-	}
-	if file == "" {
-		file = "index.html"
-	}
 	m := toServe.Load().(bytesOrErr)
 	if m.err != nil {
 		w.Header().Set("Content-Type", "text/plain")
 		w.Write([]byte(m.err.Error()))
 		return
 	}
-	b, ok := m.bytes[file]
+
+	ok := true
+	var b []byte
+
+	file := req.URL.Path
+	if file[0] == '/' {
+		file = file[1:]
+	}
+	b, ok = m.bytes[file]
+
+	if ok && file == "api-docs.json" {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+	}
+
 	if ok {
 		w.Header().Set("Content-Type", "text/html")
 		w.Write([]byte(b))
@@ -153,18 +163,23 @@ func serve(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("Not found"))
 }
 
-func populateOnce(dir string) {
-	defer wg.Done()
-	mu.Lock()
-	defer mu.Unlock()
+func generate(dir string) (map[string][]byte, error) {
 	cmd := exec.Command("python", "gendoc.py")
 	cmd.Dir = path.Join(dir, "scripts")
 	var b bytes.Buffer
 	cmd.Stderr = &b
 	err := cmd.Run()
 	if err != nil {
-		toServe.Store(bytesOrErr{nil, fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())})
-		return
+		return nil, fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())
+	}
+
+	// cheekily dump the swagger docs into the gen directory so that it is
+	// easy to serve
+	cmd = exec.Command("python", "dump-swagger.py", "gen/api-docs.json")
+	cmd.Dir = path.Join(dir, "scripts")
+	cmd.Stderr = &b
+	if err := cmd.Run(); err != nil {
+		return nil, fmt.Errorf("error generating api docs: %v\nOutput from dump-swagger:\n%v", err, b.String())
 	}
 
 	files := make(map[string][]byte)
@@ -190,12 +205,28 @@ func populateOnce(dir string) {
 		return nil
 	}
 
-	err = filepath.Walk(base, walker)
-	if err != nil {
-		toServe.Store(bytesOrErr{nil, fmt.Errorf("error reading spec: %v", err)})
-		return
+	if err := filepath.Walk(base, walker); err != nil {
+		return nil, fmt.Errorf("error reading spec: %v", err)
 	}
-	toServe.Store(bytesOrErr{files, nil})
+
+	// load the special index
+	indexpath := path.Join(dir, "scripts", "continuserv", "index.html")
+	bytes, err := ioutil.ReadFile(indexpath)
+	if err != nil {
+		return nil, fmt.Errorf("error reading index: %v", err)
+	}
+	files[""] = bytes
+
+	return files, nil
+}
+
+func populateOnce(dir string) {
+	defer wg.Done()
+	mu.Lock()
+	defer mu.Unlock()
+
+	files, err := generate(dir)
+	toServe.Store(bytesOrErr{files, err})
 }
 
 func doPopulate(ch chan struct{}, dir string) {
