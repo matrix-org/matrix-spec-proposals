@@ -53,7 +53,9 @@ paths:
         - in: query
           name: kind
           type: string
-          x-example: guest
+          # swagger-UI overrides the default with the example, so better make the
+          # example the default.
+          x-example: user
           required: false
           default: user
           enum:
