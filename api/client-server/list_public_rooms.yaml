@@ -32,7 +32,7 @@ paths:
         Lists the public rooms on the server.
 
         This API returns paginated responses. The rooms are ordered by the number
-        of members, with the largest rooms first.
+        of joined members, with the largest rooms first.
       parameters:
         - in: query
           name: limit
@@ -158,7 +158,7 @@ paths:
         Lists the public rooms on the server, with optional filter.
 
         This API returns paginated responses. The rooms are ordered by the number
-        of members, with the largest rooms first.
+        of joined members, with the largest rooms first.
       security:
         - accessToken: []
       parameters:
@@ -183,8 +183,10 @@ paths:
               since:
                 type: string
                 description: |-
-                  A pagination token from a previous request, allowing clients to
-                  get the next or previous batch of rooms.
+                  A pagination token from a previous request, allowing clients
+                  to get the next (or previous) batch of rooms.  The direction
+                  of pagination is specified solely by which token is supplied,
+                  rather than via an explicit flag.
               filter:
                 type: object
                 title: "Filter"
@@ -271,8 +273,6 @@ paths:
                   A pagination token that allows fetching previous results. The
                   absence of this token means there are no results before this
                   batch, i.e. this is the first batch.
-                  The direction of pagination is specified solely by which token
-                  is supplied, rather than via an explicit flag.
               total_room_count_estimate:
                 type: number
                 description: |-
