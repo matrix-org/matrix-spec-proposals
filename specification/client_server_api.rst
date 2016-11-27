@@ -45,7 +45,7 @@ Other versions of this specification
 
 The following other versions are also available, in reverse chronological order:
 
-- `HEAD <http://matrix.org/speculator/spec/HEAD/client_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `HEAD <https://matrix.org/speculator/spec/HEAD/client_server/unstable.html>`_: Includes all changes since the latest versioned release.
 - `r0.2.0 <https://matrix.org/docs/spec/client_server/r0.2.0.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/client_server/r0.1.0.html>`_
 - `r0.0.1 <https://matrix.org/docs/spec/r0.0.1/client_server.html>`_
@@ -666,7 +666,7 @@ handle unknown login types:
           if (ev.data !== "authDone" || ev.origin !== homeserverUrl) {
               return;
           }
-          
+
           // close the popup
           popupWindow.close();
           window.removeEventListener("message", eventListener);
