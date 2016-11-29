@@ -1,7 +1,7 @@
 ---
 allOf:
   - $ref: core-event-schema/room_event.yaml
-description: 'A m.notice message should be considered similar to a plain m.text message except that clients should visually distinguish it in some way. It is intended to be used by automated clients, such as bots, bridges, and other entities, rather than humans. Additionally, such automated agents which watch a room for messages and respond to them ought to ignore m.notice messages. This helps to prevent infinite-loop situations where two automated clients continuously exchange messages, as each responds to the other.'
+description: 'The ``m.notice`` type is primarily intended for responses from automated clients. An ``m.notice`` message must be treated the same way as a regular ``m.text`` message with two exceptions. Firstly, clients should present ``m.notice`` messages to users in a distinct manner, and secondly, ``m.notice`` messages must never be automatically responded to. This helps to prevent infinite-loop situations where two automated clients continuously exchange messages.'
 properties:
   content:
     properties:
