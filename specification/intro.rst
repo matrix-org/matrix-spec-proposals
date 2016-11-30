@@ -160,6 +160,35 @@ allocated the account and has the form::
 See the `Identifier Grammar`_ section for full details of the structure of
 user IDs.
 
+
+Devices
+~~~~~~~
+
+The Matrix specification has a particular meaning for the term "device". As a
+user, I might have several devices: a desktop client, some web browsers, an
+Android device, an iPhone, etc. They broadly relate to a real device in the
+physical world, but you might have several browsers on a physical device, or
+several Matrix client applications on a mobile device, each of which would be
+its own device.
+
+Devices are used primarily to manage the keys used for end-to-end encryption
+(each device gets its own copy of the decryption keys), but they also help
+users manage their access - for instance, by revoking access to particular
+devices.
+
+When a user first uses a client, it registers itself as a new device. The
+longevity of devices might depend on the type of client. A web client will
+probably drop all of its state on logout, and create a new device every time
+you log in, to ensure that cryptography keys are not leaked to a new user.  In
+a mobile client, it might be acceptable to reuse the device if a login session
+expires, provided the user is the same.
+
+Devices are identified by a ``device_id``, which is unique within the scope of
+a given user.
+
+A user may assign a human-readable display name to a device, to help them
+manage their devices.
+
 Events
 ~~~~~~
 

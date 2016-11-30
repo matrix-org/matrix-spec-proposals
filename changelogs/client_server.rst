@@ -32,11 +32,17 @@
     (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
   - Add ``filter`` optional query param to ``/messages``
     (`#390 <https://github.com/matrix-org/matrix-doc/pull/390>`_).
-  - Add "Send-to-Device messaging" module
+  - Add 'Send-to-Device messaging' module
     (`#386 <https://github.com/matrix-org/matrix-doc/pull/386>`_).
+  - Add 'Device management' module
+    (`#402 <https://github.com/matrix-org/matrix-doc/pull/402>`_).
   - Require that User-Interactive auth fallback pages call
     ``window.postMessage`` to notify apps of completion
     (`#398 <https://github.com/matrix-org/matrix-doc/pull/398>`_).
+  - Add pagination and filter support to ``/publicRooms``. Change response to
+    omit fields rather than return ``null``. Add estimate of total number of
+    rooms in list.
+    (`#388 <https://github.com/matrix-org/matrix-doc/pull/388>`_).
 
 - Spec clarifications:
 
