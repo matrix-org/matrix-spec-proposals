@@ -58,6 +58,9 @@
     values (`#378 <https://github.com/matrix-org/matrix-doc/pull/378>`_).
   - Mark required fields in response objects as such
     (`#394 <https://github.com/matrix-org/matrix-doc/pull/394>`_).
+  - Make ``m.notice`` description a bit harder in its phrasing to try to
+    dissuade the same issues that occurred with IRC
+    (`#750 <https://github.com/matrix-org/matrix-doc/pull/750>`_).
 
 r0.2.0
 ======
