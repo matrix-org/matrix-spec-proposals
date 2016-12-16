@@ -3,7 +3,7 @@ layout: project
 title: matrix-appservice-gitter-twisted
 categories: projects as
 author: Remi Rampin
-maturity: Early beta
+maturity: Alpha
 ---
 
 # {{ page.title }}
@@ -13,4 +13,4 @@ This is supposed to be deployed as a Matrix application service alongside a home
 
 Contrary to other bridges, this doesn't link a public Matrix room with a Gitter one. You won't be able to join a Gitter room without a Gitter account. On the other hand, Gitter users won't see the difference between a Matrix user and a normal Gitter user, since they will appear to be chatting natively.
 
-Get it from [github](https://github.com/remram44/matrix-appservice-gitter-twisted).
+Find it on [GitHub](https://github.com/remram44/matrix-appservice-gitter-twisted/).
