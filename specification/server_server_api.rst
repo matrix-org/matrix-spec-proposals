@@ -35,7 +35,7 @@ Persisted Data Units (PDUs):
 
     Like email, it is the responsibility of the originating server of a PDU
     to deliver that event to its recipient servers. However PDUs are signed
-    using the originating server's public key so that it is possible to
+    using the originating server's private key so that it is possible to
     deliver them through third-party servers.
 
 Ephemeral Data Units (EDUs):
