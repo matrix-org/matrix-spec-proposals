@@ -444,9 +444,9 @@ keys exist to support this:
                                       state is updated
 ``required_power_level`` Integer      The required power level needed to
                                       replace this update.
-``prev_state_id``        String       The homeserver of the update this
-                                      replaces
-``prev_state_origin``    String       The PDU id of the update this replaces.
+``prev_state_id``        String       The PDU id of the update this replaces.
+``prev_state_origin``    String       The homeserver of the update this
+                                      replaces.
 ``user_id``              String       The user updating the state.
 ======================== ============ =========================================
 
