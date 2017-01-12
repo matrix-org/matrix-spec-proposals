@@ -33,7 +33,7 @@ The easiest way to get started is to pick a client that appeals and join #matrix
       </a><br />
       If you like glossy and feature-rich web clients, try Riot.<br /><br />
       <a href='./client/riot.html'>
-        <img src='https://matrix.org/blog/wp-content/uploads/2015/04/vector030216-300x204.png' class='featured_screenshot'>
+        <img src='/docs/projects/images/riot-web-featured.png' class='featured_screenshot'>
       </a>
     </td>
     <td class='bigproject'>
