@@ -76,7 +76,7 @@ paths:
         - in: query
           name: set_presence
           type: string
-          enum: ["offline"]
+          enum: ["offline", "online", "unavailable"]
           description: |-
             Controls whether the client is automatically marked as online by
             polling this API. If this parameter is omitted then the client is
