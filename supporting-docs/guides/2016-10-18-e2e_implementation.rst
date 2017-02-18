@@ -654,20 +654,22 @@ This will return a result as follows:
 .. code:: json
 
   {
-    "<user id>": {
-      "<device_id>": {
-        "signed_curve25519:<key_id>": {
-          "key": "<curve25519_key>",
-          "signatures": {
-            "<user_id>": {
-              "ed25519:<device_id>": "<signature>"
+    "one_time_keys": {
+      "<user id>": {
+        "<device_id>": {
+          "signed_curve25519:<key_id>": {
+            "key": "<curve25519_key>",
+            "signatures": {
+              "<user_id>": {
+                "ed25519:<device_id>": "<signature>"
+              }
             }
-          }
+          },
         },
+        ...
       },
       ...
-    },
-    ...
+    }
   }
 
 The client should first check the signatures on the signed key objects. As with
