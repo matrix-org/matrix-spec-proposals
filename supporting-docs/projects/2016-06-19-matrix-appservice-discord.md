@@ -3,7 +3,7 @@ layout: project
 title: matrix-appservice-discord
 categories: projects as
 author: Half-Shot
-maturity: Early beta
+maturity: Alpha
 ---
 
 ![screenshot](/docs/projects/images/discord.png "{{ page.title }}")
