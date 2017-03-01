@@ -32,6 +32,7 @@ targets:
   appendices:
     files:
       - appendices.rst
+      - appendices/base64.rst
       - appendices/signing_json.rst
       - appendices/threat_model.rst
       - appendices/test_vectors.rst
