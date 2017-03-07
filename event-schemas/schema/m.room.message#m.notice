@@ -1,12 +1,20 @@
 ---
 allOf:
   - $ref: core-event-schema/room_event.yaml
-description: 'The ``m.notice`` type is primarily intended for responses from automated clients. An ``m.notice`` message must be treated the same way as a regular ``m.text`` message with two exceptions. Firstly, clients should present ``m.notice`` messages to users in a distinct manner, and secondly, ``m.notice`` messages must never be automatically responded to. This helps to prevent infinite-loop situations where two automated clients continuously exchange messages.'
+description: 'The ``m.notice`` type is primarily intended for responses from automated clients. An ``m.notice`` message must be treated the same way as a regular ``m.text`` message with two exceptions. Firstly, clients should present ``m.notice`` messages to users in a distinct manner, and secondly, ``m.notice`` messages must never be automatically responded to. This helps to prevent infinite-loop situations where two automated clients continuously exchange messages. The ``status`` field should be used by the client to display the state of a operation or the bot itself in a simple, elegant way such as an colour or icon.'
 properties:
   content:
     properties:
       body:
         description: The notice text to send.
+        type: string
+      status:
+        description: A status hint to the client that represents the result of an operation or the priority of a message.
+        enum:
+          - info
+          - warning
+          - error
+          - critical
         type: string
       msgtype:
         enum:

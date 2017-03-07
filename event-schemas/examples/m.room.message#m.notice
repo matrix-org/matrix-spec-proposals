@@ -1,7 +1,8 @@
 {
   "age": 242352,
   "content": {
-    "body": "This is an example notice",
+    "body": "Your coffee has brewed.",
+    "status": "info",
     "msgtype": "m.notice"
   },
   "origin_server_ts": 1431961217939,
