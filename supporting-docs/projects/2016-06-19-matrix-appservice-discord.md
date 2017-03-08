@@ -9,6 +9,6 @@ maturity: Alpha
 ![screenshot](/docs/projects/images/discord.png "{{ page.title }}")
 
 # {{ page.title }}
-This project bridges [Discord](https://discordapp.com) to Maatrix via the Application API
+This project bridges [Discord](https://discordapp.com) to Matrix via the Application API
 
 Get it from [GitHub](https://github.com/Half-Shot/matrix-appservice-discord).
