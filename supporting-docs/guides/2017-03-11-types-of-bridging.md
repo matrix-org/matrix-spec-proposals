@@ -38,7 +38,7 @@ Some remote systems support the idea of injecting messages from ‘fake’ or �
 
 This is a richer form of bridging, where the bridge logs into the remote service as if it were a real 3rd party client for that service.  As a result, the Matrix user has to already have a valid account on the remote system.  In exchange, the Matrix user ‘puppets’ their remote user, such that other users on the remote system aren’t even aware they are speaking to a user via Matrix.  The full semantics of the remote system are available to the bridge to expose into Matrix.  However, the bridge has to handle the authentication process to log the user into the remote bridge.
 
-This is essentially how the current [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) bridge works (if you configure it to log into the remote IRC network as your ‘real’ IRC nickname).  [matrix-appservice-gitter](https://github.com/matrix-org/matrix-appservice-gitter) is being extended to support both puppeted and bridgebot-based operation.  It’s also how kfatehi’s [puppeting bridges](https://github.com/matrix-hacks) work for iMessage, Facebook Messenger, Slack etc, and how the experimental [matrix-appservice-tg](https://github.com/matrix-org/matrix-appservice-tg) bridge works.
+This is essentially how the current [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) bridge works (if you configure it to log into the remote IRC network as your ‘real’ IRC nickname).  [matrix-appservice-gitter](https://github.com/matrix-org/matrix-appservice-gitter) is being extended to support both puppeted and bridgebot-based operation.  It’s how the experimental [matrix-appservice-tg](https://github.com/matrix-org/matrix-appservice-tg) bridge works.
 
 Going forwards we’re aiming for all bridges to be at least one-way puppeted, if not two-way.
 
@@ -46,8 +46,10 @@ Going forwards we’re aiming for all bridges to be at least one-way puppeted, i
 
 A simple ‘puppeted bridge’ allows the Matrix user to control their account on their remote network.  However, ideally this puppeting should work in both directions, so if the user logs into (say) their native telegram client and starts conversations, sends messages etc, these should be reflected back into Matrix as if the user had done them there.  This requires the bridge to be able to puppet the Matrix side of the bridge on behalf of the user.
 
-This is the holy-grail of bridging; we’re not aware of any who have implemented this yet. The main blocker is working out an elegant way of having the bridge auth with Matrix as the matrix user (which requires some kind of scoped access_token delegation).
-Server-to-server bridging
+This is the holy-grail of bridging; [matrix-puppet-bridge](https://github.com/matrix-hacks/matrix-puppet-bridge) is a community project that tries to facilitate development of two-way puppeted bridges, having done so for [several networks](https://github.com/matrix-hacks/matrix-puppet-bridge#examples). The main obstacle is working out an elegant way of having the bridge auth with Matrix as the matrix user (which requires some kind of scoped access_token delegation).
+
+### Server-to-server bridging
+
 Some remote protocols (IRC, XMPP, SIP, SMTP, NNTP, GnuSocial etc) support federation - either open or closed.  The most elegant way of bridging to these protocols would be to have the bridge participate in the federation as a server, directly bridging the entire namespace into Matrix.
 
 We’re not aware of anyone who’s done this yet.
