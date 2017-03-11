@@ -10,7 +10,7 @@ categories: guides
 
 Bridges come in many flavours, and we need consistent terminology within the Matrix community to ensure everyone (users, developers, core team) is on the same page.  This post is primarily intended for bridge developers to refer to when building bridges.
 
-*The most recent version of this document is [here](https://matrix.org/guides/types-of-bridging.html) ([source](https://github.com/matrix-org/matrix-doc/supporting-docs/guides/2017-03-11-types-of-bridging.md)) but we’re also posting it as a blog post for visibility.*
+*The most recent version of this document is [here](https://matrix.org/guides/types-of-bridging.html) ([source](https://github.com/matrix-org/matrix-doc/blob/master/supporting-docs/guides/2017-03-11-types-of-bridging.md)) but we’re also posting it as a blog post for visibility.*
 
 ## Types of rooms
 
