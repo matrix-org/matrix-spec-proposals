@@ -432,8 +432,10 @@ The client should build a JSON query object as follows:
 .. code:: json
 
   {
-    "<user_id>": {},
-    ...
+    "device_keys": {
+      "<user_id>": {},
+      [...]
+    }
   }
 
 Each member in the room should be included in the query. This is then
