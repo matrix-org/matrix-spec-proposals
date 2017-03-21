@@ -1083,65 +1083,28 @@ needs to know how to combine the events.
 
 Relates to (Events) ``[ONGOING]``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. NOTE::
-  - Should be able to specify more relationship info other than just the event
-    type. Forcing that m.room.message A "relates_to" another m.room.message B 
-    means that A is a threaded conversation reply to B is needlessly 
-    restrictive. What if A and B relate to each other by some other metric 
-    (e.g. they are part of a group rather than a thread? or we distinguish 
-    mail-style threading from multithreaded-IM threading for the same set of 
-    messages? etc)? E.g. ``"relates_to" : [["in_reply_to", "$event_id1"], 
-    ["another_type_of_relation", "$event_id2"]]``
 
-Events may be in response to other events, e.g. comments. This is represented 
-by the ``relates_to`` key. This differs from the ``updates`` key as they *do 
-not update the event itself*, and are *not required* in order to display the 
-parent event. Crucially, the child events can be paginated, whereas ``updates`` 
-child events cannot be paginated.
+See ``threading.rst``
 
-Bundling relations
-++++++++++++++++++
-Child events can be optionally bundled with the parent event, depending on your 
-display mechanism. The number of child events which can be bundled should be 
-limited to prevent events becoming too large. This limit should be set by the 
-client. If the limit is exceeded, then the bundle should also include a 
-chunk token so that the client can request more child events.
-
-Main use cases for ``relates_to``:
- - Comments on a message.
- - Non-local delivery/read receipts : If doing separate receipt events for each 
-   message.
- - Meeting invite responses : Yes/No/Maybe for a meeting.
-
-Like with ``updates``, clients need to know how to apply the deltas because 
-clients may receive the events separately down the event stream.
-
-TODO:
- - Can a child event reply to multiple parent events? Use case?
- - Should a parent event and its children share a thread ID? Does the 
-   originating HS set this ID? Is this thread ID exposed through federation? 
-   e.g. can a HS retrieve all events for a given thread ID from another HS?
-
-   
 Example using 'updates' and 'relates_to'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 - Room with a single message.
 - 10 comments are added to the message via ``relates_to``.
 - An edit is made to the original message via ``updates``.
-- An initial sync on this room with a limit of 3 comments, would return the 
-  message with the update event bundled with it and the most recent 3 comments 
+- An initial sync on this room with a limit of 3 comments, would return the
+  message with the update event bundled with it and the most recent 3 comments
   and a chunk token to request earlier comments
-  
+
   .. code :: javascript
-  
+
     {
       content: { body: "I am teh winner!" },
       updated_by: [
         { content: { body: "I am the winner!" }, ... }
       ],
-      replies: {
-        start: "some_token",
-        chunk: [
+      relates_to: {
+        prev: "some_token",
+        events: [
           { content: { body: "8th comment" }, ... },
           { content: { body: "9th comment" }, ... },
           { content: { body: "10th comment" }, ... }
