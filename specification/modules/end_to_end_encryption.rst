@@ -97,8 +97,8 @@ algorithms also require one-time keys to improve their secrecy and deniability.
 These keys are used once during session establishment, and are then thrown
 away.
 
-For Olm version 1 (see |m.olm.v1.curve25519-aes-sha2|_), each device requires a single
-Curve25519 identity key, and a number of Curve25519 one-time keys.
+For Olm version 1, each device requires a single Curve25519 identity key, and a
+number of signed Curve25519 one-time keys.
 
 Uploading Keys
 ~~~~~~~~~~~~~~
