@@ -1436,3 +1436,5 @@ have to wait in milliseconds before they can try again.
 
 .. |/user/<user_id>/account_data/<type>| replace:: ``/user/<user_id>/account_data/<type>``
 .. _/user/<user_id>/account_data/<type>: #put-matrix-client-%CLIENT_MAJOR_VERSION%-user-userid-account-data-type
+
+.. _`Unpadded Base64`:  ../appendices.html#unpadded-base64

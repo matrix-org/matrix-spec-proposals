@@ -63,19 +63,39 @@ Overview
                /keys/claim         <federation>
 
 
-Key Algorithms
+Key algorithms
 ~~~~~~~~~~~~~~
 
 The name ``ed25519`` corresponds to the `Ed25519`_ signature algorithm. The key
-is a Base64-encoded 32-byte Ed25519 public key.
+is a 32-byte Ed25519 public key, encoded using `unpadded Base64`_. Example:
+
+.. code:: json
+
+   "SogYyrkTldLz0BXP+GYWs0qaYacUI0RleEqNT8J3riQ"
 
 The name ``curve25519`` corresponds to the `Curve25519`_ ECDH algorithm. The
-key is a Base64-encoded 32-byte Curve25519 public key.
+key is a 32-byte Curve25519 public key, encoded using `unpadded
+Base64`_. Example:
+
+.. code:: json
+
+  "JGLn/yafz74HB2AbPLYJWIVGnKAtqECOBf11yyXac2Y"
 
 The name ``signed_curve25519`` also corresponds to the Curve25519 algorithm,
 but keys using this algorithm are objects with the properties ``key`` (giving
 the Base64-encoded 32-byte Curve25519 public key), and ``signatures`` (giving a
-signature for the key object, as described in `Signing JSON`_).
+signature for the key object, as described in `Signing JSON`_). Example:
+
+.. code:: json
+
+  {
+    "key":"06UzBknVHFMwgi7AVloY7ylC+xhOhEX4PkNge14Grl8",
+    "signatures": {
+      "@user:example.com": {
+        "ed25519:EGURVBUNJP": "YbJva03ihSj5mPk+CHMJKUKlCXCPFXjXOK6VqBnN9nA2evksQcTGn6hwQfrgRHIDDXO2le49x7jnWJHMJrJoBQ"
+      }
+    }
+  }
 
 Device keys
 ~~~~~~~~~~~
@@ -96,7 +116,7 @@ away.
 For Olm version 1, each device requires a single Curve25519 identity key, and a
 number of signed Curve25519 one-time keys.
 
-Uploading Keys
+Uploading keys
 ~~~~~~~~~~~~~~
 
 A device uploads the public parts of identity keys to their homeserver as a
@@ -104,7 +124,8 @@ signed JSON object, using the |/keys/upload|_ API.
 The JSON object must include the public part of the device's Ed25519 key, and
 must be signed by that key, as described in `Signing JSON`_.
 
-One-time keys are also uploaded to the homeserver.
+One-time keys are also uploaded to the homeserver using the |/keys/upload|_
+API.
 
 Devices must store the private part of each key they upload. They can
 discard the private part of a one-time key when they receive a message using
@@ -114,13 +135,13 @@ it can discard the key. Therefore a device could end up trying to store too
 many private keys. A device that is trying to store too many private keys may
 discard keys starting with the oldest.
 
-Downloading Keys
-~~~~~~~~~~~~~~~~
+Downloading Identity Keys
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Keys are downloaded as a collection of signed JSON objects, using the
+Identity keys are downloaded as a collection of signed JSON objects, using the
 |/keys/query|_ API.
 
-Claiming One-Time Keys
+Claiming one-time keys
 ~~~~~~~~~~~~~~~~~~~~~~
 
 A client wanting to set up a session with another device can claim a one-time
@@ -131,8 +152,8 @@ A homeserver should rate-limit the number of one-time keys that a given user or
 remote server can claim. A homeserver should discard the public part of a one
 time key once it has given that key to another user.
 
-Key management API
-------------------
+Protocol definitions
+--------------------
 
 {{keys_cs_http_api}}
 
