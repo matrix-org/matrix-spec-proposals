@@ -36,9 +36,12 @@ have the same event type. The device ID in the request body can be set to ``*``
 to request that the message be sent to all known devices.
 
 If there are send-to-device messages waiting for a client, they will be
-returned by |/sync|_, as detailed in `Extensions to /sync`_. Clients should
+returned by |/sync|_, as detailed in |Extensions|_. Clients should
 inspect the ``type`` of each returned event, and ignore any they do not
 understand.
+
+.. |Extensions| replace:: Extensions to /sync
+.. _Extensions: `send_to_device_sync`_
 
 Server behaviour
 ----------------

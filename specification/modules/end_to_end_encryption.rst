@@ -137,6 +137,49 @@ Key management API
 {{keys_cs_http_api}}
 
 
+.. anchor for link from /sync api spec
+.. |device_lists_sync| replace:: End-to-end encryption
+.. _device_lists_sync:
+
+Extensions to /sync
+~~~~~~~~~~~~~~~~~~~
+
+This module adds the following properties to the |/sync|_ response:
+
+.. todo: generate this from a swagger definition?
+
+.. device_lists: { changed: ["@user:server", ... ]},
+
+============ =========== =====================================================
+Parameter    Type        Description
+============ =========== =====================================================
+device_lists DeviceLists Optional. Information on e2e device updates.
+============ =========== =====================================================
+
+``DeviceLists``
+
+========= ========= =============================================
+Parameter Type      Description
+========= ========= =============================================
+changed   [string]  List of users who have updated their device identity keys
+                    since the previous sync response.
+========= ========= =============================================
+
+
+Example response:
+
+.. code:: json
+
+  {
+    "next_batch": "s72595_4483_1934",
+    "rooms": {"leave": {}, "join": {}, "invite": {}},
+    "device_lists": {
+      "changed": [
+         "@alice:example.com",
+      ],
+    },
+  }
+
 .. References
 
 .. _ed25519: http://ed25519.cr.yp.to/
