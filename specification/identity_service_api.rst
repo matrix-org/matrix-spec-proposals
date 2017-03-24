@@ -267,7 +267,7 @@ This is less secure than the client doing it itself, but may be useful where thi
 The identity service will happily sign invitation details with a request-specified ed25519 private key for you, if you want it to. It takes URL-encoded POST parameters:
 - mxid (string, required)
 - token (string, required)
-- private_key (string, required): The unpadded base64-encoded private key.
+- private_key (string, required): The private key, encoded as `Unpadded base64`_.
 
 It will look up ``token`` which was stored in a call to ``store-invite``, and fetch the sender of the invite. It will then respond with JSON which looks something like::
 
@@ -281,3 +281,5 @@ It will look up ``token`` which was stored in a call to ``store-invite``, and fe
    },
    "token": "abc123"
  }
+
+.. _`Unpadded Base64`:  ../appendices.html#unpadded-base64

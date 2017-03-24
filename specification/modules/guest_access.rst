@@ -64,11 +64,22 @@ sending events:
 * `POST /rooms/:room_id/join <#post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-join>`_
 * `POST /rooms/:room_id/leave <#post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-leave>`_
 * `PUT /rooms/:room_id/send/m.room.message/:txn_id <#put-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-send-eventtype-txnid>`_
+* `PUT /sendToDevice/{eventType}/{txnId} <#put-matrix-client-%CLIENT_MAJOR_VERSION%-sendtodevice-eventtype-txnid>`_
 
 The following API endpoints are allowed to be accessed by guest accounts for
 their own account maintenance:
 
 * `PUT /profile/:user_id/displayname <#put-matrix-client-%CLIENT_MAJOR_VERSION%-profile-userid-displayname>`_
+* `GET /devices <#get-matrix-client-%CLIENT_MAJOR_VERSION%-devices>`_
+* `GET /devices/{deviceId} <#get-matrix-client-%CLIENT_MAJOR_VERSION%-devices-deviceid>`_
+* `PUT /devices/{deviceId} <#put-matrix-client-%CLIENT_MAJOR_VERSION%-devices-deviceid>`_
+
+The following API endpoints are allowed to be accessed by guest accounts for
+end-to-end encryption:
+
+* `POST /keys/upload <#post-matrix-client-%CLIENT_MAJOR_VERSION%-keys-upload>`_
+* `POST /keys/query <#post-matrix-client-%CLIENT_MAJOR_VERSION%-keys-query>`_
+* `POST /keys/claim <#post-matrix-client-%CLIENT_MAJOR_VERSION%-keys-claim>`_
 
 Server behaviour
 ----------------
@@ -87,4 +98,3 @@ the permissions outlined in this section.
 
 Homeservers may want to enable protections such as captchas for guest
 registration to prevent spam, denial of service, and similar attacks.
-

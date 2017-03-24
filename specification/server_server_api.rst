@@ -35,7 +35,7 @@ Persisted Data Units (PDUs):
 
     Like email, it is the responsibility of the originating server of a PDU
     to deliver that event to its recipient servers. However PDUs are signed
-    using the originating server's public key so that it is possible to
+    using the originating server's private key so that it is possible to
     deliver them through third-party servers.
 
 Ephemeral Data Units (EDUs):
@@ -165,7 +165,7 @@ events sent by that server can still be checked.
 ``signatures``       Object              Digital signatures for this object
                                          signed using the ``verify_keys``.
 ``tls_fingerprints`` Array of Objects    Hashes of X.509 TLS certificates used
-                                         by this this server encoded as base64.
+                                         by this this server encoded as `Unpadded Base64`_.
 ``valid_until_ts``   Integer             POSIX timestamp when the list of valid
                                          keys should be refreshed.
 ==================== =================== ======================================
@@ -271,7 +271,7 @@ at ``/_matrix/key/v1``.
 ``signatures``       Object              Digital signatures for this object
                                          signed using the ``verify_keys``.
 ``tls_certificate``  String              The X.509 TLS certificate used by this
-                                         this server encoded as base64.
+                                         this server encoded as `Unpadded Base64`_.
 ==================== =================== ======================================
 
 .. code:: json
@@ -444,9 +444,9 @@ keys exist to support this:
                                       state is updated
 ``required_power_level`` Integer      The required power level needed to
                                       replace this update.
-``prev_state_id``        String       The homeserver of the update this
-                                      replaces
-``prev_state_origin``    String       The PDU id of the update this replaces.
+``prev_state_id``        String       The PDU id of the update this replaces.
+``prev_state_origin``    String       The homeserver of the update this
+                                      replaces.
 ``user_id``              String       The user updating the state.
 ======================== ============ =========================================
 
@@ -1144,3 +1144,4 @@ that are too long.
   known hash functions like SHA-256 when none of the keys have been redacted]]
 
 .. _`Canonical JSON`: ../appendices.html#canonical-json
+.. _`Unpadded Base64`:  ../appendices.html#unpadded-base64

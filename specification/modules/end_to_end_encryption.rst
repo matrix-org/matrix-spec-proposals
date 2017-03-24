@@ -135,7 +135,6 @@ A homeserver should rate-limit the number of one-time keys that a given user or
 remote server can claim. A homeserver should discard the public part of a one
 time key once it has given that key to another user.
 
-
 Messaging Algorithms
 --------------------
 
