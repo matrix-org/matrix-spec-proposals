@@ -46,7 +46,15 @@ Going forwards we’re aiming for all bridges to be at least simple puppeted, if
 
 A simple ‘puppeted bridge’ allows the Matrix user to control their account on their remote network. However, ideally this puppeting should work in both directions, so if the user logs into (say) their native telegram client and starts conversations, sends messages etc, these should be reflected back into Matrix as if the user had done them there. This requires the bridge to be able to puppet the Matrix side of the bridge on behalf of the user.
 
-This is the holy-grail of bridging; [matrix-puppet-bridge](https://github.com/matrix-hacks/matrix-puppet-bridge) is a community project that tries to facilitate development of two-way puppeted bridges, having done so for [several networks](https://github.com/matrix-hacks/matrix-puppet-bridge#examples). The main obstacle is working out an elegant way of having the bridge auth with Matrix as the matrix user (which requires some kind of scoped access_token delegation).
+This is the holy-grail of bridging because both the Matrix account and the third party account are accurately represented on their respective networks, with all user metadata intact. This is in contrast to a relaybot which would appear as a separate user from whom it represents.
+
+Several obstacles exist to the proper implementation of double-puppeted bridges. On the Matrix side, we need an elegant way of having the bridge auth with Matrix as the matrix user (which requires some kind of scoped access_token delegation). On the third-party network, unique problems exist depending on the limitations of that particular network network. For example, many third party networks will lack the ability to represent other Matrix users than the one being puppeted (see hybrid relaybot).
+
+[matrix-puppet-bridge](https://github.com/matrix-hacks/matrix-puppet-bridge) is a community project that tries to facilitate development of double-puppeted bridges, having done so, without a bridgebot feature, for [several networks](https://github.com/matrix-hacks/matrix-puppet-bridge#examples). A downside to their approach is the assumption that an individual will run the bridge on their own homeserver, thus working around the problem of sharing auth credentials on a shared homeserver.
+
+### Hybrid Relaybot Puppet Bridge
+
+This type of bridge is a combination single or double puppet bridge which tries to solve the problem of representing other users by means of the bridgebot technique. [matrix-appservice-gitter](https://github.com/matrix-org/matrix-appservice-gitter) works in this way.
 
 ### Server-to-server bridging
 
