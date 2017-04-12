@@ -300,20 +300,21 @@ paths:
           name: from
           type: string
           description: |-
-             The sync token corresponding to the start point of the list. Users
-             who have not uploaded new device identity keys since this point,
-             nor deleted existing devices with identity keys since then, will
-             be excluded from the results.
+             The desired start point of the list. Should be the ``next_batch`` field
+             from a response to an earlier call to |/sync|. Users who have not
+             uploaded new device identity keys since this point, nor deleted
+             existing devices with identity keys since then, will be excluded
+             from the results.
           required: true
           x-example: "s72594_4483_1934"
         - in: query
           name: to
           type: string
           description: |-
-             The sync token corresponding to the point in time to list changes
-             up to. Typically this will be the last known sync token. This may
-             be used by the server as a hint to check its caches are up to
-             date.
+             The desired end point of the list. Should be the ``next_batch``
+             field from a recent call to |/sync| - typically the most recent
+             such call. This may be used by the server as a hint to check its
+             caches are up to date.
           required: true
           x-example: "s75689_5632_2435"
       responses:
@@ -322,7 +323,6 @@ paths:
             The list of users who updated their devices.
           schema:
             type: object
-            title: KeyChangesResults
             properties:
               changes:
                 type: array

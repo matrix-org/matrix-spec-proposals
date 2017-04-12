@@ -135,11 +135,81 @@ it can discard the key. Therefore a device could end up trying to store too
 many private keys. A device that is trying to store too many private keys may
 discard keys starting with the oldest.
 
-Downloading Identity Keys
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Tracking the device list for a user
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Identity keys are downloaded as a collection of signed JSON objects, using the
-|/keys/query|_ API.
+Before Alice can send an encrypted message to Bob, she needs a list of each of
+his devices and the associated identity keys, so that she can establish an
+encryption session with each device. This list can be obtained by calling
+|/keys/query|_, passing Bob's user ID in the ``device_keys`` parameter.
+
+From time to time, Bob may add new devices, and Alice will need to know this so
+that she can include his new devices for later encrypted messages. A naive
+solution to this would be to call |/keys/query|_ before sending each message -
+however, the number of users and devices may be large and this would be
+inefficient.
+
+It is therefore expected that each client will maintain a list of devices for a
+number of users (in practice, typically each user with whom we share an
+encrypted room). Furthermore, it is likely that this list will need to be
+persisted between invocations of the client application (to preserve `device
+verification`_ data and to alert Alice if Bob suddently gets a new
+device).
+
+Alice's client can maintain a list of Bob's devices via the following
+process:
+
+#. It first sets a flag to record that it is now tracking Bob's device list,
+   and a separate flag to indicate that its list of Bob's devices is
+   outdated. Both flags should be in storage which persists over client
+   restarts.
+
+#. It then makes a request to |/keys/query|_, passing Bob's user ID in the
+   ``device_keys`` parameter. When the request completes, it stores the
+   resulting list of devices in persistent storage, and clears the 'outdated'
+   flag.
+
+#. During its normal processing of responses to |/sync|_, Alice's client
+   inspects the |device_lists|_ field. If it is tracking the device lists of
+   any of the listed users, then it marks the device lists for those users
+   outdated, and initiates another request to |/keys/query|_ for them.
+
+#. Periodically, Alice's client stores the ``next_batch`` field of the result
+   from |/sync|_ in persistent storage. If Alice later restarts her client, it
+   can obtain a list of the users who have updated their device list while it
+   was offline by calling |/keys/changes|_, passing the recorded ``next_batch``
+   field as the ``from`` parameter. If the client is tracking the device list
+   of any of the users listed in the response, it marks them as outdated. It
+   combines this list with those already flagged as outdated, and initiates a
+   |/keys/query|_ requests for all of them.
+
+.. Warning::
+
+   Bob may update one of his devices while Alice has a request to
+   ``/keys/query`` in flight. Alice's client may therefore see Bob's user ID in
+   the ``device_lists`` field of the ``/sync`` response while the first request
+   is in flight, and initiate a second request to ``/keys/query``. This may
+   lead to either of two related problems.
+
+   The first problem is that, when the first request completes, the client will
+   clear the 'outdated' flag for Bob's devices. If the second request fails, or
+   the client is shut down before it completes, this could lead to Alice using
+   an outdated list of Bob's devices.
+
+   The second possibility is that, under certain conditions, the second request
+   may complete *before* the first one. When the first request completes, the
+   client could overwrite the later results from the second request with those
+   from the first request.
+
+   Clients MUST guard against these situations. For example, a client could
+   ensure that only one request to ``/keys/query`` is in flight at a time for
+   each user, by queuing additional requests until the first completes.
+   Alternatively, the client could make a new request immediately, but ensure
+   that the first request's results are ignored (possibly by cancelling the
+   request).
+
+.. |device_lists| replace:: ``device_lists``
+.. _`device_lists`: `device_lists_sync`_
 
 Claiming one-time keys
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -151,6 +221,7 @@ API.
 A homeserver should rate-limit the number of one-time keys that a given user or
 remote server can claim. A homeserver should discard the public part of a one
 time key once it has given that key to another user.
+
 
 Protocol definitions
 --------------------
@@ -165,7 +236,12 @@ Protocol definitions
 Extensions to /sync
 ~~~~~~~~~~~~~~~~~~~
 
-This module adds the following properties to the |/sync|_ response:
+This module adds an optional ``device_lists`` property to the |/sync|_
+response, as specified below. The server need only populate this property for
+an incremental ``/sync`` (ie, one where the ``since`` parameter was
+specified). The client is expected to use |/keys/query|_ or |/keys/changes|_
+for the equivalent functionality after an initial sync, as documented in
+`Tracking the device list for a user`_.
 
 .. todo: generate this from a swagger definition?
 
@@ -174,7 +250,8 @@ This module adds the following properties to the |/sync|_ response:
 ============ =========== =====================================================
 Parameter    Type        Description
 ============ =========== =====================================================
-device_lists DeviceLists Optional. Information on e2e device updates.
+device_lists DeviceLists Optional. Information on e2e device updates. Note:
+                         only present on an incremental sync.
 ============ =========== =====================================================
 
 ``DeviceLists``
@@ -218,3 +295,6 @@ Example response:
 
 .. |/keys/claim| replace:: ``/keys/claim``
 .. _/keys/claim: #post-matrix-client-%CLIENT_MAJOR_VERSION%-keys-claim
+
+.. |/keys/changes| replace:: ``/keys/changes``
+.. _/keys/changes: #get-matrix-client-%CLIENT_MAJOR_VERSION%-keys-changes
