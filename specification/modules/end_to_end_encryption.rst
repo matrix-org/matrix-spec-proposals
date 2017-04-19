@@ -390,8 +390,6 @@ Events
 
 {{m_room_key_event}}
 
-{{m_new_device_event}}
-
 Key management API
 ~~~~~~~~~~~~~~~~~~
 
