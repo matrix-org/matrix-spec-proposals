@@ -158,8 +158,8 @@ inefficient.
 It is therefore expected that each client will maintain a list of devices for a
 number of users (in practice, typically each user with whom we share an
 encrypted room). Furthermore, it is likely that this list will need to be
-persisted between invocations of the client application (to preserve `device
-verification`_ data and to alert Alice if Bob suddently gets a new
+persisted between invocations of the client application (to preserve device
+verification data and to alert Alice if Bob suddently gets a new
 device).
 
 Alice's client can maintain a list of Bob's devices via the following
