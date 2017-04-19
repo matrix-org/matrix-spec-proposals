@@ -29,7 +29,7 @@ securityDefinitions:
 paths:
   "/keys/upload":
     post:
-      summary: Upload end-to-end encryption keys
+      summary: Upload end-to-end encryption keys.
       description: |-
         Publishes end-to-end encryption keys for the device.
       security:
@@ -97,7 +97,7 @@ paths:
         - End-to-end encryption
   "/keys/query":
     post:
-      summary: Download device identity keys
+      summary: Download device identity keys.
       description: |-
         Returns the current devices and identity keys for the given users.
       security:
@@ -205,7 +205,7 @@ paths:
         - End-to-end encryption
   "/keys/claim":
     post:
-      summary: Claim one-time encryption keys
+      summary: Claim one-time encryption keys.
       description: |-
         Claims one-time keys for use in pre-key messages.
       security:
@@ -278,5 +278,59 @@ paths:
                         signatures:
                           "@alice:example.com":
                             ed25519:JLAFKJWSCS: "FLWxXqGbwrb8SM3Y795eB6OA8bwBcoMZFXBqnTn58AYWZSqiD45tlBVcDa2L7RwdKXebW/VzDlnfVJ+9jok1Bw"
+      tags:
+        - End-to-end encryption
+  "/keys/changes":
+    get:
+      summary: Query users with recent device key updates.
+      description: |-
+        Gets a list of users who have updated their device identity keys since a
+        previous sync token.
+
+        The server should include in the results any users who:
+
+        * currently share a room with the calling user (ie, both users have
+          membership state ``join``); *and*
+        * added new device identity keys or removed an existing device with
+          identity keys, between ``from`` and ``to``.
+      security:
+        - accessToken: []
+      parameters:
+        - in: query
+          name: from
+          type: string
+          description: |-
+             The desired start point of the list. Should be the ``next_batch`` field
+             from a response to an earlier call to |/sync|. Users who have not
+             uploaded new device identity keys since this point, nor deleted
+             existing devices with identity keys since then, will be excluded
+             from the results.
+          required: true
+          x-example: "s72594_4483_1934"
+        - in: query
+          name: to
+          type: string
+          description: |-
+             The desired end point of the list. Should be the ``next_batch``
+             field from a recent call to |/sync| - typically the most recent
+             such call. This may be used by the server as a hint to check its
+             caches are up to date.
+          required: true
+          x-example: "s75689_5632_2435"
+      responses:
+        200:
+          description:
+            The list of users who updated their devices.
+          schema:
+            type: object
+            properties:
+              changes:
+                type: array
+                items:
+                  type: string
+                description: |-
+                  The Matrix User IDs of all users who updated their device
+                  identity keys.
+                example: ["@alice:example.com", "@bob:example.org"]
       tags:
         - End-to-end encryption

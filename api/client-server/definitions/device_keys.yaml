@@ -37,8 +37,9 @@ properties:
   keys:
     type: object
     description: |-
-       Base64-encoded public identity keys. The names of the properties
-       should be in the format ``<algorithm>:<device_id>``.
+       Public identity keys. The names of the properties should be in the
+       format ``<algorithm>:<device_id>``. The keys themselves should be
+       encoded as specified by the key algorithm.
     additionalProperties:
        type: string
     example:
@@ -47,8 +48,8 @@ properties:
   signatures:
     type: object
     description: |-
-       Base64-encoded signatures for the device key object. A map from user ID,
-       to a map from ``<algorithm>:<device_id>`` to the signature.
+       Signatures for the device key object. A map from user ID, to a map from
+       ``<algorithm>:<device_id>`` to the signature.
 
        The signature is calculated using the process described at `Signing
        JSON`_.

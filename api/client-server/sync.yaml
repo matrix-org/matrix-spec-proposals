@@ -242,6 +242,12 @@ paths:
                 description: |-
                   Information on the send-to-device messages for the client
                   device, as defined in |send_to_device_sync|_.
+              device_lists:
+                title: DeviceLists
+                type: object
+                description: |-
+                  Information on end-to-end device updates, as specified in
+                  |device_lists_sync|_.
           examples:
             application/json: |-
               {
