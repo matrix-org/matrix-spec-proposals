@@ -359,6 +359,9 @@ def get_example_for_response(response):
         # be formatted as raw objects rather than json-formatted strings, but we
         # have lots of the latter in our spec, which work with the swagger UI,
         # so grandfather them in.
+        #
+        # FIXME: swagger-ui no longer supports this. We should fix the inputs
+        # and remove the grandfathering.
         if isinstance(exampleobj, basestring):
             return exampleobj
 
