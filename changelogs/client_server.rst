@@ -46,6 +46,8 @@
   - Allow guest accounts to use a number of endpoints which are required for
     end-to-end encryption.
     (`#751 <https://github.com/matrix-org/matrix-doc/pull/751>`_).
+  - Add key distribution APIs, for use with end-to-end encryption.
+    (`#894 <https://github.com/matrix-org/matrix-doc/pull/894>`_).
 
 - Spec clarifications:
 
