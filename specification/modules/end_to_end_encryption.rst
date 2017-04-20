@@ -395,6 +395,7 @@ Key management API
 
 {{keys_cs_http_api}}
 
+
 .. anchor for link from /sync api spec
 .. |device_lists_sync| replace:: End-to-end encryption
 .. _device_lists_sync:

@@ -36,7 +36,7 @@ if __name__ == '__main__':
     scripts_dir = os.path.dirname(os.path.abspath(__file__))
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--port', '-p', nargs=1,
+        '--port', '-p',
         type=int, default=8000,
         help='TCP port to listen on (default: %(default)s)',
     )
