@@ -12,10 +12,11 @@
 .. See the License for the specific language governing permissions and
 .. limitations under the License.
 
+.. _module:to_device:
+.. _`to-device`:
+
 Send-to-Device messaging
 ========================
-
-.. _module:to_device:
 
 This module provides a means by which clients can exchange signalling messages
 without them being stored permanently as part of a shared communication
@@ -35,9 +36,12 @@ have the same event type. The device ID in the request body can be set to ``*``
 to request that the message be sent to all known devices.
 
 If there are send-to-device messages waiting for a client, they will be
-returned by |/sync|_, as detailed in `Extensions to /sync`_. Clients should
+returned by |/sync|_, as detailed in |Extensions|_. Clients should
 inspect the ``type`` of each returned event, and ignore any they do not
 understand.
+
+.. |Extensions| replace:: Extensions to /sync
+.. _Extensions: `send_to_device_sync`_
 
 Server behaviour
 ----------------

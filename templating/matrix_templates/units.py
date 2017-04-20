@@ -123,11 +123,6 @@ def get_json_schema_object_fields(obj, enforce_title=False):
 
     logger.debug("Processing object with title '%s'", obj_title)
 
-    if enforce_title and not obj_title:
-        # Force a default titile of "NO_TITLE" to make it obvious in the
-        # specification output which parts of the schema are missing a title
-        obj_title = 'NO_TITLE'
-
     additionalProps = obj.get("additionalProperties")
     props = obj.get("properties")
     if additionalProps and not props:
@@ -151,13 +146,20 @@ def get_json_schema_object_fields(obj, enforce_title=False):
                     props[pretty_key] = props[key_name]
                     del props[key_name]
 
+
+
     # Sometimes you just want to specify that a thing is an object without
     # doing all the keys.
     if not props:
         return {
-            "type": obj_title,
+            "type": obj_title if obj_title else 'object',
             "tables": [],
         }
+
+    if enforce_title and not obj_title:
+        # Force a default titile of "NO_TITLE" to make it obvious in the
+        # specification output which parts of the schema are missing a title
+        obj_title = 'NO_TITLE'
 
     required_keys = set(obj.get("required", []))
 
