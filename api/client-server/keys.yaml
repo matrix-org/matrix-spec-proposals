@@ -85,7 +85,7 @@ paths:
                 additionalProperties:
                   type: integer
                 description: |-
-                  For each key algorighm, the number of unclaimed one-time keys
+                  For each key algorithm, the number of unclaimed one-time keys
                   of that type currently held on the server for this device.
                 example:
                   curve25519: 10
