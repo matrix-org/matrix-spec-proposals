@@ -358,7 +358,6 @@ follows [#]_.
   the event as verified`_\ .
 
 ``recipient_keys``
-
   an object with a property ``ed25519``. The client should check that the
   value of this property matches its own fingerprint key.
 
