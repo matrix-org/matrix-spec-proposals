@@ -1,6 +1,6 @@
 ---
 layout: project
-title: riotchat
+title: riotchat-ansible
 categories: projects other
 description: Ansible playbook for matrix/riot.im setup
 author: kultsinuppeli
