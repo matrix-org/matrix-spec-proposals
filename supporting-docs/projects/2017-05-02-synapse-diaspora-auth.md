@@ -1,6 +1,6 @@
 ---
 layout: project
-title: synapse-diasport-auth
+title: synapse-diaspora-auth
 categories: projects other
 description: A diaspora authenticator for synapse
 author: Shamil K Muhammed
