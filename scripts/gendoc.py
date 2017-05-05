@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python2
 
 # Copyright 2016 OpenMarket Ltd
 #
@@ -272,7 +272,7 @@ def addAnchors(path):
 
 def run_through_template(input_files, set_verbose, substitutions):
     args = [
-        'python', 'build.py',
+        'python2', 'build.py',
         "-o", "../scripts/tmp",
         "-i", "matrix_templates",
     ]

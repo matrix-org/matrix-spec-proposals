@@ -164,7 +164,7 @@ func serve(w http.ResponseWriter, req *http.Request) {
 }
 
 func generate(dir string) (map[string][]byte, error) {
-	cmd := exec.Command("python", "gendoc.py")
+	cmd := exec.Command("python2", "gendoc.py")
 	cmd.Dir = path.Join(dir, "scripts")
 	var b bytes.Buffer
 	cmd.Stderr = &b
@@ -175,7 +175,7 @@ func generate(dir string) (map[string][]byte, error) {
 
 	// cheekily dump the swagger docs into the gen directory so that it is
 	// easy to serve
-	cmd = exec.Command("python", "dump-swagger.py", "gen/api-docs.json")
+	cmd = exec.Command("python2", "dump-swagger.py", "gen/api-docs.json")
 	cmd.Dir = path.Join(dir, "scripts")
 	cmd.Stderr = &b
 	if err := cmd.Run(); err != nil {
