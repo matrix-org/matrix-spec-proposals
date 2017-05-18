@@ -1,16 +1,22 @@
 ---
 allOf:
   - $ref: core-event-schema/room_event.yaml
-description: This message represents a real-world location.
+description: This message represents one or more real-world locations.
 properties:
   content:
     properties:
       body:
-        description: "A description of the location e.g. 'Big Ben, London, UK', or some kind of content description for accessibility e.g. 'location attachment'."
+        description: "A description of the locations e.g. 'Big Ben, London, UK', or some kind of content description for accessibility e.g. 'location attachment'."
         type: string
-      geo_uri:
-        description: A geo URI representing this location.
-        type: string
+      geojson:
+        description: A GeoJSON object representing marked features on the map, according to RFC 7946.
+        type: object
+      accuracy:
+        description: Accuracy of the given latitude longitude coordinates.
+        type: number
+      altitude_accuracy:
+        description: Accuracy of the given altitude coordinates.
+        type: number
       msgtype:
         enum:
           - m.location
@@ -19,7 +25,7 @@ properties:
         type: object
         properties:
           thumbnail_url:
-            description: The URL to a thumbnail of the location being represented.
+            description: The URL to a thumbnail of the location being represented. Will be used if the location data is not rendered.
             type: string
           thumbnail_info:
             allOf:
@@ -29,7 +35,7 @@ properties:
     required:
       - msgtype
       - body
-      - geo_uri
+      - geojson
     type: object
   type:
     enum:
