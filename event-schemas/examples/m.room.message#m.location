@@ -2,7 +2,23 @@
   "age": 146,
   "content": {
     "body": "Big Ben, London, UK",
-    "geo_uri": "geo:51.5008,0.1247",
+    "geojson": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "properties": {},
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              -0.12466,
+              51.50033
+            ]
+          }
+        }
+      ]
+    },
+    "accuracy": 5,
     "info": {
       "thumbnail_url": "mxc://localhost/FHyPlCeYUSFFxlgbQYZmoEoe",
       "thumbnail_info": {
