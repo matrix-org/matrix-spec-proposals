@@ -12,10 +12,10 @@ properties:
         description: A GeoJSON object representing marked features on the map, according to RFC 7946.
         type: object
       accuracy:
-        description: Accuracy of the given latitude longitude coordinates.
+        description: Accuracy of the given latitude longitude coordinates, in meters.
         type: number
       altitude_accuracy:
-        description: Accuracy of the given altitude coordinates.
+        description: Accuracy of the given altitude coordinates, in meters.
         type: number
       msgtype:
         enum:
