@@ -14,6 +14,9 @@ will reduce the latency between server and client by allowing the server to
 send events as soon as they arrive, rather than having to wait for a poll from
 the client.
 
+Note: This proposal got continued in a google document you can find here:
+https://docs.google.com/document/d/104ClehFBgqLQbf4s-AKX2ijr8sOAxcizfcRs_atsB0g
+
 Handshake
 ---------
 1. Instead of calling ``/sync``, the client makes a websocket request to
