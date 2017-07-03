@@ -4,7 +4,7 @@ title: matrix-topic-bot
 categories: projects other
 description: A simple bot that provides dynamic topics
 author: Travis Ralston
-maturity: Release
+maturity: Released
 ---
 
 # {{ page.title }}
