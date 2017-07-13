@@ -1341,8 +1341,8 @@ many places of a client's display, changes to these fields cause an automatic
 propagation event to occur, informing likely-interested parties of the new
 values. This change is conveyed using two separate mechanisms:
 
-- a ``m.room.member`` event is sent to every room the user is a member of,
-  to update the ``displayname`` and ``avatar_url``.
+- a ``m.room.member`` event (with a ``join`` membership) is sent to every room
+  the user is a member of, to update the ``displayname`` and ``avatar_url``.
 - a ``m.presence`` presence status update is sent, again containing the new
   values of the ``displayname`` and ``avatar_url`` keys, in addition to the
   required ``presence`` key containing the current presence state of the user.
