@@ -51,6 +51,9 @@
 
 - Spec clarifications:
 
+  - Fixed examples of ``m.room.member`` event and room state change,
+    and added a clarification on the membership event sent upon profile update
+    (`#950 <https://github.com/matrix-org/matrix-doc/pull/950>`_).
   - Spell out the way that state is handled by ``POST /createRoom``
     (`#362 <https://github.com/matrix-org/matrix-doc/pull/362>`_).
   - Clarify the fields which are applicable to different types of push rule

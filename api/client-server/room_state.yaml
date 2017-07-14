@@ -56,20 +56,22 @@ paths:
           name: eventType
           description: The type of event to send.
           required: true
-          x-example: "m.room.name"
+          x-example: "m.room.member"
         - in: path
           type: string
           name: stateKey
           description: The state_key for the state to send. Defaults to the empty string.
           required: true
-          x-example: ""
+          x-example: "@alice:example.com"
         - in: body
           name: body
           schema:
             type: object
             example: |-
               {
-                  "name": "New name for the room"
+                "membership": "join",
+                "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF#auto",
+                "displayname": "Alice Margatroid"
               }
       responses:
         200:
