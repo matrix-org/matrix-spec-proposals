@@ -51,7 +51,9 @@
 
 - Spec clarifications:
 
-  - Fixed examples of ``m.room.member`` event and room state change,
+  - Fix response format and 404 example for room alias lookup
+    (`#960 <https://github.com/matrix-org/matrix-doc/pull/960>`)
+  - Fix examples of ``m.room.member`` event and room state change,
     and added a clarification on the membership event sent upon profile update
     (`#950 <https://github.com/matrix-org/matrix-doc/pull/950>`_).
   - Spell out the way that state is handled by ``POST /createRoom``
