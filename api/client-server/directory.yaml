@@ -98,10 +98,10 @@ paths:
                 description: The room ID for this room alias.
               servers:
                 type: array
-                description: A list of servers that are aware of this room ID.
+                description: A list of servers that are aware of this room alias.
                 items:
                   type: string
-                  description: A server which is aware of this room ID.
+                  description: A server which is aware of this room alias.
           examples:
             application/json: |-
               {
@@ -118,7 +118,7 @@ paths:
             application/json: |-
               {
                 "errcode": "M_NOT_FOUND",
-                "error": "Room ID !abnjk1jdasj98:capuchins.com not found."
+                "error": "Room alias #monkeys:matrix.org not found."
               }
       tags:
         - Room directory
