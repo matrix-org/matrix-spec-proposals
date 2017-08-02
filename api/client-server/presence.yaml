@@ -35,6 +35,7 @@ paths:
         the activity time is updated to reflect that activity; the client does
         not need to specify the ``last_active_ago`` field. You cannot set the
         presence state of another user.
+      operationId: setPresence
       security:
         - accessToken: []
       parameters:
@@ -81,6 +82,7 @@ paths:
       summary: Get this user's presence state.
       description: |-
         Get the given user's presence state.
+      operationId: getPresence
       parameters:
         - in: path
           type: string
@@ -126,6 +128,7 @@ paths:
       summary: Add or remove users from this presence list.
       description: |-
         Adds or removes users from this presence list.
+      operationId: modifyPresenceList
       security:
         - accessToken: []
       parameters:
@@ -180,6 +183,7 @@ paths:
       summary: Get presence events for this presence list.
       description: |-
         Retrieve a list of presence events for every user on this list.
+      operationId: getPresenceForList
       parameters:
         - in: path
           type: string

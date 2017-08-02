@@ -35,6 +35,7 @@ paths:
         milliseconds where N is the value specified in the ``timeout`` key.
         Alternatively, if ``typing`` is ``false``, it tells the server that the
         user has stopped typing.
+      operationId: setTyping
       security:
         - accessToken: []
       parameters:

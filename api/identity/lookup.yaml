@@ -27,6 +27,7 @@ paths:
     get:
       summary: Look up the Matrix user ID for a 3pid.
       description: Look up the Matrix user ID for a 3pid.
+      operationId: lookupUser
       parameters:
         - in: query
           type: string

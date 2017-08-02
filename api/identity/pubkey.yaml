@@ -28,6 +28,7 @@ paths:
       summary: Get a public key.
       description: |-
         Get the public key for the passed key ID.
+      operationId: getPubKey
       parameters:
         - in: path
           type: string
@@ -56,6 +57,7 @@ paths:
       summary: Check whether a long-term public key is valid.
       description: |-
         Check whether a long-term public key is valid.
+      operationId: isPubKeyValid
       parameters:
         - in: query
           type: string
@@ -83,6 +85,7 @@ paths:
       summary: Check whether a short-term public key is valid.
       description: |-
         Check whether a short-term public key is valid.
+      operationId: isEphemeralPubKeyValid
       parameters:
         - in: query
           type: string

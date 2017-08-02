@@ -33,6 +33,7 @@ paths:
       description: |-
         This API provides credentials for the client to use when initiating
         calls.
+      operationId: getTurnServer
       security:
         - accessToken: []
       responses:

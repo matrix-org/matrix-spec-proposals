@@ -46,6 +46,7 @@ paths:
 
         4. Invite events implied by ``invite`` and ``invite_3pid``.
 
+      operationId: createRoom
       security:
         - accessToken: []
       parameters:

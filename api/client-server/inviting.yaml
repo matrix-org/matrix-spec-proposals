@@ -51,6 +51,7 @@ paths:
         ``m.room.member`` event to the room.
 
         .. _third party invites section: `invite-by-third-party-id-endpoint`_
+      operationId: inviteUser
       security:
         - accessToken: []
       parameters:

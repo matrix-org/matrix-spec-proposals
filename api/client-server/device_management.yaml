@@ -33,6 +33,7 @@ paths:
       summary: List registered devices for the current user
       description: |-
         Gets information about all devices for the current user.
+      operationId: getDevices
       security:
         - accessToken: []
       responses:
@@ -66,6 +67,7 @@ paths:
       summary: Get a single device
       description: |-
         Gets information on a single device, by device id.
+      operationId: getDevice
       security:
         - accessToken: []
       parameters:
@@ -97,6 +99,7 @@ paths:
       summary: Update a device
       description: |-
         Updates the metadata on the given device.
+      operationId: updateDevice
       security:
         - accessToken: []
       parameters:
@@ -137,6 +140,7 @@ paths:
         This API endpoint uses the `User-Interactive Authentication API`_.
 
         Deletes the given device, and invalidates any access token assoicated with it.
+      operationId: deleteDevice
       security:
         - accessToken: []
       parameters:

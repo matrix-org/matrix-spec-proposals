@@ -36,6 +36,7 @@ paths:
         This API may be restricted to only be called by the user being looked
         up, or by a server admin. Server-local administrator privileges are not
         specified in this document.
+      operationId: getWhoIs
       security:
         - accessToken: []
       parameters:

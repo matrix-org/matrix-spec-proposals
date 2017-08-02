@@ -35,6 +35,7 @@ paths:
         the rulesets by suffixing a ``scope`` to this path e.g.
         ``/pushrules/global/``. This will return a subset of this data under the
         specified key e.g. the ``global`` key.
+      operationId: getPushRules
       security:
         - accessToken: []
       responses:
@@ -247,6 +248,7 @@ paths:
       summary: Retrieve a push rule.
       description: |-
         Retrieve a single specified push rule.
+      operationId: getPushRule
       security:
         - accessToken: []
       parameters:
@@ -299,6 +301,7 @@ paths:
       summary: Delete a push rule.
       description: |-
         This endpoint removes the push rule defined in the path.
+      operationId: deletePushRule
       security:
         - accessToken: []
       parameters:
@@ -340,6 +343,7 @@ paths:
         This endpoint allows the creation, modification and deletion of pushers
         for this user ID. The behaviour of this endpoint varies depending on the
         values in the JSON body.
+      operationId: setPushRule
       security:
         - accessToken: []
       parameters:
@@ -446,6 +450,7 @@ paths:
       summary: "Get whether a push rule is enabled"
       description:
         This endpoint gets whether the specified push rule is enabled.
+      operationId: isPushRuleEnabled
       security:
         - accessToken: []
       parameters:
@@ -490,6 +495,7 @@ paths:
       summary: "Enable or disable a push rule."
       description: |-
         This endpoint allows clients to enable or disable the specified push rule.
+      operationId: setPushRuleEnabled
       security:
         - accessToken: []
       parameters:
@@ -545,6 +551,7 @@ paths:
       summary: "The actions for a push rule"
       description:
         This endpoint get the actions for the specified push rule.
+      operationId: getPushRuleActions
       security:
         - accessToken: []
       parameters:
@@ -592,6 +599,7 @@ paths:
       description: |-
         This endpoint allows clients to change the actions of a push rule.
         This can be used to change the actions of builtin rules.
+      operationId: setPushRuleActions
       security:
         - accessToken: []
       parameters:

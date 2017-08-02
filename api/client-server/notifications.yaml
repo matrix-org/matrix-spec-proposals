@@ -34,6 +34,7 @@ paths:
       description: |-
         This API is used to paginate through the list of events that the
         user has been, or would have been notified about.
+      operationId: getNotifications
       security:
         - accessToken: []
       parameters:

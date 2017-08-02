@@ -33,6 +33,7 @@ paths:
 
         Only the latest ``Z`` value will be reported for each supported ``X.Y`` value.
         i.e. if the server implements ``r0.0.0``, ``r0.0.1``, and ``r1.2.0``, it will report ``r0.0.1`` and ``r1.2.0``.
+      operationId: getVersions
       responses:
         200:
           description: The versions supported by the server.

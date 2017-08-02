@@ -36,6 +36,7 @@ paths:
         When a user is banned from a room, they may not join it or be invited to it until they are unbanned.
 
         The caller must have the required power level in order to perform this operation.
+      operationId: ban
       security:
         - accessToken: []
       parameters:
@@ -91,6 +92,7 @@ paths:
         and join if they would otherwise be allowed to join according to its join rules.
 
         The caller must have the required power level in order to perform this operation.
+      operationId: unban
       security:
         - accessToken: []
       parameters:

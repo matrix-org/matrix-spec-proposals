@@ -34,6 +34,7 @@ paths:
         Kick a user from the room.
 
         The caller must have the required power level in order to perform this operation.
+      operationId: kick
       security:
         - accessToken: []
       parameters:
