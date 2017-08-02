@@ -17,7 +17,7 @@
       "type": "m.room.join_rules",
       "state_key": "",
       "content": {
-        "join_rules": "invite"
+        "join_rule": "invite"
       }
     }
   ],
