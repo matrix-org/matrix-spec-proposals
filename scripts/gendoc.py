@@ -27,11 +27,10 @@ import subprocess
 import sys
 import yaml
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-stylesheets = {
-    "stylesheet_path": glob.glob("css/*.css"),
-}
+script_dir = os.path.dirname(os.path.abspath(__file__))
+docs_dir = os.path.dirname(script_dir)
+spec_dir = os.path.join(docs_dir, "specification")
+tmp_dir = os.path.join(script_dir, "tmp")
 
 VERBOSE = False
 
@@ -173,7 +172,7 @@ def build_spec(target, out_filename):
                 file_info=file_info,
                 title_level=0,
                 title_styles=target["title_styles"],
-                spec_dir="../specification/",
+                spec_dir=spec_dir,
                 adjust_titles=True
             )
             outfile.write(section)
@@ -242,7 +241,7 @@ def fix_relative_titles(target, filename, out_filename):
 
 
 
-def rst2html(i, o):
+def rst2html(i, o, stylesheets):
     log("rst2html %s -> %s" % (i, o))
     with open(i, "r") as in_file:
         with open(o, "w") as out_file:
@@ -252,7 +251,9 @@ def rst2html(i, o):
                 reader_name="standalone",
                 parser_name="restructuredtext",
                 writer_name="html",
-                settings_overrides=stylesheets
+                settings_overrides={
+                    "stylesheet_path": stylesheets,
+                },
             )
 
 
@@ -273,7 +274,7 @@ def addAnchors(path):
 def run_through_template(input_files, set_verbose, substitutions):
     args = [
         'python', 'build.py',
-        "-o", "../scripts/tmp",
+        "-o", tmp_dir,
         "-i", "matrix_templates",
     ]
 
@@ -283,13 +284,13 @@ def run_through_template(input_files, set_verbose, substitutions):
     if set_verbose:
         args.insert(2, "-v")
 
-    args.extend("../scripts/"+f for f in input_files)
+    args.extend(input_files)
 
     log("EXEC: %s" % " ".join(args))
     log(" ==== build.py output ==== ")
     subprocess.check_call(
         args,
-        cwd="../templating"
+        cwd=os.path.join(docs_dir, "templating"),
     )
 
 """
@@ -385,44 +386,50 @@ def logv(line):
         print "gendoc:V: %s" % line
 
 
-def prepare_env():
-    try:
-        os.makedirs("./gen")
-    except OSError:
-        pass
-    try:
-        os.makedirs("./tmp")
-    except OSError:
-        pass
-
-
 def cleanup_env():
-    shutil.rmtree("./tmp")
+    shutil.rmtree(tmp_dir)
 
 
-def main(targets, keep_intermediates, substitutions):
-    prepare_env()
+def mkdirp(d) :
+    if not os.path.exists(d):
+        os.makedirs(d)
 
-    with open("../specification/targets.yaml", "r") as targ_file:
+
+def main(targets, dest_dir, keep_intermediates, substitutions):
+    try:
+        mkdirp(dest_dir)
+    except Exception as e:
+        log("Error creating destination directory '%s': %s" % (dest_dir, str(e)))
+        return 1
+    try:
+        mkdirp(tmp_dir)
+    except Exception as e:
+        log("Error creating temporary directory '%s': %s" % (tmp_dir, str(e)))
+        return 1
+
+    with open(os.path.join(spec_dir, "targets.yaml"), "r") as targ_file:
         target_defs = yaml.load(targ_file.read())
 
     if targets == ["all"]:
         targets = target_defs["targets"].keys()
 
-    log("Building spec [target=%s]" % targets)
+    log("Building spec [targets=%s]" % targets)
 
-    templated_files = []
+    templated_files = {}  # map from target name to templated file
+
     for target_name in targets:
-        templated_file = "tmp/templated_%s.rst" % (target_name,)
+        templated_file = os.path.join(tmp_dir, "templated_%s.rst" % (target_name,))
 
         target = get_build_target(target_defs, target_name)
         build_spec(target=target, out_filename=templated_file)
-        templated_files.append(templated_file)
+        templated_files[target_name] = templated_file
 
     # we do all the templating at once, because it's slow
-    run_through_template(templated_files, VERBOSE, substitutions)
+    run_through_template(templated_files.values(), VERBOSE, substitutions)
 
-    for target_name in targets:
+    stylesheets = glob.glob(os.path.join(script_dir, "css", "*.css"))
+
+    for target_name, templated_file in templated_files.iteritems():
         target = target_defs["targets"].get(target_name)
         version_label = None
         if target:
@@ -431,29 +438,30 @@ def main(targets, keep_intermediates, substitutions):
                 for old, new in substitutions.items():
                     version_label = version_label.replace(old, new)
 
-        templated_file = "tmp/templated_%s.rst" % (target_name,)
-        rst_file = "tmp/spec_%s.rst" % (target_name,)
+        rst_file = os.path.join(tmp_dir, "spec_%s.rst" % (target_name,))
         if version_label:
-            d = os.path.join("gen", target_name)
+            d = os.path.join(dest_dir, target_name)
             if not os.path.exists(d):
                 os.mkdir(d)
             html_file = os.path.join(d, "%s.html" % version_label)
         else:
-            html_file = "gen/%s.html" % (target_name, )
+            html_file = os.path.join(dest_dir, "%s.html" % (target_name, ))
 
         fix_relative_titles(
             target=target_defs, filename=templated_file,
             out_filename=rst_file,
         )
-        rst2html(rst_file, html_file)
+        rst2html(rst_file, html_file, stylesheets=stylesheets)
         addAnchors(html_file)
 
     if not keep_intermediates:
         cleanup_env()
 
+    return 0
+
 
 def list_targets():
-    with open("../specification/targets.yaml", "r") as targ_file:
+    with open(os.path.join(spec_dir, "targets.yaml"), "r") as targ_file:
         target_defs = yaml.load(targ_file.read())
     targets = target_defs["targets"].keys()
     print "\n".join(targets)
@@ -469,11 +477,11 @@ def extract_major(s):
 
 if __name__ == '__main__':
     parser = ArgumentParser(
-        "gendoc.py - Generate the Matrix specification as HTML to the gen/ folder."
+        "gendoc.py - Generate the Matrix specification as HTML."
     )
     parser.add_argument(
         "--nodelete", "-n", action="store_true",
-        help="Do not delete intermediate files. They will be found in tmp/"
+        help="Do not delete intermediate files. They will be found in scripts/tmp/"
     )
     parser.add_argument(
         "--target", "-t", action="append",
@@ -496,6 +504,10 @@ if __name__ == '__main__':
         "--list_targets", action="store_true",
         help="Do not update the specification. Instead print a list of targets.",
     )
+    parser.add_argument(
+        "--dest", "-d", default=os.path.join(script_dir, "gen"),
+        help="Set destination directory (default: scripts/gen)",
+    )
 
     args = parser.parse_args()
     VERBOSE = args.verbose
@@ -510,4 +522,5 @@ if __name__ == '__main__':
         "%SERVER_RELEASE_LABEL%": args.server_release,
         "%SERVER_MAJOR_VERSION%": extract_major(args.server_release),
     }
-    main(args.target or ["all"], args.nodelete, substitutions)
+
+    exit (main(args.target or ["all"], args.dest, args.nodelete, substitutions))
