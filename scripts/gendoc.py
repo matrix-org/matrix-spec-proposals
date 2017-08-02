@@ -518,7 +518,10 @@ if __name__ == '__main__':
 
     substitutions = {
         "%CLIENT_RELEASE_LABEL%": args.client_release,
-        "%CLIENT_MAJOR_VERSION%": extract_major(args.client_release),
+        # we hardcode a major version of r0. This ends up in the
+        # example API URLs. When we have released a new major version,
+        # we'll have to bump it.
+        "%CLIENT_MAJOR_VERSION%": "r0",
         "%SERVER_RELEASE_LABEL%": args.server_release,
         "%SERVER_MAJOR_VERSION%": extract_major(args.server_release),
     }
