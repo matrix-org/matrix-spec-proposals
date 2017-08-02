@@ -8,7 +8,8 @@ pip install \
     docutils \
     pygments \
     Jinja2 \
-    jsonschema
+    jsonschema \
+    PyYAML
 
 (cd event-schemas/ && ./check_examples.py)
 (cd api && ./check_examples.py)
