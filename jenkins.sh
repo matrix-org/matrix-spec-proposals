@@ -11,9 +11,9 @@ pip install \
     jsonschema \
     PyYAML
 
+# do sanity checks on the examples and swagger
 (cd event-schemas/ && ./check_examples.py)
 (cd api && ./check_examples.py)
-(cd scripts && ./gendoc.py -v)
 (cd api && npm install && node validator.js -s "client-server")
 
 : ${GOPATH:=${WORKSPACE}/.gopath}
@@ -26,8 +26,8 @@ go get gopkg.in/fsnotify.v1
 (cd scripts/continuserv && go build)
 (cd scripts/speculator && go build)
 
-# update the jekyll site
-./scripts/generate-jekyll.sh
+# generate bits of the site
+./scripts/generate-site
 
 # create a tarball of the generated site
 tar -czf site.tar.gz _site

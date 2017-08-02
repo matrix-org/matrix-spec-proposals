@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+# This script builds part of the matrix.org site, under '_site'.
+#
+# jekyll requires the `docutils` and `pygments` python packages, so install
+# them or run from a virtualenv which includes them.
+
+set -ex
+
+# tell jekyll to parse things as utf-8
+export LANG="en_GB.UTF-8"
+
+cd `dirname $0`/..
+
+mkdir -p _site
+
+# generate the jekyll bits
+jekyll build -s jekyll
+
+# add some anchors to some generated jekyll bits
+./scripts/add_anchors.py _site/guides/faq.html
+./scripts/add_anchors.py _site/projects/try-matrix-now.html
+
+# generate the latest spec
+./scripts/gendoc.py -d _site/spec
+
+# apply the matrix.org styling to the spec
+find _site/spec -name '*.html' |
+    xargs ./scripts/add-matrix-org-stylings.pl jekyll/_includes
+
