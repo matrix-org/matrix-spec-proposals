@@ -1,0 +1,21 @@
+# Site settings
+title: Matrix
+email: webmaster@matrix.org
+description: > # this means to ignore newlines until "baseurl:"
+  Matrix.org documentation
+baseurl: "/docs" # the subpath of your site, e.g. /blog/
+url: "http://matrix.org" # the base hostname & protocol for your site
+twitter_username: matrixdotorg
+github_username:  matrix-org
+
+exclude:
+  - "*.png"
+  - "*.jpg"
+  - "*.gif"
+
+# Build settings
+markdown: kramdown
+
+#defaults:
+permalink: /:categories/:title.html # can use this when/if we use jekyll for all docs
+#permalink: /:title.html

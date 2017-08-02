@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en-US" class="js">
+  <head>
+  {% include title.html %}
+  {% include head.html %}
+
+  </head>
+  <body class="blog et_fixed_nav et_cover_background et_right_sidebar">
+   <div id="page-wrapper">
+    <div class="page-content" id="page-container">
+      {% include nav.html %}
+      <div id="main-content">
+
+      <div class="wrapper" id="wrapper">
+        <div class="document_foo" id="document">
+      {{ content }}
+        </div>
+      </div>
+      <div class="push"></div>
+    </div>
+  </div>
+    {% include footer.html %}
+  </div>
+  </div>
+  </body>
+
+</html>

@@ -13,6 +13,12 @@ export GOPATH
 go get github.com/hashicorp/golang-lru
 go get gopkg.in/fsnotify.v1
 
+# make sure that the scripts build
 (cd scripts/continuserv && go build)
 (cd scripts/speculator && go build)
 
+# update the jekyll site
+./scripts/generate-jekyll.sh
+
+# create a tarball of the generated site
+tar -czf site.tar.gz _site
