@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 # Runs an HTTP server on localhost:8000 which will serve the generated swagger
 # JSON so that it can be viewed in an online swagger UI.

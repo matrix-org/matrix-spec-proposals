@@ -11,7 +11,7 @@ dependencies available by invoking `nix-shell contrib/shell.nix` in this
 directory.
 
 To generate the complete specification along with supporting documentation, run:
-    python gendoc.py
+    python2 gendoc.py
 
 The output of this will be inside the "scripts/gen" folder.
 

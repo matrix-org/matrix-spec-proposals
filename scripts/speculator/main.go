@@ -149,7 +149,7 @@ func (s *server) lookupBranch(branch string) (string, error) {
 }
 
 func generate(dir string) error {
-	cmd := exec.Command("python", "gendoc.py", "--nodelete")
+	cmd := exec.Command("python2", "gendoc.py", "--nodelete")
 	cmd.Dir = path.Join(dir, "scripts")
 	var b bytes.Buffer
 	cmd.Stderr = &b
@@ -159,7 +159,7 @@ func generate(dir string) error {
 
 	// cheekily dump the swagger docs into the gen directory so they can be
 	// served by serveSpec
-	cmd = exec.Command("python", "dump-swagger.py", "gen/api-docs.json")
+	cmd = exec.Command("python2", "dump-swagger.py", "gen/api-docs.json")
 	cmd.Dir = path.Join(dir, "scripts")
 	cmd.Stderr = &b
 	if err := cmd.Run(); err != nil {
