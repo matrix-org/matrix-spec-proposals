@@ -2,6 +2,14 @@
 
 set -ex
 
+virtualenv env
+. env/bin/activate
+pip install \
+    docutils \
+    pygments \
+    Jinja2 \
+    jsonschema
+
 (cd event-schemas/ && ./check_examples.py)
 (cd api && ./check_examples.py)
 (cd scripts && ./gendoc.py -v)
