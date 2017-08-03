@@ -1,3 +1,6 @@
+/api/node_modules
+/assets
+/assets.tar.gz
 /scripts/gen
 /scripts/continuserv/continuserv
 /scripts/speculator/speculator
@@ -5,6 +8,3 @@
 /templating/out
 *.pyc
 *.swp
-/api/node_modules
-/site.tar.gz
-/_site

@@ -26,8 +26,5 @@ go get gopkg.in/fsnotify.v1
 (cd scripts/continuserv && go build)
 (cd scripts/speculator && go build)
 
-# generate bits of the site
-./scripts/generate-site
-
-# create a tarball of the generated site
-tar -czf site.tar.gz _site
+# build the spec and collect the supporting docs for matrix.org
+./scripts/generate-matrix-org-assets
