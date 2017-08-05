@@ -27,7 +27,7 @@ Also, the certificates will be in a folder under /etc/letsencrypt (see below) an
 
 A note about renewal
 --------------------
-These certificates will expire in 3 months. To renew certificates, just repeat this step.
+These certificates will expire in 3 months. To renew certificates, run ```letsencrypt-auto renew```. It is recommended to create a cronjob, which attempts renewal twice a day. Depending on your distribution, that could be already configured.
 
 2: Install Certificates
 =======================
