@@ -13,7 +13,7 @@ Let's Encrypt is a free Certificate Authority that makes it easy to secure your 
 0: Prerequisites
 ================
 * Install Synapse_.
-* Install (or Download) `Let's Encrypt`_
+* Install (or Download) `certbot`_
 
 1: Get certificates
 ===================
@@ -23,11 +23,11 @@ Also, the certificates will be in a folder under /etc/letsencrypt (see below) an
 
 ::
 
-# letsencrypt-auto certonly --standalone
+# certbot certonly --standalone
 
 A note about renewal
 --------------------
-These certificates will expire in 3 months. To renew certificates, run ```letsencrypt-auto renew```. It is recommended to create a cronjob, which attempts renewal twice a day. Depending on your distribution, that could be already configured.
+These certificates will expire in 3 months. To renew certificates, run ```certbot renew```. It is recommended to create a cronjob, which attempts renewal twice a day. Depending on your distribution, that could be already configured.
 
 2: Install Certificates
 =======================
