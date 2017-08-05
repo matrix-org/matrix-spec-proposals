@@ -23,10 +23,7 @@ Also, the certificates will be in a folder under /etc/letsencrypt (see below) an
 
 ::
 
-# cd (path to synapse)
-# ./letsencrypt-auto certonly --standalone
-# sudo cp /etc/letsencrypt/live/(your domain name)/* .
-# sudo chown (user synapse runs as) *.pem
+# letsencrypt-auto certonly --standalone
 
 A note about renewal
 --------------------
@@ -34,7 +31,7 @@ These certificates will expire in 3 months. To renew certificates, just repeat t
 
 2: Install Certificates
 =======================
-At the top of your homeserver.yaml there should be two keys, ```tls_certificate_path``` and ```tls_private_key_path```. These should be changed so that instead of pointing to the default keys, they now point to the Let's Encrypt keys. ```tls_certificate_path``` should point to the ```fullchain.pem``` in the synapse install directory. ```tls_private_key_path``` should point to the ```privkey.pem``` in the synapse install directory. ```tls_dh_params_path``` can stay the same as before.
+At the top of your homeserver.yaml there should be two keys, ```tls_certificate_path``` and ```tls_private_key_path```. These should be changed so that instead of pointing to the default keys, they now point to the Let's Encrypt keys. ```tls_certificate_path``` should point to ```/etc/letsencrypt/live/(your domain name)/fullchain.pem```. ```tls_private_key_path``` should point to ```/etc/letsencrypt/live/(your domain name)/privkey.pem```. ```tls_dh_params_path``` can stay the same as before.
 
 .. _Synapse: https://github.com/matrix-org/synapse/blob/master/README.rst#synapse-installation
 .. _Let's Encrypt: https://letsencrypt.readthedocs.org/en/latest/using.html#installation
