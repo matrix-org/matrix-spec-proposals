@@ -13,7 +13,7 @@ Let's Encrypt is a free Certificate Authority that makes it easy to secure your 
 0: Prerequisites
 ================
 * Install Synapse_.
-* Install (or Download) `certbot`_
+* Install (or Download) certbot_
 
 1: Get certificates
 ===================
@@ -34,4 +34,4 @@ These certificates will expire in 3 months. To renew certificates, run ```certbo
 At the top of your homeserver.yaml there should be two keys, ```tls_certificate_path``` and ```tls_private_key_path```. These should be changed so that instead of pointing to the default keys, they now point to the Let's Encrypt keys. ```tls_certificate_path``` should point to ```/etc/letsencrypt/live/(your domain name)/fullchain.pem```. ```tls_private_key_path``` should point to ```/etc/letsencrypt/live/(your domain name)/privkey.pem```. ```tls_dh_params_path``` can stay the same as before.
 
 .. _Synapse: https://github.com/matrix-org/synapse/blob/master/README.rst#synapse-installation
-.. _Let's Encrypt: https://letsencrypt.readthedocs.org/en/latest/using.html#installation
+.. _certbot: https://certbot.eff.org/
