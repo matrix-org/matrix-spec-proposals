@@ -19,7 +19,7 @@ Let's Encrypt is a free Certificate Authority that makes it easy to secure your 
 ===================
 When executing the Let's Encrypt client, it will ask for the domain name of your server, and your email address. The domain list can include multiple names and should include any domain you want to access the server from.
 
-Also, the certificates will be in a folder under /etc/letsencrypt (see below) and owned by root. These files should be copied to the same directory as the synapse install and owned by the user synapse is run as.
+Also, the certificates will be in a folder under /etc/letsencrypt (see below) and owned by root.
 
 ::
 
