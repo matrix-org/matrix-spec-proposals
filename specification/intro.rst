@@ -29,7 +29,7 @@ Introduction
   We're publishing it at this point because it's complete enough to be more than
   useful and provide a canonical reference to how Matrix is evolving. Our end
   goal is to mirror WHATWG's `Living Standard
-  <http://wiki.whatwg.org/wiki/FAQ#What_does_.22Living_Standard.22_mean.3F>`_.
+  <https://whatwg.org/faq?#living-standard>`_.
 
 Matrix is a set of open APIs for open-federated Instant Messaging (IM), Voice
 over IP (VoIP) and Internet of Things (IoT) communication, designed to create
