@@ -62,9 +62,9 @@ Some remote protocols (IRC, XMPP, SIP, SMTP, NNTP, GnuSocial etc) support federa
 
 We’re not aware of anyone who’s done this yet.
 
-### Intake bridging
+### One-way bridging
 
-Intake bridging is rare, but can be used to represent a bridge that is one-way from the remote system into matrix. This is common when the remote system does not permit message posting through approved channels, or is simply not capable of handling posting outside their system. The users bridged from the remote system often appear as virtual users in matrix, as is the case with [matrix-appservice-instagram](https://github.com/turt2live/matrix-appservice-instagram).
+One-way bridging is rare, but can be used to represent a bridge that is bridging from the remote system into matrix. This is common when the remote system does not permit message posting, or is simply not capable of handling posting outside their system. The users bridged from the remote system often appear as virtual users in matrix, as is the case with [matrix-appservice-instagram](https://github.com/turt2live/matrix-appservice-instagram).
 
 ### Sidecar bridge
 
