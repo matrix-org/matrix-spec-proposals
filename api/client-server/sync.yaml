@@ -88,8 +88,12 @@ paths:
           name: timeout
           type: integer
           description: |-
-            The maximum time to poll in milliseconds before returning this
-            request.
+            The maximum time to wait, in milliseconds, before returning this
+            request. If no events (or other data) become available before this
+            time elapses, the server will return a response with empty fields.
+
+            By default, this is ``0``, so the server will return immediately
+            even if the response is empty.
           x-example: 30000
       responses:
         200:

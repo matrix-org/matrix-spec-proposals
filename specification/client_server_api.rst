@@ -949,11 +949,11 @@ You can visualise the range of events being returned as::
 
 Clients then receive new events by "long-polling" the homeserver via the
 ``/sync`` API, passing the value of the ``next_batch`` field from the response
-to the previous call as the ``since`` parameter. This involves specifying a
-timeout in the request which will hold open the HTTP connection for a short
-period of time waiting for new events, returning early if an event occurs. Only
-the ``/sync`` API (and the deprecated ``/events`` API) support long-polling in
-this way.
+to the previous call as the ``since`` parameter. The client should also pass a
+``timeout`` parameter. The server will then hold open the HTTP connection for a
+short period of time waiting for new events, returning early if an event
+occurs. Only the ``/sync`` API (and the deprecated ``/events`` API) support
+long-polling in this way.
 
 The response for such an incremental sync can be visualised as::
 
