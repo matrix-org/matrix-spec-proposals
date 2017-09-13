@@ -51,6 +51,8 @@
 
 - Spec clarifications:
 
+  - Fix "membership" property on third-party invite upgrade example
+    (`#995 <https://github.com/matrix-org/matrix-doc/pull/995>`)
   - Fix response format and 404 example for room alias lookup
     (`#960 <https://github.com/matrix-org/matrix-doc/pull/960>`)
   - Fix examples of ``m.room.member`` event and room state change,
