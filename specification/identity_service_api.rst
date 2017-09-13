@@ -239,19 +239,27 @@ At a later point, if the owner of that particular 3pid binds it with a Matrix us
  Content-Type: application/json
 
  {
-   "invites": [{
-     "mxid": "@foo:bar.com",
-     "token": "abc123",
-     "signatures": {
-       "my.id.server": {
-         "ed25519:0": "def987"
-       }
-     }
-   }],
-
-   "medium": "email",
-   "address": "foo@bar.com",
-   "mxid": "@foo:bar.com"
+  "medium": "email",
+  "address": "foo@bar.baz",
+  "mxid": "@alice:example.tld",
+  "invites": [
+    {
+      "medium": "email",
+      "address": "foo@bar.baz",
+      "mxid": "@alice:example.tld",
+      "room_id": "!something:example.tld",
+      "sender": "@bob:example.tld",
+      "signed": {
+        "mxid": "@alice:example.tld",
+        "signatures": {
+          "vector.im": {
+            "ed25519:0": "somesignature"
+          }
+        },
+        "token": "sometoken"
+      }
+    }
+  ]
  }
 
 Where the signature is produced using a long-term private key.
