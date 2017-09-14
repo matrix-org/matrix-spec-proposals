@@ -1300,7 +1300,6 @@ that are too long.
   [[TODO(markjh) We might want to allow the server to omit the output of well
   known hash functions like SHA-256 when none of the keys have been redacted]]
 
-
 .. _`Invitation storage`: ../identity_service/unstable.html#invitation-storage
 .. _`Identity Service API`: ../identity_service/unstable.html
 .. _`Client-Server API`: ../client_server/unstable.html#m-room-member
