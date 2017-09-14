@@ -818,8 +818,6 @@ phone number).
 This identifier and its bindings to Matrix IDs are verified by an identity server
 implementing the `Identity Service API`_.
 
-.. _`Identity Service API`: ../identity_service/unstable.html
-
 Cases where an association exists for a third-party identifier
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1304,6 +1302,7 @@ that are too long.
 
 
 .. _`Invitation storage`: ../identity_service/unstable.html#invitation-storage
+.. _`Identity Service API`: ../identity_service/unstable.html
 .. _`Client-Server API`: ../client_server/unstable.html#m-room-member
 .. _`Inviting to a room`: #inviting-to-a-room
 .. _`Canonical JSON`: ../appendices.html#canonical-json
