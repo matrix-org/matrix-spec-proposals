@@ -888,7 +888,7 @@ Verifying the invite
 When a homeserver receives a ``m.room.member`` invite event for a room it's in
 with a ``third_party_invite`` object, it must verify that the association between
 the third-party identifier initially invited to the room and the Matrix ID that
-claim to be bound to it has been verified without having to rely on a third-party
+claims to be bound to it has been verified without having to rely on a third-party
 server.
 
 To do so, it will fetch from the room's state events the ``m.room.third_party_invite``
