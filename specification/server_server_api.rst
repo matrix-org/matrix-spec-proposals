@@ -749,6 +749,163 @@ that requested by the requestor in the ``v`` parameter).
   Specify (or remark that it is unspecified) how the server handles divergent
   history. DFS? BFS? Anything weirder?
 
+Inviting to a room
+------------------
+
+When a user wishes to invite an other user to a local room and the other user
+is on a different server, the inviting server will send a request to the invited
+server::
+
+  PUT .../invite/{roomId}/{eventId}
+
+The required fields in the JSON body are:
+
+==================== ======== ============
+ Key                  Type     Description
+==================== ======== ============
+``room_id``          String   The room ID of the room. Must be the same as the
+                              room ID specified in the path.
+``event_id``         String   The ID of the event. Must be the same as the event
+                              ID specified in the path.
+``type``             String   The value ``m.room.member``.
+``auth_events``      List     An event-reference list containing the IDs of the
+                              authorization events that would allow this member
+                              to be invited in the room.
+``content``          Object   The content of the event.
+``depth``            Integer  The depth of the event.
+``origin``           String   The name of the inviting homeserver.
+``origin_server_ts`` Integer  A timestamp added by the inviting homeserver.
+``prev_events``      List     An event-reference list containing the IDs of the
+                              immediate predecessor events.
+``sender``           String   The Matrix ID of the user who sent the original
+                              `m.room.third_party_invite`.
+``state_key``        String   The Matrix ID of the invited user.
+``signatures``       Object   The signature of the event from the origin server.
+``unsigned``         Object   An object containing the properties that aren't
+                              part of the signature's computation.
+==================== ======== ============
+
+Where the ``content`` key contains the content for the ``m.room.member`` event
+specified in the `Client-Server API`_. Note that the ``membership`` property of
+the content must be ``invite``.
+
+Upon receiving this request, the invited homeserver will append its signature to
+the event and respond to the request with the following JSON body::
+
+ [
+   200,
+   "event": {...}
+ ]
+
+Where ``event`` contains the event signed by both homeservers, using the same
+JSON keys as the initial request on ``/invite/{roomId}/{eventId}``. Note that,
+except for the ``signatures`` object (which now contains an additional signature),
+all of the event's keys remain the same as in the event initially provided.
+
+This response format is due to a typo in Synapse, the first implementation of
+Matrix's APIs, and is preserved to maintain compatibility.
+
+Now that the event has been signed by both the inviting homeserver and the
+invited homeserver, it can be sent to all of the users in the room.
+
+Third-party invites
+-------------------
+
+When an user wants to invite another user in a room but doesn't know the Matrix
+ID to invite, they can do so using a third-party identifier (e.g. an e-mail or a
+phone number).
+
+This identifier and its bindings to Matrix IDs are verified by an identity server
+implementing the `Identity Service API`_.
+
+Cases where an association exists for a third-party identifier
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If the third-party identifier is already bound to a Matrix ID, a lookup request
+on the identity server will return it. The invite is then processed by the inviting
+homeserver as a standard ``m.room.member`` invite event. This is the simplest case.
+
+Cases where an association doesn't exist for a third-party identifier
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If the third-party identifier isn't bound to any Matrix ID, the inviting
+homeserver will request the identity server to store an invite for this identifier
+and to deliver it to whoever binds it to its Matrix ID. It will also send a
+``m.room.third_party_invite`` event in the room to specify a display name, a token
+and public keys the identity server provided as a response to the invite storage
+request.
+
+When a third-party identifier with pending invites gets bound to a Matrix ID,
+the identity server will send a ``POST`` request to the ID's homeserver as described
+in the `Invitation Storage`_ section of the Identity Service API.
+
+The following process applies for each invite sent by the identity server:
+
+The invited homeserver will create a ``m.room.member`` invite event containing
+a special ``third_party_invite`` section containing the token and a signed object,
+both provided by the identity server.
+
+If the invited homeserver is in the room the invite came from, it can auth the
+event and send it.
+
+However, if the invited homeserver isn't in the room the invite came from, it
+will need to request the room's homeserver to auth the event::
+
+  PUT .../exchange_third_party_invite/{roomId}
+
+Where ``roomId`` is the ID of the room the invite is for.
+
+The required fields in the JSON body are:
+
+==================== ======= ==================================================
+ Key                  Type   Description
+==================== ======= ==================================================
+``type``             String  The event type. Must be `m.room.member`.
+``room_id``          String  The ID of the room the event is for. Must be the
+                             same as the ID specified in the path.
+``sender``           String  The Matrix ID of the user who sent the original
+                             `m.room.third_party_invite`.
+``state_key``        String  The Matrix ID of the invited user.
+``content``          Object  The content of the event.
+==================== ======= ==================================================
+
+Where the ``content`` key contains the content for the ``m.room.member`` event
+as described in the `Client-Server API`_. Its ``membership`` key must be
+``invite`` and its content must include the ``third_party_invite`` object.
+
+The inviting homeserver will then be able to authenticate the event. It will send
+a fully authenticated event to the invited homeserver as described in the `Inviting
+to a room`_ section above.
+
+Once the invited homeserver responded with the event to which it appended its
+signature, the inviting homeserver will respond with ``200 OK`` and an empty body
+(``{}``) to the initial request on ``/exchange_third_party_invite/{roomId}`` and
+send the now verified ``m.room.member`` invite event to the room's members.
+
+Verifying the invite
+++++++++++++++++++++
+
+When a homeserver receives a ``m.room.member`` invite event for a room it's in
+with a ``third_party_invite`` object, it must verify that the association between
+the third-party identifier initially invited to the room and the Matrix ID that
+claims to be bound to it has been verified without having to rely on a third-party
+server.
+
+To do so, it will fetch from the room's state events the ``m.room.third_party_invite``
+event for which the state key matches with the value for the ``token`` key in the
+``third_party_invite`` object from the ``m.room.member`` event's content to fetch the
+public keys initially delivered by the identity server that stored the invite.
+
+It will then use these keys to verify that the ``signed`` object (in the
+``third_party_invite`` object from the ``m.room.member`` event's content) was
+signed by the same identity server.
+
+Since this ``signed`` object can only be delivered once in the ``POST`` request
+emitted by the identity server upon binding between the third-party identifier
+and the Matrix ID, and contains the invited user's Matrix ID and the token
+delivered when the invite was stored, this verification will prove that the
+``m.room.member`` invite event comes from the user owning the invited third-party
+identifier.
 
 Authentication
 --------------
@@ -1143,5 +1300,9 @@ that are too long.
   [[TODO(markjh) We might want to allow the server to omit the output of well
   known hash functions like SHA-256 when none of the keys have been redacted]]
 
+.. _`Invitation storage`: ../identity_service/unstable.html#invitation-storage
+.. _`Identity Service API`: ../identity_service/unstable.html
+.. _`Client-Server API`: ../client_server/unstable.html#m-room-member
+.. _`Inviting to a room`: #inviting-to-a-room
 .. _`Canonical JSON`: ../appendices.html#canonical-json
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
