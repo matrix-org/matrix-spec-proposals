@@ -752,7 +752,7 @@ that requested by the requestor in the ``v`` parameter).
 Inviting to a room
 ------------------
 
-When a user wishes to invite an other user to a local room and this other user
+When a user wishes to invite an other user to a local room and the other user
 is on a different server, the inviting server will send a request to the invited
 server::
 
