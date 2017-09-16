@@ -51,6 +51,10 @@
 
 - Spec clarifications:
 
+  - Add endpoints and logic for invites and third-party invites to the federation
+    spec and update the JSON of the request sent by the identity server upon 3PID
+    binding
+    (`#997 <https://github.com/matrix-org/matrix-doc/pull/997>`)
   - Fix "membership" property on third-party invite upgrade example
     (`#995 <https://github.com/matrix-org/matrix-doc/pull/995>`)
   - Fix response format and 404 example for room alias lookup
