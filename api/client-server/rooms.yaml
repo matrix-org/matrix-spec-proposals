@@ -299,3 +299,49 @@ paths:
             member of the room.
       tags:
         - Room participation
+  "/rooms/{roomId}/joined_members":
+    get:
+      summary: Get the m.room.member events for the room.
+      description:
+        Get the list of currently joined users and their profile data.
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room to get the member events for.
+          required: true
+          x-example: "!636q39766251:example.com"
+      responses:
+        200:
+          examples:
+            application/json: |-
+              {
+                "joined": {
+                  "@bar:example.com": {
+                    "display_name": "Bar",
+                    "avatar_url": null
+                  }
+                }
+              }
+          schema:
+            type: object
+            properties:
+              joined:
+                additionalProperties:
+                  title: RoomMember
+                  type: object
+                  properties:
+                    display_name:
+                      type: string
+                      description: The display name of the user this object is representing.
+                    avatar_url:
+                      type: string
+                      description: The mxc avatar url of the user this object is representing.
+                description: A map from user ID to a RoomMember object.
+                type: object
+        403:
+          description: >
+            You aren't a member of the room and weren't previously a
+            member of the room.
+      tags:
+        - Room participation
