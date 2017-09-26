@@ -23,7 +23,6 @@ file instead.
 from batesian.units import Units
 from collections import OrderedDict
 import logging
-import inspect
 import json
 import os
 import re
@@ -371,131 +370,142 @@ def get_example_for_response(response):
 class MatrixUnits(Units):
     def _load_swagger_meta(self, api, group_name):
         endpoints = []
+        base_path = api.get("basePath", "")
+
         for path in api["paths"]:
             for method in api["paths"][path]:
-                single_api = api["paths"][path][method]
-                full_path = api.get("basePath", "").rstrip("/") + path
-                endpoint = {
-                    "title": single_api.get("summary", ""),
-                    "deprecated": single_api.get("deprecated", False),
-                    "desc": single_api.get("description", single_api.get("summary", "")),
-                    "method": method.upper(),
-                    "path": full_path.strip(),
-                    "requires_auth": "security" in single_api,
-                    "rate_limited": 429 in single_api.get("responses", {}),
-                    "req_param_by_loc": {},
-                    "req_body_tables": [],
-                    "res_headers": [],
-                    "res_tables": [],
-                    "responses": [],
-                    "example": {
-                        "req": "",
-                    }
-                }
                 logger.info(" ------- Endpoint: %s %s ------- " % (method, path))
 
-                path_template = api.get("basePath", "").rstrip("/") + path
-                example_query_params = []
-                example_body = ""
+                try:
+                    endpoint = self._handle_endpoint(
+                        api["paths"][path][method], method,
+                        base_path.rstrip("/") + path)
 
-                for param in single_api.get("parameters", []):
-                    # even body params should have names, otherwise the active docs don't work.
-                    param_name = param["name"]
-
-                    try:
-                        param_loc = param["in"]
-
-                        if param_loc == "body":
-                            self._handle_body_param(param, endpoint)
-                            example_body = get_example_for_param(param)
-                            continue
-
-                        # description
-                        desc = param.get("description", "")
-                        if param.get("required"):
-                            desc = "**Required.** " + desc
-
-                        # assign value expected for this param
-                        val_type = param.get("type") # integer/string
-
-                        if param.get("enum"):
-                            val_type = "enum"
-                            desc += (
-                                " One of: %s" % json.dumps(param.get("enum"))
-                            )
-
-                        endpoint["req_param_by_loc"].setdefault(param_loc, []).append({
-                            "key": param_name,
-                            "type": val_type,
-                            "desc": desc
-                        })
-
-                        example = get_example_for_param(param)
-                        if example is None:
-                            continue
-
-                        if param_loc == "path":
-                            path_template = path_template.replace(
-                                "{%s}" % param_name, urllib.quote(example)
-                            )
-                        elif param_loc == "query":
-                            if type(example) == list:
-                                for value in example:
-                                    example_query_params.append((param_name, value))
-                            else:
-                                example_query_params.append((param_name, example))
-
-                    except Exception, e:
-                        raise Exception("Error handling parameter %s" % param_name, e)
-                # endfor[param]
-
-                good_response = None
-                for code in sorted(single_api.get("responses", {}).keys()):
-                    res = single_api["responses"][code]
-                    if not good_response and code == 200:
-                        good_response = res
-                    description = res.get("description", "")
-                    example = get_example_for_response(res)
-                    endpoint["responses"].append({
-                        "code": code,
-                        "description": description,
-                        "example": example,
-                    })
-
-                # add response params if this API has any.
-                if good_response:
-                    if "schema" in good_response:
-                        endpoint["res_tables"] = get_tables_for_response(
-                            good_response["schema"]
-                        )
-                    if "headers" in good_response:
-                        headers = []
-                        for (header_name, header) in good_response["headers"].iteritems():
-                            headers.append({
-                                "key": header_name,
-                                "type": header["type"],
-                                "desc": header["description"],
-                            })
-                        endpoint["res_headers"] = headers
-
-                query_string = "" if len(example_query_params) == 0 else "?"+urllib.urlencode(example_query_params)
-                if example_body:
-                    endpoint["example"]["req"] = "%s %s%s HTTP/1.1\nContent-Type: application/json\n\n%s" % (
-                        method.upper(), path_template, query_string, example_body
+                    endpoints.append(endpoint)
+                except Exception as e:
+                    raise Exception(
+                        "Error handling endpoint %s %s: %s" % (method, path, e),
                     )
-                else:
-                    endpoint["example"]["req"] = "%s %s%s HTTP/1.1\n\n" % (
-                        method.upper(), path_template, query_string
-                    )
-
-                endpoints.append(endpoint)
-
         return {
             "base": api.get("basePath").rstrip("/"),
             "group": group_name,
             "endpoints": endpoints,
         }
 
+    def _handle_endpoint(self, endpoint_swagger, method, path):
+        endpoint = {
+            "title": endpoint_swagger.get("summary", ""),
+            "deprecated": endpoint_swagger.get("deprecated", False),
+            "desc": endpoint_swagger.get("description",
+                                         endpoint_swagger.get("summary", "")),
+            "method": method.upper(),
+            "path": path.strip(),
+            "requires_auth": "security" in endpoint_swagger,
+            "rate_limited": 429 in endpoint_swagger.get("responses", {}),
+            "req_param_by_loc": {},
+            "req_body_tables": [],
+            "res_headers": [],
+            "res_tables": [],
+            "responses": [],
+            "example": {
+                "req": "",
+            }
+        }
+        path_template = path
+        example_query_params = []
+        example_body = ""
+        for param in endpoint_swagger.get("parameters", []):
+            # even body params should have names, otherwise the active docs don't work.
+            param_name = param["name"]
+
+            try:
+                param_loc = param["in"]
+
+                if param_loc == "body":
+                    self._handle_body_param(param, endpoint)
+                    example_body = get_example_for_param(param)
+                    continue
+
+                # description
+                desc = param.get("description", "")
+                if param.get("required"):
+                    desc = "**Required.** " + desc
+
+                # assign value expected for this param
+                val_type = param.get("type")  # integer/string
+
+                if param.get("enum"):
+                    val_type = "enum"
+                    desc += (
+                        " One of: %s" % json.dumps(param.get("enum"))
+                    )
+
+                endpoint["req_param_by_loc"].setdefault(param_loc, []).append({
+                    "key": param_name,
+                    "type": val_type,
+                    "desc": desc
+                })
+
+                example = get_example_for_param(param)
+                if example is None:
+                    continue
+
+                if param_loc == "path":
+                    path_template = path_template.replace(
+                        "{%s}" % param_name, urllib.quote(example)
+                    )
+                elif param_loc == "query":
+                    if type(example) == list:
+                        for value in example:
+                            example_query_params.append((param_name, value))
+                    else:
+                        example_query_params.append((param_name, example))
+
+            except Exception, e:
+                raise Exception("Error handling parameter %s" % param_name, e)
+        # endfor[param]
+        good_response = None
+        for code in sorted(endpoint_swagger.get("responses", {}).keys()):
+            res = endpoint_swagger["responses"][code]
+            if not good_response and code == 200:
+                good_response = res
+            description = res.get("description", "")
+            example = get_example_for_response(res)
+            endpoint["responses"].append({
+                "code": code,
+                "description": description,
+                "example": example,
+            })
+
+        # add response params if this API has any.
+        if good_response:
+            if "schema" in good_response:
+                endpoint["res_tables"] = get_tables_for_response(
+                    good_response["schema"]
+                )
+            if "headers" in good_response:
+                headers = []
+                for (header_name, header) in good_response[
+                    "headers"].iteritems():
+                    headers.append({
+                        "key": header_name,
+                        "type": header["type"],
+                        "desc": header["description"],
+                    })
+                endpoint["res_headers"] = headers
+        query_string = "" if len(
+            example_query_params) == 0 else "?" + urllib.urlencode(
+            example_query_params)
+        if example_body:
+            endpoint["example"][
+                "req"] = "%s %s%s HTTP/1.1\nContent-Type: application/json\n\n%s" % (
+                method.upper(), path_template, query_string, example_body
+            )
+        else:
+            endpoint["example"]["req"] = "%s %s%s HTTP/1.1\n\n" % (
+                method.upper(), path_template, query_string
+            )
+        return endpoint
 
     def _handle_body_param(self, param, endpoint_data):
         """Update endpoint_data object with the details of the body param
