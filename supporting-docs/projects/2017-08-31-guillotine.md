@@ -4,13 +4,13 @@ title: Guillotine
 categories: projects client
 thumbnail: /docs/projects/images/guillotine-small.png
 author: danigm
-description: Guillotine is based on [ruma-gtk](https://github.com/jplatte/ruma-gtk), but derives in a new one using directly the matrix.org API.
+description: Guillotine is a Matrix Client written in Rust.
 maturity: Early alpha
 ---
 
 ![screenshot](/docs/projects/images/guillotine-large.png "{{ page.title }}")
 
 # {{ page.title }}
-Guillotine is based on [ruma-gtk](https://github.com/jplatte/ruma-gtk), but derives in a new one using directly the matrix.org API.
+Guillotine is a Matrix Client written in Rust.
 
-Get the code from [github](https://github.com/danigm/guillotine)
+Get the code from [github](https://github.com/danigm/guillotine).
