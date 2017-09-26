@@ -1,7 +1,8 @@
 Abstract
 ========
 
-This document outlines the format for human-readable IDs within Matrix.
+This document outlines a proposed format for human-readable IDs within Matrix.
+For status see https://github.com/matrix-org/matrix-doc/pull/3/files
 
 Background
 ----------
