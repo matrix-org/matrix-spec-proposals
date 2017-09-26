@@ -98,6 +98,8 @@ paths:
   "/user/{userId}/filter/{filterId}":
     get:
       summary: Download a filter
+      security:
+        - accessToken: []
       parameters:
         - in: path
           name: userId
