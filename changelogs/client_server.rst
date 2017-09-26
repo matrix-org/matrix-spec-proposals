@@ -75,6 +75,8 @@
   - Make ``m.notice`` description a bit harder in its phrasing to try to
     dissuade the same issues that occurred with IRC
     (`#750 <https://github.com/matrix-org/matrix-doc/pull/750>`_).
+  - ``GET /user/{userId}/filter/{filterId}`` requires authentication
+    (`#1003 <https://github.com/matrix-org/matrix-doc/pull/1003>`_).
 
 r0.2.0
 ======
