@@ -340,12 +340,9 @@ def get_example_for_param(param):
     if not schema:
         return None
 
-    # allow examples for the top-level object to be in formatted json
     exampleobj = None
     if 'example' in schema:
         exampleobj = schema['example']
-        if isinstance(exampleobj, basestring):
-           return exampleobj
 
     if exampleobj is None:
         exampleobj = get_example_for_schema(schema)
@@ -357,15 +354,6 @@ def get_example_for_response(response):
     exampleobj = None
     if 'examples' in response:
         exampleobj = response["examples"].get("application/json")
-        # the openapi spec suggests that examples in the 'examples' section should
-        # be formatted as raw objects rather than json-formatted strings, but we
-        # have lots of the latter in our spec, which work with the swagger UI,
-        # so grandfather them in.
-        #
-        # FIXME: swagger-ui no longer supports this. We should fix the inputs
-        # and remove the grandfathering.
-        if isinstance(exampleobj, basestring):
-            return exampleobj
 
     if exampleobj is None:
         schema = response.get('schema')
