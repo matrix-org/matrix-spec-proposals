@@ -25,9 +25,11 @@ import (
 var (
 	port = flag.Int("port", 8000, "Port on which to serve HTTP")
 
-	toServe atomic.Value   // Always contains valid []byte to serve. May be stale unless wg is zero.
-	wg      sync.WaitGroup // Indicates how many updates are pending.
-	mu      sync.Mutex     // Prevent multiple updates in parallel.
+	mu      sync.Mutex   // Prevent multiple updates in parallel.
+	toServe atomic.Value // Always contains a bytesOrErr. May be stale unless wg is zero.
+
+	wgMu sync.Mutex     // Prevent multiple calls to wg.Wait() or wg.Add(positive number) in parallel.
+	wg   sync.WaitGroup // Indicates how many updates are pending.
 )
 
 func main() {
@@ -48,7 +50,13 @@ func main() {
 		}
 	}
 
-	filepath.Walk(dir, makeWalker(w))
+	walker := makeWalker(dir, w)
+	paths := []string{"api", "changelogs", "event-schemas", "scripts",
+		"specification", "templating"}
+
+	for _, p := range paths {
+		filepath.Walk(path.Join(dir, p), walker)
+	}
 
 	wg.Add(1)
 	populateOnce(dir)
@@ -75,13 +83,31 @@ func watchFS(ch chan struct{}, w *fsnotify.Watcher) {
 	}
 }
 
-func makeWalker(w *fsnotify.Watcher) filepath.WalkFunc {
-	return func(path string, _ os.FileInfo, err error) error {
+func makeWalker(base string, w *fsnotify.Watcher) filepath.WalkFunc {
+	return func(path string, i os.FileInfo, err error) error {
 		if err != nil {
 			log.Fatalf("Error walking: %v", err)
 		}
+		if !i.IsDir() {
+			// we set watches on directories, not files
+			return nil
+		}
+
+		rel, err := filepath.Rel(base, path)
+		if err != nil {
+			log.Fatalf("Failed to get relative path of %s: %v", path, err)
+		}
+
+		// skip a few things that we know don't form part of the spec
+		if rel == "api/node_modules" ||
+			rel == "scripts/gen" ||
+			rel == "scripts/tmp" {
+			return filepath.SkipDir
+		}
+
+		// log.Printf("Adding watch on %s", path)
 		if err := w.Add(path); err != nil {
-			log.Fatalf("Failed to add watch: %v", err)
+			log.Fatalf("Failed to add watch on %s: %v", path, err)
 		}
 		return nil
 	}
@@ -93,48 +119,114 @@ func filter(e fsnotify.Event) bool {
 	if e.Op != fsnotify.Write {
 		return false
 	}
+
 	// Avoid some temp files that vim writes
 	if strings.HasSuffix(e.Name, "~") || strings.HasSuffix(e.Name, ".swp") || strings.HasPrefix(e.Name, ".") {
 		return false
 	}
 
-	// Ignore the .git directory - It's very noisy
-	if strings.Contains(e.Name, "/.git/") {
-		return false
-	}
-
-	// Avoid infinite cycles being caused by writing actual output
-	if strings.Contains(e.Name, "/tmp/") || strings.Contains(e.Name, "/gen/") {
-		return false
-	}
 	return true
 }
 
 func serve(w http.ResponseWriter, req *http.Request) {
+	wgMu.Lock()
 	wg.Wait()
-	b := toServe.Load().([]byte)
-	w.Write(b)
+	wgMu.Unlock()
+
+	m := toServe.Load().(bytesOrErr)
+	if m.err != nil {
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write([]byte(m.err.Error()))
+		return
+	}
+
+	ok := true
+	var b []byte
+
+	file := req.URL.Path
+	if file[0] == '/' {
+		file = file[1:]
+	}
+	b, ok = m.bytes[file]
+
+	if ok && file == "api-docs.json" {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+	}
+
+	if ok {
+		w.Header().Set("Content-Type", "text/html")
+		w.Write([]byte(b))
+		return
+	}
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(404)
+	w.Write([]byte("Not found"))
 }
 
-func populateOnce(dir string) {
-	defer wg.Done()
-	mu.Lock()
-	defer mu.Unlock()
+func generate(dir string) (map[string][]byte, error) {
 	cmd := exec.Command("python", "gendoc.py")
 	cmd.Dir = path.Join(dir, "scripts")
 	var b bytes.Buffer
 	cmd.Stderr = &b
 	err := cmd.Run()
 	if err != nil {
-		toServe.Store([]byte(fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String()).Error()))
-		return
+		return nil, fmt.Errorf("error generating spec: %v\nOutput from gendoc:\n%v", err, b.String())
 	}
-	specBytes, err := ioutil.ReadFile(path.Join(dir, "scripts", "gen", "specification.html"))
+
+	// cheekily dump the swagger docs into the gen directory so that it is
+	// easy to serve
+	cmd = exec.Command("python", "dump-swagger.py", "gen/api-docs.json")
+	cmd.Dir = path.Join(dir, "scripts")
+	cmd.Stderr = &b
+	if err := cmd.Run(); err != nil {
+		return nil, fmt.Errorf("error generating api docs: %v\nOutput from dump-swagger:\n%v", err, b.String())
+	}
+
+	files := make(map[string][]byte)
+	base := path.Join(dir, "scripts", "gen")
+	walker := func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+
+		rel, err := filepath.Rel(base, path)
+		if err != nil {
+			return fmt.Errorf("Failed to get relative path of %s: %v", path, err)
+		}
+
+		bytes, err := ioutil.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		files[rel] = bytes
+		return nil
+	}
+
+	if err := filepath.Walk(base, walker); err != nil {
+		return nil, fmt.Errorf("error reading spec: %v", err)
+	}
+
+	// load the special index
+	indexpath := path.Join(dir, "scripts", "continuserv", "index.html")
+	bytes, err := ioutil.ReadFile(indexpath)
 	if err != nil {
-		toServe.Store([]byte(fmt.Errorf("error reading spec: %v", err).Error()))
-		return
+		return nil, fmt.Errorf("error reading index: %v", err)
 	}
-	toServe.Store(specBytes)
+	files[""] = bytes
+
+	return files, nil
+}
+
+func populateOnce(dir string) {
+	defer wg.Done()
+	mu.Lock()
+	defer mu.Unlock()
+
+	files, err := generate(dir)
+	toServe.Store(bytesOrErr{files, err})
 }
 
 func doPopulate(ch chan struct{}, dir string) {
@@ -143,7 +235,9 @@ func doPopulate(ch chan struct{}, dir string) {
 		select {
 		case <-ch:
 			if pending == 0 {
+				wgMu.Lock()
 				wg.Add(1)
+				wgMu.Unlock()
 			}
 			pending++
 		case <-time.After(10 * time.Millisecond):
@@ -158,4 +252,9 @@ func doPopulate(ch chan struct{}, dir string) {
 func exists(path string) bool {
 	_, err := os.Stat(path)
 	return !os.IsNotExist(err)
+}
+
+type bytesOrErr struct {
+	bytes map[string][]byte // filename -> contents
+	err   error
 }

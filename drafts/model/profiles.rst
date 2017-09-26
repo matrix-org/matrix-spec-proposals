@@ -9,7 +9,7 @@ Overview
 ========
 
 Internally within Synapse users are referred to by an opaque ID, which consists
-of some opaque localpart combined with the domain name of their home server.
+of some opaque localpart combined with the domain name of their homeserver.
 Obviously this does not yield a very nice user experience; users would like to
 see readable names for other users that are in some way meaningful to them.
 Additionally, users like to be able to publish "profile" details to inform other
@@ -59,7 +59,7 @@ servers should be accounted for here.]]
 Visibility Permissions
 ======================
 
-A home server implementation could offer the ability to set permissions on
+A homeserver implementation could offer the ability to set permissions on
 limited visibility of those fields. When another user requests access to the
 target user's profile, their own identity should form part of that request. The
 HS implementation can then decide which fields to make available to the
@@ -130,12 +130,12 @@ namespace to allocate names into.
 It would also be nice from a user experience perspective if the profile that a
 given name links to can also declare that name as part of its metadata.
 Furthermore as a security and consistency perspective it would be nice if each
-end (the directory server and the user's home server) check the validity of the
+end (the directory server and the user's homeserver) check the validity of the
 mapping in some way. This needs investigation from a security perspective to
 ensure against spoofing.
 
 One such model may be that the user starts by declaring their intent to use a
-given user name link to their home server, which then contacts the directory
+given user name link to their homeserver, which then contacts the directory
 service. At some point later (maybe immediately for "public open FCFS servers",
 maybe after some kind of human intervention for verification) the DS decides to
 honour this link, and includes it in its served output. It should also tell the
@@ -170,7 +170,7 @@ balancing choice on behalf of the user who would choose, or not, to make use of
 such a feature to publish their information.
 
 Additionally, unless some form of strong end-to-end user-based encryption is
-used, a user of ACLs for information privacy has to trust other home servers not
+used, a user of ACLs for information privacy has to trust other homeservers not
 to lie about the identify of the user requesting access to the Profile.
 
 
@@ -182,7 +182,7 @@ The data model presented here puts the following requirements on the APIs:
 Client-Server
 -------------
 
-Requests that a client can make to its Home Server
+Requests that a client can make to its homeserver
 
  * get/set my Display Name
    This should return/take a simple "text/plain" field
@@ -207,7 +207,7 @@ TODO(paul): At some later stage we should consider the API for:
 Server-Server
 -------------
 
-Requests that Home Servers make to others
+Requests that homeservers make to others
 
  * get a user's Display Name / Avatar
 
@@ -221,7 +221,7 @@ Requests that Home Servers make to others
 Room Event PDU Types
 --------------------
 
-Events that are pushed from Home Servers to other Home Servers or clients.
+Events that are pushed from homeservers to other homeservers or clients.
 
  * user Display Name change
  

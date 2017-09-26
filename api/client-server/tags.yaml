@@ -1,0 +1,162 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server tag API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/user/{userId}/rooms/{roomId}/tags":
+    get:
+      summary: List the tags for a room.
+      description: |-
+        List the tags set by a user on a room.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          required: true
+          description: |-
+            The id of the user to get tags for. The access token must be
+            authorized to make requests for this user id.
+          x-example: "@alice:example.com"
+        - in: path
+          type: string
+          name: roomId
+          required: true
+          description: |-
+            The id of the room to get tags for.
+          x-example: "!726s6s6q:example.com"
+      responses:
+        200:
+          description:
+            The list of tags for the user for the room.
+          schema:
+            type: object
+            properties:
+              tags:
+                title: Tags
+                type: object
+          examples:
+            application/json: |-
+              {
+                "tags": {
+                  "work": {"order": "1"},
+                  "pinned": {}
+                }
+              }
+      tags:
+        - User data
+  "/user/{userId}/rooms/{roomId}/tags/{tag}":
+    put:
+      summary: Add a tag to a room.
+      description: |-
+        Add a tag to the room.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          required: true
+          description: |-
+            The id of the user to add a tag for. The access token must be
+            authorized to make requests for this user id.
+          x-example: "@alice:example.com"
+        - in: path
+          type: string
+          name: roomId
+          required: true
+          description: |-
+            The id of the room to add a tag to.
+          x-example: "!726s6s6q:example.com"
+        - in: path
+          type: string
+          name: tag
+          required: true
+          description: |-
+            The tag to add.
+          x-example: "work"
+        - in: body
+          name: body
+          required: true
+          description: |-
+            Extra data for the tag, e.g. ordering.
+          schema:
+            type: object
+            example: |-
+              {"order": "1"}
+      responses:
+        200:
+          description:
+            The tag was successfully added.
+          schema:
+            type: object
+          examples:
+            application/json: |-
+              {}
+      tags:
+        - User data
+    delete:
+      summary: Remove a tag from the room.
+      description: |-
+        Remove a tag from the room.
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          required: true
+          description: |-
+            The id of the user to remove a tag for. The access token must be
+            authorized to make requests for this user id.
+          x-example: "@alice:example.com"
+        - in: path
+          type: string
+          name: roomId
+          required: true
+          description: |-
+            The id of the room to remove a tag from.
+          x-example: "!726s6s6q:example.com"
+        - in: path
+          type: string
+          name: tag
+          required: true
+          description: |-
+            The tag to remove.
+          x-example: "work"
+      responses:
+        200:
+          description:
+            The tag was successfully removed
+          schema:
+            type: object
+          examples:
+            application/json: |-
+              {}
+      tags:
+        - User data

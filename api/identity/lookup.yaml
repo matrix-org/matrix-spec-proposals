@@ -1,0 +1,86 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Identity Service Lookup  API"
+  version: "1.0.0"
+host: localhost:8090
+schemes:
+  - https
+  - http
+basePath: /_matrix/identity/api/v1
+produces:
+  - application/json
+paths:
+  "/lookup":
+    get:
+      summary: Look up the Matrix user ID for a 3pid.
+      description: Look up the Matrix user ID for a 3pid.
+      parameters:
+        - in: query
+          type: string
+          name: medium
+          required: true
+          description: The literal string "email".
+          x-example: "email"
+        - in: query
+          type: string
+          name: address
+          required: true
+          description: The email address being looked up.
+          x-example: "louise@bobs.burgers"
+      responses:
+        200:
+          description:
+            The association for that 3pid, or the empty object if no association is known.
+          examples:
+            application/json: |-
+              {
+                "address": "louise@bobs.burgers",
+                "medium": "email",
+                "mxid": "@ears:matrix.org",
+                "not_before": 1428825849161,
+                "not_after": 4582425849161,
+                "ts": 1428825849161,
+
+                "signatures": {
+                  "matrix.org": {
+                    "ed25519:0": "ENiU2YORYUJgE6WBMitU0mppbQjidDLanAusj8XS2nVRHPu+0t42OKA/r6zV6i2MzUbNQ3c3MiLScJuSsOiVDQ"
+                  }
+                }
+              }
+          schema:
+            type: object
+            properties:
+              address:
+                type: string
+                description: The 3pid address of the user being looked up.
+              medium:
+                type: string
+                description: The literal string "email".
+              mxid:
+                type: string
+                description: The Matrix user ID associated with the 3pid.
+              not_before:
+                type: integer
+                description: A unix timestamp before which the association is not known to be valid.
+              not_after:
+                type: integer
+                description: A unix timestamp after which the association is not known to be valid.
+              ts:
+                type: integer
+                description: The unix timestamp at which the association was verified.
+              signatures:
+                type: object
+                description: The signatures of the verifying identity service which show that the association should be trusted, if you trust the verifying identity service.

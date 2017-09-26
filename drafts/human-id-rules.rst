@@ -32,7 +32,7 @@ These checks are:
 
 User ID Localparts:
  - MUST NOT contain a ``:`` or start with a ``@`` or ``.``
- - MUST NOT contain one of the 107 blacklisted characters on this list: 
+ - MUST NOT contain one of the 107 blacklisted characters on this list:
      http://kb.mozillazine.org/Network.IDN.blacklist_chars
  - After stripping " 0-9, +, -, [, ], _, and the space character it MUST NOT
    contain characters from >1 language, defined by the `exemplar characters`_
@@ -42,7 +42,7 @@ User ID Localparts:
 
 Room Alias Localparts:
  - MUST NOT contain a ``:``
- - MUST NOT contain one of the 107 blacklisted characters on this list: 
+ - MUST NOT contain one of the 107 blacklisted characters on this list:
    http://kb.mozillazine.org/Network.IDN.blacklist_chars
  - After stripping " 0-9, +, -, [, ], _, and the space character it MUST NOT
    contain characters from >1 language, defined by the `exemplar characters`_
@@ -74,14 +74,14 @@ http://cldr.unicode.org/
 
 This check SHOULD be applied when the user ID is created, in order to prevent
 registration with the same name and different capitalisations, e.g.
-``@foo:bar`` vs ``@Foo:bar`` vs ``@FOO:bar``. Home servers MAY canonicalise
+``@foo:bar`` vs ``@Foo:bar`` vs ``@FOO:bar``. Homeservers MAY canonicalise
 the user ID to be completely lower-case if desired.
 
 Rationale
 =========
 
-Each ID is split into segments (localpart/domain) around the ``:``. For 
-this reason, ``:`` is a reserved character and cannot be a localpart character. 
+Each ID is split into segments (localpart/domain) around the ``:``. For
+this reason, ``:`` is a reserved character and cannot be a localpart character.
 The 107 blacklisted characters are used to prevent non-printable characters and
 spaces from being used. The decision to ban characters from more than 1 language
 matches the behaviour of `Google Chrome for IDN handling`_. This is to protect
@@ -98,7 +98,7 @@ fail the ID checks. A failed ID could look like ``@@xn--c1yn36f:domain.com``.
 
 If a user ID fails the check, the user ID on the event is renamed. This doesn't
 require extra work for clients, and users will see an odd user ID rather than a
-spoofed name. Renaming is done in order to protect users of a given HS, so if a 
+spoofed name. Renaming is done in order to protect users of a given HS, so if a
 malicious HS doesn't rename their IDs, it doesn't affect any other HS.
 
 Room aliases cannot be rewritten as punycode and sent to the HS the alias is
@@ -115,7 +115,7 @@ Other rejected solutions for failed checks
 - Reject event: Outright rejection of the ID at the point of creation /
   receiving event. Point of creation rejection is preferable to avoid the ID
   entering the system in the first place. However, malicious HSes can just
-  allow the ID. Hence, other home servers must reject them if they see them in
+  allow the ID. Hence, other homeservers must reject them if they see them in
   events. Client never sees the problem ID, provided the HS is correctly
   implemented. However, it is difficult to ensure that ALL HSes will come to the
   same conclusion (given the CLDR dataset does come out with new versions).

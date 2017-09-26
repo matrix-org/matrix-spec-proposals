@@ -1,3 +1,17 @@
+.. Copyright 2016 OpenMarket Ltd
+..
+.. Licensed under the Apache License, Version 2.0 (the "License");
+.. you may not use this file except in compliance with the License.
+.. You may obtain a copy of the License at
+..
+..     http://www.apache.org/licenses/LICENSE-2.0
+..
+.. Unless required by applicable law or agreed to in writing, software
+.. distributed under the License is distributed on an "AS IS" BASIS,
+.. WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+.. See the License for the specific language governing permissions and
+.. limitations under the License.
+
 Typing Notifications
 ====================
 
@@ -5,10 +19,8 @@ Typing Notifications
 
 Users may wish to be informed when another user is typing in a room. This can be
 achieved using typing notifications. These are ephemeral events scoped to a
-``room_id``. This means they do not form part of the `Event Graph`_ but still
-have a ``room_id`` key.
-
-.. _Event Graph: `sect:event-graph`_
+``room_id``. This means they do not form part of the
+`Event Graph <index.html#event-graphs>`_ but still have a ``room_id`` key.
 
 Events
 ------
@@ -34,29 +46,7 @@ expected timeout runs out is recommended. When the user stops typing, the
 state change of the ``boolean`` to ``false`` should trigger another HTTP request
 to inform the server that the user has stopped typing.
 
-{{typing_http_api}}
-
-Server behaviour
-----------------
-
-Servers MUST emit typing EDUs in a different form to ``m.typing`` events which
-are shown to clients. This form looks like::
-
-  {
-    "type": "m.typing",
-    "content": {
-      "room_id": "!room-id-here:matrix.org",
-      "user_id": "@user-id-here:matrix.org",
-      "typing": true/false
-    }
-  }
-
-This does not contain timing information so it is up to originating homeservers
-to ensure they eventually send "stop" notifications.
-
-.. TODO
-  ((This will eventually need addressing, as part of the wider typing/presence
-  timer addition work))
+{{typing_cs_http_api}}
 
 Security considerations
 -----------------------

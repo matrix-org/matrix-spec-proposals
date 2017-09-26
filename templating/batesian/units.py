@@ -1,3 +1,16 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Parent class for writing units."""
 from . import AccessKeyStore
 import inspect
@@ -17,8 +30,13 @@ class Units(object):
         return val
 
 
-    def __init__(self, debug=False):
+    def __init__(self, debug=False, substitutions=None):
         self.debug = debug
+
+        if substitutions is None:
+            self.substitutions = {}
+        else:
+            self.substitutions = substitutions
 
     def log(self, text):
         if self.debug:
@@ -35,7 +53,10 @@ class Units(object):
             if not func_name.startswith("load_"):
                 continue
             unit_key = func_name[len("load_"):]
-            unit_dict[unit_key] = func()
+            if len(inspect.getargs(func.func_code).args) > 1:
+                unit_dict[unit_key] = func(self.substitutions)
+            else:
+                unit_dict[unit_key] = func()
             self.log("Generated unit '%s' : %s" % (
                 unit_key, json.dumps(unit_dict[unit_key])[:50].replace(
                     "\n",""

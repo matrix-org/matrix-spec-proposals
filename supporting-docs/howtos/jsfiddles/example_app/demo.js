@@ -98,7 +98,7 @@ $('.login').live('click', function() {
             onLoggedIn(data);
         },
         error: function(err) {
-            alert("Unable to login: is the home server running?");  
+            alert("Unable to login: is the homeserver running?");  
         }
     }); 
 });
@@ -116,7 +116,7 @@ $('.register').live('click', function() {
             onLoggedIn(data);
         },
         error: function(err) {
-            var msg = "Is the home server running?";
+            var msg = "Is the homeserver running?";
             var errJson = $.parseJSON(err.responseText);
             if (errJson !== null) {
                 msg = errJson.error;   

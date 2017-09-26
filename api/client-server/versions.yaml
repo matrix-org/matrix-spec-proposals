@@ -1,0 +1,54 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Versions API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client
+produces:
+  - application/json
+paths:
+  "/versions":
+    get:
+      summary: Gets the versions of the specification supported by the server.
+      description: |-
+        Gets the versions of the specification supported by the server.
+
+        Values will take the form ``rX.Y.Z``.
+
+        Only the latest ``Z`` value will be reported for each supported ``X.Y`` value.
+        i.e. if the server implements ``r0.0.0``, ``r0.0.1``, and ``r1.2.0``, it will report ``r0.0.1`` and ``r1.2.0``.
+      responses:
+        200:
+          description: The versions supported by the server.
+          examples:
+            application/json: |-
+              {
+                "versions": ["r0.0.1"]
+              }
+          schema:
+            type: object
+            properties:
+              versions:
+                type: array
+                description: The supported versions.
+                items:
+                  type: string
+                  description: The supported versions
+      tags:
+        - Server administration

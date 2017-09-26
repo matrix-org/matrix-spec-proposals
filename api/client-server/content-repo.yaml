@@ -1,0 +1,189 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Content Repository API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+basePath: /_matrix/media/%CLIENT_MAJOR_VERSION%
+produces:
+  - application/json
+  - "*/*"
+paths:
+  "/upload":
+    post:
+      summary: Upload some content to the content repository.
+      produces: ["application/json"]
+      parameters:
+        - in: header
+          name: Content-Type
+          type: string
+          description: The content type of the file being uploaded
+          x-example: "Content-Type: audio/mpeg"
+        - in: query
+          type: string
+          x-example: "War and Peace.pdf"
+          name: filename
+          description: The name of the file being uploaded
+        - in: body
+          name: "<content>"
+          description: The content to be uploaded.
+          required: true
+          schema:
+            type: string
+            example: "<bytes>"
+            format: byte
+      responses:
+        200:
+          description: The MXC URI for the uploaded content.
+          schema:
+            type: object
+            required: ["content_uri"]
+            properties:
+              content_uri:
+                type: string
+                description: "The MXC URI to the uploaded content."
+          examples:
+            "application/json": |-
+              {
+                "content_uri": "mxc://example.com/AQwafuaFswefuhsfAFAgsw"
+              }
+      tags:
+        - Media
+  "/download/{serverName}/{mediaId}":
+    get:
+      summary: "Download content from the content repository."
+      produces: ["*/*"]
+      parameters:
+        - in: path
+          type: string
+          name: serverName
+          x-example: matrix.org
+          required: true
+          description: |
+            The server name from the ``mxc://`` URI (the authoritory component)
+        - in: path
+          type: string
+          name: mediaId
+          x-example: ascERGshawAWawugaAcauga
+          required: true
+          description: |
+            The media ID from the ``mxc://`` URI (the path component)
+      responses:
+        200:
+          description: "The content that was previously uploaded."
+          headers:
+            Content-Type:
+              description: "The content type of the file that was previously uploaded."
+              type: "string"
+            Content-Disposition:
+              description: "The name of the file that was previously uploaded, if set."
+              type: "string"
+          schema:
+            type: file
+      tags:
+        - Media
+  "/download/{serverName}/{mediaId}/{fileName}":
+    get:
+      summary: "Download content from the content repository as a given filename."
+      produces: ["*/*"]
+      parameters:
+        - in: path
+          type: string
+          name: serverName
+          x-example: matrix.org
+          required: true
+          description: |
+            The server name from the ``mxc://`` URI (the authoritory component)
+        - in: path
+          type: string
+          name: mediaId
+          x-example: ascERGshawAWawugaAcauga
+          required: true
+          description: |
+            The media ID from the ``mxc://`` URI (the path component)
+        - in: path
+          type: string
+          name: fileName
+          x-example: filename.jpg
+          required: true
+          description: |
+            The filename to give in the Content-Disposition
+      responses:
+        200:
+          description: "The content that was previously uploaded."
+          headers:
+            Content-Type:
+              description: "The content type of the file that was previously uploaded."
+              type: "string"
+            Content-Disposition:
+              description: "The name of file given in the request"
+              type: "string"
+          schema:
+            type: file
+      tags:
+        - Media
+  "/thumbnail/{serverName}/{mediaId}":
+    get:
+      summary: "Download a thumbnail of the content from the content repository."
+      produces: ["image/jpeg", "image/png"]
+      parameters:
+        - in: path
+          type: string
+          name: serverName
+          required: true
+          x-example: matrix.org
+          description: |
+            The server name from the ``mxc://`` URI (the authoritory component)
+        - in: path
+          type: string
+          name: mediaId
+          x-example: ascERGshawAWawugaAcauga
+          required: true
+          description: |
+            The media ID from the ``mxc://`` URI (the path component)
+        - in: query
+          type: integer
+          x-example: 64
+          name: width
+          description: |-
+            The *desired* width of the thumbnail. The actual thumbnail may not
+            match the size specified.
+        - in: query
+          type: integer
+          x-example: 64
+          name: height
+          description: |-
+            The *desired* height of the thumbnail. The actual thumbnail may not
+            match the size specified.
+        - in: query
+          type: string
+          enum: ["crop", "scale"]
+          name: method
+          x-example: "scale"
+          description: The desired resizing method.
+      responses:
+        200:
+          description: "A thumbnail of the requested content."
+          headers:
+            Content-Type:
+              description: "The content type of the thumbnail."
+              type: "string"
+              enum: ["image/jpeg", "image/png"]
+          schema:
+            type: file
+      tags:
+        - Media

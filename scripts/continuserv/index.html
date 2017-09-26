@@ -1,0 +1,15 @@
+<head>
+<script>
+window.onload = function() {
+    var url = new URL(window.location);
+    url.pathname += "api-docs.json";
+    var newLoc = "http://matrix.org/docs/api/client-server/?url=" + encodeURIComponent(url);
+    document.getElementById("apidocs").href = newLoc;
+};
+</script>
+</head>
+<body><ul>
+<li><a id="apidocs">api docs</a></li>
+<li><a href="index.html">spec</a></li>
+</ul>
+</body>

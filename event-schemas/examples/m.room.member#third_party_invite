@@ -1,0 +1,26 @@
+{
+  "age": 242352,
+  "content": {
+    "membership": "join",
+    "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF#auto",
+    "displayname": "Alice Margatroid",
+    "third_party_invite": {
+      "display_name": "alice",
+      "signed": {
+        "mxid": "@alice:localhost",
+        "signatures": {
+          "magic.forest": {
+            "ed25519:3": "fQpGIW1Snz+pwLZu6sTy2aHy/DYWWTspTJRPyNp0PKkymfIsNffysMl6ObMMFdIJhk6g6pwlIqZ54rxo8SLmAg"
+          }
+        },
+        "token": "abc123"
+      }
+    }
+  },
+  "state_key": "@alice:localhost",
+  "origin_server_ts": 1431961217939,
+  "event_id": "$WLGTSEFSEF:localhost",
+  "type": "m.room.member",
+  "room_id": "!Cuyf34gef24t:localhost",
+  "sender": "@example:localhost"
+}

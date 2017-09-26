@@ -1,4 +1,3 @@
-To get this running:
-  python -m SimpleHTTPServer
+This directory contains swagger-compatible representations of our APIs. See
+scripts/README.md for details on how to make use of them.
 
-Go to http://localhost:8000/swagger.html

@@ -1,0 +1,12 @@
+{
+  "age": 242352,
+  "content": {
+    "type": "delivered",
+    "target_event_id": "$WEIGFHFW:localhost"
+  },
+  "origin_server_ts": 1431961217939,
+  "event_id": "$WLGTSEFSEF:localhost",
+  "type": "m.room.message.feedback",
+  "room_id": "!Cuyf34gef24t:localhost",
+  "sender": "@example:localhost"
+}

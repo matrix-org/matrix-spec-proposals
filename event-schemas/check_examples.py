@@ -1,4 +1,18 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
+#
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import sys
 import json
@@ -38,13 +52,12 @@ def check_example_file(examplepath, schemapath):
         schema = yaml.load(f)
 
     fileurl = "file://" + os.path.abspath(schemapath)
+    schema["id"] = fileurl
+    resolver = jsonschema.RefResolver(schemapath, schema, handlers={"file": load_yaml})
 
     print ("Checking schema for: %r %r" % (examplepath, schemapath))
-    # Setting the 'id' tells jsonschema where the file is so that it
-    # can correctly resolve relative $ref references in the schema
-    schema['id'] = fileurl
     try:
-        jsonschema.validate(example, schema)
+        jsonschema.validate(example, schema, resolver=resolver)
     except Exception as e:
         raise ValueError("Error validating JSON schema for %r %r" % (
             examplepath, schemapath
@@ -60,6 +73,8 @@ def check_example_dir(exampledir, schemadir):
                 continue
             examplepath = os.path.join(root, filename)
             schemapath = examplepath.replace(exampledir, schemadir)
+            if schemapath.find("#") >= 0:
+                schemapath = schemapath[:schemapath.find("#")]
             try:
                 check_example_file(examplepath, schemapath)
             except Exception as e:
@@ -68,6 +83,15 @@ def check_example_dir(exampledir, schemadir):
         traceback.print_exception(exc_type, exc_value, exc_trace)
     if errors:
         raise ValueError("Error validating examples")
+
+
+def load_yaml(path):
+    if not path.startswith("file:///"):
+        raise Exception("Bad ref: %s" % (path,))
+    path = path[len("file://"):]
+    with open(path, "r") as f:
+        return yaml.load(f)
+
 
 if __name__ == '__main__':
     try:

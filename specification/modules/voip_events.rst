@@ -1,3 +1,17 @@
+.. Copyright 2016 OpenMarket Ltd
+..
+.. Licensed under the Apache License, Version 2.0 (the "License");
+.. you may not use this file except in compliance with the License.
+.. You may obtain a copy of the License at
+..
+..     http://www.apache.org/licenses/LICENSE-2.0
+..
+.. Unless required by applicable law or agreed to in writing, software
+.. distributed under the License is distributed on an "AS IS" BASIS,
+.. WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+.. See the License for the specific language governing permissions and
+.. limitations under the License.
+
 Voice over IP
 =============
 
@@ -5,10 +19,11 @@ Voice over IP
 
 This module outlines how two users in a room can set up a Voice over IP (VoIP)
 call to each other. Voice and video calls are built upon the WebRTC 1.0 standard.
-Call signalling is achieved by sending `message events`_ to the room. As a result,
-this means that clients MUST only send call events to rooms with exactly two
-participants as currently the WebRTC standard is based around two-party
-communication.
+Call signalling is achieved by sending `message events`_ to the room.  In this
+version of the spec, only two-party communication is supported (e.g. between two
+peers, or between a peer and a multi-point conferencing unit).
+This means that clients MUST only send call events to rooms with exactly two
+participants.
 
 .. _message events: `sect:events`_
 
@@ -62,19 +77,19 @@ As calls are "placed" to rooms rather than users, the glare resolution algorithm
 outlined below is only considered for calls which are to the same room. The
 algorithm is as follows:
 
- - If an ``m.call.invite`` to a room is received whilst the client is
-   **preparing to send** an ``m.call.invite`` to the same room:
+- If an ``m.call.invite`` to a room is received whilst the client is
+  **preparing to send** an ``m.call.invite`` to the same room:
 
-    * the client should cancel its outgoing call and instead
-      automatically accept the incoming call on behalf of the user.
+  * the client should cancel its outgoing call and instead
+    automatically accept the incoming call on behalf of the user.
 
- - If an ``m.call.invite`` to a room is received **after the client has sent**
-   an ``m.call.invite`` to the same room and is waiting for a response:
+- If an ``m.call.invite`` to a room is received **after the client has sent**
+  an ``m.call.invite`` to the same room and is waiting for a response:
 
-    * the client should perform a lexicographical comparison of the call IDs of
-      the two calls and use the *lesser* of the two calls, aborting the
-      greater. If the incoming call is the lesser, the client should accept
-      this call on behalf of the user.
+  * the client should perform a lexicographical comparison of the call IDs of
+    the two calls and use the *lesser* of the two calls, aborting the
+    greater. If the incoming call is the lesser, the client should accept
+    this call on behalf of the user.
 
 
 The call setup should appear seamless to the user as if they had simply placed
@@ -89,7 +104,7 @@ The homeserver MAY provide a TURN server which clients can use to contact the
 remote party. The following HTTP API endpoints will be used by clients in order
 to get information about the TURN server.
 
-{{voip_http_api}}
+{{voip_cs_http_api}}
 
 
 Security considerations

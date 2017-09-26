@@ -1,3 +1,17 @@
+.. Copyright 2016 OpenMarket Ltd
+..
+.. Licensed under the Apache License, Version 2.0 (the "License");
+.. you may not use this file except in compliance with the License.
+.. You may obtain a copy of the License at
+..
+..     http://www.apache.org/licenses/LICENSE-2.0
+..
+.. Unless required by applicable law or agreed to in writing, software
+.. distributed under the License is distributed on an "AS IS" BASIS,
+.. WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+.. See the License for the specific language governing permissions and
+.. limitations under the License.
+
 Content repository
 ==================
 
@@ -24,7 +38,7 @@ Client behaviour
 
 Clients can upload and download content using the following HTTP APIs.
 
-{{content_repo_http_api}}
+{{content_repo_cs_http_api}}
 
 Thumbnails
 ~~~~~~~~~~
@@ -35,6 +49,10 @@ fit within a given rectangle. "crop" tries to return an image where the
 width and height are close to the requested size and the aspect matches
 the requested size. The client should scale the image if it needs to fit
 within a given rectangle.
+
+In summary:
+ * "scale" maintains the original aspect ratio of the image
+ * "crop" provides an image in the aspect ratio of the sizes given in the request
 
 Server behaviour
 ----------------
@@ -52,23 +70,32 @@ The HTTP GET endpoint does not require any authentication. Knowing the URL of
 the content is sufficient to retrieve the content, even if the entity isn't in
 the room.
 
-Homeservers have additional concerns:
+MXC URIs are vulnerable to directory traversal attacks such as
+``mxc://127.0.0.1/../../../some_service/etc/passwd``. This would cause the target
+homeserver to try to access and return this file. As such, homeservers MUST
+sanitise MXC URIs by allowing only alphanumeric (``A-Za-z0-9``), ``_``
+and  ``-`` characters in the ``server-name`` and ``media-id`` values. This set
+of whitelisted characters allows URL-safe base64 encodings specified in RFC 4648.
+Applying this character whitelist is preferable to blacklisting ``.`` and ``/``
+as there are techniques around blacklisted characters (percent-encoded characters,
+UTF-8 encoded traversals, etc).
 
- - Clients may try to upload very large files. Homeservers should not store files
-   that are too large and should not serve them to clients.
+Homeservers have additional content-specific concerns:
 
- - Clients may try to upload very large images. Homeservers should not attempt to
-   generate thumbnails for images that are too large.
+- Clients may try to upload very large files. Homeservers should not store files
+  that are too large and should not serve them to clients.
 
- - Remote homeservers may host very large files or images. Homeservers should not
-   proxy or thumbnail large files or images from remote homeservers.
+- Clients may try to upload very large images. Homeservers should not attempt to
+  generate thumbnails for images that are too large.
 
- - Clients may try to upload a large number of files. Homeservers should limit the
-   number and total size of media that can be uploaded by clients.
+- Remote homeservers may host very large files or images. Homeservers should not
+  proxy or thumbnail large files or images from remote homeservers.
 
- - Clients may try to access a large number of remote files through a homeserver.
-   Homeservers should restrict the number and size of remote files that it caches.
+- Clients may try to upload a large number of files. Homeservers should limit the
+  number and total size of media that can be uploaded by clients.
 
- - Clients or remote homeservers may try to upload malicious files targeting
-   vulnerabilities in either the homeserver thumbnailing or the client decoders.
+- Clients may try to access a large number of remote files through a homeserver.
+  Homeservers should restrict the number and size of remote files that it caches.
 
+- Clients or remote homeservers may try to upload malicious files targeting
+  vulnerabilities in either the homeserver thumbnailing or the client decoders.

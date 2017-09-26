@@ -6,7 +6,7 @@ categories: guides
 
 # Application services
 
-Application services are distinct modules which which sit alongside a home server providing arbitrary extensible functionality decoupled from the home server implementation. Just like the rest of Matrix, they communicate via HTTP using JSON. Application services function in a very similar way to traditional clients, but they are given much more power than a normal client. They can reserve entire namespaces of room aliases and user IDs for their own purposes. They can silently monitor events in rooms, or any events directed at any user ID. This power allows application services to have extremely useful abilities which overall enhance the end user experience.
+Application services are distinct modules which which sit alongside a homeserver providing arbitrary extensible functionality decoupled from the homeserver implementation. Just like the rest of Matrix, they communicate via HTTP using JSON. Application services function in a very similar way to traditional clients, but they are given much more power than a normal client. They can reserve entire namespaces of room aliases and user IDs for their own purposes. They can silently monitor events in rooms, or any events directed at any user ID. This power allows application services to have extremely useful abilities which overall enhance the end user experience.
 
 |
 
@@ -47,17 +47,17 @@ At present, the IRC application service is in beta, and is being run on #matrix 
 |
 
 # What Application services can do for you
-Application services have enormous potential for creating new and exciting ways to transform and enhance the core Matrix protocol. For example, you could aggregate information from multiple rooms into a summary room, or create throwaway virtual user accounts to proxy messages for a fixed user ID on-the-fly. As you may expect, all of this power assumes a high degree of trust between application services and home servers. Only home server admins can allow an application service to link up with their home server, and the application service is in no way federated to other home servers. You can think of application services as additional logic on the home server itself, without messing around with the book-keeping that home servers have to do. This makes adding useful functionality very easy.
+Application services have enormous potential for creating new and exciting ways to transform and enhance the core Matrix protocol. For example, you could aggregate information from multiple rooms into a summary room, or create throwaway virtual user accounts to proxy messages for a fixed user ID on-the-fly. As you may expect, all of this power assumes a high degree of trust between application services and homeservers. Only homeserver admins can allow an application service to link up with their homeserver, and the application service is in no way federated to other homeservers. You can think of application services as additional logic on the homeserver itself, without messing around with the book-keeping that homeservers have to do. This makes adding useful functionality very easy.
 
 |
 
 ### Example
 
-The application service (AS) API itself uses webhooks to communicate from the home server to the AS:
+The application service (AS) API itself uses webhooks to communicate from the homeserver to the AS:
 
-- Room Alias Query API : The home server hits a URL on your application server to see if a room alias exists.
-- User Query API : The home server hits a URL on your application server to see if a user ID exists.
-- Push API : The home server hits a URL on your application server to notify you of new events for your users and rooms.
+- Room Alias Query API : The homeserver hits a URL on your application server to see if a room alias exists.
+- User Query API : The homeserver hits a URL on your application server to see if a user ID exists.
+- Push API : The homeserver hits a URL on your application server to notify you of new events for your users and rooms.
 
 A very basic application service may want to log all messages in rooms which have an alias starting with "#logged_" (side note: logging won't work if these rooms are using end-to-end encryption).
 
@@ -85,7 +85,7 @@ Set your new application service running on port 5000 with:
 
         python app_service.py
 
-The home server needs to know that the application service exists before it will send requests to it. This is done via a registration YAML file which is specified in Synapse's main config file e.g. <code>homeserver.yaml</code>. The server admin needs to add the application service registration configuration file as an entry to this file.
+The homeserver needs to know that the application service exists before it will send requests to it. This is done via a registration YAML file which is specified in Synapse's main config file e.g. <code>homeserver.yaml</code>. The server admin needs to add the application service registration configuration file as an entry to this file.
 
         # homeserver.yaml
         app_service_config_files:
@@ -95,6 +95,9 @@ NB: Note the "-" at the start; this indicates a list element. The registration f
 
         # registration.yaml
         
+	# An ID which is unique across all application services on your homeserver. This should never be changed once set.
+	id: "something-good"
+
         # this is the base URL of the application service
         url: "http://localhost:5000"
         
@@ -115,7 +118,7 @@ NB: Note the "-" at the start; this indicates a list element. The registration f
             - exclusive: false
               regex: "#logged_.*"
 
-**You will need to restart the home server after editing the config file before it will take effect.**
+**You will need to restart the homeserver after editing the config file before it will take effect.**
 
 |
 
@@ -138,6 +141,6 @@ This makes the application service lazily create a room with the requested alias
 
 |
 
-Application services are powerful components which extend the functionality of home servers, but they are limited. They can only ever function in a "passive" way. For example, you cannot implement an application service which censors swear words in rooms, because there is no way to prevent the event from being sent. Aside from the fact that censoring will not work when using end-to-end encryption, all federated home servers would also need to reject the event in order to stop developing an inconsistent event graph. To "actively" monitor events, another component called a "Policy Server" is required, which is beyond the scope of this post.  Also, Application Services can result in a performance bottleneck, as all events on the homeserver must be ordered and sent to the registered application services.  If you are bridging huge amounts of traffic, you may be better off having your bridge directly talk the Server-Server federation API rather than the simpler Application Service API.
+Application services are powerful components which extend the functionality of homeservers, but they are limited. They can only ever function in a "passive" way. For example, you cannot implement an application service which censors swear words in rooms, because there is no way to prevent the event from being sent. Aside from the fact that censoring will not work when using end-to-end encryption, all federated homeservers would also need to reject the event in order to stop developing an inconsistent event graph. To "actively" monitor events, another component called a "Policy Server" is required, which is beyond the scope of this post.  Also, Application Services can result in a performance bottleneck, as all events on the homeserver must be ordered and sent to the registered application services.  If you are bridging huge amounts of traffic, you may be better off having your bridge directly talk the Server-Server federation API rather than the simpler Application Service API.
 
 I hope this demonstrates how easy it is to create an application service, along with a few ideas of the kinds of things you can do with them. Obvious uses include build protocol bridges, search engines, invisible bots, etc. For more information on the AS HTTP API, check out the new <a href="http://matrix.org/docs/spec/#application-service-api">Application Service API</a> section in the spec, or the raw drafts and spec in <a href="https://github.com/matrix-org/matrix-doc/" target="_blank">https://github.com/matrix-org/matrix-doc/</a>.

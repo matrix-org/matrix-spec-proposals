@@ -1,3 +1,17 @@
+.. Copyright 2016 OpenMarket Ltd
+..
+.. Licensed under the Apache License, Version 2.0 (the "License");
+.. you may not use this file except in compliance with the License.
+.. You may obtain a copy of the License at
+..
+..     http://www.apache.org/licenses/LICENSE-2.0
+..
+.. Unless required by applicable law or agreed to in writing, software
+.. distributed under the License is distributed on an "AS IS" BASIS,
+.. WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+.. See the License for the specific language governing permissions and
+.. limitations under the License.
+
 Push Notifications
 ==================
 
@@ -11,7 +25,7 @@ Push Notifications
                                    |                    |  |                   |
            +-------------------+   | +----------------+ |  | +---------------+ |
            |                   |   | |                | |  | |               | |
-           | Matrix Home Server+----->  Push Gateway  +------> Push Provider | |
+           | Matrix homeserver +----->  Push Gateway  +------> Push Provider | |
            |                   |   | |                | |  | |               | |
            +-^-----------------+   | +----------------+ |  | +----+----------+ |
              |                     |                    |  |      |            |
@@ -37,19 +51,19 @@ The above diagram shows the flow of push notifications being sent to a handset
 where push notifications are submitted via the handset vendor, such as Apple's
 APNS or Google's GCM. This happens as follows:
 
- 1. The client app signs in to a homeserver.
- 2. The client app registers with its vendor's Push Provider and
-    obtains a routing token of some kind.
- 3. The mobile app uses the Client/Server API to add a 'pusher', providing the
-    URL of a specific Push Gateway which is configured for that
-    application. It also provides the routing token it has acquired from the
-    Push Provider.
- 4. The homeserver starts sending HTTP requests to the Push Gateway using the
-    supplied URL. The Push Gateway relays this notification to
-    the Push Provider, passing the routing token along with any
-    necessary private credentials the provider requires to send push
-    notifications.
- 5. The Push Provider sends the notification to the device.
+1. The client app signs in to a homeserver.
+2. The client app registers with its vendor's Push Provider and
+   obtains a routing token of some kind.
+3. The mobile app uses the Client/Server API to add a 'pusher', providing the
+   URL of a specific Push Gateway which is configured for that
+   application. It also provides the routing token it has acquired from the
+   Push Provider.
+4. The homeserver starts sending HTTP requests to the Push Gateway using the
+   supplied URL. The Push Gateway relays this notification to
+   the Push Provider, passing the routing token along with any
+   necessary private credentials the provider requires to send push
+   notifications.
+5. The Push Provider sends the notification to the device.
 
 Definitions for terms used in this section are below:
 
@@ -89,9 +103,18 @@ Client behaviour
 Clients MUST configure a Pusher before they will receive push notifications.
 There is a single API endpoint for this, as described below.
 
-{{pusher_http_api}}
+{{pusher_cs_http_api}}
 
 .. _pushers: `def:pushers`_
+
+Listing Notifications
+~~~~~~~~~~~~~~~~~~~~~
+
+A client can retrieve a list of events that it has been notified about. This
+may be useful so that users can see a summary of what important messages they
+have received.
+
+{{notifications_cs_http_api}}
 
 Push Rules
 ~~~~~~~~~~
@@ -122,21 +145,14 @@ Underride rules ``underride``
   These are identical to ``override`` rules, but have a lower priority than
   ``content``, ``room`` and ``sender`` rules.
 
-Push rules may be either global or device-specific. Device specific rules only
-affect delivery of notifications via pushers with a matching ``profile_tag``.
-All device-specific rules have a higher priority than global rules. This means
-that the full list of rule kinds, in descending priority order, is as follows:
+This means that the full list of rule kinds, in descending priority order, is
+as follows:
 
- * Device-specific Override
- * Device-specific Content
- * Device-specific Room
- * Device-specific Sender
- * Device-specific Underride
- * Global Override
- * Global Content
- * Global Room
- * Global Sender
- * Global Underride
+* Global Override
+* Global Content
+* Global Room
+* Global Sender
+* Global Underride
 
 Rules with the same ``kind`` can specify an ordering priority. This determines
 which rule is selected in the event of multiple matches. For example, a rule
@@ -182,14 +198,16 @@ tweaks are defined:
 
 ``sound``
   A string representing the sound to be played when this notification arrives.
-  A value of ``default`` means to play a default sound.
+  A value of ``default`` means to play a default sound. A device may choose to
+  alert the user by some other means if appropriate, eg. vibration.
 ``highlight``
   A boolean representing whether or not this message should be highlighted in
   the UI. This will normally take the form of presenting the message in a
   different colour and/or style. The UI might also be adjusted to draw
-  particular attention to the room in which the event occurred. The ``value``
-  may be omitted from the highlight tweak, in which case it should default to
-  ``true``.
+  particular attention to the room in which the event occurred. If a
+  ``highlight`` tweak is given with no value, its value is defined to be
+  ``true``. If no highlight tweak is given at all then the value of
+  ``highlight`` is defined to be false.
 
 Tweaks are passed transparently through the homeserver so client applications
 and Push Gateways may agree on additional tweaks. For example, a tweak may be
@@ -202,32 +220,137 @@ than "user-defined rules". The ``rule_id`` for all server-default rules MUST
 start with a dot (".") to identify them as "server-default". The following
 server-default rules are specified:
 
-``.m.rule.contains_user_name``
-  Matches any message whose content is unencrypted and contains the local part
-  of the user's Matrix ID, separated by word boundaries.
 
-  Definition (as a ``content`` rule)::
+Default Override Rules
+^^^^^^^^^^^^^^^^^^^^^^
+
+``.m.rule.master``
+``````````````````
+Matches all events, this can be enabled to turn off all push notifications
+other than those generated by override rules set by the user. By default this
+rule is disabled.
+
+Definition
+
+.. code:: json
 
     {
-        "rule_id": ".m.rule.contains_user_name"
-        "pattern": "[the local part of the user's Matrix ID]",
+        "rule_id": ".m.rule.master",
+        "default": true,
+        "enabled": false,
+        "conditions": [],
         "actions": [
-            "notify",
+            "dont_notify"
+        ]
+    }
+
+``.m.rule.suppress_notices``
+````````````````````````````
+Matches messages with a ``msgtype`` of ``notice``. This should be an
+``override`` rule so that it takes priority over ``content`` / ``sender`` /
+``room`` rules.
+
+Definition:
+
+.. code:: json
+
+    {
+        "rule_id": ".m.rule.suppress_notices",
+        "default": true,
+        "enabled": true,
+        "conditions": [
+            {
+                "kind": "event_match",
+                "key": "content.msgtype",
+                "pattern": "m.notice",
+            }
+        ],
+        "actions": [
+            "dont_notify",
+        ]
+    }
+
+``.m.rule.invite_for_me``
+`````````````````````````
+Matches any invites to a new room for this user.
+
+Definition:
+
+.. code:: json
+
+    {
+        "rule_id": ".m.rule.invite_for_me",
+        "default": true,
+        "enabled": true,
+        "conditions": [
+            {
+                "key": "type",
+                "kind": "event_match",
+                "pattern": "m.room.member"
+            },
+            {
+                "key": "content.membership",
+                "kind": "event_match",
+                "pattern": "invite"
+            },
+            {
+                "key": "state_key",
+                "kind": "event_match",
+                "pattern": "[the user's Matrix ID]"
+            }
+        ],
+        "actions": [
+           "notify",
             {
                 "set_tweak": "sound",
                 "value": "default"
+            },
+            {
+                "set_tweak": "highlight",
+                "value": false
             }
-        ],
+        ]
     }
 
-``.m.rule.contains_display_name``
-  Matches any message whose content is unencrypted and contains the user's
-  current display name in the room in which it was sent.
+``.m.rule.member_event``
+````````````````````````
 
-  Definition (this rule can only be an ``override`` or ``underride`` rule)::
+Matches any ``m.room.member_event``.
+
+Definition:
+
+.. code:: json
 
     {
-        "rule_id": ".m.rule.contains_display_name"
+        "rule_id": ".m.rule.member_event",
+        "default": true,
+        "enabled": true,
+        "conditions": [
+            {
+                "key": "type",
+                "kind": "event_match",
+                "pattern": "m.room.member"
+            }
+        ],
+        "actions": [
+            "dont_notify"
+        ]
+    }
+
+
+``.m.rule.contains_display_name``
+`````````````````````````````````
+Matches any message whose content is unencrypted and contains the user's
+current display name in the room in which it was sent.
+
+Definition:
+
+.. code:: json
+
+    {
+        "rule_id": ".m.rule.contains_display_name",
+        "default": true,
+        "enabled": true,
         "conditions": [
             {
                 "kind": "contains_display_name"
@@ -238,21 +361,91 @@ server-default rules are specified:
             {
                 "set_tweak": "sound",
                 "value": "default"
+            },
+            {
+                "set_tweak": "highlight"
             }
-        ],
+        ]
     }
 
-``.m.rule.room_one_to_one``
-  Matches any message sent in a room with exactly two members.
 
-  Definition (this rule can only be an ``override`` or ``underride`` rule)::
+Default Content Rules
+^^^^^^^^^^^^^^^^^^^^^
+
+``.m.rule.contains_user_name``
+``````````````````````````````
+Matches any message whose content is unencrypted and contains the local part
+of the user's Matrix ID, separated by word boundaries.
+
+Definition (as a ``content`` rule):
+
+.. code:: json
 
     {
-        "rule_id": ".m.rule.room_two_members"
+        "rule_id": ".m.rule.contains_user_name",
+        "default": true,
+        "enabled": true,
+        "pattern": "[the local part of the user's Matrix ID]",
+        "actions": [
+            "notify",
+            {
+                "set_tweak": "sound",
+                "value": "default"
+            }
+        ]
+    }
+
+Default Underride Rules
+^^^^^^^^^^^^^^^^^^^^^^^
+
+``.m.rule.call``
+````````````````
+Matches any incoming VOIP call.
+
+Definition:
+
+.. code:: json
+
+    {
+        "rule_id": ".m.rule.call",
+        "default": true,
+        "enabled": true,
         "conditions": [
             {
-                "is": "2",
-                "kind": "room_member_count"
+                "key": "type",
+                "kind": "event_match",
+                "pattern": "m.call.invite"
+            }
+        ],
+        "actions": [
+            "notify",
+            {
+                "set_tweak": "sound",
+                "value": "ring"
+            },
+            {
+                "set_tweak": "highlight",
+                "value": false
+            }
+        ]
+    },
+
+``.m.rule.room_one_to_one``
+```````````````````````````
+Matches any message sent in a room with exactly two members.
+
+Definition:
+
+.. code:: json
+
+    {
+        "rule_id": ".m.rule.room_one_to_one",
+        "default": true,
+        "enabled": true,
+        "conditions": [
+            {
+                "kind": "room_member_count",
+                "is": "2"
             }
         ],
         "actions": [
@@ -260,46 +453,41 @@ server-default rules are specified:
             {
                 "set_tweak": "sound",
                 "value": "default"
-            }
-        ],
-    }
-
-``.m.rule.suppress_notices``
-  Matches messages with a ``msgtype`` of ``notice``. This should be an
-  ``override`` rule so that it takes priority over ``content`` / ``sender`` /
-  ``room`` rules.
-
-  Definition::
-
-    {
-        'rule_id': '.m.rule.suppress_notices',
-        'conditions': [
+            },
             {
-                'kind': 'event_match',
-                'key': 'content.msgtype',
-                'pattern': 'm.notice',
+                "set_tweak": "highlight",
+                "value": false
             }
-        ],
-        'actions': [
-            'dont-notify',
         ]
     }
-  
-``.m.rule.fallback``
-  Matches any message. Used to define the behaviour of messages that match no
-  other rules. If homeservers define this it should be the lowest priority
-  ``underride`` rule.
 
-  Definition::
+``.m.rule.message``
+```````````````````
+Matches all chat messages.
 
-    {
-        "rule_id": ".m.rule.fallback"
-        "conditions": [],
-        "actions": [
-            "notify"
+Definition:
+
+.. code:: json
+
+   {
+        "rule_id": ".m.rule.message",
+        "default": true,
+        "enabled": true,
+        "conditions": [
+            {
+                "kind": "event_match",
+                "key": "type",
+                "pattern": "m.room.message"
+            }
         ],
-    }
-
+        "actions": [
+            "notify",
+            {
+                "set_tweak": "highlight",
+                "value": false
+            }
+        ]
+   }
 
 
 Conditions
@@ -315,16 +503,11 @@ rule determines its behaviour. The following conditions are defined:
 
 ``event_match``
   This is a glob pattern match on a field of the event. Parameters:
-   * ``key``: The dot-separated field of the event to match, e.g. ``content.body``
-   * ``pattern``: The glob-style pattern to match against. Patterns with no
-     special glob characters should be treated as having asterisks
-     prepended and appended when testing the condition.
 
-``profile_tag``
-  Matches the ``profile_tag`` of the device that the notification would be
-  delivered to. Parameters:
-
-   * ``profile_tag``: The profile_tag to match with.
+  * ``key``: The dot-separated field of the event to match, e.g. ``content.body``
+  * ``pattern``: The glob-style pattern to match against. Patterns with no
+    special glob characters should be treated as having asterisks
+    prepended and appended when testing the condition.
 
 ``contains_display_name``
   This matches unencrypted messages where ``content.body`` contains the owner's
@@ -334,10 +517,11 @@ rule determines its behaviour. The following conditions are defined:
 
 ``room_member_count``
   This matches the current number of members in the room. Parameters:
-   * ``is``: A decimal integer optionally prefixed by one of, ``==``, ``<``,
-     ``>``, ``>=`` or ``<=``. A prefix of ``<`` matches rooms where the member
-     count is strictly less than the given number and so forth. If no prefix is
-     present, this parameter defaults to ``==``.
+
+  * ``is``: A decimal integer optionally prefixed by one of, ``==``, ``<``,
+    ``>``, ``>=`` or ``<=``. A prefix of ``<`` matches rooms where the member
+    count is strictly less than the given number and so forth. If no prefix is
+    present, this parameter defaults to ``==``.
 
 Push Rules: API
 ~~~~~~~~~~~~~~~
@@ -345,7 +529,15 @@ Push Rules: API
 Clients can retrieve, add, modify and remove push rules globally or per-device
 using the APIs below.
 
-{{pushrules_http_api}}
+{{pushrules_cs_http_api}}
+
+
+Push Rules: Events
+~~~~~~~~~~~~~~~~~~
+
+When a user changes their push rules a ``m.push_rules`` event is sent to all
+clients in the ``account_data`` section of their next ``/sync`` request. The
+content of the event is the current push rules for the user.
 
 Examples
 ++++++++
@@ -353,14 +545,14 @@ Examples
 To create a rule that suppresses notifications for the room with ID
 ``!dj234r78wl45Gh4D:matrix.org``::
 
-  curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/room/%21dj234r78wl45Gh4D%3Amatrix.org?access_token=123456" -d \
+  curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/%CLIENT_MAJOR_VERSION%/pushrules/global/room/%21dj234r78wl45Gh4D%3Amatrix.org?access_token=123456" -d \
   '{
      "actions" : ["dont_notify"]
    }'
 
 To suppress notifications for the user ``@spambot:matrix.org``::
 
-  curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/sender/%40spambot%3Amatrix.org?access_token=123456" -d \
+  curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/%CLIENT_MAJOR_VERSION%/pushrules/global/sender/%40spambot%3Amatrix.org?access_token=123456" -d \
   '{
      "actions" : ["dont_notify"]
    }'
@@ -368,7 +560,7 @@ To suppress notifications for the user ``@spambot:matrix.org``::
 To always notify for messages that contain the work 'cake' and set a specific
 sound (with a rule_id of ``SSByZWFsbHkgbGlrZSBjYWtl``)::
 
-  curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/content/SSByZWFsbHkgbGlrZSBjYWtl?access_token=123456" -d \
+  curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/%CLIENT_MAJOR_VERSION%/pushrules/global/content/SSByZWFsbHkgbGlrZSBjYWtl?access_token=123456" -d \
   '{
      "pattern": "cake",
      "actions" : ["notify", {"set_sound":"cakealarm.wav"}]
@@ -377,7 +569,7 @@ sound (with a rule_id of ``SSByZWFsbHkgbGlrZSBjYWtl``)::
 To add a rule suppressing notifications for messages starting with 'cake' but
 ending with 'lie', superseding the previous rule::
 
-  curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/content/U3BvbmdlIGNha2UgaXMgYmVzdA?access_token=123456&before=SSByZWFsbHkgbGlrZSBjYWtl" -d \
+  curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/%CLIENT_MAJOR_VERSION%/pushrules/global/content/U3BvbmdlIGNha2UgaXMgYmVzdA?access_token=123456&before=SSByZWFsbHkgbGlrZSBjYWtl" -d \
   '{
      "pattern": "cake*lie",
      "actions" : ["notify"]
@@ -387,7 +579,7 @@ To add a custom sound for notifications messages containing the word 'beer' in
 any rooms with 10 members or fewer (with greater importance than the room,
 sender and content rules)::
 
-  curl -X PUT -H "Content-Type: application/json" "http://localhost:8008/_matrix/client/api/v1/pushrules/global/override/U2VlIHlvdSBpbiBUaGUgRHVrZQ?access_token=123456" -d \
+  curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/%CLIENT_MAJOR_VERSION%/pushrules/global/override/U2VlIHlvdSBpbiBUaGUgRHVrZQ?access_token=123456" -d \
   '{
      "conditions": [
        {"kind": "event_match", "key": "content.body", "pattern": "beer" },
@@ -402,12 +594,6 @@ sender and content rules)::
 Server behaviour
 ----------------
 
-This describes the format used by "HTTP" pushers to send notifications of
-events to Push Gateways. If the endpoint returns an HTTP error code, the
-homeserver SHOULD retry for a reasonable amount of time using exponential-backoff.
-
-{{push_notifier_http_api}}
-
 Push Gateway behaviour
 ----------------------
 
@@ -418,12 +604,12 @@ client app and its' push gateway to agree on. As APNS requires that the sender
 has a private key owned by the app developer, each app must have its own push
 gateway. It is recommended that:
 
- * The APNS token be base64 encoded and used as the pushkey.
- * A different app_id be used for apps on the production and sandbox
-   APS environments.
- * APNS push gateways do not attempt to wait for errors from the APNS
-   gateway before returning and instead to store failures and return
-   'rejected' responses next time that pushkey is used.
+* The APNS token be base64 encoded and used as the pushkey.
+* A different app_id be used for apps on the production and sandbox
+  APS environments.
+* APNS push gateways do not attempt to wait for errors from the APNS
+  gateway before returning and instead to store failures and return
+  'rejected' responses next time that pushkey is used.
 
 Security considerations
 -----------------------

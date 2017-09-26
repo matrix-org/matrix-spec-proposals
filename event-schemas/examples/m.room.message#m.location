@@ -1,0 +1,22 @@
+{
+  "age": 146,
+  "content": {
+    "body": "Big Ben, London, UK",
+    "geo_uri": "geo:51.5008,0.1247",
+    "info": {
+      "thumbnail_url": "mxc://localhost/FHyPlCeYUSFFxlgbQYZmoEoe",
+      "thumbnail_info": {
+        "mimetype": "image/jpeg",
+        "size": 46144,
+        "w": 300,
+        "h": 300
+      }
+    },
+    "msgtype": "m.location"
+  },
+  "event_id": "$143273582443PhrSn:localhost",
+  "origin_server_ts": 1432735824653,
+  "room_id": "!jEsUZKDJdhlrceRyVU:localhost",
+  "type": "m.room.message",
+  "sender": "@example:localhost"
+}

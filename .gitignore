@@ -1,8 +1,10 @@
-scripts/gen
-scripts/continuserv/continuserv
-scripts/speculator/speculator
-templating/out
+/api/node_modules
+/assets
+/assets.tar.gz
+/scripts/gen
+/scripts/continuserv/continuserv
+/scripts/speculator/speculator
+/scripts/swagger
+/templating/out
 *.pyc
-supporting-docs/_site
-supporting-docs/.sass-cache
-api/node_modules
+*.swp

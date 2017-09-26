@@ -1,3 +1,17 @@
+.. Copyright 2016 OpenMarket Ltd
+..
+.. Licensed under the Apache License, Version 2.0 (the "License");
+.. you may not use this file except in compliance with the License.
+.. You may obtain a copy of the License at
+..
+..     http://www.apache.org/licenses/LICENSE-2.0
+..
+.. Unless required by applicable law or agreed to in writing, software
+.. distributed under the License is distributed on an "AS IS" BASIS,
+.. WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+.. See the License for the specific language governing permissions and
+.. limitations under the License.
+
 Receipts
 ========
 
@@ -24,8 +38,8 @@ single ``event_id``.
 Client behaviour
 ----------------
 
-In v1 ``/initialSync``, receipts are listed in a separate top level ``receipts``
-key. In v2 ``/sync``, receipts are contained in the ``ephemeral`` block for a
+In ``/initialSync``, receipts are listed in a separate top level ``receipts``
+key. In ``/sync``, receipts are contained in the ``ephemeral`` block for a
 room. New receipts that come down the event streams are deltas which update
 existing mappings. Clients should replace older receipt acknowledgements based
 on ``user_id`` and ``receipt_type`` pairs. For example::
@@ -52,7 +66,7 @@ dismissing a notification in order for the event to count as "read".
 A client can update the markers for its user by interacting with the following
 HTTP APIs.
 
-{{v2_receipts_http_api}}
+{{receipts_cs_http_api}}
 
 Server behaviour
 ----------------

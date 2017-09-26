@@ -1,3 +1,16 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Contains all the sections for the spec."""
 from batesian import AccessKeyStore
 from batesian.sections import Sections
@@ -15,13 +28,9 @@ class MatrixSections(Sections):
     def render_git_rev(self):
         return self.units.get("git_version")["revision"]
 
-    def render_spec_version(self):
-        spec_meta = self.units.get("spec_meta")
-        return spec_meta["version"]
-
-    def render_spec_changelog(self):
-        spec_meta = self.units.get("spec_meta")
-        return spec_meta["changelog"]
+    def render_client_server_changelog(self):
+        changelogs = self.units.get("changelogs")
+        return changelogs["client_server"]
 
     def _render_events(self, filterFn, sortFn):
         template = self.env.get_template("events.tmpl")
@@ -35,13 +44,13 @@ class MatrixSections(Sections):
             if not filterFn(event_name):
                 continue
             sections.append(template.render(
-                example=examples[event_name], 
+                examples=examples[event_name],
                 event=schemas[event_name],
                 title_kind=subtitle_title_char
             ))
         return "\n\n".join(sections)
 
-    def _render_http_api_group(self, group, sortFnOrPathList=None):
+    def _render_http_api_group(self, group, sortPathList=None):
         template = self.env.get_template("http-api.tmpl")
         http_api = self.units.get("swagger_apis")[group]["__meta"]
         subtitle_title_char = self.units.get("spec_targets")[
@@ -49,11 +58,10 @@ class MatrixSections(Sections):
         ]["subtitle"]
         sections = []
         endpoints = []
-        if sortFnOrPathList:
-            if isinstance(sortFnOrPathList, list):
+        if sortPathList:
                 # list of substrings to sort by
                 sorted_endpoints = []
-                for path_substr in sortFnOrPathList:
+                for path_substr in sortPathList:
                     for e in http_api["endpoints"]:
                         if path_substr in e["path"]:
                             sorted_endpoints.append(e)  # could have multiple
@@ -62,12 +70,9 @@ class MatrixSections(Sections):
                     e for e in http_api["endpoints"] if e not in sorted_endpoints
                 ]
                 endpoints = sorted_endpoints + rest
-            else:
-                # guess it's a func, call it.
-                endpoints = sortFnOrPathList(http_api["endpoints"])
         else:
             # sort alphabetically based on path
-            endpoints = sorted(http_api["endpoints"], key=lambda k: k["path"])
+            endpoints = http_api["endpoints"]
 
         for endpoint in endpoints:
             sections.append(template.render(
@@ -85,9 +90,9 @@ class MatrixSections(Sections):
         renders = {}
         for group in swagger_groups:
             sortFnOrPathList = None
-            if group == "presence":
+            if group == "presence_cs":
                 sortFnOrPathList = ["status"]
-            elif group == "profile":
+            elif group == "profile_cs":
                 sortFnOrPathList=["displayname", "avatar_url"]
             renders[group + "_http_api"] = self._render_http_api_group(
                 group, sortFnOrPathList
@@ -110,7 +115,7 @@ class MatrixSections(Sections):
     def render_room_events(self):
         def filterFn(eventType):
             return (
-                eventType.startswith("m.room") and 
+                eventType.startswith("m.room") and
                 not eventType.startswith("m.room.message#m.")
             )
         return self._render_events(filterFn, sorted)
@@ -136,7 +141,7 @@ class MatrixSections(Sections):
             if not event_name.startswith("m.room.message#m."):
                 continue
             sections.append(template.render(
-                example=examples[event_name], 
+                example=examples[event_name][0],
                 event=schemas[event_name],
                 title_kind=subtitle_title_char
             ))
@@ -180,3 +185,7 @@ class MatrixSections(Sections):
     def render_common_state_event_fields(self):
         return self._render_ce_type("state_event")
 
+    def render_apis(self):
+        template = self.env.get_template("apis.tmpl")
+        apis = self.units.get("apis")
+        return template.render(apis=apis)

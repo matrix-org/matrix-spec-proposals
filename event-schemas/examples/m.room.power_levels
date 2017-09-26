@@ -1,0 +1,25 @@
+{
+  "age": 242352,
+  "content": {
+    "ban": 50,
+    "events": {
+      "m.room.name": 100,
+      "m.room.power_levels": 100
+    },
+    "events_default": 0,
+    "invite": 50,
+    "kick": 50,
+    "redact": 50,
+    "state_default": 50,
+    "users": {
+      "@example:localhost": 100
+    },
+    "users_default": 0
+  },
+  "state_key": "",
+  "origin_server_ts": 1431961217939,
+  "event_id": "$WLGTSEFSEF:localhost",
+  "type": "m.room.power_levels",
+  "room_id": "!Cuyf34gef24t:localhost",
+  "sender": "@example:localhost"
+}

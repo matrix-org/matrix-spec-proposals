@@ -1,5 +1,20 @@
 #!/usr/bin/env python
-""" 
+#
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""
 Batesian: A simple templating system using Jinja.
 
 Architecture
@@ -42,7 +57,9 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined, Template, met
 from argparse import ArgumentParser, FileType
 import importlib
 import json
+import logging
 import os
+import re
 import sys
 from textwrap import TextWrapper
 
@@ -55,7 +72,7 @@ def check_unaccessed(name, store):
         log("Found %s unused %s keys." % (len(unaccessed_keys), name))
         log(unaccessed_keys)
 
-def main(input_module, file_stream=None, out_dir=None, verbose=False):
+def main(input_module, files=None, out_dir=None, verbose=False, substitutions={}):
     if out_dir and not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
@@ -84,7 +101,35 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
         input_lines = input.split('\n\n')
         wrapper = TextWrapper(initial_indent=initial_indent, width=wrap)
         output_lines = [wrapper.fill(line) for line in input_lines]
+
+        for i in range(len(output_lines)):
+            line = output_lines[i]
+            in_bullet = line.startswith("- ")
+            if in_bullet:
+                output_lines[i] = line.replace("\n", "\n  " + initial_indent)
+
         return '\n\n'.join(output_lines)
+
+    def fieldwidths(input, keys, defaults=[], default_width=15):
+        """
+        A template filter to help in the generation of tables.
+
+        Given a list of rows, returns a list giving the maximum length of the
+        values in each column.
+
+        :param list[dict[str, str]] input: a list of rows. Each row should be a
+           dict with the keys given in ``keys``.
+        :param list[str] keys: the keys corresponding to the table columns
+        :param list[int] defaults: for each column, the default column width.
+        :param int default_width: if ``defaults`` is shorter than ``keys``, this
+           will be used as a fallback
+        """
+        def colwidth(key, default):
+            return reduce(max, (len(row[key]) for row in input),
+                          default if default is not None else default_width)
+
+        results = map(colwidth, keys, defaults)
+        return results
 
     # make Jinja aware of the templates and filters
     env = Environment(
@@ -95,19 +140,23 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
     env.filters["indent"] = indent
     env.filters["indent_block"] = indent_block
     env.filters["wrap"] = wrap
+    env.filters["fieldwidths"] = fieldwidths
 
     # load up and parse the lowest single units possible: we don't know or care
     # which spec section will use it, we just need it there in memory for when
     # they want it.
     units = AccessKeyStore(
-        existing_data=in_mod.exports["units"](debug=verbose).get_units()
+        existing_data=in_mod.exports["units"](
+            debug=verbose,
+            substitutions=substitutions,
+        ).get_units()
     )
 
     # use the units to create RST sections
     sections = in_mod.exports["sections"](env, units, debug=verbose).get_sections()
 
     # print out valid section keys if no file supplied
-    if not file_stream:
+    if not files:
         print "\nValid template variables:"
         for key in sections.keys():
             sec_text = "" if (len(sections[key]) > 75) else (
@@ -121,8 +170,19 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
         return
 
     # check the input files and substitute in sections where required
-    log("Parsing input template: %s" % file_stream.name)
-    temp_str = file_stream.read().decode("utf-8")
+    for input_filename in files:
+        output_filename = os.path.join(out_dir,
+                                       os.path.basename(input_filename))
+        process_file(env, sections, input_filename, output_filename)
+
+    check_unaccessed("units", units)
+
+def process_file(env, sections, filename, output_filename):
+    log("Parsing input template: %s" % filename)
+
+    with open(filename, "r") as file_stream:
+        temp_str = file_stream.read().decode("utf-8")
+
     # do sanity checking on the template to make sure they aren't reffing things
     # which will never be replaced with a section.
     ast = env.parse(temp_str)
@@ -135,14 +195,18 @@ def main(input_module, file_stream=None, out_dir=None, verbose=False):
         )
     # process the template
     temp = Template(temp_str)
-    log("Creating output for: %s" % file_stream.name)
     output = create_from_template(temp, sections)
-    with open(
-            os.path.join(out_dir, os.path.basename(file_stream.name)), "w"
-            ) as f:
+
+    # Do these substitutions outside of the ordinary templating system because
+    # we want them to apply to things like the underlying swagger used to
+    # generate the templates, not just the top-level sections.
+    for old, new in substitutions.items():
+        output = output.replace(old, new)
+
+    with open(output_filename, "w") as f:
         f.write(output.encode("utf-8"))
-    log("Output file for: %s" % file_stream.name)
-    check_unaccessed("units", units)
+    log("Output file for: %s" % output_filename)
+
 
 def log(line):
     print "batesian: %s" % line
@@ -154,12 +218,12 @@ if __name__ == '__main__':
         "list of possible template variables, add --show-template-vars."
     )
     parser.add_argument(
-        "file", nargs="?", type=FileType('r'),
-        help="The input file to process. This will be passed through Jinja "+
+        "files", nargs="+",
+        help="The input files to process. These will be passed through Jinja "+
         "then output under the same name to the output directory."
     )
     parser.add_argument(
-        "--input", "-i", 
+        "--input", "-i",
         help="The python module (not file) which contains the sections/units "+
         "classes. This module must have an 'exports' dict which has "+
         "{ 'units': UnitClass, 'sections': SectionClass, "+
@@ -179,7 +243,17 @@ if __name__ == '__main__':
         "--verbose", "-v", action="store_true",
         help="Turn on verbose mode."
     )
+    parser.add_argument(
+        "--substitution", action="append",
+        help="Substitutions to apply to the generated output, of form NEEDLE=REPLACEMENT.",
+        default=[],
+    )
     args = parser.parse_args()
+
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
 
     if not args.input:
         raise Exception("Missing [i]nput python module.")
@@ -188,12 +262,14 @@ if __name__ == '__main__':
         main(args.input, verbose=args.verbose)
         sys.exit(0)
 
-    if not args.file:
-        log("No file supplied.")
-        parser.print_help()
-        sys.exit(1)
+    substitutions = {}
+    for substitution in args.substitution:
+        parts = substitution.split("=", 1)
+        if len(parts) != 2:
+            raise Exception("Invalid substitution")
+        substitutions[parts[0]] = parts[1]
 
     main(
-        args.input, file_stream=args.file, out_dir=args.out_directory,
-        verbose=args.verbose
+        args.input, files=args.files, out_dir=args.out_directory,
+        substitutions=substitutions, verbose=args.verbose
     )

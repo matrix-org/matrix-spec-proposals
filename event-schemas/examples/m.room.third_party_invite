@@ -1,0 +1,18 @@
+{
+  "age": 242352,
+  "content": {
+    "display_name": "Alice Margatroid",
+    "key_validity_url": "https://magic.forest/verifykey",
+    "public_key": "abc123",
+    "public_keys": [{
+      "public_key": "def456",
+      "key_validity_url": "https://magic.forest/verifykey"
+    }]
+  },
+  "state_key": "pc98",
+  "origin_server_ts": 1431961217939,
+  "event_id": "$WLGTSEFSEF:localhost",
+  "type": "m.room.third_party_invite",
+  "room_id": "!Cuyf34gef24t:localhost",
+  "sender": "@example:localhost"
+}
