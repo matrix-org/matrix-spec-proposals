@@ -45,8 +45,7 @@ paths:
           description: A list of events
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "events": [
                   {
                     "age": 32,
@@ -87,8 +86,8 @@ paths:
         200:
           description: The transaction was processed successfully.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object
 
@@ -117,8 +116,8 @@ paths:
             information about the room such as its name and topic can be set
             before responding.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object
         401:
@@ -126,8 +125,7 @@ paths:
             The homeserver has not supplied credentials to the application service.
             Optional error information can be included in the body of this response.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
               }
           schema:
@@ -136,8 +134,7 @@ paths:
           description: |-
             The credentials supplied by the homeserver were rejected.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "errcode": "M_FORBIDDEN"
               }
           schema:
@@ -147,8 +144,7 @@ paths:
             The application service indicates that this room alias does not exist.
             Optional error information can be included in the body of this response.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
               }
           schema:
@@ -175,8 +171,8 @@ paths:
             The application service indicates that this user exists. The application
             service MUST create the user using the client-server API.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object
         401:
@@ -184,8 +180,7 @@ paths:
             The homeserver has not supplied credentials to the application service.
             Optional error information can be included in the body of this response.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
               }
           schema:
@@ -194,8 +189,7 @@ paths:
           description: |-
             The credentials supplied by the homeserver were rejected.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "errcode": "M_FORBIDDEN"
               }
           schema:
@@ -205,8 +199,7 @@ paths:
             The application service indicates that this user does not exist.
             Optional error information can be included in the body of this response.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
               }
           schema:

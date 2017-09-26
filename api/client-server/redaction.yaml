@@ -66,8 +66,7 @@ paths:
           name: body
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "reason": "Indecent material"
               }
             properties:
@@ -78,8 +77,7 @@ paths:
         200:
           description: "An ID for the redaction event."
           examples:
-            application/json: |-
-              {
+            application/json: {
                   "event_id": "YUwQidLecu"
               }
           schema:

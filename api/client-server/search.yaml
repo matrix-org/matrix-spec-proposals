@@ -46,8 +46,7 @@ paths:
           name: body
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "search_categories": {
                   "room_events": {
                     "keys": [
@@ -297,8 +296,7 @@ paths:
                           the next call. If this field is absent, there are no
                           more results.
           examples:
-            application/json: |-
-               {
+            application/json: {
                   "search_categories": {
                     "room_events": {
                       "groups": {

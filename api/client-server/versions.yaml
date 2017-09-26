@@ -37,8 +37,7 @@ paths:
         200:
           description: The versions supported by the server.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "versions": ["r0.0.1"]
               }
           schema:

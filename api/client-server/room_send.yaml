@@ -66,8 +66,7 @@ paths:
           name: body
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "msgtype": "m.text",
                 "body": "hello"
               }
@@ -75,8 +74,7 @@ paths:
         200:
           description: "An ID for the sent event."
           examples:
-            application/json: |-
-              {
+            application/json: {
                   "event_id": "YUwRidLecu"
               }
           schema:

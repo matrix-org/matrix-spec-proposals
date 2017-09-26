@@ -49,8 +49,7 @@ paths:
                   allOf:
                     - $ref: "definitions/client_device.yaml"
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "devices": [
                   {
                     "device_id": "QBUAZIFURK",
@@ -84,8 +83,7 @@ paths:
             allOf:
                - $ref: "definitions/client_device.yaml"
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "device_id": "QBUAZIFURK",
                 "display_name": "android",
                 "last_seen_ip": "1.2.3.4",
@@ -125,8 +123,8 @@ paths:
         200:
           description: The device was successfully updated.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object  # empty json object
         404:
@@ -166,8 +164,8 @@ paths:
           schema:
             type: object
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
         401:
           description: |-
             The homeserver requires additional authentication information.

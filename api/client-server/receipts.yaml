@@ -62,14 +62,14 @@ paths:
             server will automatically set the ``ts`` field.
           schema:
             type: object
-            example: |-
-              {}
+            example: {
+              }
       responses:
         200:
           description: The receipt was sent.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object  # empty json object
         429:

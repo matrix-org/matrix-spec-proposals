@@ -56,8 +56,8 @@ paths:
           description: |-
             The room has been left.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object
         429:
@@ -93,8 +93,8 @@ paths:
           description: |-
             The room has been forgotten.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object
         429:

@@ -107,8 +107,7 @@ paths:
                   type: object
                   title: RoomEvent
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "start": "t47429-4392820_219380_26003_2265",
                 "end": "t47409-4357353_219380_26003_2265",
                 "chunk": [

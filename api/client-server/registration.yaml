@@ -110,8 +110,7 @@ paths:
         200:
           description: The account has been registered.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "user_id": "@cheeky_monkey:matrix.org",
                 "access_token": "abc123",
                 "home_server": "matrix.org",
@@ -154,8 +153,7 @@ paths:
             them after authentication is completed if, for example, the requested user ID
             was registered whilst the client was performing authentication.
           examples:
-            application/json: |-
-              {
+            application/json: {
                   "errcode": "M_USER_IN_USE",
                   "error": "Desired user ID is already taken."
               }
@@ -210,7 +208,7 @@ paths:
             Note that this may be an email containing the validation token or it may be informing
             the user of an error.
           examples:
-            application/json: "{}"
+            application/json: {}
           schema:
             type: object
         400:
@@ -225,8 +223,7 @@ paths:
             * ``M_SERVER_NOT_TRUSTED`` : The ``id_server`` parameter refers to an ID server
               that is not trusted by this Home Server.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "errcode": "M_THREEPID_IN_USE",
                 "error": "The specified address is already in use"
               }
@@ -266,7 +263,7 @@ paths:
         200:
           description: The password has been changed.
           examples:
-            application/json: "{}"
+            application/json: {}
           schema:
             type: object
         401:
@@ -331,7 +328,7 @@ paths:
         200:
           description: The account has been deactivated.
           examples:
-            application/json: "{}"
+            application/json: {}
           schema:
             type: object
         401:

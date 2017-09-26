@@ -57,8 +57,7 @@ paths:
           name: third_party_signed
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "third_party_signed": {
                   "sender": "@cat:the.hat",
                   "mxid": "@green:eggs.ham",
@@ -97,8 +96,8 @@ paths:
 
             The joined room ID must be returned in the ``room_id`` field.
           examples:
-            application/json: |-
-              {"room_id": "!d41d8cd:matrix.org"}
+            application/json: {
+              "room_id": "!d41d8cd:matrix.org"}
           schema:
             type: object
         403:
@@ -108,8 +107,8 @@ paths:
             - The room is invite-only and the user was not invited.
             - The user has been banned from the room.
           examples:
-            application/json: |-
-              {"errcode": "M_FORBIDDEN", "error": "You are not invited to this room."}
+            application/json: {
+              "errcode": "M_FORBIDDEN", "error": "You are not invited to this room."}
         429:
           description: This request was rate-limited.
           schema:
@@ -146,8 +145,7 @@ paths:
           name: third_party_signed
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "third_party_signed": {
                   "signed": {
                     "sender": "@cat:the.hat",
@@ -193,8 +191,8 @@ paths:
 
             The joined room ID must be returned in the ``room_id`` field.
           examples:
-            application/json: |-
-              {"room_id": "!d41d8cd:matrix.org"}
+            application/json: {
+              "room_id": "!d41d8cd:matrix.org"}
           schema:
             type: object
         403:
@@ -204,8 +202,8 @@ paths:
             - The room is invite-only and the user was not invited.
             - The user has been banned from the room.
           examples:
-            application/json: |-
-              {"errcode": "M_FORBIDDEN", "error": "You are not invited to this room."}
+            application/json: {
+              "errcode": "M_FORBIDDEN", "error": "You are not invited to this room."}
         429:
           description: This request was rate-limited.
           schema:

@@ -49,23 +49,21 @@ paths:
               room_id:
                 type: string
                 description: The room ID to set.
-            example: |-
-              {
+            example: {
                 "room_id": "!abnjk1jdasj98:capuchins.com"
               }
       responses:
         200:
           description: The mapping was created.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object
         409:
           description: A room alias with that name already exists.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "errcode": "M_UNKNOWN",
                 "error": "Room alias #monkeys:matrix.org already exists."
               }
@@ -103,8 +101,7 @@ paths:
                   type: string
                   description: A server which is aware of this room alias.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "room_id": "!abnjk1jdasj98:capuchins.com",
                 "servers": [
                   "capuchins.com",
@@ -115,8 +112,7 @@ paths:
         404:
           description: There is no mapped room ID for this room alias.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "errcode": "M_NOT_FOUND",
                 "error": "Room alias #monkeys:matrix.org not found."
               }
@@ -141,8 +137,8 @@ paths:
         200:
           description: The mapping was deleted.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object
       tags:

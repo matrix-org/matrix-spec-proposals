@@ -132,8 +132,7 @@ paths:
                    An estimate on the total number of public rooms, if the
                    server has an estimate.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "chunk": [
                   {
                     "aliases": ["#murrays:cheese.bar"],
@@ -198,8 +197,8 @@ paths:
                       description: |-
                         A string to search for in the room metadata, e.g. name,
                         topic, canonical alias etc. (Optional).
-            example: |-
-              {"limit": 10, "filter": {"generic_search_term": "foo"}}
+            example: {
+              "limit": 10, "filter": {"generic_search_term": "foo"}}
       responses:
         200:
           description: A list of the rooms on the server.
@@ -279,8 +278,7 @@ paths:
                    An estimate on the total number of public rooms, if the
                    server has an estimate.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "chunk": [
                   {
                     "aliases": ["#murrays:cheese.bar"],

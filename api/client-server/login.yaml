@@ -46,8 +46,7 @@ paths:
           name: body
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "type": "m.login.password",
                 "user": "cheeky_monkey",
                 "password": "ilovebananas",
@@ -93,8 +92,7 @@ paths:
         200:
           description: The user has been authenticated.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "user_id": "@cheeky_monkey:matrix.org",
                 "access_token": "abc123",
                 "home_server": "matrix.org",
@@ -123,8 +121,7 @@ paths:
           description: |-
             Part of the request was invalid. For example, the login type may not be recognised.
           examples:
-            application/json: |-
-              {
+            application/json: {
                   "errcode": "M_UNKNOWN",
                   "error": "Bad login type."
               }
@@ -132,8 +129,8 @@ paths:
           description: |-
             The login attempt failed. For example, the password may have been incorrect.
           examples:
-            application/json: |-
-              {"errcode": "M_FORBIDDEN"}
+            application/json: {
+              "errcode": "M_FORBIDDEN"}
         429:
           description: This request was rate-limited.
           schema:

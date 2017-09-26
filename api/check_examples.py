@@ -45,15 +45,8 @@ except ImportError as e:
 
 def check_parameter(filepath, request, parameter):
     schema = parameter.get("schema")
-    example = None
-    try:
-        example_json = schema.get('example')
-        if example_json and not schema.get("format") == "byte":
-            example = json.loads(example_json)
-    except Exception as e:
-        raise ValueError("Error parsing JSON example request for %r" % (
-            request
-        ), e)
+    example = schema.get('example')
+
     fileurl = "file://" + os.path.abspath(filepath)
     if example and schema:
         try:
@@ -72,15 +65,7 @@ def check_parameter(filepath, request, parameter):
 
 
 def check_response(filepath, request, code, response):
-    example = None
-    try:
-        example_json = response.get('examples', {}).get('application/json')
-        if example_json:
-            example = json.loads(example_json)
-    except Exception as e:
-        raise ValueError("Error parsing JSON example response for %r %r" % (
-            request, code
-        ), e)
+    example = response.get('examples', {}).get('application/json')
     schema = response.get('schema')
     fileurl = "file://" + os.path.abspath(filepath)
     if example and schema:

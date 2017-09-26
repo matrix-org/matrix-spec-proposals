@@ -61,8 +61,7 @@ paths:
                 title: Tags
                 type: object
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "tags": {
                   "work": {"order": "1"},
                   "pinned": {}
@@ -107,8 +106,8 @@ paths:
             Extra data for the tag, e.g. ordering.
           schema:
             type: object
-            example: |-
-              {"order": "1"}
+            example: {
+              "order": "1"}
       responses:
         200:
           description:
@@ -116,8 +115,8 @@ paths:
           schema:
             type: object
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
       tags:
         - User data
     delete:
@@ -156,7 +155,7 @@ paths:
           schema:
             type: object
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
       tags:
         - User data

@@ -54,8 +54,7 @@ paths:
           description: The desired room configuration.
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "preset": "public_chat",
                 "room_alias_name": "thepub",
                 "name": "The Grand Duke Pub",
@@ -188,8 +187,7 @@ paths:
                 description: |-
                   The created room's ID.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "room_id": "!sefiuhWgwghwWgh:example.com"
               }
         400:

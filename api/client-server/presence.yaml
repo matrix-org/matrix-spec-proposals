@@ -50,8 +50,7 @@ paths:
           required: true
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "presence": "online",
                 "status_msg": "I am here."
               }
@@ -68,8 +67,8 @@ paths:
         200:
           description: The new presence state was set.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object  # empty json object
         429:
@@ -93,8 +92,7 @@ paths:
         200:
           description: The presence state for this user.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "presence": "unavailable",
                 "last_active_ago": 420845
               }
@@ -143,8 +141,7 @@ paths:
           required: true
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "invite": [
                   "@bob:matrix.org"
                 ],
@@ -169,8 +166,8 @@ paths:
         200:
           description: The list was updated.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object  # empty json object
         429:
@@ -194,8 +191,7 @@ paths:
         200:
           description: A list of presence events for this list.
           examples:
-            application/json: |-
-              [
+            application/json: [
                 {
                   "content": {
                     "last_active_ago": 395,

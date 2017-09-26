@@ -253,8 +253,7 @@ paths:
                   Information on end-to-end device updates, as specified in
                   |device_lists_sync|_.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "next_batch": "s72595_4483_1934",
                 "presence": {
                   "events": [

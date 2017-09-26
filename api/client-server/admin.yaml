@@ -49,8 +49,7 @@ paths:
         200:
           description: The lookup was successful.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "user_id": "@peter:rabbit.rocks",
                 "devices": {
                   "teapot": {

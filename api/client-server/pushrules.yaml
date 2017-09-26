@@ -52,8 +52,7 @@ paths:
                   "$ref": "definitions/push_ruleset.yaml"
                 ]
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "global": {
                     "content": [
                         {
@@ -279,8 +278,7 @@ paths:
             The specific push rule. This will also include keys specific to the
             rule itself such as the rule's ``actions`` and ``conditions`` if set.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "actions": [
                     "dont_notify"
                 ],
@@ -330,8 +328,8 @@ paths:
         200:
           description: The push rule was deleted.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object  # empty json object
       tags:
@@ -393,8 +391,7 @@ paths:
           required: true
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "pattern": "cake*lie",
                 "actions": ["notify"]
               }
@@ -425,15 +422,14 @@ paths:
         200:
           description: The pusher was set.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object  # empty json object
         400:
           description: There was a problem configuring this push rule.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "error": "before/after rule not found: someRuleId",
                 "errcode": "M_UNKNOWN"
               }
@@ -480,8 +476,7 @@ paths:
         200:
           description: Whether the push rule is enabled.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "enabled": true
               }
           schema:
@@ -532,16 +527,15 @@ paths:
                 type: boolean
                 description: Whether the push rule is enabled or not.
             required: ["enabled"]
-            example: |-
-              {
+            example: {
                 "enabled": true
               }
       responses:
         200:
           description: The push rule was enabled or disabled.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object
       tags:
@@ -581,8 +575,7 @@ paths:
         200:
           description: The actions for this push rule.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "actions": ["notify"]
               }
           schema:
@@ -640,16 +633,15 @@ paths:
                   enum: ["notify", "dont_notify", "coalesce", "set_tweak"]
                   # TODO: type: object e.g. {"set_sound":"beeroclock.wav"} :/
             required: ["actions"]
-            example: |-
-              {
+            example: {
                 "actions": ["notify"]
               }
       responses:
         200:
           description: The actions for the push rule were set.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object
       tags:

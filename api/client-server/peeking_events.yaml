@@ -69,8 +69,7 @@ paths:
         200:
           description: "The events received, which may be none."
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "start": "s3456_9_0",
                 "end": "s3457_9_0",
                 "chunk": [

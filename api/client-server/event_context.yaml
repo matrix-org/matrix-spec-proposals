@@ -99,8 +99,7 @@ paths:
                   allOf:
                     - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
           examples:
-            application/json: |-
-                {
+            application/json: {
                   "end": "t29-57_2_0_2",
                   "events_after": [
                     {

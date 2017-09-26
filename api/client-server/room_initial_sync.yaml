@@ -37,8 +37,7 @@ paths:
         200:
           description: The current state of the room
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "membership": "join",
                 "messages": {
                   "chunk": [

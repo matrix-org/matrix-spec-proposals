@@ -59,8 +59,7 @@ paths:
         200:
           description: "The events received, which may be none."
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "start": "s3456_9_0",
                 "end": "s3457_9_0",
                 "chunk": [
@@ -138,8 +137,7 @@ paths:
         200:
           description: The user's current state.
           examples:
-            application/json: |-
-              {
+            application/json: {
                   "end": "s3456_9_0",
                   "presence": [
                       {
@@ -421,8 +419,7 @@ paths:
         200:
           description: The full event.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "content": {
                   "body": "Hello world!",
                   "msgtype": "m.text"

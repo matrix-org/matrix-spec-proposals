@@ -45,8 +45,7 @@ paths:
           description:
             The association for that 3pid, or the empty object if no association is known.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "address": "louise@bobs.burgers",
                 "medium": "email",
                 "mxid": "@ears:matrix.org",

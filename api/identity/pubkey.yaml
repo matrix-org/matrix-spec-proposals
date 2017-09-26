@@ -43,8 +43,7 @@ paths:
           description:
             The public key exists.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "public_key": "VXuGitF39UH5iRfvbIknlvlAVKgD1BsLDMvBf0pmp7c"
               }
           schema:
@@ -70,8 +69,7 @@ paths:
           description:
             The validity of the public key.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "valid": true
               }
           schema:
@@ -98,8 +96,7 @@ paths:
           description:
             The validity of the public key.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "valid": true
               }
           schema:

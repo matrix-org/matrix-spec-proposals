@@ -48,8 +48,7 @@ paths:
           required: true
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "reason": "Telling unfunny jokes",
                 "user_id": "@cheeky_monkey:matrix.org"
               }
@@ -65,8 +64,8 @@ paths:
         200:
           description: The user has been kicked from the room.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object
         403:
@@ -77,8 +76,7 @@ paths:
             - The kickee is not currently in the room.
             - The kicker's power level is insufficient to kick users from the room.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "errcode": "M_FORBIDDEN",
                 "error": "You do not have a high enough power level to kick from this room."
               }

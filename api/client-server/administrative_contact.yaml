@@ -45,8 +45,7 @@ paths:
         200:
           description: The lookup was successful.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "threepids": [
                   {
                     "medium": "email",
@@ -106,8 +105,7 @@ paths:
                   server. Default: ``false``.
                 x-example: true
             required: ["three_pid_creds"]
-            example: |-
-              {
+            example: {
                 "three_pid_creds": {
                   "id_server": "matrix.org",
                   "sid": "abc123987",
@@ -119,14 +117,13 @@ paths:
         200:
           description: The addition was successful.
           examples:
-            application/json: "{}"
+            application/json: {}
             schema:
               type: object
         403:
           description: The credentials could not be verified with the identity server.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "errcode": "M_THREEPID_AUTH_FAILED",
                 "error": "The third party credentials could not be verified by the identity server."
               }

@@ -67,8 +67,7 @@ paths:
           name: body
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "membership": "join",
                 "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF#auto",
                 "displayname": "Alice Margatroid"
@@ -77,8 +76,7 @@ paths:
         200:
           description: "An ID for the sent event."
           examples:
-            application/json: |-
-              {
+            application/json: {
                   "event_id": "YUwRidLecu"
               }
           schema:
@@ -125,16 +123,14 @@ paths:
           name: body
           schema:
             type: object
-            example: |-
-              {
+            example: {
                   "name": "New name for the room"
               }
       responses:
         200:
           description: "An ID for the sent event."
           examples:
-            application/json: |-
-              {
+            application/json: {
                   "event_id": "YUwRidLecu"
               }
           schema:

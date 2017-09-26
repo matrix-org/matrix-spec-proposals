@@ -38,8 +38,7 @@ paths:
         200:
           description: The pushers for this user
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "pushers": [
                   {
                     "pushkey": "Xp/MzCt8/9DcSNE9cuiaoT5Ac55job3TdLSSmtmYl4A=",
@@ -133,8 +132,7 @@ paths:
           required: true
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "lang": "en",
                 "kind": "http",
                 "app_display_name": "Mat Rix",
@@ -216,15 +214,14 @@ paths:
         200:
           description: The pusher was set.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object  # empty json object
         400:
           description: One or more of the pusher values were invalid.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "error": "Missing parameters: lang, data",
                 "errcode": "M_MISSING_PARAM"
               }

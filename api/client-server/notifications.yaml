@@ -62,8 +62,7 @@ paths:
         200:
           description: A batch of events is being returned
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "next_token": "abcdef",
                 "notifications": [
                   {
