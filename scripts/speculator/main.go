@@ -664,13 +664,23 @@ function redirectToApiDocs(relativePath) {
 	branchNames = append(branchNames, "HEAD")
 	for _, branch := range branchNames {
 		href := "spec/" + url.QueryEscape(branch) + "/"
-		fmt.Fprintf(&b, `<li><a href="%s">%s</a></li>`, href, branch)
+		fmt.Fprintf(&b, "<li><a href=\"%s\">%s</a></li>\n", href, branch)
 		if *includesDir != "" {
-			fmt.Fprintf(&b, `<li><a href="%s?matrixdotorgstyle=1">%s, styled like matrix.org</a></li>`,
+			fmt.Fprintf(&b, "<li><a href=\"%s?matrixdotorgstyle=1\">%s, styled like matrix.org</a></li>\n",
 				href, branch)
 		}
 	}
-	b.Write([]byte("</ul></div></body>"))
+	b.Write([]byte("</ul></div>\n\n"))
+
+	b.Write([]byte("<div>View the API docs at:<ul>"))
+	for _, branch := range branchNames {
+		fmt.Fprintf(&b,
+			"<li><a href=\"#\" onclick=\"redirectToApiDocs('spec/%s/api-docs.json')\">%s</a></li>\n",
+			url.QueryEscape(branch), branch)
+	}
+	b.Write([]byte("</ul></div>"))
+
+	b.Write([]byte("</body>"))
 	b.WriteTo(w)
 }
 
