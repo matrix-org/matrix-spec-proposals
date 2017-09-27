@@ -111,7 +111,7 @@ avoiding a single trust-root since each server is free to pick which notary
 servers they trust and can corroborate the keys returned by a given notary
 server by querying other servers.
 
-.. _Perspectives Project: http://perspectives-project.org/
+.. _Perspectives Project: https://web.archive.org/web/20170702024706/https://perspectives-project.org/
 
 Publishing Keys
 ^^^^^^^^^^^^^^^
