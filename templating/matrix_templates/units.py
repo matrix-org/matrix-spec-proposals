@@ -550,8 +550,8 @@ class MatrixUnits(Units):
             for filename in os.listdir(path):
                 if not filename.endswith(".yaml"):
                     continue
-                logger.info("Reading swagger API: %s" % filename)
                 filepath = os.path.join(path, filename)
+                logger.info("Reading swagger API: %s" % filepath)
                 with open(filepath, "r") as f:
                     # strip .yaml
                     group_name = filename[:-5].replace("-", "_")
