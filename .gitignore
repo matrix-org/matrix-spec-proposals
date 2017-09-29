@@ -8,3 +8,4 @@
 /templating/out
 *.pyc
 *.swp
+/env
