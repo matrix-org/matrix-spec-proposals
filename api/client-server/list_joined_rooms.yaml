@@ -13,7 +13,7 @@
 # limitations under the License.
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server Room Creation API"
+  title: "Matrix Client-Server Room Listing API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
@@ -24,32 +24,34 @@ consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
-  "/joined_rooms":
+  "/joinedRooms":
     get:
-      summary: Lists the rooms that the authenticated user is in.
+      summary: Lists the user's current rooms.
       description: |-
-        Lists the rooms that the authenticated user is in.
+        This API returns a list of the user's current rooms.
+      security:
+      - accessToken: []
       responses:
         200:
           description: A list of the rooms the user is in.
           schema:
             type: object
-            description: A list of the rooms the user is in.
-            required: ["joined_rooms"]
+            required: ["joinedRooms"]
             properties:
               joined_rooms:
                 type: array
                 description: |-
-                  IDs of the rooms the user is in.
+                  The ID of each room in which the user has ``joined`` membership.
                 items:
                   type: string
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "joined_rooms": [
                   "!foo:example.com"
                 ]
               }
       tags:
-        - Room discovery
+        - Room membership
