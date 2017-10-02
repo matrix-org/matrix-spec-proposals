@@ -33,7 +33,7 @@ paths:
       description: |-
         This API returns a list of the user's current rooms.
       security:
-      - accessToken: []
+        - accessToken: []
       responses:
         200:
           description: A list of the rooms the user is in.
