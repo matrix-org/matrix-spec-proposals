@@ -321,7 +321,7 @@ paths:
                 "joined": {
                   "@bar:example.com": {
                     "display_name": "Bar",
-                    "avatar_url": null
+                    "avatar_url": "mxc://riot.ovh/printErCATzZijQsSDWorRaK"
                   }
                 }
               }
