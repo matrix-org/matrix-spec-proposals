@@ -32,6 +32,7 @@ paths:
       summary: Lists the user's current rooms.
       description: |-
         This API returns a list of the user's current rooms.
+      operationId: getJoinedRooms
       security:
         - accessToken: []
       responses:
