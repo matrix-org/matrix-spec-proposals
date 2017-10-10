@@ -52,10 +52,10 @@
   - New endpoints:
 
     - ``GET /joined_rooms``
-      (`#343 <https://github.com/matrix-org/matrix-doc/pull/999>`_).
+      (`#999 <https://github.com/matrix-org/matrix-doc/pull/999>`_).
 
     - ``GET /rooms/{roomId}/joined_members``
-      (`#346 <https://github.com/matrix-org/matrix-doc/pull/999>`_).
+      (`#999 <https://github.com/matrix-org/matrix-doc/pull/999>`_).
 
 - Spec clarifications:
 
