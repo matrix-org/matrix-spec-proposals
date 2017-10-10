@@ -1260,6 +1260,7 @@ The allowable state transitions of membership are::
   ----------------------------------------------+ +----------------------+
                   /ban
 
+{{list_joined_rooms_cs_http_api}}
 
 Joining rooms
 +++++++++++++
@@ -1327,7 +1328,6 @@ before they can re-join the room or be re-invited.
 Listing rooms
 ~~~~~~~~~~~~~
 
-{{list_joined_rooms_cs_http_api}}
 {{list_public_rooms_cs_http_api}}
 
 Profiles
