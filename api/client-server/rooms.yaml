@@ -316,6 +316,8 @@ paths:
         - accessToken: []
       responses:
         200:
+          description: |-
+            A map of MXID to room member objects.
           examples:
             application/json: {
                 "joined": {
