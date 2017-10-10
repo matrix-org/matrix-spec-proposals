@@ -27,7 +27,7 @@ produces:
 securityDefinitions:
   $ref: definitions/security.yaml
 paths:
-  "/joinedRooms":
+  "/joined_rooms":
     get:
       summary: Lists the user's current rooms.
       description: |-
@@ -39,7 +39,7 @@ paths:
           description: A list of the rooms the user is in.
           schema:
             type: object
-            required: ["joinedRooms"]
+            required: ["joined_rooms"]
             properties:
               joined_rooms:
                 type: array
@@ -49,7 +49,7 @@ paths:
                   type: string
           examples:
             application/json: {
-                "joinedRooms": [
+                "joined_rooms": [
                   "!foo:example.com"
                 ]
               }

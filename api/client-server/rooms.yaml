@@ -299,7 +299,7 @@ paths:
             member of the room.
       tags:
         - Room participation
-  "/rooms/{roomId}/joinedMembers":
+  "/rooms/{roomId}/joined_members":
     get:
       summary: Gets the list of currently joined users and their profile data.
       description:
