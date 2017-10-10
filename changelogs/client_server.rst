@@ -49,6 +49,14 @@
   - Add key distribution APIs, for use with end-to-end encryption.
     (`#894 <https://github.com/matrix-org/matrix-doc/pull/894>`_).
 
+  - New endpoints:
+
+    - ``GET /joined_rooms``
+      (`#999 <https://github.com/matrix-org/matrix-doc/pull/999>`_).
+
+    - ``GET /rooms/{roomId}/joined_members``
+      (`#999 <https://github.com/matrix-org/matrix-doc/pull/999>`_).
+
 - Spec clarifications:
 
   - Add endpoints and logic for invites and third-party invites to the federation

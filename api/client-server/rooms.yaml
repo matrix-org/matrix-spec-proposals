@@ -297,3 +297,52 @@ paths:
             member of the room.
       tags:
         - Room participation
+  "/rooms/{roomId}/joined_members":
+    get:
+      summary: Gets the list of currently joined users and their profile data.
+      description:
+        This API returns a map of MXIDs to member info objects for members of the room. The current user must be in the room for it to work, unless it is an Application Service in which case any of the AS's users must be in the room.
+        This API is primarily for Application Services and should be faster to respond than ``/members`` as it can be implemented more efficiently on the server.
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room to get the members of.
+          required: true
+          x-example: "!636q39766251:example.com"
+      security:
+        - accessToken: []
+      responses:
+        200:
+          description: |-
+            A map of MXID to room member objects.
+          examples:
+            application/json: {
+                "joined": {
+                  "@bar:example.com": {
+                    "display_name": "Bar",
+                    "avatar_url": "mxc://riot.ovh/printErCATzZijQsSDWorRaK"
+                  }
+                }
+              }
+          schema:
+            type: object
+            properties:
+              joined:
+                additionalProperties:
+                  title: RoomMember
+                  type: object
+                  properties:
+                    display_name:
+                      type: string
+                      description: The display name of the user this object is representing.
+                    avatar_url:
+                      type: string
+                      description: The mxc avatar url of the user this object is representing.
+                description: A map from user ID to a RoomMember object.
+                type: object
+        403:
+          description: >
+            You aren't a member of the room.
+      tags:
+        - Room participation

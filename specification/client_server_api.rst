@@ -1260,6 +1260,7 @@ The allowable state transitions of membership are::
   ----------------------------------------------+ +----------------------+
                   /ban
 
+{{list_joined_rooms_cs_http_api}}
 
 Joining rooms
 +++++++++++++
