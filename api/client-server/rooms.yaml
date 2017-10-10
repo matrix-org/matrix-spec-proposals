@@ -343,7 +343,6 @@ paths:
                 type: object
         403:
           description: >
-            You aren't a member of the room and weren't previously a
-            member of the room.
+            You aren't a member of the room.
       tags:
         - Room participation
