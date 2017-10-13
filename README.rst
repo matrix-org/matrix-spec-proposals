@@ -39,8 +39,8 @@ Examples:
 * `Spec the implicit limit on /syncs
   <https://github.com/matrix-org/matrix-doc/issues/708>`_
 
-  * `Clarify the meaning of the currently_active flags in presence events
-    <https://github.com/matrix-org/matrix-doc/issues/686>`_
+* `Clarify the meaning of the currently_active flags in presence events
+  <https://github.com/matrix-org/matrix-doc/issues/686>`_
 
 `bug <https://github.com/matrix-org/matrix-doc/labels/bug>`_
 ------------------------------------------------------------
