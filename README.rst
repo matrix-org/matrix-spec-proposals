@@ -99,38 +99,35 @@ Examples:
 Structure of this repository
 ============================
 
-- ``api`` : Contains the HTTP API specification, documented using OpenAPI
-  (swagger).
-- ``attic``: Contains historical sections of specification for reference
+- ``api`` : `OpenAPI`_ (swagger) specifications for the the HTTP APIs.
+- ``attic``: historical sections of specification for reference
   purposes.
-- ``changelogs``: Contains change logs for the various parts of the
+- ``changelogs``: change logs for the various parts of the
   specification.
 - ``drafts``: Previously, contained documents which were under discussion for
   future incusion into the specification and/or supporting documentation. This
   is now historical, as we use separate discussion documents (see
   `<CONTRIBUTING.rst>`_).
-- ``event-schemas``: Contains the `JSON Schema`_ for all Matrix events
+- ``event-schemas``: the `JSON Schema`_ for all Matrix events
   contained in the specification, along with example JSON files.
-- ``meta``: Contains documents outlining the processes involved when writing
+- ``meta``: documents outlining the processes involved when writing
   documents, e.g. documentation style, guidelines.
-- ``scripts``: Contains scripts to generate formatted versions of the
+- ``scripts``: scripts to generate formatted versions of the
   documentation, typically HTML.
-- ``specification``: Contains the specification split up into sections.
-- ``supporting-docs``: Contains additional documents which explain design
+- ``specification``: the specification split up into sections.
+- ``supporting-docs``: additional documents which explain design
   decisions, examples, use cases, etc.
-- ``templating``: Contains the templates and templating system used to
+- ``templating``: the templates and templating system used to
   generate the spec.
+
+.. _OpenAPI: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
+.. _JSON Schema: http://json-schema.org/
 
 Contributing
 ============
-
-Known issues with the specification are represented as JIRA issues at
-`<https://matrix.org/jira/browse/SPEC>`_.
 
 If you want to ask more about the specification, join us on
 `#matrix-dev:matrix.org <http://matrix.to/#/#matrix-dev:matrix.org>`_.
 
 If you would like to contribute to the specification or supporting
 documentation, see `<CONTRIBUTING.rst>`_.
-
-.. _JSON Schema: http://json-schema.org/
