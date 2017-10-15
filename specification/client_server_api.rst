@@ -880,6 +880,8 @@ Where $streamtoken is an opaque token which can be used in another query to
 get the next set of results. The "start" and "end" keys can only be omitted if
 the complete dataset is provided in "chunk".
 
+.. _`filter`:
+
 Filtering
 ---------
 
