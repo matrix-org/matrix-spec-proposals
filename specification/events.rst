@@ -33,7 +33,7 @@ Size limits
 -----------
 
 The complete event MUST NOT be larger than 65535 bytes, when formatted as a
-`PDU for the Server-Server protocol <../server_server/SERVER_RELEASE_LABEL%#pdus>`_,
+`PDU for the Server-Server protocol <../server_server/%SERVER_RELEASE_LABEL%#pdus>`_,
 including any signatures, and encoded as `Canonical JSON`_.
 
 There are additional restrictions on sizes per key:
