@@ -96,6 +96,13 @@ Examples:
 * `add https://github.com/tavoda/matrix-java project
   <https://github.com/matrix-org/matrix-doc/issues/956>`_
 
+`site <https://github.com/matrix-org/matrix-doc/labels/site>`_
+--------------------------------------------------------------
+
+Ideas for things to help document or sell matrix more generally.
+(Probably these would be better filed under 
+https://github.com/matrix-org/matrix.org, but they tend to end up here.)
+
 Structure of this repository
 ============================
 
