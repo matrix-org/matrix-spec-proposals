@@ -87,6 +87,9 @@
     (`#750 <https://github.com/matrix-org/matrix-doc/pull/750>`_).
   - ``GET /user/{userId}/filter/{filterId}`` requires authentication
     (`#1003 <https://github.com/matrix-org/matrix-doc/pull/1003>`_).
+  - Add some clarifying notes on the behaviour of rooms with no
+    ``m.room.power_levels`` event
+    (`#1026 <https://github.com/matrix-org/matrix-doc/pull/1026>`_).
 
 r0.2.0
 ======
