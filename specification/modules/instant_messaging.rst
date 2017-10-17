@@ -46,6 +46,8 @@ Usage of this event is discouraged for several reasons:
 
 {{m_room_avatar_event}}
 
+{{m_room_pinned_events_event}}
+
 m.room.message msgtypes
 ~~~~~~~~~~~~~~~~~~~~~~~
 
