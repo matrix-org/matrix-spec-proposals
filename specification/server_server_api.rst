@@ -536,6 +536,10 @@ the state of the room.
 
       #. If the ``sender``'s current membership state is not ``joined``, reject.
 
+      #. If the *target user*'s current membership state is ``ban``, and the
+         ``sender``'s power level is greater than or equal to the *ban level*,
+         allow.
+
       #. If ``sender``'s power level is greater than or equal to the *kick
          level*, and the ``state_key``'s power level is less than or equal to
          the ``sender``'s power level, allow.
