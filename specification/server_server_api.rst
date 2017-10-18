@@ -443,23 +443,12 @@ keys exist to support this:
 ``state_key``            String       Combined with the ``pdu_type`` this
                                       identifies the which part of the room
                                       state is updated
-``required_power_level`` Integer      The required power level needed to
-                                      replace this update.
 ``prev_state_id``        String       The PDU id of the update this replaces.
 ``prev_state_origin``    String       The homeserver of the update this
                                       replaces.
 ``user_id``              String       The user updating the state.
 ======================== ============ =========================================
 
-.. code:: json
-
- {...,
-  "is_state":true,
-  "state_key":TODO-doc
-  "required_power_level":TODO-doc
-  "prev_state_id":TODO-doc
-  "prev_state_origin":TODO-doc
- }
 Authorization of PDUs
 ~~~~~~~~~~~~~~~~~~~~~
 
