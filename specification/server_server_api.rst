@@ -465,6 +465,17 @@ Required Power Level
   explicitly in the ``events`` section or given by either ``state_default`` or
   ``events_default`` depending on if the event is a state event or not.
 
+Invite Level, Kick Level, Ban Level, Redact Level
+   The levels given by the ``invite``, ``kick``, ``ban``, and ``redact``
+   properties in the current ``m.room.power_levels`` state. Each defaults to 50
+   if unspecified.
+
+Target User
+  For an ``m.room.member`` state event, the user given by the ``state_key`` of
+  the event.
+
+
+
 Rules
 +++++
 
@@ -500,29 +511,22 @@ the state of the room.
 
       #. If the ``state_key`` does not match ``sender`` key, reject.
 
-      #. If the state event being replaced has ``membership`` set to ``join``,
-         allow.
+      #. If the *target user*'s current membership state is ``join``, allow.
 
-      #. If the ``join_rule`` is:
+      #. If the ``join_rule`` is public, allow.
 
-         - ``public``:  allow.
-
-         - absent, or ``invite``: allow if and only if the state event being replaced has
-           ``membership`` set to ``join``.
-
-      #. Otherwise, reject
+      #. Otherwise, reject.
 
    #. If ``membership`` is ``invite``:
 
       i. If the ``sender``'s current membership state is not ``joined``, reject.
 
-      #. If the state event being replaced has ``membership`` set to ``join``
-         or ``ban``, reject.
+      #. If *target user*'s current membership state is ``join`` or ``ban``,
+         reject.
 
-      #. If ``sender``'s power level is greater than or equal to the ``invite``
-         level given in the current ``m.room.power_levels`` state (defaults to
-         50), and the ``state_key``'s power level is less than or equal to the
-         ``sender``'s power level, then allow.
+      #. If ``sender``'s power level is greater than or equal to the *invite
+         level*, and the *target user*'s power level is less than or equal to
+         the ``sender``'s power level, allow.
 
       #. Otherwise, reject.
 
@@ -532,10 +536,9 @@ the state of the room.
 
       #. If the ``sender``'s current membership state is not ``joined``, reject.
 
-      #. If ``sender``'s power level is greater than or equal to the ``kick`` level
-         given in the current ``m.room.power_levels`` state (defaults to 50),
-         and the ``state_key``'s power level is less than or equal to the
-         ``sender``'s power level, then allow.
+      #. If ``sender``'s power level is greater than or equal to the *kick
+         level*, and the ``state_key``'s power level is less than or equal to
+         the ``sender``'s power level, allow.
 
       #. Otherwise, reject.
 
@@ -543,10 +546,9 @@ the state of the room.
 
       i. If the ``sender``'s current membership state is not ``joined``, reject.
 
-      #. If ``sender``'s power level is greater than or equal to the ``ban`` level
-         given in the current ``m.room.power_levels`` state (defaults to 50),
-         and the ``state_key``'s power level is less than or equal to the
-         ``sender``'s power level, then allow.
+      #. If ``sender``'s power level is greater than or equal to the *ban
+         level*, and the *target user*'s power level is less than or equal to
+         the ``sender``'s power level, allow.
 
       #. Otherwise, reject.
 
@@ -579,8 +581,8 @@ the state of the room.
 
 #. If type is ``m.room.redact``:
 
-   #. If ``sender``'s power level is greater than or equal to the ``redact`` level
-      given in the current ``m.room.power_levels`` state (defaults to 50), allow.
+   #. If ``sender``'s power level is greater than or equal to the *redact
+      level*, allow.
 
    #. If the ``sender`` of the event being redacted is the same as the
       ``sender`` of the ``m.room.redact``, allow.
