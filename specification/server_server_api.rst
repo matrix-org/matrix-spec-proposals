@@ -513,7 +513,7 @@ the state of the room.
 
       #. If the *target user*'s current membership state is ``join``, allow.
 
-      #. If the ``join_rule`` is public, allow.
+      #. If the ``join_rule`` is ``public``, allow.
 
       #. Otherwise, reject.
 
