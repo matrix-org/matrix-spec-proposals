@@ -511,7 +511,8 @@ the state of the room.
 
       #. If the ``sender`` does not match ``state_key``, reject.
 
-      #. If the user's current membership state is ``join``, allow.
+      #. If the user's current membership state is ``invite`` or ``join``,
+         allow.
 
       #. If the ``join_rule`` is ``public``, allow.
 
