@@ -92,6 +92,9 @@
   - Add some clarifying notes on the behaviour of rooms with no
     ``m.room.power_levels`` event
     (`#1026 <https://github.com/matrix-org/matrix-doc/pull/1026>`_).
+  - Clarify the relationship between ``username`` and ``user_id`` in the
+    ``/register`` API
+    (`#1032 <https://github.com/matrix-org/matrix-doc/pull/1032>`_).
 
 r0.2.0
 ======
