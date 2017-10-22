@@ -451,7 +451,7 @@ form::
 
 The ``localpart`` of a user ID is an opaque identifier for that user. It MUST
 NOT be empty, and MUST contain only the characters ``a-z``, ``0-9``, ``.``,
-``_``, ``=``, and ``-``.
+``_``, ``=``, ``-``, and ``/``.
 
 The ``domain`` of a user ID is the `server name`_ of the homeserver which
 allocated the account.
@@ -465,7 +465,7 @@ The complete grammar for a legal user ID is::
   user_id_localpart = 1*user_id_char
   user_id_char = DIGIT
                / %x61-7A                   ; a-z
-               / "-" / "." / "=" / "_"
+               / "-" / "." / "=" / "_" / "/"
 
 .. admonition:: Rationale
 
@@ -493,11 +493,9 @@ The complete grammar for a legal user ID is::
   ``@user:matrix.org``.
 
   Finally, we decided to restrict the allowable punctuation to a very basic set
-  to ensure that the identifier can be used as-is in as wide a number of
-  situations as possible, without requiring escaping. For instance, allowing
-  "%" or "/" would make it harder to use a user ID in a URI. "*" is used as a
-  wildcard in some APIs (notably the filter API), so it also cannot be a legal
-  user ID character.
+  to reduce the possibility of conflicts with special characters in various
+  situations. For example, "*" is used as a wildcard in some APIs (notably the
+  filter API), so it cannot be a legal user ID character.
 
   The length restriction is derived from the limit on the length of the
   ``sender`` key on events; since the user ID appears in every event sent by the
