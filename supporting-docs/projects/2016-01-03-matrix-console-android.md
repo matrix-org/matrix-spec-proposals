@@ -5,7 +5,7 @@ categories: projects client
 thumbnail: /docs/projects/images/matrix-console-android-2016-02-16-cropped.png
 description: A neutral Android client showcasing Matrix capabilities and implementation.
 author: Matrix.org team
-maturity: Late beta
+maturity: No longer maintained
 ---
 
 ![screenshot](/docs/projects/images/matrix-console-android-2016-02-16-large.png "{{ page.title }}")
