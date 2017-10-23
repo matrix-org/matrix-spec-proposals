@@ -157,9 +157,8 @@ allocated the account and has the form::
 
   @localpart:domain
 
-See the `Identifier Grammar`_ section for full details of the structure of
-user IDs.
-
+See the `appendices <appendices.html#identifier-grammar>`_ for full details of
+the structure of user IDs.
 
 Devices
 ~~~~~~~
@@ -242,8 +241,8 @@ There is exactly one room ID for each room. Whilst the room ID does contain a
 domain, it is simply for globally namespacing room IDs. The room does NOT
 reside on the domain specified.
 
-See the `Identifier Grammar`_ section for full details of the structure of
-a room ID.
+See the `appendices <appendices.html#identifier-grammar>`_ for full details of
+the structure of a room ID.
 
 The following conceptual diagram shows an
 ``m.room.message`` event being sent to the room ``!qporfwt:matrix.org``::
@@ -318,8 +317,8 @@ Each room can also have multiple "Room Aliases", which look like::
 
   #room_alias:domain
 
-See the `Identifier Grammar`_ section for full details of the structure of
-a room alias.
+See the `appendices <appendices.html#identifier-grammar>`_ for full details of
+the structure of a room alias.
 
 A room alias "points" to a room ID and is the human-readable label by which
 rooms are publicised and discovered.  The room ID the alias is pointing to can
