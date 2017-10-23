@@ -287,7 +287,7 @@ all of the presences relevant for these rooms. This can be a LOT of data. You
 may just want the most recent event for each room. This can be achieved by 
 applying a filter that asks for a limit of 1 timeline event per room::
 
-    curl --globoff -XGET "https://localhost:8448/_matrix/client/r0/sync?filter={'room':{'timeline':{'limit':1}}}&access_token=YOUR_ACCESS_TOKEN"
+    curl --globoff -XGET 'https://localhost:8448/_matrix/client/r0/sync?filter={"room":{"timeline":{"limit":1}}}&access_token=YOUR_ACCESS_TOKEN'
 
     {
         ...
