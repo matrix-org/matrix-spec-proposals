@@ -9,6 +9,9 @@ mkdir -p assets
 # generate the spec docs
 ./scripts/gendoc.py -d assets/spec
 
+# and the swagger
+./scripts/dump-swagger.py -o assets/spec/client_server/unstable.json
+
 # also need the supporting-docs, which become the jekyll posts.
 cp -rT supporting-docs assets/jekyll-posts
 
