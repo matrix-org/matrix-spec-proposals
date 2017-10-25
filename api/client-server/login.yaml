@@ -64,7 +64,8 @@ paths:
                 description: The login type being used.
               identifier:
                 description: |-
-                    Additional authentication information for the identifier, being
+                    Required when ``type`` is ``m.login.password``. Additional
+                    authentication information for the identifier, being
                     a regular localpart, Matrix ID or a 3PID.
                 "$ref": "definitions/login_3pid_data.yaml"
               password:
@@ -89,7 +90,6 @@ paths:
                   if ``device_id`` corresponds to a known device.
             required:
               - "type"
-              - "identifier"
 
       responses:
         200:
