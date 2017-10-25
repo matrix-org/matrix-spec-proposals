@@ -5,6 +5,42 @@ comtains a lot of supporting documents, including some introductions to Matrix,
 and, notably, a list of projects using Matrix which is visible on the
 `matrix.org website <https://matrix.org/docs/projects/try-matrix-now.html>`_.
 
+Structure of this repository
+============================
+
+- ``api`` : `OpenAPI`_ (swagger) specifications for the the HTTP APIs.
+- ``attic``: historical sections of specification for reference
+  purposes.
+- ``changelogs``: change logs for the various parts of the
+  specification.
+- ``drafts``: Previously, contained documents which were under discussion for
+  future incusion into the specification and/or supporting documentation. This
+  is now historical, as we use separate discussion documents (see
+  `<CONTRIBUTING.rst>`_).
+- ``event-schemas``: the `JSON Schema`_ for all Matrix events
+  contained in the specification, along with example JSON files.
+- ``meta``: documents outlining the processes involved when writing
+  documents, e.g. documentation style, guidelines.
+- ``scripts``: scripts to generate formatted versions of the
+  documentation, typically HTML.
+- ``specification``: the specification split up into sections.
+- ``supporting-docs``: additional documents which explain design
+  decisions, examples, use cases, etc.
+- ``templating``: the templates and templating system used to
+  generate the spec.
+
+.. _OpenAPI: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
+.. _JSON Schema: http://json-schema.org/
+
+Contributing
+============
+
+If you want to ask more about the specification, join us on
+`#matrix-dev:matrix.org <http://matrix.to/#/#matrix-dev:matrix.org>`_.
+
+If you would like to contribute to the specification or supporting
+documentation, see `<CONTRIBUTING.rst>`_.
+
 Issue tracking
 ==============
 
@@ -100,41 +136,5 @@ Examples:
 --------------------------------------------------------------
 
 Ideas for things to help document or sell matrix more generally.
-(Probably these would be better filed under 
+(Probably these would be better filed under
 https://github.com/matrix-org/matrix.org, but they tend to end up here.)
-
-Structure of this repository
-============================
-
-- ``api`` : `OpenAPI`_ (swagger) specifications for the the HTTP APIs.
-- ``attic``: historical sections of specification for reference
-  purposes.
-- ``changelogs``: change logs for the various parts of the
-  specification.
-- ``drafts``: Previously, contained documents which were under discussion for
-  future incusion into the specification and/or supporting documentation. This
-  is now historical, as we use separate discussion documents (see
-  `<CONTRIBUTING.rst>`_).
-- ``event-schemas``: the `JSON Schema`_ for all Matrix events
-  contained in the specification, along with example JSON files.
-- ``meta``: documents outlining the processes involved when writing
-  documents, e.g. documentation style, guidelines.
-- ``scripts``: scripts to generate formatted versions of the
-  documentation, typically HTML.
-- ``specification``: the specification split up into sections.
-- ``supporting-docs``: additional documents which explain design
-  decisions, examples, use cases, etc.
-- ``templating``: the templates and templating system used to
-  generate the spec.
-
-.. _OpenAPI: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
-.. _JSON Schema: http://json-schema.org/
-
-Contributing
-============
-
-If you want to ask more about the specification, join us on
-`#matrix-dev:matrix.org <http://matrix.to/#/#matrix-dev:matrix.org>`_.
-
-If you would like to contribute to the specification or supporting
-documentation, see `<CONTRIBUTING.rst>`_.
