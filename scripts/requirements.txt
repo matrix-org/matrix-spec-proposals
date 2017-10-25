@@ -1,0 +1,8 @@
+# no doubt older versions would be fine for many of these but these were
+# current at the time of writing
+
+docutils >= 0.14
+pygments >= 2.2.0
+Jinja2 >= 2.9.6
+jsonschema >= 2.6.0
+PyYAML >= 3.12
