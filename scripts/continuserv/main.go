@@ -175,7 +175,7 @@ func generate(dir string) (map[string][]byte, error) {
 
 	// cheekily dump the swagger docs into the gen directory so that it is
 	// easy to serve
-	cmd = exec.Command("python", "dump-swagger.py", "gen/api-docs.json")
+	cmd = exec.Command("python", "dump-swagger.py", "-o", "gen/api-docs.json")
 	cmd.Dir = path.Join(dir, "scripts")
 	cmd.Stderr = &b
 	if err := cmd.Run(); err != nil {
