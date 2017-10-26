@@ -291,3 +291,4 @@ It will look up ``token`` which was stored in a call to ``store-invite``, and fe
  }
 
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
+.. _`3PID Types`:  ../appendices.html#pid-medium-types
