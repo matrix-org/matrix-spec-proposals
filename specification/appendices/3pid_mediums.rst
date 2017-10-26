@@ -29,5 +29,6 @@ Medium ID  Network
 This list is not exhaustive and arbitrary values can be used throughout the protocol.
 
 | In case a server is not capable of handing a request due to a 3PID medium type, like
-  sending a notification, it should return a 501 HTTP Status code (Not Implemented).  
-| The status code can be overwritten at the endpoint specification level.
+  sending a notification, it should return the protocol equivalent of a
+  ``Not Implemented`` status.
+| This behaviour can be overwritten at the endpoint specification level.
