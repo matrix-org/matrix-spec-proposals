@@ -86,8 +86,8 @@ paths:
                 description: The signatures of the verifying identity services which show that the association should be trusted, if you trust the verifying identity services.
   "/bulk_lookup":
     post:
-      summary: Lookup Matrix user IDs for a list of 3pid.
-      description: Lookup Matrix user IDs for a list of 3pid.
+      summary: Lookup Matrix user IDs for a list of 3pids.
+      description: Lookup Matrix user IDs for a list of 3pids.
       parameters:
         - in: body
           name: body
@@ -110,7 +110,7 @@ paths:
                   items:
                     type: string
                     title: 3PID medium or address
-                description: an array of array containing the `3PID Medium type`_ in first position and the 3PID Address in second position.
+                description: an array of arrays containing the `3PID Medium type`_ in first position and the 3PID Address in second position.
             required:
               - "threepids"
       responses:
