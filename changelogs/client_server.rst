@@ -95,6 +95,7 @@
   - Clarify the relationship between ``username`` and ``user_id`` in the
     ``/register`` API
     (`#1032 <https://github.com/matrix-org/matrix-doc/pull/1032>`_).
+  - Add mention of ability to send Access Token via an Authorization Header.
 
 r0.2.0
 ======

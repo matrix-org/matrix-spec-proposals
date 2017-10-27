@@ -171,8 +171,8 @@ Client Authentication
 
 Most API endpoints require the user to identify themselves by presenting
 previously obtained credentials in the form of an ``access_token`` query
-parameter. An access token is typically obtained via the `Login`_ or
-`Registration`_ processes.
+parameter or through an Authorization Header of ``Bearer $access_token``.
+An access token is typically obtained via the `Login`_ or `Registration`_ processes.
 
 When credentials are required but missing or invalid, the HTTP call will
 return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
