@@ -50,6 +50,7 @@
     (`#894 <https://github.com/matrix-org/matrix-doc/pull/894>`_).
   - Add ``m.room.pinned_events`` state event for rooms.
     (`#1007 <https://github.com/matrix-org/matrix-doc/pull/1007>`_).
+  - Add mention of ability to send Access Token via an Authorization Header.
 
   - New endpoints:
 
@@ -95,7 +96,6 @@
   - Clarify the relationship between ``username`` and ``user_id`` in the
     ``/register`` API
     (`#1032 <https://github.com/matrix-org/matrix-doc/pull/1032>`_).
-  - Add mention of ability to send Access Token via an Authorization Header.
 
 r0.2.0
 ======
