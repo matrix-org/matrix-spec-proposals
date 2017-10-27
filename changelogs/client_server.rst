@@ -50,6 +50,7 @@
     (`#894 <https://github.com/matrix-org/matrix-doc/pull/894>`_).
   - Add ``m.room.pinned_events`` state event for rooms.
     (`#1007 <https://github.com/matrix-org/matrix-doc/pull/1007>`_).
+  - Add mention of ability to send Access Token via an Authorization Header.
 
   - New endpoints:
 
