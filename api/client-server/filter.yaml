@@ -147,5 +147,7 @@ paths:
             type: object
             allOf:
               - $ref: "definitions/sync_filter.yaml"
+        400:
+          description: "Unknown filter."
       tags:
         - Room participation
