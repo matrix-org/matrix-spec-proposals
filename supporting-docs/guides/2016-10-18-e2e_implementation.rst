@@ -274,7 +274,11 @@ Handling an ``m.room.encrypted`` event
 
 Encrypted events have a type of ``m.room.encrypted``. They have a
 content property ``algorithm`` which gives the encryption algorithm in
-use, as well as other properties specific to the algorithm.
+use, as well as other properties specific to the algorithm [#]_.
+
+.. [#] Note that a redacted event will have an empty content, and hence the
+   content will have no ``algorithm`` property. Thus a client should check
+   whether an event is redacted before checking for the ``algorithm`` property.
 
 The encrypted payload is a JSON object with the properties ``type``
 (giving the decrypted event type), and ``content`` (giving the decrypted
@@ -380,7 +384,18 @@ In order to avoid replay attacks a client should remember the megolm
 ``message_index`` returned by ``olm_group_decrypt`` of each event they decrypt
 for each session. If the client decrypts an event with the same
 ``message_index`` as one that it has already received using that session then
-it should treat the message as invalid.
+it should treat the message as invalid. However, care must be taken when an
+event is decrypted multiple times that it is not flagged as a replay attack.
+For example, this may happen when the client decrypts an event, the event gets
+purged from the client's cache, and then the client backfills and re-decrypts
+the event. One way to handle this case is to ensure that the record of
+``message_index``\ es is appropriately purged when the client's cache of events
+is purged. Another way is to remember the event's ``event_id`` and
+``origin_server_ts`` along with its ``message_index``. When the client decrypts
+an event with a ``message_index`` matching that of a previously-decrypted
+event, it can then compare the ``event_id`` and ``origin_server_ts`` that it
+remembered for that ``message_index``, and if those fields match, then the
+message should be decrypted as normal.
 
 The client should check that the sender's fingerprint key matches the
 ``keys.ed25519`` property of the event which established the Megolm session
