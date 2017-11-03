@@ -23,8 +23,8 @@
 {% macro split_paramtable(rows_by_loc,
       titles=["Parameter", "Type", "Description"]) -%}
 
-{% set rowkeys = ['key', 'type', 'desc'] %}
-{% set titlerow = {'key': titles[0], 'type': titles[1], 'desc': titles[2]} %}
+{% set rowkeys = ['key', 'title', 'desc'] %}
+{% set titlerow = {'key': titles[0], 'title': titles[1], 'desc': titles[2]} %}
 
 {# We need the rows flattened into a single list. Abuse the 'sum' filter to
  # join arrays instead of add numbers. -#}

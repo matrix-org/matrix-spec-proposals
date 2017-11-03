@@ -96,9 +96,9 @@ class TypeTable(object):
 class TypeTableRow(object):
     """Describes an object field defined in the json schema
     """
-    def __init__(self, key, typ, desc, required=False):
+    def __init__(self, key, title, desc, required=False):
         self.key = key
-        self.type = typ
+        self.title = title
         self.desc = desc
         self.required = required
 
@@ -143,7 +143,7 @@ def inherit_parents(obj):
     # iterate through the parents first, and then overwrite with the settings
     # from the child.
     for p in map(inherit_parents, parents) + [obj]:
-        for key in ('title', 'type', 'required', 'description'):
+        for key in ('type', 'title', 'required', 'description'):
             if p.get(key):
                 result[key] = p[key]
 
@@ -161,12 +161,12 @@ def get_json_schema_object_fields(obj, enforce_title=False):
         obj(dict): definition from the JSON schema file. $refs should already
             have been resolved.
         enforce_title (bool): if True, and the definition has no "title",
-            the 'type' result will be set to 'NO_TITLE' (otherwise it will be
+            the 'title' result will be set to 'NO_TITLE' (otherwise it will be
             set to None)
 
     Returns:
         dict: with the following fields:
-          - type (str): title (normally the type name) for the object
+          - title (str): title (normally the type name) for the object
           - tables (list[TypeTable]): list of the tables for the type
                 definition
     """
@@ -190,7 +190,7 @@ def get_json_schema_object_fields(obj, enforce_title=False):
         key_type = additionalProps.get("x-pattern", "string")
         res = process_data_type(additionalProps)
         return {
-            "type": "{%s: %s}" % (key_type, res["type"]),
+            "title": "{%s: %s}" % (key_type, res["title"]),
             "tables": res["tables"],
         }
 
@@ -210,7 +210,7 @@ def get_json_schema_object_fields(obj, enforce_title=False):
     # doing all the keys.
     if not props:
         return {
-            "type": obj_title if obj_title else 'object',
+            "title": obj_title if obj_title else 'object',
             "tables": [],
         }
 
@@ -232,7 +232,7 @@ def get_json_schema_object_fields(obj, enforce_title=False):
 
             first_table_rows.append(TypeTableRow(
                 key=key_name,
-                typ=res["type"],
+                title=res["title"],
                 required=required,
                 desc=res["desc"],
             ))
@@ -252,13 +252,13 @@ def get_json_schema_object_fields(obj, enforce_title=False):
         assert isinstance(table, TypeTable)
 
     return {
-        "type": obj_title,
+        "title": obj_title,
         "tables": tables,
     }
 
 
 # process a data type definition. returns a dictionary with the keys:
-# type:     stringified type name
+# title:     stringified type name
 # desc:     description
 # enum_desc: description of permissible enum fields
 # is_object: true if the data type is an object
@@ -276,19 +276,22 @@ def process_data_type(prop, required=False, enforce_title=True):
             prop,
             enforce_title=enforce_title,
         )
-        prop_type = res["type"]
+        prop_title = res["title"]
         tables = res["tables"]
         is_object = True
 
     elif prop_type == "array":
         nested = process_data_type(prop["items"])
-        prop_type = "[%s]" % nested["type"]
+        prop_title = "[%s]" % nested["title"]
         tables = nested["tables"]
         enum_desc = nested["enum_desc"]
 
+    else:
+        prop_title = prop_type
+
     if prop.get("enum"):
         if len(prop["enum"]) > 1:
-            prop_type = "enum"
+            prop_title = "enum"
             enum_desc = (
                 "One of: %s" % json.dumps(prop["enum"])
             )
@@ -297,8 +300,8 @@ def process_data_type(prop, required=False, enforce_title=True):
                 "Must be '%s'." % prop["enum"][0]
             )
 
-    if isinstance(prop_type, list):
-        prop_type = " or ".join(prop_type)
+    if isinstance(prop_title, list):
+        prop_title = " or ".join(prop_title)
 
     rq = "**Required.**" if required else None
     desc = " ".join(x for x in [rq, prop.get("description"), enum_desc] if x)
@@ -307,7 +310,7 @@ def process_data_type(prop, required=False, enforce_title=True):
         assert isinstance(table, TypeTable)
 
     return {
-        "type": prop_type,
+        "title": prop_title,
         "desc": desc,
         "enum_desc": enum_desc,
         "is_object": is_object,
@@ -345,7 +348,7 @@ def get_tables_for_response(schema):
     # is an object, in which case there's little point in having one.
     if not pv["is_object"]:
         first_table_row = TypeTableRow(
-            key="<body>", typ=pv["type"], desc=pv["desc"],
+            key="<body>", title=pv["title"], desc=pv["desc"],
         )
         tables.insert(0, TypeTable(None, rows=[first_table_row]))
 
@@ -437,9 +440,9 @@ class MatrixUnits(Units):
 
                     endpoints.append(endpoint)
                 except Exception as e:
-                    raise Exception(
-                        "Error handling endpoint %s %s: %s" % (method, path, e),
-                    )
+                    logger.error("Error handling endpoint %s %s: %s",
+                                 method, path, e)
+                    raise
         return {
             "base": api.get("basePath").rstrip("/"),
             "group": group_name,
@@ -495,7 +498,7 @@ class MatrixUnits(Units):
                     )
 
                 endpoint["req_param_by_loc"].setdefault(param_loc, []).append(
-                    TypeTableRow(key=param_name, typ=val_type, desc=desc),
+                    TypeTableRow(key=param_name, title=val_type, desc=desc),
                 )
 
                 example = get_example_for_param(param)
@@ -539,7 +542,7 @@ class MatrixUnits(Units):
                 headers = TypeTable()
                 for (header_name, header) in good_response["headers"].iteritems():
                     headers.add_row(
-                        TypeTableRow(key=header_name, typ=header["type"],
+                        TypeTableRow(key=header_name, title=header["type"],
                                      desc=header["description"]),
                     )
                 endpoint["res_headers"] = headers
@@ -619,8 +622,8 @@ class MatrixUnits(Units):
 
         Returns:
             dict: with the following properties:
-                "type": prop_type,
-                "desc": desc,
+                "title": Event title (from the 'title' field of the schema)
+                "desc": desc
                 "tables": list[TypeTable]
         """
         path = CORE_EVENT_SCHEMA
