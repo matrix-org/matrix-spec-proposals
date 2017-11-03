@@ -9,9 +9,10 @@ properties:
     title: EventContent
     type: object
   state_key:
-    description: A unique key which defines the overwriting semantics for this piece
-      of room state. This value is often a zero-length string. The presence of this
-      key makes this event a State Event. The key MUST NOT start with '_'.
+    description: Required. A unique key which defines the overwriting semantics for
+      this piece of room state. This value is often a zero-length string.
+      The presence of this key makes this event a State Event. The key MUST NOT
+      start with '_'.
     type: string
 required:
 - state_key
