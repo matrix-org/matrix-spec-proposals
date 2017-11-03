@@ -143,9 +143,15 @@ def inherit_parents(obj):
     # iterate through the parents first, and then overwrite with the settings
     # from the child.
     for p in map(inherit_parents, parents) + [obj]:
-        for key in ('type', 'title', 'required', 'description'):
+        # child blats out type, title and description
+        for key in ('type', 'title', 'description'):
             if p.get(key):
                 result[key] = p[key]
+
+        # other fields get merged
+        for key in ('required', ):
+            if p.get(key):
+                result.setdefault(key, []).extend(p[key])
 
         for key in ('properties', 'additionalProperties', 'patternProperties'):
             if p.get(key):
