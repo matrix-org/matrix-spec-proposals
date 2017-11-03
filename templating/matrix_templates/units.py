@@ -443,7 +443,7 @@ class MatrixUnits(Units):
             "rate_limited": 429 in endpoint_swagger.get("responses", {}),
             "req_param_by_loc": {},
             "req_body_tables": [],
-            "res_headers": [],
+            "res_headers": None,
             "res_tables": [],
             "responses": [],
             "example": {
@@ -521,10 +521,9 @@ class MatrixUnits(Units):
                     good_response["schema"]
                 )
             if "headers" in good_response:
-                headers = []
-                for (header_name, header) in good_response[
-                    "headers"].iteritems():
-                    headers.append(
+                headers = TypeTable()
+                for (header_name, header) in good_response["headers"].iteritems():
+                    headers.add_row(
                         TypeTableRow(key=header_name, typ=header["type"],
                                      desc=header["description"]),
                     )
