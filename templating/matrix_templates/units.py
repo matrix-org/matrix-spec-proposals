@@ -62,6 +62,50 @@ OrderedLoader.add_constructor(
     yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
     construct_mapping)
 
+
+class TypeTable(object):
+    """Describes a table documenting an object type
+
+    Attributes:
+        title(str|None): Title of the table - normally the object type
+        desc(str|None): description of the object
+        rows(list[TypeTableRow]): the rows in the table
+    """
+    def __init__(self, title=None, desc=None, rows=[]):
+        self.title=title
+        self.desc=desc
+        self._rows = []
+        for row in rows:
+            self.add_row(row)
+
+    def add_row(self, row):
+        if not isinstance(row, TypeTableRow):
+            raise ValueError("Can only add TypeTableRows to TypeTable")
+
+        self._rows.append(row)
+
+    def __getattr__(self, item):
+        if item == 'rows':
+            return list(self._rows)
+        return super(TypeTable, self).__getattr__(item)
+
+    def __repr__(self):
+        return "TypeTable[%s, rows=%s]" % (self.title, self._rows)
+
+
+class TypeTableRow(object):
+    """Describes an object field defined in the json schema
+    """
+    def __init__(self, key, typ, desc, required=False):
+        self.key = key
+        self.type = typ
+        self.desc = desc
+        self.required = required
+
+    def __repr__(self):
+        return "TypeTableRow[%s: %s]" % (self.key, self.desc)
+
+
 def resolve_references(path, schema):
     if isinstance(schema, dict):
         # do $ref first
@@ -171,12 +215,12 @@ def get_json_schema_object_fields(obj, enforce_title=False):
             required = key_name in required_keys
             res = process_data_type(props[key_name], required)
 
-            first_table_rows.append({
-                "key": key_name,
-                "type": res["type"],
-                "required": required,
-                "desc": res["desc"],
-            })
+            first_table_rows.append(TypeTableRow(
+                key=key_name,
+                typ=res["type"],
+                required=required,
+                desc=res["desc"],
+            ))
             tables.extend(res["tables"])
             logger.debug("Done property %s" % key_name)
 
@@ -187,10 +231,10 @@ def get_json_schema_object_fields(obj, enforce_title=False):
             # we don't lose information about where the error occurred.
             raise e2, None, sys.exc_info()[2]
 
-    tables.insert(0, {
-        "title": obj_title,
-        "rows": first_table_rows,
-    })
+    tables.insert(0, TypeTable(title=obj_title, rows=first_table_rows))
+
+    for table in tables:
+        assert isinstance(table, TypeTable)
 
     return {
         "type": obj_title,
@@ -241,9 +285,11 @@ def process_data_type(prop, required=False, enforce_title=True):
     if isinstance(prop_type, list):
         prop_type = " or ".join(prop_type)
 
-
     rq = "**Required.**" if required else None
     desc = " ".join(x for x in [rq, prop.get("description"), enum_desc] if x)
+
+    for table in tables:
+        assert isinstance(table, TypeTable)
 
     return {
         "type": prop_type,
@@ -263,13 +309,10 @@ def deduplicate_tables(tables):
     titles = set()
     filtered = []
     for table in reversed(tables):
-        if table.get("no-table"):
+        if table.title in titles:
             continue
 
-        if table.get("title") in titles:
-            continue
-
-        titles.add(table.get("title"))
+        titles.add(table.title)
         filtered.append(table)
     filtered.reverse()
 
@@ -286,14 +329,10 @@ def get_tables_for_response(schema):
     # make up the first table, with just the 'body' row in, unless the response
     # is an object, in which case there's little point in having one.
     if not pv["is_object"]:
-        tables = [{
-            "title": None,
-            "rows": [{
-                "key": "<body>",
-                "type": pv["type"],
-                "desc": pv["desc"],
-            }]
-        }] + tables
+        first_table_row = TypeTableRow(
+            key="<body>", typ=pv["type"], desc=pv["desc"],
+        )
+        tables.insert(0, TypeTable(None, rows=[first_table_row]))
 
     logger.debug("response: %r" % tables)
 
@@ -440,11 +479,9 @@ class MatrixUnits(Units):
                         " One of: %s" % json.dumps(param.get("enum"))
                     )
 
-                endpoint["req_param_by_loc"].setdefault(param_loc, []).append({
-                    "key": param_name,
-                    "type": val_type,
-                    "desc": desc
-                })
+                endpoint["req_param_by_loc"].setdefault(param_loc, []).append(
+                    TypeTableRow(key=param_name, typ=val_type, desc=desc),
+                )
 
                 example = get_example_for_param(param)
                 if example is None:
@@ -487,11 +524,10 @@ class MatrixUnits(Units):
                 headers = []
                 for (header_name, header) in good_response[
                     "headers"].iteritems():
-                    headers.append({
-                        "key": header_name,
-                        "type": header["type"],
-                        "desc": header["description"],
-                    })
+                    headers.append(
+                        TypeTableRow(key=header_name, typ=header["type"],
+                                     desc=header["description"]),
+                    )
                 endpoint["res_headers"] = headers
         query_string = "" if len(
             example_query_params) == 0 else "?" + urllib.urlencode(
@@ -531,7 +567,7 @@ class MatrixUnits(Units):
             # put the top-level parameters into 'req_param_by_loc', and the others
             # into 'req_body_tables'
             body_params = endpoint_data['req_param_by_loc'].setdefault("JSON body",[])
-            body_params.extend(req_body_tables[0]["rows"])
+            body_params.extend(req_body_tables[0].rows)
 
             body_tables = req_body_tables[1:]
             endpoint_data['req_body_tables'].extend(body_tables)
@@ -586,19 +622,18 @@ class MatrixUnits(Units):
                 if "event" not in event_type:
                     continue  # filter ImageInfo and co
 
-                table = {
-                    "title": event_info["title"],
-                    "desc": event_info["description"],
-                    "rows": []
-                }
+                table = TypeTable(
+                    title=event_info["title"],
+                    desc=event_info["description"],
+                )
 
                 for prop in sorted(event_info["properties"]):
-                    row = {
-                        "key": prop,
-                        "type": event_info["properties"][prop]["type"],
-                        "desc": event_info["properties"][prop].get("description","")
-                    }
-                    table["rows"].append(row)
+                    prop_info = event_info["properties"][prop]
+                    table.add_row(TypeTableRow(
+                        key=prop,
+                        typ=prop_info["type"],
+                        desc=prop_info.get("description", ""),
+                    ))
 
                 event_types[event_type] = table
         return event_types
@@ -606,29 +641,31 @@ class MatrixUnits(Units):
     def load_apis(self, substitutions):
         cs_ver = substitutions.get("%CLIENT_RELEASE_LABEL%", "unstable")
         fed_ver = substitutions.get("%SERVER_RELEASE_LABEL%", "unstable")
-        return {
-            "rows": [{
-                "key": "`Client-Server API <client_server/"+cs_ver+".html>`_",
-                "type": cs_ver,
-                "desc": "Interaction between clients and servers",
-            }, {
-                "key": "`Server-Server API <server_server/"+fed_ver+".html>`_",
-                "type": fed_ver,
-                "desc": "Federation between servers",
-            }, {
-                "key": "`Application Service API <application_service/unstable.html>`_",
-                "type": "unstable",
-                "desc": "Privileged server plugins",
-            }, {
-                "key": "`Identity Service API <identity_service/unstable.html>`_",
-                "type": "unstable",
-                "desc": "Mapping of third party IDs to Matrix IDs",
-            }, {
-                "key": "`Push Gateway API <push_gateway/unstable.html>`_",
-                "type": "unstable",
-                "desc": "Push notifications for Matrix events",
-            }]
-        }
+
+        # we abuse the typetable to return this info to the templates
+        return TypeTable(rows=[
+            TypeTableRow(
+                "`Client-Server API <client_server/"+cs_ver+".html>`_",
+                cs_ver,
+                "Interaction between clients and servers",
+            ), TypeTableRow(
+                "`Server-Server API <server_server/"+fed_ver+".html>`_",
+                fed_ver,
+                "Federation between servers",
+            ), TypeTableRow(
+                "`Application Service API <application_service/unstable.html>`_",
+                "unstable",
+                "Privileged server plugins",
+            ), TypeTableRow(
+                "`Identity Service API <identity_service/unstable.html>`_",
+                "unstable",
+                "Mapping of third party IDs to Matrix IDs",
+            ), TypeTableRow(
+                "`Push Gateway API <push_gateway/unstable.html>`_",
+                "unstable",
+                "Push notifications for Matrix events",
+            ),
+        ])
 
     def load_event_examples(self):
         path = EVENT_EXAMPLES
@@ -680,13 +717,7 @@ class MatrixUnits(Units):
             "desc": None,
             "msgtype": None,
             "content_fields": [
-                # {
-                #   title: "<title> key"
-                #   rows: [
-                #       { key: <key_name>, type: <string>,
-                #         desc: <desc>, required: <bool> }
-                #   ]
-                # }
+                # <TypeTable>
             ]
         }
 

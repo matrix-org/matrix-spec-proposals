@@ -6,8 +6,7 @@
 {#
  # write a table for a list of parameters.
  #
- # 'rows' is the list of parameters. Each row should have the keys
- # 'key', 'type', and 'desc'.
+ # 'rows' is the list of parameters. Each row should be a TypeTableRow.
  #}
 {% macro paramtable(rows, titles=["Parameter", "Type", "Description"]) -%}
 {{ split_paramtable({None: rows}, titles) }}

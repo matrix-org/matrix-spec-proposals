@@ -12,11 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Parent class for writing units."""
-from . import AccessKeyStore
 import inspect
-import json
-import os
-import subprocess
+
 
 class Units(object):
 
@@ -57,9 +54,6 @@ class Units(object):
                 unit_dict[unit_key] = func(self.substitutions)
             else:
                 unit_dict[unit_key] = func()
-            self.log("Generated unit '%s' : %s" % (
-                unit_key, json.dumps(unit_dict[unit_key])[:50].replace(
-                    "\n",""
-                )
-            ))
+            self.log("Generated unit '%s'" % unit_key)
+
         return unit_dict
