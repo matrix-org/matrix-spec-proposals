@@ -62,6 +62,50 @@ OrderedLoader.add_constructor(
     yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
     construct_mapping)
 
+
+class TypeTable(object):
+    """Describes a table documenting an object type
+
+    Attributes:
+        title(str|None): Title of the table - normally the object type
+        desc(str|None): description of the object
+        rows(list[TypeTableRow]): the rows in the table
+    """
+    def __init__(self, title=None, desc=None, rows=[]):
+        self.title=title
+        self.desc=desc
+        self._rows = []
+        for row in rows:
+            self.add_row(row)
+
+    def add_row(self, row):
+        if not isinstance(row, TypeTableRow):
+            raise ValueError("Can only add TypeTableRows to TypeTable")
+
+        self._rows.append(row)
+
+    def __getattr__(self, item):
+        if item == 'rows':
+            return list(self._rows)
+        return super(TypeTable, self).__getattr__(item)
+
+    def __repr__(self):
+        return "TypeTable[%s, rows=%s]" % (self.title, self._rows)
+
+
+class TypeTableRow(object):
+    """Describes an object field defined in the json schema
+    """
+    def __init__(self, key, title, desc, required=False):
+        self.key = key
+        self.title = title
+        self.desc = desc
+        self.required = required
+
+    def __repr__(self):
+        return "TypeTableRow[%s: %s]" % (self.key, self.desc)
+
+
 def resolve_references(path, schema):
     if isinstance(schema, dict):
         # do $ref first
@@ -99,9 +143,15 @@ def inherit_parents(obj):
     # iterate through the parents first, and then overwrite with the settings
     # from the child.
     for p in map(inherit_parents, parents) + [obj]:
-        for key in ('title', 'type', 'required', 'description'):
+        # child blats out type, title and description
+        for key in ('type', 'title', 'description'):
             if p.get(key):
                 result[key] = p[key]
+
+        # other fields get merged
+        for key in ('required', ):
+            if p.get(key):
+                result.setdefault(key, []).extend(p[key])
 
         for key in ('properties', 'additionalProperties', 'patternProperties'):
             if p.get(key):
@@ -111,6 +161,21 @@ def inherit_parents(obj):
 
 
 def get_json_schema_object_fields(obj, enforce_title=False):
+    """Parse a JSON schema object definition
+
+    Args:
+        obj(dict): definition from the JSON schema file. $refs should already
+            have been resolved.
+        enforce_title (bool): if True, and the definition has no "title",
+            the 'title' result will be set to 'NO_TITLE' (otherwise it will be
+            set to None)
+
+    Returns:
+        dict: with the following fields:
+          - title (str): title (normally the type name) for the object
+          - tables (list[TypeTable]): list of the tables for the type
+                definition
+    """
     # Algorithm:
     # f.e. property => add field info (if field is object then recurse)
     if obj.get("type") != "object":
@@ -131,7 +196,7 @@ def get_json_schema_object_fields(obj, enforce_title=False):
         key_type = additionalProps.get("x-pattern", "string")
         res = process_data_type(additionalProps)
         return {
-            "type": "{%s: %s}" % (key_type, res["type"]),
+            "title": "{%s: %s}" % (key_type, res["title"]),
             "tables": res["tables"],
         }
 
@@ -151,7 +216,7 @@ def get_json_schema_object_fields(obj, enforce_title=False):
     # doing all the keys.
     if not props:
         return {
-            "type": obj_title if obj_title else 'object',
+            "title": obj_title if obj_title else 'object',
             "tables": [],
         }
 
@@ -171,12 +236,12 @@ def get_json_schema_object_fields(obj, enforce_title=False):
             required = key_name in required_keys
             res = process_data_type(props[key_name], required)
 
-            first_table_rows.append({
-                "key": key_name,
-                "type": res["type"],
-                "required": required,
-                "desc": res["desc"],
-            })
+            first_table_rows.append(TypeTableRow(
+                key=key_name,
+                title=res["title"],
+                required=required,
+                desc=res["desc"],
+            ))
             tables.extend(res["tables"])
             logger.debug("Done property %s" % key_name)
 
@@ -187,19 +252,19 @@ def get_json_schema_object_fields(obj, enforce_title=False):
             # we don't lose information about where the error occurred.
             raise e2, None, sys.exc_info()[2]
 
-    tables.insert(0, {
-        "title": obj_title,
-        "rows": first_table_rows,
-    })
+    tables.insert(0, TypeTable(title=obj_title, rows=first_table_rows))
+
+    for table in tables:
+        assert isinstance(table, TypeTable)
 
     return {
-        "type": obj_title,
+        "title": obj_title,
         "tables": tables,
     }
 
 
 # process a data type definition. returns a dictionary with the keys:
-# type:     stringified type name
+# title:     stringified type name
 # desc:     description
 # enum_desc: description of permissible enum fields
 # is_object: true if the data type is an object
@@ -217,19 +282,22 @@ def process_data_type(prop, required=False, enforce_title=True):
             prop,
             enforce_title=enforce_title,
         )
-        prop_type = res["type"]
+        prop_title = res["title"]
         tables = res["tables"]
         is_object = True
 
     elif prop_type == "array":
         nested = process_data_type(prop["items"])
-        prop_type = "[%s]" % nested["type"]
+        prop_title = "[%s]" % nested["title"]
         tables = nested["tables"]
         enum_desc = nested["enum_desc"]
 
+    else:
+        prop_title = prop_type
+
     if prop.get("enum"):
         if len(prop["enum"]) > 1:
-            prop_type = "enum"
+            prop_title = "enum"
             enum_desc = (
                 "One of: %s" % json.dumps(prop["enum"])
             )
@@ -238,15 +306,17 @@ def process_data_type(prop, required=False, enforce_title=True):
                 "Must be '%s'." % prop["enum"][0]
             )
 
-    if isinstance(prop_type, list):
-        prop_type = " or ".join(prop_type)
-
+    if isinstance(prop_title, list):
+        prop_title = " or ".join(prop_title)
 
     rq = "**Required.**" if required else None
     desc = " ".join(x for x in [rq, prop.get("description"), enum_desc] if x)
 
+    for table in tables:
+        assert isinstance(table, TypeTable)
+
     return {
-        "type": prop_type,
+        "title": prop_title,
         "desc": desc,
         "enum_desc": enum_desc,
         "is_object": is_object,
@@ -263,13 +333,10 @@ def deduplicate_tables(tables):
     titles = set()
     filtered = []
     for table in reversed(tables):
-        if table.get("no-table"):
+        if table.title in titles:
             continue
 
-        if table.get("title") in titles:
-            continue
-
-        titles.add(table.get("title"))
+        titles.add(table.title)
         filtered.append(table)
     filtered.reverse()
 
@@ -286,14 +353,10 @@ def get_tables_for_response(schema):
     # make up the first table, with just the 'body' row in, unless the response
     # is an object, in which case there's little point in having one.
     if not pv["is_object"]:
-        tables = [{
-            "title": None,
-            "rows": [{
-                "key": "<body>",
-                "type": pv["type"],
-                "desc": pv["desc"],
-            }]
-        }] + tables
+        first_table_row = TypeTableRow(
+            key="<body>", title=pv["title"], desc=pv["desc"],
+        )
+        tables.insert(0, TypeTable(None, rows=[first_table_row]))
 
     logger.debug("response: %r" % tables)
 
@@ -383,9 +446,9 @@ class MatrixUnits(Units):
 
                     endpoints.append(endpoint)
                 except Exception as e:
-                    raise Exception(
-                        "Error handling endpoint %s %s: %s" % (method, path, e),
-                    )
+                    logger.error("Error handling endpoint %s %s: %s",
+                                 method, path, e)
+                    raise
         return {
             "base": api.get("basePath").rstrip("/"),
             "group": group_name,
@@ -404,7 +467,7 @@ class MatrixUnits(Units):
             "rate_limited": 429 in endpoint_swagger.get("responses", {}),
             "req_param_by_loc": {},
             "req_body_tables": [],
-            "res_headers": [],
+            "res_headers": None,
             "res_tables": [],
             "responses": [],
             "example": {
@@ -440,11 +503,9 @@ class MatrixUnits(Units):
                         " One of: %s" % json.dumps(param.get("enum"))
                     )
 
-                endpoint["req_param_by_loc"].setdefault(param_loc, []).append({
-                    "key": param_name,
-                    "type": val_type,
-                    "desc": desc
-                })
+                endpoint["req_param_by_loc"].setdefault(param_loc, []).append(
+                    TypeTableRow(key=param_name, title=val_type, desc=desc),
+                )
 
                 example = get_example_for_param(param)
                 if example is None:
@@ -484,14 +545,12 @@ class MatrixUnits(Units):
                     good_response["schema"]
                 )
             if "headers" in good_response:
-                headers = []
-                for (header_name, header) in good_response[
-                    "headers"].iteritems():
-                    headers.append({
-                        "key": header_name,
-                        "type": header["type"],
-                        "desc": header["description"],
-                    })
+                headers = TypeTable()
+                for (header_name, header) in good_response["headers"].iteritems():
+                    headers.add_row(
+                        TypeTableRow(key=header_name, title=header["type"],
+                                     desc=header["description"]),
+                    )
                 endpoint["res_headers"] = headers
         query_string = "" if len(
             example_query_params) == 0 else "?" + urllib.urlencode(
@@ -531,7 +590,7 @@ class MatrixUnits(Units):
             # put the top-level parameters into 'req_param_by_loc', and the others
             # into 'req_body_tables'
             body_params = endpoint_data['req_param_by_loc'].setdefault("JSON body",[])
-            body_params.extend(req_body_tables[0]["rows"])
+            body_params.extend(req_body_tables[0].rows)
 
             body_tables = req_body_tables[1:]
             endpoint_data['req_body_tables'].extend(body_tables)
@@ -565,70 +624,64 @@ class MatrixUnits(Units):
         return apis
 
     def load_common_event_fields(self):
+        """Parse the core event schema files
+
+        Returns:
+            dict: with the following properties:
+                "title": Event title (from the 'title' field of the schema)
+                "desc": desc
+                "tables": list[TypeTable]
+        """
         path = CORE_EVENT_SCHEMA
         event_types = {}
 
-        for (root, dirs, files) in os.walk(path):
-            for filename in files:
-                if not filename.endswith(".yaml"):
-                    continue
+        for filename in os.listdir(path):
+            if not filename.endswith(".yaml"):
+                continue
 
-                event_type = filename[:-5]  # strip the ".yaml"
-                filepath = os.path.join(root, filename)
-                with open(filepath) as f:
-                    try:
-                        event_info = yaml.load(f, OrderedLoader)
-                    except Exception as e:
-                        raise ValueError(
-                            "Error reading file %r" % (filepath,), e
-                        )
+            filepath = os.path.join(path, filename)
 
-                if "event" not in event_type:
-                    continue  # filter ImageInfo and co
+            event_type = filename[:-5]  # strip the ".yaml"
+            logger.info("Reading event schema: %s" % filepath)
 
-                table = {
-                    "title": event_info["title"],
-                    "desc": event_info["description"],
-                    "rows": []
-                }
+            with open(filepath) as f:
+                event_schema = yaml.load(f, OrderedLoader)
 
-                for prop in sorted(event_info["properties"]):
-                    row = {
-                        "key": prop,
-                        "type": event_info["properties"][prop]["type"],
-                        "desc": event_info["properties"][prop].get("description","")
-                    }
-                    table["rows"].append(row)
-
-                event_types[event_type] = table
+            schema_info = process_data_type(
+                event_schema,
+                enforce_title=True,
+            )
+            event_types[event_type] = schema_info
         return event_types
 
     def load_apis(self, substitutions):
         cs_ver = substitutions.get("%CLIENT_RELEASE_LABEL%", "unstable")
         fed_ver = substitutions.get("%SERVER_RELEASE_LABEL%", "unstable")
-        return {
-            "rows": [{
-                "key": "`Client-Server API <client_server/"+cs_ver+".html>`_",
-                "type": cs_ver,
-                "desc": "Interaction between clients and servers",
-            }, {
-                "key": "`Server-Server API <server_server/"+fed_ver+".html>`_",
-                "type": fed_ver,
-                "desc": "Federation between servers",
-            }, {
-                "key": "`Application Service API <application_service/unstable.html>`_",
-                "type": "unstable",
-                "desc": "Privileged server plugins",
-            }, {
-                "key": "`Identity Service API <identity_service/unstable.html>`_",
-                "type": "unstable",
-                "desc": "Mapping of third party IDs to Matrix IDs",
-            }, {
-                "key": "`Push Gateway API <push_gateway/unstable.html>`_",
-                "type": "unstable",
-                "desc": "Push notifications for Matrix events",
-            }]
-        }
+
+        # we abuse the typetable to return this info to the templates
+        return TypeTable(rows=[
+            TypeTableRow(
+                "`Client-Server API <client_server/"+cs_ver+".html>`_",
+                cs_ver,
+                "Interaction between clients and servers",
+            ), TypeTableRow(
+                "`Server-Server API <server_server/"+fed_ver+".html>`_",
+                fed_ver,
+                "Federation between servers",
+            ), TypeTableRow(
+                "`Application Service API <application_service/unstable.html>`_",
+                "unstable",
+                "Privileged server plugins",
+            ), TypeTableRow(
+                "`Identity Service API <identity_service/unstable.html>`_",
+                "unstable",
+                "Mapping of third party IDs to Matrix IDs",
+            ), TypeTableRow(
+                "`Push Gateway API <push_gateway/unstable.html>`_",
+                "unstable",
+                "Push notifications for Matrix events",
+            ),
+        ])
 
     def load_event_examples(self):
         path = EVENT_EXAMPLES
@@ -673,24 +726,23 @@ class MatrixUnits(Units):
             json_schema = yaml.load(f, OrderedLoader)
 
         schema = {
+            # one of "Message Event" or "State Event"
             "typeof": "",
             "typeof_info": "",
+
+            # event type, eg "m.room.member". Note *not* the type of the
+            # event object (which should always be 'object').
             "type": None,
             "title": None,
             "desc": None,
             "msgtype": None,
             "content_fields": [
-                # {
-                #   title: "<title> key"
-                #   rows: [
-                #       { key: <key_name>, type: <string>,
-                #         desc: <desc>, required: <bool> }
-                #   ]
-                # }
+                # <TypeTable>
             ]
         }
 
-        # add typeof
+        # before we resolve the references, see if the first reference is to
+        # the message event or state event schemas, and add typeof info if so.
         base_defs = {
             ROOM_EVENT: "Message Event",
             STATE_EVENT: "State Event"

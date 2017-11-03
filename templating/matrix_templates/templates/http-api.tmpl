@@ -27,10 +27,10 @@ Request format:
 `No parameters`
 {% endif %}
 
-{% if endpoint.res_headers|length > 0 -%}
+{% if endpoint.res_headers is not none -%}
 Response headers:
 
-{{ tables.paramtable(endpoint.res_headers) }}
+{{ tables.paramtable(endpoint.res_headers.rows) }}
 {% endif -%}
 
 {% if endpoint.res_tables|length > 0 -%}
