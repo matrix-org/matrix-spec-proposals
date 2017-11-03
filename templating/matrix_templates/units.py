@@ -155,6 +155,21 @@ def inherit_parents(obj):
 
 
 def get_json_schema_object_fields(obj, enforce_title=False):
+    """Parse a JSON schema object definition
+
+    Args:
+        obj(dict): definition from the JSON schema file. $refs should already
+            have been resolved.
+        enforce_title (bool): if True, and the definition has no "title",
+            the 'type' result will be set to 'NO_TITLE' (otherwise it will be
+            set to None)
+
+    Returns:
+        dict: with the following fields:
+          - type (str): title (normally the type name) for the object
+          - tables (list[TypeTable]): list of the tables for the type
+                definition
+    """
     # Algorithm:
     # f.e. property => add field info (if field is object then recurse)
     if obj.get("type") != "object":
@@ -600,41 +615,34 @@ class MatrixUnits(Units):
         return apis
 
     def load_common_event_fields(self):
+        """Parse the core event schema files
+
+        Returns:
+            dict: with the following properties:
+                "type": prop_type,
+                "desc": desc,
+                "tables": list[TypeTable]
+        """
         path = CORE_EVENT_SCHEMA
         event_types = {}
 
-        for (root, dirs, files) in os.walk(path):
-            for filename in files:
-                if not filename.endswith(".yaml"):
-                    continue
+        for filename in os.listdir(path):
+            if not filename.endswith(".yaml"):
+                continue
 
-                event_type = filename[:-5]  # strip the ".yaml"
-                filepath = os.path.join(root, filename)
-                with open(filepath) as f:
-                    try:
-                        event_info = yaml.load(f, OrderedLoader)
-                    except Exception as e:
-                        raise ValueError(
-                            "Error reading file %r" % (filepath,), e
-                        )
+            filepath = os.path.join(path, filename)
 
-                if "event" not in event_type:
-                    continue  # filter ImageInfo and co
+            event_type = filename[:-5]  # strip the ".yaml"
+            logger.info("Reading event schema: %s" % filepath)
 
-                table = TypeTable(
-                    title=event_info["title"],
-                    desc=event_info["description"],
-                )
+            with open(filepath) as f:
+                event_schema = yaml.load(f, OrderedLoader)
 
-                for prop in sorted(event_info["properties"]):
-                    prop_info = event_info["properties"][prop]
-                    table.add_row(TypeTableRow(
-                        key=prop,
-                        typ=prop_info["type"],
-                        desc=prop_info.get("description", ""),
-                    ))
-
-                event_types[event_type] = table
+            schema_info = process_data_type(
+                event_schema,
+                enforce_title=True,
+            )
+            event_types[event_type] = schema_info
         return event_types
 
     def load_apis(self, substitutions):
@@ -709,8 +717,12 @@ class MatrixUnits(Units):
             json_schema = yaml.load(f, OrderedLoader)
 
         schema = {
+            # one of "Message Event" or "State Event"
             "typeof": "",
             "typeof_info": "",
+
+            # event type, eg "m.room.member". Note *not* the type of the
+            # event object (which should always be 'object').
             "type": None,
             "title": None,
             "desc": None,
@@ -720,7 +732,8 @@ class MatrixUnits(Units):
             ]
         }
 
-        # add typeof
+        # before we resolve the references, see if the first reference is to
+        # the message event or state event schemas, and add typeof info if so.
         base_defs = {
             ROOM_EVENT: "Message Event",
             STATE_EVENT: "State Event"
