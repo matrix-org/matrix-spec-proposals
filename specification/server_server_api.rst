@@ -565,18 +565,18 @@ the state of the room.
 
 #. If type is ``m.room.power_levels``:
 
-   a. For each of the prior existing keys ``users_default``, ``events_default``,
+   a. For each of the keys ``users_default``, ``events_default``,
       ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
-      each prior existing entry being changed under the ``events`` or ``users`` keys:
+      each entry being changed under the ``events`` or ``users`` keys:
 
-      i. If the current value is higher than the ``sender``'s current power level,
-         reject.
+      i. If the prior existing current value is higher than the ``sender``'s
+         current power level, reject.
 
       #. If the new value is higher than the ``sender``'s current power level,
          reject.
 
-   #. For each prior existing entry being changed under the ``users`` key, other than the
-      ``sender``'s own entry:
+   #. For each prior existing entry being changed under the ``users`` key, other
+      than the ``sender``'s own entry:
 
       i. If the current value is equal to the ``sender``'s current power level,
          reject.
