@@ -224,7 +224,7 @@ Every event graph has a single root event with no parent.
 To order and ease chronological comparison between the events within the graph,
 homeservers maintain a ``depth`` metadata field on each event. An event's
 ``depth`` is a positive integer that is strictly greater than the depths of any
-of its parents. The root event should have a depth of 1. Thus if one event is
+of its parents. The root event must have a depth of 0. Thus if one event is
 before another, then it must have a strictly smaller depth.
 
 Room structure
