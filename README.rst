@@ -1,9 +1,7 @@
-This repository contains the documentation for Matrix.
+This repository contains the Matrix specification.
 
-Primarily, that means the Matrix protocol specifcation, but this repo also
-comtains a lot of supporting documents, including some introductions to Matrix,
-and, notably, a list of projects using Matrix which is visible on the
-`matrix.org website <https://matrix.org/docs/projects/try-matrix-now.html>`_.
+Note that the Matrix Project lists, which were previously kept in this
+repository, are now in https://github.com/matrix-org/matrix.org.
 
 Structure of this repository
 ============================
@@ -24,8 +22,6 @@ Structure of this repository
 - ``scripts``: scripts to generate formatted versions of the
   documentation, typically HTML.
 - ``specification``: the specification split up into sections.
-- ``supporting-docs``: additional documents which explain design
-  decisions, examples, use cases, etc.
 - ``templating``: the templates and templating system used to
   generate the spec.
 

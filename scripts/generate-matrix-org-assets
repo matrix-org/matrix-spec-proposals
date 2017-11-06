@@ -12,9 +12,6 @@ mkdir -p assets
 # and the swagger
 ./scripts/dump-swagger.py -o assets/spec/client_server/unstable.json
 
-# also need the supporting-docs, which become the jekyll posts.
-cp -rT supporting-docs assets/jekyll-posts
-
 # create a tarball of the assets. Exclude the spec index for now, as
 # we want to leave it pointing at the release versions of the specs.
 # (XXX: how to maintain this?)
