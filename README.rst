@@ -175,23 +175,3 @@ Examples:
 * `Peer-to-peer Matrix <https://github.com/matrix-org/matrix-doc/issues/710>`_
 * `Specify a means for clients to "edit" previous messages
   <https://github.com/matrix-org/matrix-doc/issues/682>`_
-
-`projects <https://github.com/matrix-org/matrix-doc/labels/projects>`_
-----------------------------------------------------------------------
-
-A project which needs adding to the 'Try Matrix Now' page.
-
-Examples:
-
-* `add https://gitlab.com/uhoreg/matrix-appservice-prosody
-  <https://github.com/matrix-org/matrix-doc/issues/1016>`_
-
-* `add https://github.com/tavoda/matrix-java project
-  <https://github.com/matrix-org/matrix-doc/issues/956>`_
-
-`site <https://github.com/matrix-org/matrix-doc/labels/site>`_
---------------------------------------------------------------
-
-Ideas for things to help document or sell matrix more generally.
-(Probably these would be better filed under
-https://github.com/matrix-org/matrix.org, but they tend to end up here.)
