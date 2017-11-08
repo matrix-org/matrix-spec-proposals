@@ -273,7 +273,7 @@ def addAnchors(path):
 
 def run_through_template(input_files, set_verbose, substitutions):
     args = [
-        'python', 'build.py',
+        'python', script_dir+'/templating/build.py',
         "-o", tmp_dir,
         "-i", "matrix_templates",
     ]
@@ -288,10 +288,7 @@ def run_through_template(input_files, set_verbose, substitutions):
 
     log("EXEC: %s" % " ".join(args))
     log(" ==== build.py output ==== ")
-    subprocess.check_call(
-        args,
-        cwd=os.path.join(docs_dir, "templating"),
-    )
+    subprocess.check_call(args)
 
 """
 Extract and resolve groups for the given target in the given targets listing.

@@ -28,8 +28,6 @@ Structure of this repository
 - ``scripts``: scripts to generate formatted versions of the
   documentation, typically HTML.
 - ``specification``: the specification split up into sections.
-- ``templating``: the templates and templating system used to
-  generate the spec.
 
 .. _OpenAPI: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 .. _JSON Schema: http://json-schema.org/

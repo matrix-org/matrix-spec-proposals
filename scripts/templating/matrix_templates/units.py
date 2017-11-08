@@ -25,23 +25,27 @@ from collections import OrderedDict
 import logging
 import json
 import os
+import os.path
 import re
 import subprocess
 import sys
 import urllib
 import yaml
 
+matrix_doc_dir=reduce(lambda acc,_: os.path.dirname(acc),
+                      range(1, 5), os.path.abspath(__file__))
+
 HTTP_APIS = {
-    "../api/application-service": "as",
-    "../api/client-server": "cs",
-    "../api/identity": "is",
-    "../api/push-gateway": "push",
+    os.path.join(matrix_doc_dir, "api/application-service"): "as",
+    os.path.join(matrix_doc_dir, "api/client-server"): "cs",
+    os.path.join(matrix_doc_dir, "api/identity"): "is",
+    os.path.join(matrix_doc_dir, "api/push-gateway"): "push",
 }
-EVENT_EXAMPLES = "../event-schemas/examples"
-EVENT_SCHEMA = "../event-schemas/schema"
-CORE_EVENT_SCHEMA = "../event-schemas/schema/core-event-schema"
-CHANGELOG_DIR = "../changelogs"
-TARGETS = "../specification/targets.yaml"
+EVENT_EXAMPLES = os.path.join(matrix_doc_dir, "event-schemas/examples")
+EVENT_SCHEMA = os.path.join(matrix_doc_dir, "event-schemas/schema")
+CORE_EVENT_SCHEMA = os.path.join(matrix_doc_dir, "event-schemas/schema/core-event-schema")
+CHANGELOG_DIR = os.path.join(matrix_doc_dir, "changelogs")
+TARGETS = os.path.join(matrix_doc_dir, "specification/targets.yaml")
 
 ROOM_EVENT = "core-event-schema/room_event.yaml"
 STATE_EVENT = "core-event-schema/state_event.yaml"
