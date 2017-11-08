@@ -1,5 +1,11 @@
 This repository contains the Matrix specification.
 
+If you want to ask more about the specification, join us on
+`#matrix-dev:matrix.org <http://matrix.to/#/#matrix-dev:matrix.org>`_.
+
+We welcome contributions to the spec! See the notes below on `Building the
+specification`_, and `<CONTRIBUTING.rst>`_ to get started making contributions.
+
 Note that the Matrix Project lists, which were previously kept in this
 repository, are now in https://github.com/matrix-org/matrix.org.
 
@@ -27,15 +33,6 @@ Structure of this repository
 
 .. _OpenAPI: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 .. _JSON Schema: http://json-schema.org/
-
-Contributing
-============
-
-If you want to ask more about the specification, join us on
-`#matrix-dev:matrix.org <http://matrix.to/#/#matrix-dev:matrix.org>`_.
-
-If you would like to contribute to the specification or supporting
-documentation, see `<CONTRIBUTING.rst>`_.
 
 Building the specification
 ==========================
@@ -98,11 +95,33 @@ To make use of the generated file, there are a number of options:
 
 .. _`Swagger`: http://swagger.io/
 
+Continuserv
+-----------
+
+Continuserv is a script which will rebuild the specification every time a file
+is changed, and will serve it to a browser over HTTP. It is intended for use by
+specification authors, so that they can quickly see the effects of their
+changes.
+
+It is written in Go, so you will need the ``go`` compiler installed on your
+computer. You will also need to install fsnotify by running::
+
+  go get gopkg.in/fsnotify.v1
+
+Then, create a virtualenv as described above under `Preparation`_,
+and::
+
+  source env/bin/activate
+  go run ./scripts/continuserv/main.go
+
+You will then be able to view the generated spec by visiting
+http://localhost:8000/index.html.
+
 Issue tracking
 ==============
 
-Issues with the Matrix specification and supporting documentation are tracked
-in `GitHub <https://github.com/matrix-org/matrix-doc/issues>`_.
+Issues with the Matrix specification are tracked in `GitHub
+<https://github.com/matrix-org/matrix-doc/issues>`_.
 
 The following labels are used to help categorize issues:
 
