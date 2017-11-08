@@ -152,8 +152,8 @@ Examples:
 * `Clarify the meaning of the currently_active flags in presence events
   <https://github.com/matrix-org/matrix-doc/issues/686>`_
 
-`bug <https://github.com/matrix-org/matrix-doc/labels/bug>`_
-------------------------------------------------------------
+`spec-bug <https://github.com/matrix-org/matrix-doc/labels/spec-bug>`_
+----------------------------------------------------------------------
 
 Something which is in the spec, but is wrong.
 

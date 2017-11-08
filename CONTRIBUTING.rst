@@ -76,8 +76,8 @@ following:
 
 * Likewise, corrections to the specification, to fix situations where, in
   practice, servers and clients behave differently to the specification,
-  including anything with the `bug
-  <https://github.com/matrix-org/matrix-doc/labels/bug>`_ label.
+  including anything with the `spec-bug
+  <https://github.com/matrix-org/matrix-doc/labels/spec-bug>`_ label.
 
   (If there is any doubt about whether it is the spec or the implementations
   that need fixing, please discuss it with us first in `#matrix-dev:matrix.org
