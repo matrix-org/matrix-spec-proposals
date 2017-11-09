@@ -1,4 +1,5 @@
 # Copyright 2016 OpenMarket Ltd
+# Copyright 2017 Kamax.io
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -48,24 +49,25 @@ paths:
             type: object
             example: {
                 "type": "m.login.password",
-                "user": "cheeky_monkey",
                 "password": "ilovebananas",
-                "initial_device_display_name": "Jungle Phone"
+                "initial_device_display_name": "Jungle Phone",
+                "identifier": {
+                  "type": "m.id.thirdparty",
+                  "medium": "email",
+                  "address": "cheeky_monkey@matrix.org"
+                }
               }
             properties:
               type:
                 type: string
                 enum: ["m.login.password", "m.login.token"]
                 description: The login type being used.
-              user:
-                type: string
-                description: The fully qualified user ID or just local part of the user ID, to log in.
-              medium:
-                type: string
-                description: When logging in using a third party identifier, the medium of the identifier. Must be 'email'.
-              address:
-                type: string
-                description: Third party identifier for the user.
+              identifier:
+                description: |-
+                    Required when ``type`` is ``m.login.password``. Additional
+                    authentication information for the identifier, being
+                    a regular localpart, Matrix ID or a 3PID.
+                "$ref": "definitions/login_3pid_data.yaml"
               password:
                 type: string
                 description: |-
@@ -86,7 +88,8 @@ paths:
                 description: |-
                   A display name to assign to the newly-created device. Ignored
                   if ``device_id`` corresponds to a known device.
-            required: ["type"]
+            required:
+              - "type"
 
       responses:
         200:
