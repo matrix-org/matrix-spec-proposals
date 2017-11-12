@@ -4,12 +4,7 @@ set -ex
 
 virtualenv env
 . env/bin/activate
-pip install \
-    docutils \
-    pygments \
-    Jinja2 \
-    jsonschema \
-    PyYAML
+pip install -r scripts/requirements.txt
 
 # do sanity checks on the examples and swagger
 (cd event-schemas/ && ./check_examples.py)

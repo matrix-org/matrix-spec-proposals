@@ -27,17 +27,17 @@ Voice over IP (VoIP) signalling, Internet of Things (IoT) communication, and bri
 together existing communication silos - providing the basis of a new open real-time
 communication ecosystem.
 
-`Introduction to Matrix <intro.html>`_ provides a full introduction to Matrix and the spec.
-
 Matrix APIs
 -----------
 
-The following APIs are documented in this specification:
+The specification consists of the following parts:
+
+`Introduction to Matrix <intro.html>`_ provides a full introduction to Matrix and the spec.
 
 {{apis}}
 
-`Appendices <appendices.html>`_ with supplemental information not specific to
-one of the above APIs are also available.
+The `Appendices <appendices.html>`_ contain supplemental information not specific to
+one of the above APIs.
 
 Specification Versions
 ----------------------

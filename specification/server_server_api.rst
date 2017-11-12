@@ -1,4 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
+.. Copyright 2017 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -442,24 +443,173 @@ keys exist to support this:
 ``state_key``            String       Combined with the ``pdu_type`` this
                                       identifies the which part of the room
                                       state is updated
-``required_power_level`` Integer      The required power level needed to
-                                      replace this update.
 ``prev_state_id``        String       The PDU id of the update this replaces.
 ``prev_state_origin``    String       The homeserver of the update this
                                       replaces.
 ``user_id``              String       The user updating the state.
 ======================== ============ =========================================
 
-.. code:: json
+Authorization of PDUs
+~~~~~~~~~~~~~~~~~~~~~
 
- {...,
-  "is_state":true,
-  "state_key":TODO-doc
-  "required_power_level":TODO-doc
-  "prev_state_id":TODO-doc
-  "prev_state_origin":TODO-doc
- }
+Whenever a server receives an event from a remote server, the receiving server
+must check that the event is allowed by the authorization rules. These rules
+depend on the state of the room at that event.
 
+Definitions
++++++++++++
+
+Required Power Level
+  A given event type has an associated *required power level*. This is given by
+  the current ``m.room.power_levels`` event. The event type is either listed
+  explicitly in the ``events`` section or given by either ``state_default`` or
+  ``events_default`` depending on if the event is a state event or not.
+
+Invite Level, Kick Level, Ban Level, Redact Level
+   The levels given by the ``invite``, ``kick``, ``ban``, and ``redact``
+   properties in the current ``m.room.power_levels`` state. Each defaults to 50
+   if unspecified.
+
+Target User
+  For an ``m.room.member`` state event, the user given by the ``state_key`` of
+  the event.
+
+
+
+Rules
++++++
+
+The rules governing whether an event is authorized depend solely on the
+state of the room at the point in the room graph at which the new event is to
+be inserted. The types of state events that affect authorization are:
+
+- ``m.room.create``
+- ``m.room.member``
+- ``m.room.join_rules``
+- ``m.room.power_levels``
+
+Servers should not create new events that reference unauthorized events.
+However, any event that does reference an unauthorized event is not itself
+automatically considered unauthorized.
+
+Unauthorized events that appear in the event graph do *not* have any effect on
+the state of the room.
+
+.. Note:: This is in contrast to redacted events which can still affect the
+          state of the room. For example, a redacted ``join`` event will still
+          result in the user being considered joined.
+
+1. If type is ``m.room.create``, allow if and only if has depth 0 and it has no
+   previous events - *i.e.* it is the first event in the room.
+
+#. If type is ``m.room.member``:
+
+   a. If ``membership`` is ``join``:
+
+      i. If the previous event in the room graph is an ``m.room.create``, the
+         depth is 1 and the ``state_key`` is the creator, allow.
+
+      #. If the ``sender`` does not match ``state_key``, reject.
+
+      #. If the user's current membership state is ``invite`` or ``join``,
+         allow.
+
+      #. If the ``join_rule`` is ``public``, allow.
+
+      #. Otherwise, reject.
+
+   #. If ``membership`` is ``invite``:
+
+      i. If the ``sender``'s current membership state is not ``joined``, reject.
+
+      #. If *target user*'s current membership state is ``join`` or ``ban``,
+         reject.
+
+      #. If the ``sender``'s power level is greater than or equal to the *invite
+         level*, allow.
+
+      #. Otherwise, reject.
+
+   #. If ``membership`` is ``leave``:
+
+      i. If the ``sender`` matches ``state_key``, allow if and only if that user's
+         current membership state is ``invite`` or ``join``.
+
+      #. If the ``sender``'s current membership state is not ``joined``, reject.
+
+      #. If the *target user*'s current membership state is ``ban``, and the
+         ``sender``'s power level is less than the *ban level*, reject.
+
+      #. If the ``sender``'s power level is greater than or equal to the *kick
+         level*, and the *target user*'s power level is less than the
+         ``sender``'s power level, allow.
+
+      #. Otherwise, reject.
+
+   #. If ``membership`` is ``ban``:
+
+      i. If the ``sender``'s current membership state is not ``joined``, reject.
+
+      #. If the ``sender``'s power level is greater than or equal to the *ban
+         level*, and the *target user*'s power level is less than the
+         ``sender``'s power level, allow.
+
+      #. Otherwise, reject.
+
+   #. Otherwise, the membership is unknown. Reject.
+
+#. If the ``sender``'s current membership state is not ``joined``, reject.
+
+#. If the event type's *required power level* is greater than the ``sender``'s power
+   level, reject.
+
+#. If type is ``m.room.power_levels``:
+
+   a. For each of the keys ``users_default``, ``events_default``,
+      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
+      each entry being changed under the ``events`` or ``users`` keys:
+
+      i. If the current value is higher than the ``sender``'s current power level,
+         reject.
+
+      #. If the new value is higher than the ``sender``'s current power level,
+         reject.
+
+   #. For each entry being changed under the ``users`` key, other than the
+      ``sender``'s own entry:
+
+      i. If the current value is equal to the ``sender``'s current power level,
+         reject.
+
+   #. Otherwise, allow.
+
+#. If type is ``m.room.redact``:
+
+   #. If the ``sender``'s power level is greater than or equal to the *redact
+      level*, allow.
+
+   #. If the ``sender`` of the event being redacted is the same as the
+      ``sender`` of the ``m.room.redact``, allow.
+
+   #. Otherwise, reject.
+
+#. Otherwise, allow.
+
+.. NOTE::
+
+   Some consequences of these rules:
+
+   * Unless you are a member of the room, the only permitted operations (apart
+     from the intial create/join) are: joining a public room; accepting or
+     rejecting an invitation to a room.
+
+   * To unban somebody, you must have power level greater than or equal to both
+     the kick *and* ban levels, *and* greater than the target user's power
+     level.
+
+.. TODO-spec
+
+   I think there is some magic about 3pid invites too.
 
 EDUs
 ----

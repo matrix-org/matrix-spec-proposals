@@ -37,6 +37,9 @@ paths:
         the new room, including checking power levels for each event. It MUST
         apply the events implied by the request in the following order:
 
+        0. A default ``m.room.power_levels`` event, giving the room creator
+           (and not other members) permission to send state events.
+        
         1. Events set by ``presets``.
 
         2. Events listed in ``initial_state``, in the order that they are

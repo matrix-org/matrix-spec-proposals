@@ -52,7 +52,7 @@ func main() {
 
 	walker := makeWalker(dir, w)
 	paths := []string{"api", "changelogs", "event-schemas", "scripts",
-		"specification", "templating"}
+		"specification"}
 
 	for _, p := range paths {
 		filepath.Walk(path.Join(dir, p), walker)
@@ -175,7 +175,7 @@ func generate(dir string) (map[string][]byte, error) {
 
 	// cheekily dump the swagger docs into the gen directory so that it is
 	// easy to serve
-	cmd = exec.Command("python", "dump-swagger.py", "gen/api-docs.json")
+	cmd = exec.Command("python", "dump-swagger.py", "-o", "gen/api-docs.json")
 	cmd.Dir = path.Join(dir, "scripts")
 	cmd.Stderr = &b
 	if err := cmd.Run(); err != nil {

@@ -1,13 +1,22 @@
 Contributing to matrix-doc
 ==========================
 
-Everyone is welcome to contribute to the ``matrix-doc`` project, provided that they
-are willing to license their contributions under the same license as the
-project itself. We follow a simple 'inbound=outbound' model for contributions:
-the act of submitting an 'inbound' contribution means that the contributor
-agrees to license the code under the same terms as the project's overall
-'outbound' license - in our case, this is Apache Software License
-v2 (see LICENSE).
+Everyone is welcome to contribute to the Matrix specification!
+
+Please ensure that you sign off your contributions. See `Sign off`_ below.
+
+Code style
+----------
+
+The documentation style is described at
+https://github.com/matrix-org/matrix-doc/blob/master/meta/documentation_style.rst.
+
+Python code within the ``matrix-doc`` project should follow the same style as
+synapse, which is documented at
+https://github.com/matrix-org/synapse/tree/master/docs/code_style.rst.
+
+Matrix-doc workflows
+--------------------
 
 Specification changes
 ~~~~~~~~~~~~~~~~~~~~~
@@ -29,8 +38,8 @@ workflow:
 
    The Matrix Core Team's preferred tool for such discussion documents is
    `Google Docs <https://docs.google.com>`_ thanks to its support for comment
-   threads. Works in progress are kept in a folder at
-   https://drive.google.com/drive/folders/0B4wHq8qP86r2ck15MHEwMmlNVUk.
+   threads. Works in progress are kept in the `Matrix Design drafts folder
+   <https://drive.google.com/drive/folders/0B4wHq8qP86r2ck15MHEwMmlNVUk>`_.
 
 2. Seek feedback on the proposal. `#matrix-dev:matrix.org
    <http://matrix.to/#/#matrix-dev:matrix.org>`_ is a good place to reach the
@@ -59,43 +68,46 @@ The above process is unnecessary for smaller changes, and those which do not
 put new requirements on servers. This category of changes includes the
 following:
 
-* changes to supporting documentation
+* Changes to the scripts used to generate the specification.
 
-* changes to the scripts used to generate the specification
+* Addition of features which have been in use in practice for some time, but
+  have never made it into the spec (including anything with the `spec-omission
+  <https://github.com/matrix-org/matrix-doc/labels/spec-omission>`_ label).
 
-* clarifications to the specification which do not change the behaviour of
+* Likewise, corrections to the specification, to fix situations where, in
+  practice, servers and clients behave differently to the specification,
+  including anything with the `spec-bug
+  <https://github.com/matrix-org/matrix-doc/labels/spec-bug>`_ label.
+
+  (If there is any doubt about whether it is the spec or the implementations
+  that need fixing, please discuss it with us first in `#matrix-dev:matrix.org
+  <http://matrix.to/#/#matrix-dev:matrix.org>`_.)
+
+* Clarifications to the specification which do not change the behaviour of
   Matrix servers or clients in a way which might introduce compatibility
-  problems for existing deployments. For example, recommendations for UI
-  behaviour do not require a proposal document. On the other hand, changes to
-  event contents would be best discussed in a proposal document even though no
-  changes would be necessary to server implementations.
+  problems for existing deployments. This includes anything with the
+  `clarification <https://github.com/matrix-org/matrix-doc/labels/clarification>`_
+  label.
+
+  For example, recommendations for UI behaviour do not require a proposal
+  document. On the other hand, changes to event contents would be best
+  discussed in a proposal document even though no changes would be necessary to
+  server implementations.
 
 For such changes, please do just open a `pull request`_.
 
-
-Pull requests
-~~~~~~~~~~~~~
-.. _pull request: `Pull requests`_
-
-The preferred and easiest way to contribute changes to the ``matrix-doc`` project
-is to fork it on github, and then create a pull request to ask us to pull your
-changes into our repo (https://help.github.com/articles/using-pull-requests/).
-
-(Note that, unlike most of the other matrix.org projects, pull requests for
-matrix-doc should be based on the ``master`` branch.)
-
-Code style
-~~~~~~~~~~
-
-The documentation style is described at
-https://github.com/matrix-org/matrix-doc/blob/master/meta/documentation_style.rst.
-
-Python code within the ``matrix-doc`` project should follow the same style as
-synapse, which is documented at
-https://github.com/matrix-org/synapse/tree/master/docs/code_style.rst.
+.. _pull request: https://help.github.com/articles/about-pull-requests
 
 Sign off
-~~~~~~~~
+--------
+
+We ask that everybody who contributes to their project signs off their
+contributions, as explained below.
+
+We follow a simple 'inbound=outbound' model for contributions: the act of
+submitting an 'inbound' contribution means that the contributor agrees to
+license their contribution under the same terms as the project's overall 'outbound'
+license - in our case, this is Apache Software License v2 (see LICENSE).
 
 In order to have a concrete record that your contribution is intentional
 and you agree to license it under the same terms as the project's license, we've adopted the

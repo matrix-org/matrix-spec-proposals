@@ -45,7 +45,7 @@ Other versions of this specification
 
 The following other versions are also available, in reverse chronological order:
 
-- `HEAD <https://matrix.org/speculator/spec/HEAD/client_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `HEAD <https://matrix.org/docs/spec/client_server/unstable.html>`_: Includes all changes since the latest versioned release.
 - `r0.2.0 <https://matrix.org/docs/spec/client_server/r0.2.0.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/client_server/r0.1.0.html>`_
 - `r0.0.1 <https://matrix.org/docs/spec/r0.0.1/client_server.html>`_
@@ -171,8 +171,8 @@ Client Authentication
 
 Most API endpoints require the user to identify themselves by presenting
 previously obtained credentials in the form of an ``access_token`` query
-parameter. An access token is typically obtained via the `Login`_ or
-`Registration`_ processes.
+parameter or through an Authorization Header of ``Bearer $access_token``.
+An access token is typically obtained via the `Login`_ or `Registration`_ processes.
 
 When credentials are required but missing or invalid, the HTTP call will
 return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
@@ -879,6 +879,8 @@ Responses to pagination requests MUST follow the format::
 Where $streamtoken is an opaque token which can be used in another query to
 get the next set of results. The "start" and "end" keys can only be omitted if
 the complete dataset is provided in "chunk".
+
+.. _`filter`:
 
 Filtering
 ---------

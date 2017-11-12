@@ -48,6 +48,9 @@
     (`#751 <https://github.com/matrix-org/matrix-doc/pull/751>`_).
   - Add key distribution APIs, for use with end-to-end encryption.
     (`#894 <https://github.com/matrix-org/matrix-doc/pull/894>`_).
+  - Add ``m.room.pinned_events`` state event for rooms.
+    (`#1007 <https://github.com/matrix-org/matrix-doc/pull/1007>`_).
+  - Add mention of ability to send Access Token via an Authorization Header.
 
   - New endpoints:
 
@@ -62,11 +65,11 @@
   - Add endpoints and logic for invites and third-party invites to the federation
     spec and update the JSON of the request sent by the identity server upon 3PID
     binding
-    (`#997 <https://github.com/matrix-org/matrix-doc/pull/997>`)
+    (`#997 <https://github.com/matrix-org/matrix-doc/pull/997>`_)
   - Fix "membership" property on third-party invite upgrade example
-    (`#995 <https://github.com/matrix-org/matrix-doc/pull/995>`)
+    (`#995 <https://github.com/matrix-org/matrix-doc/pull/995>`_)
   - Fix response format and 404 example for room alias lookup
-    (`#960 <https://github.com/matrix-org/matrix-doc/pull/960>`)
+    (`#960 <https://github.com/matrix-org/matrix-doc/pull/960>`_)
   - Fix examples of ``m.room.member`` event and room state change,
     and added a clarification on the membership event sent upon profile update
     (`#950 <https://github.com/matrix-org/matrix-doc/pull/950>`_).
@@ -87,6 +90,12 @@
     (`#750 <https://github.com/matrix-org/matrix-doc/pull/750>`_).
   - ``GET /user/{userId}/filter/{filterId}`` requires authentication
     (`#1003 <https://github.com/matrix-org/matrix-doc/pull/1003>`_).
+  - Add some clarifying notes on the behaviour of rooms with no
+    ``m.room.power_levels`` event
+    (`#1026 <https://github.com/matrix-org/matrix-doc/pull/1026>`_).
+  - Clarify the relationship between ``username`` and ``user_id`` in the
+    ``/register`` API
+    (`#1032 <https://github.com/matrix-org/matrix-doc/pull/1032>`_).
 
 r0.2.0
 ======
