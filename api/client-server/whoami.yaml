@@ -39,7 +39,7 @@ paths:
       responses:
         200:
           description:
-            The account_data was successfully added.
+            The token belongs to a known user.
           examples:
             application/json: {
                 "user_id": "@joe:example.org"
