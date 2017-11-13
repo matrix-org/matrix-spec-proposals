@@ -13,15 +13,13 @@
 # limitations under the License.
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server Client Config API"
+  title: "Matrix Client-Server Account Identification API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
   - https
   - http
 basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
-consumes:
-  - application/json
 produces:
   - application/json
 securityDefinitions:
@@ -31,8 +29,7 @@ paths:
     get:
       summary: Gets information about the owner of an access token.
       description: |-
-        Gets information about the owner of a given access token. Currently this
-        only supports returning the user id that owns the token.
+        Gets information about the owner of a given access token.
       security:
         - accessToken: []
       parameters: []
