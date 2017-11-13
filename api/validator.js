@@ -34,6 +34,17 @@ var errFn = function(err, api) {
     process.exit(1);
 };
 
+var checkOperationId = function(api) {
+    Object.keys(api.paths).forEach(function(endpoint) {
+        var operationsMap = api.paths[endpoint];
+        Object.keys(operationsMap).forEach(function(verb) {
+            if (!operationsMap[verb]["operationId"])
+                errFn("operationId is missing in " + endpoint + ", verb " + verb, api);
+        })
+    });
+    return "";
+};
+
 var isDir = fs.lstatSync(opts.schema).isDirectory()
 if (isDir) {
     console.log("Checking directory %s for .yaml files...", opts.schema);
@@ -46,6 +57,9 @@ if (isDir) {
             var suffix = ".yaml";
             if (f.indexOf(suffix, f.length - suffix.length) > 0) {
                 parser.validate(path.join(opts.schema, f), function(err, api, metadata) {
+                    if (!err) {
+                        checkOperationId(api);
+                    }
                     if (!err) {
                         console.log("%s is valid.", f);
                     }
@@ -60,6 +74,9 @@ if (isDir) {
 }
 else{
     parser.validate(opts.schema, function(err, api) {
+        if (!err) {
+            checkOperationId(api);
+        }
         if (!err) {
             console.log("%s is valid", opts.schema);
         }
