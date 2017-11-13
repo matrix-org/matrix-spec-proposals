@@ -60,6 +60,9 @@
     - ``GET /rooms/{roomId}/joined_members``
       (`#999 <https://github.com/matrix-org/matrix-doc/pull/999>`_).
 
+    - ``GET /account/whoami``
+      (`#1063 <https://github.com/matrix-org/matrix-doc/pull/1063>`_).
+
 - Spec clarifications:
 
   - Add endpoints and logic for invites and third-party invites to the federation
