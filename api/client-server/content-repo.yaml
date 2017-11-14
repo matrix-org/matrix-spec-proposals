@@ -186,3 +186,51 @@ paths:
             type: file
       tags:
         - Media
+  "/preview_url":
+    get:
+      summary: "Get information about a URL for a client"
+      produces: ["application/json"]
+      parameters:
+        - in: query
+          type: string
+          x-example: "https://matrix.org"
+          name: url
+          description: "The URL to get a preview of"
+          required: true
+        - in: query
+          type: long
+          x-example: 1510610716656
+          name: ts
+          description: |-
+            The preferred point in time to return a preview for. The server may
+            return a newer version if it does not have the requested version
+            available.
+      responses:
+        200:
+          description: |-
+            The OpenGraph data for the URL, which may be empty. Some values are
+            replaced with matrix equivalents if they are provided in the response.
+            The differences from the OpenGraph protocol are described here.
+          schema:
+            type: object
+            properties:
+              "matrix:image:size":
+                type: long
+                description: |-
+                  The byte-size of the image. Omitted if there is no image attached.
+              "og:image":
+                type: string
+                description: |-
+                  An MXC URI to the image. Ommitted if there is no image.
+          examples:
+            application/json: {
+                "og:title": "Matrix Blog Post",
+                "og:description": "This is a really cool blog post from matrix.org",
+                "og:image": "mxc://example.com/ascERGshawAWawugaAcauga",
+                "og:image:type": "image/png",
+                "og:image:height": 48,
+                "og:image:width": 48,
+                "matrix:image:size": 102400
+              }
+      tags:
+        - Media
