@@ -63,6 +63,9 @@
     - ``GET /account/whoami``
       (`#1063 <https://github.com/matrix-org/matrix-doc/pull/1063>`_).
 
+    - ``GET /media/{version}/preview_url``
+      (`#1064 <https://github.com/matrix-org/matrix-doc/pull/1064>`_).
+
 - Spec clarifications:
 
   - Add endpoints and logic for invites and third-party invites to the federation
@@ -99,6 +102,8 @@
   - Clarify the relationship between ``username`` and ``user_id`` in the
     ``/register`` API
     (`#1032 <https://github.com/matrix-org/matrix-doc/pull/1032>`_).
+  - Clarify rate limiting and security for content repository.
+    (`#1064 <https://github.com/matrix-org/matrix-doc/pull/1064>`_).
 
 r0.2.0
 ======
