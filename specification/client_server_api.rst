@@ -1446,3 +1446,4 @@ have to wait in milliseconds before they can try again.
 .. _/user/<user_id>/account_data/<type>: #put-matrix-client-%CLIENT_MAJOR_VERSION%-user-userid-account-data-type
 
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
+.. _`3PID Types`:  ../appendices.html#pid-types
