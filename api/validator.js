@@ -34,10 +34,20 @@ var errFn = function(err, api) {
     process.exit(1);
 };
 
+/**
+ * @brief Produce a handler for parser.validate().
+ * Recommended usage: `parser.validate(filename, makeHandler(filename));`
+ * or `parser.validate(schema, makeHandler());`.
+ * @param scope - usually a filename, this will be used to denote
+ *                an (in)valid schema in console output; "Schema" if undefined
+ * @returns {function} the handler that can be passed to parser.validate
+ */
 function makeHandler(scope) {
+    if (!scope)
+        scope = "Schema";
     return function(err, api, metadata) {
         if (err) {
-            console.error("%s is not valid.", scope);
+            console.error("%s is not valid.", scope || "Schema");
             errFn(err, api, metadata); // Won't return
         }
 
@@ -45,7 +55,7 @@ function makeHandler(scope) {
             var operationsMap = api.paths[endpoint];
             Object.keys(operationsMap).forEach(function (verb) {
                 if (!operationsMap[verb]["operationId"]) {
-                    console.log("%s is not valid", scope);
+                    console.error("%s is not valid", scope);
                     errFn("operationId is missing in " + endpoint + ", verb " + verb, api);
                 }
             })
@@ -66,11 +76,11 @@ if (isDir) {
             var suffix = ".yaml";
             if (f.indexOf(suffix, f.length - suffix.length) > 0) {
                 parser.validate(path.join(opts.schema, f), makeHandler(f));
-            } 
+            }
         });
     });
 }
 else{
-    parser.validate(opts.schema, makeHandler(opt.schema));
+    parser.validate(opts.schema, makeHandler(opts.schema));
 }
 
