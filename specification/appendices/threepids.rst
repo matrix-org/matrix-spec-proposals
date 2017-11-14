@@ -23,9 +23,9 @@ represent the same identifier, only one of these strings must be used in a 3PID
 address, in a well-defined manner.
 
 For example, for e-mail, the `medium` is 'email' and the `address` would be the
-email address, eg. the string 'bob@example.com'. Since domain resolution is
-case-insensitive, the email address 'bob@Example.com' also has a 3PID address
-of 'bob@example.com' and not 'bob@Example.com'.
+email address, eg. the string ``bob@example.com``. Since domain resolution is
+case-insensitive, the email address ``bob@Example.com`` also has a 3PID address
+of ``bob@example.com`` and not ``bob@Example.com``.
 
 The namespaces defined by this specification are listed below. More namespaces
 may be defined in future versions of this specification.
