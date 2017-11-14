@@ -1,4 +1,6 @@
 # Copyright 2016 OpenMarket Ltd
+# Copyright 2017 Kamax.io
+# Copyright 2017 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,13 +34,13 @@ paths:
           type: string
           name: medium
           required: true
-          description: The literal string "email".
+          description: The medium type of the 3pid. See the `3PID Types`_ Appendix.
           x-example: "email"
         - in: query
           type: string
           name: address
           required: true
-          description: The email address being looked up.
+          description: The address of the 3pid being looked up. See the `3PID Types`_ Appendix.
           x-example: "louise@bobs.burgers"
       responses:
         200:
@@ -82,4 +84,4 @@ paths:
                 description: The unix timestamp at which the association was verified.
               signatures:
                 type: object
-                description: The signatures of the verifying identity service which show that the association should be trusted, if you trust the verifying identity service.
+                description: The signatures of the verifying identity services which show that the association should be trusted, if you trust the verifying identity services.
