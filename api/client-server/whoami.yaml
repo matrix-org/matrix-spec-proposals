@@ -1,0 +1,52 @@
+# Copyright 2017 Travis Ralston
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Account Identification API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/account/whoami":
+    get:
+      summary: Gets information about the owner of an access token.
+      description: |-
+        Gets information about the owner of a given access token.
+      security:
+        - accessToken: []
+      parameters: []
+      responses:
+        200:
+          description:
+            The token belongs to a known user.
+          examples:
+            application/json: {
+                "user_id": "@joe:example.org"
+              }
+          schema:
+            type: object
+            required: ["user_id"]
+            properties:
+              user_id:
+                type: string
+                description: The user id that owns the access token.
+      tags:
+        - User data

@@ -35,6 +35,7 @@ targets:
       - appendices/base64.rst
       - appendices/signing_json.rst
       - appendices/identifier_grammar.rst
+      - appendices/threepids.rst
       - appendices/threat_model.rst
       - appendices/test_vectors.rst
 groups:  # reusable blobs of files when prefixed with 'group:'

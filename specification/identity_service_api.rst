@@ -1,4 +1,6 @@
 .. Copyright 2016 OpenMarket Ltd
+.. Copyright 2017 Kamax.io
+.. Copyright 2017 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -51,6 +53,8 @@ In general, identity services are treated as reliable oracles. They do not
 necessarily provide evidence that they have validated associations, but claim to
 have done so. Establishing the trustworthiness of an individual identity service
 is left as an exercise for the client.
+
+3PID types are described in `3PID Types`_ Appendix.
 
 Privacy
 -------
@@ -291,3 +295,4 @@ It will look up ``token`` which was stored in a call to ``store-invite``, and fe
  }
 
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
+.. _`3PID Types`:  ../appendices.html#pid-types
