@@ -15,14 +15,14 @@
 3PID Types
 ----------
 Third Party Identifiers (3PIDs) represent identifiers on other namespaces that
-might be associated with a particular person. They comprise a tuple of `medium`
+might be associated with a particular person. They comprise a tuple of ``medium``
 which is a string that identifies the namespace in which the identifier exists
-and an `address`: a string representing the identifier in that namespace. This
+and an ``address``: a string representing the identifier in that namespace. This
 must be a canonical form of the identifier, ie. if multiple strings could
 represent the same identifier, only one of these strings must be used in a 3PID
 address, in a well-defined manner.
 
-For example, for e-mail, the `medium` is 'email' and the `address` would be the
+For example, for e-mail, the ``medium`` is 'email' and the ``address`` would be the
 email address, eg. the string ``bob@example.com``. Since domain resolution is
 case-insensitive, the email address ``bob@Example.com`` also has a 3PID address
 of ``bob@example.com`` and not ``bob@Example.com``.
@@ -32,17 +32,17 @@ may be defined in future versions of this specification.
 
 E-Mail
 ~~~~~~
-Medium: `email`
+Medium: ``email``
 
-Represents E-Mail addresses. The `address` is the raw email address in
+Represents E-Mail addresses. The ``address`` is the raw email address in
 user@domain form with the domain in lowercase. It must not contain other text
 such as real name, angle brackets or a mailto: prefix.
 
 PSTN Phone numbers
 ~~~~~~~~~~~~~~~~~~
-Medium: `msisdn`
+Medium: ``msisdn``
 
 Represents telephone numbers on the public switched telephone network.  The
-`address` is the telephone number represented as a MSISDN (Mobile Station
+``address`` is the telephone number represented as a MSISDN (Mobile Station
 International Subscriber Directory Number) as defined by the E.164 numbering
 plan. Note that MSISDNs do not include a leading '+'.
