@@ -786,6 +786,11 @@ This is independent of any information kept by any Identity Servers.
 
 {{administrative_contact_cs_http_api}}
 
+Current account information
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+{{whoami_cs_http_api}}
+
 Pagination
 ----------
 
