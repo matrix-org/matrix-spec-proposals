@@ -54,7 +54,7 @@ necessarily provide evidence that they have validated associations, but claim to
 have done so. Establishing the trustworthiness of an individual identity service
 is left as an exercise for the client.
 
-3PID types are described in the `Appendices`_.
+3PID types are described in `3PID Types`_ Appendix.
 
 Privacy
 -------
@@ -295,4 +295,4 @@ It will look up ``token`` which was stored in a call to ``store-invite``, and fe
  }
 
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
-.. _`Appendices`:  ../appendices.html#threepids
+.. _`3PID Types`:  ../appendices.html#pid-types
