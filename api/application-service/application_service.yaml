@@ -101,6 +101,7 @@ paths:
         aliases inside the application service's ``aliases`` namespace. The
         homeserver will send this request when it receives a request to join a
         room alias within the application service's namespace.
+      operationId: queryRoomByAlias
       parameters:
         - in: path
           name: roomAlias
@@ -159,6 +160,7 @@ paths:
         inside the application service's ``users`` namespace. The homeserver will
         send this request when it receives an event for an unknown user ID in
         the application service's namespace.
+      operationId: queryUserById
       parameters:
         - in: path
           name: userId

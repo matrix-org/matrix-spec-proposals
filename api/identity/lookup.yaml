@@ -90,6 +90,7 @@ paths:
     post:
       summary: Lookup Matrix user IDs for a list of 3pids.
       description: Lookup Matrix user IDs for a list of 3pids.
+      operationId: lookupUsers
       parameters:
         - in: body
           name: body
