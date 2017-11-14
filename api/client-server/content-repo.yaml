@@ -224,7 +224,7 @@ paths:
           description: "The URL to get a preview of"
           required: true
         - in: query
-          type: long
+          type: number
           x-example: 1510610716656
           name: ts
           description: |-
@@ -241,7 +241,7 @@ paths:
             type: object
             properties:
               "matrix:image:size":
-                type: long
+                type: number
                 description: |-
                   The byte-size of the image. Omitted if there is no image attached.
               "og:image":
