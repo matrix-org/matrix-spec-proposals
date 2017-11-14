@@ -2,6 +2,8 @@
 
 set -ex
 
+cd `dirname $0`/..
+
 virtualenv env
 . env/bin/activate
 pip install -r scripts/requirements.txt
@@ -21,7 +23,7 @@ go get gopkg.in/fsnotify.v1
 (cd scripts/continuserv && go build)
 (cd scripts/speculator && go build)
 
-# build the spec and collect the supporting docs for matrix.org.  (we aren't
-# actually going to use them, since we're on travis, but we may as well check
-# that the build works correctly).
+# build the spec for matrix.org.
+# (we don't actually use it on travis, but it's still useful to check we
+# can build it. On Jenkins, this is then used to deploy to matrix.org).
 ./scripts/generate-matrix-org-assets

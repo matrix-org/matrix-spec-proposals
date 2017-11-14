@@ -5,4 +5,4 @@ go:
 sudo: false
 
 script:
-  - ./scripts/travis.sh
+  - ./scripts/test-and-build.sh
