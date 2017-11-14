@@ -18,12 +18,12 @@ Third Party Identifiers (3PIDs) represent identifiers on other namespaces that
 might be associated with a particular person. They comprise a tuple of ``medium``
 which is a string that identifies the namespace in which the identifier exists,
 and an ``address``: a string representing the identifier in that namespace. This
-must be a canonical form of the identifier, *ie.* if multiple strings could
+must be a canonical form of the identifier, *i.e.* if multiple strings could
 represent the same identifier, only one of these strings must be used in a 3PID
 address, in a well-defined manner.
 
 For example, for e-mail, the ``medium`` is 'email' and the ``address`` would be the
-email address, eg. the string ``bob@example.com``. Since domain resolution is
+email address, *e.g.* the string ``bob@example.com``. Since domain resolution is
 case-insensitive, the email address ``bob@Example.com`` also has a 3PID address
 of ``bob@example.com`` and not ``bob@Example.com``.
 
@@ -35,7 +35,7 @@ E-Mail
 Medium: ``email``
 
 Represents E-Mail addresses. The ``address`` is the raw email address in
-user@domain form with the domain in lowercase. It must not contain other text
+``user@domain`` form with the domain in lowercase. It must not contain other text
 such as real name, angle brackets or a mailto: prefix.
 
 PSTN Phone numbers
