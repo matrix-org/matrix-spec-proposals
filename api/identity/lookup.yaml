@@ -111,7 +111,7 @@ paths:
                   items:
                     type: string
                     title: 3PID medium or address
-                description: an array of arrays containing the `3PID Medium type`_ in first position and the 3PID Address in second position.
+                description: an array of arrays containing the `3PID Types`_ with the ``medium`` in first position and the ``address`` in second position.
             required:
               - "threepids"
       responses:
@@ -135,6 +135,6 @@ paths:
                   items:
                     type: string
                     title: 3PID medium or address or the Matrix ID
-                description: an array of array containing the `3PID Medium type`_ in first position, the 3PID Address in second position and Matrix ID is in third position.
+                description: an array of array containing the `3PID Types`_ with the ``medium`` in first position, the ``address`` in second position and Matrix ID in third position.
             required:
               - "threepids"
