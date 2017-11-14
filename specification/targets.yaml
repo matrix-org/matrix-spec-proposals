@@ -33,6 +33,7 @@ targets:
     files:
       - appendices.rst
       - appendices/base64.rst
+      - appendices/threepids.rst
       - appendices/signing_json.rst
       - appendices/identifier_grammar.rst
       - appendices/threat_model.rst
