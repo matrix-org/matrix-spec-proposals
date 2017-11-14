@@ -34,13 +34,13 @@ paths:
           type: string
           name: medium
           required: true
-          description: The medium type of the 3pid. See `Appendices`_.
+          description: The medium type of the 3pid. See the `3PID Types`_ Appendix.
           x-example: "email"
         - in: query
           type: string
           name: address
           required: true
-          description: The address of the 3pid being looked up. See `Appendices`_.
+          description: The address of the 3pid being looked up. See the `3PID Types`_ Appendix.
           x-example: "louise@bobs.burgers"
       responses:
         200:
@@ -85,3 +85,5 @@ paths:
               signatures:
                 type: object
                 description: The signatures of the verifying identity services which show that the association should be trusted, if you trust the verifying identity services.
+
+.. _`3PID Types`:  ../appendices.html#pid-types
