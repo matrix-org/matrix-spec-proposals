@@ -14,13 +14,13 @@
 
 3PID Types
 ----------
-3PIDs represent identifiers on other namespaces that might be associated with a
-particular person. They comprise a tuple of `medium` which is a string that
-identifies the namespace in which the identifier exists and an `address`: a
-string representing the identifier in that namespace. This must be a canonical
-form of the identifier, ie. if multiple strings could represent the same
-identifier, only one of these strings must be used in a 3PID address, in a
-well-defined manner.
+Third Party Identifiers (3PIDs) represent identifiers on other namespaces that
+might be associated with a particular person. They comprise a tuple of `medium`
+which is a string that identifies the namespace in which the identifier exists
+and an `address`: a string representing the identifier in that namespace. This
+must be a canonical form of the identifier, ie. if multiple strings could
+represent the same identifier, only one of these strings must be used in a 3PID
+address, in a well-defined manner.
 
 For example, for e-mail, the `medium` is 'email' and the `address` would be the
 email address, eg. the string 'bob@example.com'. Since domain resolution is
