@@ -24,8 +24,8 @@ address, in a well-defined manner.
 
 For example, for e-mail, the ``medium`` is 'email' and the ``address`` would be the
 email address, *e.g.* the string ``bob@example.com``. Since domain resolution is
-case-insensitive, the email address ``bob@Example.com`` also has a 3PID address
-of ``bob@example.com`` and not ``bob@Example.com``.
+case-insensitive, the email address ``bob@Example.com`` is also has the 3PID address
+of ``bob@example.com`` (without the capital 'e') rather than ``bob@Example.com``.
 
 The namespaces defined by this specification are listed below. More namespaces
 may be defined in future versions of this specification.
