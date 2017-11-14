@@ -34,55 +34,43 @@ var errFn = function(err, api) {
     process.exit(1);
 };
 
-var checkOperationId = function(api) {
-    Object.keys(api.paths).forEach(function(endpoint) {
-        var operationsMap = api.paths[endpoint];
-        Object.keys(operationsMap).forEach(function(verb) {
-            if (!operationsMap[verb]["operationId"])
-                errFn("operationId is missing in " + endpoint + ", verb " + verb, api);
-        })
-    });
-    return "";
-};
+function makeHandler(scope) {
+    return function(err, api, metadata) {
+        if (err) {
+            console.error("%s is not valid.", scope);
+            errFn(err, api, metadata); // Won't return
+        }
 
-var isDir = fs.lstatSync(opts.schema).isDirectory()
+        Object.keys(api.paths).forEach(function (endpoint) {
+            var operationsMap = api.paths[endpoint];
+            Object.keys(operationsMap).forEach(function (verb) {
+                if (!operationsMap[verb]["operationId"]) {
+                    console.log("%s is not valid", scope);
+                    errFn("operationId is missing in " + endpoint + ", verb " + verb, api);
+                }
+            })
+        });
+
+        console.log("%s is valid.", scope);
+    }
+}
+
+var isDir = fs.lstatSync(opts.schema).isDirectory();
 if (isDir) {
     console.log("Checking directory %s for .yaml files...", opts.schema);
     fs.readdir(opts.schema, function(err, files) {
         if (err) {
-            console.error(err);
-            process.exit(1);
+            errFn(err); // Won't return
         }
         files.forEach(function(f) {
             var suffix = ".yaml";
             if (f.indexOf(suffix, f.length - suffix.length) > 0) {
-                parser.validate(path.join(opts.schema, f), function(err, api, metadata) {
-                    if (!err) {
-                        checkOperationId(api);
-                    }
-                    if (!err) {
-                        console.log("%s is valid.", f);
-                    }
-                    else {
-                        console.error("%s is not valid.", f);
-                        errFn(err, api, metadata);
-                    }
-                });
+                parser.validate(path.join(opts.schema, f), makeHandler(f));
             } 
         });
     });
 }
 else{
-    parser.validate(opts.schema, function(err, api) {
-        if (!err) {
-            checkOperationId(api);
-        }
-        if (!err) {
-            console.log("%s is valid", opts.schema);
-        }
-        else {
-            errFn(err, api);
-        }
-    });
-};
+    parser.validate(opts.schema, makeHandler(opt.schema));
+}
 
