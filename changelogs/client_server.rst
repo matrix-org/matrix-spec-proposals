@@ -60,6 +60,9 @@
     - ``GET /rooms/{roomId}/joined_members``
       (`#999 <https://github.com/matrix-org/matrix-doc/pull/999>`_).
 
+    - ``GET /account/whoami``
+      (`#1063 <https://github.com/matrix-org/matrix-doc/pull/1063>`_).
+
     - ``GET /media/{version}/preview_url``
       (`#1064 <https://github.com/matrix-org/matrix-doc/pull/1064>`_).
 
