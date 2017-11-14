@@ -30,6 +30,7 @@ paths:
       summary: Gets information about the owner of an access token.
       description: |-
         Gets information about the owner of a given access token.
+      operationId: getTokenOwner
       security:
         - accessToken: []
       parameters: []

@@ -217,6 +217,7 @@ paths:
   "/preview_url":
     get:
       summary: "Get information about a URL for a client"
+      operationId: getUrlPreview
       produces: ["application/json"]
       security:
         - accessToken: []
