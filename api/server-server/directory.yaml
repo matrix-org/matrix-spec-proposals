@@ -54,6 +54,9 @@ paths:
                   answering the query.
                 items:
                   type: string
+            required:
+              - "room_id"
+              - "servers"
           examples:
             application/json: {
               "room_id": "!roomid1234:example.org",
