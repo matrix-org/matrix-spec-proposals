@@ -504,7 +504,7 @@ the state of the room.
           state of the room. For example, a redacted ``join`` event will still
           result in the user being considered joined.
 
-1. If type is ``m.room.create``, allow if and only if has depth 0 and it has no
+1. If type is ``m.room.create``, allow if and only if has depth 1 and it has no
    previous events - *i.e.* it is the first event in the room.
 
 #. If type is ``m.room.member``:
@@ -512,7 +512,7 @@ the state of the room.
    a. If ``membership`` is ``join``:
 
       i. If the previous event in the room graph is an ``m.room.create``, the
-         depth is 1 and the ``state_key`` is the creator, allow.
+         depth is 2 and the ``state_key`` is the creator, allow.
 
       #. If the ``sender`` does not match ``state_key``, reject.
 
