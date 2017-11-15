@@ -14,7 +14,7 @@
 
 swagger: '2.0'
 info:
-  title: "Matrix Federation Version API"
+  title: "Matrix Federation Query Directory API"
   version: "1.0.0"
 host: localhost:8448
 schemes:
