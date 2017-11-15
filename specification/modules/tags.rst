@@ -56,6 +56,14 @@ Two special names are listed in the specification:
 
 {{m_tag_event}}
 
+Tags namespaces are defined in the following way, depending on how the client are expected to interpret them:
+
+* The namespace ``m.*`` is reserved for tags defined in the current specification
+* The namespace ``u.*`` is reserved for user-defined tags, and the client should not try to interpret as anything other than an utf8 string
+* A client or app willing to use special tags for advanced functionnality should namespace them similarly to state keys: ``tld.name.*``
+* Any tag in the ``tld.name.*`` form but not matching the namespace of the current client should be ignored
+* Any tag not matching the previous rules should be interpreted as an user tag from the ``u.*`` namespace
+
 Client Behaviour
 ----------------
 
