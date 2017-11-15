@@ -380,8 +380,8 @@ PDU Fields
                                         made this event
 ``depth``            Integer            **Required**. The maximum depth of the
                                         ``prev_events``, plus one
-``auth_events``      List of (String,   **Required**. TODO-doc
-                     {String: String})
+``auth_events``      List of (String,   **Required**. Event IDs and hashes for
+                     {String: String})  the "auth events" of this event.
                      pairs
 ``hashes``           {String: String}   **Required**. Hashes of the PDU,
                                         following the algorithm specified in
@@ -439,6 +439,14 @@ creating a new event in this room should populate the new event's
   |
   E4
 
+The ``auth_events`` field of a PDU identifies the set of events which give the
+sender permission to send the event. The ``auth_events`` for the
+``m.room.create`` event in a room is empty; for other events, it should be the
+following subset of the room state:
+
+- The ``m.room.create`` event.
+- The current ``m.room.power_levels`` event, if any.
+- The sender's current ``m.room.member`` event, if any.
 
 Authorization of PDUs
 ~~~~~~~~~~~~~~~~~~~~~
