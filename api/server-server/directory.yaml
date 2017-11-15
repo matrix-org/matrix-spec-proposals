@@ -46,14 +46,12 @@ paths:
               room_id:
                 type: string
                 description: The room ID mapped to the queried room alias.
-                required: true
                 x-example: "!roomid1234:example.org"
               servers:
                 type: array
                 description: An array of server names that are likely to hold
                   then given room. This list may or may not include the server
                   answering the query.
-                required: true
                 items:
                   type: string
           examples:
