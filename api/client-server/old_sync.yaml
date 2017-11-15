@@ -38,6 +38,7 @@ paths:
         should instead call the |/sync|_ API with a ``since`` parameter. See
         the `migration guide
         <https://matrix.org/docs/guides/client-server-migrating-from-v1.html#deprecated-endpoints>`_.
+      operationId: getEvents
       security:
         - accessToken: []
       parameters:
@@ -114,6 +115,7 @@ paths:
         should instead call the |/sync|_ API with no ``since`` parameter. See
         the `migration guide
         <https://matrix.org/docs/guides/client-server-migrating-from-v1.html#deprecated-endpoints>`_.
+      operationId: initialSync
       security:
         - accessToken: []
       parameters:
@@ -406,6 +408,7 @@ paths:
 
         This endpoint was deprecated in r0 of this specification. Clients
         should instead call the |/rooms/{roomId}/context/{eventId}|_ API.
+      operationId: getOneEvent
       security:
         - accessToken: []
       parameters:

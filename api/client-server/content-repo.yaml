@@ -32,6 +32,7 @@ paths:
   "/upload":
     post:
       summary: Upload some content to the content repository.
+      operationId: uploadContent
       produces: ["application/json"]
       security:
         - accessToken: []
@@ -77,6 +78,7 @@ paths:
   "/download/{serverName}/{mediaId}":
     get:
       summary: "Download content from the content repository."
+      operationId: getContent
       produces: ["*/*"]
       parameters:
         - in: path
@@ -114,6 +116,7 @@ paths:
   "/download/{serverName}/{mediaId}/{fileName}":
     get:
       summary: "Download content from the content repository as a given filename."
+      operationId: getContentOverrideName
       produces: ["*/*"]
       parameters:
         - in: path
@@ -158,6 +161,7 @@ paths:
   "/thumbnail/{serverName}/{mediaId}":
     get:
       summary: "Download a thumbnail of the content from the content repository."
+      operationId: getContentThumbnail
       produces: ["image/jpeg", "image/png"]
       parameters:
         - in: path
@@ -213,6 +217,7 @@ paths:
   "/preview_url":
     get:
       summary: "Get information about a URL for a client"
+      operationId: getUrlPreview
       produces: ["application/json"]
       security:
         - accessToken: []

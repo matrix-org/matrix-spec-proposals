@@ -32,6 +32,7 @@ paths:
       summary: Gets the current pushers for the authenticated user
       description: |-
           Gets all currently active pushers for the authenticated user
+      operationId: getPushers
       security:
         - accessToken: []
       responses:
@@ -123,6 +124,7 @@ paths:
         This endpoint allows the creation, modification and deletion of `pushers`_
         for this user ID. The behaviour of this endpoint varies depending on the
         values in the JSON body.
+      operationId: postPusher
       security:
         - accessToken: []
       parameters:

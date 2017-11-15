@@ -31,6 +31,7 @@ paths:
       description: |-
         This API is called by the HS when the HS wants to push an event (or
         batch of events) to the AS.
+      operationId: sendTransaction
       parameters:
         - in: path
           name: txnId
@@ -100,6 +101,7 @@ paths:
         aliases inside the application service's ``aliases`` namespace. The
         homeserver will send this request when it receives a request to join a
         room alias within the application service's namespace.
+      operationId: queryRoomByAlias
       parameters:
         - in: path
           name: roomAlias
@@ -158,6 +160,7 @@ paths:
         inside the application service's ``users`` namespace. The homeserver will
         send this request when it receives an event for an unknown user ID in
         the application service's namespace.
+      operationId: queryUserById
       parameters:
         - in: path
           name: userId

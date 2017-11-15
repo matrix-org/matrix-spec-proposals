@@ -42,6 +42,7 @@ paths:
 
         The user will still be allowed to retrieve history from the room which
         they were previously allowed to see.
+      operationId: leaveRoom
       security:
         - accessToken: []
       parameters:
@@ -79,6 +80,7 @@ paths:
 
         If the user is currently joined to the room, they will implicitly leave
         the room as part of this API call.
+      operationId: forgetRoom
       security:
         - accessToken: []
       parameters:

@@ -41,6 +41,7 @@ paths:
         Note that the normal ``/events`` endpoint has been deprecated. This
         API will also be deprecated at some point, but its replacement is not
         yet known.
+      operationId: peekEvents
       security:
         - accessToken: []
       parameters:

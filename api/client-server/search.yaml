@@ -32,6 +32,7 @@ paths:
       summary: Perform a server-side search.
       description: |-
         Performs a full text search across different categories.
+      operationId: search
       security:
         - accessToken: []
       parameters:

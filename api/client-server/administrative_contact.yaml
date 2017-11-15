@@ -39,6 +39,7 @@ paths:
 
         Identifiers in this list may be used by the homeserver as, for example,
         identifiers that it will accept to reset the user's account password.
+      operationId: getAccount3PIDs
       security:
         - accessToken: []
       responses:
@@ -74,6 +75,7 @@ paths:
     post:
       summary: Adds contact information to the user's account.
       description: Adds contact information to the user's account.
+      operationId: post3PIDs
       security:
         - accessToken: []
       parameters:
@@ -139,6 +141,7 @@ paths:
         validation tokens when adding an email address to an account. This API's
         parameters and response is identical to that of the HS API
         |/register/email/requestToken|_ endpoint.
+      operationId: requestTokenTo3PID
       responses:
         200:
           description: An email was sent to the given address

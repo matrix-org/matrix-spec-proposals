@@ -29,6 +29,7 @@ paths:
     get:
       summary: Look up the Matrix user ID for a 3pid.
       description: Look up the Matrix user ID for a 3pid.
+      operationId: lookupUser
       parameters:
         - in: query
           type: string
@@ -89,6 +90,7 @@ paths:
     post:
       summary: Lookup Matrix user IDs for a list of 3pids.
       description: Lookup Matrix user IDs for a list of 3pids.
+      operationId: lookupUsers
       parameters:
         - in: body
           name: body

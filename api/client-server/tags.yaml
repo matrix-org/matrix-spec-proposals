@@ -32,6 +32,7 @@ paths:
       summary: List the tags for a room.
       description: |-
         List the tags set by a user on a room.
+      operationId: getRoomTags
       security:
         - accessToken: []
       parameters:
@@ -74,6 +75,7 @@ paths:
       summary: Add a tag to a room.
       description: |-
         Add a tag to the room.
+      operationId: setRoomTag
       security:
         - accessToken: []
       parameters:
@@ -123,6 +125,7 @@ paths:
       summary: Remove a tag from the room.
       description: |-
         Remove a tag from the room.
+      operationId: deleteRoomTag
       security:
         - accessToken: []
       parameters:

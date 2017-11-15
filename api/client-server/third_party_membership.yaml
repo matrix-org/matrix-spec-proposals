@@ -75,6 +75,7 @@ paths:
         append a ``m.room.third_party_invite`` event to the room.
 
         .. _joining rooms section: `invite-by-user-id-endpoint`_
+      operationId: inviteBy3PID
       security:
         - accessToken: []
       parameters:

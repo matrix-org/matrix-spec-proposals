@@ -35,6 +35,7 @@ paths:
         joined to the room then the state is taken from the current
         state of the room. If the user has left the room then the state is
         taken from the state of the room when they left.
+      operationId: getRoomStateWithKey
       security:
         - accessToken: []
       parameters:
@@ -82,6 +83,7 @@ paths:
         taken from the state of the room when they left.
 
         This looks up the state event with the empty state key.
+      operationId: getRoomStateByType
       security:
         - accessToken: []
       parameters:
@@ -118,6 +120,7 @@ paths:
       summary: Get all state events in the current state of a room.
       description: |-
         Get the state events for the current state of a room.
+      operationId: getRoomState
       security:
         - accessToken: []
       parameters:
@@ -234,6 +237,7 @@ paths:
       summary: Get the m.room.member events for the room.
       description:
         Get the list of members for this room.
+      operationId: getMembersByRoom
       parameters:
         - in: path
           type: string
@@ -303,6 +307,7 @@ paths:
       description:
         This API returns a map of MXIDs to member info objects for members of the room. The current user must be in the room for it to work, unless it is an Application Service in which case any of the AS's users must be in the room.
         This API is primarily for Application Services and should be faster to respond than ``/members`` as it can be implemented more efficiently on the server.
+      operationId: getJoinedMembersByRoom
       parameters:
         - in: path
           type: string

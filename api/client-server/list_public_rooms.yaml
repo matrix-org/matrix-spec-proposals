@@ -33,6 +33,7 @@ paths:
 
         This API returns paginated responses. The rooms are ordered by the number
         of joined members, with the largest rooms first.
+      operationId: getPublicRooms
       parameters:
         - in: query
           name: limit
@@ -158,6 +159,7 @@ paths:
 
         This API returns paginated responses. The rooms are ordered by the number
         of joined members, with the largest rooms first.
+      operationId: queryPublicRooms
       security:
         - accessToken: []
       parameters:

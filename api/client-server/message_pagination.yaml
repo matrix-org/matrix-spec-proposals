@@ -33,6 +33,7 @@ paths:
       description: |-
         This API returns a list of message and state events for a room. It uses
         pagination query parameters to paginate history in the room.
+      operationId: getRoomEvents
       security:
         - accessToken: []
       parameters:

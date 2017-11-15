@@ -33,6 +33,7 @@ paths:
       description: |-
         This API updates the marker for the given receipt type to the event ID
         specified.
+      operationId: postReceipt
       security:
         - accessToken: []
       parameters:

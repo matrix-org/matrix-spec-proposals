@@ -32,6 +32,7 @@ paths:
       summary: Upload end-to-end encryption keys.
       description: |-
         Publishes end-to-end encryption keys for the device.
+      operationId: uploadKeys
       security:
         - accessToken: []
       parameters:
@@ -100,6 +101,7 @@ paths:
       summary: Download device identity keys.
       description: |-
         Returns the current devices and identity keys for the given users.
+      operationId: queryKeys
       security:
         - accessToken: []
       parameters:
@@ -208,6 +210,7 @@ paths:
       summary: Claim one-time encryption keys.
       description: |-
         Claims one-time keys for use in pre-key messages.
+      operationId: claimKeys
       security:
         - accessToken: []
       parameters:
@@ -293,6 +296,7 @@ paths:
           membership state ``join``); *and*
         * added new device identity keys or removed an existing device with
           identity keys, between ``from`` and ``to``.
+      operationId: getKeysChanges
       security:
         - accessToken: []
       parameters:

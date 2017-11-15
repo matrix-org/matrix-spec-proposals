@@ -44,6 +44,7 @@ paths:
         If a ``third_party_signed`` was supplied, the homeserver must verify
         that it matches a pending ``m.room.third_party_invite`` event in the
         room, and perform key validity checking if required by the event.
+      operationId: joinRoomById
       security:
         - accessToken: []
       parameters:
@@ -132,6 +133,7 @@ paths:
         If a ``third_party_signed`` was supplied, the homeserver must verify
         that it matches a pending ``m.room.third_party_invite`` event in the
         room, and perform key validity checking if required by the event.
+      operationId: joinRoom
       security:
         - accessToken: []
       parameters:
