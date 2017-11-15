@@ -37,9 +37,6 @@ This version of the specification is generated from
 For the full historical changelog, see
 https://github.com/matrix-org/matrix-doc/blob/master/changelogs/client_server.rst
 
-If this is an unstable snapshot, any changes since the last release may be
-viewed using ``git log``.
-
 Other versions of this specification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
