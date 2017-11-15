@@ -1271,21 +1271,7 @@ Directory
 
 The server API for directory queries is also based on Federation Queries.
 
-Querying directory information::
-
-  Query type: directory
-
-  Arguments:
-    room_alias: the room alias to query
-
-  Returns: JSON object containing the following keys:
-    room_id: string giving the underlying room ID the alias maps to
-    servers: list of strings giving the join candidates
-
-The list of join candidates is a list of server names that are likely to hold
-the given room; these are servers that the requesting server may wish to use as
-resident servers as part of the remote join handshake. This list may or may not
-include the server answering the query.
+{{directory_ss_http_api}}
 
 Send-to-device messaging
 ------------------------
