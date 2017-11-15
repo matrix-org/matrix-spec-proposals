@@ -1,6 +1,8 @@
 Unreleased changes
 ==================
 
+No changes as yet.
+
 r0.3.0
 ======
 
