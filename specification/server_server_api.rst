@@ -92,6 +92,11 @@ default fallback port number of 8448.
 Homeservers may use SRV records to load balance requests between multiple TLS
 endpoints or to failover to another endpoint if an endpoint fails.
 
+Server implementation
+~~~~~~~~~~~~~~~~~~~~~~
+
+{{version_ss_http_api}}
+
 Retrieving Server Keys
 ~~~~~~~~~~~~~~~~~~~~~~
 

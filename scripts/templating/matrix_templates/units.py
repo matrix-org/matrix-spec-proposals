@@ -40,6 +40,7 @@ HTTP_APIS = {
     os.path.join(matrix_doc_dir, "api/client-server"): "cs",
     os.path.join(matrix_doc_dir, "api/identity"): "is",
     os.path.join(matrix_doc_dir, "api/push-gateway"): "push",
+    os.path.join(matrix_doc_dir, "api/server-server"): "ss",
 }
 EVENT_EXAMPLES = os.path.join(matrix_doc_dir, "event-schemas/examples")
 EVENT_SCHEMA = os.path.join(matrix_doc_dir, "event-schemas/schema")
