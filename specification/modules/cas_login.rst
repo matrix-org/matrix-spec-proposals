@@ -18,7 +18,7 @@ CAS-based client login
 .. _module:cas_login:
 
 `Central Authentication Service
-<https://github.com/apereo/cas/blob/master/cas-server-documentation/protocol/CAS-Protocol-Specification.md>`_
+<https://github.com/apereo/cas/blob/master/docs/cas-server-documentation/protocol/CAS-Protocol-Specification.md>`_
 (CAS) is a web-based single sign-on protocol.
 
 An overview of the process, as used in Matrix, is as follows:
