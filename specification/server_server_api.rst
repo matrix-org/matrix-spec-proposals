@@ -568,14 +568,14 @@ the state of the room.
       ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
       each entry being changed under the ``events`` or ``users`` keys:
 
-      i. If the current value is higher than the ``sender``'s current power level,
-         reject.
+      i. If the prior existing current value is higher than the ``sender``'s
+         current power level, reject.
 
       #. If the new value is higher than the ``sender``'s current power level,
          reject.
 
-   #. For each entry being changed under the ``users`` key, other than the
-      ``sender``'s own entry:
+   #. For each prior existing entry being changed under the ``users`` key, other
+      than the ``sender``'s own entry:
 
       i. If the current value is equal to the ``sender``'s current power level,
          reject.
