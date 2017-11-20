@@ -65,7 +65,7 @@ making the chatroom unusable.
 Threat: Banning users without necessary authorisation
 +++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-An attacker could attempt to ban a user from a chatroom with the necessary
+An attacker could attempt to ban a user from a chatroom without the necessary
 authorisation.
 
 Spoofing
