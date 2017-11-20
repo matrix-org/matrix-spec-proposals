@@ -564,7 +564,7 @@ the state of the room.
 
 #. If type is ``m.room.power_levels``:
 
-   a. If no previous ``m.room.power_levels`` event exist, allow.
+   a. If there is no previous ``m.room.power_levels`` event in the room, allow.
 
    #. For each of the keys ``users_default``, ``events_default``,
       ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
