@@ -8,7 +8,8 @@ description: |-
   If a ``user_id`` is in the ``users`` list, then that ``user_id`` has the
   associated power level. Otherwise they have the default level
   ``users_default``. If ``users_default`` is not supplied, it is assumed to be
-  0.
+  0. If the room contains no ``m.room.power_levels`` event, the room's creator has
+  a power level of 100, and all other users have a power level of 0.
 
   The level required to send a certain event is governed by ``events``,
   ``state_default`` and ``events_default``. If an event type is specified in
