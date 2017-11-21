@@ -584,13 +584,13 @@ the state of the room.
 
    #. Otherwise, allow.
 
-#. If type is ``m.room.redact``:
+#. If type is ``m.room.redaction``:
 
    #. If the ``sender``'s power level is greater than or equal to the *redact
       level*, allow.
 
    #. If the ``sender`` of the event being redacted is the same as the
-      ``sender`` of the ``m.room.redact``, allow.
+      ``sender`` of the ``m.room.redaction``, allow.
 
    #. Otherwise, reject.
 
