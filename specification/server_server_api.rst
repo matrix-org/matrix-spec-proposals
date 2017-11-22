@@ -474,6 +474,8 @@ Target User
   For an ``m.room.member`` state event, the user given by the ``state_key`` of
   the event.
 
+.. _`authorization rules`:
+
 Rules
 +++++
 
@@ -704,7 +706,7 @@ results of the resolution so far.
   * Add the first event in the list to :math:`R`.
 
   * For each subsequent event in the list, check that the event would be
-    allowed by the Authorization Rules for a room in state :math:`R`. If the
+    allowed by the `authorization rules`_ for a room in state :math:`R`. If the
     event would be allowed, then update :math:`R` with the event and continue
     with the next event in the list. If it would not be allowed, stop and
     continue below with ``m.room.join_rules`` events.
