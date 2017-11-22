@@ -446,6 +446,7 @@ following subset of the room state:
 
 - The ``m.room.create`` event.
 - The current ``m.room.power_levels`` event, if any.
+- The current ``m.room.join_rules`` event, if any.
 - The sender's current ``m.room.member`` event, if any.
 
 Authorization of PDUs
@@ -472,8 +473,6 @@ Invite Level, Kick Level, Ban Level, Redact Level
 Target User
   For an ``m.room.member`` state event, the user given by the ``state_key`` of
   the event.
-
-
 
 Rules
 +++++
@@ -615,6 +614,9 @@ the state of the room.
 EDUs
 ----
 
+.. WARNING::
+  This section may be misleading or inaccurate.
+
 EDUs, by comparison to PDUs, do not have an ID, a room ID, or a list of
 "previous" IDs. The only mandatory fields for these are the type, origin and
 destination homeserver names, and the actual nested content.
@@ -635,6 +637,89 @@ destination homeserver names, and the actual nested content.
   "content":{...}
  }
 
+Room State Resolution
+---------------------
+
+The *state* of a room is a map of ``(event_type, state_key)`` to
+``event_id``. Each room starts with an empty state, and each state event which
+is accepted into the room updates the state of that room.
+
+Where each event has a single ``prev_event``, it is clear what the state of the
+room after each event should be. However, when two branches in the event graph
+merge, the state of those branches might differ, so a *state resolution*
+algorithm must be used to determine the resultant state.
+
+For example, consider the following event graph (where the oldest event, E0,
+is at the top)::
+
+      E0
+      |
+      E1
+     /  \
+    E2  E4
+    |    |
+    E3   |
+     \  /
+      E5
+
+
+Suppose E3 and E4 are both ``m.room.name`` events which set the name of the
+room. What should the name of the room be at E5?
+
+Servers should follow the following recursively-defined algorithm to determine
+the room state at a given point on the DAG.
+
+State resolution algorithm
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The room state :math:`S'(E)` after an event :math:`E` is defined in terms of
+the room state :math:`S(E)` before :math:`E`, and depends on whether
+:math:`E` is a state event or a message event:
+
+* If :math:`E` is a message event, then :math:`S'(E) = S(E)`.
+
+* If :math:`E` is a state event, then :math:`S'(E)` is :math:`S(E)`, except
+  that its entry corresponding to :math:`E`'s ``event_type`` and ``state_key``
+  is replaced by :math:`E`'s ``event_id``.
+
+The room state :math:`S(E)` before :math:`E` is the *resolution* of the set of
+states :math:`\{ S'(E'), S'(E''), … \}` consisting of the states after each of
+:math:`E`'s ``prev_event``\s :math:`\{ E', E'', … \}`.
+
+The *resolution* of a set of states is defined as follows.  The resolved state
+is built up in a number of passes; here we use :math:`R` to refer to the
+results of the resolution so far.
+
+* Start by setting :math:`R` to the union of the states to be resolved,
+  excluding any *conflicting* events.
+
+* First we resolve conflicts between ``m.room.power_levels`` events. If there
+  is no conflict, this step is skipped, otherwise:
+
+  * Assemble all the ``m.room.power_levels`` events from the states to
+    be resolved into a list.
+
+  * Sort the list by ascending ``depth`` then descending ``sha1(event_id)``.
+
+  * Add the first event in the list to :math:`R`.
+
+  * For each subsequent event in the list, check that the event would be
+    allowed by the Authorization Rules for a room in state :math:`R`. If the
+    event would be allowed, then update :math:`R` with the event and continue
+    with the next event in the list. If it would not be allowed, stop and
+    continue below with ``m.room.join_rules`` events.
+
+* Repeat the above process for conflicts between ``m.room.join_rules`` events.
+
+* Repeat the above process for conflicts between ``m.room.member`` events.
+
+* No other events affect the authorization rules, so for all other conflicts,
+  just pick the event with the highest depth and lowest ``sha1(event_id)`` that
+  passes authentication in :math:`R` and add it to :math:`R`.
+
+A *conflict* occurs between states where those states have different
+``event_ids`` for the same ``(state_type, state_key)``. The events thus
+affected are said to be *conflicting* events.
 
 Protocol URLs
 -------------
@@ -1150,30 +1235,6 @@ A homeserver may provide a TLS client certificate and the receiving homeserver
 may check that the client certificate matches the certificate of the origin
 homeserver.
 
-Server-Server Authorization
----------------------------
-
-.. TODO-doc
-  - PDU signing (see the Event signing section earlier)
-  - State conflict resolution (see below)
-
-State Conflict Resolution
--------------------------
-.. NOTE::
-  This section is a work in progress.
-
-.. TODO-doc
-  - How do conflicts arise (diagrams?)
-  - How are they resolved (incl tie breaks)
-  - How does this work with deleting current state
-  - How do we reject invalid federation traffic?
-
-  [[TODO(paul): At this point we should probably have a long description of how
-  State management works, with descriptions of clobbering rules, power levels, etc
-  etc... But some of that detail is rather up-in-the-air, on the whiteboard, and
-  so on. This part needs refining. And writing in its own document as the details
-  relate to the server/system as a whole, not specifically to server-server
-  federation.]]
 
 Presence
 --------
