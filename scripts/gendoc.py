@@ -53,20 +53,14 @@ Example:
 """
 def load_with_adjusted_titles(filename, file_stream, title_level, title_styles):
     rst_lines = []
-    title_chars = "".join(title_styles)
-    title_regex = re.compile("^[" + re.escape(title_chars) + "]{3,}$")
 
     prev_line_title_level = 0 # We expect the file to start with '=' titles
     file_offset = None
     prev_non_title_line = None
-    for i, line in enumerate(file_stream, 1):
-        # ignore anything which isn't a title (e.g. '===============')
-        if not title_regex.match(line):
-            rst_lines.append(line)
-            prev_non_title_line = line
-            continue
-        # The title underline must match at a minimum the length of the title
-        if len(prev_non_title_line) > len(line):
+    for i, line in enumerate(file_stream):
+        if (prev_non_title_line is None
+            or not is_title_line(prev_non_title_line, line, title_styles)
+        ):
             rst_lines.append(line)
             prev_non_title_line = line
             continue
@@ -128,6 +122,31 @@ def load_with_adjusted_titles(filename, file_stream, title_level, title_styles):
         ))
 
     return "".join(rst_lines)
+
+
+def is_title_line(prev_line, line, title_styles):
+    # The title underline must match at a minimum the length of the title
+    if len(prev_line) > len(line):
+        return False
+
+    line = line.rstrip()
+
+    # must be at least 3 chars long
+    if len(line) < 3:
+        return False
+
+    # must start with a title char
+    title_char = line[0]
+    if title_char not in title_styles:
+        return False
+
+    # all characters must be the same
+    for char in line[1:]:
+        if char != title_char:
+            return False
+
+    # looks like a title line
+    return True
 
 
 def get_rst(file_info, title_level, title_styles, spec_dir, adjust_titles):
