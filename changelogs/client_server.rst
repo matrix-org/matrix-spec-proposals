@@ -3,8 +3,8 @@ r0.3.0
 
 - Breaking changes:
 
-  - Change the rule kind of `.m.rule.contains_display_name` from
-    `underride` to `override`. This works with all known clients
+  - Change the rule kind of ``.m.rule.contains_display_name`` from
+    ``underride`` to ``override``. This works with all known clients
     which support push rules, but any other clients implementing
     the push rules API should be aware of this change. This
     makes it simple to mute rooms correctly in the API
