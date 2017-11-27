@@ -18,8 +18,10 @@ r0.3.0
     (`#395 <https://github.com/matrix-org/matrix-doc/pull/395>`_).
   - Remove requirement that tokens used in token-based login be macaroons
     (`#395 <https://github.com/matrix-org/matrix-doc/pull/395>`_).
-  - Move m.* thumbnail_url to be inside info to match m.video
-    (`#723 <https://github.com/matrix-org/matrix-doc/pull/723`_).
+  - Move ``thumbnail_url`` and ``thumbnail_info`` members of json objects
+    for events of types ``m.image``, ``m.file`` and ``m.location``, inside
+    the ``info`` memeber, to match ``m.video`` behaviour
+    (`#723 <https://github.com/matrix-org/matrix-doc/pull/723>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
