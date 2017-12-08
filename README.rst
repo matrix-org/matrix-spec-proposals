@@ -75,7 +75,7 @@ a Swagger specs, they must be combined into a single json file. This can be
 done as follows::
 
   source env/bin/activate
-  ./dump-swagger.py
+  ./scripts/dump-swagger.py
 
 By default, ``dump-swagger`` will write to ``scripts/swagger/api-docs.json``.
 
