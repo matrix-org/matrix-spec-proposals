@@ -4,25 +4,6 @@ Federation
 .. contents:: Table of Contents
 
 
-Auth events
-~~~~~~~~~~~
-
-The auth events of an event are the set of events used by the authorization 
-algorithm to accept the event. These should be a subset of the current state.
-
-A server is required to store the complete chain of auth events for all events
-it serves to remote servers.
-
-All auth events have type:
-
- - ``m.room.create``
- - ``m.room.power_levels``
- - ``m.room.member``
-
-.. todo
-    We probably should probably give a lower band of how long auth events
-    should be kept around for.
-
 Auth chain
 ~~~~~~~~~~
 
@@ -65,51 +46,6 @@ If a server discovers it cannot prove the other side is wrong, then it accepts
 that the other is correct; i.e. we always accept that the other side is correct
 unless we can prove otherwise.
 
-
-
-State Resolution
-----------------
-
-    **TODO**
-
-When two branches in the event graph merge, the state of those branches might
-differ, so a *state resolution* algorithm must be used to determine the current
-state of the resultant merge.
-
-The properties of the state resolution algorithm are:
-
-- Must only depend on the event graph, and not local server state.
-- When two state events are comparable, the descendant one should be picked.
-- Must not require the full event graph.
-
-The following algorithm satisfies these requirements; given two or more events,
-pick the one with the greatest:
-
-#. Depth.
-#. Hash of event_id.
-
-
-This works except in the case of auth events, where we need to mitigate against
-the attack where servers artificially netsplit to avoid bans or power level
-changes.
-
-We want the following rules to apply:
-
-#. If power levels have been changed on two different branches use the rules
-   above, ensuring that the one picked is a valid change from the one not picked.
-#. Similarly handle membership changes (e.g. bans, kicks, etc.)
-#. Any state merged must be allowed by the newly merged auth events. If none of
-   the candidate events for a given state are allowed, we pick the last event
-   given by the ordering above (i.e. we pick one with the least depth).
-
-
-
-State Conflict Resolution
--------------------------
-
-If a server discovers that it disagrees with another about the current state,
-it can follow the same process outlined in *Auth chain resolution* to resolve
-these conflicts.
 
 Constructing a new event
 ------------------------
@@ -315,4 +251,3 @@ Example event:
             "age": 500
         }
     }
-
