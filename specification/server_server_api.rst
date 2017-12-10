@@ -674,6 +674,11 @@ the room state at a given point on the DAG.
 State resolution algorithm
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. WARNING::
+  This section documents the state resolution algorithm as implemented by
+  Synapse as of December 2017 (and therefore the de-facto Matrix protocol).
+  However, this algorithm is known to have some problems.
+
 The room state :math:`S'(E)` after an event :math:`E` is defined in terms of
 the room state :math:`S(E)` before :math:`E`, and depends on whether
 :math:`E` is a state event or a message event:
