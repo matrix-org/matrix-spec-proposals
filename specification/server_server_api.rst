@@ -1174,7 +1174,7 @@ Step 1 sign JSON:
         "uri": "/target",
         "origin": "origin.hs.example.com",
         "destintation": "destination.hs.example.com",
-        "content": { JSON content ... },
+        "content": <request body>,
         "signatures": {
             "origin.hs.example.com": {
                 "ed25519:key1": "ABCDEF..."
@@ -1190,7 +1190,7 @@ Step 2 add Authorization header:
     Authorization: X-Matrix origin=origin.example.com,key="ed25519:key1",sig="ABCDEF..."
     Content-Type: application/json
 
-    { JSON content ... }
+    <JSON-encoded request body>
 
 
 Example python code:
@@ -1199,7 +1199,7 @@ Example python code:
 
     def authorization_headers(origin_name, origin_signing_key,
                               destination_name, request_method, request_target,
-                              content_json=None):
+                              content=None):
         request_json = {
              "method": request_method,
              "uri": request_target,
@@ -1208,7 +1208,7 @@ Example python code:
         }
 
         if content_json is not None:
-            request["content"] = content_json
+            request["content"] = content
 
         signed_json = sign_json(request_json, origin_name, origin_signing_key)
 
