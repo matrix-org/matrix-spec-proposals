@@ -61,6 +61,8 @@ r0.3.0
   - Add ``m.room.pinned_events`` state event for rooms.
     (`#1007 <https://github.com/matrix-org/matrix-doc/pull/1007>`_).
   - Add mention of ability to send Access Token via an Authorization Header.
+  - Add ``guest_can_join`` parameter to ``POST /createRoom``
+    (`#1093 <https://github.com/matrix-org/matrix-doc/pull/1093>`_).
 
   - New endpoints:
 
