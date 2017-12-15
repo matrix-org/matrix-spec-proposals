@@ -215,7 +215,7 @@ paths:
               send_attempt:
                 type: number
                 description: Used to distinguish protocol level retries from requests to re-send the email.
-                example: "1"
+                example: 1
             required: ["client_secret", "email", "send_attempt"]
       responses:
         200:
