@@ -1335,6 +1335,13 @@ Listing rooms
 
 {{list_public_rooms_cs_http_api}}
 
+
+Users
+-----
+
+{{users_cs_http_api}}
+
+
 Profiles
 --------
 
