@@ -76,6 +76,9 @@ r0.3.0
     - ``GET /media/{version}/preview_url``
       (`#1064 <https://github.com/matrix-org/matrix-doc/pull/1064>`_).
 
+    - ``POST /user_directory/search``
+      (`#1096 <https://github.com/matrix-org/matrix-doc/pull/1096>`_).
+
 - Spec clarifications:
 
   - Add endpoints and logic for invites and third-party invites to the federation
