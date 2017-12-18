@@ -8,6 +8,12 @@ Unreleased changes
     - ``POST /user_directory/search``
       (`#1096 <https://github.com/matrix-org/matrix-doc/pull/1096>`_).
 
+- Spec clarifications:
+
+  - Mark ``home_server`` return field for ``/login`` and ``/register``
+    endpoints as deprecated
+    (`#1097 <https://github.com/matrix-org/matrix-doc/pull/1097>`_).
+
 r0.3.0
 ======
 
