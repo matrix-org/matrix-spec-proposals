@@ -1,7 +1,12 @@
 Unreleased changes
 ==================
 
-No changes as yet.
+- Changes to the API which will be backwards-compatible for clients:
+
+  - New endpoints:
+
+    - ``POST /user_directory/search``
+      (`#1096 <https://github.com/matrix-org/matrix-doc/pull/1096>`_).
 
 r0.3.0
 ======
@@ -75,9 +80,6 @@ r0.3.0
 
     - ``GET /media/{version}/preview_url``
       (`#1064 <https://github.com/matrix-org/matrix-doc/pull/1064>`_).
-
-    - ``POST /user_directory/search``
-      (`#1096 <https://github.com/matrix-org/matrix-doc/pull/1096>`_).
 
 - Spec clarifications:
 
