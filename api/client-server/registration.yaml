@@ -144,11 +144,12 @@ paths:
               home_server:
                 type: string
                 description: |-
-                  The server_name of the homeserver on which the account has been registered.
+                  The server_name of the homeserver on which the account has
+                  been registered.
 
                   **Deprecated**. Clients should extract the server_name from
-                  ``user_id`` if they require it. Note also that ``homeserver``
-                  is not spelt this way.
+                  ``user_id`` (by splitting at the first colon) if they require
+                  it. Note also that ``homeserver`` is not spelt this way.
               device_id:
                 type: string
                 description: |-
