@@ -1,4 +1,4 @@
-# Copyright 2016 OpenMarket Ltd
+# Copyright 2017 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 # limitations under the License.
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server Profile API"
+  title: "Matrix Client-Server User Directory API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
@@ -31,7 +31,9 @@ paths:
     post:
       summary: Searches the user directory.
       description: |-
-        This API paginates over search results of the user directory.
+        This API performs a server-side search over all users registered on the server.
+        Searches MXID and displayname case-insesitively for users that you share a room with or that are in public rooms.
+      operationId: postUserDirectorySearch
       security:
         - accessToken: []
       parameters:
@@ -46,12 +48,12 @@ paths:
                 example: "foo"
               limit:
                 type: number
-                description: The maximum number of results to return
+                description: The maximum number of results to return (10 if omitted), with a maximum of 50
                 example: 10
             required: ["search_term"]
       responses:
         200:
-          description: The results of the paginated search.
+          description: The results of the search.
           examples:
             application/json: {
                   "results": [
@@ -69,9 +71,11 @@ paths:
             properties:
               results:
                 type: array
+                description: Ordered by rank and then whether or not profile info is available.
                 items:
                   title: User
                   type: object
+                  require: ["user_id"]
                   properties:
                     user_id:
                       type: string
