@@ -75,17 +75,20 @@ paths:
                 items:
                   title: User
                   type: object
-                  require: ["user_id"]
+                  required: ["user_id"]
                   properties:
                     user_id:
                       type: string
                       example: "@foo:bar.com"
+                      description: The MXID of the user.
                     display_name:
                       type: string
                       example: "Foo"
+                      description: The display name of the user, if one exists.
                     avatar_url:
                       type: string
                       example: "mxc://bar.com/foo"
+                      description: The avatar url, as an MXC, if one exists.
               limited:
                 type: boolean
                 description: Indicates if the result list has been truncated by the limit.

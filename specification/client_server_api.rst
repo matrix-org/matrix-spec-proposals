@@ -1336,14 +1336,17 @@ Listing rooms
 {{list_public_rooms_cs_http_api}}
 
 
-Users
------
+User Data
+---------
+
+User Directory
+~~~~~~~~~~~~~~
 
 {{users_cs_http_api}}
 
 
 Profiles
---------
+~~~~~~~~
 
 {{profile_cs_http_api}}
 
