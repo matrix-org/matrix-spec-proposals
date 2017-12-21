@@ -32,8 +32,8 @@ paths:
       summary: Searches the user directory.
       description: |-
         This API performs a server-side search over all users registered on the server.
-        Searches MXID and displayname case-insesitively for users that you share a room with or that are in public rooms.
-      operationId: postUserDirectorySearch
+        It searches user ID and displayname case-insensitively for users that you share a room with or that are in public rooms.
+      operationId: searchUserDirectory
       security:
         - accessToken: []
       parameters:
@@ -48,7 +48,7 @@ paths:
                 example: "foo"
               limit:
                 type: number
-                description: The maximum number of results to return (10 if omitted), with a maximum of 50
+                description: The maximum number of results to return (Defaults to 10).
                 example: 10
             required: ["search_term"]
       responses:
@@ -80,7 +80,7 @@ paths:
                     user_id:
                       type: string
                       example: "@foo:bar.com"
-                      description: The MXID of the user.
+                      description: The user's matrix user ID.
                     display_name:
                       type: string
                       example: "Foo"
