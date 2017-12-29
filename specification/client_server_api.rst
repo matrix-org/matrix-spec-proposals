@@ -1335,13 +1335,23 @@ Listing rooms
 
 {{list_public_rooms_cs_http_api}}
 
+
+User Data
+---------
+
+User Directory
+~~~~~~~~~~~~~~
+
+{{users_cs_http_api}}
+
+
 Profiles
---------
+~~~~~~~~
 
 {{profile_cs_http_api}}
 
 Events on Change of Profile Information
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++++++++++++++++++++++++++++++++++++++++
 Because the profile display name and avatar information are likely to be used in
 many places of a client's display, changes to these fields cause an automatic
 propagation event to occur, informing likely-interested parties of the new

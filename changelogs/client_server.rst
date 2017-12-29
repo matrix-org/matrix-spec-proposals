@@ -1,6 +1,13 @@
 Unreleased changes
 ==================
 
+- Changes to the API which will be backwards-compatible for clients:
+
+  - New endpoints:
+
+    - ``POST /user_directory/search``
+      (`#1096 <https://github.com/matrix-org/matrix-doc/pull/1096>`_).
+
 - Spec clarifications:
 
   - Mark ``home_server`` return field for ``/login`` and ``/register``
