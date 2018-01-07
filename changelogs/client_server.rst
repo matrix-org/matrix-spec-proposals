@@ -8,7 +8,7 @@ Unreleased changes
     - ``POST /user_directory/search``
       (`#1096 <https://github.com/matrix-org/matrix-doc/pull/1096>`_).
 
-    - ``GET /media/{version}/identicon``
+    - ``GET /media/{version}/identicon/{optionalSeed}``
       (`#1102 <https://github.com/matrix-org/matrix-doc/pull/1102>`_).
 
 - Spec clarifications:
