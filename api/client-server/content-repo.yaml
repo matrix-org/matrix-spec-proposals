@@ -269,6 +269,42 @@ paths:
             "$ref": "definitions/error.yaml"
       tags:
         - Media
+  "/identicon":
+    get:
+      summary: "Generates an identicon with an empty string as the seed"
+      description: |-
+        Generates an `identicon <https://en.wikipedia.org/wiki/Identicon>`_ with an empty string
+        as the seed
+      operationId: getIdenticon
+      produces: ["image/*"]
+      parameters:
+        - in: query
+          type: integer
+          x-example: 96
+          name: width
+          description: |-
+            The width of the identicon to generate. Defaults to 96.
+        - in: query
+          type: integer
+          x-example: 96
+          name: height
+          description: |-
+            The height of the identicon to generate. Defaults to the width.
+      responses:
+        200:
+          description: "The identicon for the seed string"
+          headers:
+            Content-Type:
+              description: "The content type of the identicon. Should be an image."
+              type: "string"
+          schema:
+            type: file
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/error.yaml"
+      tags:
+        - Media
   "/identicon/{seed}":
     get:
       summary: "Generates an identicon for the given seed string"
@@ -282,7 +318,6 @@ paths:
           x-example: "my_cool_username"
           name: seed
           description: "The seed for the identicon generator"
-          required: false
         - in: query
           type: integer
           x-example: 96
