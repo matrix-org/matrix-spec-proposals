@@ -283,6 +283,18 @@ paths:
           name: seed
           description: "The seed for the identicon generator"
           required: false
+        - in: query
+          type: integer
+          x-example: 96
+          name: width
+          description: |-
+            The width of the identicon to generate. Defaults to 96.
+        - in: query
+          type: integer
+          x-example: 96
+          name: height
+          description: |-
+            The height of the identicon to generate. Defaults to the width.
       responses:
         200:
           description: "The identicon for the seed string"
