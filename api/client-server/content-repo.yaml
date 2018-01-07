@@ -318,6 +318,7 @@ paths:
           x-example: "my_cool_username"
           name: seed
           description: "The seed for the identicon generator"
+          required: true
         - in: query
           type: integer
           x-example: 96
