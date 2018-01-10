@@ -14,6 +14,10 @@ Unreleased changes
     endpoints as deprecated
     (`#1097 <https://github.com/matrix-org/matrix-doc/pull/1097>`_).
 
+- Changes to the API which will be backwards-compatible for clients:
+  - Add 'token' parameter to /keys/query endpoint
+    (`#1104 <https://github.com/matrix-org/matrix-doc/pull/1104>`_).
+
 r0.3.0
 ======
 
