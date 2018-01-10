@@ -1,4 +1,5 @@
 # Copyright 2016 OpenMarket Ltd
+# Copyright 2018 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -131,6 +132,13 @@ paths:
                     description: "device ID"
                 example:
                   "@alice:example.com": []
+              token:
+                type: string
+                description: |-
+                  If the client is fetching keys as a result of a device update received
+                  in a sync request, this should be the 'since' token of that sync request,
+		  or any later sync token. This allows the server to ensure its response
+                  contains the keys advertised by the notification in that sync.
             required:
               - device_keys
 
