@@ -172,7 +172,7 @@ Examples:
 `improvement <https://github.com/matrix-org/matrix-doc/labels/improvement>`_
 ----------------------------------------------------------------------------
 
-A suggestion for a relaatively simple improvement to the protocol.
+A suggestion for a relatively simple improvement to the protocol.
 
 Examples:
 
