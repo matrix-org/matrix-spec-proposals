@@ -747,18 +747,6 @@ with ``403 Forbidden`` and an error code of ``M_FORBIDDEN``.
 
 {{logout_cs_http_api}}
 
-Login Fallback
-<<<<<<<<<<<<<<
-
-If a client does not recognize any or all login flows it can use the fallback
-login API::
-
-    GET /_matrix/static/client/login/
-
-This returns an HTML and JavaScript page which can perform the entire login
-process. The page will attempt to call the JavaScript function
-``window.onLogin`` when login has been successfully completed.
-
 .. _Registration:
 
 Account registration and management
