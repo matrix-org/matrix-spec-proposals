@@ -13,6 +13,8 @@ Unreleased changes
   - Mark ``home_server`` return field for ``/login`` and ``/register``
     endpoints as deprecated
     (`#1097 <https://github.com/matrix-org/matrix-doc/pull/1097>`_).
+  - Fix response format of ``/keys/changes`` endpoint
+    (`#1106 <https://github.com/matrix-org/matrix-doc/pull/1106>`_)
 
 - Changes to the API which will be backwards-compatible for clients:
   - Add 'token' parameter to /keys/query endpoint
