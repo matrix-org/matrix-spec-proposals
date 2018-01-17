@@ -336,7 +336,7 @@ paths:
           schema:
             type: object
             properties:
-              changes:
+              changed:
                 type: array
                 items:
                   type: string
@@ -344,5 +344,14 @@ paths:
                   The Matrix User IDs of all users who updated their device
                   identity keys.
                 example: ["@alice:example.com", "@bob:example.org"]
+              left:
+                type: array
+                items:
+                  type: string
+                description: |-
+                  The Matrix User IDs of all users who may have left an
+                  end-to-end encrypted room that the user is joined to.
+                  identity keys.
+                example: ["@clara:example.com", "@doug:example.org"]
       tags:
         - End-to-end encryption
