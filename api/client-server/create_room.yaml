@@ -179,6 +179,10 @@ paths:
                   This flag makes the server set the ``is_direct`` flag on the
                   ``m.room.member`` events sent to the users in ``invite`` and
                   ``invite_3pid``. See `Direct Messaging`_ for more information.
+              guest_can_join:
+                type: boolean
+                description: |-
+                  Allows guests to join the room. See `Guest Access`_ for more information.
       responses:
         200:
           description: Information about the newly created room.
