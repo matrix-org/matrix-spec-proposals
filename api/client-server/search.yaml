@@ -99,7 +99,9 @@ paths:
                         title: "Ordering"
                         type: string
                         enum: ["recent", "rank"]
-                        description: "The order in which to search for results."
+                        description: |-
+                          The order in which to search for results.
+                          By default, this is ``"rank"``.
                       event_context:
                         title: "Event Context"
                         type: object
@@ -112,13 +114,13 @@ paths:
                                 title: "Before limit"
                                 description: |-
                                   How many events before the result are
-                                  returned.
+                                  returned. By default, this is ``5``.
                             after_limit:
                                 type: integer
                                 title: "After limit"
                                 description: |-
                                   How many events after the result are
-                                  returned.
+                                  returned. By default, this is ``5``.
                             include_profile:
                                 type: boolean
                                 title: "Return profile information"
@@ -126,6 +128,7 @@ paths:
                                   Requests that the server returns the
                                   historic profile information for the users
                                   that sent the events that were returned.
+                                  By default, this is ``false``.
                       include_state:
                         type: boolean
                         title: Include current state
