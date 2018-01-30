@@ -14,7 +14,9 @@ Unreleased changes
     endpoints as deprecated
     (`#1097 <https://github.com/matrix-org/matrix-doc/pull/1097>`_).
   - Fix response format of ``/keys/changes`` endpoint
-    (`#1106 <https://github.com/matrix-org/matrix-doc/pull/1106>`_)
+    (`#1106 <https://github.com/matrix-org/matrix-doc/pull/1106>`_).
+  - Clarify default values for some fields on the /search API
+    (`#1109 <https://github.com/matrix-org/matrix-doc/pull/1109>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
