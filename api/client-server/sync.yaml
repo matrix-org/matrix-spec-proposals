@@ -366,3 +366,46 @@ paths:
               }
       tags:
         - Room participation
+  "/rooms/{roomId}/event/{eventId}":
+    get:
+      summary: Get a single event by event ID.
+      description: |-
+        Get a single event based on ``roomId/eventId``. You must have permission to
+        retrieve this event e.g. by being a member in the room for this event.
+      operationId: getOneRoomEvent
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The ID of the room the event is in.
+          required: true
+          x-example: "!asfDuShaf7Gafaw:matrix.org"
+        - in: path
+          type: string
+          name: eventId
+          description: The event ID to get.
+          required: true
+          x-example: "$asfDuShaf7Gafaw:matrix.org"
+      responses:
+        200:
+          description: The full event.
+          examples:
+            application/json: {
+                "content": {
+                  "body": "Hello world!",
+                  "msgtype": "m.text"
+                },
+                "room_id": "!wfgy43Sg4a:matrix.org",
+                "sender": "@bob:matrix.org",
+                "event_id": "$asfDuShaf7Gafaw:matrix.org",
+                "type": "m.room.message"
+              }
+          schema:
+            allOf:
+              - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
+        404:
+          description: The event was not found or you do not have permission to read this event.
+      tags:
+        - Room participation
