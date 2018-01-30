@@ -192,7 +192,7 @@ requests can be handled correctly.
 
 By default, the `Login`_ and `Registration`_ processes auto-generate a new
 ``device_id``. A client is also free to generate its own ``device_id`` or,
-provided the user remains the same, reuse a device: in ether case the client
+provided the user remains the same, reuse a device: in either case the client
 should pass the ``device_id`` in the request body. If the client sets the
 ``device_id``, the server will invalidate any access token previously assigned
 to that device. There is therefore at most one active access token assigned to
@@ -1335,13 +1335,23 @@ Listing rooms
 
 {{list_public_rooms_cs_http_api}}
 
+
+User Data
+---------
+
+User Directory
+~~~~~~~~~~~~~~
+
+{{users_cs_http_api}}
+
+
 Profiles
---------
+~~~~~~~~
 
 {{profile_cs_http_api}}
 
 Events on Change of Profile Information
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++++++++++++++++++++++++++++++++++++++++
 Because the profile display name and avatar information are likely to be used in
 many places of a client's display, changes to these fields cause an automatic
 propagation event to occur, informing likely-interested parties of the new

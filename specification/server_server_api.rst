@@ -941,11 +941,11 @@ following keys:
 ============== ===== ============
  Key            Type  Description
 ============== ===== ============
-``auth_chain`` List  A list of events giving the authorization chain for this
-                     join event
+``auth_chain`` List  A list of events giving all of the events in the auth
+                     chains for the join event and the events in ``state``.
 ``state``      List  A complete list of the prevailing state events at the
                      instant just before accepting the new ``m.room.member``
-                     event
+                     event.
 ============== ===== ============
 
 .. TODO-spec

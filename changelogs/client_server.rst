@@ -1,7 +1,25 @@
 Unreleased changes
 ==================
 
-No changes as yet.
+- Changes to the API which will be backwards-compatible for clients:
+
+  - New endpoints:
+
+    - ``POST /user_directory/search``
+      (`#1096 <https://github.com/matrix-org/matrix-doc/pull/1096>`_).
+
+- Spec clarifications:
+
+  - Mark ``home_server`` return field for ``/login`` and ``/register``
+    endpoints as deprecated
+    (`#1097 <https://github.com/matrix-org/matrix-doc/pull/1097>`_).
+  - Fix response format of ``/keys/changes`` endpoint
+    (`#1106 <https://github.com/matrix-org/matrix-doc/pull/1106>`_)
+
+- Changes to the API which will be backwards-compatible for clients:
+
+  - Add 'token' parameter to /keys/query endpoint
+    (`#1104 <https://github.com/matrix-org/matrix-doc/pull/1104>`_).
 
 r0.3.0
 ======
@@ -61,6 +79,8 @@ r0.3.0
   - Add ``m.room.pinned_events`` state event for rooms.
     (`#1007 <https://github.com/matrix-org/matrix-doc/pull/1007>`_).
   - Add mention of ability to send Access Token via an Authorization Header.
+  - Add ``guest_can_join`` parameter to ``POST /createRoom``
+    (`#1093 <https://github.com/matrix-org/matrix-doc/pull/1093>`_).
 
   - New endpoints:
 
