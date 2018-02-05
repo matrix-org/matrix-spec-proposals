@@ -43,7 +43,7 @@ paths:
           type: string
           description: The client secret provided to the ``requestToken`` endpoint.
         - in: form
-          name: mxisd
+          name: mxid
           required: true
           type: string
           description: The user's Matrix ID to bind to the 3PID address.
