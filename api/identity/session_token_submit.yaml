@@ -1,0 +1,75 @@
+# Copyright 2018 Kamax.io
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Identity Service Session API"
+  version: "1.0.0"
+host: localhost:8090
+schemes:
+  - https
+basePath: /_matrix/identity/api/v1
+produces:
+  - application/json
+paths:
+  "/validate/{medium}/submitToken":
+    post:
+      summary: Validate ownership of the 3PID address associated with a session.
+      description: |
+        Validate the 3PID session with the provided token.
+
+        This endpoint may also be called using the ``GET`` method and the form parameters
+        given as query parameters.
+      operationId: sessionSubmitToken
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: path
+          type: string
+          name: medium
+          required: true
+          description: The 3PID medium type of the session.
+          x-example: "email"
+        - in: form
+          name: sid
+          type: string
+          required: true
+          description: The session ID returned by the ``requestToken`` endpoint.
+        - in: form
+          name: client_secret
+          required: true
+          type: string
+          description: The client secret provided to the ``requestToken`` endpoint.
+        - in: form
+          name: token
+          required: true
+          type: string
+          description: The token provided to the user after calling the ``requestToken`` endpoint.
+      responses:
+        200:
+          description: The session was successfully validated.
+          examples:
+            application/json: {
+                "success": true
+            }
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                description: The success status of the session validation
+            required:
+              - "success"
+        403:
+          description: The session credentials or the token provided are not valid.

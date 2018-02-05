@@ -1,0 +1,145 @@
+# Copyright 2018 Kamax.io
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Identity Service Session API"
+  version: "1.0.0"
+host: localhost:8090
+schemes:
+  - https
+basePath: /_matrix/identity/api/v1
+produces:
+  - application/json
+paths:
+  "/validate/email/requestToken":
+    post:
+      summary: Create an email 3PID session and initiate the validation procedure.
+      description: |
+        Create an email 3PID session which can be used to validate ownership of the given 3PID and later bind it to a Matrix ID.
+
+        A token is sent to the given email address that can be provided to the appropriate token submission endpoint.
+      operationId: sessionEmailRequestToken
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            example: {
+              client_secret: "TopSecretString",
+              email: "john.doe@example.org",
+              send_attempt: 1
+            }
+            properties:
+              client_secret:
+                type: string
+                title: Client secret
+                description: The client secret that will be used when performing actions on the session.
+              send_attempt:
+                type: integer
+                title: Send attempt
+                description: Uniquely identity this token request. If a new request is needed (e.g. reminder), this should be incremented.
+              next_link:
+                type: string
+                title: Next link
+                description: URL to redirect the client to after validation is complete.
+              email:
+                type: string
+                title: Email address
+                description: The email address to validate and to which the token should be sent.
+            required:
+              - "client_secret"
+              - "send_attempt"
+              - "email"
+      responses:
+        200:
+          description: The session was successfully created and the token was communicated.
+          examples:
+            application/json: {
+                "sid": "M3BpZFNlc3Npb25JZEV4YW1wbGUK"
+            }
+          schema:
+            type: object
+            properties:
+              sid:
+                type: string
+                description: The ID of the session that was created.
+            required:
+              - "sid"
+        501:
+          description: The Identity service does not have the capability to validate the 3PID medium type.
+  "/validate/msisdn/requestToken":
+    post:
+      summary: Create a phone number 3PID session and initiate the validation procedure.
+      description: |
+        Create a phone number 3PID session which can be used to validate ownership of the given 3PID and later bind it to a Matrix ID.
+
+        A token is sent to the given phone number that can be provided to the appropriate token submission endpoint.
+      operationId: sessionMsisdnRequestToken
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            example: {
+              client_secret: "TopSecretString",
+              country: "be",
+              phone_number: "0495/01.23.45",
+              send_attempt: 1
+            }
+            properties:
+              client_secret:
+                type: string
+                title: Client secret
+                description: The client secret that will be used when performing actions on the session.
+              send_attempt:
+                type: integer
+                title: Send attempt
+                description: Uniquely identity this token request. If a new request is needed (reminder), this should be incremented.
+              next_link:
+                type: string
+                title: Next link
+                description: URL to redirect the client to after validation is complete.
+              country:
+                type: string
+                title: Email address
+                description: |-
+                  The 2-letters country code to use to build a msisdn 3PID in case the phone number is not an international format.
+                  If the phone number is in internal format, this value will be ignored and can be empty.
+              phone_number:
+                type: string
+                title: Phone number
+                description: The national or international phone number to parse and format as msisdn.
+            required:
+              - "client_secret"
+              - "send_attempt"
+              - "country"
+              - "phone_number"
+      responses:
+        200:
+          description: The session was successfully created and the token was communicated.
+          examples:
+            application/json: {
+                "sid": "M3BpZFNlc3Npb25JZEV4YW1wbGUK"
+            }
+          schema:
+            type: object
+            properties:
+              sid:
+                type: string
+                description: The ID of the session that was created.
+            required:
+              - "sid"
+        501:
+          description: The Identity service does not have the capability to validate the 3PID medium type.

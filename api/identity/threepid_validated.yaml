@@ -1,0 +1,71 @@
+# Copyright 2018 Kamax.io
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Identity Service Session API"
+  version: "1.0.0"
+host: localhost:8090
+schemes:
+  - https
+basePath: /_matrix/identity/api/v1
+produces:
+  - application/json
+paths:
+  "/3pid/getValidated3pid":
+    post:
+      summary: Get the validated 3PID for the session.
+      description: |
+        Get the validated 3PID for the session, if the session has been validated.
+
+        If the session has not yet been validated, an error is returned.
+      operationId: threepidCheckValidated
+      parameters:
+        - in: query
+          name: sid
+          type: string
+          required: true
+          description: The session ID returned by the ``requestToken`` endpoint.
+        - in: query
+          name: client_secret
+          required: true
+          type: string
+          description: The client secret provided to the ``requestToken`` endpoint.
+      responses:
+        200:
+          description: The validation information for this session.
+          examples:
+            application/json: {
+              "medium": "email",
+              "address": "john.doe@example.org",
+              "validated_at": 1457622739026
+            }
+          schema:
+            type: object
+            properties:
+              medium:
+                type: string
+                description: The medium type of the 3PID.
+              address:
+                type: string
+                description: The canonical address of the 3PID.
+              validated_at:
+                type: integer
+                description: Epoch millisecond timestamp when the 3PID address was validated.
+            required:
+              - "medium"
+              - "address"
+              - "validated_at"
+        403:
+          description: The session credentials provided are not valid.
