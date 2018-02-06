@@ -1,0 +1,94 @@
+# Copyright 2018 Kamax.io
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Identity Invites API"
+  version: "1.0.0"
+host: localhost:8090
+schemes:
+  - https
+basePath: /_matrix/identity/api/v1
+produces:
+  - application/json
+paths:
+  "/store-invite":
+    post:
+      summary: Store a 3PID invite for a room.
+      description: |
+        Store the received 3PID invite for a room from a homeserver if no mapping already exists,
+        informing the homeserver if and when a 3PID mappging gets created for that 3PID using the
+        ``/_matrix/federation/v1/3pid/onBind`` endpoint.
+
+        An arbitrary number of other parameters may also be specified for the specific 3PID medium
+        type handler.
+      operationId: inviteStore
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: form
+          name: sender
+          type: string
+          required: true
+          description: The Matrix user ID of the inviting user.
+        - in: form
+          name: room_id
+          type: string
+          required: true
+          description: The Matrix room ID to which the user was invited.
+        - in: form
+          name: medium
+          type: string
+          required: true
+          description: The 3PID medium type for this invite.
+        - in: form
+          name: address
+          type: string
+          required: true
+          description: The 3PID address for this invite.
+      responses:
+        200:
+          description: The bind was successfully performed.
+          examples:
+            application/json: {
+              "token": "SecretToken",
+              "display_name": "j...@e....",
+              "public_keys": [
+                "key1",
+                "key2"
+              ]
+            }
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                description: The token that will be used to authenticate this invite if a 3PID mapping is found.
+              display_name:
+                type: string
+                description: The display name to be used for this 3PID invite for the room membership, hiding the real 3PID address.
+              public_keys:
+                type: array
+                description: Keys involved in storing this invite.
+                items:
+                  type: string
+                  title: Long-term public signing key or ephemeral key.
+            required:
+              - "token"
+              - "display_name"
+              - "public_keys"
+        400:
+          description: A mapping already exists for that 3PID.
+        501:
+          description: The 3PID medium type is not supported and invite cannot be processed.
