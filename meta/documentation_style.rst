@@ -62,13 +62,19 @@ have English as their first language.
 
 Prefer British English (colour, -ise) to American English.
 
+Lists should:
+
+* Be introduced with a colon.
+* Be used where they provide clarity.
+* Contain entries which start with a capital and end with a full stop.
+
 OpenAPI
 ~~~~~~~
 
 When writing OpenAPI specifications for the API endpoints, follow these rules:
 
 * ``summary``: a phrase summarising what this API does. Start with a capital,
-  end with a full-stop. Examples: "Sends an event."; "Searches the directory."
+  end with a full stop. Examples: "Sends an event."; "Searches the directory."
 
 * ``description``: a longer description of the behaviour of this API, written
   in complete sentences.
@@ -78,7 +84,7 @@ When writing OpenAPI specifications for the API endpoints, follow these rules:
 
 * Parameter and property ``description``\s: a phrase summarising the behaviour
   of this parameter or property, optionally followed by sentences giving more
-  detailed explanations.
+  detailed explanations. Start with a capital, end with a full stop.
 
   The description is also the place to define default values for optional
   properties. Use the wording "Defaults to X [if unspecified]."
