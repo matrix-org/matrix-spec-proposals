@@ -1,0 +1,33 @@
+{
+  "age": 242352,
+  "content": {
+      "title": "Party at Bob's House",
+      "start_time": 922838400000,
+      "end_time": 922924800000,
+      "location_description": "123 Fake Street",
+      "location": {
+        "geometry": {
+          "type": "Point",
+          "coordinates": [125.6, 10.1]
+        }
+      },
+      "description": {
+        "body": "Party at Bob's house to celebrate the release of a sci-fi film. *Bring 🍺 and 🍿*",
+        "formatted_body":  "Party at Bob's house to celebrate the release of a sci-fi film. <i>Bring 🍺 and 🍿</i>",
+        "format": "org.matrix.custom.html"
+      },
+      "thumbnail": {
+        "uri": "mxc://localhost/JWEIFJgwEIhweiWJE",
+        "width": 256,
+        "height": 256,
+        "mimetype": "image/jpeg",
+        "size": 1024000
+      }
+  },
+  "state_key": "",
+  "origin_server_ts": 1431961217939,
+  "event_id": "$WLGTSEFSEF:localhost",
+  "type": "m.room.name",
+  "room_id": "!Cuyf34gef24t:localhost",
+  "sender": "@bob:localhost"
+}

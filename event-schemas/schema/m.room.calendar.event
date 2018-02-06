@@ -1,0 +1,68 @@
+---
+$schema: http://json-schema.org/draft-04/schema#
+allOf:
+  - $ref: core-event-schema/room_event.yaml
+description: This event represents a single calendar event item. Clients may convert this into other formats such as iCal for users to put into third party calendars.
+properties:
+  content:
+    properties:
+      title:
+        description: Descriptive shortname name for the event.
+        type: string
+      start_time:
+        description: When the event is due to start in milliseconds since epoch, UTC time.
+        type: integer
+      end_time:
+        description: When the event is due to end in milliseconds since epoch, UTC time.
+        type: integer
+      location_description:
+        description: A string representation of the location of the event.
+        type: string
+      location:
+        description: A object containing valid GeoJSON
+      description:
+        properties:
+          body:
+            description: Plaintext long description for the event.
+            type: string
+          formatted_body:
+            description: Formatted long description for the event.
+            type: string
+          format:
+            description: Format type of the formatted_body.
+            type: string
+        required:
+          - body
+        type: object
+      thumbnail:
+        properties:
+          uri:
+            description: Matrix MXC uri of the thumbnail.
+            type: string
+          width:
+            description: Width of the thumbnail.
+            type: integer
+          height:
+            description: Height of the thumbnail.
+            type: integer
+          mimetype:
+            description: Mimetype of the thumbnail.
+            type: string
+          size:
+            description: Size in bytes of the thumbnail.
+            type: integer
+        required:
+          - uri
+          - mimetype
+        type: object
+    required:
+      - title
+      - start_time
+      - end_time
+    type: object
+  type:
+    enum:
+      - m.room.calendar.event
+    type: string
+title: Calendar Event
+type: object
