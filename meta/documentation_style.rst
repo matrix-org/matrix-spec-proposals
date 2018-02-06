@@ -1,8 +1,9 @@
 Documentation Style
 ===================
 
-A brief single sentence to describe what this file contains; in this case a
-description of the style to write documentation in.
+Each document should begin with aa brief single sentence to describe what this
+file contains; in this case a description of the style to write documentation
+in.
 
 Format
 ------
@@ -49,3 +50,35 @@ Line widths
 
 We use 80 characters for line widths. This is a guideline and can be flouted IF
 AND ONLY IF it makes reading more legible. Use common sense.
+
+Stylistic notes
+---------------
+
+General
+~~~~~~~
+
+Try to write clearly and unambiguously. Remember that many readers will not
+have English as their first language.
+
+Prefer British English (colour, -ise) to American English.
+
+OpenAPI
+~~~~~~~
+
+When writing OpenAPI specifications for the API endpoints, follow these rules:
+
+ * ``summary``: a phrase summarising what this API does. Start with a capital,
+   end with a full-stop. Examples: "Sends an event."; "Searches the directory."
+
+ * ``description``: a longer description of the behaviour of this API, written
+   in complete sentences.
+
+ * ``operationId``: a camelCased unique identifier for this endpoint. This will
+   be used to automatically generate bindings for the endpoint.
+
+ * Parameter and property ``description``\s: a phrase summarising the behaviour
+   of this parameter or property, optionally followed by sentences giving more
+   detailed explanations.
+
+   The description is also the place to define default values for optional
+   properties. Use the wording "Defaults to X [if unspecified]."
