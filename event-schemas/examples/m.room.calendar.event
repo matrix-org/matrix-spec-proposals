@@ -12,8 +12,8 @@
         }
       },
       "description": {
-        "body": "Party at Bob's house to celebrate the release of a sci-fi film. *Bring 🍺 and 🍿*",
-        "formatted_body":  "Party at Bob's house to celebrate the release of a sci-fi film. <i>Bring 🍺 and 🍿</i>",
+        "body": "Party at Bob's house to celebrate the release of a sci-fi film. *Bring beer and popcorn*",
+        "formatted_body":  "Party at Bob's house to celebrate the release of a sci-fi film. <i>Bring beer and popcorn</i>",
         "format": "org.matrix.custom.html"
       },
       "thumbnail": {
@@ -27,7 +27,7 @@
   "state_key": "",
   "origin_server_ts": 1431961217939,
   "event_id": "$WLGTSEFSEF:localhost",
-  "type": "m.room.name",
+  "type": "m.room.calendar.event",
   "room_id": "!Cuyf34gef24t:localhost",
   "sender": "@bob:localhost"
 }
