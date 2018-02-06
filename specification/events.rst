@@ -70,4 +70,10 @@ prefixed with ``m.``
 
 {{m_room_redaction_event}}
 
+Room Calendar Events
+--------------------
+
+{{m_room_calendar_event_event}}
+
+
 .. _`Canonical JSON`: ../appendices.html#canonical-json

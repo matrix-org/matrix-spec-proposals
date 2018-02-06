@@ -7,7 +7,7 @@ properties:
   content:
     properties:
       title:
-        description: Descriptive shortname name for the event.
+        description: Descriptive short name for the event.
         type: string
       start_time:
         description: When the event is due to start in milliseconds since epoch, UTC time.
@@ -19,7 +19,7 @@ properties:
         description: A string representation of the location of the event.
         type: string
       location:
-        description: A object containing valid GeoJSON
+        description: An object containing valid GeoJSON
         type: object
       description:
         properties:
@@ -38,7 +38,7 @@ properties:
       thumbnail:
         properties:
           uri:
-            description: Matrix MXC uri of the thumbnail.
+            description: The content URI to the thumbnail.
             type: string
           width:
             description: Width of the thumbnail.
@@ -54,7 +54,6 @@ properties:
             type: integer
         required:
           - uri
-          - mimetype
         type: object
     required:
       - title
