@@ -23,6 +23,11 @@ Unreleased changes
   - Add 'token' parameter to /keys/query endpoint
     (`#1104 <https://github.com/matrix-org/matrix-doc/pull/1104>`_).
 
+- New Event Types:
+
+    - ``m.room.calendar.event``
+      (`#1116 <https://github.com/matrix-org/matrix-doc/pull/1116>`_).
+
 r0.3.0
 ======
 
