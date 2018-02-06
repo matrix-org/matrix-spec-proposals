@@ -67,18 +67,18 @@ OpenAPI
 
 When writing OpenAPI specifications for the API endpoints, follow these rules:
 
- * ``summary``: a phrase summarising what this API does. Start with a capital,
-   end with a full-stop. Examples: "Sends an event."; "Searches the directory."
+* ``summary``: a phrase summarising what this API does. Start with a capital,
+  end with a full-stop. Examples: "Sends an event."; "Searches the directory."
 
- * ``description``: a longer description of the behaviour of this API, written
-   in complete sentences.
+* ``description``: a longer description of the behaviour of this API, written
+  in complete sentences.
 
- * ``operationId``: a camelCased unique identifier for this endpoint. This will
-   be used to automatically generate bindings for the endpoint.
+* ``operationId``: a camelCased unique identifier for this endpoint. This will
+  be used to automatically generate bindings for the endpoint.
 
- * Parameter and property ``description``\s: a phrase summarising the behaviour
-   of this parameter or property, optionally followed by sentences giving more
-   detailed explanations.
+* Parameter and property ``description``\s: a phrase summarising the behaviour
+  of this parameter or property, optionally followed by sentences giving more
+  detailed explanations.
 
-   The description is also the place to define default values for optional
-   properties. Use the wording "Defaults to X [if unspecified]."
+  The description is also the place to define default values for optional
+  properties. Use the wording "Defaults to X [if unspecified]."
