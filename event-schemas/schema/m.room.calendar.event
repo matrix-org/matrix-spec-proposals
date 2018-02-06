@@ -20,6 +20,7 @@ properties:
         type: string
       location:
         description: A object containing valid GeoJSON
+        type: object
       description:
         properties:
           body:
