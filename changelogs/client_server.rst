@@ -7,6 +7,8 @@ Unreleased changes
 
     - ``POST /user_directory/search``
       (`#1096 <https://github.com/matrix-org/matrix-doc/pull/1096>`_).
+    - ``GET /rooms/{roomId}/event/{eventId}``
+      (`#1110 <https://github.com/matrix-org/matrix-doc/pull/1110>`_).
 
 - Spec clarifications:
 
