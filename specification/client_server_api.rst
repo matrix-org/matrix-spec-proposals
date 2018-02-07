@@ -1447,6 +1447,9 @@ have to wait in milliseconds before they can try again.
 .. |/rooms/{roomId}/context/{eventId}| replace:: ``/rooms/{roomId}/context/{eventId}``
 .. _/rooms/{roomId}/context/{eventId}: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-context-eventid
 
+.. |/rooms/{roomId}/event/{eventId}| replace:: ``/rooms/{roomId}/event/{eventId}``
+.. _/rooms/{roomId}/event/{eventId}: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-event-eventid
+
 .. |/account/3pid| replace:: ``/account/3pid``
 .. _/account/3pid: #post-matrix-client-%CLIENT_MAJOR_VERSION%-account-3pid
 
