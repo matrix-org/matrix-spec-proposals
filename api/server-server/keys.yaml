@@ -1,0 +1,188 @@
+# Copyright 2018 Kamax.io
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Federation Key API"
+  version: "1.0.0"
+host: localhost:8448
+schemes:
+  - https
+basePath: /_matrix/key/v2
+produces:
+  - application/json
+paths:
+  "/server":
+    get:
+      summary: Get the server keys and certificate fingerprints.
+      description: Get the server keys and certificate fingerprints.
+      responses:
+        200:
+          description: The keys and certificates information about this server.
+          examples:
+            application/json: {
+              "old_verify_keys": {
+                  "ed25519:auto1": {
+                      "expired_ts": 922834800000,
+                      "key": "Base+64+Encoded+Old+Verify+Key"
+                  }
+              },
+              "server_name": "example.org",
+              "signatures": {
+                  "example.org": {
+                      "ed25519:auto2": "Base+64+Encoded+Signature"
+                  }
+              },
+              "tls_fingerprints": [
+                  {
+                      "sha256": "Base+64+Encoded+SHA-256-Fingerprint"
+                  }
+              ],
+              "valid_until_ts": 1052262000000,
+              "verify_keys": {
+                  "ed25519:auto2": {
+                      "key": "Base+64+Encoded+Signature+Verification+Key"
+                  }
+              }
+            }
+          schema:
+            type: object
+            required:
+              - server_name
+              - verify_keys
+              - old_verify_keys
+              - tls_fingerprints
+              - valid_until_ts
+              - signatures
+            properties:
+              server_name:
+                type: string
+                description: DNS name of the homeserver.
+                example: example.org
+              verify_keys:
+                type: object
+                description: Public keys of the homeserver for verifying digital signatures.
+                additionalProperties:
+                  $ref: definitions/signing_verify_key.yaml
+              old_verify_keys:
+                type: object
+                description: The public keys that the server used to use.
+                additionalProperties:
+                  $ref: definitions/signing_verify_key_old.yaml
+              tls_fingerprints:
+                type: array
+                description: Fingerprints of the X.509 TLS certificates used by this server.
+                items:
+                  type: object
+                  title: TLS Fingerprints
+                  required:
+                    - sha256
+                  properties:
+                    sha256:
+                      type: string
+                      description: Hash of X.509 TLS certificate encoded as `Unpadded Base64`_.
+                  additionalProperties:
+                    type: string
+              valid_until_ts:
+                type: integer
+                description: POSIX timestamp when the list of valid keys should be refreshed.
+                example: 1052262000000
+              signatures:
+                $ref: definitions/signatures.yaml
+  "/server/{keyId}":
+    get:
+      summary: Get a specific server key.
+      description: |-
+        Get a specific server key.
+
+        It is recommended to return the full set of keys and TLS fingerprints even if a single
+        key as been queried to avoid several back-and-forth traffic between servers trying to
+        validate events.
+      parameters:
+        - in: path
+          name: keyId
+          type: string
+          description: The key ID that we want to query.
+          example: "ed25519:keyId"
+      responses:
+        200:
+          description: The keys and certificates information about this server.
+          examples:
+            application/json: {
+              "server_name": "example.org",
+              "signatures": {
+                  "example.org": {
+                      "ed25519:auto2": "Base+64+Encoded+Signature"
+                  }
+              },
+              "tls_fingerprints": [
+                  {
+                      "sha256": "Base+64+Encoded+SHA-256-Fingerprint"
+                  }
+              ],
+              "valid_until_ts": 1052262000000,
+              "verify_keys": {
+                  "ed25519:auto2": {
+                      "key": "Base+64+Encoded+Signature+Verification+Key"
+                  }
+              }
+            }
+          schema:
+            type: object
+            required:
+              - server_name
+              - tls_fingerprints
+              - valid_until_ts
+              - signatures
+            properties:
+              server_name:
+                type: string
+                description: DNS name of the homeserver.
+                example: example.org
+              verify_keys:
+                type: object
+                description: |-
+                  Public keys of the homeserver for verifying digital signatures.
+                  This section can be ommited if the requested key is not part of it.
+                additionalProperties:
+                  $ref: definitions/signing_verify_key.yaml
+              old_verify_keys:
+                type: object
+                description: |-
+                  The public keys that the server used to use.
+                  This section can be ommited if the requested key is not part of it.
+                additionalProperties:
+                  $ref: definitions/signing_verify_key_old.yaml
+              tls_fingerprints:
+                type: array
+                description: Fingerprints of the X.509 TLS certificates used by this server.
+                items:
+                  type: object
+                  title: TLS Fingerprints
+                  required:
+                    - sha256
+                  properties:
+                    sha256:
+                      type: string
+                      description: Hash of X.509 TLS certificate encoded as `Unpadded Base64`_.
+                  additionalProperties:
+                    type: string
+              valid_until_ts:
+                type: integer
+                description: POSIX timestamp when the list of valid keys should be refreshed.
+                example: 1052262000000
+              signatures:
+                $ref: definitions/signatures.yaml
+        404:
+          description: If the requested key is not known.
