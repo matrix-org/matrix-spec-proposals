@@ -49,7 +49,7 @@ paths:
               send_attempt:
                 type: integer
                 title: Send attempt
-                description: Uniquely identity this token request. If a new request is needed (e.g. reminder), this should be incremented.
+                description: Uniquely identify this token request. If a new request is needed (e.g. reminder), this should be incremented.
               next_link:
                 type: string
                 title: Next link
@@ -106,7 +106,7 @@ paths:
               send_attempt:
                 type: integer
                 title: Send attempt
-                description: Uniquely identity this token request. If a new request is needed (reminder), this should be incremented.
+                description: Uniquely identify this token request. If a new request is needed (reminder), this should be incremented.
               next_link:
                 type: string
                 title: Next link
@@ -116,7 +116,7 @@ paths:
                 title: Email address
                 description: |-
                   The 2-letters country code to use to build a msisdn 3PID in case the phone number is not an international format.
-                  If the phone number is in internal format, this value will be ignored and can be empty.
+                  If the phone number is in international format, this value will be ignored and can be empty.
               phone_number:
                 type: string
                 title: Phone number
