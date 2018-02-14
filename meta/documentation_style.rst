@@ -77,7 +77,12 @@ When writing OpenAPI specifications for the API endpoints, follow these rules:
   end with a full stop. Examples: "Sends an event."; "Searches the directory."
 
 * ``description``: a longer description of the behaviour of this API, written
-  in complete sentences.
+  in complete sentences. Use multiple paragraphs if necessary.
+  
+  Example: 
+  
+      This API sends an event to the room. The server must ensure that the user
+      has permission to post events to this room.
 
 * ``operationId``: a camelCased unique identifier for this endpoint. This will
   be used to automatically generate bindings for the endpoint.
