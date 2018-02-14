@@ -19,7 +19,7 @@ properties:
       on the filter
     type: boolean
   prev_batch:
-    description: A token that can be supplied to to the ``from`` parameter of the
+    description: A token that can be supplied to the ``from`` parameter of the
       rooms/{roomId}/messages endpoint
     type: string
 type: object
