@@ -1,8 +1,8 @@
 Documentation Style
 ===================
 
-Each document should begin with aa brief single sentence to describe what this
-file contains; in this case a description of the style to write documentation
+Each document should begin with a brief single sentence to describe what this
+file contains: in this case a description of the style to write documentation
 in.
 
 Format
