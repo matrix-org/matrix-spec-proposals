@@ -25,8 +25,8 @@ produces:
 paths:
   "/server":
     get:
-      summary: Get the server keys and certificate fingerprints.
-      description: Get the server keys and certificate fingerprints.
+      summary: Gets the server keys and certificate fingerprints.
+      description: Gets the server keys and certificate fingerprints.
       responses:
         200:
           description: The keys and certificates information about this server.
@@ -68,7 +68,7 @@ paths:
             properties:
               server_name:
                 type: string
-                description: DNS name of the homeserver.
+                description: Server name of the homeserver.
                 example: example.org
               verify_keys:
                 type: object
@@ -102,9 +102,9 @@ paths:
                 $ref: definitions/signatures.yaml
   "/server/{keyId}":
     get:
-      summary: Get a specific server key.
+      summary: Gets a specific server key.
       description: |-
-        Get a specific server key.
+        Gets a specific server key.
 
         It is recommended to return the full set of keys and TLS fingerprints even if a single
         key as been queried to avoid several back-and-forth traffic between servers trying to
@@ -153,7 +153,7 @@ paths:
               verify_keys:
                 type: object
                 description: |-
-                  Public keys of the homeserver for verifying digital signatures.
+                  The public keys of the homeserver for verifying digital signatures.
                   This section can be ommited if the requested key is not part of it.
                 additionalProperties:
                   $ref: definitions/signing_verify_key.yaml

@@ -14,7 +14,7 @@
 
 title: Key's signature
 type: object
-description: The signature using a specific signing key, referenced in the object's key name.
+description: The signature of a specific signing key, referenced in the object's key name.
 additionalProperties:
   type: string
   description: The base64 encoded signature of the data for this key.

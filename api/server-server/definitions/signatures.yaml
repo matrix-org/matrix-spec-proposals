@@ -14,7 +14,9 @@
 
 title: Signatures
 type: object
-description: The server signatures, using the server name as key.
+description: |
+  Server(s) signature(s), provided as a dictionary, using a server name as key
+  and the corresponding key signature object as value.
 additionalProperties:
   $ref: key_signature.yaml
 example: {
