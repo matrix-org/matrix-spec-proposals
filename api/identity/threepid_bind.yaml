@@ -27,7 +27,12 @@ paths:
     post:
       summary: Bind a user's Matrix ID to a 3PID.
       description: |
-        Bind a user's Matrix ID to a 3PID, being published and found via ``/lookup``.
+        After a 3PID session has been successfully validated, a Matrix User ID can
+        be bound to a 3PID by calling this API and providing the session credentials.
+
+        If the session is still valid, this will publish the association between the
+        3PIDs validated on that session and the passed Matrix user ID. Future calls
+        to ``/lookup`` for any of the session's 3PIDs will return this association.
       operationId: threepidBind
       consumes:
         - multipart/form-data
@@ -54,5 +59,12 @@ paths:
             application/json: {}
           schema:
             type: object
+        401:
+          description: The session has not yet been validated.
+          examples:
+            application/json: {
+              "errcode": "M_SESSION_NOT_VALIDATED",
+              "error": "This validation session has not yet been completed"
+            }
         403:
           description: The session credentials provided are not valid.

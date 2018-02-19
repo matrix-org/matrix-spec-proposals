@@ -25,12 +25,12 @@ produces:
 paths:
   "/validate/{medium}/submitToken":
     post:
-      summary: Validate ownership of the 3PID address associated with a session.
+      summary: Validates ownership of the 3PID address associated with a session.
       description: |
-        Validate the 3PID session with the provided token.
+        Validates the 3PID session with the provided token.
 
-        This endpoint may also be called using the ``GET`` method and the form parameters
-        given as query parameters.
+        This endpoint takes form-data as input and may also be called using
+        the ``GET`` method and the form parameters given as query parameters.
       operationId: sessionSubmitToken
       consumes:
         - multipart/form-data

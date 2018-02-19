@@ -25,11 +25,13 @@ produces:
 paths:
   "/validate/email/requestToken":
     post:
-      summary: Create an email 3PID session and initiate the validation procedure.
+      summary: Creates an email 3PID session and initiates the validation procedure.
       description: |
-        Create an email 3PID session which can be used to validate ownership of the given 3PID and later bind it to a Matrix ID.
+        Creates an email 3PID session which can be used to validate ownership of
+        the given 3PID and later bind it to a Matrix ID.
 
-        A token is sent to the given email address that can be provided to the appropriate token submission endpoint.
+        The Identity server will send a token to the given email address.  
+        The token can then be provided to the appropriate token submission endpoint.
       operationId: sessionEmailRequestToken
       parameters:
         - in: body
@@ -49,7 +51,9 @@ paths:
               send_attempt:
                 type: integer
                 title: Send attempt
-                description: Uniquely identify this token request. If a new request is needed (e.g. reminder), this should be incremented.
+                description: |
+                  Uniquely identify this token request.
+                  If a new request is needed (e.g. reminder), this should be incremented.
               next_link:
                 type: string
                 title: Next link
@@ -60,7 +64,6 @@ paths:
                 description: The email address to validate and to which the token should be sent.
             required:
               - "client_secret"
-              - "send_attempt"
               - "email"
       responses:
         200:
@@ -113,17 +116,19 @@ paths:
                 description: URL to redirect the client to after validation is complete.
               country:
                 type: string
-                title: Email address
+                title: Country code
                 description: |-
-                  The 2-letters country code to use to build a msisdn 3PID in case the phone number is not an international format.
-                  If the phone number is in international format, this value will be ignored and can be empty.
+                  The 2-letter country code to use to build a msisdn 3PID in
+                  case the phone number is not an international format.
+                  
+                  If the phone number is in international format, this value
+                  will be ignored and can be empty.
               phone_number:
                 type: string
                 title: Phone number
                 description: The national or international phone number to parse and format as msisdn.
             required:
               - "client_secret"
-              - "send_attempt"
               - "country"
               - "phone_number"
       responses:

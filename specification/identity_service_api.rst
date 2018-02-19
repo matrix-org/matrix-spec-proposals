@@ -123,9 +123,18 @@ Creating a session is done by providing generic values and 3PID-specific values.
 
 Generic values are:
 
-- A client secret to protect the session
-- The attempt number, allowing the client to control when a token should be sent again (e.g. reminder)
-- An optional next link URL to which the client is redirected after validation of the session
+- ``client_secret``: a client secret to protect the session.
+- ``send_attempt``: an optional attempt number, controlling if a token should
+  be sent again.
+- ``next_link``: An optional next link URL to which the client is redirected
+  after validation of the session. 
+
+If a send_attempt is specified, the server will only send an email if the
+send_attempt is a number greater than the most recent one which it has seen (or
+if it has never seen one), scoped to that email address + client_secret pair.
+This is to avoid repeatedly sending the same email in the case of request
+retries between the POSTing user and the identity service. The client should
+increment this value if they desire a new email (e.g. a reminder) to be sent.
 
 3PID-specific values are specific to the 3PID medium to give flexibility in the
 3PID address representation, either as a canonical value or as a set of values
@@ -134,7 +143,7 @@ to be parsed/resolved into a canonical value.
 If the request is accepted by the identity server, it will return the session ID
 to be used in the next actions alongside the client secret, acting as credentials.
 
-Note that Home Servers offer APIs that proxy this API, adding additional
+Note that Home Servers offer APIs that proxy these API, adding additional
 behaviour on top, for example, ``/register/email/requestToken`` is designed
 specifically for use when registering an account and therefore will inform
 the user if the email address given is already registered on the server.
@@ -162,39 +171,13 @@ Otherwise, an error will be returned.
 
 {{session_token_submit_is_http_api}}
 
-Checking non-published 3pid ownership
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-A client can check whether ownership of a 3pid was validated by providing
-the session ID and client secret.
-
-If the tokens were not recognised, or were not correct, an error will be returned.
-
-In case the session has not yet been validated::
-
-  {
-    "errcode": "M_SESSION_NOT_VALIDATED",
-    "error": "This validation session has not yet been completed"
-  }
+Checking for a validated association
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {{threepid_validated_is_http_api}}
 
 Publishing a validated association
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-An association between a session and a Matrix user ID can be created by
-being providing it with the session credentials.
-
-If the session is still valid, this will publish the association between the
-3pids validated on that session and the passed Matrix user ID. Future calls
-to ``/lookup`` for any of the session's 3pids will return this association.
-
-In case the session has not yet been validated::
-
-  {
-    "errcode": "M_SESSION_NOT_VALIDATED",
-    "error": "This validation session has not yet been completed"
-  }
 
 {{threepid_bind_is_http_api}}
 

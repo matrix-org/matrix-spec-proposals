@@ -25,9 +25,9 @@ produces:
 paths:
   "/3pid/getValidated3pid":
     post:
-      summary: Get the validated 3PID for the session.
+      summary: Gets the validated 3PID for the session.
       description: |
-        Get the validated 3PID for the session, if the session has been validated.
+        Gets the validated 3PID for the session, if the session has been validated.
 
         If the session has not yet been validated, an error is returned.
       operationId: threepidCheckValidated
@@ -67,5 +67,12 @@ paths:
               - "medium"
               - "address"
               - "validated_at"
+        401:
+          description: The session has not yet been validated.
+          examples:
+            application/json: {
+              "errcode": "M_SESSION_NOT_VALIDATED",
+              "error": "This validation session has not yet been completed"
+            }
         403:
           description: The session credentials provided are not valid.
