@@ -976,8 +976,8 @@ Exchanging room data
 Because of the decentralized and federated nature of Matrix, it is very likely
 that data is not received in order or delayed in transit.
 
-Matrix provide several proactive flows so homeservers can try to complete their
-DAG if they become aware that part(s) of it are missing.
+Matrix provides several proactive flows so homeservers can try to complete their
+DAG if they become aware that parts of it are missing.
 
 {{room_get_missing_events_ss_http_api}}
 

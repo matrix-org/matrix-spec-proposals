@@ -25,7 +25,7 @@ produces:
 paths:
   "/get_missing_events/{roomId}":
     post:
-      summary: Get missing events within a room.
+      summary: Gets missing events within a room.
       description: "**UNKNOWN**"
       operationId: getMissingEventsInRoom
       parameters:

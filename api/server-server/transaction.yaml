@@ -25,8 +25,8 @@ produces:
 paths:
   "/send/{transactionId}":
     put:
-      summary: Send a transaction.
-      description: Send a transaction to a remote homeserver.
+      summary: Sends a transaction.
+      description: Sends a transaction to a remote homeserver.
       operationId: sendTransaction
       parameters:
         - in: path
@@ -47,12 +47,16 @@ paths:
                 example: "example.org"
               origin_server_ts:
                 type: integer
-                description: Timestamp in milliseconds on originating homeserver when this transaction started.
+                description: |
+                  Timestamp in milliseconds on originating homeserver when this
+                  transaction started.
                 required: true
                 example: 1404835423000
               edus:
                 type: array
-                description: List of ephemeral messages. May be omitted if there are no ephemeral messages to be sent.
+                description: |
+                  List of ephemeral messages. May be omitted if there are no
+                  ephemeral messages to be sent.
                 example: [
                   ...
                 ]

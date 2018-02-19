@@ -25,8 +25,8 @@ produces:
 paths:
   "/state/{roomId}":
     get:
-      summary: Get room state for a specific event.
-      description: Get room state for a specific event.
+      summary: Gets room state for a specific event.
+      description: Gets room state for a specific event.
       operationId: getStateForEventInRoom
       parameters:
         - in: path
@@ -41,23 +41,25 @@ paths:
           example: "$eventid:example.org"
       responses:
         200:
-          description: The room state for that event, including the authentication chain for the state.
+          description: |
+            The room state for that event, including the authentication chain
+            for the state.
           examples:
             application/json: {
               "auth_chain": [
                 {
-                  
+                  "**UNKNOWN**": "**UNKNOWN**"
                 },
                 {
-                  
+                  "**UNKNOWN**": "**UNKNOWN**"
                 }
               ],
               "pdus": [
                 {
-                  
+                  "**UNKNOWN**": "**UNKNOWN**"
                 },
                 {
-                  
+                  "**UNKNOWN**": "**UNKNOWN**"
                 }
               ]
             }
@@ -99,7 +101,9 @@ paths:
           example: "$eventid:example.org"
       responses:
         200:
-          description: The room state for that event, including the authentication chain for the state.
+          description: |
+            The room state for that event, including the authentication chain
+            for the state.
           examples:
             application/json: {
               "auth_chain_ids": [
