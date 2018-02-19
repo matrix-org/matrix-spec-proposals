@@ -25,14 +25,17 @@ produces:
 paths:
   "/store-invite":
     post:
-      summary: Store a 3PID invite for a room.
+      summary: Stores a 3PID invite for a room.
       description: |
-        Store the received 3PID invite for a room from a homeserver if no mapping already exists,
-        informing the homeserver if and when a 3PID mappging gets created for that 3PID using the
-        ``/_matrix/federation/v1/3pid/onBind`` endpoint.
+        Stores the received 3PID invite for a room from a homeserver if no
+        mapping already exists, informing the homeserver if and when a 3PID
+        mappging gets created for that 3PID using the endpoint
+        ``/_matrix/federation/v1/3pid/onBind``.
 
-        An arbitrary number of other parameters may also be specified for the specific 3PID medium
-        type handler.
+        An arbitrary number of other parameters may also be specified for
+        the specific 3PID medium type handler of the Identity server.
+
+        This endpoint takes form-data as input.
       operationId: inviteStore
       consumes:
         - multipart/form-data
@@ -51,7 +54,9 @@ paths:
           name: medium
           type: string
           required: true
-          description: The 3PID medium type for this invite.
+          description: |
+            The 3PID medium type for this invite.
+            See the `3PID Types`_ Appendix.
         - in: form
           name: address
           type: string
@@ -74,10 +79,14 @@ paths:
             properties:
               token:
                 type: string
-                description: The token that will be used to authenticate this invite if a 3PID mapping is found.
+                description: |
+                  The token that will be used to authenticate this invite
+                  if a 3PID mapping is found.
               display_name:
                 type: string
-                description: The display name to be used for this 3PID invite for the room membership, hiding the real 3PID address.
+                description: |
+                  The display name to be used for this 3PID invite for the
+                  room membership, hiding the real 3PID address.
               public_keys:
                 type: array
                 description: Keys involved in storing this invite.

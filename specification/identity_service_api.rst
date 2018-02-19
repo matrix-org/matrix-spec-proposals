@@ -228,6 +228,10 @@ The service records persistently all of the above information.
 Finally, it will generates a notification containing any relevant data
 sent to the 3PID address, notifying the user of the invitation.
 
+At a later point, if the owner of that particular 3pid binds it with a Matrix user ID,
+the identity server will attempt to make a request to the Matrix user's homeserver
+using the endpoint ``/_matrix/federation/v1/3pid/onBind``.
+
 {{invite_store_is_http_api}}
 
 Ephemeral invitation signing

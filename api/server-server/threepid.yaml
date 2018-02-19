@@ -25,10 +25,11 @@ produces:
 paths:
   "/3pid/onBind":
     post:
-      summary: Resolve a 3PID invite.
+      summary: Resolves a 3PID invite.
       description: |
-        Resolve a 3PID invite for a room by providing the mapping for the 3PID
-        address and the token returned when this invite was first created.
+        Resolves a 3PID invite for a room by providing the mapping for the 3PID
+        address and the token returned by the Identity Server when this invite
+        was first created.
       operationId: threepidBind
       parameters:
         - in: body
@@ -46,7 +47,7 @@ paths:
                 example: "email"
               address:
                 type: string
-                description: The 3PID address of the invite.
+                description: The 3PID canonical address of the invite.
                 example: "jane.doe@example.org"
               invites:
                 type: array
