@@ -1,0 +1,70 @@
+# Copyright 2018 Kamax.io
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Identity Service Session API"
+  version: "1.0.0"
+host: localhost:8090
+schemes:
+  - https
+basePath: /_matrix/identity/api/v1
+produces:
+  - application/json
+paths:
+  "/3pid/bind":
+    post:
+      summary: Bind a user's Matrix ID to a 3PID.
+      description: |
+        After a 3PID session has been successfully validated, a Matrix User ID can
+        be bound to a 3PID by calling this API and providing the session credentials.
+
+        If the session is still valid, this will publish the association between the
+        3PIDs validated on that session and the passed Matrix user ID. Future calls
+        to ``/lookup`` for any of the session's 3PIDs will return this association.
+      operationId: threepidBind
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: form
+          name: sid
+          type: string
+          required: true
+          description: The session ID returned by the ``requestToken`` endpoint.
+        - in: form
+          name: client_secret
+          required: true
+          type: string
+          description: The client secret provided to the ``requestToken`` endpoint.
+        - in: form
+          name: mxid
+          required: true
+          type: string
+          description: The user's Matrix ID to bind to the 3PID address.
+      responses:
+        200:
+          description: The bind was successfully performed.
+          examples:
+            application/json: {}
+          schema:
+            type: object
+        401:
+          description: The session has not yet been validated.
+          examples:
+            application/json: {
+              "errcode": "M_SESSION_NOT_VALIDATED",
+              "error": "This validation session has not yet been completed"
+            }
+        403:
+          description: The session credentials provided are not valid.
