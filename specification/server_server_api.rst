@@ -1337,6 +1337,11 @@ The server API for directory queries is also based on Federation Queries.
 
 {{directory_ss_http_api}}
 
+Identity
+--------
+
+{{threepid_ss_http_api}}
+
 Send-to-device messaging
 ------------------------
 

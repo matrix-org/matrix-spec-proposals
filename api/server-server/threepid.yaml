@@ -1,0 +1,109 @@
+# Copyright 2018 Kamax.io
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Identity Invites API"
+  version: "1.0.0"
+host: localhost:8448
+schemes:
+  - https
+basePath: /_matrix/federation/v1
+produces:
+  - application/json
+paths:
+  "/3pid/onBind":
+    post:
+      summary: Resolves a 3PID invite.
+      description: |
+        Resolves a 3PID invite for a room by providing the mapping for the 3PID
+        address and the token returned by the Identity Server when this invite
+        was first created.
+      operationId: threepidBind
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              mxid:
+                type: string
+                description: The Matrix ID that was mapped to the 3PID of the invite.
+                example: "@jane:example.org"
+              medium:
+                type: string
+                description: The 3PID medium of the invite.
+                example: "email"
+              address:
+                type: string
+                description: The 3PID canonical address of the invite.
+                example: "jane.doe@example.org"
+              invites:
+                type: array
+                description: The 3PID invites that are resolved with the 3PID mapping.
+                items:
+                  type: object
+                  title: Invites
+                  properties:
+                    sender:
+                      type: string
+                      description: The Matrix user ID that sent this invite.
+                      example: "@john:example.org"
+                    mxid:
+                      type: string
+                      description: The Matrix ID that was mapped to the 3PID of the invite.
+                      example: "@jane:example.org"
+                    medium:
+                      type: string
+                      description: The 3PID medium of the invite.
+                      example: "email"
+                    address:
+                      type: string
+                      description: The 3PID address of the invite.
+                      example: "jane.doe@example.org"
+                    room_id:
+                      type: string
+                      description: The room ID in which the invite took place.
+                      example: "!abcdefgh:example.org"
+                    signed:
+                      type: object
+                      title: Signed
+                      description: The critical data that are signed by the Identity server.
+                      properties:
+                        mxid:
+                          type: string
+                          description: The Matrix ID that was mapped to the 3PID of the invite.
+                          example: "@jane:example.org"
+                        token:
+                          type: string
+                          description: The token given by the Identity server when originally storing the invite.
+                          example: "SecretToken"
+                        signatures:
+                          type: object
+                          title: Signatures
+                          description: The signature(s) for this signed key content.
+                          example: {
+                            "example.org": {
+                              "ed25519:0": "signature"
+                            }
+                          }
+      responses:
+        200:
+          description: The bind was successfully performed.
+          examples:
+            application/json: {}
+        400:
+          description: A mapping already exists for that 3PID.
+        501:
+          description: The 3PID medium type is not supported and invite cannot be processed.

@@ -207,71 +207,38 @@ an error will be returned.
 Invitation Storage
 ------------------
 
+.. WARNING::
+  Ephemeral keys' specification may be misleading or inaccurate.
+
 An identity service can store pending invitations to a user's 3pid, which will
 be retrieved and can be either notified on or look up when the 3pid is
 associated with a Matrix user ID.
 
-If one makes a ``POST`` request to ``/_matrix/identity/api/v1/store-invite`` with the following URL-encoded POST parameters:
-
-- ``medium`` (string, required): The literal string ``email``.
-- ``address`` (string, required): The email address of the invited user.
-- ``room_id`` (string, required): The Matrix room ID to which the user is invited.
-- ``sender`` (string, required): The matrix user ID of the inviting user.
-
-An arbitrary number of other parameters may also be specified. These may be used in the email generation described below.
-
-The service will look up whether the 3pid is bound to a Matrix user ID. If it is, the request will be rejected with a 400 status code.
-
-If the medium is something other than the literal string ``email``, the request will be rejected with a 400 status code.
+The service will look up whether the 3pid is bound to a Matrix user ID. If it is,
+the request will be rejected. If the medium is not supported, the request will be rejected.
 
 Otherwise, the service will then generate a random string called ``token``, and an ephemeral public key.
+The ephemeral public key will be listed as valid on requests to ``/_matrix/identity/api/v1/pubkey/ephemeral/isvalid``.
 
-The service also generates a ``display_name`` for the inviter, which is a redacted version of ``address`` which does not leak the full contents of the ``address``.
+The service also generates a display name for the inviter, which is a redacted
+version of 3PID address which does not leak the full contents of the address.
 
 The service records persistently all of the above information.
 
-It also generates an email containing all of this data, sent to the ``address`` parameter, notifying them of the invitation.
+Finally, it will generates a notification containing any relevant data
+sent to the 3PID address, notifying the user of the invitation.
 
-The response body is then populated as the JSON-encoded dictionary containing the following fields:
-- ``token`` (string): The generated token.
-- ``public_keys`` ([string]): A list of [server's long-term public key, generated ephemeral public key].
-- ``display_name`` (string): The generated (redacted) display_name.
+At a later point, if the owner of that particular 3pid binds it with a Matrix user ID,
+the identity server will attempt to make a request to the Matrix user's homeserver
+using the endpoint ``/_matrix/federation/v1/3pid/onBind``.
 
-At a later point, if the owner of that particular 3pid binds it with a Matrix user ID, the identity server will attempt to make an HTTP POST to the Matrix user's homeserver which looks roughly as below::
-
- POST https://bar.com:8448/_matrix/federation/v1/3pid/onbind
- Content-Type: application/json
-
- {
-  "medium": "email",
-  "address": "foo@bar.baz",
-  "mxid": "@alice:example.tld",
-  "invites": [
-    {
-      "medium": "email",
-      "address": "foo@bar.baz",
-      "mxid": "@alice:example.tld",
-      "room_id": "!something:example.tld",
-      "sender": "@bob:example.tld",
-      "signed": {
-        "mxid": "@alice:example.tld",
-        "signatures": {
-          "vector.im": {
-            "ed25519:0": "somesignature"
-          }
-        },
-        "token": "sometoken"
-      }
-    }
-  ]
- }
-
-Where the signature is produced using a long-term private key.
-
-Also, the generated ephemeral public key will be listed as valid on requests to ``/_matrix/identity/api/v1/pubkey/ephemeral/isvalid``.
+{{invite_store_is_http_api}}
 
 Ephemeral invitation signing
 ----------------------------
+
+.. WARNING::
+  This section may be misleading or inaccurate.
 
 To aid clients who may not be able to perform crypto themselves, the identity service offers some crypto functionality to help in accepting invitations.
 This is less secure than the client doing it itself, but may be useful where this isn't possible.
