@@ -316,33 +316,7 @@ Each transaction has:
  - A list of PDUs and EDUs - the actual message payload that the Transaction
    carries.
 
-Transaction Fields
-~~~~~~~~~~~~~~~~~~
-
-==================== =================== ======================================
-    Key              Type                         Description
-==================== =================== ======================================
-``origin``           String              **Required**. ``server_name`` of homeserver sending
-                                         this transaction.
-``origin_server_ts`` Integer             **Required**. Timestamp in milliseconds on
-                                         originating homeserver when this
-                                         transaction started.
-``pdus``             List of Objects     **Required**. List of persistent updates to rooms.
-``edus``             List of Objects     List of ephemeral messages. May be omitted
-                                         if there are no ephemeral messages to
-                                         be sent.
-==================== =================== ======================================
-
-Example:
-
-.. code:: json
-
- {
-  "origin_server_ts":1404835423000,
-  "origin":"matrix.org",
-  "pdus":[...],
-  "edus":[...]
- }
+{{transaction_ss_http_api}}
 
 PDUs
 ----
@@ -991,6 +965,23 @@ that requested by the requestor in the ``v`` parameter).
 .. TODO-spec
   Specify (or remark that it is unspecified) how the server handles divergent
   history. DFS? BFS? Anything weirder?
+
+Exchanging room data
+---------------------
+
+.. WARNING::
+  This section is incomplete and only act as a knowledge holder until it is
+  formalized.
+
+Because of the decentralized and federated nature of Matrix, it is very likely
+that data is not received in order or delayed in transit.
+
+Matrix provides several proactive flows so homeservers can try to complete their
+DAG if they become aware that parts of it are missing.
+
+{{room_get_missing_events_ss_http_api}}
+
+{{room_get_state_ss_http_api}}
 
 Inviting to a room
 ------------------

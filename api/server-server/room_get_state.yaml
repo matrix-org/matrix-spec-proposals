@@ -1,0 +1,134 @@
+# Copyright 2018 Kamax.io
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Federation Get State API"
+  version: "1.0.0"
+host: localhost:8448
+schemes:
+  - https
+basePath: /_matrix/federation/v1
+produces:
+  - application/json
+paths:
+  "/state/{roomId}":
+    get:
+      summary: Gets room state for a specific event.
+      description: Gets room state for a specific event.
+      operationId: getStateForEventInRoom
+      parameters:
+        - in: path
+          name: roomId
+          type: string
+          description: The room ID of the event referenced in query parameters.
+          example: "!roomid:example.org"
+        - in: query
+          name: event_id
+          type: string
+          description: The event ID for which we want the state.
+          example: "$eventid:example.org"
+      responses:
+        200:
+          description: |
+            The room state for that event, including the authentication chain
+            for the state.
+          examples:
+            application/json: {
+              "auth_chain": [
+                {
+                  "**UNKNOWN**": "**UNKNOWN**"
+                },
+                {
+                  "**UNKNOWN**": "**UNKNOWN**"
+                }
+              ],
+              "pdus": [
+                {
+                  "**UNKNOWN**": "**UNKNOWN**"
+                },
+                {
+                  "**UNKNOWN**": "**UNKNOWN**"
+                }
+              ]
+            }
+          schema:
+            type: object
+            properties:
+              auth_chain:
+                type: array
+                description: Authentication chain that validate the PDUs.
+                items:
+                  type: object
+                  title: PDUs
+              pdus:
+                type: array
+                description: Events that make up the state.
+                items:
+                  type: object
+                  title: PDUs
+            required:
+              - "auth_chain"
+              - "pdus"
+  "/state_ids/{roomId}":
+    get:
+      summary: Get room state's event IDs for a specific event.
+      description: Get room state's event IDs for a specific event.
+      operationId: getStateIdsForEventInRoom
+      parameters:
+        - in: path
+          name: roomId
+          type: string
+          required: true
+          description: The room ID of the event referenced in query parameters.
+          example: "!roomid:example.org"
+        - in: query
+          name: event_id
+          type: string
+          required: true
+          description: The event ID for which we want the state.
+          example: "$eventid:example.org"
+      responses:
+        200:
+          description: |
+            The room state for that event, including the authentication chain
+            for the state.
+          examples:
+            application/json: {
+              "auth_chain_ids": [
+                "!authChainEventId1:example.org",
+                "!authChainEventId2:example.org"
+              ],
+              "pdu_ids": [
+                "!pduId1:example.org",
+                "!pduId2:example.org"
+              ],
+            }
+          schema:
+            type: object
+            properties:
+              auth_chain_ids:
+                type: array
+                description: Event IDs of the PDUs' authentication chain.
+                items:
+                  type: string
+              pdu_ids:
+                type: array
+                description: Event IDs that make up the state.
+                items:
+                  type: string
+                  title: PDUs
+            required:
+              - "auth_chain_ids"
+              - "pdu_ids"

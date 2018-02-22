@@ -1,0 +1,85 @@
+# Copyright 2018 Kamax.io
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Federation Get Missing Events API"
+  version: "1.0.0"
+host: localhost:8448
+schemes:
+  - https
+basePath: /_matrix/federation/v1
+produces:
+  - application/json
+paths:
+  "/get_missing_events/{roomId}":
+    post:
+      summary: Gets missing events within a room.
+      description: "**UNKNOWN**"
+      operationId: getMissingEventsInRoom
+      parameters:
+        - in: path
+          name: roomId
+          description: The room in which the search should be done.
+          type: string
+          example: "!roomId:example.org"
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              earliest_events:
+                type: array
+                description: "**UNKNOWN**"
+                items:
+                  type: string
+                  title: Events
+                  example: "$earlyEventId:example.org"
+              latest_events:
+                type: array
+                description: "**UNKNOWN**"
+                items:
+                  type: string
+                  title: Events
+                  example: "$lateEventId:example.org"
+              min_depth:
+                type: integer
+                description: "**UNKNOWN**"
+                example: 1
+              limit:
+                type: integer
+                description: "**UNKNOWN**"
+                example: 10
+            required:
+              - "earliest_events"
+      responses:
+        200:
+          description: The request was processed successfully.
+          examples:
+            application/json: {
+              "events": [
+                {}
+              ]
+            }
+          schema:
+            type: object
+            properties:
+              events:
+                type: array
+                description: "**UNKNOWN**"
+                items:
+                  type: object
+                  title: PDUs
+            required:
+              - "events"

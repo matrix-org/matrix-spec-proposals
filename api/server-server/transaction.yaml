@@ -1,0 +1,96 @@
+# Copyright 2018 Kamax.io
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Federation Transaction Push API"
+  version: "1.0.0"
+host: localhost:8448
+schemes:
+  - https
+basePath: /_matrix/federation/v1
+produces:
+  - application/json
+paths:
+  "/send/{transactionId}":
+    put:
+      summary: Sends a transaction.
+      description: Sends a transaction to a remote homeserver.
+      operationId: sendTransaction
+      parameters:
+        - in: path
+          name: transactionId
+          type: string
+          description: The ID for this transaction.
+          required: true
+          example: "123456789abcdef"
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              origin:
+                type: string
+                description: Server name of the homeserver sending this transaction.
+                required: true
+                example: "example.org"
+              origin_server_ts:
+                type: integer
+                description: |
+                  Timestamp in milliseconds on originating homeserver when this
+                  transaction started.
+                required: true
+                example: 1404835423000
+              edus:
+                type: array
+                description: |
+                  List of ephemeral messages. May be omitted if there are no
+                  ephemeral messages to be sent.
+                example: [
+                  ...
+                ]
+                items:
+                  type: EDU
+              pdus:
+                type: array
+                description: List of persistent updates to rooms.
+                required: true
+                example: [
+                  ...
+                ]
+                items:
+                  type: PDU
+            required:
+              - "origin"
+              - "origin_server_ts"
+              - "pdus"
+      responses:
+        200:
+          description: The request was processed successfully.
+          examples:
+            application/json: {
+              "pdus": {
+                "!eventId:example.org": {}
+              }
+            }
+          schema:
+            type: object
+            properties:
+              pdus:
+                type: object
+                description: Processing outcome of each PDU.
+                additionalProperties:
+                  type: object
+            required:
+              - "pdus"
