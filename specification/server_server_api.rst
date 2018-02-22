@@ -103,11 +103,11 @@ Retrieving Server Keys
 Version 2
 +++++++++
 
-Each homeserver publishes its public keys under ``/_matrix/key/v2/server/``.
-Homeservers query for keys by either getting ``/_matrix/key/v2/server/``
+Each homeserver publishes its public keys.
+Homeservers query for keys by either contacting homeservers
 directly or by querying an intermediate notary server using a
 ``/_matrix/key/v2/query`` API. Intermediate notary servers query the
-``/_matrix/key/v2/server/`` API on behalf of another server and sign the
+final homeserver directly on behalf of another server and sign the
 response with their own key. A server may query multiple notary servers to
 ensure that they all report the same public keys.
 
@@ -123,32 +123,32 @@ Publishing Keys
 ^^^^^^^^^^^^^^^
 
 Homeservers publish the allowed TLS fingerprints and signing keys in a JSON
-object at ``/_matrix/key/v2/server/{key_id}``. The response contains a list of
-``verify_keys`` that are valid for signing federation requests made by the
-server and for signing events. It contains a list of ``old_verify_keys``
-which are only valid for signing events. Finally the response contains a list
-of TLS certificate fingerprints to validate any connection made to the server.
+object that contains a list of keys that are valid for signing
+federation requests made by the server and for signing events. It contains a
+list of old signing verification keys which are only valid for signing events.
+Finally the response contains a list of TLS certificate fingerprints to
+validate any connection made to the server.
 
 A server may have multiple keys active at a given time. A server may have any
 number of old keys. It is recommended that servers return a single JSON
-response listing all of its keys whenever any ``key_id`` is requested to reduce
+response listing all of its keys whenever any key is requested to reduce
 the number of round trips needed to discover the relevant keys for a server.
-However a server may return a different responses for a different ``key_id``.
+However a server may return a different responses for a different key id.
 
-The ``tls_certificates`` contain a list of hashes of the X.509 TLS certificates
+The response also contains a list of hashes of the X.509 TLS certificates
 currently used by the server. The list must include SHA-256 hashes for every
 certificate currently in use by the server. These fingerprints are valid until
-the millisecond POSIX timestamp in ``valid_until_ts``.
+the given millisecond POSIX timestamp.
 
-The ``verify_keys`` can be used to sign requests and events made by the server
-until the millisecond POSIX timestamp in ``valid_until_ts``. If a homeserver
-receives an event with a ``origin_server_ts`` after the ``valid_until_ts`` then
-it should request that ``key_id`` for the originating server to check whether
-the key has expired.
+The keys can be used to sign requests and events made by the server until
+the given millisecond POSIX timestamp. If a homeserver receives an event with
+a ``origin_server_ts`` after the given timestamp then it should request the
+key info for the originating server to check whether the key has expired.
 
-The ``old_verify_keys`` can be used to sign events with an ``origin_server_ts``
-before the ``expired_ts``. The ``expired_ts`` is a millisecond POSIX timestamp
-of when the originating server stopped using that key.
+The old keys can be used to sign events with an ``origin_server_ts``
+before its expiration millisecond POSIX timestamp. The expiration timestamp
+is a millisecond POSIX timestamp of when the originating server stopped using
+that key.
 
 Intermediate notary servers should cache a response for half of its remaining
 life time to avoid serving a stale response. Originating servers should avoid
@@ -160,50 +160,7 @@ If a server goes offline intermediate notary servers should continue to return
 the last response they received from that server so that the signatures of old
 events sent by that server can still be checked.
 
-==================== =================== ======================================
-    Key                    Type                         Description
-==================== =================== ======================================
-``server_name``      String              DNS name of the homeserver.
-``verify_keys``      Object              Public keys of the homeserver for
-                                         verifying digital signatures.
-``old_verify_keys``  Object              The public keys that the server used
-                                         to use and when it stopped using them.
-``signatures``       Object              Digital signatures for this object
-                                         signed using the ``verify_keys``.
-``tls_fingerprints`` Array of Objects    Hashes of X.509 TLS certificates used
-                                         by this this server encoded as `Unpadded Base64`_.
-``valid_until_ts``   Integer             POSIX timestamp when the list of valid
-                                         keys should be refreshed.
-==================== =================== ======================================
-
-
-.. code:: json
-
-    {
-        "old_verify_keys": {
-            "ed25519:auto1": {
-                "expired_ts": 922834800000,
-                "key": "Base+64+Encoded+Old+Verify+Key"
-            }
-        },
-        "server_name": "example.org",
-        "signatures": {
-            "example.org": {
-                "ed25519:auto2": "Base+64+Encoded+Signature"
-            }
-        },
-        "tls_fingerprints": [
-            {
-                "sha256": "Base+64+Encoded+SHA-256-Fingerprint"
-            }
-        ],
-        "valid_until_ts": 1052262000000,
-        "verify_keys": {
-            "ed25519:auto2": {
-                "key": "Base+64+Encoded+Signature+Verification+Key"
-            }
-        }
-    }
+{{keys_ss_http_api}}
 
 Querying Keys Through Another Server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1511,3 +1468,4 @@ that are too long.
 .. _`Inviting to a room`: #inviting-to-a-room
 .. _`Canonical JSON`: ../appendices.html#canonical-json
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
+.. _`Digital signatures`:  ../appendices.html#signing-json
