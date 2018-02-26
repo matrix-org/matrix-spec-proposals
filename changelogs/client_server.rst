@@ -10,6 +10,8 @@ Unreleased changes
     - ``GET /rooms/{roomId}/event/{eventId}``
       (`#1110 <https://github.com/matrix-org/matrix-doc/pull/1110>`_).
 
+  - Add server discovery rules (FIXME: add PR #)
+
 - Spec clarifications:
 
   - Mark ``home_server`` return field for ``/login`` and ``/register``
