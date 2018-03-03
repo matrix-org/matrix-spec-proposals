@@ -19,6 +19,8 @@ Unreleased changes
     (`#1106 <https://github.com/matrix-org/matrix-doc/pull/1106>`_).
   - Clarify default values for some fields on the /search API
     (`#1109 <https://github.com/matrix-org/matrix-doc/pull/1109>`_).
+  - Add the room visibility options for the room directory
+    (`#1141 <https://github.com/matrix-org/matrix-doc/pull/1141`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
