@@ -4,8 +4,7 @@
     "last_active_ago": 2478593,
     "presence": "online",
     "currently_active": false,
-    "user_id": "@example:localhost"
   },
-  "event_id": "$WLGTSEFSEF:localhost",
+  "sender": "@example:localhost",
   "type": "m.presence"
 }
