@@ -19,6 +19,8 @@ Unreleased changes
     (`#1106 <https://github.com/matrix-org/matrix-doc/pull/1106>`_).
   - Clarify default values for some fields on the /search API
     (`#1109 <https://github.com/matrix-org/matrix-doc/pull/1109>`_).
+  - Add spec for ignoring users
+    (`#1142 <https://github.com/matrix-org/matrix-doc/pull/1142>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
