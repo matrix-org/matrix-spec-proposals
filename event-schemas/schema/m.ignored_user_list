@@ -1,0 +1,21 @@
+---
+allOf:
+  - $ref: core-event-schema/event.yaml
+description: |-
+  A map of users which are considered ignored is kept in ``acount_data``
+  in an event type of ``m.ignored_user_list``.
+properties:
+  content:
+    type: object
+    patternProperties:
+      "^@":
+        type: "object"
+        title: "Ignored User"
+        description: "An empty object for future enhancement"
+        x-pattern: "$USER_ID"
+  type:
+    enum:
+      - m.ignored_user_list
+    type: string
+title: Ignored User List
+type: object
