@@ -21,6 +21,10 @@ Unreleased changes
     (`#1109 <https://github.com/matrix-org/matrix-doc/pull/1109>`_).
   - Add spec for ignoring users
     (`#1142 <https://github.com/matrix-org/matrix-doc/pull/1142>`_).
+  - Fix the representation of ``m.presence`` events
+    (`#1137 <https://github.com/matrix-org/matrix-doc/pull/1137>`_).
+  - Clarify that ``m.tag`` ordering is done with numbers, not strings
+    (`#1139 <https://github.com/matrix-org/matrix-doc/pull/1139>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
