@@ -67,6 +67,11 @@ should allow a 3pid to be mapped to a Matrix user identity, but not in the other
 direction (i.e. one should not be able to get all 3pids associated with a Matrix
 user ID, or get all 3pids associated with a 3pid).
 
+Status check
+------------
+
+{{ping_is_http_api}}
+
 Key management
 --------------
 

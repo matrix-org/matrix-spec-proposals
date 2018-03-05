@@ -41,7 +41,7 @@ specs and event schemas in this repository.
 Preparation
 -----------
 
-To use the scripts, it is best to create a Python virtualenv as follows::
+To use the scripts, it is best to create a Python 2.x virtualenv as follows::
 
   virtualenv env
   env/bin/pip install -r scripts/requirements.txt
