@@ -19,6 +19,8 @@ Unreleased changes
     (`#1106 <https://github.com/matrix-org/matrix-doc/pull/1106>`_).
   - Clarify default values for some fields on the /search API
     (`#1109 <https://github.com/matrix-org/matrix-doc/pull/1109>`_).
+  - Fix the representation of ``m.presence`` events
+    (`#1137 <https://github.com/matrix-org/matrix-doc/pull/1137>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
