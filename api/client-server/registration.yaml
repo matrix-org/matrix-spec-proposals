@@ -381,7 +381,7 @@ paths:
         Matrix clients may wish to use this API prior to attempting registration,
         however the clients must also be aware that using this API does not normally
         reserve the username. This can mean that the username becomes unavailable
-        between checking it's availability and attempting to register it.
+        between checking its availability and attempting to register it.
       operationId: checkUsernameAvailability
       parameters:
         - in: query
