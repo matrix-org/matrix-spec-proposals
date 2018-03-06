@@ -50,15 +50,15 @@ paths:
                 description: The visibility of the room in the directory.
           examples: 
             application/json: {
-                  "visibility": "public"
-              }
+              "visibility": "public"
+            }
         404:
           description: The room is not known to the server
           examples:
             application/json: {
-                  "errcode": "M_NOT_FOUND",
-                  "error": "Room not found"
-              }
+              "errcode": "M_NOT_FOUND",
+              "error": "Room not found"
+            }
     put:
       summary: Sets the visibility of a room in the room directory
       description: |-
@@ -93,50 +93,20 @@ paths:
                   The new visibility setting for the room. 
                   Defaults to 'public'.
             example: {
-                  "visibility": "public"
-              }
+               "visibility": "public"
+            }
       responses:
         200:
           description: The visibility was updated, or no change was needed.
           examples: 
-            application/json: {
-              }
+            application/json: {}
         404:
           description: The room is not known to the server
           examples:
             application/json: {
-                  "errcode": "M_NOT_FOUND",
-                  "error": "Room not found"
-              }
-    delete:
-      summary: Sets a room to be private on the room directory
-      description: |-
-        Updates the visibility of a room to be private on the server's room
-        directory. This is the same as using the PUT operation with a private
-        as the visibility.
-      operationId: setRoomPrivateOnDirectory
-      security:
-        - accessToken: []
-      parameters:
-        - in: path
-          type: string
-          name: roomId
-          description: The room ID.
-          required: true
-          x-example: "!curbf:matrix.org"
-      responses:
-        200:
-          description: The visibility was updated, or no change was needed.
-          examples: 
-            application/json: {
-              }
-        404:
-          description: The room is not known to the server
-          examples:
-            application/json: {
-                  "errcode": "M_NOT_FOUND",
-                  "error": "Room not found"
-              }
+              "errcode": "M_NOT_FOUND",
+              "error": "Room not found"
+            }
   "/publicRooms":
     get:
       summary: Lists the public rooms on the server.
