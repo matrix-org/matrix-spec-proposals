@@ -30,6 +30,8 @@ Unreleased changes
     (`#1104 <https://github.com/matrix-org/matrix-doc/pull/1104>`_).
   - Add the room visibility options for the room directory
     (`#1141 <https://github.com/matrix-org/matrix-doc/pull/1141>`_).
+  - Add spec for ignoring users
+    (`#1142 <https://github.com/matrix-org/matrix-doc/pull/1142>`_).
 
 r0.3.0
 ======
