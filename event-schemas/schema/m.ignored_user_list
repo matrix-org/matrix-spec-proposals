@@ -2,7 +2,7 @@
 allOf:
   - $ref: core-event-schema/event.yaml
 description: |-
-  A map of users which are considered ignored is kept in ``acount_data``
+  A map of users which are considered ignored is kept in ``account_data``
   in an event type of ``m.ignored_user_list``.
 properties:
   content:
@@ -10,6 +10,8 @@ properties:
     properties:
       ignored_users:
         type: object
+        title: "Ignored users"
+        description: "The map of users to ignore"
         patternProperties:
           "^@":
             type: "object"
