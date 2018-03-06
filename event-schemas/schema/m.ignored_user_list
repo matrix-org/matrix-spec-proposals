@@ -16,8 +16,8 @@ properties:
             title: "Ignored User"
             description: "An empty object for future enhancement"
             x-pattern: "$USER_ID"
-      required:
-        - ignored_users
+    required:
+      - ignored_users
   type:
     enum:
       - m.ignored_user_list
