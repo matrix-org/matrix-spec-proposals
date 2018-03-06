@@ -23,13 +23,13 @@ Unreleased changes
     (`#1137 <https://github.com/matrix-org/matrix-doc/pull/1137>`_).
   - Clarify that ``m.tag`` ordering is done with numbers, not strings
     (`#1139 <https://github.com/matrix-org/matrix-doc/pull/1139>`_).
-  - Add the room visibility options for the room directory
-    (`#1141 <https://github.com/matrix-org/matrix-doc/pull/1141`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
   - Add 'token' parameter to /keys/query endpoint
     (`#1104 <https://github.com/matrix-org/matrix-doc/pull/1104>`_).
+  - Add the room visibility options for the room directory
+    (`#1141 <https://github.com/matrix-org/matrix-doc/pull/1141>`_).
 
 r0.3.0
 ======
