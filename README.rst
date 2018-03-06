@@ -64,6 +64,23 @@ To rebuild the specification, use ``scripts/gendoc.py``::
 The above will write the rendered version of the specification to
 ``scripts/gen``. To view it, point your browser at ``scripts/gen/index.html``.
 
+Windows users
+~~~~~~~~~~~~~
+
+If you're on Windows Vista or higher, be sure that the "Symbolic Links"
+option was selected when installing Git prior to cloning this repository. If 
+you're still seeing errors about files not being found it is likely because 
+the symlink at ``api/client-server/definitions/event-schemas`` looks like a 
+file. To correct the problem, open an Administrative/Elevated shell in your 
+cloned matrix-doc directory and run the following::
+
+  cd api\client-server\definitions
+  del event-schemas
+  mklink /D event-schemas "..\..\..\event-schemas"
+
+This will delete the file and replace it with a symlink. Git should not detect
+this as a change, and you should be able to go back to building the project.
+
 Generating the OpenAPI (Swagger) specs
 --------------------------------------
 
