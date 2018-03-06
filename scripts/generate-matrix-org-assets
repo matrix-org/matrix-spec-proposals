@@ -2,6 +2,8 @@
 #
 # generate a tarball of assets suitable for the matrix.org site
 
+set -e
+
 cd `dirname $0`/..
 
 mkdir -p assets

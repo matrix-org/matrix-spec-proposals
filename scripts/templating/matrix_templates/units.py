@@ -694,15 +694,25 @@ class MatrixUnits(Units):
         for filename in os.listdir(path):
             if not filename.startswith("m."):
                 continue
-            with open(os.path.join(path, filename), "r") as f:
-                event_name = filename.split("#")[0]
-                example = json.loads(f.read())
 
-                examples[filename] = examples.get(filename, [])
-                examples[filename].append(example)
-                if filename != event_name:
-                    examples[event_name] = examples.get(event_name, [])
-                    examples[event_name].append(example)
+            event_name = filename.split("#")[0]
+            filepath = os.path.join(path, filename)
+            logger.info("Reading event example: %s" % filepath)
+            try:
+                with open(filepath, "r") as f:
+                    example = json.load(f)
+                    examples[filename] = examples.get(filename, [])
+                    examples[filename].append(example)
+                    if filename != event_name:
+                        examples[event_name] = examples.get(event_name, [])
+                        examples[event_name].append(example)
+            except Exception, e:
+                e2 = Exception("Error reading event example "+filepath+": "+
+                               str(e))
+                # throw the new exception with the old stack trace, so that
+                # we don't lose information about where the error occurred.
+                raise e2, None, sys.exc_info()[2]
+
         return examples
 
     def load_event_schemas(self):
