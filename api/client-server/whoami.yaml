@@ -58,11 +58,11 @@ paths:
                 description: The user id that owns the access token.
         401:
           description:
-            The token is not recongized
+            The token is not recognised
           examples:
             application/json: {
               "errcode": "M_UNKNOWN_TOKEN",
-              "error": "Unrecongised access token."
+              "error": "Unrecognised access token."
             }
           schema:
             "$ref": "definitions/error.yaml"
