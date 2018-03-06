@@ -31,15 +31,26 @@ paths:
       description: |-
         Gets information about the owner of a given access token. 
         
-        If the owner of the access token is an application service, 
+        If the owner of the access token is an application service,
         the server should return the user ID making the request. The
-        server should respect the application service client/server API
-        extensions during this request. If the request is made for a 
-        virtual user, the server should verify that it is registered.
+        user ID making the request can be determined by checking to
+        see if the ``user_id`` query parameter was also supplied. If
+        the parameter is not present, the default application service
+        user ID should be used (defined as the ``sender_localpart``
+        in the registration). If the parameter is present, the given
+        user ID should be verified to be both registered and in the
+        application service's namespace.
       operationId: getTokenOwner
       security:
         - accessToken: []
-      parameters: []
+      parameters:
+        # TODO: Break this out to a template or something (and apply it everywhere)
+        - in: query
+          name: user_id
+          type: string
+          required: false
+          description: |-
+            The user ID to masquerade as. Only applies to application services.
       responses:
         200:
           description:
@@ -67,7 +78,7 @@ paths:
             "$ref": "definitions/error.yaml"
         403:
           description:
-            The appservice cannot masquerade the user or has not registered them.
+            The appservice cannot masquerade as the user or has not registered them.
           examples:
             application/json: {
               "errcode": "M_FORBIDDEN",
