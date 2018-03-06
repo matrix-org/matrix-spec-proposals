@@ -28,6 +28,8 @@ Unreleased changes
 
   - Add 'token' parameter to /keys/query endpoint
     (`#1104 <https://github.com/matrix-org/matrix-doc/pull/1104>`_).
+  - Add the room visibility options for the room directory
+    (`#1141 <https://github.com/matrix-org/matrix-doc/pull/1141>`_).
 
 r0.3.0
 ======
