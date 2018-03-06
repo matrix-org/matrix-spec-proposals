@@ -75,7 +75,7 @@ paths:
               token:
                 type: string
                 description: |-
-                  Required when ``type`` is ``m.login.token``. The login token.
+                  Required when ``type`` is ``m.login.token``. Part of `Token-based`_ login. Not an access token.
               device_id:
                 type: string
                 description: |-
