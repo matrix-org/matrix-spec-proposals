@@ -7,12 +7,17 @@ description: |-
 properties:
   content:
     type: object
-    patternProperties:
-      "^@":
-        type: "object"
-        title: "Ignored User"
-        description: "An empty object for future enhancement"
-        x-pattern: "$USER_ID"
+    properties:
+      ignored_users:
+        type: object
+        patternProperties:
+          "^@":
+            type: "object"
+            title: "Ignored User"
+            description: "An empty object for future enhancement"
+            x-pattern: "$USER_ID"
+      required:
+        - ignored_users
   type:
     enum:
       - m.ignored_user_list

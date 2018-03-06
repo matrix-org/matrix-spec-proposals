@@ -12,7 +12,7 @@
 .. See the License for the specific language governing permissions and
 .. limitations under the License.
 
-Ignore Users
+Ignoring Users
 ==============
 
 .. _module:ignore_users:
@@ -29,10 +29,11 @@ Events
 Client behaviour
 ----------------
 To ignore a user, effectively blocking them, the client should add the target
-user to the ``m.ignored_user_list`` event in their account data. Once ignored,
-the client will no longer receive events sent by that user, with the exception
-of state events. The client should either hide previous content sent by the
-newly ignored user or perform a new ``/sync`` with no previous token.
+user to the ``m.ignored_user_list`` event in their account data using 
+|/user/<user_id>/account_data/<type>|_. Once ignored, the client will no longer 
+receive events sent by that user, with the exception of state events. The client 
+should either hide previous content sent by the newly ignored user or perform 
+a new ``/sync`` with no previous token.
 
 Invites to new rooms by ignored users will not be sent to the client. The server
 may optionally reject the invite on behalf of the client.
@@ -48,12 +49,10 @@ To receive the events that were sent while the user was ignored the client
 should perform a fresh sync. The client may also un-hide any events it previously
 hid due to the user becoming ignored.
 
-Clients should be aware that split-brain 
-
 Server behaviour
 ----------------
 Following an update of the ``m.ignored_user_list``, the sync API for all clients
-will immediately start ignoring (or un-ignoring) the user. Clients are responsible
+should immediately start ignoring (or un-ignoring) the user. Clients are responsible
 for determining if they should hide previously sent events or to start a new sync
 stream.
 

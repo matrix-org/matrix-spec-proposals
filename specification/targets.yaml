@@ -61,6 +61,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/event_context.rst
     - modules/cas_login.rst
     - modules/dm.rst
+    - modules/ignore_users.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`", "@", ":"]
