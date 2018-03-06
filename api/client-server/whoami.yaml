@@ -31,26 +31,16 @@ paths:
       description: |-
         Gets information about the owner of a given access token. 
         
-        If the owner of the access token is an application service,
-        the server should return the user ID making the request. The
-        user ID making the request can be determined by checking to
-        see if the ``user_id`` query parameter was also supplied. If
-        the parameter is not present, the default application service
-        user ID should be used (defined as the ``sender_localpart``
-        in the registration). If the parameter is present, the given
-        user ID should be verified to be both registered and in the
-        application service's namespace.
+        Note that, as with the rest of the Client-Server API, 
+        Application Services may masquerade as users within their 
+        namespace by giving a ``user_id`` query parameter. In this 
+        situation, the server should verify that the given ``user_id``
+        is registered by the appservice, and return it in the response 
+        body.
       operationId: getTokenOwner
       security:
         - accessToken: []
-      parameters:
-        # TODO: Break this out to a template or something (and apply it everywhere)
-        - in: query
-          name: user_id
-          type: string
-          required: false
-          description: |-
-            The user ID to masquerade as. Only applies to application services.
+      parameters: []
       responses:
         200:
           description:
