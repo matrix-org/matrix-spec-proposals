@@ -31,8 +31,6 @@ paths:
       description: |-
         Gets the visibility of a given room on the server's public room directory.
       operationId: getRoomVisibilityOnDirectory
-      security:
-        - accessToken: []
       parameters:
         - in: path
           type: string
@@ -54,11 +52,11 @@ paths:
             application/json: {
                   "visibility": "public"
               }
-        400:
+        404:
           description: The room is not known to the server
           examples:
             application/json: {
-                  "errcode": "M_UNKNOWN",
+                  "errcode": "M_NOT_FOUND",
                   "error": "Room not found"
               }
     put:
@@ -66,6 +64,10 @@ paths:
       description: |-
         Sets the visibility of a given room in the server's public room
         directory.
+
+        Servers may choose to implement additional access control checks
+        here, for instance that room visibility can only be changed by 
+        the room creator or a server administrator.
       operationId: setRoomVisibilityOnDirectory
       security:
         - accessToken: []
@@ -99,18 +101,19 @@ paths:
           examples: 
             application/json: {
               }
-        400:
+        404:
           description: The room is not known to the server
           examples:
             application/json: {
-                  "errcode": "M_UNKNOWN",
+                  "errcode": "M_NOT_FOUND",
                   "error": "Room not found"
               }
     delete:
       summary: Sets a room to be private on the room directory
       description: |-
         Updates the visibility of a room to be private on the server's room
-        directory.
+        directory. This is the same as using the PUT operation with a private
+        as the visibility.
       operationId: setRoomPrivateOnDirectory
       security:
         - accessToken: []
@@ -127,11 +130,11 @@ paths:
           examples: 
             application/json: {
               }
-        400:
+        404:
           description: The room is not known to the server
           examples:
             application/json: {
-                  "errcode": "M_UNKNOWN",
+                  "errcode": "M_NOT_FOUND",
                   "error": "Room not found"
               }
   "/publicRooms":
