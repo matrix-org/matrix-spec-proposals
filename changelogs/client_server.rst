@@ -19,8 +19,6 @@ Unreleased changes
     (`#1106 <https://github.com/matrix-org/matrix-doc/pull/1106>`_).
   - Clarify default values for some fields on the /search API
     (`#1109 <https://github.com/matrix-org/matrix-doc/pull/1109>`_).
-  - Add spec for ignoring users
-    (`#1142 <https://github.com/matrix-org/matrix-doc/pull/1142>`_).
   - Fix the representation of ``m.presence`` events
     (`#1137 <https://github.com/matrix-org/matrix-doc/pull/1137>`_).
   - Clarify that ``m.tag`` ordering is done with numbers, not strings
@@ -30,6 +28,8 @@ Unreleased changes
 
   - Add 'token' parameter to /keys/query endpoint
     (`#1104 <https://github.com/matrix-org/matrix-doc/pull/1104>`_).
+  - Add spec for ignoring users
+    (`#1142 <https://github.com/matrix-org/matrix-doc/pull/1142>`_).
 
 r0.3.0
 ======
