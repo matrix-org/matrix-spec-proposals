@@ -32,6 +32,8 @@ Unreleased changes
     (`#1141 <https://github.com/matrix-org/matrix-doc/pull/1141>`_).
   - Add spec for ignoring users
     (`#1142 <https://github.com/matrix-org/matrix-doc/pull/1142>`_).
+  - Add the ``/register/available`` endpoint for username availability
+    (`#1151 <https://github.com/matrix-org/matrix-doc/pull/1151>`_).
 
 r0.3.0
 ======
