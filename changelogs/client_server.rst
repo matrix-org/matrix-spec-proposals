@@ -23,6 +23,8 @@ Unreleased changes
     (`#1137 <https://github.com/matrix-org/matrix-doc/pull/1137>`_).
   - Clarify that ``m.tag`` ordering is done with numbers, not strings
     (`#1139 <https://github.com/matrix-org/matrix-doc/pull/1139>`_).
+  - Clarify that ``/account/whoami`` should consider application services
+    (`#1152 <https://github.com/matrix-org/matrix-doc/pull/1152>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
