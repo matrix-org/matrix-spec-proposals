@@ -1,0 +1,28 @@
+---
+allOf:
+  - $ref: core-event-schema/room_event.yaml
+description: This message represents a single sticker image.
+properties:
+  content:
+    properties:
+      body:
+        description: "A textual representation of the sticker image. This could be the alt text of the image, the filename of the image, or some kind of content description for accessibility e.g. 'image attachment'."
+        type: string
+      info:
+        allOf:
+          - $ref: core-event-schema/msgtype_infos/image_info.yaml
+        description: Metadata about the image referred to in ``url``.
+      url:
+        description: The URL to the sticker image.
+        type: string
+    required:
+      - body
+      - info
+      - url
+    type: object
+  type:
+    enum:
+      - m.sticker
+    type: string
+title: StickerMessage
+type: object
