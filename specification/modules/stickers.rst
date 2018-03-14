@@ -18,13 +18,23 @@ Sticker Messages
 .. _module:stickers:
 
 This module allows users to send sticker messages in to rooms or direct messaging sessions.
-Sticker messages are specialised image messages that are displayed without controls.
+
+Sticker messages are specialised image messages that are displayed without controls (e.g. no "download" link, or light-box view on click, as would be displayed for for m.room.message#m.image events).
+
+Sticker messages are intended to provide simple "reaction" events in the message timeline. The matrix client should provide some mechanism to display the sticker "body" e.g. as a tooltip on hover, or in a modal when the sticker image is clicked.
 
 Events
 ------
 Sticker events are received as single ``m.sticker`` event in the
 ``timeline`` section of a room in a ``/sync``.
 
-``m.sticker``
-~~~~~~~~~~~~~~~~~~~~~~~~
 {{m_sticker_event}}
+
+Client behaviour
+----------------
+
+Clients supporting this message type should display the image content from the event URL directly in the timeline.
+
+A thumbnail image should be provided in the message info. object. This is largely intended as a fallback for clients that do not fully support the m.sticker event type. Im most cases it is fine to set the thumbnail URL to the same URL as the main event content.
+
+It is recommended that sticker image content should be approximately 400x400 pixels in size (or smaller). The image dimensions specified in the info. object of the message should be half of the original image dimensions in order to display correctly on retina displays.
