@@ -31,8 +31,8 @@ clicked.
 
 Events
 ------
-Sticker events are received as single ``m.sticker`` event in the
-``timeline`` section of a room in a ``/sync``.
+Sticker events are received as a single ``m.sticker`` event in the
+``timeline`` section of a room, in a ``/sync``.
 
 {{m_sticker_event}}
 
