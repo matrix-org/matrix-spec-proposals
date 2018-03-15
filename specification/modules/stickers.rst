@@ -22,7 +22,7 @@ messaging sessions.
 
 Sticker messages are specialised image messages that are displayed without
 controls (e.g. no "download" link, or light-box view on click, as would be
-displayed for for m.room.message#m.image events).
+displayed for for `m.image`_ events).
 
 Sticker messages are intended to provide simple "reaction" events in the message
 timeline. The matrix client should provide some mechanism to display the sticker
