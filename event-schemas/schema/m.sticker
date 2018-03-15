@@ -6,12 +6,17 @@ properties:
   content:
     properties:
       body:
-        description: "A textual representation or associated description of the sticker image. This could be the alt text of the original image, or a message to accompany and further describe the sticker."
+        description: |-
+          A textual representation or associated description of the sticker
+          image. This could be the alt text of the original image, or a message
+          to accompany and further describe the sticker.
         type: string
       info:
         allOf:
           - $ref: core-event-schema/msgtype_infos/image_info.yaml
-        description: Metadata about the image referred to in ``url`` including a thumbnail representation.
+        description: |-
+          Metadata about the image referred to in ``url`` including a thumbnail
+          representation.
       url:
         description: The URL to the sticker image.
         type: string
