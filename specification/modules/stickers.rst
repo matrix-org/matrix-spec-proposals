@@ -48,6 +48,6 @@ largely intended as a fallback for clients that do not fully support the
 same URL as the main event content.
 
 It is recommended that sticker image content should be approximately 512x512
-pixels in size (or smaller). The image dimensions specified in the info. object
+pixels in size (or smaller). The image dimensions specified in the ``info`` object
 of the message should be half of the original image dimensions in order to
 display correctly on retina displays.
