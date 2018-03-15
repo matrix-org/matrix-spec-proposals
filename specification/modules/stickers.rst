@@ -42,9 +42,9 @@ Client behaviour
 Clients supporting this message type should display the image content from the
 event URL directly in the timeline.
 
-A thumbnail image should be provided in the message info. object. This is
+A thumbnail image should be provided in the ``info`` object. This is
 largely intended as a fallback for clients that do not fully support the
-m.sticker event type. Im most cases it is fine to set the thumbnail URL to the
+``m.sticker`` event type. In most cases it is fine to set the thumbnail URL to the
 same URL as the main event content.
 
 It is recommended that sticker image content should be approximately 512x512
