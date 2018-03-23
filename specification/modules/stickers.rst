@@ -49,5 +49,5 @@ same URL as the main event content.
 
 It is recommended that sticker image content should be 512x512 pixels in size
 or smaller. The dimensions of the image file should be twice the intended
-display size specified in the ``info`` object, in order to assist
+display size specified in the ``info`` object in order to assist
 rendering sharp images on higher DPI screens.
