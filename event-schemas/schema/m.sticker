@@ -18,7 +18,8 @@ properties:
           Metadata about the image referred to in ``url`` including a thumbnail
           representation.
       url:
-        description: The URL to the sticker image.
+        description: |-
+          The URL to the sticker image. This must be a valid ``mxc://`` URI.
         type: string
     required:
       - body

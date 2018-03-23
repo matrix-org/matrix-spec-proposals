@@ -42,8 +42,6 @@ Client behaviour
 Clients supporting this message type should display the image content from the
 event URL directly in the timeline.
 
-The event ``url`` key must specify a valid ``mxc://`` URI.
-
 A thumbnail image should be provided in the ``info`` object. This is
 largely intended as a fallback for clients that do not fully support the
 ``m.sticker`` event type. In most cases it is fine to set the thumbnail URL to the
