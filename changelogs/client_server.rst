@@ -10,8 +10,16 @@ Unreleased changes
     - ``GET /rooms/{roomId}/event/{eventId}``
       (`#1110 <https://github.com/matrix-org/matrix-doc/pull/1110>`_).
 
+  - Sticker messages:
+    - Add sticker message event definition.
+    (`#1158 <https://github.com/matrix-org/matrix-doc/pull/1158>`_).
+
 - Spec clarifications:
 
+  - Update ``ImageInfo`` and ``ThumbnailInfo`` dimension schema descriptions
+    to clarify that they relate to intended display size, as opposed to the
+    intrinsic size of the image file.
+    (`#1158 <https://github.com/matrix-org/matrix-doc/pull/1158>`_).
   - Mark ``home_server`` return field for ``/login`` and ``/register``
     endpoints as deprecated
     (`#1097 <https://github.com/matrix-org/matrix-doc/pull/1097>`_).
