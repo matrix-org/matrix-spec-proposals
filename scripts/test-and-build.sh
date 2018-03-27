@@ -17,7 +17,7 @@ pip install -r scripts/requirements.txt
 mkdir -p "${GOPATH}"
 export GOPATH
 go get github.com/hashicorp/golang-lru
-go get gopkg.in/fsnotify.v1
+go get gopkg.in/fsnotify/fsnotify.v1
 
 # make sure that the scripts build
 (cd scripts/continuserv && go build)
