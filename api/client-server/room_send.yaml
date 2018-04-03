@@ -76,7 +76,7 @@ paths:
           description: "An ID for the sent event."
           examples:
             application/json: {
-                  "event_id": "YUwRidLecu"
+                  "event_id": "$YUwRidLecu:example.com"
               }
           schema:
             type: object

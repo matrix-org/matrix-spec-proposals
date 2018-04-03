@@ -79,7 +79,7 @@ paths:
           description: "An ID for the redaction event."
           examples:
             application/json: {
-                  "event_id": "YUwQidLecu"
+                  "event_id": "$YUwQidLecu:example.com"
               }
           schema:
             type: object
