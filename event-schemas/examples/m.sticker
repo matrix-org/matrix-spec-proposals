@@ -15,7 +15,12 @@
       "w": 140,
       "size": 73602
     },
-    "url": "mxc://matrix.org/sHhqkFCvSkFwtmvtETOtKnLP"
+    "url": "mxc://matrix.org/sHhqkFCvSkFwtmvtETOtKnLP",
+    "stickerpack": {
+      "name": "Rabbits",
+      "description": "Cute rabbit stickers",
+      "stickerpack_url": "https://scalar.vector.im/integration/stickerpicker/rabbits123"
+    }
   },
   "origin_server_ts": 1431961217939,
   "event_id": "$WLGTSEFSEF:localhost",

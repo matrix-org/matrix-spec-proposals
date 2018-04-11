@@ -1,0 +1,15 @@
+$schema: http://json-schema.org/draft-04/schema#
+description: Metadata about a sticker pack.
+properties:
+  name:
+    description: The human-readable name of the sticker pack.
+    type: string
+  description:
+    description: |-
+      Description of the sticker pack contents.
+    type: string
+  stickerpack_url:
+    description: The URL to view / add the sticker pack in an integration manager.
+    type: string
+title: StickerpackInfo
+type: object

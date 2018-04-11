@@ -21,6 +21,11 @@ properties:
         description: |-
           The URL to the sticker image. This must be a valid ``mxc://`` URI.
         type: string
+      stickerpack:
+        allOf:
+          - $ref:  core-event-schema/msgtype_infos/stickerpack_info.yaml
+        description: |-
+          Metadata about the sticker pack that the sticker image belongs to.
     required:
       - body
       - info
