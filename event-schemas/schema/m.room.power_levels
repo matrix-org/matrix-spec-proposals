@@ -91,6 +91,7 @@ properties:
         description: |-
             The power level requirements for specific notification types.
             This is a mapping from ``key`` to power level for that notifications key.
+            Defaults to 50 for unspecified keys.
         title: Notification power level requirements
         type: object
     type: object
