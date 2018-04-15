@@ -85,6 +85,14 @@ properties:
             ``user_id`` is mentioned in the ``users`` key. Defaults to 0 if
             unspecified.
         type: number
+      notifications:
+        additionalProperties:
+          type: number
+        description: |-
+            The power level requirements for specific notification types.
+            This is a mapping from ``key`` to power level for that notifications key.
+        title: Notification power level requirements
+        type: object
     type: object
   state_key:
     description: A zero-length string.

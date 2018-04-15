@@ -14,7 +14,10 @@
     "users": {
       "@example:localhost": 100
     },
-    "users_default": 0
+    "users_default": 0,
+    "notifications": {
+      "room": 20
+    }
   },
   "state_key": "",
   "origin_server_ts": 1431961217939,
