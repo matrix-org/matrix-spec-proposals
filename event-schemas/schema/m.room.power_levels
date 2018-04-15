@@ -86,13 +86,16 @@ properties:
             unspecified.
         type: number
       notifications:
+        properties:
+          room:
+            type: number
+            description: The level required to trigger an ``@room`` notification. Defaults to 50 if unspecified.
         additionalProperties:
           type: number
         description: |-
             The power level requirements for specific notification types.
             This is a mapping from ``key`` to power level for that notifications key.
-            Defaults to 50 for unspecified keys.
-        title: Notification power level requirements
+        title: Notifications
         type: object
     type: object
   state_key:
