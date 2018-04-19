@@ -62,6 +62,9 @@ have English as their first language.
 
 Prefer British English (colour, -ise) to American English.
 
+The word "homeserver" is spelt thus (rather than "home server", "Homeserver",
+or (argh) "Home Server").
+
 Lists should:
 
 * Be introduced with a colon.
