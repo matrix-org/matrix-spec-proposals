@@ -252,7 +252,7 @@ paths:
               "og:image":
                 type: string
                 description: |-
-                  An MXC URI to the image. Ommitted if there is no image.
+                  An MXC URI to the image. Omitted if there is no image.
           examples:
             application/json: {
                 "og:title": "Matrix Blog Post",
