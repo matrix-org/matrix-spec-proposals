@@ -35,7 +35,7 @@ the tags are for.
 Each tag has an associated JSON object with information about the tag, e.g how
 to order the rooms with a given tag.
 
-Ordering information is given under teh ``order`` key as a number between 0 and 
+Ordering information is given under the ``order`` key as a number between 0 and
 1. The numbers are compared such that 0 is displayed first. Therefore a room 
 with an ``order`` of ``0.2`` would be displayed before a room with an ``order`` 
 of ``0.7``. If a room has a tag without an ``order`` key then it should appear 
