@@ -45,11 +45,11 @@ paths:
           required: false
           x-example: "xxxxx"
         - in: query
-          type: number
+          type: integer
           name: limit
           description: Limit on the number of events to return in this request.
           required: false
-          x-example: "20"
+          x-example: 20
         - in: query
           name: only
           type: string
@@ -133,6 +133,7 @@ paths:
                       type: string
                       description: The ID of the room in which the event was posted.
                     ts:
+                      format: int64
                       type: integer
                       description: |-
                         The unix timestamp at which the event notification was sent,
