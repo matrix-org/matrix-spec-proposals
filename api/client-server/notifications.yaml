@@ -49,7 +49,7 @@ paths:
           name: limit
           description: Limit on the number of events to return in this request.
           required: false
-          x-example: "20"
+          x-example: 20
         - in: query
           name: only
           type: string
