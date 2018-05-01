@@ -119,7 +119,7 @@ paths:
       parameters:
         - in: query
           name: limit
-          type: number
+          type: integer
           description: |-
             Limit the number of results returned.
         - in: query
@@ -173,7 +173,8 @@ paths:
                       description: |-
                         The name of the room, if any.
                     num_joined_members:
-                      type: number
+                      type: integer
+                      format: int64
                       description: |-
                         The number of members joined to the room.
                     room_id:
@@ -210,7 +211,8 @@ paths:
                   absence of this token means there are no results before this
                   batch, i.e. this is the first batch.
               total_room_count_estimate:
-                type: number
+                type: integer
+                format: int64
                 description: |-
                    An estimate on the total number of public rooms, if the
                    server has an estimate.
@@ -260,7 +262,7 @@ paths:
             type: object
             properties:
               limit:
-                type: number
+                type: integer
                 description: |-
                   Limit the number of results returned.
               since:
@@ -320,7 +322,8 @@ paths:
                       description: |-
                         The name of the room, if any.
                     num_joined_members:
-                      type: number
+                      type: integer
+                      format: int64
                       description: |-
                         The number of members joined to the room.
                     room_id:
@@ -357,7 +360,8 @@ paths:
                   absence of this token means there are no results before this
                   batch, i.e. this is the first batch.
               total_room_count_estimate:
-                type: number
+                type: integer
+                format: int64
                 description: |-
                    An estimate on the total number of public rooms, if the
                    server has an estimate.
