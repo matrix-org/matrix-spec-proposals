@@ -179,7 +179,8 @@ paths:
                     description: Mapping of category name to search criteria.
                     properties:
                       count:
-                        type: number
+                        type: integer
+                        format: int64
                         description: An approximate count of the total number of results found.
                       results:
                         type: array
