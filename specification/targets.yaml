@@ -38,6 +38,10 @@ targets:
       - appendices/threepids.rst
       - appendices/threat_model.rst
       - appendices/test_vectors.rst
+  proposals:
+    files:
+        - proposals_intro.rst
+        - proposals.rst
 groups:  # reusable blobs of files when prefixed with 'group:'
   modules:
     - modules/instant_messaging.rst
