@@ -269,3 +269,30 @@ paths:
             "$ref": "definitions/error.yaml"
       tags:
         - Media
+  "/limits":
+    get:
+      summary: Get limits on what can be uploaded to the content repository.
+               Clients SHOULD use this as a guide when uploading content.
+               All values are intentionally left optional, the client MUST assume
+               that any field not given is not limited.
+
+               **NOTE:** Reverse proxies may apply their own limits.
+      operationId: getLimits
+      produces: ["application/json"]
+      security:
+        - accessToken: []
+      responses:
+        200:
+          description: The limits exposed by the matrix server.
+          schema:
+            type: object
+            properties:
+              size:
+                type: number
+                description: "The maximum size a upload can be in bytes."
+          examples:
+            application/json: {
+                "size": 50000000
+              }
+      tags:
+        - Media
