@@ -277,6 +277,9 @@ paths:
                that any field not given is not limited.
 
                **NOTE:** Reverse proxies may apply their own limits.
+
+               If auth is not supplied, this endpoint gives the global limit of the server.
+               Otherwise it should give the limits applied to the authenticated user.
       operationId: getLimits
       produces: ["application/json"]
       security:
