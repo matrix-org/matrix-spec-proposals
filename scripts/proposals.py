@@ -33,8 +33,10 @@ def getbylabel(label):
     return json
 
 # new status labels:
-# proposal-ready-for-review,rejected,stalled,merged,spec-pr-in-review,proposal-wip,proposal-in-review,spec-pr-ready-for-review,proposal-passed-review
-labels = ['p1', 'p2']
+# labels = ['proposal-wip', 'proposal-ready-for-review',
+#     'proposal-in-review', 'proposal-passed-review',
+#     'spec-pr-ready-for-review', 'spec-pr-in-review', 'merged', 'stalled', 'rejected' ]
+labels = ['p1', 'p2', 'p3', 'p4', 'p5']
 issues = {}
 
 for label in labels:
@@ -49,23 +51,33 @@ text_file.write("Tables\n------------------\n\n")
 for label in labels:
     text_file.write(label + "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
     text_file.write(".. list-table::\n   :header-rows: 1\n   :widths: auto\n\n")
-    text_file.write("   * - ID\n")
+    text_file.write("   * - MSC\n")
     text_file.write("     - github username\n")
     text_file.write("     - proposal title\n")
     text_file.write("     - created_at\n")
     text_file.write("     - updated_at\n")
     text_file.write("     - maindoc\n")
+    text_file.write("     - author\n")
+    text_file.write("     - shepherd\n")
 
     for item in issues[label]:
-        maindoc = re.search('Documentation: (.+?)\n', str(item['body']))
-        if maindoc is not None:
-            maindoc = maindoc.group(1)
-        text_file.write("   * - `" + str(item['number']) + " <" + item['html_url'] + ">`_\n")
+        text_file.write("   * - `MSC" + str(item['number']) + " <" + item['html_url'] + ">`_\n")
         text_file.write("     - " + item['user']['login'] + "\n")
         text_file.write("     - " + item['title'] + "\n")
-        text_file.write("     - " + item['created_at'] + "\n")
-        text_file.write("     - " + item['updated_at'] + "\n")
+        created = datetime.strptime(item['created_at'], "%Y-%m-%dT%XZ")
+        text_file.write("     - " + created.strftime('%Y-%m-%d') + "\n")
+        updated = datetime.strptime(item['updated_at'], "%Y-%m-%dT%XZ")
+        text_file.write("     - " + updated.strftime('%Y-%m-%d') + "\n")
+        maindoc = re.search('Documentation: (.+?)\n', str(item['body']))
+        if maindoc is not None: maindoc = maindoc.group(1)
         text_file.write("     - " + str(maindoc) + "\n")
+        author = re.search('Author: (.+?)\n', str(item['body']))
+        if author is not None: author = author.group(1)
+        #if author is None: author = item['user']['login']
+        text_file.write("     - " + str(author) + "\n")
+        shepherd = re.search('Shepherd: (.+?)\n', str(item['body']))
+        if shepherd is not None: shepherd = shepherd.group(1)
+        text_file.write("     - " + str(shepherd) + "\n")
     text_file.write("\n\n\n")
 
 text_file.write("\n")
