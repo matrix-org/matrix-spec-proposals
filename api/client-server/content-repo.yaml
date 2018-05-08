@@ -292,7 +292,7 @@ paths:
             properties:
               upload_size:
                 type: number
-                description: "The maximum size a upload can be in bytes."
+                description: "The maximum size an upload can be in bytes."
           examples:
             application/json: {
                 "upload_size": 50000000
