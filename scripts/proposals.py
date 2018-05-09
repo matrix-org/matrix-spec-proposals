@@ -50,7 +50,7 @@ text_file.write("Tables\n------------------\n\n")
 
 for label in labels:
     text_file.write(label + "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
-    text_file.write(".. list-table::\n   :header-rows: 1\n   :widths: auto\n\n")
+    text_file.write(".. list-table::\n   :header-rows: 1\n   :widths: auto\n   :stub-columns: 1\n\n")
     text_file.write("   * - MSC\n")
     text_file.write("     - github username\n")
     text_file.write("     - proposal title\n")
