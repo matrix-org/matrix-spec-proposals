@@ -33,10 +33,10 @@ def getbylabel(label):
     return json
 
 # new status labels:
-# labels = ['proposal-wip', 'proposal-ready-for-review',
-#     'proposal-in-review', 'proposal-passed-review',
-#     'spec-pr-ready-for-review', 'spec-pr-in-review', 'merged', 'stalled', 'rejected' ]
-labels = ['p1', 'p2', 'p3', 'p4', 'p5']
+labels = ['proposal-wip', 'proposal-ready-for-review',
+    'proposal-in-review', 'proposal-passed-review',
+    'spec-pr-ready-for-review', 'spec-pr-in-review', 'merged', 'abandoned', 'rejected', 'blocked' ]
+#labels = ['p1', 'p2', 'p3', 'p4', 'p5']
 issues = {}
 
 for label in labels:
@@ -49,6 +49,9 @@ text_file.write("Tables\n------------------\n\n")
 
 
 for label in labels:
+    if (len(issues[label]) == 0):
+        continue
+    
     text_file.write(label + "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
     text_file.write(".. list-table::\n   :header-rows: 1\n   :widths: auto\n   :stub-columns: 1\n\n")
     text_file.write("   * - MSC\n")
@@ -68,10 +71,10 @@ for label in labels:
         text_file.write("     - " + created.strftime('%Y-%m-%d') + "\n")
         updated = datetime.strptime(item['updated_at'], "%Y-%m-%dT%XZ")
         text_file.write("     - " + updated.strftime('%Y-%m-%d') + "\n")
-        maindoc = re.search('Documentation: (.+?)\n', str(item['body']))
+        maindoc = re.search('^Documentation: (.+?)\n', str(item['body']))
         if maindoc is not None: maindoc = maindoc.group(1)
         text_file.write("     - " + str(maindoc) + "\n")
-        author = re.search('Author: (.+?)\n', str(item['body']))
+        author = re.search('^Author: (.+?)\n', str(item['body']), flags=re.MULTILINE)
         if author is not None: author = author.group(1)
         #if author is None: author = item['user']['login']
         text_file.write("     - " + str(author) + "\n")
