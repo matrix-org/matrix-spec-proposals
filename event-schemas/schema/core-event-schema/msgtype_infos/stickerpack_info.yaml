@@ -8,8 +8,9 @@ properties:
     description: |-
       Description of the sticker pack contents.
     type: string
-  stickerpack_url:
-    description: The URL to view / add the sticker pack in an integration manager.
+  integration_manager_url:
+    description: |-
+      The URL to view / add the sticker pack in an integration manager.
     type: string
 title: StickerpackInfo
 type: object

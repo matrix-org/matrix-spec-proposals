@@ -19,7 +19,7 @@
     "stickerpack": {
       "name": "Rabbits",
       "description": "Cute rabbit stickers",
-      "stickerpack_url": "https://scalar.vector.im/integration/stickerpicker/rabbits123"
+      "integration_manager_url": "https://scalar.vector.im/integration/stickerpicker/rabbits123?utm_source=matrix.org&utm_medium=email&utm_campaign=january_newsletter&promotional_code=10"
     }
   },
   "origin_server_ts": 1431961217939,
