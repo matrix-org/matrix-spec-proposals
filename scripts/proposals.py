@@ -51,7 +51,7 @@ text_file.write("Tables\n------------------\n\n")
 for label in labels:
     if (len(issues[label]) == 0):
         continue
-    
+
     text_file.write(label + "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
     text_file.write(".. list-table::\n   :header-rows: 1\n   :widths: auto\n   :stub-columns: 1\n\n")
     text_file.write("   * - MSC\n")
@@ -72,8 +72,13 @@ for label in labels:
         updated = datetime.strptime(item['updated_at'], "%Y-%m-%dT%XZ")
         text_file.write("     - " + updated.strftime('%Y-%m-%d') + "\n")
         maindoc = re.search('^Documentation: (.+?)\n', str(item['body']))
-        if maindoc is not None: maindoc = maindoc.group(1)
-        text_file.write("     - " + str(maindoc) + "\n")
+        if maindoc is not None:
+            maindoc = maindoc.group(1)
+            doc_list_formatted = ["`" + str(item['number']) + "-" + str(i) + " <" + x.strip() + ">`_" for i, x in enumerate(maindoc.split(','),1)]
+            text_file.write("     - " + ', '.join(doc_list_formatted))
+        else:
+            text_file.write("     - ")
+        text_file.write("\n")
         author = re.search('^Author: (.+?)\n', str(item['body']), flags=re.MULTILINE)
         if author is not None: author = author.group(1)
         #if author is None: author = item['user']['login']
