@@ -11,6 +11,7 @@ from datetime import datetime
 from m2r import convert as m2r
 
 pagecount = 1
+authors = set()
 
 def getpage(url, page):
     resp = requests.get(url + str(page))
@@ -55,7 +56,7 @@ for label in labels:
     text_file.write(label + "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
     text_file.write(".. list-table::\n   :header-rows: 1\n   :widths: auto\n   :stub-columns: 1\n\n")
     text_file.write("   * - MSC\n")
-    text_file.write("     - github username\n")
+    #text_file.write("     - github username\n")
     text_file.write("     - proposal title\n")
     text_file.write("     - created_at\n")
     text_file.write("     - updated_at\n")
@@ -65,7 +66,7 @@ for label in labels:
 
     for item in issues[label]:
         text_file.write("   * - `MSC" + str(item['number']) + " <" + item['html_url'] + ">`_\n")
-        text_file.write("     - " + item['user']['login'] + "\n")
+        #text_file.write("     - " + item['user']['login'] + "\n")
         text_file.write("     - " + item['title'] + "\n")
         created = datetime.strptime(item['created_at'], "%Y-%m-%dT%XZ")
         text_file.write("     - " + created.strftime('%Y-%m-%d') + "\n")
@@ -81,33 +82,19 @@ for label in labels:
         text_file.write("\n")
         author = re.search('^Author: (.+?)\n', str(item['body']), flags=re.MULTILINE)
         if author is not None: author = author.group(1)
-        #if author is None: author = item['user']['login']
-        text_file.write("     - " + str(author) + "\n")
+        else: author = "@" + item['user']['login']
+        authors.add(author.strip())
+        text_file.write("     - `" + str(author.strip()) + "`_" + "\n")
         shepherd = re.search('Shepherd: (.+?)\n', str(item['body']))
-        if shepherd is not None: shepherd = shepherd.group(1)
+        if shepherd is not None:
+            authors.add(shepherd.group(1).strip())
+            shepherd = "`" + shepherd.group(1).strip() + "`_"
         text_file.write("     - " + str(shepherd) + "\n")
     text_file.write("\n\n\n")
 
 text_file.write("\n")
 
-
-# text_file.write("The Proposals List\n------------------\n")
-# # text_file.write(json[0]['user']['login'])
-# for item in json:
-#     # write a header
-#     prop_header = item['title'] + " (" + str(item['number']) + ")"
-#     text_file.write(prop_header + "\n")
-#     text_file.write("~" * len(prop_header))
-#     text_file.write("\n\n")
-
-#     # write some metadata
-#     text_file.write(item['created_at'] + "\n")
-#     text_file.write(item['updated_at'] + "\n")
-#     # created = datetime.strptime(item['created_at'], "%Y-%m-%dT%XZ")
-
-
-#     # write body text
-#     body = m2r(str(item['body']))
-#     text_file.write(body + "\n\n\n")
+for author in authors:
+    text_file.write("\n.. _" + author + ": https://github.com/" + author[1:])
 
 text_file.close()
