@@ -56,7 +56,6 @@ for label in labels:
     text_file.write(label + "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
     text_file.write(".. list-table::\n   :header-rows: 1\n   :widths: auto\n   :stub-columns: 1\n\n")
     text_file.write("   * - MSC\n")
-    #text_file.write("     - github username\n")
     text_file.write("     - proposal title\n")
     text_file.write("     - created_at\n")
     text_file.write("     - updated_at\n")
@@ -65,13 +64,26 @@ for label in labels:
     text_file.write("     - shepherd\n")
 
     for item in issues[label]:
+        # MSC number
         text_file.write("   * - `MSC" + str(item['number']) + " <" + item['html_url'] + ">`_\n")
-        #text_file.write("     - " + item['user']['login'] + "\n")
+
+        # title from Github issue
         text_file.write("     - " + item['title'] + "\n")
-        created = datetime.strptime(item['created_at'], "%Y-%m-%dT%XZ")
-        text_file.write("     - " + created.strftime('%Y-%m-%d') + "\n")
+
+        # created date, find local field, otherwise Github
+        created = re.search('^Date: (.+?)\n', str(item['body']), flags=re.MULTILINE)
+        if created is not None:
+            created = created.group(1).strip()
+        else :
+            created = datetime.strptime(item['created_at'], "%Y-%m-%dT%XZ")
+            created = created.strftime('%Y-%m-%d')
+        text_file.write("     - " + created + "\n")
+
+        # last updated, purely Github
         updated = datetime.strptime(item['updated_at'], "%Y-%m-%dT%XZ")
         text_file.write("     - " + updated.strftime('%Y-%m-%d') + "\n")
+
+        # list of document links (urls comma-separated)
         maindoc = re.search('^Documentation: (.+?)\n', str(item['body']))
         if maindoc is not None:
             maindoc = maindoc.group(1)
@@ -80,11 +92,23 @@ for label in labels:
         else:
             text_file.write("     - ")
         text_file.write("\n")
+
+        # author list, if missing just use Github issue creator
         author = re.search('^Author: (.+?)\n', str(item['body']), flags=re.MULTILINE)
-        if author is not None: author = author.group(1)
-        else: author = "@" + item['user']['login']
-        authors.add(author.strip())
-        text_file.write("     - `" + str(author.strip()) + "`_" + "\n")
+        if author is not None:
+            author_list_formatted = set()
+            author_list = author.group(1)
+            for a in author_list.split(","):
+                authors.add(a.strip())
+                author_list_formatted.add("`" + str(a.strip()) + "`_")
+            text_file.write("     - " + ', '.join(author_list_formatted))
+        else:
+            author = "@" + item['user']['login']
+            authors.add(author)
+            text_file.write("     - `" + str(author) + "`_")
+        text_file.write("\n")
+
+        # shepherd (currnely only one)
         shepherd = re.search('Shepherd: (.+?)\n', str(item['body']))
         if shepherd is not None:
             authors.add(shepherd.group(1).strip())
