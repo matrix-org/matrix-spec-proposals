@@ -13,7 +13,7 @@
 # limitations under the License.
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server Room Creation API"
+  title: "Matrix Client-Server Room Directory API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
@@ -25,6 +25,88 @@ consumes:
 produces:
   - application/json
 paths:
+  "/directory/list/room/{roomId}":
+    get:
+      summary: Gets the visibility of a room in the directory
+      description: |-
+        Gets the visibility of a given room on the server's public room directory.
+      operationId: getRoomVisibilityOnDirectory
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room ID.
+          required: true
+          x-example: "!curbf:matrix.org"
+      responses:
+        200:
+          description: The visibility of the room in the directory
+          schema:
+            type: object
+            properties:
+              visibility:
+                type: string
+                enum: ['private', 'public']
+                description: The visibility of the room in the directory.
+          examples: 
+            application/json: {
+              "visibility": "public"
+            }
+        404:
+          description: The room is not known to the server
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "Room not found"
+            }
+    put:
+      summary: Sets the visibility of a room in the room directory
+      description: |-
+        Sets the visibility of a given room in the server's public room
+        directory.
+
+        Servers may choose to implement additional access control checks
+        here, for instance that room visibility can only be changed by 
+        the room creator or a server administrator.
+      operationId: setRoomVisibilityOnDirectory
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room ID.
+          required: true
+          x-example: "!curbf:matrix.org"
+        - in: body
+          name: body
+          required: true
+          description: |-
+            The new visibility for the room on the room directory.
+          schema:
+            type: object
+            properties:
+              visibility:
+                type: string
+                enum: ["private", "public"]
+                description: |-
+                  The new visibility setting for the room. 
+                  Defaults to 'public'.
+            example: {
+               "visibility": "public"
+            }
+      responses:
+        200:
+          description: The visibility was updated, or no change was needed.
+          examples: 
+            application/json: {}
+        404:
+          description: The room is not known to the server
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "Room not found"
+            }
   "/publicRooms":
     get:
       summary: Lists the public rooms on the server.

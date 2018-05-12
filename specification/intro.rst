@@ -116,7 +116,7 @@ model communication history as a partially ordered graph of events known as
 the room's "event graph", which is synchronised with eventual consistency
 between the participating servers using the "Server-Server API". This process
 of synchronising shared conversation history between homeservers run by
-different parties is called "Federation". Matrix optimises for the the
+different parties is called "Federation". Matrix optimises for the
 Availability and Partitioned properties of CAP theorem at
 the expense of Consistency.
 

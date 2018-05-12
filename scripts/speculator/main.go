@@ -712,6 +712,7 @@ func main() {
 		"richvdh":       true,
 		"ara4n":         true,
 		"leonerd":       true,
+		"rxl881":        true,
 	}
 	if err := initCache(); err != nil {
 		log.Fatal(err)

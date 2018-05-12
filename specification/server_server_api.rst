@@ -520,7 +520,7 @@ the state of the room.
 
    #. If ``membership`` is ``invite``:
 
-      i. If the ``sender``'s current membership state is not ``joined``, reject.
+      i. If the ``sender``'s current membership state is not ``join``, reject.
 
       #. If *target user*'s current membership state is ``join`` or ``ban``,
          reject.
@@ -535,7 +535,7 @@ the state of the room.
       i. If the ``sender`` matches ``state_key``, allow if and only if that user's
          current membership state is ``invite`` or ``join``.
 
-      #. If the ``sender``'s current membership state is not ``joined``, reject.
+      #. If the ``sender``'s current membership state is not ``join``, reject.
 
       #. If the *target user*'s current membership state is ``ban``, and the
          ``sender``'s power level is less than the *ban level*, reject.
@@ -548,7 +548,7 @@ the state of the room.
 
    #. If ``membership`` is ``ban``:
 
-      i. If the ``sender``'s current membership state is not ``joined``, reject.
+      i. If the ``sender``'s current membership state is not ``join``, reject.
 
       #. If the ``sender``'s power level is greater than or equal to the *ban
          level*, and the *target user*'s power level is less than the
@@ -558,7 +558,7 @@ the state of the room.
 
    #. Otherwise, the membership is unknown. Reject.
 
-#. If the ``sender``'s current membership state is not ``joined``, reject.
+#. If the ``sender``'s current membership state is not ``join``, reject.
 
 #. If the event type's *required power level* is greater than the ``sender``'s power
    level, reject.
