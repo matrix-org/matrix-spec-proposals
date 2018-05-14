@@ -47,7 +47,7 @@ for label in labels:
 
 text_file = open("../specification/proposals.rst", "w")
 
-text_file.write("Tables\n------------------\n\n")
+text_file.write("Tables of Tracked Proposals\n---------------------------\n\n")
 
 
 for label in labels:
