@@ -74,6 +74,18 @@ for label in labels:
         created = re.search('^Date: (.+?)\n', str(item['body']), flags=re.MULTILINE)
         if created is not None:
             created = created.group(1).strip()
+            try:
+                created = datetime.strptime(created, "%d/%m/%Y")
+                created = created.strftime('%Y-%m-%d')
+            except:
+                pass
+
+            try:
+                created = datetime.strptime(created, "%Y-%m-%d")
+                created = created.strftime('%Y-%m-%d')
+            except:
+                pass
+
         else :
             created = datetime.strptime(item['created_at'], "%Y-%m-%dT%XZ")
             created = created.strftime('%Y-%m-%d')
