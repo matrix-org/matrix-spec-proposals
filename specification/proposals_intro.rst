@@ -16,8 +16,8 @@ The process for submitting a Matrix Spec Change (MSC) Proposal is as follows:
 - Gather feedback as widely as possible from the community and core team on the proposal.
   - The aim is to get maximum consensus on the trade-offs chosen to get an optimal solution.
   - Iterating on the proposal and gathering consensus can sometimes be time-consuming; an impartial 'shepherd' can be assigned to help guide the proposal through this process.
-- Once the proposal has sufficient consensus and passed review, you **must** show an implementation to prove that it works well in practice, before before a spec PR will be accepted.  Iterate on the proposal if needed.
-- Finally, please make a new spec PR which includes the proposed changes against https://github.com/matrix-org/matrix-doc/tree/master/specification.  This will then be reviewed and hopefully merged!
+- Once the proposal has sufficient consensus and passed review, you **must** show an implementation to prove that it works well in practice, before a spec PR will be accepted.  Iterate on the proposal if needed.
+- Finally, please make a new spec PR which includes the changes as implemented against https://github.com/matrix-org/matrix-doc/tree/master/specification.  This will then be reviewed and hopefully merged!
 
 Final decisions on review are made by the +matrix:matrix.org community (i.e. the core team), acting on behalf of the whole Matrix community.
 
