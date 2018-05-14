@@ -139,7 +139,7 @@ paths:
       description: |-
         This API endpoint uses the `User-Interactive Authentication API`_.
 
-        Deletes the given device, and invalidates any access token assoicated with it.
+        Deletes the given device, and invalidates any access token associated with it.
       operationId: deleteDevice
       security:
         - accessToken: []
