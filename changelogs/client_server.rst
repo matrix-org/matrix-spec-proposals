@@ -9,6 +9,8 @@ Unreleased changes
       (`#1096 <https://github.com/matrix-org/matrix-doc/pull/1096>`_).
     - ``GET /rooms/{roomId}/event/{eventId}``
       (`#1110 <https://github.com/matrix-org/matrix-doc/pull/1110>`_).
+    - ``POST /delete_devices``
+      (`#1239 <https://github.com/matrix-org/matrix-doc/pull/1239>`_).
 
   - Sticker messages:
     - Add sticker message event definition.
