@@ -12,6 +12,7 @@ from m2r import convert as m2r
 
 pagecount = 1
 authors = set()
+prs = set()
 
 def getpage(url, page):
     resp = requests.get(url + str(page))
@@ -35,8 +36,8 @@ def getbylabel(label):
 
 # new status labels:
 labels = ['proposal-wip', 'proposal-ready-for-review',
-    'proposal-in-review', 'proposal-passed-review',
-    'spec-pr-ready-for-review', 'spec-pr-in-review', 'merged', 'abandoned', 'rejected', 'blocked' ]
+    'proposal-in-review', 'proposal-passed-review', 'spec-pr-missing',
+    'spec-pr-ready-for-review', 'spec-pr-in-review', 'merged', 'abandoned', 'rejected', 'blocked', 'obsolete' ]
 #labels = ['p1', 'p2', 'p3', 'p4', 'p5']
 issues = {}
 
@@ -56,12 +57,13 @@ for label in labels:
     text_file.write(label + "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
     text_file.write(".. list-table::\n   :header-rows: 1\n   :widths: auto\n   :stub-columns: 1\n\n")
     text_file.write("   * - MSC\n")
-    text_file.write("     - proposal title\n")
-    text_file.write("     - created_at\n")
-    text_file.write("     - updated_at\n")
-    text_file.write("     - maindoc\n")
-    text_file.write("     - author\n")
-    text_file.write("     - shepherd\n")
+    text_file.write("     - Proposal Title\n")
+    text_file.write("     - Creation Date\n")
+    text_file.write("     - Update Date\n")
+    text_file.write("     - Documenation\n")
+    text_file.write("     - Author\n")
+    text_file.write("     - Shepherd\n")
+    text_file.write("     - PRs\n")
 
     for item in issues[label]:
         # MSC number
@@ -126,11 +128,28 @@ for label in labels:
             authors.add(shepherd.group(1).strip())
             shepherd = "`" + shepherd.group(1).strip() + "`_"
         text_file.write("     - " + str(shepherd) + "\n")
+
+        # PRs
+        pr_list = re.search('PRs: (.+?)\n', str(item['body']))
+        if pr_list is not None:
+            pr_list_formatted = set()
+            pr_list = pr_list.group(1)
+            for p in pr_list.split(","):
+                prs.add(p.strip())
+                pr_list_formatted.add("`PR" + str(p.strip()) + "`_")
+            text_file.write("     - " + ', '.join(pr_list_formatted))
+            text_file.write("\n")
+        else:
+            text_file.write("     - \n")
+
     text_file.write("\n\n\n")
 
 text_file.write("\n")
 
 for author in authors:
     text_file.write("\n.. _" + author + ": https://github.com/" + author[1:])
+
+for pr in prs:
+    text_file.write("\n.. _PR" + pr + ": https://github.com/matrix-org/matrix-doc/pull/" + pr)
 
 text_file.close()
