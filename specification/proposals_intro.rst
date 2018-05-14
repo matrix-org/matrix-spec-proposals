@@ -94,7 +94,8 @@ Other metadata:
 
 - the MSC (Matrix Spec Change) number is taken from the github issue ID. This is carried for the lifetime of the proposal, including the PR creation phase.  N.B. They are not in chronological order!
 - Please use the github issue title to set the title.
-- The created date is taken from the github issue, but can be overriden by adding a "Date: yyyy-mm-dd" line in the body of the issue text.
+- Please link to the proposal document by adding a "Documentation: <url>" line in the issue description.
+- The creation date is taken from the github issue, but can be overriden by adding a "Date: yyyy-mm-dd" line in the issue description.
 - Updated Date is taken from github.
-- Author is the creator of the github issue, but can be overriden by adding a "Author: @username" line in the body of the issue text. Please make sure @username is a github user (include the @!)
-- Shepherd is set by adding a "Shepherd: @username" line in the issue description. Again, make sure this is a real Github user.
+- Author is the creator of the github issue, but can be overriden by adding a "Author: @username" line in the body of the issue description. Please make sure @username is a github user (include the @!)
+- A shepherd can be assigned by adding a "Shepherd: @username" line in the issue description. Again, make sure this is a real Github user.
