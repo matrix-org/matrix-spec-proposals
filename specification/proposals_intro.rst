@@ -27,7 +27,7 @@ Final decisions on review are made by the +matrix:matrix.org community (i.e. the
 
 Proposals **must** act to the greater benefit of the entire Matrix ecosystem, rather than benefiting or privileging any single player or subset of players - and must not contain any patent encumbered IP.  The Matrix core team pledges to act as a neutral custodian for Matrix on behalf of the whole ecosystem, just as it has since Matrix's inception in May 2014.
 
-The directions above are not intended to be exhaustive but simple and pragmatic.  A full governance document for the Matrix core team will follow in due course.
+The above directions are intended to be simple and pragmatic rather than exhaustive, and aim to provide guidelinnes until we have a formal spec governance process in place that covers the whole Matrix community.  In order to get Matrix out of beta as quickly as possible, as of May 2018 we are prioritising spec and reference implementation development over writing formal governance, but a formal governance document will follow as rapidly as that allows.
 
 The process for handling proposals is described in the following diagram. Note that the lifetime of a proposal is tracked through the corresponding labels for each stage in the `matrix-doc issue tracker <https://github.com/matrix-org/matrix-doc/issues>`_.
 
