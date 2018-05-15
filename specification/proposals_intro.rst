@@ -7,15 +7,19 @@ Proposals for Spec Changes to Matrix
 The process for submitting a Matrix Spec Change (MSC) Proposal is as follows:
 
 - produce a publicly-accessible proposal describing your change:
+
   - Please use Google Docs, or an equivalent system capable of collaborative editing, with versioned history and threaded comments.
   - We do not use Github issues (or Etherpad) for the design process of the proposal, as the document review/commenting capabilities aren't good enough.
   - We also don't jump straight to PRing against the spec itself, as it's much faster to iterate on a proposal in freeform document form than in the terse and formal structure of the spec.
   - In the proposal, please clearly state the problem being solved, and the possible solutions being proposed for solving it and their respective trade-offs.
   - Proposal documents are intended to be as lightweight and flexible as the author desires; there is no formal template; the intention is to iterate as quickly as possible to get to a good design.
+
 - make a new issue at https://github.com/matrix-org/matrix-doc/issues (or modify an existing one), whose description should list the metadata as per below.
 - Gather feedback as widely as possible from the community and core team on the proposal.
+
   - The aim is to get maximum consensus on the trade-offs chosen to get an optimal solution.
   - Iterating on the proposal and gathering consensus can sometimes be time-consuming; an impartial 'shepherd' can be assigned to help guide the proposal through this process.
+  
 - Once the proposal has sufficient consensus and passed review, you **must** show an implementation to prove that it works well in practice, before a spec PR will be accepted.  Iterate on the proposal if needed.
 - Finally, please make a new spec PR which includes the changes as implemented against https://github.com/matrix-org/matrix-doc/tree/master/specification.  This will then be reviewed and hopefully merged!
 
