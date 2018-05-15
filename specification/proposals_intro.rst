@@ -9,8 +9,9 @@ The process for submitting a Matrix Spec Change (MSC) Proposal is as follows:
 - produce a publicly-accessible proposal describing your change:
 
   - Please use Google Docs, or an equivalent system capable of collaborative
-    editing, with versioned history and threaded comments.  Please ensure the
-    document is world-commentable or -editable.
+    editing, with versioned history, suggestions ('track changes'), threaded
+    comments, and good mobile support.  Please ensure the document is
+    world-commentable or -editable.
   - We do not use Github issues (or Etherpad) for the design process of the
     proposal, as the document review/commenting capabilities aren't good
     enough.
