@@ -8,29 +8,75 @@ The process for submitting a Matrix Spec Change (MSC) Proposal is as follows:
 
 - produce a publicly-accessible proposal describing your change:
 
-  - Please use Google Docs, or an equivalent system capable of collaborative editing, with versioned history and threaded comments.  Please ensure the document is world-commentable or -editable.
-  - We do not use Github issues (or Etherpad) for the design process of the proposal, as the document review/commenting capabilities aren't good enough.
-  - We also don't jump straight to PRing against the spec itself, as it's much faster to iterate on a proposal in freeform document form than in the terse and formal structure of the spec.
-  - In the proposal, please clearly state the problem being solved, and the possible solutions being proposed for solving it and their respective trade-offs.
-  - Proposal documents are intended to be as lightweight and flexible as the author desires; there is no formal template; the intention is to iterate as quickly as possible to get to a good design.
+  - Please use Google Docs, or an equivalent system capable of collaborative
+    editing, with versioned history and threaded comments.  Please ensure the
+    document is world-commentable or -editable.
+  - We do not use Github issues (or Etherpad) for the design process of the
+    proposal, as the document review/commenting capabilities aren't good
+    enough.
+  - We also don't jump straight to PRing against the spec itself, as it's much
+    faster to iterate on a proposal in freeform document form than in the
+    terse and formal structure of the spec.
+  - In the proposal, please clearly state the problem being solved, and the
+    possible solutions being proposed for solving it and their respective
+    trade-offs.
+  - Proposal documents are intended to be as lightweight and flexible as the 
+    author desires; there is no formal template; the intention is to iterate
+    as quickly as possible to get to a good design.
 
-- make a new issue at https://github.com/matrix-org/matrix-doc/issues (or modify an existing one), whose description should list the metadata as per below.
-- Gather feedback as widely as possible from the community and core team on the proposal.
+- make a new issue at https://github.com/matrix-org/matrix-doc/issues (or
+  modify an existing one), whose description should list the metadata as per
+  below.
+- Gather feedback as widely as possible from the community and core team on
+  the proposal.
 
-  - The aim is to get maximum consensus on the trade-offs chosen to get an optimal solution.
-  - A good place to ask for feedback on a specific proposal is `#matrix-spec:matrix.org <https://matrix.to/#/#matrix-spec:matrix.org>`_.  However, authors/shepherds are welcome to use an alternative room if they prefer - please advertise it in #matrix-spec:matrix.org though and link to it on the github issue.  N.B. that #matrix-dev:matrix.org is for developers using existing Matrix APIs, #matrix:matrix.org is for users trying to run matrix apps (clients & servers); #matrix-architecture:matrix.org is for cross-cutting discussion of Matrix's architectural design.
-  - Iterating on the proposal and gathering consensus can sometimes be time-consuming; an impartial 'shepherd' can be assigned to help guide the proposal through this process.
+  - The aim is to get maximum consensus on the trade-offs chosen to get an
+    optimal solution.
+  - A good place to ask for feedback on a specific proposal is
+    `#matrix-spec:matrix.org <https://matrix.to/#/#matrix-spec:matrix.org>`_.
+    However, authors/shepherds are welcome to use an alternative room if they
+    prefer - please advertise it in #matrix-spec:matrix.org though and link
+    to it on the github issue.  N.B. that #matrix-dev:matrix.org is for
+    developers using existing Matrix APIs, #matrix:matrix.org is for users
+    trying to run matrix apps (clients & servers);
+    #matrix-architecture:matrix.org is for cross-cutting discussion of
+    Matrix's architectural design.
+  - Iterating on the proposal and gathering consensus can sometimes be
+    time-consuming; an impartial 'shepherd' can be assigned to help guide the
+    proposal through this process.
   
-- Once the proposal has sufficient consensus and passed review, you **must** show an implementation to prove that it works well in practice, before a spec PR will be accepted.  Iterate on the proposal if needed.
-- Finally, please make a new spec PR which includes the changes as implemented against https://github.com/matrix-org/matrix-doc/tree/master/specification.  This will then be reviewed and hopefully merged!  Please sign off the spec PR as per the `CONTRIBUTING.rst <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_ guidelines.
+- Once the proposal has sufficient consensus and passed review, you **must**
+  show an implementation to prove that it works well in practice, before a
+  spec PR will be accepted.  Iterate on the proposal if needed.
+- Finally, please make a new spec PR which includes the changes as
+  implemented against
+  https://github.com/matrix-org/matrix-doc/tree/master/specification.  This
+  will then be reviewed and hopefully merged!  Please sign off the spec PR as
+  per the `CONTRIBUTING.rst
+  <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_
+  guidelines.
 
-Final decisions on review are made by the Matrix core team (+matrix:matrix.org), acting on behalf of the whole Matrix community.
+Final decisions on review are made by the Matrix core team
+(+matrix:matrix.org), acting on behalf of the whole Matrix community.
 
-Proposals **must** act to the greater benefit of the entire Matrix ecosystem, rather than benefiting or privileging any single player or subset of players - and must not contain any patent encumbered IP.  The Matrix core team pledges to act as a neutral custodian for Matrix on behalf of the whole ecosystem, just as it has since Matrix's inception in May 2014.
+Proposals **must** act to the greater benefit of the entire Matrix ecosystem,
+rather than benefiting or privileging any single player or subset of players
+- and must not contain any patent encumbered IP.  The Matrix core team pledges
+to act as a neutral custodian for Matrix on behalf of the whole ecosystem,
+just as it has since Matrix's inception in May 2014.
 
-The above directions are intended to be simple and pragmatic rather than exhaustive, and aim to provide guidelines until we have a formal spec governance process in place that covers the whole Matrix community.  In order to get Matrix out of beta as quickly as possible, as of May 2018 we are prioritising spec and reference implementation development over writing formal governance, but a formal governance document will follow as rapidly as possible.
+The above directions are intended to be simple and pragmatic rather than
+exhaustive, and aim to provide guidelines until we have a formal spec
+governance process in place that covers the whole Matrix community.  In order
+to get Matrix out of beta as quickly as possible, as of May 2018 we are
+prioritising spec and reference implementation development over writing formal
+governance, but a formal governance document will follow as rapidly as
+possible.
 
-The process for handling proposals is described in the following diagram. Note that the lifetime of a proposal is tracked through the corresponding labels for each stage in the `matrix-doc issue tracker <https://github.com/matrix-org/matrix-doc/issues>`_.
+The process for handling proposals is described in the following diagram. Note
+that the lifetime of a proposal is tracked through the corresponding labels for
+each stage in the `matrix-doc issue tracker
+<https://github.com/matrix-org/matrix-doc/issues>`_.
 
 ::
 
@@ -97,17 +143,29 @@ Rejected                    A proposal which is not going to be incorporated int
 Proposal Tracking
 -----------------
 
-This is a living document generated from the list of proposals at `matrix-doc/issues <https://github.com/matrix-org/matrix-doc/issues>`_ on GitHub.
+This is a living document generated from the list of proposals at
+`matrix-doc/issues <https://github.com/matrix-org/matrix-doc/issues>`_ on
+GitHub.
 
-We use labels and some metadata in the issues' descriptions to generate this page.  Labels are assigned by the core team whilst triaging the issues based on those which exist in the matrix-doc repo already.
+We use labels and some metadata in the issues' descriptions to generate this
+page.  Labels are assigned by the core team whilst triaging the issues based
+on those which exist in the matrix-doc repo already.
 
 Other metadata:
 
-- the MSC (Matrix Spec Change) number is taken from the github issue ID. This is carried for the lifetime of the proposal, including the PR creation phase.  N.B. They are not in chronological order!
+- the MSC (Matrix Spec Change) number is taken from the github issue ID. This
+  is carried for the lifetime of the proposal, including the PR creation
+  phase. N.B. They are not in chronological order!
 - Please use the github issue title to set the title.
-- Please link to the proposal document by adding a "Documentation: <url>" line in the issue description.
-- Please link to the spec PR (if any) by adding a "PRs: #1234" line in the issue description.
-- The creation date is taken from the github issue, but can be overriden by adding a "Date: yyyy-mm-dd" line in the issue description.
+- Please link to the proposal document by adding a "Documentation: <url>" line
+  in the issue description.
+- Please link to the spec PR (if any) by adding a "PRs: #1234" line in the
+  issue description.
+- The creation date is taken from the github issue, but can be overriden by
+  adding a "Date: yyyy-mm-dd" line in the issue description.
 - Updated Date is taken from github.
-- Author is the creator of the github issue, but can be overriden by adding a "Author: @username" line in the body of the issue description. Please make sure @username is a github user (include the @!)
-- A shepherd can be assigned by adding a "Shepherd: @username" line in the issue description. Again, make sure this is a real Github user.
+- Author is the creator of the github issue, but can be overriden by adding a
+  "Author: @username" line in the body of the issue description. Please make
+  sure @username is a github user (include the @!)
+- A shepherd can be assigned by adding a "Shepherd: @username" line in the
+  issue description. Again, make sure this is a real Github user.

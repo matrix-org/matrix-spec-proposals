@@ -124,7 +124,7 @@ for label in labels:
             text_file.write("     - `" + str(author) + "`_")
         text_file.write("\n")
 
-        # shepherd (currnely only one)
+        # shepherd (currently only one)
         shepherd = re.search('Shepherd: (.+?)\n', str(item['body']))
         if shepherd is not None:
             authors.add(shepherd.group(1).strip())
