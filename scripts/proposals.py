@@ -1,9 +1,5 @@
 # proposals.py: generate an RST file (proposals.rst) from queries to github.com/matrix.org/matrix-doc/issues.
 # v0.0.1
-# todo:
-#   use status labels to create separate sections.
-#   include all fields discussed at https://docs.google.com/document/d/1wLln7da12l0H5YgAh5xM2TVE7VsTjXzhEwVh3sRBMCk/edit#
-#   format, probably as tables
 
 import requests
 import re
@@ -114,7 +110,7 @@ for label in labels:
         text_file.write("\n")
 
         # author list, if missing just use Github issue creator
-        author = re.search('^Author: (.+?)\n', str(item['body']), flags=re.MULTILINE)
+        author = re.search('^Author: (.+?)$', str(item['body']), flags=re.MULTILINE)
         if author is not None:
             author_list_formatted = set()
             author_list = author.group(1)
@@ -136,7 +132,7 @@ for label in labels:
         text_file.write("     - " + str(shepherd) + "\n")
 
         # PRs
-        pr_list = re.search('PRs: (.+?)\n', str(item['body']))
+        pr_list = re.search('PRs: (.+?)$', str(item['body']))
         if pr_list is not None:
             pr_list_formatted = set()
             pr_list = pr_list.group(1)
