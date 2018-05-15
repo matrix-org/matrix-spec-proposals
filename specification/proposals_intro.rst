@@ -8,7 +8,7 @@ The process for submitting a Matrix Spec Change (MSC) Proposal is as follows:
 
 - produce a publicly-accessible proposal describing your change:
 
-  - Please use Google Docs, or an equivalent system capable of collaborative editing, with versioned history and threaded comments.
+  - Please use Google Docs, or an equivalent system capable of collaborative editing, with versioned history and threaded comments.  Please ensure the document is world-commentable or -editable.
   - We do not use Github issues (or Etherpad) for the design process of the proposal, as the document review/commenting capabilities aren't good enough.
   - We also don't jump straight to PRing against the spec itself, as it's much faster to iterate on a proposal in freeform document form than in the terse and formal structure of the spec.
   - In the proposal, please clearly state the problem being solved, and the possible solutions being proposed for solving it and their respective trade-offs.
@@ -99,7 +99,7 @@ Proposal Tracking
 
 This is a living document generated from the list of proposals at `matrix-doc/issues <https://github.com/matrix-org/matrix-doc/issues>`_ on GitHub.
 
-We use labels and some metadata in the issue's description to generate this page.  Labels are assigned by the core team whilst triaging the issues based on those which exist in the matrix-doc repo already.
+We use labels and some metadata in the issues' descriptions to generate this page.  Labels are assigned by the core team whilst triaging the issues based on those which exist in the matrix-doc repo already.
 
 Other metadata:
 
