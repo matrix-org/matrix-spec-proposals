@@ -21,9 +21,9 @@ The process for submitting a Matrix Spec Change (MSC) Proposal is as follows:
   - Iterating on the proposal and gathering consensus can sometimes be time-consuming; an impartial 'shepherd' can be assigned to help guide the proposal through this process.
   
 - Once the proposal has sufficient consensus and passed review, you **must** show an implementation to prove that it works well in practice, before a spec PR will be accepted.  Iterate on the proposal if needed.
-- Finally, please make a new spec PR which includes the changes as implemented against https://github.com/matrix-org/matrix-doc/tree/master/specification.  This will then be reviewed and hopefully merged!
+- Finally, please make a new spec PR which includes the changes as implemented against https://github.com/matrix-org/matrix-doc/tree/master/specification.  This will then be reviewed and hopefully merged!  Please sign off the spec PR as per the `CONTRIBUTING.rst <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_ guidelines.
 
-Final decisions on review are made by the +matrix:matrix.org community (i.e. the core team), acting on behalf of the whole Matrix community.
+Final decisions on review are made by the Matrix core team (+matrix:matrix.org), acting on behalf of the whole Matrix community.
 
 Proposals **must** act to the greater benefit of the entire Matrix ecosystem, rather than benefiting or privileging any single player or subset of players - and must not contain any patent encumbered IP.  The Matrix core team pledges to act as a neutral custodian for Matrix on behalf of the whole ecosystem, just as it has since Matrix's inception in May 2014.
 
