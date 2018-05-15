@@ -18,6 +18,7 @@ The process for submitting a Matrix Spec Change (MSC) Proposal is as follows:
 - Gather feedback as widely as possible from the community and core team on the proposal.
 
   - The aim is to get maximum consensus on the trade-offs chosen to get an optimal solution.
+  - A good place to ask for feedback on a specific proposal is `#matrix-spec:matrix.org <https://matrix.to/#/#matrix-spec:matrix.org>`_.  However, authors/shepherds are welcome to use an alternative room if they prefer - please advertise it in #matrix-spec:matrix.org though and link to it on the github issue.  N.B. that #matrix-dev:matrix.org is for developers using existing Matrix APIs, #matrix:matrix.org is for users trying to run matrix apps (clients & servers); #matrix-architecture:matrix.org is for cross-cutting discussion of Matrix's architecture.
   - Iterating on the proposal and gathering consensus can sometimes be time-consuming; an impartial 'shepherd' can be assigned to help guide the proposal through this process.
   
 - Once the proposal has sufficient consensus and passed review, you **must** show an implementation to prove that it works well in practice, before a spec PR will be accepted.  Iterate on the proposal if needed.
