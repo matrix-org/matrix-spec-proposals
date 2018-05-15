@@ -43,7 +43,6 @@ issues = {}
 
 for label in labels:
     issues[label] = getbylabel(label)
-    print(issues)
 
 text_file = open("../specification/proposals.rst", "w")
 
@@ -66,14 +65,10 @@ for label in labels:
     text_file.write("     - PRs\n")
 
     for item in issues[label]:
-        # MSC number
-        text_file.write("   * - `MSC" + str(item['number']) + " <" + item['html_url'] + ">`_\n")
-
-        # title from Github issue
-        text_file.write("     - " + item['title'] + "\n")
-
-        # created date, find local field, otherwise Github
-        created = re.search('^Date: (.+?)\n', str(item['body']), flags=re.MULTILINE)
+        # set the created date, find local field, otherwise Github
+        print(item)
+        body = str(item['body'])
+        created = re.search('^Date: (.+?)\n', body, flags=re.MULTILINE)
         if created is not None:
             created = created.group(1).strip()
             try:
@@ -81,17 +76,28 @@ for label in labels:
                 created = created.strftime('%Y-%m-%d')
             except:
                 pass
-
             try:
                 created = datetime.strptime(created, "%Y-%m-%d")
                 created = created.strftime('%Y-%m-%d')
             except:
                 pass
-
         else :
             created = datetime.strptime(item['created_at'], "%Y-%m-%dT%XZ")
             created = created.strftime('%Y-%m-%d')
-        text_file.write("     - " + created + "\n")
+        item['created'] = created
+
+    issues_to_print = list(issues[label])
+    issues_to_print.sort(key=lambda issue_sort: issue_sort["created"])
+
+    for item in issues_to_print:
+        # MSC number
+        text_file.write("   * - `MSC" + str(item['number']) + " <" + item['html_url'] + ">`_\n")
+
+        # title from Github issue
+        text_file.write("     - " + item['title'] + "\n")
+
+        # created date
+        text_file.write("     - " + item['created'] + "\n")
 
         # last updated, purely Github
         updated = datetime.strptime(item['updated_at'], "%Y-%m-%dT%XZ")
