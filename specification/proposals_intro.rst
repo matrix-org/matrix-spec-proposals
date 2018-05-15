@@ -83,12 +83,12 @@ Proposal WIP                A proposal document which is still work-in-progress 
 Proposal Ready for Review   A proposal document which is now ready and waiting for review by the core team and community
 Proposal In Review          A proposal document which is currently in review
 Proposal Passed Review      A proposal document which has passed review as worth implementing and then being added to the spec
-Spec PR Missing             A proposal which has been implemented and is being used in the wild but hasn't yet been added to the spec
+Spec PR Missing             A proposal which has been implemented and has been used in the wild for a few months but hasn't yet been added to the spec
 Spec PR Ready for Review    A proposal which has been PR'd against the spec and is awaiting review
 Spec PR In Review           A proposal which has been PR'd against the spec and is in review
 Merged                      A proposal whose PR has merged into the spec!
 Blocked                     A proposal which is temporarily blocked on some external factor (e.g. being blocked on another proposal first being approved)
-Abandoned                   A proposal where the author/shepherd is not responsive
+Abandoned                   A proposal where the author/shepherd has not been responsive for a few months
 Obsolete                    A proposal which has been overtaken by other proposals
 Rejected                    A proposal which is not going to be incorporated into Matrix
 =========================== =======================================================
