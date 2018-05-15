@@ -152,6 +152,6 @@ for author in authors:
     text_file.write("\n.. _" + author + ": https://github.com/" + author[1:])
 
 for pr in prs:
-    text_file.write("\n.. _PR" + pr + ": https://github.com/matrix-org/matrix-doc/pull/" + pr)
+    text_file.write("\n.. _PR" + pr + ": https://github.com/matrix-org/matrix-doc/pull/" + pr.replace('#', ''))
 
 text_file.close()
