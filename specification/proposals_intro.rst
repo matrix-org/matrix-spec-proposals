@@ -24,6 +24,9 @@ The process for submitting a Matrix Spec Change (MSC) Proposal is as follows:
   - Proposal documents are intended to be as lightweight and flexible as the 
     author desires; there is no formal template; the intention is to iterate
     as quickly as possible to get to a good design.
+  - A `template with suggested headers
+    <https://docs.google.com/document/d/1CoLCPTcRFvD4PqjvbUl3ZIWgGLpmRNbqxsT2Tu7lCzI/>`_
+    is available.
 
 - make a new issue at https://github.com/matrix-org/matrix-doc/issues (or
   modify an existing one), whose description should list the metadata as per
