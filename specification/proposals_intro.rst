@@ -84,25 +84,25 @@ the first place.
 
 "Greater benefit" could include maximising:
 
- * the number of end-users reachable on the open Matrix network.
- * the number of regular users on the Matrix network (e.g. 30-day retained
-   federated users)
- * the number of online servers in the open federation.
- * the number of developers building on Matrix.
- * the number of independent implementations which use Matrix
- * the quality and utility of the Matrix spec.
+* the number of end-users reachable on the open Matrix network.
+* the number of regular users on the Matrix network (e.g. 30-day retained
+  federated users)
+* the number of online servers in the open federation.
+* the number of developers building on Matrix.
+* the number of independent implementations which use Matrix
+* the quality and utility of the Matrix spec.
 
 The guiding principles of the overall project are being worked on as part of
 the upcoming governance proposal, but could be something like:
 
- * Supporting the whole long-term ecosystem rather than individual stakeholder gain
- * Openness rather than proprietariness
- * Collaboration rather than competition
- * Accessibility rather than elitism
- * Transparency rather than stealth
- * Empathy rather than contrariness
- * Pragmatism rather than perfection
- * Proof rather than conjecture
+* Supporting the whole long-term ecosystem rather than individual stakeholder gain
+* Openness rather than proprietariness
+* Collaboration rather than competition
+* Accessibility rather than elitism
+* Transparency rather than stealth
+* Empathy rather than contrariness
+* Pragmatism rather than perfection
+* Proof rather than conjecture
 
 The above directions are intended to be simple and pragmatic rather than
 exhaustive, and aim to provide guidelines until we have a formal spec
