@@ -21,44 +21,15 @@ Matrix-doc workflows
 Specification changes
 ~~~~~~~~~~~~~~~~~~~~~
 
-The Matrix specification documents the APIs which Matrix clients can use. For
-this to be effective, the APIs need to be present and working correctly in a
-server before they can be documented in the specification. This process can
-take some time to complete.
+The Matrix specification documents the APIs which Matrix clients and servers use.
+For this to be effective, the APIs need to be present and working correctly in a
+server before they can be documented in the specification. This process can take
+some time to complete.
 
 For this reason, we have not found the github pull-request model effective for
-discussing changes to the specification. Instead, we have adopted the following
-workflow:
-
-1. Create a discussion document outlining the proposed change. The document
-   should include details such as the HTTP endpoint being changed (or the
-   suggested URL for a new endpoint), any new or changed parameters and response
-   fields, and generally as much detail about edge-cases and error handling as
-   is practical at this stage.
-
-   The Matrix Core Team's preferred tool for such discussion documents is
-   `Google Docs <https://docs.google.com>`_ thanks to its support for comment
-   threads. Works in progress are kept in the `Matrix Design drafts folder
-   <https://drive.google.com/drive/folders/0B4wHq8qP86r2ck15MHEwMmlNVUk>`_.
-
-2. Seek feedback on the proposal. `#matrix-dev:matrix.org
-   <http://matrix.to/#/#matrix-dev:matrix.org>`_ is a good place to reach the
-   core team and others who may be interested in your proposal.
-
-3. Implement the changes in servers and clients. Refer to the CONTRIBUTING files
-   of the relevant projects for details of how best to do this.
-
-   In general we will be unable to publish specification updates until the
-   reference server implements them, and they have been proven by a working
-   client implementation.
-
-4. Iterate steps 1-3 as necessary.
-
-5. Write the specification for the change, and create a `pull request`_ for
-   it. It may be that much of the text of the change can be taken directly from
-   the discussion document, though typically some effort will be needed to
-   change to the ReST syntax and to ensure that the text is as clear as
-   possible.
+discussing changes to the specification. Instead, we have adopted the workflow
+as described at https://matrix.org/docs/spec/proposals - *please read this for
+details on how to contribute spec changes*.
 
 
 Other changes
