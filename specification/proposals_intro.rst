@@ -45,9 +45,14 @@ The process for submitting a Matrix Spec Change (MSC) Proposal is as follows:
     trying to run matrix apps (clients & servers);
     #matrix-architecture:matrix.org is for cross-cutting discussion of
     Matrix's architectural design.
-  - Iterating on the proposal and gathering consensus can sometimes be
-    time-consuming; an impartial 'shepherd' can be assigned to help guide the
-    proposal through this process.
+  - The point of the spec proposal process is to be collaborative rather than
+    competitive, and to try to solve the problem in question with the optimal
+    set of trade-offs.  Ideally the author would neutrally gather the various
+    viewpoints and get consensus, but this can sometimes be time-consuming (or
+    the author may be biased), in which case an impartial 'shepherd' can be
+    assigned to help guide the proposal through this process.  A shepherd is
+    typically a neutral party from the core team or an experienced member of
+    the community.
   
 - Once the proposal has sufficient consensus and passed review, you **must**
   show an implementation to prove that it works well in practice, before a
@@ -68,6 +73,36 @@ rather than benefiting or privileging any single player or subset of players
 - and must not contain any patent encumbered IP.  The Matrix core team pledges
 to act as a neutral custodian for Matrix on behalf of the whole ecosystem,
 just as it has since Matrix's inception in May 2014.
+
+For clarity: the Matrix ecosystem is anyone who uses the Matrix protocol. That
+includes client users, server admins, client developers, bot developers,
+bridge and AS developers, users and admins who are indirectly using Matrix via
+3rd party networks which happen to be bridged, server developers, room
+moderators and admins, companies/projects building products or services on
+Matrix, spec contributors, translators, and the core team who created it in
+the first place.
+
+"Greater benefit" could include maximising:
+
+ * the number of end-users reachable on the open Matrix network.
+ * the number of regular users on the Matrix network (e.g. 30-day retained
+   federated users)
+ * the number of online servers in the open federation.
+ * the number of developers building on Matrix.
+ * the number of independent implementations which use Matrix
+ * the quality and utility of the Matrix spec.
+
+The guiding principles of the overall project are being worked on as part of
+the upcoming governance proposal, but could be something like:
+
+ * Supporting the whole long-term ecosystem rather than individual stakeholder gain
+ * Openness rather than proprietariness
+ * Collaboration rather than competition
+ * Accessibility rather than elitism
+ * Transparency rather than stealth
+ * Empathy rather than contrariness
+ * Pragmatism rather than perfection
+ * Proof rather than conjecture
 
 The above directions are intended to be simple and pragmatic rather than
 exhaustive, and aim to provide guidelines until we have a formal spec
