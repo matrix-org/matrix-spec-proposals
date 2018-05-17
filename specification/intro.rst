@@ -96,6 +96,13 @@ instant messages, VoIP call setups, or any other objects that need to be
 reliably and persistently pushed from A to B in an interoperable and federated
 manner.
 
+
+Spec Change Proposals
+~~~~~~~~~~~~~~~~~~~~~
+To propose a change to the Matrix Spec, see the explanations at `Proposals
+for Spec Changes to Matrix <proposals>`_.
+
+
 Architecture
 ------------
 
