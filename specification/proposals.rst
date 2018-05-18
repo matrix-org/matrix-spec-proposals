@@ -13,7 +13,7 @@ proposal-wip
      - Proposal Title
      - Creation Date
      - Update Date
-     - Documenation
+     - Documentation
      - Author
      - Shepherd
      - PRs
@@ -200,7 +200,7 @@ proposal-ready-for-review
      - Proposal Title
      - Creation Date
      - Update Date
-     - Documenation
+     - Documentation
      - Author
      - Shepherd
      - PRs
@@ -235,7 +235,7 @@ proposal-in-review
      - Proposal Title
      - Creation Date
      - Update Date
-     - Documenation
+     - Documentation
      - Author
      - Shepherd
      - PRs
@@ -270,7 +270,7 @@ proposal-passed-review
      - Proposal Title
      - Creation Date
      - Update Date
-     - Documenation
+     - Documentation
      - Author
      - Shepherd
      - PRs
@@ -288,22 +288,6 @@ proposal-passed-review
      - 2018-05-15
      - `1229-1 <https://docs.google.com/document/d/16ofbjluy8ZKYL6nt7WLHG4GqSodJUWLUxHhI6xPEjr4/edit>`_
      - `@ara4n`_
-     - None
-     - 
-   * - `MSC1233 <https://github.com/matrix-org/matrix-doc/issues/1233>`_
-     - A proposal for organising spec proposals
-     - 2018-05-10
-     - 2018-05-15
-     - `1233-1 <https://docs.google.com/document/d/1wLln7da12l0H5YgAh5xM2TVE7VsTjXzhEwVh3sRBMCk/edit#>`_
-     - `@ara4n`_
-     - None
-     - `PR#1240`_
-   * - `MSC1234 <https://github.com/matrix-org/matrix-doc/issues/1234>`_
-     - Rich Replies format
-     - 2018-05-12
-     - 2018-05-17
-     - `1234-1 <https://docs.google.com/document/d/1BPd4lBrooZrWe_3s_lHw_e-Dydvc7bXbm02_sV2k6Sc>`_
-     - `@t3chguy`_
      - None
      - 
    * - `MSC1236 <https://github.com/matrix-org/matrix-doc/issues/1236>`_
@@ -329,18 +313,10 @@ spec-pr-missing
      - Proposal Title
      - Creation Date
      - Update Date
-     - Documenation
+     - Documentation
      - Author
      - Shepherd
      - PRs
-   * - `MSC1197 <https://github.com/matrix-org/matrix-doc/issues/1197>`_
-     - Ignoring Users
-     - 2016-05-03
-     - 2018-05-15
-     - `1197-1 <https://docs.google.com/document/d/1Jex7lDAwmv0KcgyL9oeGfUCsjw0CWSqedPKZ1ViSVis/edit>`_
-     - `@erikjohnston`_
-     - None
-     - 
    * - `MSC1201 <https://github.com/matrix-org/matrix-doc/issues/1201>`_
      - Device Management API
      - 2016-07-14
@@ -456,7 +432,7 @@ spec-pr-missing
    * - `MSC1234 <https://github.com/matrix-org/matrix-doc/issues/1234>`_
      - Rich Replies format
      - 2018-05-12
-     - 2018-05-17
+     - 2018-05-18
      - `1234-1 <https://docs.google.com/document/d/1BPd4lBrooZrWe_3s_lHw_e-Dydvc7bXbm02_sV2k6Sc>`_
      - `@t3chguy`_
      - None
@@ -476,7 +452,7 @@ merged
      - Proposal Title
      - Creation Date
      - Update Date
-     - Documenation
+     - Documentation
      - Author
      - Shepherd
      - PRs
@@ -504,6 +480,14 @@ merged
      - `@richvdh`_
      - None
      - 
+   * - `MSC1233 <https://github.com/matrix-org/matrix-doc/issues/1233>`_
+     - A proposal for organising spec proposals
+     - 2018-05-10
+     - 2018-05-18
+     - `1233-1 <https://docs.google.com/document/d/1wLln7da12l0H5YgAh5xM2TVE7VsTjXzhEwVh3sRBMCk/edit#>`_
+     - `@ara4n`_
+     - None
+     - `PR#1240`_
 
 
 
@@ -519,7 +503,7 @@ abandoned
      - Proposal Title
      - Creation Date
      - Update Date
-     - Documenation
+     - Documentation
      - Author
      - Shepherd
      - PRs
@@ -549,8 +533,8 @@ abandoned
      - 
    * - `MSC1213 <https://github.com/matrix-org/matrix-doc/issues/1213>`_
      - Set defaults for m.federate
-     - 2018-05-10
-     - 2018-05-15
+     - 2017-04-10
+     - 2018-05-18
      - `1213-1 <https://docs.google.com/document/d/14zqsbwl5KKil-bB8w2HMhidBVmFkP9Q7EQKFwKIIfZc/edit#heading=h.eipip5qhqo0d>`_
      - `@psaavedra`_
      - None
@@ -570,7 +554,7 @@ obsolete
      - Proposal Title
      - Creation Date
      - Update Date
-     - Documenation
+     - Documentation
      - Author
      - Shepherd
      - PRs

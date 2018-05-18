@@ -6,7 +6,7 @@ Proposals for Spec Changes to Matrix
 
 The process for submitting a Matrix Spec Change (MSC) Proposal is as follows:
 
-- produce a publicly-accessible proposal describing your change:
+- Produce a publicly-accessible proposal describing your change:
 
   - Please use Google Docs, or an equivalent system capable of collaborative
     editing, with versioned history, suggestions ('track changes'), threaded
@@ -28,7 +28,7 @@ The process for submitting a Matrix Spec Change (MSC) Proposal is as follows:
     <https://docs.google.com/document/d/1CoLCPTcRFvD4PqjvbUl3ZIWgGLpmRNbqxsT2Tu7lCzI/>`_
     is available.
 
-- make a new issue at https://github.com/matrix-org/matrix-doc/issues (or
+- Make a new issue at https://github.com/matrix-org/matrix-doc/issues (or
   modify an existing one), whose description should list the metadata as per
   below.
 - Gather feedback as widely as possible from the community and core team on

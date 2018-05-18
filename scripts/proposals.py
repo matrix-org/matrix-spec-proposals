@@ -55,7 +55,7 @@ for label in labels:
     text_file.write("     - Proposal Title\n")
     text_file.write("     - Creation Date\n")
     text_file.write("     - Update Date\n")
-    text_file.write("     - Documenation\n")
+    text_file.write("     - Documentation\n")
     text_file.write("     - Author\n")
     text_file.write("     - Shepherd\n")
     text_file.write("     - PRs\n")
