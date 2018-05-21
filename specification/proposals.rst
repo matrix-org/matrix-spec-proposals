@@ -92,7 +92,7 @@ proposal-wip
    * - `MSC971 <https://github.com/matrix-org/matrix-doc/issues/971>`_
      - Add groups stuff to spec
      - 2017-08-10
-     - 2018-05-15
+     - 2018-05-20
      - `971-1 <https://docs.google.com/document/d/17RHQ4Fw_cltmF1ABvDp7P4q65Kk65vi6HAaNbXgjjJE/edit>`_, `971-2 <https://docs.google.com/document/d/1cTK2pKolWNXspL69knpDJkcQWZsHpsMDTc2X_dEB5XQ/edit>`_, `971-3 <https://docs.google.com/document/d/1F2i1q7Kk4DKMtSaUzwj8CoNkDDwNFu0Uc2xPzJ2Mx00/edit>`_
      - `@erikjohnston`_
      - None
