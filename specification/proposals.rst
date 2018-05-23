@@ -185,6 +185,14 @@ proposal-wip
      - `@neilisfragile`_
      - None
      - 
+   * - `MSC1256 <https://github.com/matrix-org/matrix-doc/issues/1256>`_
+     - Custom emoji and sticker packs in matrix
+     - 2018-05-23
+     - 2018-05-23
+     - `1256-1 <https://docs.google.com/document/d/1zHS14unA2Wb3DgTL5fiymlWKZo4WMJpmmJOgY_2g6pg/edit?usp=sharing>`_
+     - `@turt2live`_
+     - None
+     - 
 
 
 
