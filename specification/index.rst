@@ -27,8 +27,8 @@ Voice over IP (VoIP) signalling, Internet of Things (IoT) communication, and bri
 together existing communication silos - providing the basis of a new open real-time
 communication ecosystem.
 
-To propose a change to the Matrix Spec, see the explanations at `Proposals
-for Spec Changes to Matrix <proposals>`_.
+To propose a change to the Matrix Spec, see the explanations at
+`Proposals for Spec Changes to Matrix <proposals>`_.
 
 Matrix APIs
 -----------
