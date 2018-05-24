@@ -132,7 +132,7 @@ proposal-wip
    * - `MSC1221 <https://github.com/matrix-org/matrix-doc/issues/1221>`_
      - Improving Presence
      - 2017-12-26
-     - 2018-05-15
+     - 2018-05-24
      - `1221-1 <https://docs.google.com/document/d/1sKaM9J5oorEeReYwOBmcgED6XnX2PdCYcx0Pp0gFnqM/edit#heading=h.geptormxf2k8>`_
      - `@ara4n`_
      - None
@@ -185,14 +185,6 @@ proposal-wip
      - `@neilisfragile`_
      - None
      - 
-   * - `MSC1256 <https://github.com/matrix-org/matrix-doc/issues/1256>`_
-     - Custom emoji and sticker packs in matrix
-     - 2018-05-23
-     - 2018-05-23
-     - `1256-1 <https://docs.google.com/document/d/1zHS14unA2Wb3DgTL5fiymlWKZo4WMJpmmJOgY_2g6pg/edit?usp=sharing>`_
-     - `@turt2live`_
-     - None
-     - 
 
 
 
@@ -228,6 +220,14 @@ proposal-ready-for-review
      - `@Half-Shot`_
      - None
      - `PR#1189`_
+   * - `MSC1256 <https://github.com/matrix-org/matrix-doc/issues/1256>`_
+     - Custom emoji and sticker packs in matrix
+     - 2018-05-23
+     - 2018-05-24
+     - `1256-1 <https://docs.google.com/document/d/1zHS14unA2Wb3DgTL5fiymlWKZo4WMJpmmJOgY_2g6pg/edit?usp=sharing>`_
+     - `@turt2live`_
+     - None
+     - 
 
 
 
