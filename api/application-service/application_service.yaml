@@ -43,7 +43,7 @@ paths:
           x-example: "35"
         - in: body
           name: body
-          description: A list of events
+          description: A list of events.
           schema:
             type: object
             example: {

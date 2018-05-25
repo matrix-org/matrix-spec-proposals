@@ -83,33 +83,92 @@ regular expressions and look like:
 
    users:
      - exclusive: true
-       regex: @irc.freenode.net_.*
+       regex: "@irc.freenode.net_.*"
+       group_id: "+irc:matrix.org"
+
+Application Services may define the following namespaces (with none being explicitly required):
+
++------------------+-----------------------------------------------------------+
+| Name             | Description                                               |
++==================+===========================================================+
+| users            | Events which are sent from certain users.                 |
++------------------+-----------------------------------------------------------+
+| aliases          | Events which are sent in rooms with certain room aliases. |
++------------------+-----------------------------------------------------------+
+| rooms            | Events which are sent in rooms with certain room IDs.     |
++------------------+-----------------------------------------------------------+
+
+Each individual namespace MUST declare the following fields:
+
++------------------+-----------------------------------------------------------------------------------------------------------------------------------+
+| Name             | Description                                                                                                                       |
++==================+===================================================================================================================================+
+| exclusive        | **Required** A true or false value stating whether this Application Service has exclusive access to events within this namespace. |
++------------------+-----------------------------------------------------------------------------------------------------------------------------------+
+| regex            | **Required** A regular expression defining which values this namespace includes.                                                  |
++------------------+-----------------------------------------------------------------------------------------------------------------------------------+
+
+An optional ``group_id`` field may be added to the users namespace:
+
++------------------+-----------------------------------------------------------+
+| Name             | Description                                               |
++==================+===========================================================+
+| group_id         | All matching users will be considered part of this group. |
++------------------+-----------------------------------------------------------+
+
+.. WARNING::
+
+  Users that are matched by ``group_id`` should not be publically listed by
+  Homeservers. The intention is to differentiate users, perhaps with a flair,
+  rather than having a list of people to spam.
 
 
 The registration is represented by a series of key-value pairs, which this
-specification will present as YAML. An example HS configuration required to pass
-traffic to the AS is:
+specification will present as YAML. See below for the possible options along
+with their explanation:
+
++------------------+----------------------------------------------------------------------------------------------------------+
+| Name             | Description                                                                                              |
++==================+==========================================================================================================+
+| id               | **Required.** A unique, user-defined ID of the Application Service which will never change.              |
++------------------+----------------------------------------------------------------------------------------------------------+
+| url              | **Required.** The base URL for the Application Service.                                                  |
++------------------+----------------------------------------------------------------------------------------------------------+
+| as_token         | **Required.** A unique token for Application Services to use to authenticate requests to Homeservers.    |
++------------------+----------------------------------------------------------------------------------------------------------+
+| hs_token         | **Required.** A unique token for Homeservers to use to authenticate requests to Application Services.    |
++------------------+----------------------------------------------------------------------------------------------------------+
+| sender_localpart | **Required.** The localpart of the user associated with the Application Service.                         |
++------------------+----------------------------------------------------------------------------------------------------------+
+| namespaces       | **Required.** A list of "users", "aliases" and "rooms" namespaces that the Application Service controls. |
++------------------+----------------------------------------------------------------------------------------------------------+
+| rate_limited     | Whether requests from masqueraded users are rate-limited. The sender is excluded.                        |
++------------------+----------------------------------------------------------------------------------------------------------+
+| protocols        | The external protocols which the Application Service provides (e.g. IRC).                                |
++------------------+----------------------------------------------------------------------------------------------------------+
+
+An example registration file for an IRC-bridging Application Service is below:
 
 .. code-block:: yaml
 
-    id: <user-defined unique ID of AS which will never change>
-    url: <base url of AS>
-    as_token: <token AS will add to requests to HS>
-    hs_token: <token HS will add to requests to AS>
-    sender_localpart: <localpart of AS user>
+    id: "IRC Bridge"
+    url: "http://127.0.0.1:1234"
+    as_token: "30c05ae90a248a4188e620216fa72e349803310ec83e2a77b34fe90be6081f46"
+    hs_token: "312df522183efd404ec1cd22d2ffa4bbc76a8c1ccf541dd692eef281356bb74e"
+    sender_localpart: "_irc_bot" # Will result in @_irc_bot:domain.com
     namespaces:
-      users:  # Namespaces of users which should be delegated to the AS
-        - exclusive: <bool>
-          regex: <regex>
-        - ...
-      aliases: []  # Namespaces of room aliases which should be delegated to the AS
-      rooms: [] # Namespaces of room ids which should be delegated to the AS
+      users:
+        - exclusive: true
+          regex: "@irc_bridge_.*"
+      aliases:
+        - exclusive: false 
+          regex: "#irc_bridge_.*"
+      rooms: []
 
 .. WARNING::
   If the homeserver in question has multiple application services, each
   ``as_token`` and ``id`` MUST be unique per application service as these are
   used to identify the application service. The homeserver MUST enforce this.
-
 
 Homeserver -> Application Service API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
