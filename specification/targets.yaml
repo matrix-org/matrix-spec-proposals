@@ -67,6 +67,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/dm.rst
     - modules/ignore_users.rst
     - modules/stickers.rst
+    - modules/report_content.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`", "@", ":"]
