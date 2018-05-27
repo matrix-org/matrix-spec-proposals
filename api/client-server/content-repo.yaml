@@ -95,6 +95,15 @@ paths:
           required: true
           description: |
             The media ID from the ``mxc://`` URI (the path component)
+        - in: query
+          type: boolean
+          name: allow_remote
+          x-example: false
+          required: false
+          description: |
+            Indicates to the server that it should not attempt to fetch the media if it is deemed
+            remote. This is to prevent routing loops where the server contacts itself. Defaults to 
+            true if not provided.
       responses:
         200:
           description: "The content that was previously uploaded."
@@ -140,6 +149,15 @@ paths:
           required: true
           description: |
             The filename to give in the Content-Disposition
+        - in: query
+          type: boolean
+          name: allow_remote
+          x-example: false
+          required: false
+          description: |
+            Indicates to the server that it should not attempt to fetch the media if it is deemed
+            remote. This is to prevent routing loops where the server contacts itself. Defaults to 
+            true if not provided.
       responses:
         200:
           description: "The content that was previously uploaded."
@@ -198,6 +216,15 @@ paths:
           name: method
           x-example: "scale"
           description: The desired resizing method.
+        - in: query
+          type: boolean
+          name: allow_remote
+          x-example: false
+          required: false
+          description: |
+            Indicates to the server that it should not attempt to fetch the media if it is deemed
+            remote. This is to prevent routing loops where the server contacts itself. Defaults to 
+            true if not provided.
       responses:
         200:
           description: "A thumbnail of the requested content."
