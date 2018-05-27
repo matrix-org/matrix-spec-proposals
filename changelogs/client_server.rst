@@ -48,6 +48,8 @@ Unreleased changes
     (`#1142 <https://github.com/matrix-org/matrix-doc/pull/1142>`_).
   - Add the ``/register/available`` endpoint for username availability
     (`#1151 <https://github.com/matrix-org/matrix-doc/pull/1151>`_).
+  - Add ``allow_remote`` to the content repo to avoid routing loops
+    (`#1265 <https://github.com/matrix-org/matrix-doc/pull/1265>`_).
 
 r0.3.0
 ======
