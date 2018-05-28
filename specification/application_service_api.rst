@@ -83,10 +83,10 @@ regular expressions and look like:
 
    users:
      - exclusive: true
-       regex: "@irc.freenode.net_.*"
+       regex: "@_irc.freenode.net_.*"
        group_id: "+irc:matrix.org"
 
-Application Services may define the following namespaces (with none being explicitly required):
+Application services may define the following namespaces (with none being explicitly required):
 
 +------------------+-----------------------------------------------------------+
 | Name             | Description                                               |
@@ -103,22 +103,24 @@ Each individual namespace MUST declare the following fields:
 +------------------+-----------------------------------------------------------------------------------------------------------------------------------+
 | Name             | Description                                                                                                                       |
 +==================+===================================================================================================================================+
-| exclusive        | **Required** A true or false value stating whether this Application Service has exclusive access to events within this namespace. |
+| exclusive        | **Required** A true or false value stating whether this application service has exclusive access to events within this namespace. |
 +------------------+-----------------------------------------------------------------------------------------------------------------------------------+
 | regex            | **Required** A regular expression defining which values this namespace includes.                                                  |
 +------------------+-----------------------------------------------------------------------------------------------------------------------------------+
 
-An optional ``group_id`` field may be added to the users namespace:
+An application service's users and regex field MUST begin with an underscore (``_``), in
+order to provide a visually clear distinction between AS users and regular
+users. An optional ``group_id`` field may be added to the ``users`` namespace:
 
-+------------------+-----------------------------------------------------------+
-| Name             | Description                                               |
-+==================+===========================================================+
-| group_id         | All matching users will be considered part of this group. |
-+------------------+-----------------------------------------------------------+
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Name             | Description                                                                                                                                                                                                                                                                |
++==================+============================================================================================================================================================================================================================================================================+
+| group_id         | An existing group that all matching user IDs will be considered a part of. Users who are joined to this group through an application service are not to be listed when querying for the group's members, however the group should be listed when querying a user's groups. |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 .. WARNING::
 
-  Users that are matched by ``group_id`` should not be publically listed by
+  Users that are matched by ``group_id`` should not be publicly listed by
   Homeservers. The intention is to differentiate users, perhaps with a flair,
   rather than having a list of people to spam.
 
@@ -127,27 +129,27 @@ The registration is represented by a series of key-value pairs, which this
 specification will present as YAML. See below for the possible options along
 with their explanation:
 
-+------------------+----------------------------------------------------------------------------------------------------------+
-| Name             | Description                                                                                              |
-+==================+==========================================================================================================+
-| id               | **Required.** A unique, user-defined ID of the Application Service which will never change.              |
-+------------------+----------------------------------------------------------------------------------------------------------+
-| url              | **Required.** The base URL for the Application Service.                                                  |
-+------------------+----------------------------------------------------------------------------------------------------------+
-| as_token         | **Required.** A unique token for Application Services to use to authenticate requests to Homeservers.    |
-+------------------+----------------------------------------------------------------------------------------------------------+
-| hs_token         | **Required.** A unique token for Homeservers to use to authenticate requests to Application Services.    |
-+------------------+----------------------------------------------------------------------------------------------------------+
-| sender_localpart | **Required.** The localpart of the user associated with the Application Service.                         |
-+------------------+----------------------------------------------------------------------------------------------------------+
-| namespaces       | **Required.** A list of "users", "aliases" and "rooms" namespaces that the Application Service controls. |
-+------------------+----------------------------------------------------------------------------------------------------------+
-| rate_limited     | Whether requests from masqueraded users are rate-limited. The sender is excluded.                        |
-+------------------+----------------------------------------------------------------------------------------------------------+
-| protocols        | The external protocols which the Application Service provides (e.g. IRC).                                |
-+------------------+----------------------------------------------------------------------------------------------------------+
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| Name             | Description                                                                                                                                        |
++==================+====================================================================================================================================================+
+| id               | **Required.** A unique, user-defined ID of the application service which will never change.                                                        |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| url              | **Required.** The URL for the application service. May include a path after the domain name. Optionally set to ``null`` if no traffic is required. |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| as_token         | **Required.** A unique token for application services to use to authenticate requests to Homeservers.                                              |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| hs_token         | **Required.** A unique token for Homeservers to use to authenticate requests to application services.                                              |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| sender_localpart | **Required.** The localpart of the user associated with the application service.                                                                   |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| namespaces       | **Required.** A list of ``users``, ``aliases`` and ``rooms`` namespaces that the application service controls.                                     |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| rate_limited     | Whether requests from masqueraded users are rate-limited. The sender is excluded.                                                                  |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| protocols        | The external protocols which the application service provides (e.g. IRC).                                                                          |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 
-An example registration file for an IRC-bridging Application Service is below:
+An example registration file for an IRC-bridging application service is below:
 
 .. code-block:: yaml
 
@@ -159,10 +161,10 @@ An example registration file for an IRC-bridging Application Service is below:
     namespaces:
       users:
         - exclusive: true
-          regex: "@irc_bridge_.*"
+          regex: "@_irc_bridge_.*"
       aliases:
         - exclusive: false 
-          regex: "#irc_bridge_.*"
+          regex: "#_irc_bridge_.*"
       rooms: []
 
 .. WARNING::
