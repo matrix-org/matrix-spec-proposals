@@ -11,7 +11,7 @@ authors = set()
 prs = set()
 
 def getpage(url, page):
-    resp = requests.get(url + str(page))
+    resp = requests.get(url + str(page), auth=('benparsons', '99fbc9df2d75a18b5ac7f24e326e4de548b06172'))
 
     for link in resp.links.values():
         if link['rel'] == 'last':
@@ -100,7 +100,7 @@ for label in labels:
         text_file.write("     - " + updated.strftime('%Y-%m-%d') + "\n")
 
         # list of document links (urls comma-separated)
-        maindoc = re.search('^Documentation: (.+?)\n', str(item['body']))
+        maindoc = re.search('^Documentation: (.+?)$', str(item['body']), flags=re.MULTILINE)
         if maindoc is not None:
             maindoc = maindoc.group(1)
             doc_list_formatted = ["`" + str(item['number']) + "-" + str(i) + " <" + x.strip() + ">`_" for i, x in enumerate(maindoc.split(','),1)]

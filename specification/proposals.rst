@@ -140,7 +140,7 @@ proposal-wip
    * - `MSC1222 <https://github.com/matrix-org/matrix-doc/issues/1222>`_
      - Pushing updates about Groups (Communities) to clients
      - 2018-01-02
-     - 2018-05-15
+     - 2018-05-24
      - `1222-1 <https://drive.google.com/open?id=1GzwhGdnWWMENYOaXMFP8CD-M9ny1vznxHnNqT3I3NZI>`_
      - `@ara4n`_
      - None
@@ -156,7 +156,7 @@ proposal-wip
    * - `MSC1227 <https://github.com/matrix-org/matrix-doc/issues/1227>`_
      - Proposal for lazy-loading room members to improve initial sync speed and client RAM usage
      - 2018-03-05
-     - 2018-05-15
+     - 2018-05-28
      - `1227-1 <https://docs.google.com/document/d/11yn-mAkYll10RJpN0mkYEVqraTbU3U4eQx9MNrzqX1U/edit>`_
      - `@ara4n`_
      - None
@@ -183,6 +183,14 @@ proposal-wip
      - 2018-05-15
      - `1231-1 <https://docs.google.com/document/d/1-Q_Z9dD3VTfsNYtK_WTzyTQR4HQWsntt-_DwgoW02ZU/edit#heading=h.cvd8uae3gmto>`_
      - `@neilisfragile`_
+     - None
+     - 
+   * - `MSC1267 <https://github.com/matrix-org/matrix-doc/issues/1267>`_
+     - Interactive Key Verification
+     - 2018-05-28
+     - 2018-05-28
+     - `1267-1 <https://docs.google.com/document/d/1SXmyjyNqClJ5bTHtwvp8tT1Db4pjlGVxfPQNdlQILqU/edit#>`_
+     - `@uhoreg`_
      - None
      - 
 
