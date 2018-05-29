@@ -11,7 +11,7 @@ authors = set()
 prs = set()
 
 def getpage(url, page):
-    resp = requests.get(url + str(page), auth=('benparsons', '99fbc9df2d75a18b5ac7f24e326e4de548b06172'))
+    resp = requests.get(url + str(page))
 
     for link in resp.links.values():
         if link['rel'] == 'last':
