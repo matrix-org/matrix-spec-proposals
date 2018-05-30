@@ -39,7 +39,7 @@ Sticker events are received as a single ``m.sticker`` event in the
 Integration manager referral URL
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-In order to aid `widget` or `asset` sharing and discovery, sticker events can
+In order to aid widget or asset sharing and discovery, sticker events can
 specify an ``integration_manager_url`` property under ``StickerpackInfo``.
 
 This URL is intended to link the user to an appropriate page within the relevant
