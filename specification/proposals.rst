@@ -68,7 +68,7 @@ proposal-wip
    * - `MSC1207 <https://github.com/matrix-org/matrix-doc/issues/1207>`_
      - Publishing Room Lists for 3rd party networks
      - 2016-10-21
-     - 2018-05-15
+     - 2018-05-31
      - `1207-1 <https://docs.google.com/document/d/12mVuOT7Qoa49L_PQAPjavoK9c2nalYEFOHxJOmH5j-w/edit>`_
      - `@erikjohnston`_
      - None
@@ -212,14 +212,6 @@ proposal-ready-for-review
      - Author
      - Shepherd
      - PRs
-   * - `MSC1183 <https://github.com/matrix-org/matrix-doc/issues/1183>`_
-     - Document key-share requests
-     - 2018-04-30
-     - 2018-05-15
-     - `1183-1 <https://docs.google.com/document/d/1m4gQkcnJkxNuBmb5NoFCIadIY-DyqqNAS3lloE73BlQ>`_
-     - `@richvdh`_
-     - None
-     - 
    * - `MSC1232 <https://github.com/matrix-org/matrix-doc/issues/1232>`_
      - Media limits API
      - 2018-05-04
@@ -234,6 +226,14 @@ proposal-ready-for-review
      - 2018-05-24
      - `1256-1 <https://docs.google.com/document/d/1zHS14unA2Wb3DgTL5fiymlWKZo4WMJpmmJOgY_2g6pg/edit?usp=sharing>`_
      - `@turt2live`_
+     - None
+     - 
+   * - `MSC1270 <https://github.com/matrix-org/matrix-doc/issues/1270>`_
+     - Synapse /_matrix/media/v1/resolve_url to API download and preview urls in the clients despite on CORS
+     - 2018-05-31
+     - 2018-05-31
+     - `1270-1 <https://docs.google.com/document/d/1bbX1yxNETmMa-AxBGjIpb4lNoTuc3vjGXmbZWrNBlzM/edit?usp=sharing>`_
+     - `@oivoodoo`_
      - None
      - 
 
@@ -333,6 +333,14 @@ spec-pr-missing
      - Author
      - Shepherd
      - PRs
+   * - `MSC1200 <https://github.com/matrix-org/matrix-doc/issues/1200>`_
+     - Configuration of E2E encryption in a room
+     - 2016-06-16
+     - 2018-05-31
+     - `1200-1 <https://docs.google.com/document/d/1SEPMhNh6ztcrrbkGRSayVQ23bd3cfMPkTgGL4kBS9Ps/edit#heading=h.e7hfigo2zcsj>`_
+     - `@richvdh`_
+     - None
+     - 
    * - `MSC1201 <https://github.com/matrix-org/matrix-doc/issues/1201>`_
      - Device Management API
      - 2016-07-14
@@ -429,14 +437,22 @@ spec-pr-missing
      - `@lukebarnard1`_
      - None
      - 
-   * - `MSC1216 <https://github.com/matrix-org/matrix-doc/issues/1216>`_
-     - @room notification proposal
+   * - `MSC1033 <https://github.com/matrix-org/matrix-doc/issues/1033>`_
+     - Doc @room notifications
      - 2017-10-23
-     - 2018-05-15
-     - `1216-1 <https://docs.google.com/document/d/1qRdlg94cr9YXxPCwhW4HgI2oDrqQOUKX5HptZFBGf6o/edit>`_
+     - 2018-05-31
+     - 
      - `@dbkr`_
      - None
-     - `PR#1176`_
+     - 
+   * - `MSC1183 <https://github.com/matrix-org/matrix-doc/issues/1183>`_
+     - Document key-share requests
+     - 2018-04-30
+     - 2018-05-31
+     - `1183-1 <https://docs.google.com/document/d/1m4gQkcnJkxNuBmb5NoFCIadIY-DyqqNAS3lloE73BlQ>`_
+     - `@richvdh`_
+     - None
+     - 
    * - `MSC1230 <https://github.com/matrix-org/matrix-doc/issues/1230>`_
      - Temporary mitigation for depth parameter abuse
      - 2018-05-01
@@ -472,6 +488,14 @@ merged
      - Author
      - Shepherd
      - PRs
+   * - `MSC1197 <https://github.com/matrix-org/matrix-doc/issues/1197>`_
+     - Ignoring Users
+     - 2016-05-03
+     - 2018-05-18
+     - `1197-1 <https://docs.google.com/document/d/1Jex7lDAwmv0KcgyL9oeGfUCsjw0CWSqedPKZ1ViSVis/edit>`_
+     - `@erikjohnston`_
+     - None
+     - `PR#1142`_
    * - `MSC1199 <https://github.com/matrix-org/matrix-doc/issues/1199>`_
      - Notifications API
      - 2016-05-23
@@ -480,20 +504,20 @@ merged
      - `@dbkr`_
      - None
      - 
-   * - `MSC1200 <https://github.com/matrix-org/matrix-doc/issues/1200>`_
-     - Configuration of E2E encryption in a room
-     - 2016-06-16
-     - 2018-05-15
-     - `1200-1 <https://docs.google.com/document/d/1SEPMhNh6ztcrrbkGRSayVQ23bd3cfMPkTgGL4kBS9Ps/edit#heading=h.e7hfigo2zcsj>`_
-     - `@richvdh`_
-     - None
-     - 
    * - `MSC1204 <https://github.com/matrix-org/matrix-doc/issues/1204>`_
      - Access Token Semantics (refresh and macaroons) - aka Auth Sept 2016 Edition
      - 2016-09-29
      - 2018-05-15
      - `1204-1 <https://docs.google.com/document/d/1mdis1LQcoOSVRElszEmrAWZGIX0jX_croSha-X5oe_w/edit#heading=h.3zmkga77kwe3>`_
      - `@richvdh`_
+     - None
+     - 
+   * - `MSC953 <https://github.com/matrix-org/matrix-doc/issues/953>`_
+     - Add /user_directory/search API
+     - 2017-05-31
+     - 2018-05-10
+     - `953-1 <https://docs.google.com/document/d/1Xc9lAM-FiIC66Z5pnaI4D5zqAqcFcZ5uHr3bYT-DWVk/edit>`_
+     - `@erikjohnston`_
      - None
      - 
    * - `MSC1233 <https://github.com/matrix-org/matrix-doc/issues/1233>`_
@@ -574,6 +598,22 @@ obsolete
      - Author
      - Shepherd
      - PRs
+   * - `MSC1223 <https://github.com/matrix-org/matrix-doc/issues/1223>`_
+     - Replies event format
+     - 2018-02-01
+     - 2018-05-15
+     - `1223-1 <https://docs.google.com/document/d/1KLdKtuZBbFoWDSfN4KM3p7LnIvFBQfSORICBo8zRHaE/edit>`_
+     - `@t3chguy`_
+     - None
+     - 
+   * - `MSC1224 <https://github.com/matrix-org/matrix-doc/issues/1224>`_
+     - Replies - next steps
+     - 2018-02-03
+     - 2018-05-15
+     - `1224-1 <https://docs.google.com/document/d/1FZsvodn2C0iKJDtn-8y8IPwOa96ixoJejK3gMLVOXHM/edit>`_
+     - `@t3chguy`_
+     - None
+     - 
    * - `MSC1235 <https://github.com/matrix-org/matrix-doc/issues/1235>`_
      - Proposal for Calendar Events
      - 2018-02-06
@@ -582,34 +622,43 @@ obsolete
      - `@Half-Shot`_
      - None
      - 
+   * - `MSC1220 <https://github.com/matrix-org/matrix-doc/issues/1220>`_
+     - Rich quoting proposal
+     - 2018-05-10
+     - 2018-05-15
+     - `1220-1 <https://docs.google.com/document/d/146zJr4h6odczMeGUH99dxDZk0i_iVtDiVMy510G25jI/edit>`_
+     - `@t3chguy`_
+     - None
+     - 
 
 
 
 
 
+.. _@rxl881: https://github.com/rxl881
+.. _@psaavedra: https://github.com/psaavedra
+.. _@erikjohnston: https://github.com/erikjohnston
 .. _@t3chguy: https://github.com/t3chguy
+.. _@Kegsay: https://github.com/Kegsay
 .. _@KitsuneRal: https://github.com/KitsuneRal
-.. _@pik: https://github.com/pik
 .. _@leonerd: https://github.com/leonerd
 .. _@turt2live: https://github.com/turt2live
-.. _@erikjohnston: https://github.com/erikjohnston
-.. _@neilisfragile: https://github.com/neilisfragile
-.. _@psaavedra: https://github.com/psaavedra
-.. _@richvdh: https://github.com/richvdh
-.. _@NegativeMjark: https://github.com/NegativeMjark
 .. _@ara4n: https://github.com/ara4n
-.. _@lukebarnard1: https://github.com/lukebarnard1
-.. _@lampholder: https://github.com/lampholder
-.. _@dbkr: https://github.com/dbkr
 .. _@maxidor: https://github.com/maxidor
-.. _others: https://github.com/thers
-.. _@rxl881: https://github.com/rxl881
 .. _@uhoreg: https://github.com/uhoreg
-.. _@Kegsay: https://github.com/Kegsay
+.. _@pik: https://github.com/pik
+.. _@neilisfragile: https://github.com/neilisfragile
+.. _@lukebarnard1: https://github.com/lukebarnard1
+.. _others: https://github.com/thers
 .. _@Half-Shot: https://github.com/Half-Shot
 .. _@aviraldg: https://github.com/aviraldg
+.. _@oivoodoo: https://github.com/oivoodoo
+.. _@richvdh: https://github.com/richvdh
+.. _@NegativeMjark: https://github.com/NegativeMjark
+.. _@lampholder: https://github.com/lampholder
+.. _@dbkr: https://github.com/dbkr
 .. _PR#310: https://github.com/matrix-org/matrix-doc/pull/310
+.. _PR#1142: https://github.com/matrix-org/matrix-doc/pull/1142
 .. _PR#1240: https://github.com/matrix-org/matrix-doc/pull/1240
 .. _PR#1189: https://github.com/matrix-org/matrix-doc/pull/1189
 .. _PR#919: https://github.com/matrix-org/matrix-doc/pull/919
-.. _PR#1176: https://github.com/matrix-org/matrix-doc/pull/1176
