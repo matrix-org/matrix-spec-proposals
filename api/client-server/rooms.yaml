@@ -107,7 +107,8 @@ paths:
             application/json: {
               "name": "Example room name"}
           schema:
-            type: object
+            allOf:
+              - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
         404:
           description: The room has no state with the given type or key.
         403:
@@ -149,7 +150,8 @@ paths:
             application/json: {
               "name": "Example room name"}
           schema:
-            type: object
+            allOf:
+              - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
         404:
           description: The room has no state with the given type or key.
         403:
