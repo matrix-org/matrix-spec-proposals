@@ -229,9 +229,9 @@ proposal-ready-for-review
      - None
      - 
    * - `MSC1270 <https://github.com/matrix-org/matrix-doc/issues/1270>`_
-     - Synapse /_matrix/media/v1/resolve_url to API download and preview urls in the clients despite on CORS
+     - Add /_matrix/media/v1/resolve_url to Client-Server API: download and preview urls in the clients despite CORS
      - 2018-05-31
-     - 2018-05-31
+     - 2018-06-04
      - `1270-1 <https://docs.google.com/document/d/1bbX1yxNETmMa-AxBGjIpb4lNoTuc3vjGXmbZWrNBlzM/edit?usp=sharing>`_
      - `@oivoodoo`_
      - None
@@ -376,7 +376,7 @@ spec-pr-missing
    * - `MSC739 <https://github.com/matrix-org/matrix-doc/issues/739>`_
      - Reporting inappropriate content in Matrix
      - 2016-11-21
-     - 2018-05-15
+     - 2018-05-31
      - `739-1 <https://docs.google.com/document/d/15cUuF0VyBMtNIcyFqXvEmXsMURLgXzMOIW33qHoi89A/edit>`_
      - `@ara4n`_
      - None

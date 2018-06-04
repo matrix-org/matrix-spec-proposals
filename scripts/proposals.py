@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 # proposals.py: generate an RST file (proposals.rst) from queries to github.com/matrix.org/matrix-doc/issues.
 # v0.0.1
 
