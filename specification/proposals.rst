@@ -49,6 +49,14 @@ proposal-wip
      - `@leonerd`_
      - None
      - 
+   * - `MSC1148 <https://github.com/matrix-org/matrix-doc/issues/1148>`_
+     - Support for websockets
+     - 2015-11-16
+     - 2018-06-04
+     - `1148-1 <https://github.com/matrix-org/matrix-doc/blob/master/drafts/websockets.rst>`_, `1148-2 <https://docs.google.com/document/d/104ClehFBgqLQbf4s-AKX2ijr8sOAxcizfcRs_atsB0g/edit>`_
+     - `@richvdh`_, `@krombel`_
+     - None
+     - 
    * - `MSC1238 <https://github.com/matrix-org/matrix-doc/issues/1238>`_
      - Push to Talk
      - 2016-04-13
@@ -193,6 +201,14 @@ proposal-wip
      - `@uhoreg`_
      - None
      - 
+   * - `MSC1280 <https://github.com/matrix-org/matrix-doc/issues/1280>`_
+     - Mechanisms for communicating erasure requests to bots and federated homeservers
+     - 2018-06-05
+     - 2018-06-05
+     - `1280-1 <https://docs.google.com/document/d/17ssplT4pX80ebmyaFIYcXtINV88lBT83ddW9ZhjsDnI>`_
+     - `@richvdh`_
+     - None
+     - 
 
 
 
@@ -215,7 +231,7 @@ proposal-ready-for-review
    * - `MSC1232 <https://github.com/matrix-org/matrix-doc/issues/1232>`_
      - Media limits API
      - 2018-05-04
-     - 2018-05-15
+     - 2018-06-05
      - `1232-1 <https://docs.google.com/document/d/1fI4ZqQcyAyBEPMtS1MCZWpN84kEPdm9SDw6SVZsJvYY/edit>`_
      - `@Half-Shot`_
      - None
@@ -231,7 +247,7 @@ proposal-ready-for-review
    * - `MSC1270 <https://github.com/matrix-org/matrix-doc/issues/1270>`_
      - Add /_matrix/media/v1/resolve_url to Client-Server API: download and preview urls in the clients despite CORS
      - 2018-05-31
-     - 2018-06-04
+     - 2018-06-05
      - `1270-1 <https://docs.google.com/document/d/1bbX1yxNETmMa-AxBGjIpb4lNoTuc3vjGXmbZWrNBlzM/edit?usp=sharing>`_
      - `@oivoodoo`_
      - None
@@ -636,14 +652,15 @@ obsolete
 
 
 .. _@rxl881: https://github.com/rxl881
-.. _@psaavedra: https://github.com/psaavedra
+.. _@turt2live: https://github.com/turt2live
 .. _@erikjohnston: https://github.com/erikjohnston
 .. _@t3chguy: https://github.com/t3chguy
 .. _@Kegsay: https://github.com/Kegsay
 .. _@KitsuneRal: https://github.com/KitsuneRal
 .. _@leonerd: https://github.com/leonerd
-.. _@turt2live: https://github.com/turt2live
+.. _@psaavedra: https://github.com/psaavedra
 .. _@ara4n: https://github.com/ara4n
+.. _@krombel: https://github.com/krombel
 .. _@maxidor: https://github.com/maxidor
 .. _@uhoreg: https://github.com/uhoreg
 .. _@pik: https://github.com/pik
