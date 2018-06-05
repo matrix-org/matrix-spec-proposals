@@ -53,16 +53,16 @@ paths:
                     "keys": [
                       "content.body"
                     ],
-                    "search_term": "martians and men"
-                  }
-                },
-                "order_by": "recent",
-                "groupings": {
-                  "group_by": [
-                    {
-                      "key": "room_id"
+                    "search_term": "martians and men",
+                    "order_by": "recent",
+                    "groupings": {
+                      "group_by": [
+                        {
+                          "key": "room_id"
+                        }
+                      ]
                     }
-                  ]
+                  }
                 }
               }
             properties:
@@ -181,6 +181,12 @@ paths:
                       count:
                         type: number
                         description: An approximate count of the total number of results found.
+                      highlights:
+                        type: array
+                        title: Highlights
+                        description: List of words which should be highlighted, useful for stemming which may change the query terms.
+                        items:
+                          type: string
                       results:
                         type: array
                         title: Results
@@ -318,6 +324,10 @@ paths:
                           }
                         }
                       },
+                      "highlights": [
+                        "martians",
+                        "men"
+                      ],
                       "next_batch": "5FdgFsd234dfgsdfFD",
                       "count": 1224,
                       "results": [
