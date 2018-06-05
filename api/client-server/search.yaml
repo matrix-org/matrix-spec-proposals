@@ -53,16 +53,16 @@ paths:
                     "keys": [
                       "content.body"
                     ],
-                    "search_term": "martians and men"
-                  }
-                },
-                "order_by": "recent",
-                "groupings": {
-                  "group_by": [
-                    {
-                      "key": "room_id"
+                    "search_term": "martians and men",
+                    "order_by": "recent",
+                    "groupings": {
+                      "group_by": [
+                        {
+                          "key": "room_id"
+                        }
+                      ]
                     }
-                  ]
+                  }
                 }
               }
             properties:
