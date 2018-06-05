@@ -324,6 +324,10 @@ paths:
                           }
                         }
                       },
+                      "highlights": [
+                        "martians",
+                        "men"
+                      ],
                       "next_batch": "5FdgFsd234dfgsdfFD",
                       "count": 1224,
                       "results": [
