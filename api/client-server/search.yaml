@@ -181,6 +181,12 @@ paths:
                       count:
                         type: number
                         description: An approximate count of the total number of results found.
+                      highlights:
+                        type: array
+                        title: Highlights
+                        description: List of words which should be highlighted, useful for stemming which may change the query terms.
+                        items:
+                          type: string
                       results:
                         type: array
                         title: Results
