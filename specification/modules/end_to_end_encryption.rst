@@ -228,6 +228,28 @@ A homeserver should rate-limit the number of one-time keys that a given user or
 remote server can claim. A homeserver should discard the public part of a one
 time key once it has given that key to another user.
 
+Messaging Algorithms
+--------------------
+
+Messaging Algorithm Names
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Messaging algorithm names use the extensible naming scheme used throughout this
+specification. Algorithm names that start with ``m.`` are reserved for
+algorithms defined by this specification. Implementations wanting to experiment
+with new algorithms are encouraged to pick algorithm names that start with
+their domain to reduce the risk of collisions.
+
+Algorithm names should be short and meaningful, and should list the primitives
+used by the algorithm so that it is easier to see if the algorithm is using a
+broken primitive.
+
+A name of ``m.olm.v1`` is too short: it gives no information about the primitives
+in use, and is difficult to extend for different primitives. However a name of
+``m.olm.v1.ecdh-curve25519-hdkfsha256.hmacsha256.hkdfsha256-aes256-cbc-hmac64sha256``
+is too long despite giving a more precise description of the algorithm: it adds
+to the data transfer overhead and sacrifices clarity for human readers without
+adding any useful extra information.
 
 Protocol definitions
 --------------------
