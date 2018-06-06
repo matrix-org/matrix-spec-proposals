@@ -274,13 +274,16 @@ An event encrypted using Olm has the following format:
     {
       "type": "m.room.encrypted",
       "content": {
-      "algorithm": "m.olm.v1.curve25519-aes-sha2",
+        "algorithm": "m.olm.v1.curve25519-aes-sha2",
         "sender_key": "<sender_curve25519_key>",
         "ciphertext": {
           "<device_curve25519_key>": {
             "type": 0,
             "body": "<base_64>"
-    } } } }
+          }
+        }
+      }
+    }
 
 ``ciphertext`` is a mapping from device Curve25519 key to an encrypted payload
 for that device. ``body`` is a Base64-encoded Olm message body. ``type`` is an
