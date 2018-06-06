@@ -251,6 +251,76 @@ is too long despite giving a more precise description of the algorithm: it adds
 to the data transfer overhead and sacrifices clarity for human readers without
 adding any useful extra information.
 
+``m.olm.v1.curve25519-aes-sha2``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The name ``m.olm.v1.curve25519-aes-sha2`` corresponds to version 1 of the Olm
+ratchet, as defined by the `Olm specification`_. This uses:
+
+* Curve25519 for the initial key agreement.
+* HKDF-SHA-256 for ratchet key derivation.
+* Curve25519 for the root key ratchet.
+* HMAC-SHA-256 for the chain key ratchet.
+* HKDF-SHA-256, AES-256 in CBC mode, and 8 byte truncated HMAC-SHA-256 for authenticated encryption.
+
+Devices that support Olm must include "m.olm.v1.curve25519-aes-sha2" in their
+list of supported messaging algorithms, must list a Curve25519 device key, and
+must publish Curve25519 one-time keys.
+
+An event encrypted using Olm has the following format:
+
+.. code:: json
+
+    {
+      "type": "m.room.encrypted",
+      "content": {
+      "algorithm": "m.olm.v1.curve25519-aes-sha2",
+        "sender_key": "<sender_curve25519_key>",
+        "ciphertext": {
+          "<device_curve25519_key>": {
+            "type": 0,
+            "body": "<base_64>"
+    } } } }
+
+``ciphertext`` is a mapping from device Curve25519 key to an encrypted payload
+for that device. ``body`` is a Base64-encoded Olm message body. ``type`` is an
+integer indicating the type of the message body: 0 for the initial pre-key
+message, 1 for ordinary messages.
+
+Olm sessions will generate messages with a type of 0 until they receive a
+message. Once a session has decrypted a message it will produce messages with
+a type of 1.
+
+When a client receives a message with a type of 0 it must first check if it
+already has a matching session. If it does then it will use that session to
+try to decrypt the message. If there is no existing session then the client
+must create a new session and use the new session to decrypt the message. A
+client must not persist a session or remove one-time keys used by a session
+until it has successfully decrypted a message using that session.
+
+Messages with type 1 can only be decrypted with an existing session. If there
+is no matching session, the client should show this as an invalid message.
+
+The plaintext payload is of the form:
+
+.. code:: json
+
+   {
+     "type": "<type of the plaintext event>",
+     "content": "<content for the plaintext event>",
+     "room_id": "<the room_id>",
+   }
+
+The type and content of the plaintext message event are given in the payload.
+
+We include the room ID in the payload, because otherwise the homeserver would
+be able to change the room a message was sent in.
+
+.. TODO: claimed_keys
+
+Clients must confirm that the ``sender_key`` belongs to the user that sent the
+message. TODO: how?
+
 Protocol definitions
 --------------------
 
@@ -310,6 +380,7 @@ Example response:
 
 .. _ed25519: http://ed25519.cr.yp.to/
 .. _curve25519: https://cr.yp.to/ecdh.html
+.. _`Olm specification`: http://matrix.org/docs/spec/olm.html
 
 .. _`Signing JSON`: ../appendices.html#signing-json
 
