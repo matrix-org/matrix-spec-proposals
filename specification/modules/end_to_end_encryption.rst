@@ -321,6 +321,17 @@ be able to change the room a message was sent in.
 Clients must confirm that the ``sender_key`` belongs to the user that sent the
 message. TODO: how?
 
+``m.megolm.v1.aes-sha2``
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The name ``m.megolm.v1.aes-sha2`` corresponds to version 1 of the Megolm
+ratchet, as defined by the `Megolm specification`_. This uses:
+
+* HMAC-SHA-256 for the hash ratchet.
+* HKDF-SHA-256, AES-256 in CBC mode, and 8 byte truncated HMAC-SHA-256 for authenticated encryption.
+* Ed25519 for message authenticity.
+
+
 Protocol definitions
 --------------------
 
@@ -381,6 +392,7 @@ Example response:
 .. _ed25519: http://ed25519.cr.yp.to/
 .. _curve25519: https://cr.yp.to/ecdh.html
 .. _`Olm specification`: http://matrix.org/docs/spec/olm.html
+.. _`Megolm specification`: http://matrix.org/docs/spec/megolm.html
 
 .. _`Signing JSON`: ../appendices.html#signing-json
 
