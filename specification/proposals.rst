@@ -252,6 +252,14 @@ proposal-ready-for-review
      - `@oivoodoo`_
      - None
      - 
+   * - `MSC701 <https://github.com/matrix-org/matrix-doc/issues/701>`_
+     - Auth for content repo (and enforcing GDPR erasure)
+     - 2018-06-04
+     - 2018-06-07
+     - `701-1 <https://docs.google.com/document/d/1ERHpmthZyspnZtE3tQzxKTkcxar6JANeyNXgz2_djhA/edit#>`_
+     - `@ara4n`_
+     - None
+     - 
 
 
 
@@ -280,9 +288,9 @@ proposal-in-review
      - `@uhoreg`_
      - 
    * - `MSC1194 <https://github.com/matrix-org/matrix-doc/issues/1194>`_
-     - A way for HSes to remove bindings from ISes
+     - A way for HSes to remove bindings from ISes (aka unbind)
      - 2018-05-09
-     - 2018-05-15
+     - 2018-06-05
      - `1194-1 <https://docs.google.com/document/d/135g2muVxmuml0iUnLoTZxk8M2ZSt3kJzg81chGh51yg/edit?usp=sharing>`_
      - `@dbkr`_
      - None
