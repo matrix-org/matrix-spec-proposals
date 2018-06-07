@@ -6,7 +6,6 @@
 import requests
 import re
 from datetime import datetime
-from m2r import convert as m2r
 
 pagecount = 1
 authors = set()
@@ -42,7 +41,7 @@ issues = {}
 for label in labels:
     issues[label] = getbylabel(label)
 
-text_file = open("../specification/proposals.rst", "w")
+text_file = open("specification/proposals.rst", "w")
 
 text_file.write("Tables of Tracked Proposals\n---------------------------\n\n")
 
