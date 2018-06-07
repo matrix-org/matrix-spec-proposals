@@ -6,3 +6,4 @@ pygments >= 2.2.0
 Jinja2 >= 2.9.6
 jsonschema >= 2.6.0
 PyYAML >= 3.12
+requests >= 2.18.4

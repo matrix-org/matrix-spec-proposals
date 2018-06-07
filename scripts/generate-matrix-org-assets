@@ -8,6 +8,9 @@ cd `dirname $0`/..
 
 mkdir -p assets
 
+# generate specification/proposals.rst
+./scripts/proposals.py
+
 # generate the spec docs
 ./scripts/gendoc.py -d assets/spec
 
