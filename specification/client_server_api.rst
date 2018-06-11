@@ -122,6 +122,10 @@ Some standard error codes are below:
   Too many requests have been sent in a short period of time. Wait a while then
   try again.
 
+:``M_CONSENT_NOT_GIVEN``:
+  Server requires consenting to a policy before it can be used. This error includes
+  a ``consent_uri`` field to which the user should be sent so that they can consent.
+
 Some requests have unique error codes:
 
 :``M_USER_IN_USE``:
@@ -147,6 +151,9 @@ Some requests have unique error codes:
 
 :``M_SERVER_NOT_TRUSTED``:
   The client's request used a third party server, eg. ID server, that this server does not trust.
+
+:``M_CANNOT_LEAVE_SERVER_NOTICE_ROOM``:
+  They server refuses to let the user leave the server notice room, or reject an invite to it.
 
 .. _sect:txn_ids:
 

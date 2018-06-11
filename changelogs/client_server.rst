@@ -56,6 +56,8 @@ Unreleased changes
     (`#1263 <https://github.com/matrix-org/matrix-doc/pull/1263>`_).
   - Document `highlights` field in /search response
     (`#1274 <https://github.com/matrix-org/matrix-doc/pull/1274>`_).
+  - Document ``M_CANNOT_LEAVE_SERVER_NOTICE_ROOM`` and ``M_CONSENT_NOT_GIVEN``
+    (`#1292 <https://github.com/matrix-org/matrix-doc/pull/1292>`_).
 
 r0.3.0
 ======
