@@ -123,8 +123,9 @@ Some standard error codes are below:
   try again.
 
 :``M_CONSENT_NOT_GIVEN``:
-  Server requires consenting to a policy before it can be used. This error includes
-  a ``consent_uri`` field to which the user should be sent so that they can consent.
+  Server requires the user to consent to a policy before it can be used. This error
+  includes a ``consent_uri`` field to which the user should be sent so that they can
+  consent.
 
 Some requests have unique error codes:
 
