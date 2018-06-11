@@ -355,6 +355,9 @@ specified). The client is expected to use |/keys/query|_ or |/keys/changes|_
 for the equivalent functionality after an initial sync, as documented in
 `Tracking the device list for a user`_.
 
+It also adds a ``one_time_keys_count`` property. Note the spelling difference
+with the ``one_time_key_counts`` property in the |/keys/upload|_ response.
+
 .. todo: generate this from a swagger definition?
 
 .. device_lists: { changed: ["@user:server", ... ]},
@@ -364,6 +367,9 @@ Parameter    Type        Description
 ============ =========== =====================================================
 device_lists DeviceLists Optional. Information on e2e device updates. Note:
                          only present on an incremental sync.
+|device_otk| {string:    Optional. For each key algorithm, the number of
+             integer}    unclaimed one-time keys currently held on the server
+                         for this device.
 ============ =========== =====================================================
 
 ``DeviceLists``
@@ -388,6 +394,10 @@ Example response:
          "@alice:example.com",
       ],
     },
+    "device_one_time_keys_count": {
+      "curve25519": 10,
+      "signed_curve25519": 20
+    }
   }
 
 .. References
@@ -400,6 +410,7 @@ Example response:
 .. _`Signing JSON`: ../appendices.html#signing-json
 
 .. |m.olm.v1.curve25519-aes-sha2| replace:: ``m.olm.v1.curve25519-aes-sha2``
+.. |device_otk| replace:: device_one_time_keys_count
 
 .. |/keys/upload| replace:: ``/keys/upload``
 .. _/keys/upload: #post-matrix-client-%CLIENT_MAJOR_VERSION%-keys-upload
