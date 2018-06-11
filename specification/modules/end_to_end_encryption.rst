@@ -379,6 +379,8 @@ Parameter Type      Description
 ========= ========= =============================================
 changed   [string]  List of users who have updated their device identity keys
                     since the previous sync response.
+left      [string]  List of users with whom we do not share any encrypted rooms
+                    anymore since the previous sync response.
 ========= ========= =============================================
 
 
@@ -392,6 +394,9 @@ Example response:
     "device_lists": {
       "changed": [
          "@alice:example.com",
+      ],
+      "left": [
+         "@bob:example.com",
       ],
     },
     "device_one_time_keys_count": {
