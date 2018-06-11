@@ -247,7 +247,7 @@ paths:
                     description: algorithm
                     example: "signed_curve25519"
                 example:
-                  "@alice:example.com": { "JLAFKJWSCS": "curve25519" }
+                  "@alice:example.com": { "JLAFKJWSCS": "signed_curve25519" }
             required:
               - one_time_keys
       responses:
