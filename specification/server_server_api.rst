@@ -781,7 +781,7 @@ room. Starting from the PDU ID(s) given in the "v" argument, the PDUs that
 preceded it are retrieved, up to a total number given by the "limit" argument.
 
 
-To stream events all the events::
+To stream all the events::
 
   GET .../pull/
     Query args: origin, v
