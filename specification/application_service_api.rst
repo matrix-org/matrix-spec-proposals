@@ -105,10 +105,10 @@ traffic to the AS is:
       aliases: []  # Namespaces of room aliases which should be delegated to the AS
       rooms: [] # Namespaces of room ids which should be delegated to the AS
     filter:
-      exclude_virtual_users: <bool> # This will exclude traffic from virtual users being
-                                    # recieved on the AS.
-      exclude_as_user: <bool>       # This will exclude traffic from the AS user
-                                    # being recieved on the AS.
+      include_virtual_users: <bool> # This will exclude traffic from virtual users being
+                                    # received on the AS. Defaults to true.
+      include_as_user: <bool>       # This will exclude traffic from the AS user
+                                    # being received on the AS. Defaults to true.
 
 .. WARNING::
   If the homeserver in question has multiple application services, each
@@ -150,11 +150,12 @@ on retries, as the AS may have already processed the events.
 
 .. NOTE::
   Please note the filter options in the registration object above. Homeservers
-  should exclude traffic based on the filters. Filters are always off by default
-  so do not exclude traffic unless the option is explicitly set.
+  should exclude traffic to each application service based on the filters they
+  have set. If an option is not set, the homeserver MUST adhere to the default
+  value.
 
-  Additionally the filters are within the context of the transaction API, the
-  Client Server API must continue to show events that may be excluded by the
+  Additionally the filters are within the context of the transaction API. The
+  Client Server API MUST continue to show events that may be excluded by the
   filter.
 
 Querying
