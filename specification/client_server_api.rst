@@ -1372,6 +1372,19 @@ users, they should include the display name and avatar URL fields in these
 events so that clients already have these details to hand, and do not have to
 perform extra round trips to query it.
 
+Per-room Profiles
++++++++++++++++++
+Users may wish to have a different display name or avatar or both in a specific
+room. To accomplish this, the client should modify the ``displayname`` and 
+``avatar_url`` properties of the user's ``m.room.member`` event in the room. 
+
+Homeservers SHOULD NOT overwrite ``m.room.member`` events that were updated in
+this way when the client invokes the dedicated profile API. Further, homeservers
+should not return per-room profiles as part of this profile API.
+
+Clients SHOULD use the ``m.room.member`` event for users in a room when showing
+profiles to the user.
+
 Security
 --------
 
