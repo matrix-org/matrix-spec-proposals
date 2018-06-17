@@ -27,13 +27,13 @@ paths:
     get:
       summary: Retrieve the room ID and list of resident homeservers for a room
         alias.
-      description: Retrieve the room ID and list of resident homeservers for a Room
+      description: Retrieve the room ID and list of resident homeservers for a room
         alias.
       parameters:
         - in: query
           name: room_alias
           type: string
-          description: Room alias
+          description: Room alias.
           required: true
           x-example: "#room_alias:example.org"
       responses:
