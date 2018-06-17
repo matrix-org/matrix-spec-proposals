@@ -943,9 +943,9 @@ event to an resident homeserver, by using the ``send_join`` endpoint. This is
 invoked using the room ID and the event ID of the new member event.
 
 The resident homeserver then accepts this event into the room's event graph,
-and responds to the joining server with the full set of state for the newly
-joined room. This is returned as a two-element list, whose first element is the
-integer 200, and whose second element is an object which contains the
+and responds to the joining server with the full set of state for the
+newly-joined room. This is returned as a two-element list, whose first element
+is the integer 200, and whose second element is an object which contains the
 following keys:
 
 ======================== ============ =========================================
