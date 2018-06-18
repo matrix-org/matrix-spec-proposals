@@ -253,8 +253,10 @@ including the AS token on a ``/register`` request, along with a login type of
   /register?access_token=$as_token
 
   Content:
-  {
-    type: "m.login.application_service",
+  { 
+    auth: {
+      type: "m.login.application_service"
+    },
     username: "<desired user localpart in AS namespace>"
   }
 
