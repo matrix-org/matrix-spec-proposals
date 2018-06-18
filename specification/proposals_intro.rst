@@ -31,8 +31,9 @@ The process for submitting a Matrix Spec Change (MSC) Proposal is as follows:
     is available.
 
 - Make a new issue at https://github.com/matrix-org/matrix-doc/issues, whose
-  description should list the metadata as per below. If an existing issue
-  relates to your proposal, link to it in your new issue.
+  description should list the metadata as per below. Use the github search
+  function to attempt to locate any related github issues, and link any that
+  are found in the body of the new issue.
 - Gather feedback as widely as possible from the community and core team on
   the proposal.
 
