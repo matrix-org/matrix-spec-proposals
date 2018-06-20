@@ -290,12 +290,12 @@ paths:
           schema:
             type: object
             properties:
-              upload_size:
+              m.upload.size:
                 type: number
                 description: "The maximum size an upload can be in bytes."
           examples:
             application/json: {
-                "upload_size": 50000000
+                "m.upload.size": 50000000
               }
       tags:
         - Media
