@@ -269,9 +269,9 @@ paths:
             "$ref": "definitions/error.yaml"
       tags:
         - Media
-  "/limits":
+  "/config":
     get:
-      summary: Get limits on what can be uploaded to the content repository.
+      summary: Get the config for the media repository.
                Clients SHOULD use this as a guide when uploading content.
                All values are intentionally left optional, the client MUST assume
                that any field not given is not limited.
