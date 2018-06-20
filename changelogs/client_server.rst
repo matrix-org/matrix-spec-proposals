@@ -56,6 +56,8 @@ Unreleased changes
     (`#1263 <https://github.com/matrix-org/matrix-doc/pull/1263>`_).
   - Document `highlights` field in /search response
     (`#1274 <https://github.com/matrix-org/matrix-doc/pull/1274>`_).
+  - Add the option of setting an avatar for a room when creating it
+    (`#1326 <https://github.com/matrix-org/matrix-doc/pull/1326>`_).
 
 r0.3.0
 ======
