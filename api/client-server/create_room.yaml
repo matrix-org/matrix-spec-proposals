@@ -149,7 +149,7 @@ paths:
                   with type, state_key and content keys set.
 
                   Takes precedence over events set by ``presets``, but gets
-                  overriden by ``name`` and ``topic`` keys.
+                  overriden by the ``name``, ``topic``, and ``avatar`` keys.
                 items:
                   type: object
                   title: StateEvent
