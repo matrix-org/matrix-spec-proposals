@@ -189,6 +189,9 @@ paths:
                 type: boolean
                 description: |-
                   Allows guests to join the room. See `Guest Access`_ for more information.
+
+                  **Deprecated**. Clients should use ``initial_state`` instead
+                  to set the room's guest access policy.
       responses:
         200:
           description: Information about the newly created room.
