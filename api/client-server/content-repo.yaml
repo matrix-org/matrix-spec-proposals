@@ -286,7 +286,7 @@ paths:
         - accessToken: []
       responses:
         200:
-          description: The limits exposed by the matrix server.
+          description: The public content repository configuration for the matrix server.
           schema:
             type: object
             properties:
@@ -295,7 +295,7 @@ paths:
                 description: "The maximum size an upload can be in bytes."
           examples:
             application/json: {
-                "m.upload.size": 50000000
-              }
+               "m.upload.size": 50000000
+            }
       tags:
         - Media
