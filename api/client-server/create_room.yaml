@@ -150,10 +150,13 @@ paths:
                   properties:
                     type:
                       type: string
+                      description: The type of event to send.
                     state_key:
                       type: string
+                      description: The state_key of the state event. Defaults to an empty string.
                     content:
                       type: object
+                      description: The content of the event.
               preset:
                 type: string
                 enum: ["private_chat", "public_chat", "trusted_private_chat"]
