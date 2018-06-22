@@ -157,6 +157,7 @@ paths:
                     content:
                       type: object
                       description: The content of the event.
+                  required: ["type", "content"]
               preset:
                 type: string
                 enum: ["private_chat", "public_chat", "trusted_private_chat"]
