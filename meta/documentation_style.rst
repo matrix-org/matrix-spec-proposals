@@ -100,3 +100,7 @@ When writing OpenAPI specifications for the API endpoints, follow these rules:
 
   The description is also the place to define default values for optional
   properties. Use the wording "Defaults to X [if unspecified]."
+  
+  Some descriptions start with the workd "Optional" to explicitly mark optional 
+  properties and parameters. This is redundant. Instead, use the ``required``
+  property to mark those that are required.
