@@ -271,16 +271,17 @@ paths:
         - Media
   "/config":
     get:
-      summary: Get the config for the media repository.
+      summary: Get the configuration for the media repository.
                Clients SHOULD use this as a guide when uploading content.
                All values are intentionally left optional, the client MUST assume
                that any field not given is not limited.
 
-               **NOTE:** Reverse proxies may apply their own limits.
+               **NOTE:** Reverse proxies may apply their own configuration.
+               
 
-               If auth is not supplied, this endpoint gives the global limit of the server.
-               Otherwise it should give the limits applied to the authenticated user.
-      operationId: getLimits
+               If an accessToken is supplied, the configuration applied to the authenticated user.
+               Otherwise it should give the configuration applied globally to the server.
+      operationId: getConfig
       produces: ["application/json"]
       security:
         - accessToken: []
@@ -297,5 +298,10 @@ paths:
             application/json: {
                "m.upload.size": 50000000
             }
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/error.yaml"
+
       tags:
         - Media
