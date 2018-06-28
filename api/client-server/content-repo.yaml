@@ -272,7 +272,7 @@ paths:
   "/config":
     get:
       summary: Get the configuration for the content repository.
-               Clients SHOULD use this as a guide when using content endpoints.
+               Clients SHOULD use this as a guide when using content repository endpoints.
                All values are intentionally left optional. Clients SHOULD follow
                the advice given in the field description when the field is not available.
 
