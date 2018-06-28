@@ -274,7 +274,7 @@ paths:
       summary: Get the configuration for the media repository.
                Clients SHOULD use this as a guide when uploading content.
                All values are intentionally left optional. Clients SHOULD follow
-               the advise given in the field description when the field is not avaliable.
+               the advice given in the field description when the field is not available.
 
                **NOTE:** Reverse proxies may apply their own configuration.
                
