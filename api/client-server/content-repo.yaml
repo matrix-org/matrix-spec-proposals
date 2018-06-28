@@ -272,15 +272,13 @@ paths:
   "/config":
     get:
       summary: Get the configuration for the media repository.
-               Clients SHOULD use this as a guide when uploading content.
+               Clients SHOULD use this as a guide when using media endpoints.
                All values are intentionally left optional. Clients SHOULD follow
                the advice given in the field description when the field is not available.
 
-               **NOTE:** Reverse proxies may apply their own configuration.
-               
-
-               If an accessToken is supplied, the configuration applied to the authenticated user is returned.
-               Otherwise it should give the configuration applied globally to the server.
+               **NOTE:** The /config endpoint is a guide. Other middleware such as 
+               reverse proxies may apply their own configuration not described on this
+               endpoint.
       operationId: getConfig
       produces: ["application/json"]
       security:
@@ -294,8 +292,9 @@ paths:
               m.upload.size:
                 type: number
                 description: |- 
-                  The maximum size an upload can be in bytes. If not listed or null,
-                  the upload limit should be treated as unknown.
+                  The maximum size an upload can be in bytes.
+                  Clients SHOULD use this as a guide when uploading content.
+                  If not listed or null, the size limit should be treated as unknown.
           examples:
             application/json: {
                "m.upload.size": 50000000
