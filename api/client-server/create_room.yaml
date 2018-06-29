@@ -92,13 +92,19 @@ paths:
                 description: |-
                   If this is included, an ``m.room.name`` event will be sent
                   into the room to indicate the name of the room. See Room
-                  Events for more information on ``m.room.name``.
+                  Events for more information on ``m.room.name``. 
+
+                  **Deprecated**. Clients should use ``initial_state`` instead
+                  to set the room's name.
               topic:
                 type: string
                 description: |-
                   If this is included, an ``m.room.topic`` event will be sent
                   into the room to indicate the topic for the room. See Room
                   Events for more information on ``m.room.topic``.
+
+                  **Deprecated**. Clients should use ``initial_state`` instead
+                  to set the room's topic.
               invite:
                 type: array
                 description: |-
@@ -187,6 +193,9 @@ paths:
                 type: boolean
                 description: |-
                   Allows guests to join the room. See `Guest Access`_ for more information.
+
+                  **Deprecated**. Clients should use ``initial_state`` instead
+                  to set the room's guest access policy.
       responses:
         200:
           description: Information about the newly created room.
