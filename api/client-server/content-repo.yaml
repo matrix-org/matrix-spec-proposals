@@ -279,8 +279,7 @@ paths:
                **NOTE:** Both clients and server administrators should be aware that proxies
                between the client and the server may affect the apparent behaviour of content
                repository APIs, for example, proxies may enforce a lower upload size limit
-               than is advertised by the server on this endpoint. Clients should handle such
-               situations gracefully.
+               than is advertised by the server on this endpoint.
       operationId: getConfig
       produces: ["application/json"]
       security:
