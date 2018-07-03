@@ -147,7 +147,6 @@ paths:
           type: array
           items:
             type: string
-          explode: true
           name: server_name
           description: |-
             The servers to attempt to join the room through. One of the servers
