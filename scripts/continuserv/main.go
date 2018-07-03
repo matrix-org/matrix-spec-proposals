@@ -99,6 +99,7 @@ func makeWalker(base string, w *fsnotify.Watcher) filepath.WalkFunc {
 		}
 
 		// skip a few things that we know don't form part of the spec
+		rel = strings.Replace(rel, "\\", "/", -1) // normalize slashes (thanks to windows)
 		if rel == "api/node_modules" ||
 			rel == "scripts/gen" ||
 			rel == "scripts/tmp" {
@@ -125,6 +126,14 @@ func filter(e fsnotify.Event) bool {
 		return false
 	}
 
+	// Forcefully ignore directories we don't care about (Windows, at least, tries to notify about some directories)
+	filePath := strings.Replace(e.Name, "\\", "/", -1) // normalize slashes (thanks to windows)
+	if strings.Contains(filePath, "/scripts/tmp") ||
+		strings.Contains(filePath, "/scripts/gen") ||
+		strings.Contains(filePath, "/api/node_modules") {
+		return false
+	}
+
 	return true
 }
 
@@ -148,6 +157,10 @@ func serve(w http.ResponseWriter, req *http.Request) {
 		file = file[1:]
 	}
 	b, ok = m.bytes[file]
+
+	if !ok {
+		b, ok = m.bytes[strings.Replace(file, "/", "\\", -1)] // Attempt a Windows lookup
+	}
 
 	if ok && file == "api-docs.json" {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
