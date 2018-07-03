@@ -16,6 +16,8 @@ Unreleased changes
     - Add sticker message event definition.
     (`#1158 <https://github.com/matrix-org/matrix-doc/pull/1158>`_).
 
+  - Add server discovery rules (FIXME: add PR #)
+
 - Spec clarifications:
 
   - Update ``ImageInfo`` and ``ThumbnailInfo`` dimension schema descriptions

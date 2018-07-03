@@ -164,6 +164,63 @@ recommended.
 
 {{versions_cs_http_api}}
 
+Server Discovery
+~~~~~~~~~~~~~~~~
+
+Resolving Server Names
+++++++++++++++++++++++
+
+*(first two sentences, as well as the heading names are copied from the
+Server-Server API, section 2.1.  Should we also copy the server name grammar
+from there?)*
+*(wording is a bit confusing here, with different terms that sound similar --
+"server name", "DNS name", "server address".  Wording suggestions welcome.)*
+
+Each matrix homeserver is identified by a server name consisting of a DNS name
+and an optional TLS port.
+
+If the port is present then the server is discovered by looking up an AAAA or A
+record for the DNS name and connecting to the specified TLS port.  If the port
+is absent, then a client may use one or more of the methods below to determine
+the server address.  The methods are listed in order of preference, so if
+multiple methods succeed, then the first method listed should be given
+priority.
+
+*(do we want to include SRV lookups?)*
+*(3 and 4 are "guessing" the server address.  Do we want those?)*
+
+1. Perform an HTTPS GET request on the path ``/.well-known/matrix`` (or should
+   it be ``.well-known/matrix.json``?)to the web server at the DNS name, on
+   port 443.  If the request succeeds, is formatted according to `Well-known
+   URI`_, and has a ``homeserver_url`` field, then use the server address is
+   the ``homeserver_url`` field declared within the file.
+2. Look up the ``_matrix-client._tcp`` SRV record for the DNS name.
+3. Perform an HTTPS GET request on the path ``/_matrix/client/versions`` to the
+   web server at the DNS name, on port 443.  If the request succeeds and is
+   formatted according to `GET /_matrix/client/versions`_, then the server
+   address is the DNS name.
+4. Perform an HTTPS GET request on the path ``/_matrix/client/versions`` to the
+   web server at the DNS name with ``matrix.`` prepended, on port 443.  For
+   example, if the DNS name is ``example.com``, then the client would perform
+   the GET request to the web server at ``matrix.example.com``.  If the request
+   succeeds and is formatted according to `GET /_matrix/client/versions`_, then
+   the server address is the DNS name with ``matrix.`` prepended.
+5. Prompt the user to supply the server address.
+
+When checking the validity of the server's TLS certficate, the client must use
+the resolved server address, rather than the given DNS name, as the certificate
+subject name.  *(except for in the SRV case?)*
+
+Well-known URI
+++++++++++++++
+
+A client may make an HTTPS GET request on port 443 ``/.well-known/matrix`` to a
+domain name in order to gather discovery information about Matrix-related
+servers for that domain.  The request, if successful, must return a JSON object.
+
+{{wellknown_cs_http_api}}
+
+
 Client Authentication
 ---------------------
 
