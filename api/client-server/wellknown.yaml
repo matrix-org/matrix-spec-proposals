@@ -1,0 +1,63 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server server discovery API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+basePath: /.well-known
+produces:
+  - application/json
+paths:
+  "/matrix/client":
+    get:
+      summary: Gets Matrix server discovery information about the domain.
+      description: |-
+        Gets discovery information about the domain.  The file may include
+        additional keys, which SHOULD follow the Java package naming convention,
+        e.g. ``com.example.myapp.property``. This ensures property names are
+        suitably namespaced for each application and reduces the risk of
+        clashes.
+
+        **FIXME:** do we need to add a note that this endpoint is not
+        necessarily handled by the homeserver, but by another webserver?  Or
+        does the context make this clear enough?
+      operationId: getWellknown
+      responses:
+        200:
+          description: Server discovery information
+          examples:
+            application/json: {
+                "m.homeserver": {
+                  "base_url": "https://matrix.example.com"
+                },
+                "m.identity_server": {
+                  "base_url": "https://identity.example.com"
+                }
+              }
+          schema:
+            type: object
+            properties:
+              m.homeserver:
+                description: Information about the homeserver to connect to.
+                "$ref": "definitions/wellknown/homeserver.yaml"
+              m.identity_server:
+                description: Information about the identity server to connect to.
+                "$ref": "definitions/wellknown/identity_server.yaml"
+        404:
+          description: No server discovery information available
+      tags:
+        - Server administration

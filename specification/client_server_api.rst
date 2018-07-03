@@ -164,6 +164,78 @@ recommended.
 
 {{versions_cs_http_api}}
 
+Server Discovery
+~~~~~~~~~~~~~~~~
+
+In order to allow users to connect to a Matrix server without needing to
+explicitly specify the homeserver's URL or other parameters, clients may use an
+auto-discovery mechanism to determine the server's URL based on a user's
+Matrix ID. Auto-discovery should only be done at login time, with the
+discovered values retained for the duration of the user's session.
+
+In this section, the following terms are used with specific meanings:
+
+``PROMPT``
+  Retrieve the specific piece of information from the user in a way which
+  fits within the existing client UX, if the client is inclined to do so.
+  Failure can take place instead if no good UX is possible at this point.
+
+``IGNORE``
+  Stop the current auto-discovery mechanism. If no more auto-discovery
+  mechanisms are available, then the client may use other methods of
+  determining the required parameters, such as prompting the user, or using
+  default values.
+
+``FAIL_PROMPT``
+  Inform the user that auto-discovery failed due to invalid/empty data and
+  ``PROMPT`` for the parameter.
+
+``FAIL_ERROR``
+  Inform the user that auto-discovery did not return any usable URLs. Do not
+  continue further with the current login process. At this point, valid data
+  was obtained, but no homeserver is available to serve the client. No further
+  guess should be attempted and the user should make a conscientious decision
+  what to do next.
+
+Well-known URI
+++++++++++++++
+
+The ``.well-known`` method uses a JSON file at a predetermined location to
+specify parameter values.  The flow for this method is as follows:
+
+1. Extract the server name from the user's Matrix ID by splitting the Matrix ID
+   at the first colon.
+2. Extract the DNS name from the server name.
+3. Make a GET request to ``https://dns_name/.well-known/matrix/client``.
+
+   a. If the returned status code is 404, then ``IGNORE``.
+   b. If the returned status code is not 200, or the response body is empty,
+      then ``FAIL_PROMPT``.
+   c. Parse the response body as a JSON object
+
+      i. If the content cannot be parsed, then ``FAIL_PROMPT``.
+
+   d. Extract the ``base_url`` value from the ``m.homeserver`` property.  This
+      value is to be used as the base URL of the homeserver.
+
+      i. If this value is not provided, then ``FAIL_PROMPT``.
+
+   e. Validate the homeserver base URL:
+
+      i. Parse it as a URL.  If it is not a URL, then ``FAIL_ERROR``.
+      ii. Clients should validate that the URL points to a valid homeserver
+          before accepting it.  Currently, the suggested way of validating is
+          to connect to the ``/_matrix/client/versions`` endpoint, and to parse
+          and validate the data.  If any step in the validation fails, then
+          ``FAIL_ERROR``.
+
+   f. If the ``m.identity_server`` property is present, extract the
+      ``base_url`` value for use as the base URL of the identity server.  This
+      value can be validated as in the step above, but using
+      ``/_matrix/identity/api/v1``.
+
+{{wellknown_cs_http_api}}
+
 Client Authentication
 ---------------------
 
