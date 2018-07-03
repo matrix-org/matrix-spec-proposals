@@ -15,6 +15,8 @@ Unreleased changes
   - Sticker messages:
     - Add sticker message event definition.
     (`#1158 <https://github.com/matrix-org/matrix-doc/pull/1158>`_).
+  - Document the CORS/preflight headers
+    (`#1365 <https://github.com/matrix-org/matrix-doc/pull/1365>`_).
 
 - Spec clarifications:
 
