@@ -177,6 +177,8 @@ paths:
                   "errcode": "M_USER_IN_USE",
                   "error": "Desired user ID is already taken."
               }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
         401:
           description: |-
             The homeserver requires additional authentication information.
@@ -249,7 +251,7 @@ paths:
                 "error": "The specified address is already in use"
               }
           schema:
-            type: object
+            "$ref": "definitions/errors/error.yaml"
   "/account/password":
     post:
       summary: "Changes a user's password."
@@ -420,6 +422,8 @@ paths:
               "errcode": "M_USER_IN_USE",
               "error": "Desired user ID is already taken."
             }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
         429:
           description: This request was rate-limited.
           schema:

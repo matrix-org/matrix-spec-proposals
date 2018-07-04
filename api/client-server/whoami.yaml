@@ -65,7 +65,7 @@ paths:
               "error": "Unrecognised access token."
             }
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/error.yaml"
         403:
           description:
             The appservice cannot masquerade as the user or has not registered them.
@@ -75,7 +75,7 @@ paths:
               "error": "Application service has not registered this user."
             }
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/error.yaml"
         429:
           description: This request was rate-limited.
           schema:

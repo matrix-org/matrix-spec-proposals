@@ -228,7 +228,7 @@ paths:
                 "errcode": "M_MISSING_PARAM"
               }
           schema:
-            type: object
+            "$ref": "definitions/errors/error.yaml"
         429:
           description: This request was rate-limited.
           schema:

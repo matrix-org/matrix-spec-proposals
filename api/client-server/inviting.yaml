@@ -93,6 +93,8 @@ paths:
           examples:
             application/json: {
               "errcode": "M_FORBIDDEN", "error": "@cheeky_monkey:matrix.org is banned from the room"}
+          schema:
+            "$ref": "definitions/errors/error.yaml"
         429:
           description: This request was rate-limited.
           schema:
