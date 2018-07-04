@@ -78,8 +78,8 @@ paths:
         for this room. If all users on a homeserver forget a room, the room is
         eligible for deletion from that homeserver.
 
-        If the user is currently joined to the room, they will implicitly leave
-        the room as part of this API call.
+        If the user is currently joined to the room, they must leave the room
+        before calling this API.
       operationId: forgetRoom
       security:
         - accessToken: []
