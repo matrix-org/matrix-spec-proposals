@@ -39,6 +39,8 @@ Unreleased changes
     (`#1152 <https://github.com/matrix-org/matrix-doc/pull/1152>`_).
   - Mark ``GET /rooms/{roomId}/members`` as requiring authentication
     (`#1245 <https://github.com/matrix-org/matrix-doc/pull/1244>`_).
+  - Mark ``GET /presence/{userId}/status`` as requiring authentication
+    (`#1371 <https://github.com/matrix-org/matrix-doc/pull/1371>`_).
   - Describe ``StateEvent`` for ``/createRoom``
     (`#1329 <https://github.com/matrix-org/matrix-doc/pull/1329>`_).
 
