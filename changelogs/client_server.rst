@@ -16,6 +16,10 @@ Unreleased changes
     - Add sticker message event definition.
     (`#1158 <https://github.com/matrix-org/matrix-doc/pull/1158>`_).
 
+  - Server discovery:
+    - Add ``.well-known`` discovery method
+      (`#1359 <https://github.com/matrix-org/matrix-doc/pull/1359>`_).
+
 - Spec clarifications:
 
   - Update ``ImageInfo`` and ``ThumbnailInfo`` dimension schema descriptions

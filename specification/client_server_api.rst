@@ -168,17 +168,17 @@ Server Discovery
 ~~~~~~~~~~~~~~~~
 
 In order to allow users to connect to a Matrix server without needing to
-explicitly specify the homeserver's URL or other parameters, clients may use an
-auto-discovery mechanism to determine the server's URL based on a user's
-Matrix ID. Auto-discovery should only be done at login time, with the
-discovered values retained for the duration of the user's session.
+explicitly specify the homeserver's URL or other parameters, clients SHOULD use
+an auto-discovery mechanism to determine the server's URL based on a user's
+Matrix ID. Auto-discovery should only be done at login time.
 
 In this section, the following terms are used with specific meanings:
 
 ``PROMPT``
   Retrieve the specific piece of information from the user in a way which
-  fits within the existing client UX, if the client is inclined to do so.
-  Failure can take place instead if no good UX is possible at this point.
+  fits within the existing client user experience, if the client is inclined to
+  do so. Failure can take place instead if no good user experience for this is
+  possible at this point.
 
 ``IGNORE``
   Stop the current auto-discovery mechanism. If no more auto-discovery
@@ -223,16 +223,19 @@ specify parameter values.  The flow for this method is as follows:
    e. Validate the homeserver base URL:
 
       i. Parse it as a URL.  If it is not a URL, then ``FAIL_ERROR``.
-      ii. Clients should validate that the URL points to a valid homeserver
-          before accepting it.  Currently, the suggested way of validating is
-          to connect to the ``/_matrix/client/versions`` endpoint, and to parse
-          and validate the data.  If any step in the validation fails, then
-          ``FAIL_ERROR``.
+      ii. Clients SHOULD validate that the URL points to a valid homeserver
+          before accepting it by connecting to the ``/_matrix/client/versions``
+          endpoint, and parsing and validating the data.  If any step in the
+          validation fails, then ``FAIL_ERROR``. Validation is done as a simple
+          check against configuration errors, before sending sensitive
+          information such as a user's password to the server.
 
    f. If the ``m.identity_server`` property is present, extract the
-      ``base_url`` value for use as the base URL of the identity server.  This
-      value can be validated as in the step above, but using
-      ``/_matrix/identity/api/v1``.
+      ``base_url`` value for use as the base URL of the identity server.
+      Validation for this URL is done as in the step above, but using
+      ``/_matrix/identity/api/v1`` as the endpoint to connect to.  If the
+      ``m.identity_server`` property is present, but does not have a
+      ``base_url`` value, then ``FAIL_ERROR``.
 
 {{wellknown_cs_http_api}}
 
