@@ -169,7 +169,8 @@ Web Browser Clients
 
 It is realistic to expect that some clients will be written to be run within a
 web browser or similar environment. In these cases, the homeserver should respond
-to pre-flight requests and supply Cross-Origin Resource Sharing (CORS) headers.
+to pre-flight requests and supply Cross-Origin Resource Sharing (CORS) headers on
+all requests.
 
 When a client approaches the server with a pre-flight (``OPTIONS``) request, the
 server should respond with the CORS headers for that route. If the route does not
