@@ -123,6 +123,15 @@ paths:
           description: |-
             There is no presence state for this user. This user may not exist or
             isn't exposing presence information to you.
+        403:
+          description: You are not allowed to see this user's presence status.
+          examples:
+            application/json: {
+              "errcode": "M_FORBIDDEN",
+              "error": "You are not allowed to see their presence"
+            }
+          schema:
+            "$ref": "definitions/error.yaml"
       tags:
         - Presence
   "/presence/list/{userId}":
