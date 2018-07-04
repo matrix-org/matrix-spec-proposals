@@ -83,6 +83,8 @@ paths:
       description: |-
         Get the given user's presence state.
       operationId: getPresence
+      security:
+        - accessToken: []
       parameters:
         - in: path
           type: string
