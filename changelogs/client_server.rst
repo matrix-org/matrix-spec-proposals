@@ -41,6 +41,8 @@ Unreleased changes
     (`#1245 <https://github.com/matrix-org/matrix-doc/pull/1244>`_).
   - Describe ``StateEvent`` for ``/createRoom``
     (`#1329 <https://github.com/matrix-org/matrix-doc/pull/1329>`_).
+  - Describe the rate limit error response schema
+    (`#1373 <https://github.com/matrix-org/matrix-doc/pull/1373>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
