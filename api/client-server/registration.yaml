@@ -348,6 +348,11 @@ paths:
                 description: |-
                   Additional authentication information for the user-interactive authentication API.
                 "$ref": "definitions/auth_data.yaml"
+              erase:
+                description: |-
+                  Indicates whether the account should be erased. Defaults to `false`.
+                type: boolean
+                example: true
       responses:
         200:
           description: The account has been deactivated.

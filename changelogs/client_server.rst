@@ -60,6 +60,8 @@ Unreleased changes
     (`#1263 <https://github.com/matrix-org/matrix-doc/pull/1263>`_).
   - Document `highlights` field in /search response
     (`#1274 <https://github.com/matrix-org/matrix-doc/pull/1274>`_).
+  - Document `erase` field in `/account/deactivate` request
+    (`#1290 <https://github.com/matrix-org/matrix-doc/pull/1290>`_).
 
 r0.3.0
 ======
