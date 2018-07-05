@@ -10,7 +10,7 @@ Matrix client can use to interact with an application service through the
 facilitation of the homeserver.
 
 Third Party Lookups
-------------------
+-------------------
 
 Application services can provide access to third party networks via bridging.
 This allows Matrix users to communicate with users on other communication
