@@ -350,7 +350,7 @@ paths:
             items:
               type: object
               title: User
-              properties:
+              schema:
                 userid:
                   type: string
                   description: The Matrix ID of the matched user.
