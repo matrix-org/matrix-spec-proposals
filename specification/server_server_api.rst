@@ -16,6 +16,10 @@
 Federation API
 ==============
 
+.. WARNING::
+  This API is unstable and will change without warning or discussion while
+  we work towards a r0 release (scheduled for August 2018).
+
 Matrix homeservers use the Federation APIs (also known as server-server APIs)
 to communicate with each other. Homeservers use these APIs to push messages to
 each other in real-time, to 
