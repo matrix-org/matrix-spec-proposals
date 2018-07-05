@@ -98,8 +98,10 @@ func makeWalker(base string, w *fsnotify.Watcher) filepath.WalkFunc {
 			log.Fatalf("Failed to get relative path of %s: %v", path, err)
 		}
 
+		// Normalize slashes
+		rel = filepath.ToSlash(rel)
+
 		// skip a few things that we know don't form part of the spec
-		rel = strings.Replace(rel, "\\", "/", -1) // normalize slashes (thanks to windows)
 		if rel == "api/node_modules" ||
 			rel == "scripts/gen" ||
 			rel == "scripts/tmp" {
@@ -127,7 +129,7 @@ func filter(e fsnotify.Event) bool {
 	}
 
 	// Forcefully ignore directories we don't care about (Windows, at least, tries to notify about some directories)
-	filePath := strings.Replace(e.Name, "\\", "/", -1) // normalize slashes (thanks to windows)
+	filePath := filepath.ToSlash(e.Name) // normalize slashes
 	if strings.Contains(filePath, "/scripts/tmp") ||
 		strings.Contains(filePath, "/scripts/gen") ||
 		strings.Contains(filePath, "/api/node_modules") {
@@ -156,11 +158,7 @@ func serve(w http.ResponseWriter, req *http.Request) {
 	if file[0] == '/' {
 		file = file[1:]
 	}
-	b, ok = m.bytes[file]
-
-	if !ok {
-		b, ok = m.bytes[strings.Replace(file, "/", "\\", -1)] // Attempt a Windows lookup
-	}
+	b, ok = m.bytes[filepath.FromSlash(file)] // de-normalize slashes
 
 	if ok && file == "api-docs.json" {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
