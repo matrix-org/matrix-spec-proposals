@@ -305,7 +305,7 @@ paths:
       description: |-
         Retreive an array of third party users from a Matrix ID.
       operationId: queryUserByID
-      paramters:
+      parameters:
         - in: path
           name: userid
           type: string
