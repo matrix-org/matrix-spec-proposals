@@ -237,20 +237,20 @@ paths:
             items:
               type: object
               title: User
-                properties:
-                  userid:
-                    type: string
-                    description: The Matrix ID of the matched user.
-                  protocol:
-                    type: string
-                    description: The third party protocol.
-                  fields:
-                    type: object
-                    description: The third party network fields used to identify this user.
-                    properties:
-                      user:
-                        type: string
-                        description: An example field, in this case the username for a Gitter user.
+              properties:
+                userid:
+                  type: string
+                  description: The Matrix ID of the matched user.
+                protocol:
+                  type: string
+                  description: The third party protocol.
+                fields:
+                  type: object
+                  description: The third party network fields used to identify this user.
+                  properties:
+                    user:
+                      type: string
+                      description: An example field, in this case the username for a Gitter user.
         404:
           description: The Matrix ID was not found
           examples:
