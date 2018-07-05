@@ -1,0 +1,338 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Third Party Lookup API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  "/thirdparty/protocols":
+    get:
+      summary: Retrieve metadata about all protocols that a homeserver supports.
+      description: |-
+        Fetches the overall metadata about protocols supported by the
+        homeserver. Includes both the available protocols and all fields
+        required for queries against each protocol.
+      operationId: queryMetadata
+      responses:
+        200:
+          description: The protocols supported by the homeserver.
+          examples:
+            application/json: {
+              "irc": {
+                "user_fields": ["network", "nickname"],
+                "location_fields": ["network", "channel"],
+                "icon": "mxc://example.org/aBcDeFgH",
+                "field_types": {
+                  "network": {
+                    "regexp": "([a-z0-9]+\\.)*[a-z0-9]+",
+                    "placeholder": "irc.example.org"
+                  },
+                  "nickname": {
+                    "regexp": "[^\\s]+",
+                    "placeholder": "username"
+                  },
+                  "channel": {
+                    "regexp": "#[^\\s]+",
+                    "placeholder": "#foobar"
+                  }
+                },
+                "instances": [
+                  {
+                    "desc": "Freenode",
+                    "icon": "mxc://example.org/JkLmNoPq",
+                    "fields": {
+                      "network": "freenode.net",
+                    }
+                  }
+                ]
+              },
+              "gitter": {
+                "user_fields": ["username"],
+                "location_fields": ["room"],
+                "field_types": {
+                  "username": {
+                    "regexp": "@[^\\s]+",
+                    "placeholder": "@username"
+                  },
+                  "room": {
+                    "regexp": "[^\\s]+\\/[^\\s]+",
+                    "placeholder": "matrix-org/matrix-doc"
+                  }
+                },
+                "instances": [
+                  {
+                    "desc": "Gitter",
+                    "icon": "mxc://example.org/zXyWvUt",
+                    "fields": {}
+                  }
+                ]
+              }
+            }
+          schema:
+            type: object
+  "/thirdparty/protocol/{protocol}":
+    get:
+      summary: Retrieve metadata about a specific protocol that the homeserver supports.
+      description: |-
+        Fetches the metadata from the homeserver about a particular third party protocol.
+      operationId: queryMetadata
+      parameters:
+        - in: path
+          name: protocol
+          type: string
+          description: |-
+            The name of the protocol.
+          required: true
+          x-example: "irc"
+      responses:
+        200:
+          description: The protocol was found and metadata returned.
+          examples:
+            application/json: {
+              "user_fields": ["network", "nickname"],
+              "location_fields": ["network", "channel"],
+              "icon": "mxc://example.org/aBcDeFgH",
+              "field_types": {
+                "network": {
+                  "regexp": "([a-z0-9]+\\.)*[a-z0-9]+",
+                  "placeholder": "irc.example.org"
+                },
+                "nickname": {
+                  "regexp": "[^\\s#]+",
+                  "placeholder": "username"
+                },
+                "channel": {
+                  "regexp": "#[^\\s]+",
+                  "placeholder": "#foobar"
+                }
+              },
+              "instances": [
+                {
+                  "desc": "Freenode",
+                  "icon": "mxc://example.org/JkLmNoPq",
+                  "fields": {
+                    "network": "freenode.net",
+                  }
+                }
+              ]
+            }
+          schema:
+            type: object
+        404:
+          description: The protocol is unknown
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND"
+            }
+          schema:
+            type: object
+  "/thirdparty/location/{protocol}":
+    get:
+      summary: Retreive Matrix-side portals rooms leading to a third party location.
+      description: |-
+        Requesting this endpoint with a valid protocol name results in a list
+        of successful mapping results in a JSON array. Each result contains
+        objects to represent the Matrix room or rooms that represent a portal
+        to this third party network. Each has the Matrix room alias string,
+        an identifier for the particular third party network protocol, and an
+        object containing the network-specific fields that comprise this
+        identifier. It should attempt to canonicalise the identifier as much
+        as reasonably possible given the network type.
+      operationId: queryLocationByProtocol
+      parameters:
+        - in: path
+          name: protocol
+          type: string
+          description: The protocol used to communicate to the third party network.
+          required: true
+          x-example: "irc"
+        - in: query
+          name: field1, field2...
+          type: string
+          description: |-
+            One or more custom fields to help identify the third party
+            location.
+      responses:
+        200:
+          description: At least one portal room was found.
+          examples:
+            application/json: [{
+              "alias": "#freenode_#matrix:matrix.org",
+              "protocol": "irc",
+              "fields": {
+                "network": "freenode",
+                "channel": "#matrix"
+              }
+            }]
+          schema:
+            type: array
+            description: |-
+              Array of portal rooms leading to the requested third party
+              location.
+            items:
+              type: object
+              title: Portal Room
+        404:
+          description: The Matrix room alias was not found
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND"
+            }
+          schema:
+            type: object
+  "/thirdparty/user/{protocol}":
+    get:
+      summary: Retrieve the Matrix ID of a corresponding third party user.
+      description: |-
+        Retrieve a Matrix ID linked to a user on the third party service, given
+        a set of user parameters.
+      operationId: queryUserByProtocol
+      parameters:
+        - in: path
+          name: protocol
+          type: string
+          description: |-
+            The name of the protocol.
+          required: true
+          x-example: irc
+        - in: query
+          name: field1, field2...
+          type: string
+          description: |-
+            One or more custom fields that are passed to the AS to help identify the user.
+      responses:
+        200:
+          description: The Matrix IDs found with the given parameters.
+          examples:
+            application/json: [{
+              "userid": "@_gitter_jim:matrix.org",
+              "protocol": "gitter",
+              "fields": {
+                "user": "jim"
+              }
+            }]
+          schema:
+            type: array
+            description: Matched users.
+            items:
+              type: object
+              title: User
+                properties:
+                  userid:
+                    type: string
+                    description: The Matrix ID of the matched user.
+                  protocol:
+                    type: string
+                    description: The third party protocol.
+                  fields:
+                    type: object
+                    description: The third party network fields used to identify this user.
+                    properties:
+                      user:
+                        type: string
+                        description: An example field, in this case the username for a Gitter user.
+        404:
+          description: The Matrix ID was not found
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND"
+            }
+          schema:
+            type: object
+  "/thirdparty/location":
+    get:
+      summary: Reverse-lookup third party locations given a Matrix room alias.
+      description: |-
+        Retreive an array of third party network locations from a Matrix room
+        alias.
+      operationId: queryLocationByAlias
+      parameters:
+       - in: path
+         name: alias
+         type: string
+         description: The Matrix room alias to look up.
+      responses:
+        200:
+          description: |-
+            All found third party locations. Same response format as the
+            forward lookup response.
+          examples:
+            application/json: [{
+              "alias": "#freenode_#matrix:matrix.org",
+              "protocol": "irc",
+              "fields": {
+                "network": "freenode",
+                "channel": "#matrix"
+              }
+            }]
+          schema:
+            type: array
+            description: Matched third party locations.
+            items:
+              type: object
+              title: Location
+        404:
+          description: The Matrix room alias was not found
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND"
+            }
+          schema:
+            type: object
+  "/thirdparty/user":
+    get:
+      summary: Reverse-lookup third party users given a Matrix ID.
+      description: |-
+        Retreive an array of third party users from a Matrix ID.
+      operationId: queryUserByID
+      paramters:
+        - in: path
+          name: userid
+          type: string
+          description: The Matrix ID to look up.
+      responses:
+        200:
+          description: |-
+            An array of third party users.
+          examples:
+            application/json: [{
+              "userid": "@_gitter_jim:matrix.org",
+              "protocol": "gitter",
+              "fields": {
+                "user": "jim"
+              }
+            }]
+          schema:
+            type: array
+            description: Matched third party users
+            items:
+              type: object
+              title: User
+        404:
+          description: The Matrix ID was not found
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND"
+            }
+          schema:
+            type: object

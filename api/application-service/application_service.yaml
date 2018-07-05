@@ -30,8 +30,8 @@ paths:
     put:
       summary: Send some events to the application service.
       description: |-
-        This API is called by the HS when the HS wants to push an event (or
-        batch of events) to the AS.
+        This API is called by the homeserver when it wants to push an event
+        (or batch of events) to the application service.
       operationId: sendTransaction
       parameters:
         - in: path
@@ -48,33 +48,33 @@ paths:
           schema:
             type: object
             example: {
-                "events": [
-                  {
-                    "age": 32,
-                    "content": {
-                        "body": "incoming message",
-                        "msgtype": "m.text"
-                    },
-                    "event_id": "$14328055551tzaee:localhost",
-                    "origin_server_ts": 1432804485886,
-                    "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
-                    "type": "m.room.message",
-                    "user_id": "@bob:localhost"
+              "events": [
+                {
+                  "age": 32,
+                  "content": {
+                      "body": "incoming message",
+                      "msgtype": "m.text"
                   },
-                  {
-                    "age": 1984,
-                    "content": {
-                        "body": "another incoming message",
-                        "msgtype": "m.text"
-                    },
-                    "event_id": "$1228055551ffsef:localhost",
-                    "origin_server_ts": 1432804485886,
-                    "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
-                    "type": "m.room.message",
-                    "user_id": "@bob:localhost"
-                  }
-                ]
-              }
+                  "event_id": "$14328055551tzaee:localhost",
+                  "origin_server_ts": 1432804485886,
+                  "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
+                  "type": "m.room.message",
+                  "user_id": "@bob:localhost"
+                },
+                {
+                  "age": 1984,
+                  "content": {
+                      "body": "another incoming message",
+                      "msgtype": "m.text"
+                  },
+                  "event_id": "$1228055551ffsef:localhost",
+                  "origin_server_ts": 1432804485886,
+                  "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
+                  "type": "m.room.message",
+                  "user_id": "@bob:localhost"
+                }
+              ]
+            }
             description: "Transaction informations"
             properties:
               events:
@@ -89,14 +89,14 @@ paths:
           description: The transaction was processed successfully.
           examples:
             application/json: {
-              }
+            }
           schema:
             type: object
         500:
           description: There was a problem completing the request.
           examples:
             application/json: {
-              }
+            }
           schema:
             type: object
   "/rooms/{roomAlias}":
@@ -126,7 +126,7 @@ paths:
             before responding.
           examples:
             application/json: {
-              }
+            }
           schema:
             type: object
         401:
@@ -135,8 +135,8 @@ paths:
             Optional error information can be included in the body of this response.
           examples:
             application/json: {
-                "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
           schema:
             type: object
         403:
@@ -144,8 +144,8 @@ paths:
             The credentials supplied by the homeserver were rejected.
           examples:
             application/json: {
-                "errcode": "M_FORBIDDEN"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
+            }
           schema:
             type: object
         404:
@@ -154,15 +154,15 @@ paths:
             Optional error information can be included in the body of this response.
           examples:
             application/json: {
-                "errcode": "M_NOT_FOUND"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
+            }
           schema:
             type: object
         500:
           description: There was a problem completing the request.
           examples:
             application/json: {
-              }
+            }
           schema:
             type: object
   "/users/{userId}":
@@ -189,7 +189,7 @@ paths:
             service MUST create the user using the client-server API.
           examples:
             application/json: {
-              }
+            }
           schema:
             type: object
         401:
@@ -198,8 +198,8 @@ paths:
             Optional error information can be included in the body of this response.
           examples:
             application/json: {
-                "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
           schema:
             type: object
         403:
@@ -207,8 +207,8 @@ paths:
             The credentials supplied by the homeserver were rejected.
           examples:
             application/json: {
-                "errcode": "M_FORBIDDEN"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
+            }
           schema:
             type: object
         404:
@@ -217,24 +217,24 @@ paths:
             Optional error information can be included in the body of this response.
           examples:
             application/json: {
-                "errcode": "M_NOT_FOUND"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
+            }
           schema:
             type: object
         500:
           description: There was a problem completing the request.
           examples:
             application/json: {
-              }
+            }
           schema:
             type: object
   "/_matrix/app/unstable/thirdparty/{protocol}":
     get:
       summary: Retrieve metadata about a specific protocol that the application service supports.
       description: |-
-        This API is called by the HS when it wants to present clients with
-        specific information about the various thirdparty networks that an AS
-        supports.
+        This API is called by the homeserver when it wants to present clients
+        with specific information about the various third party networks that
+        an application service supports.
       operationId: queryMetadata
       parameters:
         - in: path
@@ -249,33 +249,33 @@ paths:
           description: The protocol was found and metadata returned.
           examples:
             application/json: {
-                "user_fields": ["network", "nickname"],
-                "location_fields": ["network", "channel"],
-                "icon": "mxc://example.org/aBcDeFgH",
-                "field_types": {
-                  "network": {
-                    "regexp": "([a-z0-9]+\\.)*[a-z0-9]+",
-                    "placeholder": "irc.example.org"
-                  },
-                  "nickname": {
-                    "regexp": "[^\\s]+",
-                    "placeholder": "username"
-                  },
-                  "channel": {
-                    "regexp": "#[^\\s]+",
-                    "placeholder": "#foobar"
-                  }
+              "user_fields": ["network", "nickname"],
+              "location_fields": ["network", "channel"],
+              "icon": "mxc://example.org/aBcDeFgH",
+              "field_types": {
+                "network": {
+                  "regexp": "([a-z0-9]+\\.)*[a-z0-9]+",
+                  "placeholder": "irc.example.org"
                 },
-                "instances": [
-                  {
-                    "desc": "Freenode",
-                    "icon": "mxc://example.org/JkLmNoPq",
-                    "fields": {
-                      "network": "freenode.net",
-                    }
+                "nickname": {
+                  "regexp": "[^\\s]+",
+                  "placeholder": "username"
+                },
+                "channel": {
+                  "regexp": "#[^\\s]+",
+                  "placeholder": "#foobar"
+                }
+              },
+              "instances": [
+                {
+                  "desc": "Freenode",
+                  "icon": "mxc://example.org/JkLmNoPq",
+                  "fields": {
+                    "network": "freenode.net",
                   }
-                ]
-              }
+                }
+              ]
+            }
           schema:
             type: object
         401:
@@ -284,8 +284,8 @@ paths:
             Optional error information can be included in the body of this response.
           examples:
             application/json: {
-                "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
           schema:
             type: object
         403:
@@ -293,30 +293,30 @@ paths:
             The credentials supplied by the homeserver were rejected.
           examples:
             application/json: {
-                "errcode": "M_FORBIDDEN"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
+            }
           schema:
             type: object
         404:
           description: No protocol was found with the given path.
           examples:
             application/json: {
-                "errcode": "M_NOT_FOUND"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
+            }
           schema:
             type: object
         500:
           description: There was a problem completing the request.
           examples:
             application/json: {
-              }
+            }
           schema:
             type: object
   "/_matrix/app/unstable/thirdparty/user/{protocol}":
     get:
-      summary: Retrieve the Matrix ID of a corresponding thirdparty user.
+      summary: Retrieve the Matrix ID of a corresponding third party user.
       description: |-
-        This API is called by the HS in order to retrieve a Matrix ID linked
+        This API is called by the homeserver in order to retrieve a Matrix ID linked
         to a user on the external service, given a set of user parameters.
       operationId: queryUserByProtocol
       parameters:
@@ -331,32 +331,47 @@ paths:
           name: field1, field2...
           type: string
           description: |-
-            One or more custom fields that are passed to the AS to help identify the user.
+            One or more custom fields that are passed to the application
+            service to help identify the user.
       responses:
         200:
           description: The Matrix IDs found with the given parameters.
           examples:
             application/json: [{
-                "userid": "@_gitter_jim:matrix.org",
-                "protocol": "gitter",
-                "fields": {
-                  "user": "jim"
-                }
-              }]
+              "userid": "@_gitter_jim:matrix.org",
+              "protocol": "gitter",
+              "fields": {
+                "user": "jim"
+              }
+            }]
           schema:
             type: array
             description: Matched users.
             items:
               type: object
               title: User
+                properties:
+                  userid:
+                    type: string
+                    description: The Matrix ID of the matched user.
+                  protocol:
+                    type: string
+                    description: The third party protocol.
+                  fields:
+                    type: object
+                    description: The third party network fields used to identify this user.
+                    properties:
+                      user:
+                        type: string
+                        description: An example field, in this case the username for a Gitter user.
         401:
           description: |-
             The homeserver has not supplied credentials to the application service.
             Optional error information can be included in the body of this response.
           examples:
             application/json: {
-                "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
           schema:
             type: object
         403:
@@ -364,67 +379,67 @@ paths:
             The credentials supplied by the homeserver were rejected.
           examples:
             application/json: {
-                "errcode": "M_FORBIDDEN"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
+            }
           schema:
             type: object
         404:
           description: No users were found with the given parameters.
           examples:
             application/json: {
-                "errcode": "M_NOT_FOUND"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
+            }
           schema:
             type: object
         500:
           description: There was a problem completing the request.
           examples:
             application/json: {
-              }
+            }
           schema:
             type: object
   "/_matrix/app/unstable/thirdparty/location/{protocol}":
     get:
-      summary: Retreive Matrix-side portals rooms leading to a thirdparty location.
+      summary: Retreive Matrix-side portal rooms leading to a third party location.
       description: |-
         Requesting this endpoint with a valid protocol name results in a list
         of successful mapping results in a JSON array. Each result contains
         objects to represent the Matrix room or rooms that represent a portal
-        to this 3PN. Each has the Matrix room alias string, an identifier for
-        the particular 3PN protocol, and an object containing the
-        network-specific fields that comprise this identifier. It should
-        attempt to canonicalise the identifier as much as reasonably possible
-        given the network type.
+        to this third party network. Each has the Matrix room alias string,
+        an identifier for the particular third party network protocol, and an
+        object containing the network-specific fields that comprise this
+        identifier. It should attempt to canonicalise the identifier as much
+        as reasonably possible given the network type.
       operationId: queryLocationByProtocol
       parameters:
         - in: path
           name: protocol
           type: string
-          description: The protocol used to communicate to the thirdparty network.
+          description: The protocol used to communicate to the third party network.
           required: true
           x-example: "irc"
         - in: query
           name: field1, field2...
           type: string
           description: |-
-            One or more custom fields that are passed to the AS to help
-            identify the thirdparty location.
+            One or more custom fields that are passed to the application
+            service to help identify the third party location.
       responses:
         200:
           description: At least one portal room was found.
           examples:
             application/json: [{
-                "alias": "#freenode_#matrix:matrix.org",
-                "protocol": "irc",
-                "fields": {
-                  "network": "freenode",
-                  "channel": "#matrix"
-                }
-              }]
+              "alias": "#freenode_#matrix:matrix.org",
+              "protocol": "irc",
+              "fields": {
+                "network": "freenode",
+                "channel": "#matrix"
+              }
+            }]
           schema:
             type: array
             description: |-
-              Array of portal rooms leading to the requested thirdparty
+              Array of portal rooms leading to the requested third party
               location.
             items:
               type: object
@@ -435,8 +450,8 @@ paths:
             Optional error information can be included in the body of this response.
           examples:
             application/json: {
-                "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
           schema:
             type: object
         403:
@@ -444,54 +459,54 @@ paths:
             The credentials supplied by the homeserver were rejected.
           examples:
             application/json: {
-                "errcode": "M_FORBIDDEN"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
+            }
           schema:
             type: object
         404:
           description: No mappings were found with the given parameters.
           examples:
             application/json: {
-                "errcode": "M_NOT_FOUND"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
+            }
           schema:
             type: object
         500:
           description: There was a problem completing the request.
           examples:
             application/json: {
-              }
+            }
           schema:
             type: object
   "/_matrix/app/unstable/thirdparty/location":
     get:
-      summary: Reverse-lookup thirdparty locations given a Matrix room alias.
+      summary: Reverse-lookup third party locations given a Matrix room alias.
       description: |-
-        Retreive an array of thirdparty network locations from a Matrix room
+        Retreive an array of third party network locations from a Matrix room
         alias.
       operationId: queryLocationByAlias
       parameters:
-       - in: path
+       - in: query
          name: alias
          type: string
          description: The Matrix room alias to look up.
       responses:
         200:
           description: |-
-            All found thirdparty locations. Same response format as the
+            All found third party locations. Same response format as the
             forward lookup response.
           examples:
             application/json: [{
-                "alias": "#freenode_#matrix:matrix.org",
-                "protocol": "irc",
-                "fields": {
-                  "network": "freenode",
-                  "channel": "#matrix"
-                }
-              }]
+              "alias": "#freenode_#matrix:matrix.org",
+              "protocol": "irc",
+              "fields": {
+                "network": "freenode",
+                "channel": "#matrix"
+              }
+            }]
           schema:
             type: array
-            description: Matched thirdparty locations.
+            description: Matched third party locations.
             items:
               type: object
               title: Location
@@ -501,8 +516,8 @@ paths:
             Optional error information can be included in the body of this response.
           examples:
             application/json: {
-                "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
           schema:
             type: object
         403:
@@ -510,51 +525,51 @@ paths:
             The credentials supplied by the homeserver were rejected.
           examples:
             application/json: {
-                "errcode": "M_FORBIDDEN"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
+            }
           schema:
             type: object
         404:
           description: No mappings were found with the given parameters.
           examples:
             application/json: {
-                "errcode": "M_NOT_FOUND"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
+            }
           schema:
             type: object
         500:
           description: There was a problem completing the request.
           examples:
             application/json: {
-              }
+            }
           schema:
             type: object
   "/_matrix/app/unstable/thirdparty/user":
     get:
-      summary: Reverse-lookup thirdparty users given a Matrix ID.
+      summary: Reverse-lookup third party users given a Matrix ID.
       description: |-
-        Retreive an array of thirdparty users from a Matrix ID.
+        Retreive an array of third party users from a Matrix ID.
       operationId: queryUserByID
       paramters:
-        - in: path
+        - in: query 
           name: userid
           type: string
           description: The Matrix ID to look up.
       responses:
         200:
           description: |-
-            An array of thirdparty users.
+            An array of third party users.
           examples:
             application/json: [{
-                "userid": "@_gitter_jim:matrix.org",
-                "protocol": "gitter",
-                "fields": {
-                  "user": "jim"
-                }
-              }]
+              "userid": "@_gitter_jim:matrix.org",
+              "protocol": "gitter",
+              "fields": {
+                "user": "jim"
+              }
+            }]
           schema:
             type: array
-            description: Matched thirdparty users
+            description: Matched third party users
             items:
               type: object
               title: User
@@ -564,8 +579,8 @@ paths:
             Optional error information can be included in the body of this response.
           examples:
             application/json: {
-                "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
           schema:
             type: object
         403:
@@ -573,22 +588,22 @@ paths:
             The credentials supplied by the homeserver were rejected.
           examples:
             application/json: {
-                "errcode": "M_FORBIDDEN"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
           schema:
             type: object
         404:
           description: No mappings were found with the given parameters.
           examples:
             application/json: {
-                "errcode": "M_NOT_FOUND"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
+            }
           schema:
             type: object
         500:
           description: There was a problem completing the request.
           examples:
             application/json: {
-              }
+            }
           schema:
             type: object

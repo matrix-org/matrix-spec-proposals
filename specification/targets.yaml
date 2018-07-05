@@ -12,7 +12,7 @@ targets:
       - { 1: modules.rst }
       - { 2: feature_profiles.rst }
       - { 2: "group:modules" }  # reference a group of files
-      - { 1: thirdparty_lookup.rst }
+      - { 1: third_party_lookup.rst }
     version_label: "%CLIENT_RELEASE_LABEL%"
   application_service:
     files:

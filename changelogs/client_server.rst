@@ -11,8 +11,6 @@ Unreleased changes
       (`#1110 <https://github.com/matrix-org/matrix-doc/pull/1110>`_).
     - ``POST /delete_devices``
       (`#1239 <https://github.com/matrix-org/matrix-doc/pull/1239>`_).
-    - ``GET /thirdparty/protocols``
-      (`#1353 <https://github.com/matrix-org/matrix-doc/pull/1353>`_).
     - ``GET /thirdparty/protocol/{protocol}``
       (`#1353 <https://github.com/matrix-org/matrix-doc/pull/1353>`_).
     - ``GET /thirdparty/location/{protocol}``
