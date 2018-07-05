@@ -103,7 +103,7 @@ paths:
                           The order in which to search for results.
                           By default, this is ``"rank"``.
                       event_context:
-                        title: "Include Event Context"
+                        title: Include Event Context
                         type: object
                         description: |-
                           Configures whether any context for the events
