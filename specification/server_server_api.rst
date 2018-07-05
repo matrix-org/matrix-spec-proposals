@@ -18,7 +18,7 @@ Federation API
 
 Matrix homeservers use the Federation APIs (also known as server-server APIs)
 to communicate with each other. Homeservers use these APIs to push messages to
-each other in real-time, to 
+each other in real-time, to
 historic messages from each other, and to
 query profile and presence information about users on each other's servers.
 
@@ -73,22 +73,22 @@ Server Discovery
 Resolving Server Names
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Each matrix homeserver is identified by a server name consisting of a DNS name
+Each matrix homeserver is identified by a server name consisting of a hostname
 and an optional TLS port.
 
 .. code::
 
-    server_name = dns_name [ ":" tls_port]
+    server_name = hostname [ ":" tls_port]
     dns_name = <host, see [RFC 3986], Section 3.2.2>
     tls_port = *DIGIT
 
 .. **
 
 If the port is present then the server is discovered by looking up an AAAA or
-A record for the DNS name and connecting to the specified TLS port. If the port
+A record for the hostname and connecting to the specified TLS port. If the port
 is absent then the server is discovered by looking up a ``_matrix._tcp`` SRV
-record for the DNS name. If this record does not exist then the server is
-discovered by looking up an AAAA or A record on the DNS name and taking the
+record for the hostname. If this record does not exist then the server is
+discovered by looking up an AAAA or A record on the hostname and taking the
 default fallback port number of 8448.
 Homeservers may use SRV records to load balance requests between multiple TLS
 endpoints or to failover to another endpoint if an endpoint fails.
@@ -165,7 +165,7 @@ events sent by that server can still be checked.
 ==================== =================== ======================================
  Key                  Type                Description
 ==================== =================== ======================================
-``server_name``      String              DNS name of the homeserver.
+``server_name``      String              hostname of the homeserver.
 ``verify_keys``      Object              Public keys of the homeserver for
                                          verifying digital signatures.
 ``old_verify_keys``  Object              The public keys that the server used
@@ -273,7 +273,7 @@ at ``/_matrix/key/v1``.
 ==================== =================== ======================================
  Key                  Type                Description
 ==================== =================== ======================================
-``server_name``      String              DNS name of the homeserver.
+``server_name``      String              hostname of the homeserver.
 ``verify_keys``      Object              Public keys of the homeserver for
                                          verifying digital signatures.
 ``signatures``       Object              Digital signatures for this object
@@ -897,10 +897,10 @@ the resident homeserver. The required fields are:
 ======================== ============ =========================================
 ``type``                 String       The value ``m.room.member``.
 ``auth_events``          List         An event-reference list containing the
-                                      authorization events that would allow 
+                                      authorization events that would allow
                                       this member to join.
 ``content``              Object       The event content.
-``depth``                Integer      (this field must be present but is 
+``depth``                Integer      (this field must be present but is
                                       ignored; it may be 0)
 ``origin``               String       The name of the resident homeserver.
 ``origin_server_ts``     Integer      A timestamp added by the resident
