@@ -107,7 +107,7 @@ paths:
               "error": "User @example:matrix.org is in room !au1ba7o:matrix.org"
             }
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/error.yaml"
         429:
           description: This request was rate-limited.
           schema:
