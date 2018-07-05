@@ -92,13 +92,6 @@ paths:
             }
           schema:
             type: object
-        500:
-          description: There was a problem completing the request.
-          examples:
-            application/json: {
-            }
-          schema:
-            type: object
   "/rooms/{roomAlias}":
     get:
       summary: Query if a room alias should exist on the application service.
@@ -158,13 +151,6 @@ paths:
             }
           schema:
             type: object
-        500:
-          description: There was a problem completing the request.
-          examples:
-            application/json: {
-            }
-          schema:
-            type: object
   "/users/{userId}":
     get:
       summary: Query if a user should exist on the application service.
@@ -221,14 +207,7 @@ paths:
             }
           schema:
             type: object
-        500:
-          description: There was a problem completing the request.
-          examples:
-            application/json: {
-            }
-          schema:
-            type: object
-  "/_matrix/app/unstable/thirdparty/{protocol}":
+  "/_matrix/app/unstable/thirdparty/protocol/{protocol}":
     get:
       summary: Retrieve metadata about a specific protocol that the application service supports.
       description: |-
@@ -302,13 +281,6 @@ paths:
           examples:
             application/json: {
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
-            }
-          schema:
-            type: object
-        500:
-          description: There was a problem completing the request.
-          examples:
-            application/json: {
             }
           schema:
             type: object
@@ -391,13 +363,6 @@ paths:
             }
           schema:
             type: object
-        500:
-          description: There was a problem completing the request.
-          examples:
-            application/json: {
-            }
-          schema:
-            type: object
   "/_matrix/app/unstable/thirdparty/location/{protocol}":
     get:
       summary: Retreive Matrix-side portal rooms leading to a third party location.
@@ -471,13 +436,6 @@ paths:
             }
           schema:
             type: object
-        500:
-          description: There was a problem completing the request.
-          examples:
-            application/json: {
-            }
-          schema:
-            type: object
   "/_matrix/app/unstable/thirdparty/location":
     get:
       summary: Reverse-lookup third party locations given a Matrix room alias.
@@ -537,13 +495,6 @@ paths:
             }
           schema:
             type: object
-        500:
-          description: There was a problem completing the request.
-          examples:
-            application/json: {
-            }
-          schema:
-            type: object
   "/_matrix/app/unstable/thirdparty/user":
     get:
       summary: Reverse-lookup third party users given a Matrix ID.
@@ -597,13 +548,6 @@ paths:
           examples:
             application/json: {
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
-            }
-          schema:
-            type: object
-        500:
-          description: There was a problem completing the request.
-          examples:
-            application/json: {
             }
           schema:
             type: object
