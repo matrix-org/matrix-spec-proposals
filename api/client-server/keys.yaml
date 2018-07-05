@@ -274,7 +274,7 @@ paths:
                 type: object
                 description: |-
                   One-time keys for the queried devices. A map from user ID, to a
-                  map from ``<algorithm>:<key_id>`` to the key object.
+                  map from devices to a map from ``<algorithm>:<key_id>`` to the key object.
                 additionalProperties:
                   type: object
                   additionalProperties:
