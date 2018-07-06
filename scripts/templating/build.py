@@ -63,6 +63,7 @@ import sys
 from textwrap import TextWrapper
 
 from matrix_templates.units import TypeTableRow
+from functools import reduce
 
 
 def create_from_template(template, sections):
@@ -138,7 +139,7 @@ def main(input_module, files=None, out_dir=None, verbose=False, substitutions={}
             return reduce(max, rowwidths,
                           default if default is not None else default_width)
 
-        results = map(colwidth, keys, defaults)
+        results = list(map(colwidth, keys, defaults))
         return results
 
     # make Jinja aware of the templates and filters
@@ -167,16 +168,16 @@ def main(input_module, files=None, out_dir=None, verbose=False, substitutions={}
 
     # print out valid section keys if no file supplied
     if not files:
-        print "\nValid template variables:"
-        for key in sections.keys():
+        print("\nValid template variables:")
+        for key in list(sections.keys()):
             sec_text = "" if (len(sections[key]) > 75) else (
                 "(Value: '%s')" % sections[key]
             )
             sec_info = "%s characters" % len(sections[key])
             if sections[key].count("\n") > 0:
                 sec_info += ", %s lines" % sections[key].count("\n")
-            print "  %s" % key
-            print "      %s %s" % (sec_info, sec_text)
+            print("  %s" % key)
+            print("      %s %s" % (sec_info, sec_text))
         return
 
     # check the input files and substitute in sections where required
@@ -190,8 +191,8 @@ def main(input_module, files=None, out_dir=None, verbose=False, substitutions={}
 def process_file(env, sections, filename, output_filename):
     log("Parsing input template: %s" % filename)
 
-    with open(filename, "r") as file_stream:
-        temp_str = file_stream.read().decode("utf-8")
+    with open(filename, "rb") as file_stream:
+        temp_str = file_stream.read().decode('UTF-8')
 
     # do sanity checking on the template to make sure they aren't reffing things
     # which will never be replaced with a section.
@@ -210,16 +211,16 @@ def process_file(env, sections, filename, output_filename):
     # Do these substitutions outside of the ordinary templating system because
     # we want them to apply to things like the underlying swagger used to
     # generate the templates, not just the top-level sections.
-    for old, new in substitutions.items():
+    for old, new in list(substitutions.items()):
         output = output.replace(old, new)
 
-    with open(output_filename, "w") as f:
-        f.write(output.encode("utf-8"))
+    with open(output_filename, "wb") as f:
+        f.write(output.encode('UTF-8'))
     log("Output file for: %s" % output_filename)
 
 
 def log(line):
-    print "batesian: %s" % line
+    print("batesian: %s" % line)
 
 if __name__ == '__main__':
     parser = ArgumentParser(

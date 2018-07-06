@@ -29,7 +29,7 @@ class Sections(object):
 
     def log(self, text):
         if self.debug:
-            print "batesian:sections: %s" % text
+            print("batesian:sections: %s" % text)
 
     def get_sections(self):
         render_list = inspect.getmembers(self, predicate=inspect.ismethod)
@@ -40,7 +40,7 @@ class Sections(object):
             section_key = func_name[len("render_"):]
             self.log("Generating section '%s'" % section_key)
             section = func()
-            if isinstance(section, basestring):
+            if isinstance(section, str):
                 if section_key in section_dict:
                     raise Exception(
                         ("%s : Section %s already exists. It must have been " +
@@ -54,8 +54,8 @@ class Sections(object):
                 )
             elif isinstance(section, dict):
                 self.log("  Generated multiple sections:")
-                for (k, v) in section.iteritems():
-                    if not isinstance(k, basestring) or not isinstance(v, basestring):
+                for (k, v) in list(section.items()):
+                    if not isinstance(k, str) or not isinstance(v, str):
                         raise Exception(
                             ("Method %s returned multiple sections as a dict but " +
                             "expected the dict elements to be strings but they aren't.") %

@@ -94,16 +94,16 @@ for filename in os.listdir(cs_api_dir):
         api = units.resolve_references(filepath, api)
 
         basePath = api['basePath']
-        for path, methods in api["paths"].items():
+        for path, methods in list(api["paths"].items()):
             path = (basePath + path).replace('%CLIENT_MAJOR_VERSION%',
                                              major_version)
-            for method, spec in methods.items():
-                if "tags" in spec.keys():
+            for method, spec in list(methods.items()):
+                if "tags" in list(spec.keys()):
                     if path not in output["paths"]:
                         output["paths"][path] = {}
                     output["paths"][path][method] = spec
 
-print "Generating %s" % output_file
+print("Generating %s" % output_file)
 
 try:
     os.makedirs(os.path.dirname(output_file))

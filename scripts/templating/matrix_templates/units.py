@@ -29,11 +29,12 @@ import os.path
 import re
 import subprocess
 import sys
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import yaml
+from functools import reduce
 
 matrix_doc_dir=reduce(lambda acc,_: os.path.dirname(acc),
-                      range(1, 5), os.path.abspath(__file__))
+                      list(range(1, 5)), os.path.abspath(__file__))
 
 HTTP_APIS = {
     os.path.join(matrix_doc_dir, "api/application-service"): "as",
@@ -124,7 +125,7 @@ def resolve_references(path, schema):
         else:
             result = OrderedDict()
 
-        for key, value in schema.items():
+        for key, value in list(schema.items()):
             result[key] = resolve_references(path, value)
         return result
     elif isinstance(schema, list):
@@ -147,7 +148,7 @@ def inherit_parents(obj):
     # settings defined in the child take priority over the parents, so we
     # iterate through the parents first, and then overwrite with the settings
     # from the child.
-    for p in map(inherit_parents, parents) + [obj]:
+    for p in list(map(inherit_parents, parents)) + [obj]:
         # child blats out type, title and description
         for key in ('type', 'title', 'description'):
             if p.get(key):
@@ -209,7 +210,7 @@ def get_json_schema_object_fields(obj, enforce_title=False):
         props = obj.get("patternProperties")
         if props:
             # try to replace horrible regex key names with pretty x-pattern ones
-            for key_name in props.keys():
+            for key_name in list(props.keys()):
                 pretty_key = props[key_name].get("x-pattern")
                 if pretty_key:
                     props[pretty_key] = props[key_name]
@@ -250,12 +251,12 @@ def get_json_schema_object_fields(obj, enforce_title=False):
             tables.extend(res["tables"])
             logger.debug("Done property %s" % key_name)
 
-        except Exception, e:
+        except Exception as e:
             e2 = Exception("Error reading property %s.%s: %s" %
                            (obj_title, key_name, str(e)))
             # throw the new exception with the old stack trace, so that
             # we don't lose information about where the error occurred.
-            raise e2, None, sys.exc_info()[2]
+            raise e2.with_traceback(sys.exc_info()[2])
 
     tables.insert(0, TypeTable(title=obj_title, rows=first_table_rows))
 
@@ -380,7 +381,7 @@ def get_example_for_schema(schema):
         if 'properties' not in schema:
             raise Exception('"object" property has neither properties nor example')
         res = OrderedDict()
-        for prop_name, prop in schema['properties'].iteritems():
+        for prop_name, prop in list(schema['properties'].items()):
             logger.debug("Parsing property %r" % prop_name)
             prop_example = get_example_for_schema(prop)
             res[prop_name] = prop_example
@@ -523,7 +524,7 @@ class MatrixUnits(Units):
 
                 if param_loc == "path":
                     path_template = path_template.replace(
-                        "{%s}" % param_name, urllib.quote(example)
+                        "{%s}" % param_name, urllib.parse.quote(example)
                     )
                 elif param_loc == "query":
                     if type(example) == list:
@@ -532,7 +533,7 @@ class MatrixUnits(Units):
                     else:
                         example_query_params.append((param_name, example))
 
-            except Exception, e:
+            except Exception as e:
                 raise Exception("Error handling parameter %s" % param_name, e)
         # endfor[param]
         good_response = None
@@ -556,14 +557,14 @@ class MatrixUnits(Units):
                 )
             if "headers" in good_response:
                 headers = TypeTable()
-                for (header_name, header) in good_response["headers"].iteritems():
+                for (header_name, header) in list(good_response["headers"].items()):
                     headers.add_row(
                         TypeTableRow(key=header_name, title=header["type"],
                                      desc=header["description"]),
                     )
                 endpoint["res_headers"] = headers
         query_string = "" if len(
-            example_query_params) == 0 else "?" + urllib.urlencode(
+            example_query_params) == 0 else "?" + urllib.parse.urlencode(
             example_query_params)
         if example_body:
             endpoint["example"][
@@ -605,17 +606,17 @@ class MatrixUnits(Units):
             body_tables = req_body_tables[1:]
             endpoint_data['req_body_tables'].extend(body_tables)
 
-        except Exception, e:
+        except Exception as e:
             e2 = Exception(
                 "Error decoding body of API endpoint %s %s: %s" %
                 (endpoint_data["method"], endpoint_data["path"], e)
             )
-            raise e2, None, sys.exc_info()[2]
+            raise e2.with_traceback(sys.exc_info()[2])
 
 
     def load_swagger_apis(self):
         apis = {}
-        for path, suffix in HTTP_APIS.items():
+        for path, suffix in list(HTTP_APIS.items()):
             for filename in os.listdir(path):
                 if not filename.endswith(".yaml"):
                     continue
@@ -711,12 +712,12 @@ class MatrixUnits(Units):
                     if filename != event_name:
                         examples[event_name] = examples.get(event_name, [])
                         examples[event_name].append(example)
-            except Exception, e:
+            except Exception as e:
                 e2 = Exception("Error reading event example "+filepath+": "+
                                str(e))
                 # throw the new exception with the old stack trace, so that
                 # we don't lose information about where the error occurred.
-                raise e2, None, sys.exc_info()[2]
+                raise e2.with_traceback(sys.exc_info()[2])
 
         return examples
 
@@ -730,12 +731,12 @@ class MatrixUnits(Units):
             filepath = os.path.join(path, filename)
             try:
                 schemata[filename] = self.read_event_schema(filepath)
-            except Exception, e:
+            except Exception as e:
                 e2 = Exception("Error reading event schema "+filepath+": "+
                                str(e))
                 # throw the new exception with the old stack trace, so that
                 # we don't lose information about where the error occurred.
-                raise e2, None, sys.exc_info()[2]
+                raise e2.with_traceback(sys.exc_info()[2])
 
         return schemata
 
@@ -871,7 +872,7 @@ class MatrixUnits(Units):
                 ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
                 stderr=null,
                 cwd=cwd,
-            ).strip()
+            ).strip().decode('UTF-8')
         except subprocess.CalledProcessError:
             git_branch = ""
         try:
@@ -879,7 +880,7 @@ class MatrixUnits(Units):
                 ['git', 'describe', '--exact-match'],
                 stderr=null,
                 cwd=cwd,
-            ).strip()
+            ).strip().decode('UTF-8')
             git_tag = "tag=" + git_tag
         except subprocess.CalledProcessError:
             git_tag = ""
@@ -888,7 +889,7 @@ class MatrixUnits(Units):
                 ['git', 'rev-parse', '--short', 'HEAD'],
                 stderr=null,
                 cwd=cwd,
-            ).strip()
+            ).strip().decode('UTF-8')
         except subprocess.CalledProcessError:
             git_commit = ""
         try:
@@ -897,7 +898,7 @@ class MatrixUnits(Units):
                 ['git', 'describe', '--dirty=' + dirty_string, "--all"],
                 stderr=null,
                 cwd=cwd,
-            ).strip().endswith(dirty_string)
+            ).strip().decode('UTF-8').endswith(dirty_string)
             git_dirty = "dirty" if is_dirty else ""
         except subprocess.CalledProcessError:
             git_dirty = ""
@@ -908,7 +909,7 @@ class MatrixUnits(Units):
                 s for s in
                 (git_branch, git_tag, git_commit, git_dirty,)
                 if s
-            ).encode("ascii")
+            ).encode("ascii").decode('ascii')
         return {
             "string": git_version,
             "revision": git_commit
