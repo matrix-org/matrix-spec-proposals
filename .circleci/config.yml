@@ -1,0 +1,19 @@
+version: 2
+jobs:
+  build-docs:
+    docker:
+      - image: uhoreg/matrix-doc-build
+    steps:
+      - checkout
+      - run: python scripts/gendoc.py
+
+workflows:
+  version: 2
+
+  egg-info:
+    jobs:
+      - build-docs
+
+notify:
+  webhooks:
+    - url: https://giles.cadair.com/circleci
