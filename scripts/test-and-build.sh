@@ -4,7 +4,7 @@ set -ex
 
 cd `dirname $0`/..
 
-virtualenv env
+virtualenv -p python3 env
 . env/bin/activate
 pip install -r scripts/requirements.txt
 

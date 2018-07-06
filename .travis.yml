@@ -8,6 +8,10 @@ sudo: false
 git:
   depth: 1
 
+before_install:
+- sudo apt-get update
+- sudo apt-get install python3
+
 # test-and-build does the installation, so tell travis to skip the
 # installation step
 install: true
