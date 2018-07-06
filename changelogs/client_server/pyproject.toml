@@ -1,5 +1,5 @@
 [tool.towncrier]
-    filename = "_rendered.rst"
+    filename = "../client_server.rst"
     directory = "newsfragments"
     issue_format = "`#{issue} <https://github.com/matrix-org/matrix-doc/issues/{issue}>`_"
     title_format = "{version}"
