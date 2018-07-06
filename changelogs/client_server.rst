@@ -15,6 +15,8 @@ Unreleased changes
   - Sticker messages:
     - Add sticker message event definition.
     (`#1158 <https://github.com/matrix-org/matrix-doc/pull/1158>`_).
+  - Document the ``server_name`` parameter on ``/join/{roomIdOrAlias}``
+    (`#1364 <https://github.com/matrix-org/matrix-doc/pull/1364>`_).
   - Add 'token' parameter to /keys/query endpoint
     (`#1104 <https://github.com/matrix-org/matrix-doc/pull/1104>`_).
   - Add the room visibility options for the room directory
