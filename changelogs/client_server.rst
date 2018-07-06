@@ -15,6 +15,8 @@ Unreleased changes
   - Sticker messages:
     - Add sticker message event definition.
     (`#1158 <https://github.com/matrix-org/matrix-doc/pull/1158>`_).
+  - Document the ``server_name`` parameter on ``/join/{roomIdOrAlias}``
+    (`#1364 <https://github.com/matrix-org/matrix-doc/pull/1364>`_).
   - Add 'token' parameter to /keys/query endpoint
     (`#1104 <https://github.com/matrix-org/matrix-doc/pull/1104>`_).
   - Add the room visibility options for the room directory
@@ -59,6 +61,8 @@ Unreleased changes
     (`#1380 <https://github.com/matrix-org/matrix-doc/pull/1380>`_).
   - Describe ``StateEvent`` for ``/createRoom``
     (`#1329 <https://github.com/matrix-org/matrix-doc/pull/1329>`_).
+  - Describe how the ``reason`` is handled for kicks/bans
+    (`#1362 <https://github.com/matrix-org/matrix-doc/pull/1362>`_).
   - Clarify that clients must leave rooms before forgetting them
     (`#1378 <https://github.com/matrix-org/matrix-doc/pull/1378>`_).
   - Clarify the request and result types on ``/search``
