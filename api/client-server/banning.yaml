@@ -61,7 +61,8 @@ paths:
                 description: The fully qualified user ID of the user being banned.
               reason:
                 type: string
-                description: The reason the user has been banned.
+                description: The reason the user has been banned. This will be supplied as the 
+                  ``reason`` on the target's updated `m.room.member`_ event.
             required: ["user_id"]
       responses:
         200:

@@ -74,7 +74,7 @@ paths:
                 properties:
                   room_events:
                     type: object
-                    title: "Room Events"
+                    title: Room Events Criteria
                     description: Mapping of category name to search criteria.
                     properties:
                       search_term:
@@ -103,7 +103,7 @@ paths:
                           The order in which to search for results.
                           By default, this is ``"rank"``.
                       event_context:
-                        title: "Event Context"
+                        title: Include Event Context
                         type: object
                         description: |-
                           Configures whether any context for the events
@@ -169,13 +169,13 @@ paths:
             properties:
               search_categories:
                 type: object
-                title: Categories
+                title: Result Categories
                 description: Describes which categories to search in and
                   their criteria.
                 properties:
                   room_events:
                     type: object
-                    title: Room Event Results
+                    title: Result Room Events
                     description: Mapping of category name to search criteria.
                     properties:
                       count:
