@@ -273,6 +273,8 @@ paths:
     get:
       summary: Get the configuration for the content repository.
       description: |-
+        This endpoint allows clients to retrieve the configuration of the content
+        repository, such as upload limitations.
         Clients SHOULD use this as a guide when using content repository endpoints.
         All values are intentionally left optional. Clients SHOULD follow
         the advice given in the field description when the field is not available.
