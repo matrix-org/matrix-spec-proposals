@@ -15,6 +15,26 @@ Unreleased changes
   - Sticker messages:
     - Add sticker message event definition.
     (`#1158 <https://github.com/matrix-org/matrix-doc/pull/1158>`_).
+  - Document the ``server_name`` parameter on ``/join/{roomIdOrAlias}``
+    (`#1364 <https://github.com/matrix-org/matrix-doc/pull/1364>`_).
+  - Add 'token' parameter to /keys/query endpoint
+    (`#1104 <https://github.com/matrix-org/matrix-doc/pull/1104>`_).
+  - Add the room visibility options for the room directory
+    (`#1141 <https://github.com/matrix-org/matrix-doc/pull/1141>`_).
+  - Add spec for ignoring users
+    (`#1142 <https://github.com/matrix-org/matrix-doc/pull/1142>`_).
+  - Add the ``/register/available`` endpoint for username availability
+    (`#1151 <https://github.com/matrix-org/matrix-doc/pull/1151>`_).
+  - Add ``allow_remote`` to the content repo to avoid routing loops
+    (`#1265 <https://github.com/matrix-org/matrix-doc/pull/1265>`_).
+  - Add report content API
+    (`#1264 <https://github.com/matrix-org/matrix-doc/pull/1264>`_).
+  - Document ``/logout/all`` endpoint
+    (`#1263 <https://github.com/matrix-org/matrix-doc/pull/1263>`_).
+  - Document `highlights` field in /search response
+    (`#1274 <https://github.com/matrix-org/matrix-doc/pull/1274>`_).
+  - Document the GET version of ``/login``
+    (`#1361 <https://github.com/matrix-org/matrix-doc/pull/1361>`_).
 
 - Spec clarifications:
 
@@ -37,29 +57,16 @@ Unreleased changes
     (`#1152 <https://github.com/matrix-org/matrix-doc/pull/1152>`_).
   - Mark ``GET /rooms/{roomId}/members`` as requiring authentication
     (`#1245 <https://github.com/matrix-org/matrix-doc/pull/1244>`_).
+  - Define what a ``RoomEvent`` is on ``/rooms/{roomId}/messages``
+    (`#1380 <https://github.com/matrix-org/matrix-doc/pull/1380>`_).
   - Describe ``StateEvent`` for ``/createRoom``
     (`#1329 <https://github.com/matrix-org/matrix-doc/pull/1329>`_).
   - Describe how the ``reason`` is handled for kicks/bans
     (`#1362 <https://github.com/matrix-org/matrix-doc/pull/1362>`_).
-
-- Changes to the API which will be backwards-compatible for clients:
-
-  - Add 'token' parameter to /keys/query endpoint
-    (`#1104 <https://github.com/matrix-org/matrix-doc/pull/1104>`_).
-  - Add the room visibility options for the room directory
-    (`#1141 <https://github.com/matrix-org/matrix-doc/pull/1141>`_).
-  - Add spec for ignoring users
-    (`#1142 <https://github.com/matrix-org/matrix-doc/pull/1142>`_).
-  - Add the ``/register/available`` endpoint for username availability
-    (`#1151 <https://github.com/matrix-org/matrix-doc/pull/1151>`_).
-  - Add ``allow_remote`` to the content repo to avoid routing loops
-    (`#1265 <https://github.com/matrix-org/matrix-doc/pull/1265>`_).
-  - Add report content API
-    (`#1264 <https://github.com/matrix-org/matrix-doc/pull/1264>`_).
-  - Document ``/logout/all`` endpoint
-    (`#1263 <https://github.com/matrix-org/matrix-doc/pull/1263>`_).
-  - Document `highlights` field in /search response
-    (`#1274 <https://github.com/matrix-org/matrix-doc/pull/1274>`_).
+  - Clarify that clients must leave rooms before forgetting them
+    (`#1378 <https://github.com/matrix-org/matrix-doc/pull/1378>`_).
+  - Clarify the request and result types on ``/search``
+    (`#1381 <https://github.com/matrix-org/matrix-doc/pull/1381>`_).
 
 r0.3.0
 ======

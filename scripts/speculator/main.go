@@ -701,8 +701,8 @@ func ignoreExitCodeOne(err error) error {
 
 func main() {
 	flag.Parse()
-	// It would be great to read this from github, but there's no convenient way to do so.
-	// Most of these memberships are "private", so would require some kind of auth.
+	// It would be great to read this from github
+	// cf https://github.com/matrix-org/matrix-doc/issues/1384
 	allowedMembers = map[string]bool{
 		"dbkr":          true,
 		"erikjohnston":  true,
@@ -713,6 +713,13 @@ func main() {
 		"ara4n":         true,
 		"leonerd":       true,
 		"rxl881":        true,
+		"uhoreg":        true,
+		"turt2live":     true,
+		"Half-Shot":     true,
+		"anoadragon453": true,
+		"mujx":          true,
+		"benparsons":    true,
+		"KitsuneRal":    true,
 	}
 	if err := initCache(); err != nil {
 		log.Fatal(err)
