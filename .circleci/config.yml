@@ -1,12 +1,17 @@
+gendoc: &gendoc
+  name: Generate the docs
+  command: |
+    source /env/bin/activate
+    scripts/gendoc.py
+
 version: 2
 jobs:
   build-docs:
     docker:
-      - image: circleci/python:2.7
+      - image: uhoreg/matrix-doc-build
     steps:
       - checkout
-      - run: pip install -r scripts/requirements.txt
-      - run: python scripts/gendoc.py
+      - run: *gendoc
 
 workflows:
   version: 2
