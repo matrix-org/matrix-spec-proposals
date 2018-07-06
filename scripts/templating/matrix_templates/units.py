@@ -832,12 +832,28 @@ class MatrixUnits(Units):
             path = os.path.join(CHANGELOG_DIR, f)
             name = f[:-4]
 
+            # If there's a directory with the same name, we'll try to generate
+            # a towncrier changelog and prepend it to the general changelog.
+            tc_path = os.path.join(CHANGELOG_DIR, name)
+            tc_lines = []
+            if os.path.isdir(tc_path):
+                logger.info("Generating towncrier changelog for: %s" % name)
+                try:
+                    raw_log = subprocess.check_output(
+                        ['towncrier', '--version', 'Unreleased Changes', '--name', name, '--draft'],
+                        stderr=subprocess.PIPE,
+                        cwd=tc_path,
+                    ).strip().decode('UTF-8')
+                except subprocess.CalledProcessError:
+                    raw_log = ""
+                tc_lines = raw_log.splitlines()
+
             title_part = None
             changelog_lines = []
             with open(path, "r") as f:
                 lines = f.readlines()
             prev_line = None
-            for line in lines:
+            for line in (tc_lines + lines):
                 if prev_line is None:
                     prev_line = line
                     continue
@@ -853,7 +869,10 @@ class MatrixUnits(Units):
                         # then bail out.
                         changelog_lines.pop()
                         break
-                    changelog_lines.append("    " + line)
+                    # Don't generate subheadings (we'll keep the title though)
+                    if re.match("^[-]{3,}$", line.strip()):
+                        continue
+                    changelog_lines.append("    " + line + '\n')
             changelogs[name] = "".join(changelog_lines)
 
         return changelogs

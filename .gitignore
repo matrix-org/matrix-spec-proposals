@@ -10,3 +10,4 @@
 /templating/out
 *.pyc
 *.swp
+_rendered.rst
