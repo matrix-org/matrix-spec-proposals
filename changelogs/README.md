@@ -52,4 +52,4 @@ For this example, we're going to pretend that the `server_server` API doesn't ex
         name = "Spec Clarifications"
         showcontent = true
    ```
-4. Use the changelog in whatever RST documents you need
+4. Create a `.gitignore` in `changelogs/server_server/newsfragments` with the contents `!.gitignore`
