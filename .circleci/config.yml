@@ -12,6 +12,11 @@ jobs:
     steps:
       - checkout
       - run: *gendoc
+      - store_artifacts:
+          path: scripts/gen
+      - run:
+          name: "Doc build is available at:"
+          command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/scripts/gen/index.html"; echo $DOCS_URL
 
 workflows:
   version: 2
