@@ -12,7 +12,6 @@ targets:
       - { 1: modules.rst }
       - { 2: feature_profiles.rst }
       - { 2: "group:modules" }  # reference a group of files
-      - { 1: third_party_lookup.rst }
     version_label: "%CLIENT_RELEASE_LABEL%"
   application_service:
     files:
@@ -69,6 +68,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/ignore_users.rst
     - modules/stickers.rst
     - modules/report_content.rst
+    - modules/application_services.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`", "@", ":"]

@@ -1,6 +1,8 @@
 Application Services
 ====================
 
+.. _module:application-services:
+
 An application service is a separate program that interacts with a homeserver
 and provides various bits of functionality that would otherwise not make
 sense to include directly in the homeserver. This ranges from bots, which can

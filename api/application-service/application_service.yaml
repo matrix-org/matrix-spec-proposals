@@ -131,7 +131,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
@@ -140,7 +140,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
         404:
           description: |-
             The application service indicates that this room alias does not exist.
@@ -150,7 +150,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
   "/users/{userId}":
     get:
       summary: Query if a user should exist on the application service.
@@ -187,7 +187,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
@@ -196,7 +196,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
         404:
           description: |-
             The application service indicates that this user does not exist.
@@ -206,7 +206,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
   "/_matrix/app/unstable/thirdparty/protocol/{protocol}":
     get:
       summary: Retrieve metadata about a specific protocol that the application service supports.
@@ -219,44 +219,14 @@ paths:
         - in: path
           name: protocol
           type: string
-          description: |-
-            The name of the protocol.
+          description: The protocol ID.
           required: true
           x-example: "irc"
       responses:
         200:
           description: The protocol was found and metadata returned.
-          examples:
-            application/json: {
-              "user_fields": ["network", "nickname"],
-              "location_fields": ["network", "channel"],
-              "icon": "mxc://example.org/aBcDeFgH",
-              "field_types": {
-                "network": {
-                  "regexp": "([a-z0-9]+\\.)*[a-z0-9]+",
-                  "placeholder": "irc.example.org"
-                },
-                "nickname": {
-                  "regexp": "[^\\s]+",
-                  "placeholder": "username"
-                },
-                "channel": {
-                  "regexp": "#[^\\s]+",
-                  "placeholder": "#foobar"
-                }
-              },
-              "instances": [
-                {
-                  "desc": "Freenode",
-                  "icon": "mxc://example.org/JkLmNoPq",
-                  "fields": {
-                    "network": "freenode.net",
-                  }
-                }
-              ]
-            }
           schema:
-            type: object
+            $ref: definitions/schema/protocol_metadata.yaml
         401:
           description: |-
             The homeserver has not supplied credentials to the application service.
@@ -266,7 +236,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
@@ -275,7 +245,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
         404:
           description: No protocol was found with the given path.
           examples:
@@ -283,20 +253,20 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
   "/_matrix/app/unstable/thirdparty/user/{protocol}":
     get:
-      summary: Retrieve the Matrix ID of a corresponding third party user.
+      summary: Retrieve the Matrix User ID of a corresponding third party user.
       description: |-
-        This API is called by the homeserver in order to retrieve a Matrix ID linked
-        to a user on the external service, given a set of user parameters.
+        This API is called by the homeserver in order to retrieve a Matrix
+        User ID linked to a user on the third party network, given a set of
+        user parameters.
       operationId: queryUserByProtocol
       parameters:
         - in: path
           name: protocol
           type: string
-          description: |-
-            The name of the protocol.
+          description: The protocol ID.
           required: true
           x-example: irc
         - in: query
@@ -307,35 +277,9 @@ paths:
             service to help identify the user.
       responses:
         200:
-          description: The Matrix IDs found with the given parameters.
-          examples:
-            application/json: [{
-              "userid": "@_gitter_jim:matrix.org",
-              "protocol": "gitter",
-              "fields": {
-                "user": "jim"
-              }
-            }]
+          description: The Matrix User IDs found with the given parameters.
           schema:
-            type: array
-            description: Matched users.
-            items:
-              type: object
-              title: User
-              schema:
-                userid:
-                  type: string
-                  description: The Matrix ID of the matched user.
-                protocol:
-                  type: string
-                  description: The third party protocol.
-                fields:
-                  type: object
-                  description: The third party network fields used to identify this user.
-                  properties:
-                    user:
-                      type: string
-                      description: An example field, in this case the username for a Gitter user.
+            $ref: definitions/schema/user_batch.yaml
         401:
           description: |-
             The homeserver has not supplied credentials to the application service.
@@ -345,7 +289,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
@@ -354,7 +298,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
         404:
           description: No users were found with the given parameters.
           examples:
@@ -362,27 +306,20 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
   "/_matrix/app/unstable/thirdparty/location/{protocol}":
     get:
       summary: Retreive Matrix-side portal rooms leading to a third party location.
       description: |-
-        Requesting this endpoint with a valid protocol name results in a list
-        of successful mapping results in a JSON array. Each result contains
-        objects to represent the Matrix room or rooms that represent a portal
-        to this third party network. Each has the Matrix room alias string,
-        an identifier for the particular third party network protocol, and an
-        object containing the network-specific fields that comprise this
-        identifier. It should attempt to canonicalise the identifier as much
-        as reasonably possible given the network type.
+        Retrieve a list of Matrix portal rooms that lead to the matched third party location.
       operationId: queryLocationByProtocol
       parameters:
         - in: path
           name: protocol
           type: string
-          description: The protocol used to communicate to the third party network.
+          description: The protocol ID.
           required: true
-          x-example: "irc"
+          x-example: irc
         - in: query
           name: field1, field2...
           type: string
@@ -392,23 +329,8 @@ paths:
       responses:
         200:
           description: At least one portal room was found.
-          examples:
-            application/json: [{
-              "alias": "#freenode_#matrix:matrix.org",
-              "protocol": "irc",
-              "fields": {
-                "network": "freenode",
-                "channel": "#matrix"
-              }
-            }]
           schema:
-            type: array
-            description: |-
-              Array of portal rooms leading to the requested third party
-              location.
-            items:
-              type: object
-              title: Portal Room
+            $ref: definitions/schema/location_batch.yaml
         401:
           description: |-
             The homeserver has not supplied credentials to the application service.
@@ -418,7 +340,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
@@ -427,7 +349,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
         404:
           description: No mappings were found with the given parameters.
           examples:
@@ -435,7 +357,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
   "/_matrix/app/unstable/thirdparty/location":
     get:
       summary: Reverse-lookup third party locations given a Matrix room alias.
@@ -444,30 +366,16 @@ paths:
         alias.
       operationId: queryLocationByAlias
       parameters:
-       - in: query
-         name: alias
-         type: string
-         description: The Matrix room alias to look up.
+        - in: query
+          name: alias
+          type: string
+          description: The Matrix room alias to look up.
       responses:
         200:
           description: |-
-            All found third party locations. Same response format as the
-            forward lookup response.
-          examples:
-            application/json: [{
-              "alias": "#freenode_#matrix:matrix.org",
-              "protocol": "irc",
-              "fields": {
-                "network": "freenode",
-                "channel": "#matrix"
-              }
-            }]
+            All found third party locations.
           schema:
-            type: array
-            description: Matched third party locations.
-            items:
-              type: object
-              title: Location
+            $ref: definitions/schema/location_batch.yaml
         401:
           description: |-
             The homeserver has not supplied credentials to the application service.
@@ -477,7 +385,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
@@ -486,7 +394,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
         404:
           description: No mappings were found with the given parameters.
           examples:
@@ -494,36 +402,24 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
   "/_matrix/app/unstable/thirdparty/user":
     get:
-      summary: Reverse-lookup third party users given a Matrix ID.
+      summary: Reverse-lookup third party users given a Matrix User ID.
       description: |-
-        Retreive an array of third party users from a Matrix ID.
+        Retreive an array of third party users from a Matrix User ID.
       operationId: queryUserByID
       parameters:
         - in: query 
           name: userid
           type: string
-          description: The Matrix ID to look up.
+          description: The Matrix User ID to look up.
       responses:
         200:
           description: |-
             An array of third party users.
-          examples:
-            application/json: [{
-              "userid": "@_gitter_jim:matrix.org",
-              "protocol": "gitter",
-              "fields": {
-                "user": "jim"
-              }
-            }]
           schema:
-            type: array
-            description: Matched third party users
-            items:
-              type: object
-              title: User
+            $ref: definitions/schema/user_batch.yaml
         401:
           description: |-
             The homeserver has not supplied credentials to the application service.
@@ -533,7 +429,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
@@ -542,7 +438,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml
         404:
           description: No mappings were found with the given parameters.
           examples:
@@ -550,4 +446,4 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
             }
           schema:
-            type: object
+            $ref: ../client-server/definitions/error.yaml

@@ -24,6 +24,8 @@ consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/thirdparty/protocols":
     get:
@@ -36,60 +38,8 @@ paths:
       responses:
         200:
           description: The protocols supported by the homeserver.
-          examples:
-            application/json: {
-              "irc": {
-                "user_fields": ["network", "nickname"],
-                "location_fields": ["network", "channel"],
-                "icon": "mxc://example.org/aBcDeFgH",
-                "field_types": {
-                  "network": {
-                    "regexp": "([a-z0-9]+\\.)*[a-z0-9]+",
-                    "placeholder": "irc.example.org"
-                  },
-                  "nickname": {
-                    "regexp": "[^\\s]+",
-                    "placeholder": "username"
-                  },
-                  "channel": {
-                    "regexp": "#[^\\s]+",
-                    "placeholder": "#foobar"
-                  }
-                },
-                "instances": [
-                  {
-                    "desc": "Freenode",
-                    "icon": "mxc://example.org/JkLmNoPq",
-                    "fields": {
-                      "network": "freenode.net",
-                    }
-                  }
-                ]
-              },
-              "gitter": {
-                "user_fields": ["username"],
-                "location_fields": ["room"],
-                "field_types": {
-                  "username": {
-                    "regexp": "@[^\\s]+",
-                    "placeholder": "@username"
-                  },
-                  "room": {
-                    "regexp": "[^\\s]+\\/[^\\s]+",
-                    "placeholder": "matrix-org/matrix-doc"
-                  }
-                },
-                "instances": [
-                  {
-                    "desc": "Gitter",
-                    "icon": "mxc://example.org/zXyWvUt",
-                    "fields": {}
-                  }
-                ]
-              }
-            }
           schema:
-            type: object
+            $ref: ../application-service/definitions/schema/protocol_metadata.yaml
   "/thirdparty/protocol/{protocol}":
     get:
       summary: Retrieve metadata about a specific protocol that the homeserver supports.
@@ -107,45 +57,16 @@ paths:
       responses:
         200:
           description: The protocol was found and metadata returned.
-          examples:
-            application/json: {
-              "user_fields": ["network", "nickname"],
-              "location_fields": ["network", "channel"],
-              "icon": "mxc://example.org/aBcDeFgH",
-              "field_types": {
-                "network": {
-                  "regexp": "([a-z0-9]+\\.)*[a-z0-9]+",
-                  "placeholder": "irc.example.org"
-                },
-                "nickname": {
-                  "regexp": "[^\\s#]+",
-                  "placeholder": "username"
-                },
-                "channel": {
-                  "regexp": "#[^\\s]+",
-                  "placeholder": "#foobar"
-                }
-              },
-              "instances": [
-                {
-                  "desc": "Freenode",
-                  "icon": "mxc://example.org/JkLmNoPq",
-                  "fields": {
-                    "network": "freenode.net",
-                  }
-                }
-              ]
-            }
           schema:
-            type: object
+            $ref: ../application-service/definitions/schema/protocol.yaml
         404:
-          description: The protocol is unknown
+          description: The protocol is unknown.
           examples:
             application/json: {
               "errcode": "M_NOT_FOUND"
             }
           schema:
-            type: object
+            $ref: definitions/error.yaml
   "/thirdparty/location/{protocol}":
     get:
       summary: Retreive Matrix-side portals rooms leading to a third party location.
@@ -165,9 +86,9 @@ paths:
           type: string
           description: The protocol used to communicate to the third party network.
           required: true
-          x-example: "irc"
+          x-example: irc
         - in: query
-          name: field1, field2...
+          name: searchFields
           type: string
           description: |-
             One or more custom fields to help identify the third party
@@ -175,36 +96,21 @@ paths:
       responses:
         200:
           description: At least one portal room was found.
-          examples:
-            application/json: [{
-              "alias": "#freenode_#matrix:matrix.org",
-              "protocol": "irc",
-              "fields": {
-                "network": "freenode",
-                "channel": "#matrix"
-              }
-            }]
           schema:
-            type: array
-            description: |-
-              Array of portal rooms leading to the requested third party
-              location.
-            items:
-              type: object
-              title: Portal Room
+            $ref: ../application-service/definitions/schema/location_batch.yaml
         404:
-          description: The Matrix room alias was not found
+          description: No portal rooms were found.
           examples:
             application/json: {
               "errcode": "M_NOT_FOUND"
             }
           schema:
-            type: object
+            $ref: definitions/error.yaml
   "/thirdparty/user/{protocol}":
     get:
-      summary: Retrieve the Matrix ID of a corresponding third party user.
+      summary: Retrieve the Matrix User ID of a corresponding third party user.
       description: |-
-        Retrieve a Matrix ID linked to a user on the third party service, given
+        Retrieve a Matrix User ID linked to a user on the third party service, given
         a set of user parameters.
       operationId: queryUserByProtocol
       parameters:
@@ -222,43 +128,16 @@ paths:
             One or more custom fields that are passed to the AS to help identify the user.
       responses:
         200:
-          description: The Matrix IDs found with the given parameters.
-          examples:
-            application/json: [{
-              "userid": "@_gitter_jim:matrix.org",
-              "protocol": "gitter",
-              "fields": {
-                "user": "jim"
-              }
-            }]
-          schema:
-            type: array
-            description: Matched users.
-            items:
-              type: object
-              title: User
-              schema:
-                userid:
-                  type: string
-                  description: The Matrix ID of the matched user.
-                protocol:
-                  type: string
-                  description: The third party protocol.
-                fields:
-                  type: object
-                  description: The third party network fields used to identify this user.
-                  properties:
-                    user:
-                      type: string
-                      description: An example field, in this case the username for a Gitter user.
+          description: The Matrix User IDs found with the given parameters.
+          $ref: ../application-service/definitions/schema/user_batch.yaml
         404:
-          description: The Matrix ID was not found
+          description: The Matrix User ID was not found
           examples:
             application/json: {
               "errcode": "M_NOT_FOUND"
             }
           schema:
-            type: object
+            $ref: definitions/error.yaml
   "/thirdparty/location":
     get:
       summary: Reverse-lookup third party locations given a Matrix room alias.
@@ -267,30 +146,17 @@ paths:
         alias.
       operationId: queryLocationByAlias
       parameters:
-       - in: path
-         name: alias
-         type: string
-         description: The Matrix room alias to look up.
+        - in: path
+          name: alias
+          type: string
+          description: The Matrix room alias to look up.
+          required: true
       responses:
         200:
           description: |-
-            All found third party locations. Same response format as the
-            forward lookup response.
-          examples:
-            application/json: [{
-              "alias": "#freenode_#matrix:matrix.org",
-              "protocol": "irc",
-              "fields": {
-                "network": "freenode",
-                "channel": "#matrix"
-              }
-            }]
+            All found third party locations.
           schema:
-            type: array
-            description: Matched third party locations.
-            items:
-              type: object
-              title: Location
+            $ref: ../application-service/definitions/schema/location_batch.yaml
         404:
           description: The Matrix room alias was not found
           examples:
@@ -298,41 +164,30 @@ paths:
               "errcode": "M_NOT_FOUND"
             }
           schema:
-            type: object
+            $ref: definitions/error.yaml
   "/thirdparty/user":
     get:
-      summary: Reverse-lookup third party users given a Matrix ID.
+      summary: Reverse-lookup third party users given a Matrix User ID.
       description: |-
-        Retreive an array of third party users from a Matrix ID.
+        Retreive an array of third party users from a Matrix User ID.
       operationId: queryUserByID
       parameters:
         - in: path
           name: userid
           type: string
-          description: The Matrix ID to look up.
+          description: The Matrix User ID to look up.
+          required: true
       responses:
         200:
           description: |-
             An array of third party users.
-          examples:
-            application/json: [{
-              "userid": "@_gitter_jim:matrix.org",
-              "protocol": "gitter",
-              "fields": {
-                "user": "jim"
-              }
-            }]
           schema:
-            type: array
-            description: Matched third party users
-            items:
-              type: object
-              title: User
+            $ref: ../application-service/definitions/schema/user_batch.yaml
         404:
-          description: The Matrix ID was not found
+          description: The Matrix User ID was not found
           examples:
             application/json: {
               "errcode": "M_NOT_FOUND"
             }
           schema:
-            type: object
+            $ref: definitions/error.yaml
