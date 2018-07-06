@@ -69,6 +69,41 @@ For such changes, please do just open a `pull request`_.
 
 .. _pull request: https://help.github.com/articles/about-pull-requests
 
+
+Adding to the changelog
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Currently only changes to the client-server API need to end up in a changelog. The
+other APIs are not yet stable and therefore do not have a changelog. Adding to the
+changelog can only be done after you've opened your pull request, so be sure to do
+that first. 
+
+The changelog is managed by Towncrier (https://github.com/hawkowl/towncrier) in the
+form of "news fragments". The news fragments for the client-server API are stored
+under ``changelogs/client_server/newsfragments``. 
+
+To create a changelog entry, create a file named in the format ``prNumber.type`` in
+the ``newsfragments`` directory. The ``type`` can be one of the following:
+
+* ``new`` - Used when adding new endpoints. Please have the file contents be the
+  method and route being added, surrounded in RST code tags. For example: ``POST
+  /accounts/whoami``
+
+* ``feature`` - Used when adding backwards-compatible changes to the API.
+
+* ``clarification`` - Used when an area of the spec is being improved upon and does
+  not change or introduce any functionality.
+
+* ``breaking`` - Used when the change is not backwards compatible.
+
+* ``deprecation`` - Used when deprecating something
+
+All news fragments must have a brief summary explaining the change in the contents
+of the file.
+
+Changes that do not change the spec, such as changes to the build script, formatting,
+CSS, etc should not get a news fragment.
+
 Sign off
 --------
 
