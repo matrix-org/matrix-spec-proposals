@@ -272,14 +272,14 @@ paths:
   "/config":
     get:
       summary: Get the configuration for the content repository.
-               Clients SHOULD use this as a guide when using content repository endpoints.
-               All values are intentionally left optional. Clients SHOULD follow
-               the advice given in the field description when the field is not available.
+      description: Clients SHOULD use this as a guide when using content repository endpoints.
+                   All values are intentionally left optional. Clients SHOULD follow
+                   the advice given in the field description when the field is not available.
 
-               **NOTE:** Both clients and server administrators should be aware that proxies
-               between the client and the server may affect the apparent behaviour of content
-               repository APIs, for example, proxies may enforce a lower upload size limit
-               than is advertised by the server on this endpoint.
+                   **NOTE:** Both clients and server administrators should be aware that proxies
+                   between the client and the server may affect the apparent behaviour of content
+                   repository APIs, for example, proxies may enforce a lower upload size limit
+                   than is advertised by the server on this endpoint.
       operationId: getConfig
       produces: ["application/json"]
       security:
