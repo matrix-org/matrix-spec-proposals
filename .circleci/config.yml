@@ -2,9 +2,10 @@ version: 2
 jobs:
   build-docs:
     docker:
-      - image: uhoreg/matrix-doc-build
+      - image: circleci/python:2.7
     steps:
       - checkout
+      - run: pip install -r scripts/requirements.txt
       - run: python scripts/gendoc.py
 
 workflows:
