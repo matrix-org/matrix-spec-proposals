@@ -10,7 +10,7 @@ git:
 
 before_install:
 - sudo apt-get update
-- sudo apt-get install python3
+- sudo apt-get install python3.5
 
 # test-and-build does the installation, so tell travis to skip the
 # installation step

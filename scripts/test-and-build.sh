@@ -4,7 +4,7 @@ set -ex
 
 cd `dirname $0`/..
 
-virtualenv -p python3 env
+virtualenv -p python3.5 env
 . env/bin/activate
 
 # Print out the python versions for debugging purposes
