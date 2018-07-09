@@ -283,12 +283,12 @@ def addAnchors(path):
     with open(path, "rb") as f:
         lines = f.readlines()
 
-    replacement = replacement = r'<p><a class="anchor" id="\3"></a></p>\n\1'
+    replacement = r'<p><a class="anchor" id="\2"></a></p>\n\1'
     with open(path, "wb") as f:
         for line in lines:
             line = line.decode("UTF-8")
             line = re.sub(r'(<h\d id="#?(.*?)">)', replacement, line.rstrip())
-            line = re.sub(r'(<div class="section" (id)="(.*?)">)', replacement, line.rstrip())
+            line = re.sub(r'(<div class="section" id="(.*?)">)', replacement, line.rstrip())
             f.write((line + "\n").encode('UTF-8'))
 
 
