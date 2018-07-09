@@ -442,7 +442,7 @@ Password-based
 :Type:
   ``m.login.password``
 :Description:
-  The client submits a username and secret password, both sent in plain-text.
+  The client submits an identifier and secret password, both sent in plain-text.
 
 To use this authentication type, clients should submit an auth dict as follows:
 
@@ -450,7 +450,26 @@ To use this authentication type, clients should submit an auth dict as follows:
 
   {
     "type": "m.login.password",
-    "user": "<user_id or user localpart>",
+    "identifier": {
+      ...
+    },
+    "password": "<password>",
+    "session": "<session ID>"
+  }
+
+where the ``identifier`` property is a user identifier object, as described in
+`Identifier types`_.
+
+For example, to authenticate using the user's Matrix ID, clients whould submit:
+
+.. code:: json
+
+  {
+    "type": "m.login.password",
+    "identifier": {
+      "type": "m.id.user",
+      "user": "<user_id or user localpart>"
+    },
     "password": "<password>",
     "session": "<session ID>"
   }
@@ -463,8 +482,11 @@ follows:
 
   {
     "type": "m.login.password",
-    "medium": "<The medium of the third party identifier. Must be 'email'>",
-    "address": "<The third party address of the user>",
+    "identifier": {
+      "type": "m.id.thirdparty",
+      "medium": "<The medium of the third party identifier. Must be 'email'>",
+      "address": "<The third party address of the user>"
+    },
     "password": "<password>",
     "session": "<session ID>"
   }
@@ -695,6 +717,72 @@ handle unknown login types:
   }
 
 
+Identifier types
+++++++++++++++++
+
+Some authentication mechanisms use a user identifier object to identify a
+user.  The user identifier object has a ``type`` field to indicate the type of
+identifier being used, and depending on the type, has other fields giving the
+information required to identify the user as described below.
+
+This specification defines the following identifier types:
+ - ``m.id.user``
+ - ``m.id.thirdparty``
+ - ``m.id.phone``
+
+Matrix User ID
+<<<<<<<<<<<<<<
+:Type:
+  ``m.id.user``
+:Description:
+  The user is identified by their Matrix ID.
+
+A client can identify a user using their Matrix ID.  This can either be the
+fully qualified Matrix user ID, or just the localpart of the user ID.
+
+.. code:: json
+
+  "identifier": {
+    "type": "m.id.user",
+    "user": "<user_id or user localpart>"
+  }
+
+Third-party ID
+<<<<<<<<<<<<<<
+:Type:
+  ``m.id.thirdparty``
+:Description:
+  The user is identified by a third-party identifer in canonicalized form.
+
+A client can identify a user using a 3pid bound to the user's account on the
+homeserver, where the 3pid was previously bound using the |/account/3pid|_ API.
+
+.. code:: json
+
+  "identifier": {
+    "type": "m.id.thirdparty",
+    "medium": "<The medium of the third party identifier>",
+    "address": "<The canonicalized third party address of the user>"
+  }
+
+Phone number
+<<<<<<<<<<<<
+:Type:
+  ``m.id.phone``
+:Description:
+  The user is identified by a phone number.
+
+A client can identify a user using a phone number bound to the user's account.
+FIXME: how was the phone number bound?  Also with |/account/3pid|_?
+
+.. code:: json
+
+  "identifier": {
+    "type": "m.id.thirdparty",
+    "country": "<The country that the phone number is from>",
+    "phone": "<The phone number FIXME: are there any requirements for the format?>"
+  }
+
 Login
 ~~~~~
 
@@ -710,7 +798,10 @@ request as follows:
 
   {
     "type": "m.login.password",
-    "user": "<user_id or user localpart>",
+    "identifier": {
+      "type": "m.id.user",
+      "user": "<user_id or user localpart>"
+    },
     "password": "<password>"
   }
 
@@ -722,8 +813,10 @@ explicitly, as follows:
 
   {
     "type": "m.login.password",
-    "medium": "<The medium of the third party identifier. Must be 'email'>",
-    "address": "<The third party address of the user>",
+    "identifier": {
+      "medium": "<The medium of the third party identifier>",
+      "address": "<The canonicalized third party address of the user>"
+    },
     "password": "<password>"
   }
 
