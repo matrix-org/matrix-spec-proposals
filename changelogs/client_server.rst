@@ -59,6 +59,8 @@ Unreleased changes
     (`#1245 <https://github.com/matrix-org/matrix-doc/pull/1244>`_).
   - Define what a ``RoomEvent`` is on ``/rooms/{roomId}/messages``
     (`#1380 <https://github.com/matrix-org/matrix-doc/pull/1380>`_).
+  - Mark ``GET /presence/{userId}/status`` as requiring authentication
+    (`#1371 <https://github.com/matrix-org/matrix-doc/pull/1371>`_).
   - Describe ``StateEvent`` for ``/createRoom``
     (`#1329 <https://github.com/matrix-org/matrix-doc/pull/1329>`_).
   - Describe how the ``reason`` is handled for kicks/bans
