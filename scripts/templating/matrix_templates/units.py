@@ -29,9 +29,10 @@ import os.path
 import re
 import subprocess
 import sys
-import urllib.request, urllib.parse, urllib.error
 import yaml
+import requests.utils
 from functools import reduce
+from six.moves.urllib.parse import urlencode
 
 matrix_doc_dir=reduce(lambda acc,_: os.path.dirname(acc),
                       list(range(1, 5)), os.path.abspath(__file__))
@@ -524,7 +525,7 @@ class MatrixUnits(Units):
 
                 if param_loc == "path":
                     path_template = path_template.replace(
-                        "{%s}" % param_name, urllib.parse.quote(example)
+                        "{%s}" % param_name, requests.utils.requote_uri(example)
                     )
                 elif param_loc == "query":
                     if type(example) == list:
@@ -564,7 +565,7 @@ class MatrixUnits(Units):
                     )
                 endpoint["res_headers"] = headers
         query_string = "" if len(
-            example_query_params) == 0 else "?" + urllib.parse.urlencode(
+            example_query_params) == 0 else "?" + urlencode(
             example_query_params)
         if example_body:
             endpoint["example"][
