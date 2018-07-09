@@ -173,10 +173,8 @@ to pre-flight requests and supply Cross-Origin Resource Sharing (CORS) headers o
 all requests.
 
 When a client approaches the server with a pre-flight (``OPTIONS``) request, the
-server should respond with the CORS headers for that route. If the route does not
-exist, the server should return an ``M_NOT_FOUND`` error with a 404 status code.
-
-The standard CORS headers to be returned by servers on all requests are:
+server should respond with the CORS headers for that route. The recommended CORS
+headers to be returned by servers on all requests are:
 
 .. code::
 
