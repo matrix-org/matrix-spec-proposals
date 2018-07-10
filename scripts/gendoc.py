@@ -299,7 +299,7 @@ def run_through_template(input_files, set_verbose, substitutions):
         "-i", "matrix_templates",
     ]
 
-    for k, v in list(substitutions.items()):
+    for k, v in substitutions.items():
         args.append("--substitution=%s=%s" % (k, v))
 
     if set_verbose:
@@ -359,7 +359,7 @@ def get_build_target(all_targets, target_name):
         for i, entry in enumerate(group):
             if isinstance(entry, dict):
                 group[i] = {
-                    (rel_depth + depth): v for (rel_depth, v) in list(entry.items())
+                    (rel_depth + depth): v for (rel_depth, v) in entry.items()
                 }
         return group
 
@@ -378,7 +378,7 @@ def get_build_target(all_targets, target_name):
         # file_entry is a dict which has more file entries as values
         elif isinstance(file_entry, dict):
             resolved_entry = {}
-            for (depth, entry) in list(file_entry.items()):
+            for (depth, entry) in file_entry.items():
                 if not isinstance(entry, str):
                     raise Exception(
                         "Double-nested depths are not supported. Entry: %s" % (file_entry,)
@@ -429,7 +429,7 @@ def main(targets, dest_dir, keep_intermediates, substitutions):
         target_defs = yaml.load(targ_file.read())
 
     if targets == ["all"]:
-        targets = list(target_defs["targets"].keys())
+        targets = target_defs["targets"].keys()
 
     log("Building spec [targets=%s]" % targets)
 
@@ -443,17 +443,17 @@ def main(targets, dest_dir, keep_intermediates, substitutions):
         templated_files[target_name] = templated_file
 
     # we do all the templating at once, because it's slow
-    run_through_template(list(templated_files.values()), VERBOSE, substitutions)
+    run_through_template(templated_files.values(), VERBOSE, substitutions)
 
     stylesheets = glob.glob(os.path.join(script_dir, "css", "*.css"))
 
-    for target_name, templated_file in list(templated_files.items()):
+    for target_name, templated_file in templated_files.items():
         target = target_defs["targets"].get(target_name)
         version_label = None
         if target:
             version_label = target.get("version_label")
             if version_label:
-                for old, new in list(substitutions.items()):
+                for old, new in substitutions.items():
                     version_label = version_label.replace(old, new)
 
         rst_file = os.path.join(tmp_dir, "spec_%s.rst" % (target_name,))
@@ -481,7 +481,7 @@ def main(targets, dest_dir, keep_intermediates, substitutions):
 def list_targets():
     with open(os.path.join(spec_dir, "targets.yaml"), "r") as targ_file:
         target_defs = yaml.load(targ_file.read())
-    targets = list(target_defs["targets"].keys())
+    targets = target_defs["targets"].keys()
     print("\n".join(targets))
 
 

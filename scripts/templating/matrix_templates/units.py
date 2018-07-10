@@ -35,7 +35,7 @@ from functools import reduce
 from six.moves.urllib.parse import urlencode
 
 matrix_doc_dir=reduce(lambda acc,_: os.path.dirname(acc),
-                      list(range(1, 5)), os.path.abspath(__file__))
+                      range(1, 5), os.path.abspath(__file__))
 
 HTTP_APIS = {
     os.path.join(matrix_doc_dir, "api/application-service"): "as",
@@ -126,7 +126,7 @@ def resolve_references(path, schema):
         else:
             result = OrderedDict()
 
-        for key, value in list(schema.items()):
+        for key, value in schema.items():
             result[key] = resolve_references(path, value)
         return result
     elif isinstance(schema, list):
@@ -211,7 +211,7 @@ def get_json_schema_object_fields(obj, enforce_title=False):
         props = obj.get("patternProperties")
         if props:
             # try to replace horrible regex key names with pretty x-pattern ones
-            for key_name in list(props.keys()):
+            for key_name in props.keys():
                 pretty_key = props[key_name].get("x-pattern")
                 if pretty_key:
                     props[pretty_key] = props[key_name]
@@ -382,7 +382,7 @@ def get_example_for_schema(schema):
         if 'properties' not in schema:
             raise Exception('"object" property has neither properties nor example')
         res = OrderedDict()
-        for prop_name, prop in list(schema['properties'].items()):
+        for prop_name, prop in schema['properties'].items():
             logger.debug("Parsing property %r" % prop_name)
             prop_example = get_example_for_schema(prop)
             res[prop_name] = prop_example
@@ -558,7 +558,7 @@ class MatrixUnits(Units):
                 )
             if "headers" in good_response:
                 headers = TypeTable()
-                for (header_name, header) in list(good_response["headers"].items()):
+                for (header_name, header) in good_response["headers"].items():
                     headers.add_row(
                         TypeTableRow(key=header_name, title=header["type"],
                                      desc=header["description"]),
@@ -617,7 +617,7 @@ class MatrixUnits(Units):
 
     def load_swagger_apis(self):
         apis = {}
-        for path, suffix in list(HTTP_APIS.items()):
+        for path, suffix in HTTP_APIS.items():
             for filename in os.listdir(path):
                 if not filename.endswith(".yaml"):
                     continue

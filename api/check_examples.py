@@ -88,9 +88,9 @@ def check_swagger_file(filepath):
     with open(filepath) as f:
         swagger = yaml.load(f)
 
-    for path, path_api in list(swagger.get('paths', {}).items()):
+    for path, path_api in swagger.get('paths', {}).items():
 
-        for method, request_api in list(path_api.items()):
+        for method, request_api in path_api.items():
             request = "%s %s" % (method.upper(), path)
             for parameter in request_api.get('parameters', ()):
                 if parameter['in'] == 'body':
@@ -100,7 +100,7 @@ def check_swagger_file(filepath):
                 responses = request_api['responses']
             except KeyError:
                 raise ValueError("No responses for %r" % (request,))
-            for code, response in list(responses.items()):
+            for code, response in responses.items():
                 check_response(filepath, request, code, response)
 
 

@@ -14,7 +14,7 @@ prs = set()
 def getpage(url, page):
     resp = requests.get(url + str(page))
 
-    for link in list(resp.links.values()):
+    for link in resp.links.values():
         if link['rel'] == 'last':
             pagecount = re.search('page=(.+?)', link['url']).group(1)
 

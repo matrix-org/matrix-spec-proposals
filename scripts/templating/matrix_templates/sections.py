@@ -86,7 +86,7 @@ class MatrixSections(Sections):
     # the key is the section name and the value is the value of the section
     def render_group_http_apis(self):
         # map all swagger_apis to the form $GROUP_http_api
-        swagger_groups = list(self.units.get("swagger_apis").keys())
+        swagger_groups = self.units.get("swagger_apis").keys()
         renders = {}
         for group in swagger_groups:
             sortFnOrPathList = None
@@ -134,7 +134,7 @@ class MatrixSections(Sections):
             "m.room.message#m.file"
         ]
         other_msgtypes = [
-            k for k in list(schemas.keys()) if k.startswith("m.room.message#") and
+            k for k in schemas.keys() if k.startswith("m.room.message#") and
             k not in msgtype_order
         ]
         for event_name in (msgtype_order + other_msgtypes):

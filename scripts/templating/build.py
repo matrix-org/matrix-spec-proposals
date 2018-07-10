@@ -169,7 +169,7 @@ def main(input_module, files=None, out_dir=None, verbose=False, substitutions={}
     # print out valid section keys if no file supplied
     if not files:
         print("\nValid template variables:")
-        for key in list(sections.keys()):
+        for key in sections.keys():
             sec_text = "" if (len(sections[key]) > 75) else (
                 "(Value: '%s')" % sections[key]
             )
@@ -211,7 +211,7 @@ def process_file(env, sections, filename, output_filename):
     # Do these substitutions outside of the ordinary templating system because
     # we want them to apply to things like the underlying swagger used to
     # generate the templates, not just the top-level sections.
-    for old, new in list(substitutions.items()):
+    for old, new in substitutions.items():
         output = output.replace(old, new)
 
     with open(output_filename, "wb") as f:

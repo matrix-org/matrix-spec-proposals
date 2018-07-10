@@ -54,7 +54,7 @@ class Sections(object):
                 )
             elif isinstance(section, dict):
                 self.log("  Generated multiple sections:")
-                for (k, v) in list(section.items()):
+                for (k, v) in section.items():
                     if not isinstance(k, str) or not isinstance(v, str):
                         raise Exception(
                             ("Method %s returned multiple sections as a dict but " +

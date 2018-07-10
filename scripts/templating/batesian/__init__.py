@@ -24,7 +24,7 @@ class AccessKeyStore(object):
         self.accessed_set = set()
 
     def keys(self):
-        return list(self.data.keys())
+        return self.data.keys()
 
     def add(self, key, unit_dict):
         self.data[key] = unit_dict
