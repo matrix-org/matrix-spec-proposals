@@ -845,7 +845,14 @@ class MatrixUnits(Units):
                         stderr=subprocess.PIPE,
                         cwd=tc_path,
                     ).strip().decode('UTF-8')
-                except subprocess.CalledProcessError:
+
+                    # This is a bit of a hack, but it does mean that the log at least gets *something*
+                    # to tell us it broke
+                    if not raw_log.startswith("Unreleased Changes"):
+                        logger.error(raw_log)
+                        raw_log = ""
+                except subprocess.CalledProcessError as e:
+                    logger.error(e)
                     raw_log = ""
                 tc_lines = raw_log.splitlines()
 
