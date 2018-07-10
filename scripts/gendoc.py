@@ -405,8 +405,7 @@ def logv(line):
 
 
 def cleanup_env():
-    #shutil.rmtree(tmp_dir)
-    pass
+    shutil.rmtree(tmp_dir)
 
 
 def mkdirp(d) :
