@@ -23,23 +23,6 @@ basePath: /_matrix/key/v2
 produces:
   - application/json
 paths:
-  "/server/{keyId}":
-    get:
-      summary: Get the server's key
-      description: Get the server's key
-      operationId: getServerKey
-      parameters:
-        - in: path
-          name: keyId
-          type: string
-          description: Key ID
-          required: false
-          x-example: TODO # No examples in the spec so far
-      responses:
-        200:
-          description: The server's keys
-          schema:
-            $ref: "definitions/keys.yaml"
   "/query/{serverName}/{keyId}":
     get:
       summary: Retreive a server key
@@ -100,20 +83,16 @@ paths:
                   name: ServerName
                   description: The server names to query
                   additionalProperties:
-                    type: array
-                    name: ServerKey
+                    type: object
+                    title: Query Criteria
                     description: The server keys to query
-                    items:
-                      type: object
-                      title: Query Criteria
-                      description: The query criteria
-                      properties:
-                        minimum_valid_until_ts:
-                          type: integer
-                          format: int64
-                          description: Minimum Valid Until MS
-                          required: true # TODO: Verify
-                          x-example: 1234567890
+                    properties:
+                      minimum_valid_until_ts:
+                        type: integer
+                        format: int64
+                        description: Minimum Valid Until MS
+                        required: true # TODO: Verify
+                        example: 1234567890
       responses:
         200:
           description: The keys for the server
