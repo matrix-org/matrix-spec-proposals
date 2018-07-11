@@ -839,21 +839,28 @@ class MatrixUnits(Units):
             tc_lines = []
             if os.path.isdir(tc_path):
                 logger.info("Generating towncrier changelog for: %s" % name)
-                try:
-                    raw_log = subprocess.check_output(
-                        ['towncrier', '--version', 'Unreleased Changes', '--name', name, '--draft'],
-                        stderr=subprocess.PIPE,
-                        cwd=tc_path,
-                    ).strip().decode('UTF-8')
+                p = subprocess.run(
+                    ['towncrier', '--version', 'Unreleased Changes', '--name', name, '--draft'],
+                    cwd=tc_path,
+                    check=False, # We'll manually check the exit code
+                    stderr=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                )
+                if p.returncode != 0:
+                    # Something broke - dump as much information as we can
+                    logger.error("Towncrier exited with code %s" % p.returncode)
+                    logger.error(p.stdout.decode('UTF-8'))
+                    logger.error(p.stderr.decode('UTF-8'))
+                    raw_log = ""
+                else:
+                    raw_log = p.stdout.decode('UTF-8')
 
                     # This is a bit of a hack, but it does mean that the log at least gets *something*
                     # to tell us it broke
                     if not raw_log.startswith("Unreleased Changes"):
+                        logger.error("Towncrier appears to have failed to generate a changelog")
                         logger.error(raw_log)
                         raw_log = ""
-                except subprocess.CalledProcessError as e:
-                    logger.error(e)
-                    raw_log = ""
                 tc_lines = raw_log.splitlines()
 
             title_part = None
