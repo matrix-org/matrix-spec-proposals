@@ -1,5 +1,6 @@
 .. Copyright 2016 OpenMarket Ltd
 .. Copyright 2017 New Vector Ltd
+.. Copyright 2018 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -232,38 +233,7 @@ This API can return keys for servers that are offline by using cached responses
 taken from when the server was online. Keys can be queried from multiple
 servers to mitigate against DNS spoofing.
 
-Example request:
-
-.. code::
-
-    GET /_matrix/key/v2/query/{server_name}/{key_id}/?minimum_valid_until_ts={minimum_valid_until_ts} HTTP/1.1
-
-    POST /_matrix/key/v2/query HTTP/1.1
-    Content-Type: application/json
-
-    {
-        "server_keys": {
-            "{server_name}": {
-                "{key_id}": {
-                    "minimum_valid_until_ts": {posix_timestamp}
-                }
-            }
-        }
-    }
-
-
-Response:
-
-.. code::
-
-    HTTP/1.1 200 OK
-    Content-Type: application/json
-    {
-        "server_keys": [
-           # List of responses with same format as /_matrix/key/v2/server
-           # signed by both the originating server and this server.
-        ]
-    }
+{{keys_ss_http_api}}
 
 Version 1
 +++++++++

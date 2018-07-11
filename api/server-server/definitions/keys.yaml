@@ -1,0 +1,96 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+type: object
+title: Server Keys
+description: Server keys
+example:
+  $ref: "../examples/server_key.json"
+properties:
+  server_name:
+    type: string
+    description: DNS name of the homeserver
+    required: true # TODO: Verify
+    example: "example.org"
+  verify_keys:
+    type: object
+    description: Public keys of the homeserver for verifying digital signatures
+    required: true # TODO: Verify
+    additionalProperties:
+      type: object
+      title: Verify Key
+      example: {
+        "ed25519:auto2": {
+          "key": "Base+64+Encoded+Signature+Verification+Key"
+        }
+      }
+      properties:
+        key:
+          type: string
+          description: The key
+          required: true
+          example: "Base+64+Encoded+Signature+Verification+Key"
+  old_verify_keys:
+    type: object
+    description: The public keys that the server used to use and when it stopped using them
+    additionalProperties:
+      type: object
+      title: Old Verify Key
+      example: {
+        "ed25519:auto1": {
+          "expired_ts": 922834800000,
+          "key": "Base+64+Encoded+Signature+Verification+Key"
+        }
+      }
+      properties:
+        expired_ts:
+          type: integer
+          format: int64
+          description: The expiration time
+          required: true
+          example: 922834800000
+        key:
+          type: string
+          description: The key
+          required: true
+          example: "Base+64+Encoded+Signature+Verification+Key"
+  signatures:
+    type: object
+    description: Digital signatures for this object signed using the ``verify_keys``
+    additionalProperties:
+      type: object
+      title: Signed Server
+      example: {
+        "example.org": {
+          "ad25519:auto2": "Base+64+Encoded+Signature+Verification+Key"
+        }
+      }
+      additionalProperties:
+        type: string
+        name: Encoded Signature Verification Key
+  tls_fingerprints:
+    type: array
+    description: Hashes of X.509 TLS certificates used by this server encoded as `Unpadded Base64`_
+    items:
+      type: object
+      title: TLS Fingerprint
+      properties:
+        sha256:
+          type: string
+          description: The encoded fingerprint
+          example: Base+64+Encoded+SHA-256-Fingerprint
+  valid_until_ts:
+    type: integer
+    format: int64
+    description: POSIX timestamp when the list of valid keys should be refreshed
+    example: 1052262000000
