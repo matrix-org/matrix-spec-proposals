@@ -1,0 +1,51 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Federation Transaction API"
+  version: "1.0.0"
+host: localhost:8448
+schemes:
+  - https
+basePath: /_matrix/federation/v1
+produces:
+  - application/json
+paths:
+  "/send/{txnId}":
+    put:
+      summary: Send a transaction
+      description: |-
+        Push messages representing live activity to another server. The destination name
+        will be set to that of the receiving server itself. Each embedded PDU in the
+        transaction body will be processed.
+      operationId: sendTransaction
+      parameters:
+        - in: path
+          name: txnId
+          type: string
+          # TODO: "Overrides any ID given in the JSON body" - What does this mean?
+          description: |-
+            The transaction ID. Overrides any ID given in the JSON body.
+          required: true
+          x-example: TODO # No examples in the spec so far
+        - in: body
+          name: body
+          type: object
+          schema:
+            $ref: "definitions/full_transaction.yaml"
+      responses:
+        200:
+          # TODO: Spec this (and figure out what it is)
+          description: TODO

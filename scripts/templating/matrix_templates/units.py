@@ -292,10 +292,19 @@ def process_data_type(prop, required=False, enforce_title=True):
         is_object = True
 
     elif prop_type == "array":
-        nested = process_data_type(prop["items"])
-        prop_title = "[%s]" % nested["title"]
-        tables = nested["tables"]
-        enum_desc = nested["enum_desc"]
+        items = prop["items"]
+        if isinstance(items, list):
+            prop_title = "["
+            for i in items:
+                nested = process_data_type(i)
+                tables.extend(nested['tables'])
+                prop_title = "%s%s, " % (prop_title, nested['title'])
+            prop_title = prop_title[:-2] + "]"
+        else:
+            nested = process_data_type(prop["items"])
+            prop_title = "[%s]" % nested["title"]
+            tables = nested["tables"]
+            enum_desc = nested["enum_desc"]
 
     else:
         prop_title = prop_type
@@ -505,7 +514,13 @@ class MatrixUnits(Units):
                 if val_type == "array":
                     items = param.get("items")
                     if items:
-                        val_type = "[%s]" % items.get("type")
+                        if isinstance(items, list):
+                            val_type = "["
+                            for i in items:
+                                val_type += "%s, " % items.get("type")
+                            val_type = val_type[:-2] + "]"
+                        else:
+                            val_type = "[%s]" % items.get("type")
 
                 if param.get("enum"):
                     val_type = "enum"

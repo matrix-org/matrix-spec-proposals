@@ -1,0 +1,118 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Federation Events API"
+  version: "1.0.0"
+host: localhost:8448
+schemes:
+  - https
+basePath: /_matrix/federation/v1
+produces:
+  - application/json
+paths:
+  "/state/{roomId}":
+    get:
+      summary: Get all the state of a given room
+      description: |-
+        Retrieves a snapshot of the entire current state of the given room.
+      operationId: getRoomState
+      parameters:
+        - in: path
+          name: roomId
+          type: string
+          description: The room ID to get state for
+          required: true
+          x-example: "!abc123:matrix.org"
+      responses:
+        200:
+          description: The room state for the room (kept under ``pdus``)
+          schema:
+            $ref: "definitions/transaction.yaml"
+  "/event/{eventId}":
+    get:
+      summary: Get a single event
+      description: |-
+        Retrieves a single event
+      operationId: getEvent
+      parameters:
+        - in: path
+          name: eventId
+          type: string
+          description: The event ID to get
+          required: true
+          x-example: "$abc123:matrix.org"
+      responses:
+        200:
+          description: A transaction containing a single PDU which is the event requested
+          schema:
+            $ref: "definitions/transaction.yaml"
+  "/backfill/{roomId}":
+    get:
+      summary: Retrieves the events which precede the given event
+      description: |-
+        Retreives a sliding-window history of previous PDUs that occurred on the given room.
+        Starting from the PDU ID(s) given in the ``v`` argument, the PDUs that preceded it
+        are retrived, up to the total number given by the ``limit``.
+      operationId: backfillRoom
+      parameters:
+        - in: path
+          name: roomId
+          type: string
+          description: The room ID to backfill
+          required: true
+          x-example: "!abc123:matrix.org"
+        - in: query
+          name: v
+          type: string # TODO: The description says this is plural - figure out how to specify multiple, and spec it
+          description: The event ID to backfill from
+          required: true
+          x-example: "$abc123:matrix.org"
+        - in: query
+          name: limit
+          type: integer
+          description: The maximum number of events to retrieve
+          required: true # TODO: Verify
+          x-example: 10
+      responses:
+        200:
+          description: A transaction containing the PDUs that preceded the given event(s).
+          schema:
+            $ref: "definitions/transaction.yaml"
+  "/pull":
+    get:
+      summary: Stream events later than a given point in history
+      description: |-
+        Retrieves all of the transactions later than any version given by the ``v`` arguments.
+      operationId: pull
+      parameters:
+        - in: query
+          name: v
+          type: string # TODO: The description says this is plural - figure out how to specify multiple, and spec it
+          description: The event ID to backfill from
+          required: true
+          x-example: "$abc123:matrix.org"
+        - in: query
+          name: origin
+          type: string
+          description: The origin # TODO: What is this actually?
+          required: true # TODO: Verify
+          x-example: "matrix.org"
+      responses:
+        200:
+          # TODO: This could do with a better description
+          description: A transaction containing multiple PDUs
+          schema:
+            $ref: "definitions/transaction.yaml"
