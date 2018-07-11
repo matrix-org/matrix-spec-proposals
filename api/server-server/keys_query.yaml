@@ -77,7 +77,6 @@ paths:
               server_keys:
                 type: object
                 description: The query criteria
-                required: true
                 additionalProperties:
                   type: object
                   name: ServerName
@@ -91,8 +90,8 @@ paths:
                         type: integer
                         format: int64
                         description: Minimum Valid Until MS
-                        required: true # TODO: Verify
                         example: 1234567890
+            required: ['server_keys']
       responses:
         200:
           description: The keys for the server
