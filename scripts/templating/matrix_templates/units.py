@@ -30,9 +30,8 @@ import re
 import subprocess
 import sys
 import yaml
-import requests.utils
 from functools import reduce
-from six.moves.urllib.parse import urlencode
+from six.moves.urllib.parse import urlencode, quote
 
 matrix_doc_dir=reduce(lambda acc,_: os.path.dirname(acc),
                       range(1, 5), os.path.abspath(__file__))
@@ -525,7 +524,7 @@ class MatrixUnits(Units):
 
                 if param_loc == "path":
                     path_template = path_template.replace(
-                        "{%s}" % param_name, requests.utils.requote_uri(example)
+                        "{%s}" % param_name, quote(example)
                     )
                 elif param_loc == "query":
                     if type(example) == list:
