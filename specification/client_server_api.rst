@@ -164,6 +164,25 @@ recommended.
 
 {{versions_cs_http_api}}
 
+Web Browser Clients
+-------------------
+
+It is realistic to expect that some clients will be written to be run within a
+web browser or similar environment. In these cases, the homeserver should respond
+to pre-flight requests and supply Cross-Origin Resource Sharing (CORS) headers on
+all requests.
+
+When a client approaches the server with a pre-flight (``OPTIONS``) request, the
+server should respond with the CORS headers for that route. The recommended CORS
+headers to be returned by servers on all requests are:
+
+.. code::
+
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+  Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization
+
+
 Client Authentication
 ---------------------
 
