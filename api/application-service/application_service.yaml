@@ -131,7 +131,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
@@ -140,7 +140,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
         404:
           description: |-
             The application service indicates that this room alias does not exist.
@@ -150,7 +150,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
   "/users/{userId}":
     get:
       summary: Query if a user should exist on the application service.
@@ -187,7 +187,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
@@ -196,7 +196,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
         404:
           description: |-
             The application service indicates that this user does not exist.
@@ -206,7 +206,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
   "/_matrix/app/unstable/thirdparty/protocol/{protocol}":
     get:
       summary: Retrieve metadata about a specific protocol that the application service supports.
@@ -236,7 +236,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
@@ -245,7 +245,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
         404:
           description: No protocol was found with the given path.
           examples:
@@ -253,7 +253,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
   "/_matrix/app/unstable/thirdparty/user/{protocol}":
     get:
       summary: Retrieve the Matrix User ID of a corresponding third party user.
@@ -289,7 +289,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
@@ -298,7 +298,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
         404:
           description: No users were found with the given parameters.
           examples:
@@ -306,7 +306,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
   "/_matrix/app/unstable/thirdparty/location/{protocol}":
     get:
       summary: Retreive Matrix-side portal rooms leading to a third party location.
@@ -340,7 +340,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
@@ -349,7 +349,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
         404:
           description: No mappings were found with the given parameters.
           examples:
@@ -357,7 +357,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
   "/_matrix/app/unstable/thirdparty/location":
     get:
       summary: Reverse-lookup third party locations given a Matrix room alias.
@@ -385,7 +385,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
@@ -394,7 +394,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
         404:
           description: No mappings were found with the given parameters.
           examples:
@@ -402,7 +402,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
   "/_matrix/app/unstable/thirdparty/user":
     get:
       summary: Reverse-lookup third party users given a Matrix User ID.
@@ -429,7 +429,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
@@ -438,7 +438,7 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml
         404:
           description: No mappings were found with the given parameters.
           examples:
@@ -446,4 +446,4 @@ paths:
               "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
             }
           schema:
-            $ref: ../client-server/definitions/error.yaml
+            $ref: ../client-server/definitions/errors/error.yaml

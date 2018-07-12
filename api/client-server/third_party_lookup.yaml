@@ -66,7 +66,7 @@ paths:
               "errcode": "M_NOT_FOUND"
             }
           schema:
-            $ref: definitions/error.yaml
+            $ref: definitions/errors/error.yaml
   "/thirdparty/location/{protocol}":
     get:
       summary: Retreive Matrix-side portals rooms leading to a third party location.
@@ -105,7 +105,7 @@ paths:
               "errcode": "M_NOT_FOUND"
             }
           schema:
-            $ref: definitions/error.yaml
+            $ref: definitions/errors/error.yaml
   "/thirdparty/user/{protocol}":
     get:
       summary: Retrieve the Matrix User ID of a corresponding third party user.
@@ -138,7 +138,7 @@ paths:
               "errcode": "M_NOT_FOUND"
             }
           schema:
-            $ref: definitions/error.yaml
+            $ref: definitions/errors/error.yaml
   "/thirdparty/location":
     get:
       summary: Reverse-lookup third party locations given a Matrix room alias.
@@ -165,7 +165,7 @@ paths:
               "errcode": "M_NOT_FOUND"
             }
           schema:
-            $ref: definitions/error.yaml
+            $ref: definitions/errors/error.yaml
   "/thirdparty/user":
     get:
       summary: Reverse-lookup third party users given a Matrix User ID.
@@ -191,4 +191,4 @@ paths:
               "errcode": "M_NOT_FOUND"
             }
           schema:
-            $ref: definitions/error.yaml
+            $ref: definitions/errors/error.yaml
