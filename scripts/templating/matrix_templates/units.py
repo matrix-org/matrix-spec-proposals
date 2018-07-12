@@ -30,9 +30,8 @@ import re
 import subprocess
 import sys
 import yaml
-import requests.utils
 from functools import reduce
-from six.moves.urllib.parse import urlencode
+from six.moves.urllib.parse import urlencode, quote
 
 matrix_doc_dir=reduce(lambda acc,_: os.path.dirname(acc),
                       range(1, 5), os.path.abspath(__file__))
@@ -525,7 +524,7 @@ class MatrixUnits(Units):
 
                 if param_loc == "path":
                     path_template = path_template.replace(
-                        "{%s}" % param_name, requests.utils.requote_uri(example)
+                        "{%s}" % param_name, quote(example)
                     )
                 elif param_loc == "query":
                     if type(example) == list:
@@ -839,21 +838,21 @@ class MatrixUnits(Units):
             tc_lines = []
             if os.path.isdir(tc_path):
                 logger.info("Generating towncrier changelog for: %s" % name)
-                p = subprocess.run(
+                p = subprocess.Popen(
                     ['towncrier', '--version', 'Unreleased Changes', '--name', name, '--draft'],
                     cwd=tc_path,
-                    check=False, # We'll manually check the exit code
                     stderr=subprocess.PIPE,
                     stdout=subprocess.PIPE,
                 )
+                stdout, stderr = p.communicate()
                 if p.returncode != 0:
                     # Something broke - dump as much information as we can
                     logger.error("Towncrier exited with code %s" % p.returncode)
-                    logger.error(p.stdout.decode('UTF-8'))
-                    logger.error(p.stderr.decode('UTF-8'))
+                    logger.error(stdout.decode('UTF-8'))
+                    logger.error(stderr.decode('UTF-8'))
                     raw_log = ""
                 else:
-                    raw_log = p.stdout.decode('UTF-8')
+                    raw_log = stdout.decode('UTF-8')
 
                     # This is a bit of a hack, but it does mean that the log at least gets *something*
                     # to tell us it broke
