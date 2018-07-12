@@ -39,7 +39,7 @@ paths:
         200:
           description: The protocols supported by the homeserver.
           schema:
-            $ref: ../application-service/definitions/schema/protocol_metadata.yaml
+            $ref: ../application-service/definitions/protocol_metadata.yaml
   "/thirdparty/protocol/{protocol}":
     get:
       summary: Retrieve metadata about a specific protocol that the homeserver supports.
@@ -58,7 +58,7 @@ paths:
         200:
           description: The protocol was found and metadata returned.
           schema:
-            $ref: ../application-service/definitions/schema/protocol.yaml
+            $ref: ../application-service/definitions/protocol.yaml
         404:
           description: The protocol is unknown.
           examples:
@@ -97,7 +97,7 @@ paths:
         200:
           description: At least one portal room was found.
           schema:
-            $ref: ../application-service/definitions/schema/location_batch.yaml
+            $ref: ../application-service/definitions/location_batch.yaml
         404:
           description: No portal rooms were found.
           examples:
@@ -130,7 +130,7 @@ paths:
         200:
           description: The Matrix User IDs found with the given parameters.
           schema:
-            $ref: ../application-service/definitions/schema/user_batch.yaml
+            $ref: ../application-service/definitions/user_batch.yaml
         404:
           description: The Matrix User ID was not found
           examples:
@@ -157,7 +157,7 @@ paths:
           description: |-
             All found third party locations.
           schema:
-            $ref: ../application-service/definitions/schema/location_batch.yaml
+            $ref: ../application-service/definitions/location_batch.yaml
         404:
           description: The Matrix room alias was not found
           examples:
@@ -183,7 +183,7 @@ paths:
           description: |-
             An array of third party users.
           schema:
-            $ref: ../application-service/definitions/schema/user_batch.yaml
+            $ref: ../application-service/definitions/user_batch.yaml
         404:
           description: The Matrix User ID was not found
           examples:

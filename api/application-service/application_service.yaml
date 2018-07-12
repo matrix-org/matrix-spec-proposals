@@ -226,7 +226,7 @@ paths:
         200:
           description: The protocol was found and metadata returned.
           schema:
-            $ref: definitions/schema/protocol_metadata.yaml
+            $ref: definitions/protocol_metadata.yaml
         401:
           description: |-
             The homeserver has not supplied credentials to the application service.
@@ -279,7 +279,7 @@ paths:
         200:
           description: The Matrix User IDs found with the given parameters.
           schema:
-            $ref: definitions/schema/user_batch.yaml
+            $ref: definitions/user_batch.yaml
         401:
           description: |-
             The homeserver has not supplied credentials to the application service.
@@ -330,7 +330,7 @@ paths:
         200:
           description: At least one portal room was found.
           schema:
-            $ref: definitions/schema/location_batch.yaml
+            $ref: definitions/location_batch.yaml
         401:
           description: |-
             The homeserver has not supplied credentials to the application service.
@@ -375,7 +375,7 @@ paths:
           description: |-
             All found third party locations.
           schema:
-            $ref: definitions/schema/location_batch.yaml
+            $ref: definitions/location_batch.yaml
         401:
           description: |-
             The homeserver has not supplied credentials to the application service.
@@ -419,7 +419,7 @@ paths:
           description: |-
             An array of third party users.
           schema:
-            $ref: definitions/schema/user_batch.yaml
+            $ref: definitions/user_batch.yaml
         401:
           description: |-
             The homeserver has not supplied credentials to the application service.

@@ -42,7 +42,7 @@ Summary
  `Server Side Search`_                 Optional   Optional   Optional   Optional   Optional
  `Server Administration`_              Optional   Optional   Optional   Optional   Optional
  `Event Context`_                      Optional   Optional   Optional   Optional   Optional
- `Application Services`_               Optional   Optional   Optional   Optional   Optional
+ `Third Party Networks`_               Optional   Optional   Optional   Optional   Optional
 ===================================== ========== ========== ========== ========== ==========
 
 *Please see each module for more details on what clients need to implement.*
@@ -58,7 +58,7 @@ Summary
 .. _Server Side Search: `module:search`_
 .. _Server Administration: `module:admin`_
 .. _Event Context: `module:event-context`_
-.. _Application Services: `module:application-services`_
+.. _Third Party Networks: `module:third-party-networks`_
 
 Clients
 -------
