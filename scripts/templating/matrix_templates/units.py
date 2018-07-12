@@ -502,6 +502,11 @@ class MatrixUnits(Units):
                 # assign value expected for this param
                 val_type = param.get("type")  # integer/string
 
+                if val_type == "array":
+                    items = param.get("items")
+                    if items:
+                        val_type = "[%s]" % items.get("type")
+
                 if param.get("enum"):
                     val_type = "enum"
                     desc += (
