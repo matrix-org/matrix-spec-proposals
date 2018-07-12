@@ -2,7 +2,7 @@ language: go
 go:
   - 1.8
 
-sudo: false
+sudo: required
 
 # we only need a single git commit
 git:
