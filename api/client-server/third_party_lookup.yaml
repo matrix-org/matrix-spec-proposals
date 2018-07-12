@@ -129,7 +129,8 @@ paths:
       responses:
         200:
           description: The Matrix User IDs found with the given parameters.
-          $ref: ../application-service/definitions/schema/user_batch.yaml
+          schema:
+            $ref: ../application-service/definitions/schema/user_batch.yaml
         404:
           description: The Matrix User ID was not found
           examples:
