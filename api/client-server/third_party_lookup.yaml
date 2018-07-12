@@ -147,7 +147,7 @@ paths:
         alias.
       operationId: queryLocationByAlias
       parameters:
-        - in: path
+        - in: query
           name: alias
           type: string
           description: The Matrix room alias to look up.
@@ -173,7 +173,7 @@ paths:
         Retreive an array of third party users from a Matrix User ID.
       operationId: queryUserByID
       parameters:
-        - in: path
+        - in: query 
           name: userid
           type: string
           description: The Matrix User ID to look up.
