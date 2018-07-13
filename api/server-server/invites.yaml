@@ -53,9 +53,11 @@ paths:
           example: {
             "$ref": "examples/pdu.json",
             "type": "m.room.member",
+            "state_key": "@someone:example.org",
             "content": {
                 "membership": "invite"
-            }
+            },
+            "unsigned": {}
           }
       responses:
         200:
@@ -77,8 +79,10 @@ paths:
               {
                 "$ref": "examples/pdu.json",
                 "type": "m.room.member",
+                "state_key": "@someone:example.org",
                 "content": {
                     "membership": "invite"
-                }
+                },
+                "unsigned": {}
               }
             ]

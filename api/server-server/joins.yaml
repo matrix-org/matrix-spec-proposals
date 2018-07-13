@@ -125,6 +125,7 @@ paths:
             application/json: {
               "$ref": "examples/unsigned_pdu.json",
               "type": "m.room.member",
+              "state_key": "@someone:example.org",
               "content": {
                   "membership": "join"
               }
@@ -228,6 +229,7 @@ paths:
           example: {
             "$ref": "examples/pdu.json",
             "type": "m.room.member",
+            "state_key": "@someone:example.org",
             "content": {
                 "membership": "join"
             }
