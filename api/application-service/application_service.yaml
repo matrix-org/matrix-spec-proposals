@@ -270,7 +270,7 @@ paths:
           required: true
           x-example: irc
         - in: query
-          name: field1, field2...
+          name: fields...
           type: string
           description: |-
             One or more custom fields that are passed to the application
@@ -321,7 +321,7 @@ paths:
           required: true
           x-example: irc
         - in: query
-          name: field1, field2...
+          name: field...
           type: string
           description: |-
             One or more custom fields that are passed to the application
