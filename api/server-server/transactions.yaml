@@ -43,8 +43,21 @@ paths:
         - in: body
           name: body
           type: object
+          required: true
           schema:
-            $ref: "definitions/full_transaction.yaml"
+            allOf:
+              - $ref: "definitions/transaction.yaml"
+              - type: object
+                properties:
+                  edus:
+                    type: array
+                    description: List of ephemeral messages. May be omitted if there are no ephemeral messages to be sent.
+                    items:
+                      $ref: "definitions/edu.yaml"
+          example: {
+            "$ref": "examples/transaction.json",
+            "edus": [{"$ref": "edu.json"}] # Relative to the examples directory
+          }
       responses:
         200:
           # TODO: Spec this (and figure out what it is)

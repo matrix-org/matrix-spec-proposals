@@ -1,16 +1,5 @@
 {
-    "room_id": "!UcYsUzyxTGDxLBEvLy:example.org",
-    "sender": "@alice:example.com",
-    "origin": "example.com",
-    "event_id": "$a4ecee13e2accdadf56c1025:example.com",
-    "origin_server_ts": 1404838188000,
-    "type": "m.room.message",
-    "prev_events": [
-        [
-            "$af232176:example.org",
-            {"sha256": "abase64encodedsha256hashshouldbe43byteslong"}
-        ]
-    ],
+    "$ref": "unsigned_pdu.json",
     "hashes": {
         "sha256": "thishashcoversallfieldsincasethisisredacted"
     },
@@ -18,8 +7,5 @@
         "example.com": {
             "ed25519:key_version:": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
         }
-    },
-    "content": {
-        "key": "value"
     }
 }
