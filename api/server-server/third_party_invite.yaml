@@ -29,7 +29,7 @@ paths:
       description: |-
         The receiving server will verify the partial ``m.room.member`` event
         given in the request body. If valid, the receiving server will issue
-        an invite as per the `Inviting Users`_ section before returning a
+        an invite as per the `Inviting to a room`_ section before returning a
         response to this request.
       operationId: exchangeThirdPartyInvite
       parameters:
