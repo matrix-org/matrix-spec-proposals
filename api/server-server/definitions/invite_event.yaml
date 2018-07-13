@@ -85,4 +85,4 @@ allOf:
     required:
       # Every other field is already flagged as required by the $ref
       - state_key
-      - unsigned # TODO: apparently this is required?
+      - unsigned # TODO: apparently this is required? Verify.
