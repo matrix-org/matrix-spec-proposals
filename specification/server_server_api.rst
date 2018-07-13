@@ -689,16 +689,7 @@ All these URLs are name-spaced within a prefix of::
 {{query_general_ss_http_api}}
 
 
-To join a room::
-
-  GET .../make_join/<room_id>/<user_id>
-    Response: JSON encoding of a join proto-event
-
-  PUT .../send_join/<room_id>/<event_id>
-    Response: JSON encoding of the state of the room at the time of the event
-
-Performs the room join handshake. For more information, see "Joining Rooms"
-below.
+{{joins_ss_http_api}}
 
 Joining Rooms
 -------------
