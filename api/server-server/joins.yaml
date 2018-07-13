@@ -71,7 +71,6 @@ paths:
                   type:
                     type: string
                     description: The value ``m.room.member``
-                    required: true
                     example: "m.room.member"
                   state_key:
                     type: string
