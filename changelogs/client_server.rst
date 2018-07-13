@@ -45,6 +45,8 @@ Unreleased changes
     (`#1274 <https://github.com/matrix-org/matrix-doc/pull/1274>`_).
   - Document the GET version of ``/login``
     (`#1361 <https://github.com/matrix-org/matrix-doc/pull/1361>`_).
+  - Document guest access in ``/createRoom`` presets
+    (`#1379 <https://github.com/matrix-org/matrix-doc/pull/1379>`_).
   - Document the CORS/preflight headers
     (`#1365 <https://github.com/matrix-org/matrix-doc/pull/1365>`_).
 
