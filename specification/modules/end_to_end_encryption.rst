@@ -224,6 +224,39 @@ process:
 .. |device_lists| replace:: ``device_lists``
 .. _`device_lists`: `device_lists_sync`_
 
+
+Sending encrypted attachments
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When encryption is enabled in a room, files should be uploaded encrypted on
+the homeserver.
+
+In order to achieve this, a client should generate a single-use 256 bits AES key.
+Then, it should encrypt the file using AES-CTR. The counter should be 64 bits long,
+starting at 0 and prefixed by a random 64 bits Initialization Vector (IV), which
+together form a 128 bits unique counter block.
+
+.. Warning::
+  An IV must never be used multiple times with the same key. This implies that if there
+  are multiple files to encrypt in the same message, typically an image and its thumbnail,
+  the key may be reused, but not the IV.
+
+Then, the encrypted file can be uploaded to the homeserver.
+The key and the IV must be shared along with the resulting ``mxc://`` in order to allow
+recipients to decrypt the file. As the event containing those will be Megolm encrypted,
+the server will never have access to the decrypted file.
+
+A hash of the ciphertext must also be included, in order to prevent the homeserver from
+changing the file content.
+
+A client should send those data as a ``m.room.message``. The structure is similar to
+a ``m.file`` message or equivalent. The two differing keys are ``url`` and
+``thumbnail_url``, which are replaced respectively by ``file`` and ``thumbnail_file``,
+containing an ``EncryptedFile`` object as specified below. The key is sent using
+the `JSON Web Key`_ format, with a `W3C extension`_.
+
+{{m_room_message_encrypted_file_event}}
+
 Claiming one-time keys
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -548,6 +581,8 @@ Example response:
 .. _curve25519: https://cr.yp.to/ecdh.html
 .. _`Olm specification`: http://matrix.org/docs/spec/olm.html
 .. _`Megolm specification`: http://matrix.org/docs/spec/megolm.html
+.. _`JSON Web Key`: https://tools.ietf.org/html/rfc7517#appendix-A.3
+.. _`W3C extension`: https://w3c.github.io/webcrypto/#iana-section-jwk
 
 .. _`Signing JSON`: ../appendices.html#signing-json
 
