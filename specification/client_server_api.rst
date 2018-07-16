@@ -484,7 +484,7 @@ follows:
     "type": "m.login.password",
     "identifier": {
       "type": "m.id.thirdparty",
-      "medium": "<The medium of the third party identifier. Must be 'email'>",
+      "medium": "<The medium of the third party identifier.>",
       "address": "<The third party address of the user>"
     },
     "password": "<password>",
@@ -755,7 +755,8 @@ Third-party ID
   The user is identified by a third-party identifer in canonicalized form.
 
 A client can identify a user using a 3pid bound to the user's account on the
-homeserver, where the 3pid was previously bound using the |/account/3pid|_ API.
+homeserver, where the 3pid was previously bound using the |/account/3pid|_
+API.  See the `3PID Types`_ Appendix for a list of Third-party ID media.
 
 .. code:: json
 
@@ -1551,3 +1552,4 @@ have to wait in milliseconds before they can try again.
 .. _/user/<user_id>/account_data/<type>: #put-matrix-client-%CLIENT_MAJOR_VERSION%-user-userid-account-data-type
 
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
+.. _`3PID Types`:  ../appendices.html#pid-types
