@@ -1,0 +1,88 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Identity Service Ephemeral Invitation Signing API"
+  version: "1.0.0"
+host: localhost:8090
+schemes:
+  - https
+  - http
+basePath: /_matrix/identity/api/v1
+produces:
+  - application/json
+paths:
+  "/sign-ed25519":
+    post:
+      summary: Sign invitation details
+      description: |-
+        Sign invitation details.
+
+        The identity server will look up ``token`` which was stored in a call
+        to ``store-invite``, and fetch the sender of the invite.
+      operationId: blindlySignStuff
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            example: {
+                "mxid": "@foo:bar.com",
+                "token": "sometoken",
+                "private_key": "base64encodedkey"
+              }
+            properties:
+              mxid:
+                type: string
+                description: The Matrix user ID of the user accepting the invitation.
+              token:
+                type: string
+                description: Token from the call to ``store-invite``
+              private_key:
+                type: string
+                description: The private key, encoded as `Unpadded base64`_.
+            required: ["mxid", "token", "private_key"]
+      responses:
+        200:
+          description: "The signature of ... **FIXME:** what exactly is this
+            signing? (and what is it for?)"
+          schema:
+            type: object
+            properties:
+              mxid:
+                type: string
+                description: The Matrix user ID of the user accepting the invitation.
+              sender:
+                type: string
+                description: The Matrix user ID of the user who sent the invitation.
+              signatures:
+                type: object
+                description: "The signature of ... **FIXME:** what exactly is this signing?"
+          examples:
+            application/json: {
+              "mxid": "@foo:bar.com",
+              "sender": "@baz:bar.com",
+              "signatures": {
+                "my.id.server": {
+                  "ed25519:0": "def987"
+                }
+              },
+              "token": "abc123"
+            }
+        404:
+          description: Token was not found.
+          example: {
+              "errcode": "M_UNRECOGNIZED",
+              "error": "Didn't recognize token"
+            }
