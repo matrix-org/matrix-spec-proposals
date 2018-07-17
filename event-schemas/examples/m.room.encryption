@@ -1,6 +1,8 @@
 {
   "content": {
-    "algorithm": "m.megolm.v1.aes-sha2"
+    "algorithm": "m.megolm.v1.aes-sha2",
+    "rotation_period_ms": 604800000,
+    "rotation_period_msgs": 100
   },
   "event_id": "$WLGTSEFJJKJ:localhost",
   "origin_server_ts": 1476648761524,
