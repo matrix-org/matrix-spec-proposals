@@ -360,6 +360,9 @@ The plaintext payload is of the form:
      "type": "<type of the plaintext event>",
      "content": "<content for the plaintext event>",
      "room_id": "<the room_id>",
+     "keys": {
+       "ed25519": "<sender_ed25519_key>"
+     }
    }
 
 The type and content of the plaintext message event are given in the payload.
@@ -367,10 +370,12 @@ The type and content of the plaintext message event are given in the payload.
 We include the room ID in the payload, because otherwise the homeserver would
 be able to change the room a message was sent in.
 
-.. TODO: claimed_keys
-
-Clients must confirm that the ``sender_key`` belongs to the user that sent the
-message. TODO: how?
+Clients must confirm that the ``sender_key`` and the ``ed25519`` field value
+under the ``keys`` property match the keys returned by |/keys/query|_ for
+the given user, and must also verify the signature of the payload. Without
+this check, a client cannot be sure that the sender device owns the private
+part of the ed25519 key it claims to have in the Olm payload.
+This is crucial when the ed25519 key corresponds to a verified device.
 
 ``m.megolm.v1.aes-sha2``
 ~~~~~~~~~~~~~~~~~~~~~~~~
