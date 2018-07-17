@@ -41,9 +41,9 @@ specs and event schemas in this repository.
 Preparation
 -----------
 
-To use the scripts, it is best to create a Python 3.5+ virtualenv as follows::
+To use the scripts, it is best to create a Python 3.4+ virtualenv as follows::
 
-  virtualenv env
+  virtualenv -p python3 env
   env/bin/pip install -r scripts/requirements.txt
 
 (Benjamin Synders has contributed a script for `Nix`_ users, which can be
