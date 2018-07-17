@@ -449,6 +449,18 @@ messages.
 Protocol definitions
 --------------------
 
+Events
+~~~~~~
+
+{{m_room_encryption_event}}
+
+{{m_room_encrypted_event}}
+
+{{m_room_key_event}}
+
+Key management API
+~~~~~~~~~~~~~~~~~~
+
 {{keys_cs_http_api}}
 
 

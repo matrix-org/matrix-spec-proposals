@@ -1,0 +1,24 @@
+---
+allOf:
+  - $ref: core-event-schema/state_event.yaml
+description: Defines how messages sent in this room should be encrypted.
+properties:
+  content:
+    properties:
+      algorithm:
+        type: string
+        description: |-
+          The encryption algorithm to be used to encrypt messages sent in this
+          room. For example, ``m.megolm.v1.aes-sha2``.
+    required:
+      - algorithm
+    type: object
+  state_key:
+    description: A zero-length string.
+    pattern: '^$'
+    type: string
+  type:
+    enum:
+      - m.room.encryption
+    type: string
+type: object
