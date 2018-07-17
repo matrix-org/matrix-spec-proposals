@@ -781,7 +781,7 @@ FIXME: how was the phone number bound?  Also with |/account/3pid|_?
   "identifier": {
     "type": "m.id.thirdparty",
     "country": "<The country that the phone number is from>",
-    "phone": "<The phone number FIXME: are there any requirements for the format?>"
+    "phone": "<The phone number as a MSISDN (Mobile Station International Subscriber Directory Number)>"
   }
 
 Login
