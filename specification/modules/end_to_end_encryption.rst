@@ -228,6 +228,54 @@ A homeserver should rate-limit the number of one-time keys that a given user or
 remote server can claim. A homeserver should discard the public part of a one
 time key once it has given that key to another user.
 
+Device verification
+-------------------
+
+Before Alice sends Bob encrypted data, or trusts data received from him, she
+may want to verify that she is actually communicating with him, rather than a
+man-in-the-middle. This verification process requires an out-of-band channel:
+there is no way to do it within Matrix without trusting the administrators of
+the homeservers.
+
+In Matrix, the basic process for device verification is for Alice to verify
+that the public Ed25519 signing key she received via ``/keys/query`` for Bob's
+device corresponds to the private key in use by Bob's device. For now, it is
+recommended that clients provide mechanisms by which the user can see:
+
+1. The public part of their device's Ed25519 signing key, encoded using
+   `unpadded Base64`_.
+
+2. The list of devices in use for each user in a room, along with the public
+   Ed25519 signing key for each device, again encoded using unpadded Base64.
+
+Alice can then meet Bob in person, or contact him via some other trusted
+medium, and ask him to read out the Ed25519 key shown on his device. She
+compares this with the value shown for his device on her client.
+
+Device verification may reach one of several conclusions. For example:
+
+* Alice may "accept" the device. This means that she is satisfied that the
+  device belongs to Bob. She can then encrypt sensitive material for that
+  device, and knows that messages received were sent from that device.
+
+* Alice may "reject" the device. She will do this if she knows or suspects
+  that Bob does not control that device (or equivalently, does not trust
+  Bob). She will not send sensitive material to that device, and cannot trust
+  messages apparently received from it.
+
+* Alice may choose to skip the device verification process. She is not able
+  to verify that the device actually belongs to Bob, but has no reason to
+  suspect otherwise. The encryption protocol continues to protect against
+  passive eavesdroppers.
+
+.. NOTE::
+
+   Once the signing key has been verified, it is then up to the encryption
+   protocol to verify that a given message was sent from a device holding that
+   Ed25519 private key, or to encrypt a message so that it may only be
+   decrypted by such a device. For the Olm protocol, this is documented at
+   https://matrix.org/git/olm/about/docs/signing.rst.
+
 Messaging Algorithms
 --------------------
 
