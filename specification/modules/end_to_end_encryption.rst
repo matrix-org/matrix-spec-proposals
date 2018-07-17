@@ -327,7 +327,7 @@ An event encrypted using Olm has the following format:
         "ciphertext": {
           "<device_curve25519_key>": {
             "type": 0,
-            "body": "<base_64>"
+            "body": "<encrypted_payload_base_64>"
           }
         }
       }
@@ -398,6 +398,53 @@ ratchet, as defined by the `Megolm specification`_. This uses:
 * HKDF-SHA-256, AES-256 in CBC mode, and 8 byte truncated HMAC-SHA-256 for authenticated encryption.
 * Ed25519 for message authenticity.
 
+Devices that support Megolm must support Olm, and include "m.megolm.v1.aes-sha2" in
+their list of supported messaging algorithms.
+
+An event encrypted using Megolm has the following format:
+
+.. code:: json
+
+    {
+      "type": "m.room.encrypted",
+      "content": {
+        "algorithm": "m.megolm.v1.aes-sha2",
+        "sender_key": "<sender_curve25519_key>",
+        "device_id": "<sender_device_id>",
+        "session_id": "<outbound_group_session_id>",
+        "ciphertext": "<encypted_payload_base_64>"
+      }
+    }
+
+The encrypted payload can contain any message event. The plaintext is of the form:
+
+.. code:: json
+
+    {
+      "type": "<event_type>",
+      "content": "<event_content>",
+      "room_id": "<the room_id>"
+    }
+
+Clients must guard against replay attacks by keeping track of the ratchet indices
+of Megolm sessions. They should reject messages with a ratchet index that they
+have already decrypted. Care should be taken in order to avoid false positives, as a
+client may decrypt the same event twice as part of its normal processing.
+
+As with Olm events, clients must confirm that the ``sender_key`` belongs to the user
+who sent the message. The same reasoning applies, but the sender ed25519 key has to be
+inferred from the ``keys.ed25519`` property of the event which established the Megolm
+session.
+
+In order to enable end-to-end encryption in a room, clients can send a
+``m.room.encryption`` state event specifying ``m.megolm.v1.aes-sha2`` as its
+``algorithm`` property.
+
+When creating a Megolm session in a room, clients must share the corresponding session
+key using Olm with the intended recipients, so that they can decrypt future messages
+encrypted using this session. A ``m.room_key`` event is used to do this. Clients
+must also handle ``m.room_key`` events sent by other devices in order to decrypt their
+messages.
 
 Protocol definitions
 --------------------
