@@ -7,6 +7,7 @@
     "session_id": "X3lUlvLELLYxeTx4yOVu6UDpasGEVO0Jbu+QFnm0cKQ"
   },
   "event_id": "$WLGTSEFSEF:localhost",
+  "room_id": "!Cuyf34gef24t:localhost",
   "origin_server_ts": 1476648761524,
   "sender": "@example:localhost",
   "type": "m.room.encrypted",
