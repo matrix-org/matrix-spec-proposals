@@ -227,6 +227,9 @@ paths:
                                   description: |-
                                     The historic profile information of the
                                     users that sent the events returned.
+
+                                    The ``string`` key is the user ID for which
+                                    the profile belongs to.
                                   additionalProperties:
                                     type: object
                                     title: User Profile
@@ -260,15 +263,24 @@ paths:
                           The current state for every room in the results.
                           This is included if the request had the
                           ``include_state`` key set with a value of ``true``.
+
+                          The ``string`` key is the room ID for which the ``State
+                          Event`` array belongs to.
                         additionalProperties:
                           type: array
                           title: Room State
                           items:
+                            type: object
                             "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
                       groups:
                         type: object
                         title: Groups
-                        description: Any groups that were requested.
+                        description: |-
+                          Any groups that were requested.
+
+                          The outer ``string`` key is the group key requested (eg: ``room_id``
+                          or ``sender``). The inner ``string`` key is the grouped value (eg: 
+                          a room's ID or a user's ID).
                         additionalProperties:
                           type: object
                           title: Group Key
@@ -355,6 +367,6 @@ paths:
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Search

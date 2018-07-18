@@ -83,6 +83,8 @@ paths:
                 "errcode": "M_FORBIDDEN",
                 "error": "You do not have a high enough power level to ban from this room."
               }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Room membership
   "/rooms/{roomId}/unban":
@@ -134,5 +136,7 @@ paths:
                 "errcode": "M_FORBIDDEN",
                 "error": "You do not have a high enough power level to unban from this room."
               }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Room membership

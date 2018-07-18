@@ -103,7 +103,7 @@ for filename in os.listdir(cs_api_dir):
                         output["paths"][path] = {}
                     output["paths"][path][method] = spec
 
-print "Generating %s" % output_file
+print("Generating %s" % output_file)
 
 try:
     os.makedirs(os.path.dirname(output_file))

@@ -2,15 +2,15 @@ language: go
 go:
   - 1.8
 
-sudo: false
+sudo: required
 
 # we only need a single git commit
 git:
   depth: 1
 
-# test-and-build does the installation, so tell travis to skip the
-# installation step
-install: true
+install:
+  - sudo apt-get update
+  - sudo apt-get install python3 python3-dev
 
 script:
   - ./scripts/test-and-build.sh

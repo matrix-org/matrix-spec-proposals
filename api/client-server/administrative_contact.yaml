@@ -129,6 +129,8 @@ paths:
                 "errcode": "M_THREEPID_AUTH_FAILED",
                 "error": "The third party credentials could not be verified by the identity server."
               }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - User data
   "/account/3pid/email/requestToken":
