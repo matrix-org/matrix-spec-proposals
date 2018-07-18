@@ -20,16 +20,16 @@ properties:
   origin:
     type: string
     description: |-
-      The ``server_name`` of hoemserver sending this transaction
+      The ``server_name`` of the hoemserver sending this transaction.
     example: "example.org"
   origin_server_ts:
     type: integer
     format: int64
-    description: Timestamp in milliseconds on originating homeserver when this transaction started
+    description: Timestamp in milliseconds on originating homeserver when this transaction started.
     example: 1234567890
   pdus:
     type: array
-    description: List of persistent updates to rooms
+    description: List of persistent updates to rooms.
     items:
       $ref: "pdu.yaml"
 required: ['origin', 'origin_server_ts', 'pdus']

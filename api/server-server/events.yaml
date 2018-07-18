@@ -33,37 +33,37 @@ paths:
         - in: path
           name: roomId
           type: string
-          description: The room ID to get state for
+          description: The room ID to get state for.
           required: true
           x-example: "!abc123:matrix.org"
       responses:
         200:
-          description: The room state for the room (kept under ``pdus``)
+          description: The room state for the room (kept under ``pdus``).
           schema:
             $ref: "definitions/transaction.yaml"
   "/event/{eventId}":
     get:
       summary: Get a single event
       description: |-
-        Retrieves a single event
+        Retrieves a single event.
       operationId: getEvent
       parameters:
         - in: path
           name: eventId
           type: string
-          description: The event ID to get
+          description: The event ID to get.
           required: true
           x-example: "$abc123:matrix.org"
       responses:
         200:
-          description: A transaction containing a single PDU which is the event requested
+          description: A transaction containing a single PDU which is the event requested.
           schema:
             $ref: "definitions/transaction.yaml"
   "/backfill/{roomId}":
     get:
       summary: Retrieves the events which precede the given event
       description: |-
-        Retreives a sliding-window history of previous PDUs that occurred on the given room.
+        Retreives a sliding-window history of previous PDUs that occurred in the given room.
         Starting from the PDU ID(s) given in the ``v`` argument, the PDUs that preceded it
         are retrived, up to the total number given by the ``limit``.
       operationId: backfillRoom
@@ -71,19 +71,19 @@ paths:
         - in: path
           name: roomId
           type: string
-          description: The room ID to backfill
+          description: The room ID to backfill.
           required: true
           x-example: "!abc123:matrix.org"
         - in: query
           name: v
           type: string # TODO: The description says this is plural - figure out how to specify multiple, and spec it
-          description: The event ID to backfill from
+          description: The event ID to backfill from.
           required: true
           x-example: "$abc123:matrix.org"
         - in: query
           name: limit
           type: integer
-          description: The maximum number of events to retrieve
+          description: The maximum number of events to retrieve.
           required: true # TODO: Verify
           x-example: 10
       responses:
@@ -91,6 +91,7 @@ paths:
           description: A transaction containing the PDUs that preceded the given event(s).
           schema:
             $ref: "definitions/transaction.yaml"
+  # TODO: It's possible that this endpoint doesn't exist anymore - verify
   "/pull":
     get:
       summary: Stream events later than a given point in history
@@ -101,7 +102,7 @@ paths:
         - in: query
           name: v
           type: string # TODO: The description says this is plural - figure out how to specify multiple, and spec it
-          description: The event ID to backfill from
+          description: The event ID to backfill from.
           required: true
           x-example: "$abc123:matrix.org"
         - in: query

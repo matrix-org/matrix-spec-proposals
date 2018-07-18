@@ -19,15 +19,15 @@ example:
 properties:
   room_id:
     type: string
-    description: Room identifier
+    description: Room identifier.
     example: "!abc123:matrix.org"
   sender:
     type: string
-    description: The ID of the user sending the event
+    description: The ID of the user sending the event.
     example: "@someone:matrix.org"
   origin:
     type: string
-    description: The ``server_name`` of the homeserver that created this event
+    description: The ``server_name`` of the homeserver that created this event.
     example: "matrix.org"    
   origin_server_ts:
     type: integer
@@ -47,13 +47,13 @@ properties:
     example: "my_key"
   content:
     type: object
-    description: The content of the event
+    description: The content of the event.
     example: {"key": "value"}
   prev_events:
     type: array
     description: |-
       Event IDs and hashes of the most recent events in the room that the homeserver was aware
-      of when it made this event
+      of when it made this event.
     items:
       type: array
       maxItems: 2
@@ -70,16 +70,16 @@ properties:
           properties:
             sha256:
               type: string
-              description: The event hash
+              description: The event hash.
               example: abase64encodedsha256hashshouldbe43byteslong
           required: ['sha256']
   depth:
     type: integer
-    description: The maximum depth of the ``prev_events``, plus one
+    description: The maximum depth of the ``prev_events``, plus one.
     example: 12
   auth_events:
     type: array
-    description: Event IDs and hashes for the "auth events" of this event
+    description: Event IDs and hashes for the "auth events" of this event.
     items:
       type: array
       maxItems: 2
@@ -96,16 +96,16 @@ properties:
           properties:
             sha256:
               type: string
-              description: The event hash
+              description: The event hash.
               example: abase64encodedsha256hashshouldbe43byteslong
           required: ['sha256']
   redacts:
     type: string
-    description: For redaction events, the ID of the event being redacted
+    description: For redaction events, the ID of the event being redacted.
     example: "$def456:matrix.org"
   unsigned:
     type: object
-    description: Additional data added by the origin server but not covered by the ``signatures``
+    description: Additional data added by the origin server but not covered by the ``signatures``.
     example: {"key": "value"}
 required:
   - room_id

@@ -22,16 +22,16 @@ example:
 properties:
   edu_type:
     type: string
-    description: The type of ephemeral message
-    example: "!abc123:matrix.org"
+    description: The type of ephemeral message.
+    example: "m.presence"
   origin:
     type: string
-    description: The server name sending the ephemeral message
+    description: The server name sending the ephemeral message.
     example: "matrix.org"    
   destination:
     type: string
-    description: The server name receiving the ephemeral message
+    description: The server name receiving the ephemeral message.
     example: "elsewhere.com"
   content:
     type: object
-    description: The content of the ephemeral message
+    description: The content of the ephemeral message.
