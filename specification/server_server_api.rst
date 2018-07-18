@@ -758,16 +758,7 @@ All these URLs are name-spaced within a prefix of::
 
 {{events_ss_http_api}}
 
-To make a query::
-
-  GET .../query/<query_type>
-    Query args: as specified by the individual query types
-    Response: JSON encoding of a response object
-
-Performs a single query request on the receiving homeserver. The Query Type
-part of the path specifies the kind of query being made, and its query
-arguments have a meaning specific to that kind of query. The response is a
-JSON-encoded object whose meaning also depends on the kind of query.
+{{query_general_ss_http_api}}
 
 
 To join a room::

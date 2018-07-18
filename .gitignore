@@ -1,7 +1,7 @@
 /api/node_modules
 /assets
 /assets.tar.gz
-/env
+/env*
 /scripts/gen
 /scripts/continuserv/continuserv
 /scripts/speculator/speculator
@@ -10,3 +10,4 @@
 /templating/out
 *.pyc
 *.swp
+_rendered.rst

@@ -59,6 +59,8 @@ paths:
               "errcode": "M_NOT_FOUND",
               "error": "Room not found"
             }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
     put:
       summary: Sets the visibility of a room in the room directory
       description: |-
@@ -107,6 +109,8 @@ paths:
               "errcode": "M_NOT_FOUND",
               "error": "Room not found"
             }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
   "/publicRooms":
     get:
       summary: Lists the public rooms on the server.
