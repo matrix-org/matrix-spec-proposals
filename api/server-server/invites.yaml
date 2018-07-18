@@ -35,13 +35,13 @@ paths:
         - in: path
           name: roomId
           type: string
-          description: The room ID that the user is being invited to
+          description: The room ID that the user is being invited to.
           required: true
           x-example: "!abc123:matrix.org"
         - in: path
           name: eventId
           type: string
-          description: The event ID for the invite event
+          description: The event ID for the invite event.
           required: true
           x-example: "$abc123:example.org"
         - in: body
@@ -70,7 +70,7 @@ paths:
             maxItems: 2
             items:
               - type: integer
-                description: The value ``200``
+                description: The value ``200``.
                 example: 200
               - $ref: "definitions/invite_event.yaml"
           examples:
