@@ -25,18 +25,38 @@ produces:
 paths:
   "/server/{keyId}":
     get:
-      summary: Get the server's key
-      description: Get the server's key.
+      summary: Get the homeserver's public key(s)
+      description: |-
+        Gets the homeserver's published TLS fingerprints and signing keys.
+        The homeserver may have any number of active keys and may have a
+        number of old keys. Homeservers SHOULD return a single JSON object
+        listing all of its keys, regardless of the ``keyId`` path argument.
+        This is to reduce the number of round trips needed to discover the
+        relevant keys for a homeserver.
+
+        Intermediate notary servers should cache a response for half of its
+        lifetime to avoid serving a stale response. Originating servers should
+        avoid returning responses that expire in less than an hour to avoid
+        repeated reqests for a certificate that is about to expire. Requesting
+        servers should limit how frequently they query for certificates to
+        avoid flooding a server with requests.
+
+        If the server fails to respond to this request, intermediate notary
+        servers should continue to return the last response they received
+        from the server so that the signatures of old events can still be
+        checked.
       operationId: getServerKey
       parameters:
         - in: path
           name: keyId
           type: string
-          description: Key ID
+          description: |-
+            The key ID to look up. If omitted or empty, all server keys are
+            to be returned.
           required: false
-          x-example: TODO # No examples in the spec so far
+          x-example: "ed25519:abc123"
       responses:
         200:
-          description: The server's keys.
+          description: The homeserver's keys
           schema:
             $ref: "definitions/keys.yaml"

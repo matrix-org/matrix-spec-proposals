@@ -106,15 +106,17 @@ Server implementation
 Retrieving Server Keys
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Version 2
-+++++++++
+.. NOTE::
+  There was once a "version 1" of the key exchange. It has been removed from the
+  specification due to lack of significance. It may be reviewed `here
+  <https://github.com/matrix-org/matrix-doc/blob/51faf8ed2e4a63d4cfd6d23183698ed169956cc0/specification/server_server_api.rst#232version-1>`_.
 
-Each homeserver publishes its public keys under ``/_matrix/key/v2/server/``.
-Homeservers query for keys by either getting ``/_matrix/key/v2/server/``
+Each homeserver publishes its public keys under ``/_matrix/key/v2/server/{keyId}`.
+Homeservers query for keys by either getting ``/_matrix/key/v2/server/{keyId}``
 directly or by querying an intermediate notary server using a
-``/_matrix/key/v2/query`` API. Intermediate notary servers query the
-``/_matrix/key/v2/server/`` API on behalf of another server and sign the
-response with their own key. A server may query multiple notary servers to
+``/_matrix/key/v2/query/{serverName}/{keyId}`` API. Intermediate notary servers 
+query the ``/_matrix/key/v2/server/{keyId}`` API on behalf of another server and
+sign the response with their own key. A server may query multiple notary servers to
 ensure that they all report the same public keys.
 
 This approach is borrowed from the `Perspectives Project`_, but modified to
@@ -126,113 +128,33 @@ server by querying other servers.
 .. _Perspectives Project: https://web.archive.org/web/20170702024706/https://perspectives-project.org/
 
 Publishing Keys
-^^^^^^^^^^^^^^^
++++++++++++++++
 
 Homeservers publish the allowed TLS fingerprints and signing keys in a JSON
 object at ``/_matrix/key/v2/server/{key_id}``. The response contains a list of
 ``verify_keys`` that are valid for signing federation requests made by the
-server and for signing events. It contains a list of ``old_verify_keys`` which
+homeserver and for signing events. It contains a list of ``old_verify_keys`` which
 are only valid for signing events. Finally the response contains a list of TLS
-certificate fingerprints to validate any connection made to the server.
-
-A server may have multiple keys active at a given time. A server may have any
-number of old keys. It is recommended that servers return a single JSON
-response listing all of its keys whenever any ``key_id`` is requested to reduce
-the number of round trips needed to discover the relevant keys for a server.
-However a server may return different responses for a different ``key_id``.
-
-The ``tls_certificates`` field contains a list of hashes of the X.509 TLS
-certificates currently used by the server. The list must include SHA-256 hashes
-for every certificate currently in use by the server. These fingerprints are
-valid until the millisecond POSIX timestamp in ``valid_until_ts``.
-
-The ``verify_keys`` can be used to sign requests and events made by the server
-until the millisecond POSIX timestamp in ``valid_until_ts``. If a homeserver
-receives an event with a ``origin_server_ts`` after the ``valid_until_ts`` then
-it should request that ``key_id`` for the originating server to check whether
-the key has expired.
-
-The ``old_verify_keys`` can be used to sign events with an ``origin_server_ts``
-before the ``expired_ts``. The ``expired_ts`` is a millisecond POSIX timestamp
-of when the originating server stopped using that key.
-
-Intermediate notary servers should cache a response for half of its remaining
-lifetime to avoid serving a stale response. Originating servers should avoid
-returning responses that expire in less than an hour to avoid repeated requests
-for a certificate that is about to expire. Requesting servers should limit how
-frequently they query for certificates to avoid flooding a server with
-requests.
-
-If a server goes offline intermediate notary servers should continue to return
-the last response they received from that server so that the signatures of old
-events sent by that server can still be checked.
+certificate fingerprints to validate any connection made to the homeserver.
 
 {{keys_server_ss_http_api}}
 
 
 Querying Keys Through Another Server
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+++++++++++++++++++++++++++++++++++++
 
-Servers may offer a query API ``/_matrix/key/v2/query/`` for getting the keys
-for another server. This API can be used to GET a list of JSON objects for a
-given server or to POST a bulk query for a number of keys from a number of
-servers. Either way the response is a list of JSON objects containing the
-JSON published by the server under ``/_matrix/key/v2/server/`` signed by
-both the originating server and by this server.
+Servers may query another server's keys through a notary server. The notary
+server may be another homeserver. The notary server will retrieve keys from
+the queried servers through use of the ``/_matrix/key/v2/server/{keyId}``
+API. The notary server will additionally sign the response from the queried
+server before returning the results.
 
-The ``minimum_valid_until_ts`` is a millisecond POSIX timestamp indicating
-when the returned certificate will need to be valid until to be useful to the
-requesting server. This can be set using the maximum ``origin_server_ts`` of
-a batch of events that a requesting server is trying to validate. This allows
-an intermediate notary server to give a prompt cached response even if the
-originating server is offline.
-
-This API can return keys for servers that are offline by using cached responses
-taken from when the server was online. Keys can be queried from multiple
-servers to mitigate against DNS spoofing.
+Notary servers can return keys for servers that are offline or having issues
+serving their own keys by using cached responses. Keys can be queried from
+multiple servers to mitigate against DNS spoofing.
 
 {{keys_query_ss_http_api}}
 
-Version 1
-+++++++++
-.. WARNING::
-  Version 1 of key distribution is obsolete.
-
-
-Homeservers publish their TLS certificates and signing keys in a JSON object
-at ``/_matrix/key/v1``.
-
-==================== =================== ======================================
- Key                  Type                Description
-==================== =================== ======================================
-``server_name``      String              DNS name of the homeserver.
-``verify_keys``      Object              Public keys of the homeserver for
-                                         verifying digital signatures.
-``signatures``       Object              Digital signatures for this object
-                                         signed using the ``verify_keys``.
-``tls_certificate``  String              The X.509 TLS certificate used by this
-                                         this server encoded as `Unpadded Base64`_.
-==================== =================== ======================================
-
-.. code:: json
-
-    {
-        "server_name": "example.org",
-        "signatures": {
-            "example.org": {
-                "ed25519:auto": "Base+64+Encoded+Signature"
-            }
-        },
-        "tls_certificate": "Base+64+Encoded+DER+Encoded+X509+TLS+Certificate",
-        "verify_keys": {
-            "ed25519:auto": "Base+64+Encoded+Signature+Verification+Key"
-        }
-    }
-
-When fetching the keys for a server the client should check that the TLS
-certificate in the JSON matches the TLS server certificate for the connection
-and should check that the JSON signatures are correct for the supplied
-``verify_keys``.
 
 Transactions
 ------------
