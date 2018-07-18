@@ -1,0 +1,1 @@
+Add ``allow_remote`` to the content repo to avoid routing loops

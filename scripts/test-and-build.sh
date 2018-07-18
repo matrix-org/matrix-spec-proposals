@@ -4,8 +4,13 @@ set -ex
 
 cd `dirname $0`/..
 
-virtualenv env
+virtualenv -p python3 env
 . env/bin/activate
+
+# Print out the python versions for debugging purposes
+python --version
+pip --version
+
 pip install -r scripts/requirements.txt
 
 # do sanity checks on the examples and swagger

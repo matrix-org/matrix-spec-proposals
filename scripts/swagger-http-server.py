@@ -19,14 +19,14 @@
 
 import argparse
 import os
-import SimpleHTTPServer
-import SocketServer
+import http.server
+import socketserver
 
 # Thanks to http://stackoverflow.com/a/13354482
-class MyHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
         self.send_my_headers()
-        SimpleHTTPServer.SimpleHTTPRequestHandler.end_headers(self)
+        http.server.SimpleHTTPRequestHandler.end_headers(self)
 
     def send_my_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     os.chdir(args.swagger_dir)
 
-    httpd = SocketServer.TCPServer(("localhost", args.port),
+    httpd = socketserver.TCPServer(("localhost", args.port),
                                    MyHTTPRequestHandler)
-    print "Serving at http://localhost:%i/api-docs.json" % args.port
+    print("Serving at http://localhost:%i/api-docs.json" % args.port)
     httpd.serve_forever()
