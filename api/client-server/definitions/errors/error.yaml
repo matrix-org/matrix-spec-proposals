@@ -17,7 +17,9 @@ properties:
   errcode:
     type: string
     description: An error code.
+    example: M_UNKNOWN
   error:
     type: string
     description: A human-readable error message.
+    example: An unknown error occurred
 required: ["errcode"]

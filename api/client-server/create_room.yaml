@@ -216,6 +216,8 @@ paths:
               invalid: for example, the user's ``power_level`` is set below
               that necessary to set the room name (``errcode`` set to
               ``M_INVALID_ROOM_STATE``).
+          schema:
+            "$ref": "definitions/errors/error.yaml"
 
       tags:
         - Room creation
