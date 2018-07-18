@@ -26,7 +26,7 @@ paths:
   "/server/{keyId}":
     get:
       summary: Get the server's key
-      description: Get the server's key
+      description: Get the server's key.
       operationId: getServerKey
       parameters:
         - in: path
@@ -37,6 +37,6 @@ paths:
           x-example: TODO # No examples in the spec so far
       responses:
         200:
-          description: The server's keys
+          description: The server's keys.
           schema:
             $ref: "definitions/keys.yaml"

@@ -25,27 +25,27 @@ produces:
 paths:
   "/query/{serverName}/{keyId}":
     get:
-      summary: Retreive a server key
-      description: Retreive a server key
-      operationId: getQueryKeys
+      summary: Retrieve a server key.
+      description: Retrieve a server key.
+      operationId: perspectivesKeyQuery
       parameters:
         - in: path
           name: serverName
           type: string
-          description: Server name
+          description: Server name.
           required: true
           x-example: matrix.org
         - in: path
           name: keyId
           type: string
-          description: Key ID
+          description: Key ID.
           required: true
           x-example: TODO # No examples in spec so far
         - in: query
           name: minimum_valid_until_ts
           type: integer
           format: int64
-          description: Minimum Valid Until Milliseconds
+          description: Minimum Valid Until Milliseconds.
           required: true # TODO: Verify 
           x-example: 1234567890
       responses:
@@ -55,9 +55,9 @@ paths:
             $ref: "definitions/keys_query_response.yaml"
   "/query":
     post:
-      summary: Retreive a server key
-      description: Retreive a server key
-      operationId: postQueryKeys
+      summary: Retrieve a server key
+      description: Retrieve a server key.
+      operationId: bulkPerspectivesKeyQuery
       parameters:
         - in: body
           name: body
@@ -76,24 +76,24 @@ paths:
             properties:
               server_keys:
                 type: object
-                description: The query criteria
+                description: The query criteria.
                 additionalProperties:
                   type: object
                   name: ServerName
-                  description: The server names to query
+                  description: The server names to query.
                   additionalProperties:
                     type: object
                     title: Query Criteria
-                    description: The server keys to query
+                    description: The server keys to query.
                     properties:
                       minimum_valid_until_ts:
                         type: integer
                         format: int64
-                        description: Minimum Valid Until MS
+                        description: Minimum Valid Until MS.
                         example: 1234567890
             required: ['server_keys']
       responses:
         200:
-          description: The keys for the server
+          description: The keys for the server.
           schema:
             $ref: "definitions/keys_query_response.yaml"

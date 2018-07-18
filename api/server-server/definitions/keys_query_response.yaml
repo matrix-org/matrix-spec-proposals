@@ -22,6 +22,6 @@ properties:
   server_keys:
     type: array
     title: Server Keys
-    description: The server keys
+    description: The server keys.
     items:
       $ref: "keys.yaml"
