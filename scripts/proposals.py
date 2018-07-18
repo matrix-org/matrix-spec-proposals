@@ -12,13 +12,18 @@ authors = set()
 prs = set()
 
 def getpage(url, page):
-    resp = requests.get(url + str(page))
+    url = url + str(page)
+    resp = requests.get(url)
 
     for link in resp.links.values():
         if link['rel'] == 'last':
             pagecount = re.search('page=(.+?)', link['url']).group(1)
 
-    return resp.json()
+    val = resp.json()
+    if not isinstance(val, list):
+        print(val) # Just dump the raw (likely error) response to the log
+        raise Exception("Error calling %s" % url)
+    return val
 
 def getbylabel(label):
     pagecount = 1
@@ -27,7 +32,7 @@ def getbylabel(label):
     print(urlbase)
     json.extend(getpage(urlbase, 1))
     for page in range(2, int(pagecount) + 1):
-        getpage(urlbase, page)
+        json.extend(getpage(urlbase, page))
 
     return json
 
