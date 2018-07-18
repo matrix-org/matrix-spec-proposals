@@ -1,5 +1,6 @@
 .. Copyright 2016 OpenMarket Ltd
 .. Copyright 2017 New Vector Ltd
+.. Copyright 2018 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -166,50 +167,8 @@ If a server goes offline intermediate notary servers should continue to return
 the last response they received from that server so that the signatures of old
 events sent by that server can still be checked.
 
-==================== =================== ======================================
- Key                  Type                Description
-==================== =================== ======================================
-``server_name``      String              DNS name of the homeserver.
-``verify_keys``      Object              Public keys of the homeserver for
-                                         verifying digital signatures.
-``old_verify_keys``  Object              The public keys that the server used
-                                         to use and when it stopped using them.
-``signatures``       Object              Digital signatures for this object
-                                         signed using the ``verify_keys``.
-``tls_fingerprints`` Array of Objects    Hashes of X.509 TLS certificates used
-                                         by this server encoded as `Unpadded Base64`_.
-``valid_until_ts``   Integer             POSIX timestamp when the list of valid
-                                         keys should be refreshed.
-==================== =================== ======================================
+{{keys_server_ss_http_api}}
 
-
-.. code:: json
-
-    {
-        "old_verify_keys": {
-            "ed25519:auto1": {
-                "expired_ts": 922834800000,
-                "key": "Base+64+Encoded+Old+Verify+Key"
-            }
-        },
-        "server_name": "example.org",
-        "signatures": {
-            "example.org": {
-                "ed25519:auto2": "Base+64+Encoded+Signature"
-            }
-        },
-        "tls_fingerprints": [
-            {
-                "sha256": "Base+64+Encoded+SHA-256-Fingerprint"
-            }
-        ],
-        "valid_until_ts": 1052262000000,
-        "verify_keys": {
-            "ed25519:auto2": {
-                "key": "Base+64+Encoded+Signature+Verification+Key"
-            }
-        }
-    }
 
 Querying Keys Through Another Server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -232,38 +191,7 @@ This API can return keys for servers that are offline by using cached responses
 taken from when the server was online. Keys can be queried from multiple
 servers to mitigate against DNS spoofing.
 
-Example request:
-
-.. code::
-
-    GET /_matrix/key/v2/query/{server_name}/{key_id}/?minimum_valid_until_ts={minimum_valid_until_ts} HTTP/1.1
-
-    POST /_matrix/key/v2/query HTTP/1.1
-    Content-Type: application/json
-
-    {
-        "server_keys": {
-            "{server_name}": {
-                "{key_id}": {
-                    "minimum_valid_until_ts": {posix_timestamp}
-                }
-            }
-        }
-    }
-
-
-Response:
-
-.. code::
-
-    HTTP/1.1 200 OK
-    Content-Type: application/json
-    {
-        "server_keys": [
-           # List of responses with same format as /_matrix/key/v2/server
-           # signed by both the originating server and this server.
-        ]
-    }
+{{keys_query_ss_http_api}}
 
 Version 1
 +++++++++

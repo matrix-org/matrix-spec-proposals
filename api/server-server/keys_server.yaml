@@ -1,0 +1,42 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Federation Key Exchange API"
+  version: "1.0.0"
+host: localhost:8448
+schemes:
+  - https
+basePath: /_matrix/key/v2
+produces:
+  - application/json
+paths:
+  "/server/{keyId}":
+    get:
+      summary: Get the server's key
+      description: Get the server's key.
+      operationId: getServerKey
+      parameters:
+        - in: path
+          name: keyId
+          type: string
+          description: Key ID
+          required: false
+          x-example: TODO # No examples in the spec so far
+      responses:
+        200:
+          description: The server's keys.
+          schema:
+            $ref: "definitions/keys.yaml"
