@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # dump-swagger reads all of the swagger API docs used in spec generation and
 # outputs a JSON file which merges them all, for use as input to a swagger UI
