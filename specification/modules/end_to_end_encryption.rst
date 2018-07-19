@@ -176,9 +176,10 @@ process:
    flag.
 
 #. During its normal processing of responses to |/sync|_, Alice's client
-   inspects the |device_lists|_ field. If it is tracking the device lists of
-   any of the listed users, then it marks the device lists for those users
-   outdated, and initiates another request to |/keys/query|_ for them.
+   inspects the ``changed`` property of the |device_lists|_ field. If it is
+   tracking the device lists of any of the listed users, then it marks the
+   device lists for those users outdated, and initiates another request to
+   |/keys/query|_ for them.
 
 #. Periodically, Alice's client stores the ``next_batch`` field of the result
    from |/sync|_ in persistent storage. If Alice later restarts her client, it
@@ -213,6 +214,18 @@ process:
    Alternatively, the client could make a new request immediately, but ensure
    that the first request's results are ignored (possibly by cancelling the
    request).
+
+.. Note::
+
+  When Bob and Alice share a room, with Bob tracking Alice's devices, she may leave
+  the room and then add a new device. Bob will not be notified of this change,
+  as he doesn't share a room anymore with Alice. When they start sharing a
+  room again, Bob has an out-of-date list of Alice's devices. In order to address
+  this issue, Bob's homeserver will add Alice's user ID to the ``changed`` property of
+  the ``device_lists`` field, thus Bob will update his list of Alice's devices as part
+  of his normal processing. Note that Bob can also be notified when he stops sharing
+  any room with Alice by inspecting the ``left`` property of the ``device_lists``
+  field, and as a result should remove her from its list of tracked users.
 
 .. |device_lists| replace:: ``device_lists``
 .. _`device_lists`: `device_lists_sync`_
@@ -500,12 +513,20 @@ device_lists DeviceLists Optional. Information on e2e device updates. Note:
 ========= ========= =============================================
 Parameter Type      Description
 ========= ========= =============================================
-changed   [string]  List of users who have updated their device identity keys
-                    since the previous sync response.
+changed   [string]  List of users who have updated their device identity keys,
+                    or who now share an encrypted room with the client since
+                    the previous sync response.
 left      [string]  List of users with whom we do not share any encrypted rooms
                     anymore since the previous sync response.
 ========= ========= =============================================
 
+.. NOTE::
+
+  For optimal performance, Alice should be added to ``changed`` in Bob's sync only
+  when she adds a new device, or when Alice and Bob now share a room but didn't
+  share any room previously. However, for the sake of simpler logic, a server
+  may add Alice to ``changed`` when Alice and Bob share a new room, even if they
+  previously already shared a room.
 
 Example response:
 
