@@ -192,7 +192,7 @@ First we define:
 
 *   **"State sets"** are the sets of state that the resolution algorithm tries to resolve, i.e. the inputs to the algorithm.
 *   **"Power events"** are events that have the potential to remove the ability of another user to do something. These are power levels, join rules, bans and kicks.
-*   The **"unconflicted state map"** is the state where the value of each key exists and is the same in every state set. The** "conflicted state map"** is everything else. (Note that this is subtly different to the definition used in the existing algorithm, which considered the merge of a present event with an absent event to be unconflicted rather than conflicted)
+*   The **"unconflicted state map"** is the state where the value of each key exists and is the same in every state set. The **"conflicted state map"** is everything else. (Note that this is subtly different to the definition used in the existing algorithm, which considered the merge of a present event with an absent event to be unconflicted rather than conflicted)
 *   The "**auth difference"** is calculated by first calculating the full auth chain for each state set and taking every event that doesn't appear in every auth chain.
 *   The **"full conflicted set"** is the union of the conflicted state map and auth difference.
 *   The **"reverse topological power ordering"**[^4] of a set of events is an ordering of the given events, plus any events in their auth chains that appear in the auth difference, ordered such that x < y if:
