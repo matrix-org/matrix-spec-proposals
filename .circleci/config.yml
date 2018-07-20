@@ -4,11 +4,25 @@ gendoc: &gendoc
     source /env/bin/activate
     scripts/gendoc.py
 
-gendoc: &genswagger
+genswagger: &genswagger
   name: Generate the swagger
   command: |
     source /env/bin/activate
     scripts/dump-swagger.py
+
+buildswaggerui: &buildswaggerui
+  name: Build Swagger UI
+  command: |
+    ls scripts/
+    mkdir -p api/client-server
+    git clone https://github.com/matrix-org/swagger-ui swagger-ui
+    cp -r swagger-ui/dist/* api/client-server/
+    mkdir -p api/client-server/json
+    cp scripts/swagger/api-docs.json api/client-server/json/
+    wget https://raw.githubusercontent.com/matrix-org/matrix.org/master/content/swagger.css -O api/client-server/swagger.css
+    wget https://raw.githubusercontent.com/matrix-org/matrix.org/master/scripts/swagger-ui.patch
+    patch api/client-server/index.html swagger-ui.patch
+
 
 version: 2
 jobs:
@@ -30,11 +44,12 @@ jobs:
     steps:
       - checkout
       - run: *genswagger
+      - run: *buildswaggerui
       - store_artifacts:
-          path: scripts/swagger/api-docs.json
+          path: api/client-server/
       - run:
           name: "Swagger UI is available at:"
-          command: SWAGGER_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/scripts/swagger/api-docs.json"; echo "https://matrix.org/docs/api/client-server/?url="$SWAGGER_URL
+          command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/api/client-server/index.html"; echo $DOCS_URL
 
 workflows:
   version: 2
