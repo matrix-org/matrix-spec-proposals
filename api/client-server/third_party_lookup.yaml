@@ -34,7 +34,7 @@ paths:
         Fetches the overall metadata about protocols supported by the
         homeserver. Includes both the available protocols and all fields
         required for queries against each protocol.
-      operationId: queryMetadata
+      operationId: getProtocols
       responses:
         200:
           description: The protocols supported by the homeserver.
@@ -45,7 +45,7 @@ paths:
       summary: Retrieve metadata about a specific protocol that the homeserver supports.
       description: |-
         Fetches the metadata from the homeserver about a particular third party protocol.
-      operationId: queryMetadata
+      operationId: getProtocolMetadata
       parameters:
         - in: path
           name: protocol
@@ -122,8 +122,9 @@ paths:
           required: true
           x-example: irc
         - in: query
-          name: fields...
-          type: string
+          name: fields
+          explode: true
+          type: object
           description: |-
             One or more custom fields that are passed to the AS to help identify the user.
       responses:

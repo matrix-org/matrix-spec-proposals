@@ -214,7 +214,7 @@ paths:
         This API is called by the homeserver when it wants to present clients
         with specific information about the various third party networks that
         an application service supports.
-      operationId: queryMetadata
+      operationId: getProtocolMetadata
       parameters:
         - in: path
           name: protocol
