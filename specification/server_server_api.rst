@@ -1032,38 +1032,9 @@ If the invited homeserver is in the room the invite came from, it can auth the
 event and send it.
 
 However, if the invited homeserver isn't in the room the invite came from, it
-will need to request the room's homeserver to auth the event::
+will need to request the room's homeserver to auth the event.
 
-  PUT .../exchange_third_party_invite/{roomId}
-
-Where ``roomId`` is the ID of the room the invite is for.
-
-The required fields in the JSON body are:
-
-==================== ======= ==================================================
- Key                  Type    Description
-==================== ======= ==================================================
-``type``             String  The event type. Must be ``m.room.member``.
-``room_id``          String  The ID of the room the event is for. Must be the
-                             same as the ID specified in the path.
-``sender``           String  The Matrix ID of the user who sent the original
-                             ``m.room.third_party_invite``.
-``state_key``        String  The Matrix ID of the invited user.
-``content``          Object  The content of the event.
-==================== ======= ==================================================
-
-Where the ``content`` key contains the content for the ``m.room.member`` event
-as described in the `Client-Server API`_. Its ``membership`` key must be
-``invite`` and its content must include the ``third_party_invite`` object.
-
-The inviting homeserver will then be able to authenticate the event. It will send
-a fully authenticated event to the invited homeserver as described in the `Inviting
-to a room`_ section above.
-
-Once the invited homeserver responds with the event to which it appended its
-signature, the inviting homeserver will respond with ``200 OK`` and an empty body
-(``{}``) to the initial request on ``/exchange_third_party_invite/{roomId}`` and
-send the now verified ``m.room.member`` invite event to the room's members.
+{{third_party_invite_ss_http_api}}
 
 Verifying the invite
 ++++++++++++++++++++
