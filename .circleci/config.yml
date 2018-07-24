@@ -15,7 +15,7 @@ buildswaggerui: &buildswaggerui
   command: |
     ls scripts/
     mkdir -p api/client-server
-    git clone https://github.com/matrix-org/swagger-ui swagger-ui
+    git clone https://github.com/swagger-api/swagger-ui swagger-ui
     cp -r swagger-ui/dist/* api/client-server/
     mkdir -p api/client-server/json
     cp scripts/swagger/api-docs.json api/client-server/json/
