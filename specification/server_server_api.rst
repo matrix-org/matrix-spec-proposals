@@ -288,6 +288,10 @@ the destination.
 PDU Fields
 ~~~~~~~~~~
 
+.. TODO-spec
+
+  Figure out how to embed swagger definitions in here (or improve the section)
+
 ==================== ================== =======================================
  Key                  Type               Description
 ==================== ================== =======================================
@@ -677,57 +681,10 @@ All these URLs are name-spaced within a prefix of::
 
   /_matrix/federation/v1/...
 
-For active pushing of messages representing live activity "as it happens"::
 
-  PUT .../send/<transaction_id>/
-    Body: JSON encoding of a single Transaction
-    Response: TODO-doc
+{{transactions_ss_http_api}}
 
-The transaction_id path argument will override any ID given in the JSON body.
-The destination name will be set to that of the receiving server itself. Each
-embedded PDU in the transaction body will be processed.
-
-
-To fetch all the state of a given room::
-
-  GET .../state/<room_id>/
-    Response: JSON encoding of a single Transaction containing multiple PDUs
-
-Retrieves a snapshot of the entire current state of the given room. The
-response will contain a single Transaction, inside which will be a list of PDUs
-that encode the state.
-
-
-To fetch a particular event::
-
-  GET .../event/<event_id>/
-    Response: JSON encoding of a partial Transaction containing the event
-
-Retrieves a single event. The response will contain a partial Transaction,
-having just the ``origin``, ``origin_server_ts`` and ``pdus`` fields; the
-event will be encoded as the only PDU in the ``pdus`` list.
-
-
-To backfill events on a given room::
-
-  GET .../backfill/<room_id>/
-    Query args: v, limit
-    Response: JSON encoding of a single Transaction containing multiple PDUs
-
-Retrieves a sliding-window history of previous PDUs that occurred on the given
-room. Starting from the PDU ID(s) given in the "v" argument, the PDUs that
-preceded it are retrieved, up to a total number given by the "limit" argument.
-
-
-To stream all the events::
-
-  GET .../pull/
-    Query args: origin, v
-    Response: JSON encoding of a single Transaction consisting of multiple PDUs
-
-Retrieves all of the transactions later than any version given by the "v"
-arguments.
-
+{{events_ss_http_api}}
 
 {{query_general_ss_http_api}}
 

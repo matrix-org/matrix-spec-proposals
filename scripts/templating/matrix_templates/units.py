@@ -139,6 +139,7 @@ def inherit_parents(obj):
     Recurse through the 'allOf' declarations in the object
     """
     logger.debug("inherit_parents %r" % obj)
+
     parents = obj.get("allOf", [])
     if not parents:
         return obj
@@ -293,10 +294,21 @@ def process_data_type(prop, required=False, enforce_title=True):
         is_object = True
 
     elif prop_type == "array":
-        nested = process_data_type(prop["items"])
-        prop_title = "[%s]" % nested["title"]
-        tables = nested["tables"]
-        enum_desc = nested["enum_desc"]
+        items = prop["items"]
+        # Items can be a list of schemas or a schema itself
+        # http://json-schema.org/latest/json-schema-validation.html#rfc.section.6.4
+        if isinstance(items, list):
+            nested_titles = []
+            for i in items:
+                nested = process_data_type(i)
+                tables.extend(nested['tables'])
+                nested_titles.append(nested['title'])
+            prop_title = "[%s]" % (", ".join(nested_titles), )
+        else:
+            nested = process_data_type(prop["items"])
+            prop_title = "[%s]" % nested["title"]
+            tables = nested["tables"]
+            enum_desc = nested["enum_desc"]
 
     else:
         prop_title = prop_type
@@ -371,6 +383,7 @@ def get_tables_for_response(schema):
 def get_example_for_schema(schema):
     """Returns a python object representing a suitable example for this object"""
     schema = inherit_parents(schema)
+
     if 'example' in schema:
         example = schema['example']
         return example
@@ -390,7 +403,10 @@ def get_example_for_schema(schema):
     if proptype == 'array':
         if 'items' not in schema:
             raise Exception('"array" property has neither items nor example')
-        return [get_example_for_schema(schema['items'])]
+        items = schema['items']
+        if isinstance(items, list):
+            return [get_example_for_schema(i) for i in items]
+        return [get_example_for_schema(items)]
 
     if proptype == 'integer':
         return 0
@@ -506,7 +522,11 @@ class MatrixUnits(Units):
                 if val_type == "array":
                     items = param.get("items")
                     if items:
-                        val_type = "[%s]" % items.get("type")
+                        if isinstance(items, list):
+                            types = ", ".join(i.get("type") for i in items)
+                            val_type = "[%s]" % (types,)
+                        else:
+                            val_type = "[%s]" % items.get("type")
 
                 if param.get("enum"):
                     val_type = "enum"
