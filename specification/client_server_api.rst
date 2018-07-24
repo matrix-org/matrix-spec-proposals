@@ -1417,7 +1417,7 @@ have to wait in milliseconds before they can try again.
 .. References
 
 .. _`macaroon`: http://research.google.com/pubs/pub41892.html
-.. _`devices`: ../intro.html#devices
+.. _`devices`: ../index.html#devices
 
 .. Links through the external API docs are below
 .. =============================================
