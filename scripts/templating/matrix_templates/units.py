@@ -406,10 +406,7 @@ def get_example_for_schema(schema):
         items = schema['items']
         if isinstance(items, list):
             return [get_example_for_schema(i) for i in items]
-        result = get_example_for_schema(items)
-        if isinstance(result, list):
-            return [result]
-        return result
+        return get_example_for_schema(items)
 
     if proptype == 'integer':
         return 0
