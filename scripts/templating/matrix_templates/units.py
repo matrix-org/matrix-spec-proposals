@@ -302,7 +302,7 @@ def process_data_type(prop, required=False, enforce_title=True):
             for i in items:
                 nested = process_data_type(i)
                 tables.extend(nested['tables'])
-                nested_titles.extend([nested['title']])
+                nested_titles.append(nested['title'])
             prop_title = "[%s]" % (", ".join(nested_titles), )
         else:
             nested = process_data_type(prop["items"])
@@ -523,10 +523,8 @@ class MatrixUnits(Units):
                     items = param.get("items")
                     if items:
                         if isinstance(items, list):
-                            val_type = "["
-                            for i in items:
-                                val_type += "%s, " % items.get("type")
-                            val_type = val_type[:-2] + "]"
+                            types = ", ".join(i.get("type") for i in items)
+                            val_type = "[%s]" % (types,)
                         else:
                             val_type = "[%s]" % items.get("type")
 
