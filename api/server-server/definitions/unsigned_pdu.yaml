@@ -37,7 +37,6 @@ properties:
   type:
     type: string
     description: Event type
-    required: true
     example: "m.room.message"
   state_key:
     type: string

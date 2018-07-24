@@ -65,7 +65,7 @@ paths:
       description: |-
         Retreives a sliding-window history of previous PDUs that occurred in the given room.
         Starting from the PDU ID(s) given in the ``v`` argument, the PDUs that preceded it
-        are retrived, up to the total number given by the ``limit``.
+        are retrieved, up to the total number given by the ``limit``.
       operationId: backfillRoom
       parameters:
         - in: path
@@ -84,7 +84,7 @@ paths:
           name: limit
           type: integer
           description: The maximum number of events to retrieve.
-          required: true # TODO: Verify
+          required: true
           x-example: 10
       responses:
         200:

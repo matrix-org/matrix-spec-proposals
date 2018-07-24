@@ -24,14 +24,17 @@ properties:
     type: string
     description: The type of ephemeral message.
     example: "m.presence"
+    required: true
   origin:
     type: string
     description: The server name sending the ephemeral message.
-    example: "matrix.org"    
+    example: "matrix.org"
+    required: true
   destination:
     type: string
     description: The server name receiving the ephemeral message.
     example: "elsewhere.com"
+    required: true
   content:
     type: object
     description: The content of the ephemeral message.
