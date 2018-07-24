@@ -752,18 +752,19 @@ Third-party ID
 :Type:
   ``m.id.thirdparty``
 :Description:
-  The user is identified by a third-party identifer in canonicalized form.
+  The user is identified by a third-party identifer in canonicalised form.
 
-A client can identify a user using a 3pid bound to the user's account on the
-homeserver, where the 3pid was previously bound using the |/account/3pid|_
-API.  See the `3PID Types`_ Appendix for a list of Third-party ID media.
+A client can identify a user using a 3pid associated with the user's account on
+the homeserver, where the 3pid was previously associated using the
+|/account/3pid|_ API.  See the `3PID Types`_ Appendix for a list of Third-party
+ID media.
 
 .. code:: json
 
   "identifier": {
     "type": "m.id.thirdparty",
     "medium": "<The medium of the third party identifier>",
-    "address": "<The canonicalized third party address of the user>"
+    "address": "<The canonicalised third party address of the user>"
   }
 
 Phone number
@@ -773,15 +774,19 @@ Phone number
 :Description:
   The user is identified by a phone number.
 
-A client can identify a user using a phone number bound to the user's account.
-FIXME: how was the phone number bound?  Also with |/account/3pid|_?
+A client can identify a user using a phone number associated with the user's
+account, where the phone number was previously associated using the
+|/account/3pid|_ API.  The phone number can be passed in as entered by the
+user; the homeserver will be responsible for canonicalising it.  If the client
+wishes to canonicalise the phone number, then it can use the
+``m.id.thirdparty`` identifier type with a ``medium`` of ``msisdn`` instead.
 
 .. code:: json
 
   "identifier": {
-    "type": "m.id.thirdparty",
+    "type": "m.id.phone",
     "country": "<The country that the phone number is from>",
-    "phone": "<The phone number as a MSISDN (Mobile Station International Subscriber Directory Number)>"
+    "phone": "<The phone number>"
   }
 
 Login
@@ -816,7 +821,7 @@ explicitly, as follows:
     "type": "m.login.password",
     "identifier": {
       "medium": "<The medium of the third party identifier>",
-      "address": "<The canonicalized third party address of the user>"
+      "address": "<The canonicalised third party address of the user>"
     },
     "password": "<password>"
   }
