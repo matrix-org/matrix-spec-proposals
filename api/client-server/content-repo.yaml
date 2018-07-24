@@ -72,7 +72,7 @@ paths:
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Media
   "/download/{serverName}/{mediaId}":
@@ -120,7 +120,7 @@ paths:
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Media
   "/download/{serverName}/{mediaId}/{fileName}":
@@ -175,7 +175,7 @@ paths:
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Media
   "/thumbnail/{serverName}/{mediaId}":
@@ -241,7 +241,7 @@ paths:
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Media
   "/preview_url":
@@ -296,6 +296,47 @@ paths:
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - Media
+  "/config":
+    get:
+      summary: Get the configuration for the content repository.
+      description: |-
+        This endpoint allows clients to retrieve the configuration of the content
+        repository, such as upload limitations.
+        Clients SHOULD use this as a guide when using content repository endpoints.
+        All values are intentionally left optional. Clients SHOULD follow
+        the advice given in the field description when the field is not available.
+
+        **NOTE:** Both clients and server administrators should be aware that proxies
+        between the client and the server may affect the apparent behaviour of content
+        repository APIs, for example, proxies may enforce a lower upload size limit
+        than is advertised by the server on this endpoint.
+      operationId: getConfig
+      produces: ["application/json"]
+      security:
+        - accessToken: []
+      responses:
+        200:
+          description: The public content repository configuration for the matrix server.
+          schema:
+            type: object
+            properties:
+              m.upload.size:
+                type: number
+                description: |- 
+                  The maximum size an upload can be in bytes.
+                  Clients SHOULD use this as a guide when uploading content.
+                  If not listed or null, the size limit should be treated as unknown.
+          examples:
+            application/json: {
+               "m.upload.size": 50000000
+            }
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+
       tags:
         - Media

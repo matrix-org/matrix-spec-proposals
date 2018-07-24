@@ -68,6 +68,8 @@ paths:
                 "errcode": "M_UNKNOWN",
                 "error": "Room alias #monkeys:matrix.org already exists."
               }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Room directory
     get:
@@ -118,6 +120,8 @@ paths:
                 "errcode": "M_NOT_FOUND",
                 "error": "Room alias #monkeys:matrix.org not found."
               }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Room directory
     delete:

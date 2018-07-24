@@ -1,5 +1,6 @@
 .. Copyright 2016 OpenMarket Ltd
 .. Copyright 2017 New Vector Ltd
+.. Copyright 2018 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -15,6 +16,10 @@
 
 Federation API
 ==============
+
+.. WARNING::
+  This API is unstable and will change without warning or discussion while
+  we work towards a r0 release (scheduled for August 2018).
 
 Matrix homeservers use the Federation APIs (also known as server-server APIs)
 to communicate with each other. Homeservers use these APIs to push messages to
@@ -162,50 +167,7 @@ If a server goes offline intermediate notary servers should continue to return
 the last response they received from that server so that the signatures of old
 events sent by that server can still be checked.
 
-==================== =================== ======================================
- Key                  Type                Description
-==================== =================== ======================================
-``server_name``      String              hostname of the homeserver.
-``verify_keys``      Object              Public keys of the homeserver for
-                                         verifying digital signatures.
-``old_verify_keys``  Object              The public keys that the server used
-                                         to use and when it stopped using them.
-``signatures``       Object              Digital signatures for this object
-                                         signed using the ``verify_keys``.
-``tls_fingerprints`` Array of Objects    Hashes of X.509 TLS certificates used
-                                         by this server encoded as `Unpadded Base64`_.
-``valid_until_ts``   Integer             POSIX timestamp when the list of valid
-                                         keys should be refreshed.
-==================== =================== ======================================
-
-
-.. code:: json
-
-    {
-        "old_verify_keys": {
-            "ed25519:auto1": {
-                "expired_ts": 922834800000,
-                "key": "Base+64+Encoded+Old+Verify+Key"
-            }
-        },
-        "server_name": "example.org",
-        "signatures": {
-            "example.org": {
-                "ed25519:auto2": "Base+64+Encoded+Signature"
-            }
-        },
-        "tls_fingerprints": [
-            {
-                "sha256": "Base+64+Encoded+SHA-256-Fingerprint"
-            }
-        ],
-        "valid_until_ts": 1052262000000,
-        "verify_keys": {
-            "ed25519:auto2": {
-                "key": "Base+64+Encoded+Signature+Verification+Key"
-            }
-        }
-    }
+{{keys_server_ss_http_api}}
 
 Querying Keys Through Another Server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -228,38 +190,7 @@ This API can return keys for servers that are offline by using cached responses
 taken from when the server was online. Keys can be queried from multiple
 servers to mitigate against DNS spoofing.
 
-Example request:
-
-.. code::
-
-    GET /_matrix/key/v2/query/{server_name}/{key_id}/?minimum_valid_until_ts={minimum_valid_until_ts} HTTP/1.1
-
-    POST /_matrix/key/v2/query HTTP/1.1
-    Content-Type: application/json
-
-    {
-        "server_keys": {
-            "{server_name}": {
-                "{key_id}": {
-                    "minimum_valid_until_ts": {posix_timestamp}
-                }
-            }
-        }
-    }
-
-
-Response:
-
-.. code::
-
-    HTTP/1.1 200 OK
-    Content-Type: application/json
-    {
-        "server_keys": [
-           # List of responses with same format as /_matrix/key/v2/server
-           # signed by both the originating server and this server.
-        ]
-    }
+{{keys_query_ss_http_api}}
 
 Version 1
 +++++++++
@@ -355,6 +286,10 @@ the destination.
 
 PDU Fields
 ~~~~~~~~~~
+
+.. TODO-spec
+
+  Figure out how to embed swagger definitions in here (or improve the section)
 
 ==================== ================== =======================================
  Key                  Type               Description
@@ -745,68 +680,12 @@ All these URLs are name-spaced within a prefix of::
 
   /_matrix/federation/v1/...
 
-For active pushing of messages representing live activity "as it happens"::
 
-  PUT .../send/<transaction_id>/
-    Body: JSON encoding of a single Transaction
-    Response: TODO-doc
+{{transactions_ss_http_api}}
 
-The transaction_id path argument will override any ID given in the JSON body.
-The destination name will be set to that of the receiving server itself. Each
-embedded PDU in the transaction body will be processed.
+{{events_ss_http_api}}
 
-
-To fetch all the state of a given room::
-
-  GET .../state/<room_id>/
-    Response: JSON encoding of a single Transaction containing multiple PDUs
-
-Retrieves a snapshot of the entire current state of the given room. The
-response will contain a single Transaction, inside which will be a list of PDUs
-that encode the state.
-
-
-To fetch a particular event::
-
-  GET .../event/<event_id>/
-    Response: JSON encoding of a partial Transaction containing the event
-
-Retrieves a single event. The response will contain a partial Transaction,
-having just the ``origin``, ``origin_server_ts`` and ``pdus`` fields; the
-event will be encoded as the only PDU in the ``pdus`` list.
-
-
-To backfill events on a given room::
-
-  GET .../backfill/<room_id>/
-    Query args: v, limit
-    Response: JSON encoding of a single Transaction containing multiple PDUs
-
-Retrieves a sliding-window history of previous PDUs that occurred on the given
-room. Starting from the PDU ID(s) given in the "v" argument, the PDUs that
-preceded it are retrieved, up to a total number given by the "limit" argument.
-
-
-To stream all the events::
-
-  GET .../pull/
-    Query args: origin, v
-    Response: JSON encoding of a single Transaction consisting of multiple PDUs
-
-Retrieves all of the transactions later than any version given by the "v"
-arguments.
-
-
-To make a query::
-
-  GET .../query/<query_type>
-    Query args: as specified by the individual query types
-    Response: JSON encoding of a response object
-
-Performs a single query request on the receiving homeserver. The Query Type
-part of the path specifies the kind of query being made, and its query
-arguments have a meaning specific to that kind of query. The response is a
-JSON-encoded object whose meaning also depends on the kind of query.
+{{query_general_ss_http_api}}
 
 
 To join a room::
@@ -1109,38 +988,9 @@ If the invited homeserver is in the room the invite came from, it can auth the
 event and send it.
 
 However, if the invited homeserver isn't in the room the invite came from, it
-will need to request the room's homeserver to auth the event::
+will need to request the room's homeserver to auth the event.
 
-  PUT .../exchange_third_party_invite/{roomId}
-
-Where ``roomId`` is the ID of the room the invite is for.
-
-The required fields in the JSON body are:
-
-==================== ======= ==================================================
- Key                  Type    Description
-==================== ======= ==================================================
-``type``             String  The event type. Must be ``m.room.member``.
-``room_id``          String  The ID of the room the event is for. Must be the
-                             same as the ID specified in the path.
-``sender``           String  The Matrix ID of the user who sent the original
-                             ``m.room.third_party_invite``.
-``state_key``        String  The Matrix ID of the invited user.
-``content``          Object  The content of the event.
-==================== ======= ==================================================
-
-Where the ``content`` key contains the content for the ``m.room.member`` event
-as described in the `Client-Server API`_. Its ``membership`` key must be
-``invite`` and its content must include the ``third_party_invite`` object.
-
-The inviting homeserver will then be able to authenticate the event. It will send
-a fully authenticated event to the invited homeserver as described in the `Inviting
-to a room`_ section above.
-
-Once the invited homeserver responds with the event to which it appended its
-signature, the inviting homeserver will respond with ``200 OK`` and an empty body
-(``{}``) to the initial request on ``/exchange_third_party_invite/{roomId}`` and
-send the now verified ``m.room.member`` invite event to the room's members.
+{{third_party_invite_ss_http_api}}
 
 Verifying the invite
 ++++++++++++++++++++

@@ -75,7 +75,7 @@ paths:
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Presence
     get:
@@ -83,6 +83,8 @@ paths:
       description: |-
         Get the given user's presence state.
       operationId: getPresence
+      security:
+        - accessToken: []
       parameters:
         - in: path
           type: string
@@ -121,6 +123,17 @@ paths:
           description: |-
             There is no presence state for this user. This user may not exist or
             isn't exposing presence information to you.
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+        403:
+          description: You are not allowed to see this user's presence status.
+          examples:
+            application/json: {
+              "errcode": "M_FORBIDDEN",
+              "error": "You are not allowed to see their presence"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Presence
   "/presence/list/{userId}":
@@ -176,7 +189,7 @@ paths:
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Presence
     get:

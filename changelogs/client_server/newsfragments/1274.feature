@@ -1,0 +1,1 @@
+Document `highlights` field in /search response

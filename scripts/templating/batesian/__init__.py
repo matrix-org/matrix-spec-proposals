@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from sets import Set
 
 
 class AccessKeyStore(object):
@@ -22,7 +21,7 @@ class AccessKeyStore(object):
         if not existing_data:
             existing_data = {}
         self.data = existing_data
-        self.accessed_set = Set()
+        self.accessed_set = set()
 
     def keys(self):
         return self.data.keys()
@@ -35,5 +34,5 @@ class AccessKeyStore(object):
         return self.data[key]
 
     def get_unaccessed_set(self):
-        data_list = Set(self.data.keys())
+        data_list = set(self.data.keys())
         return data_list - self.accessed_set
