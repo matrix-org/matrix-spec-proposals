@@ -75,7 +75,7 @@ output = {
     },
     "securityDefinitions": {},
     "paths": {},
-    "swagger": "3.0",
+    "openapi": "3.0.0",
 }
 
 cs_api_dir = os.path.join(api_dir, 'client-server')
