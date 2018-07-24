@@ -879,6 +879,11 @@ that requested by the requester in the ``v`` parameter).
 Inviting to a room
 ------------------
 
+When a user on a given homeserver invites another user on the same homeserver,
+the homeserver may sign the membership event itself and skip the process defined
+here. However, when a user invites another user on a different homeserver, a request
+to that homeserver to have the event signed and verified must be made.
+
 {{invites_ss_http_api}}
 
 Third-party invites
