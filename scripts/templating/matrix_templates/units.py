@@ -298,12 +298,12 @@ def process_data_type(prop, required=False, enforce_title=True):
         # Items can be a list of schemas or a schema itself
         # http://json-schema.org/latest/json-schema-validation.html#rfc.section.6.4
         if isinstance(items, list):
-            prop_title = "["
+            nested_titles = []
             for i in items:
                 nested = process_data_type(i)
                 tables.extend(nested['tables'])
-                prop_title = "%s%s, " % (prop_title, nested['title'])
-            prop_title = prop_title[:-2] + "]"
+                nested_titles.extend([nested['title']])
+            prop_title = "[%s]" % (", ".join(nested_titles), )
         else:
             nested = process_data_type(prop["items"])
             prop_title = "[%s]" % nested["title"]
