@@ -19,7 +19,7 @@ example:
 properties:
   event_id:
     type: string
-    description: The event ID for the PDU
+    description: The event ID for the PDU.
     example: "$a4ecee13e2accdadf56c1025:example.com"
   room_id:
     type: string
