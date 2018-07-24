@@ -60,6 +60,7 @@ The sigil characters are as follows:
 * ``@``: User ID
 * ``!``: Room ID
 * ``$``: Event ID
+* ``+``: Group ID
 * ``#``: Room alias
 
 The precise grammar defining the allowable format of an identifier depends on
@@ -206,6 +207,35 @@ readable.
 
 .. TODO-spec
   What is the grammar for the opaque part? https://matrix.org/jira/browse/SPEC-389
+
+
+Group Identifiers
++++++++++++++++++
+
+Groups within Matrix are uniquely identified by their group ID. The group
+ID is namespaced to the group server which hosts this group and has the
+form::
+
+  +localpart:domain
+
+The ``localpart`` of a group ID is an opaque identifier for that group. It MUST
+NOT be empty, and MUST contain only the characters ``a-z``, ``0-9``, ``.``,
+``_``, ``=``, ``-``, and ``/``.
+
+The ``domain`` of a group ID is the `server name`_ of the group server which
+hosts this group.
+
+The length of a group ID, including the ``+`` sigil and the domain, MUST NOT
+exceed 255 characters.
+
+The complete grammar for a legal group ID is::
+
+  group_id = "+" group_id_localpart ":" server_name
+  group_id_localpart = 1*group_id_char
+  group_id_char = DIGIT
+               / %x61-7A                   ; a-z
+               / "-" / "." / "=" / "_" / "/"
+
 
 Room Aliases
 ++++++++++++
