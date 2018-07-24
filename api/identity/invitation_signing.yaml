@@ -55,8 +55,7 @@ paths:
             required: ["mxid", "token", "private_key"]
       responses:
         200:
-          description: "The signature of ... **FIXME:** what exactly is this
-            signing? (and what is it for?)"
+          description: The signedjson of the mxid, sender, and token.
           schema:
             type: object
             properties:
@@ -68,7 +67,10 @@ paths:
                 description: The Matrix user ID of the user who sent the invitation.
               signatures:
                 type: object
-                description: "The signature of ... **FIXME:** what exactly is this signing?"
+                description: The signature of the mxid, sender, and token.
+              token:
+                type: string
+                description: The token for the invitation.
           examples:
             application/json: {
               "mxid": "@foo:bar.com",

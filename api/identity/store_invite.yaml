@@ -104,12 +104,11 @@ paths:
             An error has occured.
 
             If the 3pid is already bound to a Matrix user ID, the error code
-            will be ``THREEPID_IN_USE`` (**QUESTION:** why is there no leading
-            ``M_``?)  If the medium is unsupported, the error code will be
-            ``M_UNRECOGNIZED``.
+            will be ``M_THREEPID_IN_USE``.  If the medium is unsupported, the
+            error code will be ``M_UNRECOGNIZED``.
           examples:
             application/json: {
-                "errcode": "THREEPID_IN_USE",
+                "errcode": "M_THREEPID_IN_USE",
                 "error": "Binding already known",
                 "mxid": mxid
               }
