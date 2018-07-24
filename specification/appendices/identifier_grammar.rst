@@ -25,8 +25,7 @@ number of identifiers, as described below.
 The server name represents the address at which the homeserver in question can
 be reached by other homeservers. The complete grammar is::
 
-    server_name = dns_name [ ":" port]
-    dns_name = host
+    server_name = host [ ":" port]
     port = *DIGIT
 
 where ``host`` is as defined by `RFC3986, section 3.2.2
