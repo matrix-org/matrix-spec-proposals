@@ -131,7 +131,8 @@ paths:
           x-example: "@someone:example.org"
         - in: query
           name: field
-          type: string
+          type: enum
+          enum: ['displayname', 'avatar_url']
           description: |-
             The field to query. If specified, the server will only return the given field
             in the response. If not specified, the server will return the full profile for
@@ -144,26 +145,22 @@ paths:
             the response should include the fields of the user's profile that can be made 
             public, such as the display name and avatar.
 
-            If the ``field`` is for a field that the server does not recognize, an empty object
-            should be returned. If the ``field`` is recognized, but the user does not have it
-            set on their profile, ``null`` should be returned for the value of that field.
-
-            If the user does not exist, an empty object should be returned regardless of the
-            ``field`` being queried.
+            If the user does not have a particular field set on their profile, the server
+            should exclude it from the response body or give it the value ``null``.
           schema:
             type: object
             properties:
               displayname:
                 type: string
                 description: |-
-                  The display name of the user. If the user does not have a display name set,
-                  this should be the value ``null``.
+                  The display name of the user. May be omitted if the user does not have a
+                  display name set.
                 x-example: "John Doe"
               avatar_url:
                 type: string
                 description: |-
-                  The avatar URL for the user's avatar. If the user does not have an avatar
-                  set, this should be the value ``null``.
+                  The avatar URL for the user's avatar. May be omitted if the user does not
+                  have an avatar set.
                 x-example: "mxc://matrix.org/MyC00lAvatar"
           examples:
             application/json: {
@@ -171,11 +168,26 @@ paths:
               "avatar_url": "mxc://matrix.org/MyC00lAvatar"
             }
         400:
-          description: The user does not belong to the server.
+          description: |-
+            The request was missing parameters or had invalid values for the parameters. This
+            can happen for:
+
+            * The user not being hosted on the homeserver,
+            * Lack of a ``user_id`` in the request, or
+            * The ``field`` requested not being an allowed value.
           schema:
             $ref: "../client-server/definitions/errors/error.yaml"
           examples:
             application/json: {
-              "errcode": "M_UNKNOWN",
+              "errcode": "M_INVALID_ARGUMENT_VALUE",
               "error": "User is not hosted on this homeserver."
+            }
+        404:
+          description: The user does not exist or does not have a profile.
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "User does not exist."
             }
