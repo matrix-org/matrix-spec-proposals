@@ -1,0 +1,41 @@
+diff --git a/original b/changed
+index 3b1ff23..c4af3c3 100644
+--- a/original
++++ b/changed
+@@ -4,6 +4,7 @@
+   <head>
+     <meta charset="UTF-8">
+     <title>Swagger UI</title>
++    <link rel="stylesheet" type="text/css" href="/swagger.css" >
+     <link rel="stylesheet" type="text/css" href="./swagger-ui.css" >
+     <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
+     <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
+@@ -40,7 +41,7 @@
+ 
+       // Build a system
+       const ui = SwaggerUIBundle({
+-        url: "https://petstore.swagger.io/v2/swagger.json",
++        url: window.location.pathname.replace(/[^/]*$/, '') + "json/api-docs.json";
+         dom_id: '#swagger-ui',
+         deepLinking: true,
+         presets: [
+@@ -54,6 +55,19 @@
+       })
+ 
+       window.ui = ui
++
++      $("#url_selector").submit(function(ev) {
++          ev.preventDefault();
++          window.hs_url = $("#serverurl").attr("value");
++          setHsUrl(window.hs_url);
++      });
++    }
++
++    function setHsUrl(hs_url) {
++      var r = hs_url.split("://", 2);
++      $("#serverurl").attr("value", hs_url);
++      window.swaggerUi.api.setSchemes([r[0]]);
++      window.swaggerUi.api.setHost(r[1]);
+     }
+   </script>
+   </body>
