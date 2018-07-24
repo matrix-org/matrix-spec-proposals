@@ -17,6 +17,10 @@ description: An unsigned persistent data unit (event)
 example:
   $ref: "../examples/unsigned_pdu.json"
 properties:
+  event_id:
+    type: string
+    description: The event ID for the PDU
+    example: "$a4ecee13e2accdadf56c1025:example.com"
   room_id:
     type: string
     description: Room identifier.
@@ -107,6 +111,7 @@ properties:
     description: Additional data added by the origin server but not covered by the ``signatures``.
     example: {"key": "value"}
 required:
+  - event_id
   - room_id
   - sender
   - origin
