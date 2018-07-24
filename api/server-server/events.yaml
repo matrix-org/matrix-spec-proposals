@@ -91,29 +91,3 @@ paths:
           description: A transaction containing the PDUs that preceded the given event(s).
           schema:
             $ref: "definitions/transaction.yaml"
-  # TODO: It's possible that this endpoint doesn't exist anymore - verify
-  "/pull":
-    get:
-      summary: Stream events later than a given point in history
-      description: |-
-        Retrieves all of the transactions later than any version given by the ``v`` arguments.
-      operationId: pull
-      parameters:
-        - in: query
-          name: v
-          type: string # TODO: The description says this is plural - figure out how to specify multiple, and spec it
-          description: The event ID to backfill from.
-          required: true
-          x-example: "$abc123:matrix.org"
-        - in: query
-          name: origin
-          type: string
-          description: The origin # TODO: What is this actually?
-          required: true # TODO: Verify
-          x-example: "matrix.org"
-      responses:
-        200:
-          # TODO: This could do with a better description
-          description: A transaction containing multiple PDUs
-          schema:
-            $ref: "definitions/transaction.yaml"
