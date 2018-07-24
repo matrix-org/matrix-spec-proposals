@@ -140,9 +140,6 @@ def inherit_parents(obj):
     """
     logger.debug("inherit_parents %r" % obj)
 
-    if isinstance(obj, list):
-        return [inherit_parents(obj[i]) for i in range(0, len(obj))]
-
     parents = obj.get("allOf", [])
     if not parents:
         return obj
@@ -298,6 +295,8 @@ def process_data_type(prop, required=False, enforce_title=True):
 
     elif prop_type == "array":
         items = prop["items"]
+        # Items can be a list of schemas or a schema itself
+        # http://json-schema.org/latest/json-schema-validation.html#rfc.section.6.4
         if isinstance(items, list):
             prop_title = "["
             for i in items:
@@ -385,9 +384,6 @@ def get_example_for_schema(schema):
     """Returns a python object representing a suitable example for this object"""
     schema = inherit_parents(schema)
 
-    if isinstance(schema, list):
-        return [get_example_for_schema(v) for v in schema]
-
     if 'example' in schema:
         example = schema['example']
         return example
@@ -407,10 +403,13 @@ def get_example_for_schema(schema):
     if proptype == 'array':
         if 'items' not in schema:
             raise Exception('"array" property has neither items nor example')
-        result = get_example_for_schema(schema['items'])
+        items = schema['items']
+        if isinstance(items, list):
+            return [get_example_for_schema(i) for i in items]
+        result = get_example_for_schema(items)
         if isinstance(result, list):
-            return result
-        return [result]
+            return [result]
+        return result
 
     if proptype == 'integer':
         return 0
