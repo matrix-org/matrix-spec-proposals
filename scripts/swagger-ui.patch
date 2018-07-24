@@ -1,7 +1,7 @@
-diff --git a/original b/changed
-index 3b1ff23..c4af3c3 100644
---- a/original
-+++ b/changed
+diff --git a/home/user/Desktop/original b/home/user/Desktop/changed
+index 3b1ff23..fbbdb02 100644
+--- a/home/user/Desktop/original
++++ b/home/user/Desktop/changed
 @@ -4,6 +4,7 @@
    <head>
      <meta charset="UTF-8">
@@ -15,7 +15,7 @@ index 3b1ff23..c4af3c3 100644
        // Build a system
        const ui = SwaggerUIBundle({
 -        url: "https://petstore.swagger.io/v2/swagger.json",
-+        url: window.location.pathname.replace(/[^/]*$/, '') + "json/api-docs.json";
++        url: window.location.pathname.replace(/[^/]*$/, '') + "json/api-docs.json",
          dom_id: '#swagger-ui',
          deepLinking: true,
          presets: [
