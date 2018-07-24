@@ -21,7 +21,7 @@ buildswaggerui: &buildswaggerui
     cp scripts/swagger/api-docs.json api/client-server/json/
     wget https://raw.githubusercontent.com/matrix-org/matrix.org/master/content/swagger.css -O api/client-server/swagger.css
     wget https://raw.githubusercontent.com/matrix-org/matrix.org/master/scripts/swagger-ui.patch
-    patch api/client-server/index.html swagger-ui.patch
+    #patch api/client-server/index.html swagger-ui.patch
 
 
 version: 2
