@@ -2,9 +2,6 @@ targets:
   index:
     files:
       - index.rst
-  intro:
-    files:
-      - intro.rst
   client_server:
     files:
       - client_server_api.rst
