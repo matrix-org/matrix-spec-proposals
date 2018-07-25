@@ -49,11 +49,77 @@ paths:
           type: object
           required: true
           schema:
-            $ref: "definitions/invite_event.yaml"
+            allOf:
+              - $ref: "definitions/invite_event.yaml"
+              - type: object
+                properties:
+                  unsigned:
+                    type: object
+                    title: Unsigned Event Content
+                    description: |-
+                      Information included alongside the event that is not signed. May include more
+                      than what is listed here.
+                    properties:
+                      invite_room_state:
+                        type: array
+                        description: |-
+                          An optional list of simplified events to help the receiver of the invite
+                          identify the room. The recommended events to include are the join rules,
+                          canonical alias, avatar, and name of the room.
+                        items:
+                          type: object
+                          title: Invite Room State Event
+                          properties:
+                            type:
+                              type: string
+                              description: The type of event.
+                              example: "m.room.join_rules"
+                            state_key:
+                              type: string
+                              description: The state key for the event. May be an empty string.
+                              example: ""
+                            content:
+                              type: object
+                              description: The content for the event.
+                            sender:
+                              type: string
+                              description: The sender of the event.
+                              example: "@someone:matrix.org"
+                          required: ['type', 'state_key', 'content', 'sender']
+                        example: [
+                          {
+                            "type": "m.room.join_rules",
+                            "sender": "@someone:matrix.org",
+                            "state_key": "",
+                            "content": {
+                              "join_rule": "public"
+                            }
+                          }
+                        ]
           example: {
             "$ref": "examples/pdu.json",
             "type": "m.room.member",
             "state_key": "@joe:elsewhere.com",
+            "unsigned": {
+              "invite_room_state": [
+                {
+                  "type": "m.room.join_rules",
+                  "sender": "@someone:matrix.org",
+                  "state_key": "",
+                  "content": {
+                    "join_rule": "public"
+                  }
+                },
+                {
+                  "type": "m.room.name",
+                  "sender": "@someone:matrix.org",
+                  "state_key": "",
+                  "content": {
+                    "name": "Cool New Room"
+                  }
+                }
+              ]
+            },
             "content": {
                 "membership": "invite"
             },
@@ -91,6 +157,26 @@ paths:
                   "$ref": "examples/pdu.json",
                   "type": "m.room.member",
                   "state_key": "@someone:example.org",
+                  "unsigned": {
+                    "invite_room_state": [
+                      {
+                        "type": "m.room.join_rules",
+                        "sender": "@someone:matrix.org",
+                        "state_key": "",
+                        "content": {
+                          "join_rule": "public"
+                        }
+                      },
+                      {
+                        "type": "m.room.name",
+                        "sender": "@someone:matrix.org",
+                        "state_key": "",
+                        "content": {
+                          "name": "Cool New Room"
+                        }
+                      }
+                    ]
+                  },
                   "content": {
                       "membership": "invite"
                   },
