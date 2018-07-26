@@ -66,7 +66,7 @@ properties:
         expired_ts:
           type: integer
           format: int64
-          description: POSIX timestamp for when this key expired.
+          description: POSIX timestamp in milliseconds for when this key expired.
           required: true
           example: 922834800000
         key:
