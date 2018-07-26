@@ -56,7 +56,8 @@ def check_parameter(filepath, request, parameter):
             # Setting the 'id' tells jsonschema where the file is so that it
             # can correctly resolve relative $ref references in the schema
             schema['id'] = fileurl
-            resolver = jsonschema.RefResolver(filepath, schema, handlers={"file": load_yaml})
+            example = resolve_references(filepath, example)
+            resolver = jsonschema.RefResolver(filepath, schema, handlers={"file": load_file})
             jsonschema.validate(example, schema, resolver=resolver)
         except Exception as e:
             raise ValueError("Error validating JSON schema for %r" % (
@@ -76,7 +77,8 @@ def check_response(filepath, request, code, response):
             # Setting the 'id' tells jsonschema where the file is so that it
             # can correctly resolve relative $ref references in the schema
             schema['id'] = fileurl
-            resolver = jsonschema.RefResolver(filepath, schema, handlers={"file": load_yaml})
+            example = resolve_references(filepath, example)
+            resolver = jsonschema.RefResolver(filepath, schema, handlers={"file": load_file})
             jsonschema.validate(example, schema, resolver=resolver)
         except Exception as e:
             raise ValueError("Error validating JSON schema for %r %r" % (
@@ -104,12 +106,51 @@ def check_swagger_file(filepath):
                 check_response(filepath, request, code, response)
 
 
+def resolve_references(path, schema):
+    if isinstance(schema, dict):
+        # do $ref first
+        if '$ref' in schema:
+            value = schema['$ref']
+            path = os.path.abspath(os.path.join(os.path.dirname(path), value))
+            ref = load_file("file://" + path)
+            result = resolve_references(path, ref)
+            del schema['$ref']
+        else:
+            result = {}
+
+        for key, value in schema.items():
+            result[key] = resolve_references(path, value)
+        return result
+    elif isinstance(schema, list):
+        return [resolve_references(path, value) for value in schema]
+    else:
+        return schema
+
+
 def load_yaml(path):
     if not path.startswith("file:///"):
         raise Exception("Bad ref: %s" % (path,))
     path = path[len("file://"):]
     with open(path, "r") as f:
         return yaml.load(f)
+
+
+def load_json(path):
+    if not path.startswith("file:///"):
+        raise Exception("Bad ref: %s" % (path,))
+    path = path[len("file://"):]
+    with open(path, "r") as f:
+        return json.load(f)
+
+
+def load_file(path):
+    print("Loading reference: %s" % path)
+    if path.endswith(".json"):
+        return load_json(path)
+    else:
+        # We have to assume it's YAML because some of the YAML examples 
+        # do not have file extensions.
+        return load_yaml(path)
 
 
 if __name__ == '__main__':
