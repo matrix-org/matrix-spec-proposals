@@ -111,7 +111,7 @@ Retrieving Server Keys
   specification due to lack of significance. It may be reviewed `here
   <https://github.com/matrix-org/matrix-doc/blob/51faf8ed2e4a63d4cfd6d23183698ed169956cc0/specification/server_server_api.rst#232version-1>`_.
 
-Each homeserver publishes its public keys under ``/_matrix/key/v2/server/{keyId}`.
+Each homeserver publishes its public keys under ``/_matrix/key/v2/server/{keyId}``.
 Homeservers query for keys by either getting ``/_matrix/key/v2/server/{keyId}``
 directly or by querying an intermediate notary server using a
 ``/_matrix/key/v2/query/{serverName}/{keyId}`` API. Intermediate notary servers 
