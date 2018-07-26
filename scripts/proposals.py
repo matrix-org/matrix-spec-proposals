@@ -28,7 +28,7 @@ def getpage(url, page):
 def getbylabel(label):
     pagecount = 1
     json = list()
-    urlbase = 'https://api.github.com/repos/matrix-org/matrix-doc/issues?state=all&labels=' + label + '&page='
+    urlbase = 'https://api.github.com/repos/matrix-org/matrix-doc/issues?state=all&labels=proposal,' + label + '&page='
     print(urlbase)
     json.extend(getpage(urlbase, 1))
     for page in range(2, int(pagecount) + 1):
