@@ -84,7 +84,7 @@ paths:
                     properties:
                       membership:
                         type: string
-                        description: The value ``join``
+                        description: The value ``join``.
                         example: "join"
                     required: ['membership']
                   depth:
