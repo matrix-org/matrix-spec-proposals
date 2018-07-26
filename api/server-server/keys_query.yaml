@@ -41,8 +41,9 @@ paths:
           name: keyId
           type: string
           description: |-
-            The key ID to look up. If omitted or empty, all the server's keys
-            are to be queried for.
+            **Deprecated**. Servers should not use this parameter and instead
+            opt to return all keys, not just the requested one. The key ID to 
+            look up.
           required: false
           x-example: "ed25519:abc123"
         - in: query
