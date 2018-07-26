@@ -29,7 +29,8 @@ properties:
       
       The object's key is the algorithm and version combined (``ed25519`` being the 
       algorithm and ``abc123`` being the version in the example below). Together,
-      this forms the Key ID.
+      this forms the Key ID. The version must have characters matching the regular
+      expression ``[a-zA-Z0-9_]``.
     required: true
     additionalProperties:
       type: object
@@ -52,7 +53,8 @@ properties:
       
       The object's key is the algorithm and version combined (``ed25519`` being the 
       algorithm and ``0ldK3y`` being the version in the example below). Together,
-      this forms the Key ID.
+      this forms the Key ID. The version must have characters matching the regular
+      expression ``[a-zA-Z0-9_]``.
     additionalProperties:
       type: object
       title: Old Verify Key
