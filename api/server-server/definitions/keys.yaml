@@ -36,7 +36,7 @@ properties:
       title: Verify Key
       example: {
         "ed25519:abc123": {
-          "key": "VGhpcyBzaG91bGQgYmUgYSByZWFsIGVkMjU1MTkgcGF5bG9hZA=="
+          "key": "VGhpcyBzaG91bGQgYmUgYSByZWFsIGVkMjU1MTkgcGF5bG9hZA"
         }
       }
       properties:
@@ -44,7 +44,7 @@ properties:
           type: string
           description: The `Unpadded Base64`_ encoded key.
           required: true
-          example: "VGhpcyBzaG91bGQgYmUgYSByZWFsIGVkMjU1MTkgcGF5bG9hZA=="
+          example: "VGhpcyBzaG91bGQgYmUgYSByZWFsIGVkMjU1MTkgcGF5bG9hZA"
   old_verify_keys:
     type: object
     description: |-
@@ -59,7 +59,7 @@ properties:
       example: {
         "ed25519:0ldK3y": {
           "expired_ts": 922834800000,
-          "key": "VGhpcyBzaG91bGQgYmUgeW91ciBvbGQga2V5J3MgZWQyNTUxOSBwYXlsb2FkLg=="
+          "key": "VGhpcyBzaG91bGQgYmUgeW91ciBvbGQga2V5J3MgZWQyNTUxOSBwYXlsb2FkLg"
         }
       }
       properties:
@@ -73,7 +73,7 @@ properties:
           type: string
           description: The `Unpadded Base64`_ encoded key.
           required: true
-          example: "VGhpcyBzaG91bGQgYmUgeW91ciBvbGQga2V5J3MgZWQyNTUxOSBwYXlsb2FkLg=="
+          example: "VGhpcyBzaG91bGQgYmUgeW91ciBvbGQga2V5J3MgZWQyNTUxOSBwYXlsb2FkLg"
   signatures:
     type: object
     description: Digital signatures for this object signed using the ``verify_keys``.
@@ -82,7 +82,7 @@ properties:
       title: Signed Server
       example: {
         "example.org": {
-          "ad25519:abc123": "VGhpcyBzaG91bGQgYWN0dWFsbHkgYmUgYSBzaWduYXR1cmU="
+          "ad25519:abc123": "VGhpcyBzaG91bGQgYWN0dWFsbHkgYmUgYSBzaWduYXR1cmU"
         }
       }
       additionalProperties:
@@ -90,15 +90,15 @@ properties:
         name: Encoded Signature Verification Key
   tls_fingerprints:
     type: array
-    description: Hashes of X.509 TLS certificates used by this server encoded as `Unpadded Base64`_.
+    description: Hashes of X.509 TLS certificates used by this server.
     items:
       type: object
       title: TLS Fingerprint
       properties:
         sha256:
           type: string
-          description: The `Unpadded Base64`_ encoded fingerprint
-          example: "VGhpcyBpcyBoYXNoIHdoaWNoIHNob3VsZCBiZSBieXRlcw=="
+          description: The `Unpadded Base64`_ encoded fingerprint.
+          example: "VGhpcyBpcyBoYXNoIHdoaWNoIHNob3VsZCBiZSBieXRlcw"
   valid_until_ts:
     type: integer
     format: int64
