@@ -29,7 +29,7 @@ paths:
       description: |-
         Query for another server's keys. The receiving (notary) server must
         sign the keys returned by the queried server.
-      operationId: getQueryKeys
+      operationId: perspectivesKeyQuery
       parameters:
         - in: path
           name: serverName
@@ -70,7 +70,7 @@ paths:
       description: |-
         Query for keys from multiple servers in a batch format. The receiving (notary)
         server must sign the keys returned by the queried servers.
-      operationId: postQueryKeys
+      operationId: bulkPerspectivesKeyQuery
       parameters:
         - in: body
           name: body
