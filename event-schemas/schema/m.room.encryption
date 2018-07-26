@@ -7,9 +7,11 @@ properties:
     properties:
       algorithm:
         type: string
+        enum:
+          - "m.megolm.v1.aes-sha2"
         description: |-
           The encryption algorithm to be used to encrypt messages sent in this
-          room. For example, ``m.megolm.v1.aes-sha2``.
+          room.
       rotation_period_ms:
         type: integer
         description: |-
