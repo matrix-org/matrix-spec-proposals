@@ -60,7 +60,7 @@ properties:
       title: Old Verify Key
       example: {
         "ed25519:0ldK3y": {
-          "expired_ts": 922834800000,
+          "expired_ts": 1532645052628,
           "key": "VGhpcyBzaG91bGQgYmUgeW91ciBvbGQga2V5J3MgZWQyNTUxOSBwYXlsb2FkLg"
         }
       }
@@ -70,7 +70,7 @@ properties:
           format: int64
           description: POSIX timestamp in milliseconds for when this key expired.
           required: true
-          example: 922834800000
+          example: 1532645052628
         key:
           type: string
           description: The `Unpadded Base64`_ encoded key.

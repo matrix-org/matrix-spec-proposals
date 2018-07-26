@@ -7,7 +7,7 @@
     },
     "old_verify_keys": {
         "ed25519:0ldk3y": {
-        "expired_ts": 922834800000,
+        "expired_ts": 1532645052628,
             "key": "VGhpcyBzaG91bGQgYmUgeW91ciBvbGQga2V5J3MgZWQyNTUxOSBwYXlsb2FkLg=="
         }
     },
@@ -19,5 +19,5 @@
     "tls_fingerprints": [{
         "sha256": "VGhpcyBpcyBoYXNoIHdoaWNoIHNob3VsZCBiZSBieXRlcw=="
     }],
-    "valid_until_ts": 1052262000000
+    "valid_until_ts": 1652262000000
 }
