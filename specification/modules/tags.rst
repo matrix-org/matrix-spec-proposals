@@ -51,7 +51,8 @@ Tags namespaces are defined in the following way, depending on how the client ar
 * Any tag in the ``tld.name.*`` form but not matching the namespace of the current client should be ignored
 * Any tag not matching the above rules should be interpreted as a user tag from the ``u.*`` namespace, as if
   the name had already had ``u.`` stripped from the start (ie. the name of the tag is used as the
-  display name directly).
+  display name directly). These non-namespaced tags are supported for historical reasons. New tags should use
+  one of the defined namespaces above.
 
 Two special names are listed in the specification:
 The following tags are defined in the ``m.*`` namespace:
