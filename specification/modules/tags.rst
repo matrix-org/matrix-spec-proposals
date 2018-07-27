@@ -43,7 +43,8 @@ The name of a tag MUST not exceed 255 bytes.
 
 Tags namespaces are defined in the following way, depending on how the client are expected to interpret them:
 
-* The namespace ``m.*`` is reserved for tags defined in the Matrix specification
+* The namespace ``m.*`` is reserved for tags defined in the Matrix specification. Clients must ignore
+  any tags in this namespace they don't understand.
 * The namespace ``u.*`` is reserved for user-defined tags. The portion of the string after the ``u.``
   is defined to be the display name of this tag. No other semantics should be inferred from tags in
   this namespace.
