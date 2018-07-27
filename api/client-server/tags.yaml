@@ -65,7 +65,7 @@ paths:
           examples:
             application/json: {
                 "tags": {
-                  "m.favourite": {}
+                  "m.favourite": {},
                   "u.Work": {"order": "1"},
                   "u.Customers": {}
                 }
