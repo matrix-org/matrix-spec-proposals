@@ -1,4 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
+.. Copyright 2018 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -17,22 +18,19 @@ Room Tagging
 
 .. _module:tagging:
 
-Users can add tags to rooms. Tags are short strings used to label rooms, e.g.
-"work", "family". A room may have multiple tags. Tags are only visible to the
-user that set them but are shared across all their devices.
+Users can add tags to rooms. Tags are namespaced strings used to label rooms.
+A room may have multiple tags. Tags are only visible to the user that set them
+but are shared across all their devices.
 
 Events
 ------
 
 The tags on a room are received as single ``m.tag`` event in the
-``account_data`` section of a room in a ``/sync``.
+``account_data`` section of a room. The content of the ``m.tag`` event is a
+``tags`` key whose value is an object mapping the name of each tag to another
+object.
 
-The ``m.tag`` can also be received in a ``/events`` response or in the
-``account_data`` section of a room in ``/initialSync``. ``m.tag``
-events appearing in ``/events`` will have a ``room_id`` with the room
-the tags are for.
-
-Each tag has an associated JSON object with information about the tag, e.g how
+The JSON object associated with each tag gives information about the tag, e.g how
 to order the rooms with a given tag.
 
 Ordering information is given under the ``order`` key as a number between 0 and
@@ -43,25 +41,25 @@ after the rooms with that tag that have an ``order`` key.
 
 The name of a tag MUST not exceed 255 bytes.
 
-The name of a tag should be human readable. When displaying tags for a room a
-client should display this human readable name. When adding a tag for a room
-a client may offer a list to choose from that includes all the tags that the
-user has previously set on any of their rooms.
-
-Two special names are listed in the specification:
-
-* ``m.favourite``
-* ``m.lowpriority``
-
-{{m_tag_event}}
-
 Tags namespaces are defined in the following way, depending on how the client are expected to interpret them:
 
-* The namespace ``m.*`` is reserved for tags defined in the current specification
-* The namespace ``u.*`` is reserved for user-defined tags, and the client should not try to interpret as anything other than an utf8 string
+* The namespace ``m.*`` is reserved for tags defined in the Matrix specification
+* The namespace ``u.*`` is reserved for user-defined tags. The portion of the string after the ``u.``
+  is defined to be the display name of this tag. No other semantics should be inferred from tags in
+  this namespace.
 * A client or app willing to use special tags for advanced functionnality should namespace them similarly to state keys: ``tld.name.*``
 * Any tag in the ``tld.name.*`` form but not matching the namespace of the current client should be ignored
-* Any tag not matching the previous rules should be interpreted as an user tag from the ``u.*`` namespace
+* Any tag not matching the above rules should be interpreted as a user tag from the ``u.*`` namespace, as if
+  the name had already had ``u.`` stripped from the start (ie. the name of the tag is used as the
+  display name directly).
+
+Two special names are listed in the specification:
+The following tags are defined in the ``m.*`` namespace:
+
+* ``m.favourite``: The user's favourite rooms. These should be shown with higher precedence than other rooms.
+* ``m.lowpriority``: These should be shown with lower precedence than others.
+
+{{m_tag_event}}
 
 Client Behaviour
 ----------------
