@@ -126,7 +126,7 @@ def resolve_references(path, schema):
 
 def load_file(path):
     print("Loading reference: %s" % path)
-    if not path.startswith("file:///"):
+    if not path.startswith("file://"):
         raise Exception("Bad ref: %s" % (path,))
     path = path[len("file://"):]
     with open(path, "r") as f:
