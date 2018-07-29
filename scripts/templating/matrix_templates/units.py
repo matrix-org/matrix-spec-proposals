@@ -326,6 +326,10 @@ def process_data_type(prop, required=False, enforce_title=True):
                 nested = process_data_type(t)
                 tables.extend(nested['tables'])
                 prop_title.append(nested['title'])
+                # Assuming there's at most one enum among type options
+                enum_desc = nested['enum_desc']
+                if enum_desc:
+                    enum_desc = "%s if the type is enum" % enum_desc
             else:
                 prop_title.append(t)
     else:
