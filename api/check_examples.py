@@ -44,16 +44,14 @@ except ImportError as e:
 
 
 def check_schema(filepath, example, schema):
-    # Setting the 'id' tells jsonschema where the file is so that it
-    # can correctly resolve relative $ref references in the schema
-    schema['id'] = "file://" + os.path.abspath(filepath)
     example = resolve_references(filepath, example)
+    schema = resolve_references(filepath, schema)
     resolver = jsonschema.RefResolver(filepath, schema, handlers={"file": load_file})
     jsonschema.validate(example, schema, resolver=resolver)
 
 
 def check_parameter(filepath, request, parameter):
-    schema = parameter.get("schema")
+    schema = parameter.get("schema", {})
     example = schema.get('example')
 
     if example and schema:
