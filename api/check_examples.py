@@ -58,7 +58,7 @@ def check_parameter(filepath, request, parameter):
 
     if example and schema:
         try:
-            print ("Checking request schema for: %r %r" % (
+            print("Checking request schema for: %r %r" % (
                 filepath, request
             ))
             check_schema(filepath, example, schema)
