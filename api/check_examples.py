@@ -51,7 +51,7 @@ def check_schema(filepath, example, schema):
 
 
 def check_parameter(filepath, request, parameter):
-    schema = parameter.get("schema", {})
+    schema = parameter.get("schema")
     example = schema.get('example')
 
     if example and schema:
