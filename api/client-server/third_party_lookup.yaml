@@ -35,6 +35,8 @@ paths:
         homeserver. Includes both the available protocols and all fields
         required for queries against each protocol.
       operationId: getProtocols
+      security:
+        - accessToken: []
       responses:
         200:
           description: The protocols supported by the homeserver.
@@ -46,6 +48,8 @@ paths:
       description: |-
         Fetches the metadata from the homeserver about a particular third party protocol.
       operationId: getProtocolMetadata
+      security:
+        - accessToken: []
       parameters:
         - in: path
           name: protocol
@@ -80,6 +84,8 @@ paths:
         identifier. It should attempt to canonicalise the identifier as much
         as reasonably possible given the network type.
       operationId: queryLocationByProtocol
+      security:
+        - accessToken: []
       parameters:
         - in: path
           name: protocol
@@ -113,6 +119,8 @@ paths:
         Retrieve a Matrix User ID linked to a user on the third party service, given
         a set of user parameters.
       operationId: queryUserByProtocol
+      security:
+        - accessToken: []
       parameters:
         - in: path
           name: protocol
@@ -121,10 +129,10 @@ paths:
             The name of the protocol.
           required: true
           x-example: irc
+          # TODO: Change to 'explode' after OpenAPI/Swagger v3 update
         - in: query
-          name: fields
-          explode: true
-          type: object
+          name: field1, field2...
+          type: string
           description: |-
             One or more custom fields that are passed to the AS to help identify the user.
       responses:
@@ -147,6 +155,8 @@ paths:
         Retreive an array of third party network locations from a Matrix room
         alias.
       operationId: queryLocationByAlias
+      security:
+        - accessToken: []
       parameters:
         - in: query
           name: alias
@@ -173,6 +183,8 @@ paths:
       description: |-
         Retreive an array of third party users from a Matrix User ID.
       operationId: queryUserByID
+      security:
+        - accessToken: []
       parameters:
         - in: query 
           name: userid
