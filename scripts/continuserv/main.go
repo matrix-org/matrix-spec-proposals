@@ -123,8 +123,11 @@ func filter(e fsnotify.Event) bool {
 		return false
 	}
 
-	// Avoid some temp files that vim writes
-	if strings.HasSuffix(e.Name, "~") || strings.HasSuffix(e.Name, ".swp") || strings.HasPrefix(e.Name, ".") {
+	_, fname := filepath.Split(e.Name)
+
+	// Avoid some temp files that vim or emacs writes
+	if strings.HasSuffix(e.Name, "~") || strings.HasSuffix(e.Name, ".swp") || strings.HasPrefix(fname, ".") ||
+		(strings.HasPrefix(fname, "#") && strings.HasSuffix(fname, "#")) {
 		return false
 	}
 
