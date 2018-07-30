@@ -163,6 +163,7 @@ paths:
           type: string
           description: The Matrix room alias to look up.
           required: true
+          x-example: "#matrix:matrix.org"
       responses:
         200:
           description: |-
@@ -191,6 +192,7 @@ paths:
           type: string
           description: The Matrix User ID to look up.
           required: true
+          x-example: "@bob:matrix.org"
       responses:
         200:
           description: |-
