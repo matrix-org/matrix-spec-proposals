@@ -129,9 +129,8 @@ paths:
             The name of the protocol.
           required: true
           x-example: irc
-          # TODO: Change to 'explode' after OpenAPI/Swagger v3 update
         - in: query
-          name: field1, field2...
+          name: fields...
           type: string
           description: |-
             One or more custom fields that are passed to the AS to help identify the user.

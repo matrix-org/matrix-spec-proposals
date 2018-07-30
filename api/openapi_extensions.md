@@ -8,6 +8,8 @@ parsers should be able to take advantage of the added syntax.
 
 ## Extensible Query Parameters
 
+<!-- TODO: Remove and change instances to 'explode' after OpenAPI/Swagger v3 update -->
+
 If a unknown amount of query parameters can be added to a request, the `name`
 must be `fields...`, with the trailing ellipses representing the possibility
 of more fields.

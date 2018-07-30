@@ -321,7 +321,7 @@ paths:
           required: true
           x-example: irc
         - in: query
-          name: field...
+          name: fields...
           type: string
           description: |-
             One or more custom fields that are passed to the application
