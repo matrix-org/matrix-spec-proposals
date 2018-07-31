@@ -138,10 +138,15 @@ for label in labels:
                 pr_list_formatted = set()
                 pr_list = pr_list.group(1)
                 for p in pr_list.split(","):
-                    if not re.match(r"#\d", p.strip()):
+                    if re.match(r"#\d", p.strip()):
+                        prs.add(p.strip())
+                        pr_list_formatted.add("`PR" + str(p.strip()) + "`_")
+                    elif re.match(r"https://github.com/matrix-org/matrix-doc/pulls/\d", p.strip()):
+                        pr = "#" + p.strip().replace('https://github.com/matrix-org/matrix-doc/pulls/', '')
+                        prs.add(pr)
+                        pr_list_formatted.add("`PR" + str(pr) + "`_")
+                    else:
                         raise RuntimeWarning
-                    prs.add(p.strip())
-                    pr_list_formatted.add("`PR" + str(p.strip()) + "`_")
                 text_file.write("     - " + ', '.join(pr_list_formatted))
                 text_file.write("\n")
             else:
