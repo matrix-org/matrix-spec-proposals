@@ -3,7 +3,7 @@
     "algorithm": "m.megolm.v1.aes-sha2",
     "room_id": "!UCnwUWwIKhcpaPTHtR:sw1v.org",
     "session_id": "X3lUlvLELLYxeTx4yOVu6UDpasGEVO0Jbu+QFnm0cKQ",
-    "session_key": "AgAAAADxKHa9uFxcXzwYoNueL5Xqi69IkD4sni8LlfJL7qNBEYbf8q5V1G7D/0GHj81JbEFsaE8JOHXJCyIqUGU9svVEi52SAGiC4lpID43TAeGfYc64rUsBx5ovhZl8WrdszLxld29I+7H9e8GZt/NVd/ZQEBBfOv3vrgoODT3WpJiWZ7VEIjL6gspKkkRTDcmwYU6Eff+A11iJ2tEC9njtCeNfTrK7XUIPoXkHWmEjPwqdSQi9pqVb1OYRKT7un7WFJzo0WEw8xjo6wyEolSikaBr3/o8FhoIMIA9KvbjR4y1WDg"
+    "session_key": "AgAAAADxKHa9uFxcXzwYoNueL5Xqi69IkD4sni8LlfJL7qNBEY..."
   },
   "type": "m.room_key"
 }
