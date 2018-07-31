@@ -131,7 +131,7 @@ properties:
         description: The sender of the replaced state event.
         example: "@someone:domain.com"
       prev_content:
-        type: string
+        type: object
         description: The content of the replaced state event.
         example: {
           "membership": "join",
