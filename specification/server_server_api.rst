@@ -284,78 +284,6 @@ PDUs
 Each PDU contains a single Room Event which the origin server wants to send to
 the destination.
 
-
-PDU Fields
-~~~~~~~~~~
-
-.. TODO-spec
-
-  Figure out how to embed swagger definitions in here (or improve the section)
-
-==================== ================== =======================================
- Key                  Type               Description
-==================== ================== =======================================
-``room_id``          String             **Required**. Room identifier.
-``sender``           String             **Required**. The ID of the user sending
-                                        the event.
-``origin``           String             **Required**. ``server_name`` of the
-                                        homeserver that created this event.
-``event_id``         String             **Required**. Unique identifier for the
-                                        event being sent.
-``origin_server_ts`` Integer            **Required**. Timestamp in milliseconds
-                                        on origin homeserver when this event
-                                        was created.
-``type``             String             **Required**. Event type.
-``state_key``        String             If this key is present, the event is a
-                                        state event, and it will replace
-                                        previous events with the same ``type``
-                                        and ``state_key`` in the room state.
-``content``          Object             **Required**. The content of the event.
-``prev_events``      List of (String,   **Required**. Event IDs and hashes of
-                     {String: String})  the most recent events in the room that
-                     pairs              the homeserver was aware of when it
-                                        made this event.
-``depth``            Integer            **Required**. The maximum depth of the
-                                        ``prev_events``, plus one.
-``auth_events``      List of (String,   **Required**. Event IDs and hashes for
-                     {String: String})  the "auth events" of this event.
-                     pairs
-``hashes``           {String: String}   **Required**. Hashes of the PDU,
-                                        following the algorithm specified in
-                                        `Signing Events`_.
-``signatures``       {String:           **Required**. Signatures of the redacted
-                     {String: String}}  PDU, following the algorithm specified
-                                        in `Signing Events`_.
-``redacts``          String             For redaction events, the ID of the
-                                        event being redacted.
-``unsigned``         Object             Additional data added by the origin
-                                        server but not covered by the
-                                        ``signatures``.
-==================== ================== =======================================
-
-Example:
-
-.. code:: json
-
- {
-  "room_id": "!UcYsUzyxTGDxLBEvLy:example.org",
-  "sender": "@alice:example.com",
-  "origin": "example.com",
-  "event_id": "$a4ecee13e2accdadf56c1025:example.com",
-  "origin_server_ts": 1404838188000,
-  "type": "m.room.message",
-  "prev_events": [
-    ["$af232176:example.org", {"sha256": "abase64encodedsha256hashshouldbe43byteslong"}]
-  ],
-  "hashes": {"sha256": "thishashcoversallfieldsincasethisisredacted"},
-  "signatures": {
-    "example.com": {
-      "ed25519:key_version:": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
-    }
-  },
-  "content": {...}
- }
-
 The ``prev_events`` field of a PDU identifies the "parents" of the event, and
 thus establishes a partial ordering on events within the room by linking them
 into a Directed Acyclic Graph (DAG). The sending server should populate this
@@ -385,6 +313,8 @@ following subset of the room state:
 - The current ``m.room.power_levels`` event, if any.
 - The current ``m.room.join_rules`` event, if any.
 - The sender's current ``m.room.member`` event, if any.
+
+{{definition_ss_pdu}}
 
 Authorization of PDUs
 ~~~~~~~~~~~~~~~~~~~~~
@@ -555,32 +485,11 @@ The rules are as follows:
 EDUs
 ----
 
-.. WARNING::
-  This section may be misleading or inaccurate.
-
 EDUs, by comparison to PDUs, do not have an ID, a room ID, or a list of
-"previous" IDs. The only mandatory fields for these are the type, origin and
-destination homeserver names, and the actual nested content.
+"previous" IDs. They are intended to be non-persistent data such as user
+presence, typing notifications, etc.
 
-======================== ============ =========================================
- Key                      Type          Description
-======================== ============ =========================================
-``edu_type``             String       The type of the ephemeral message.
-``origin``               String       The server name sending the ephemeral
-                                      message.
-``destination``          String       The server name receiving the ephemeral
-                                      message.
-``content``              Object       Content of the ephemeral message.
-======================== ============ =========================================
-
-.. code:: json
-
- {
-  "edu_type": "m.presence",
-  "origin": "blue",
-  "destination": "orange",
-  "content": {...}
- }
+{{definition_ss_edu}}
 
 Room State Resolution
 ---------------------

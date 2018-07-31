@@ -1,7 +1,7 @@
 {
     "edu_type": "m.presence",
-    "origin": "blue",
-    "destination": "orange",
+    "origin": "matrix.org",
+    "destination": "elsewhere.com",
     "content": {
         "key": "value"
     }
