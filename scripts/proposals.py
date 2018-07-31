@@ -68,7 +68,6 @@ for label in labels:
 
     for item in issues[label]:
         # set the created date, find local field, otherwise Github
-        print(item)
         body = str(item['body'])
         created = re.search('^Date: (.+?)\n', body, flags=re.MULTILINE)
         if created is not None:
@@ -138,16 +137,27 @@ for label in labels:
         text_file.write("     - " + str(shepherd) + "\n")
 
         # PRs
-        pr_list = re.search('PRs: (.+?)$', str(item['body']))
-        if pr_list is not None:
-            pr_list_formatted = set()
-            pr_list = pr_list.group(1)
-            for p in pr_list.split(","):
-                prs.add(p.strip())
-                pr_list_formatted.add("`PR" + str(p.strip()) + "`_")
-            text_file.write("     - " + ', '.join(pr_list_formatted))
-            text_file.write("\n")
-        else:
+        try:
+            pr_list = re.search('PRs: (.+?)$', str(item['body']))
+            if pr_list is not None:
+                pr_list_formatted = set()
+                pr_list = pr_list.group(1)
+                for p in pr_list.split(","):
+                    if re.match(r"#\d", p.strip()):
+                        prs.add(p.strip())
+                        pr_list_formatted.add("`PR" + str(p.strip()) + "`_")
+                    elif re.match(r"https://github.com/matrix-org/matrix-doc/pulls/\d", p.strip()):
+                        pr = "#" + p.strip().replace('https://github.com/matrix-org/matrix-doc/pulls/', '')
+                        prs.add(pr)
+                        pr_list_formatted.add("`PR" + str(pr) + "`_")
+                    else:
+                        raise RuntimeWarning
+                text_file.write("     - " + ', '.join(pr_list_formatted))
+                text_file.write("\n")
+            else:
+                text_file.write("     - \n")
+        except:
+            print("exception parsing PRs for MSC" + str(item['number']))
             text_file.write("     - \n")
 
     text_file.write("\n\n\n")
