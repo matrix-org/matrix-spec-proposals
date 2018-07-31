@@ -283,6 +283,20 @@ Device verification may reach one of several conclusions. For example:
    decrypted by such a device. For the Olm protocol, this is documented at
    https://matrix.org/git/olm/about/docs/signing.rst.
 
+Key sharing
+-----------
+
+If Bob has an encrypted conversation with Alice on his computer, and then logs in
+through his phone for the first time, he may want to have access to the previously
+exchanged messages. To address this issue, events exist for requesting and sending
+keys from device to device.
+
+.. NOTE::
+
+  Key sharing can be a big attack vector, thus it must be done very carefully.
+  A reasonable stategy is for a user's client to only send keys requested by the
+  verified devices of the same user.
+
 Messaging Algorithms
 --------------------
 
@@ -463,6 +477,10 @@ Events
 {{m_room_encrypted_event}}
 
 {{m_room_key_event}}
+
+{{m_room_key_request_event}}
+
+{{m_forwarded_room_key_event}}
 
 Key management API
 ~~~~~~~~~~~~~~~~~~
