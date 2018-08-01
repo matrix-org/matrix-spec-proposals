@@ -25,49 +25,61 @@ produces:
 paths:
   "/query/{serverName}/{keyId}":
     get:
-      summary: Retrieve a server key.
-      description: Retrieve a server key.
+      summary: Query for another server's keys
+      description: |-
+        Query for another server's keys. The receiving (notary) server must
+        sign the keys returned by the queried server.
       operationId: perspectivesKeyQuery
       parameters:
         - in: path
           name: serverName
           type: string
-          description: Server name.
+          description: The server's DNS name to query
           required: true
           x-example: matrix.org
         - in: path
           name: keyId
           type: string
-          description: Key ID.
-          required: true
-          x-example: TODO # No examples in spec so far
+          description: |-
+            **Deprecated**. Servers should not use this parameter and instead
+            opt to return all keys, not just the requested one. The key ID to 
+            look up.
+          required: false
+          x-example: "ed25519:abc123"
         - in: query
           name: minimum_valid_until_ts
           type: integer
           format: int64
-          description: Minimum Valid Until Milliseconds.
-          required: true # TODO: Verify 
+          description: |-
+            A millisecond POSIX timestamp in milliseconds indicating when the returned 
+            certificates will need to be valid until to be useful to the requesting server.
+
+            If not supplied, the current time as determined by the notary server is used.
+          required: false
           x-example: 1234567890
       responses:
         200:
-          description: The keys for the server
+          description: |-
+            The keys for the server, or an empty array if the server could not be reached
+            and no cached keys were available.
           schema:
             $ref: "definitions/keys_query_response.yaml"
   "/query":
     post:
-      summary: Retrieve a server key
-      description: Retrieve a server key.
+      summary: Query for several server's keys
+      description: |-
+        Query for keys from multiple servers in a batch format. The receiving (notary)
+        server must sign the keys returned by the queried servers.
       operationId: bulkPerspectivesKeyQuery
       parameters:
         - in: body
           name: body
           schema:
             type: object
-            # TODO: Improve example
             example: {
               "server_keys": {
-                "{server_name}": {
-                  "{key_id}": {
+                "example.org": {
+                  "ed25519:abc123": {
                     "minimum_valid_until_ts": 1234567890
                   }
                 }
@@ -76,7 +88,16 @@ paths:
             properties:
               server_keys:
                 type: object
-                description: The query criteria.
+                description: |-
+                  The query criteria. The outer ``string`` key on the object is the
+                  server name (eg: ``matrix.org``). The inner ``string`` key is the
+                  Key ID to query for the particular server. If no key IDs are given
+                  to be queried, the notary server should query for all keys. If no
+                  servers are given, the notary server must return an empty ``server_keys``
+                  array in the response.
+
+                  The notary server may return multiple keys regardless of the Key IDs
+                  given.
                 additionalProperties:
                   type: object
                   name: ServerName
@@ -84,16 +105,25 @@ paths:
                   additionalProperties:
                     type: object
                     title: Query Criteria
-                    description: The server keys to query.
+                    description: The server key IDs to query.
                     properties:
                       minimum_valid_until_ts:
                         type: integer
                         format: int64
-                        description: Minimum Valid Until MS.
+                        description: |-
+                          A millisecond POSIX timestamp in milliseconds indicating when
+                          the returned certificates will need to be valid until to be 
+                          useful to the requesting server.
+
+                          If not supplied, the current time as determined by the notary
+                          server is used.
                         example: 1234567890
             required: ['server_keys']
       responses:
         200:
-          description: The keys for the server.
+          description: |-
+            The keys for the queried servers, signed by the notary server. Servers which
+            are offline and have no cached keys will not be included in the result. This
+            may result in an empty array.
           schema:
             $ref: "definitions/keys_query_response.yaml"
