@@ -34,7 +34,9 @@ paths:
         Fetches the overall metadata about protocols supported by the
         homeserver. Includes both the available protocols and all fields
         required for queries against each protocol.
-      operationId: queryMetadata
+      operationId: getProtocols
+      security:
+        - accessToken: []
       responses:
         200:
           description: The protocols supported by the homeserver.
@@ -45,7 +47,9 @@ paths:
       summary: Retrieve metadata about a specific protocol that the homeserver supports.
       description: |-
         Fetches the metadata from the homeserver about a particular third party protocol.
-      operationId: queryMetadata
+      operationId: getProtocolMetadata
+      security:
+        - accessToken: []
       parameters:
         - in: path
           name: protocol
@@ -80,6 +84,8 @@ paths:
         identifier. It should attempt to canonicalise the identifier as much
         as reasonably possible given the network type.
       operationId: queryLocationByProtocol
+      security:
+        - accessToken: []
       parameters:
         - in: path
           name: protocol
@@ -113,6 +119,8 @@ paths:
         Retrieve a Matrix User ID linked to a user on the third party service, given
         a set of user parameters.
       operationId: queryUserByProtocol
+      security:
+        - accessToken: []
       parameters:
         - in: path
           name: protocol
@@ -122,7 +130,7 @@ paths:
           required: true
           x-example: irc
         - in: query
-          name: field1, field2...
+          name: fields...
           type: string
           description: |-
             One or more custom fields that are passed to the AS to help identify the user.
@@ -146,12 +154,15 @@ paths:
         Retreive an array of third party network locations from a Matrix room
         alias.
       operationId: queryLocationByAlias
+      security:
+        - accessToken: []
       parameters:
         - in: query
           name: alias
           type: string
           description: The Matrix room alias to look up.
           required: true
+          x-example: "#matrix:matrix.org"
       responses:
         200:
           description: |-
@@ -172,12 +183,15 @@ paths:
       description: |-
         Retreive an array of third party users from a Matrix User ID.
       operationId: queryUserByID
+      security:
+        - accessToken: []
       parameters:
         - in: query 
           name: userid
           type: string
           description: The Matrix User ID to look up.
           required: true
+          x-example: "@bob:matrix.org"
       responses:
         200:
           description: |-
