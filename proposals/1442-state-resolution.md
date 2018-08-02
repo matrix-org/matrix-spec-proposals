@@ -160,6 +160,14 @@ e.g. bans before events sent in other forks. (However events can point to old
 parts of the DAG, for a variety of reasons, and ideally in that case the
 resolved state would closely match the recent state).
 
+Similarly care should be taken when multiple changes to e.g. power levels happen
+in a fork. If Alice gives Bob power (A), then Bob gives Charlie power (B) and
+then Charlie, say, changes the ban level (C). If you try and resolve two state
+sets one of which has A and the other has C, C will not pass auth unless B is
+also taken into account. This case can be handled if we also consider the
+difference in auth chains between the two sets, which in the previous example
+would include B.
+
 
 ## Power Level Ordering
 
@@ -361,8 +369,6 @@ the resolution and so the join would be rejected.
 
 The changes to the current model that would be required to make the above
 assumptions true would be, for example:
-
-
 
 1.  By default permissions are closed.
 1.  Bans would need to be a list in either the join rules event or a separate
