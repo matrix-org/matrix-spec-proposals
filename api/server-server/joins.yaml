@@ -273,7 +273,7 @@ paths:
                       type: object
                       schema:
                         $ref: "definitions/pdu.yaml"
-                required: ["auth_chain", "state"]
+                required: ["auth_chain", "state", "origin"]
           examples:
             application/json: [
               200,
