@@ -1,7 +1,8 @@
 # State Resolution: Reloaded
 
 
-Thoughts on the next iteration of the state resolution algorithm that aims to mitigate currently known attacks
+Thoughts on the next iteration of the state resolution algorithm that aims to
+mitigate currently known attacks
 
 
 # Background
@@ -44,23 +45,48 @@ ban, any merge back should always ensure that the ban is still in the state.
 The current state resolution is known to have some undesirable properties,
 which can be summarized into two separate cases:
 
-1.  Moderation evasion ─ where an attacker can avoid e.g. bans by forking and joining the room DAG in particular ways.
-1.  State resets ─ where a server (often innocently) sends an event that points to disparate parts of the graph, causing state resolution to pick old state rather than later versions.
+1.  Moderation evasion ─ where an attacker can avoid e.g. bans by forking and
+    joining the room DAG in particular ways.
+1.  State resets ─ where a server (often innocently) sends an event that points
+    to disparate parts of the graph, causing state resolution to pick old state
+    rather than later versions.
 
 These have the following causes:
 
-1.  Conflicting state must pass auth checks to be eligible to be picked, but the algorithm does not consider previous (superseded) state changes in a fork. For example, where Alice gives Bob power and then Bob gives Charlie power on one branch of a conflict, when the latter power level event is authed against the original power level (where Bob didn't have power), it fails.
-1.  The algorithm relies on the deprecated and untrustable depth parameter to try and ensure that the "most recent" state is picked. Without having a copy of the complete room DAG the algorithm doesn't know that e.g. one topic event came strictly after another in the DAG.  For efficiency and storage reasons servers are not required (or expected) to store the whole room DAG.
-1.  The algorithm always accepts events where there are no conflicting alternatives in other forks. This means that if an admin changed the join rules to `private`, then new joins on forks based on parts of the DAG which predate that change would always be accepted without being authed against the join_rules event.
+1.  Conflicting state must pass auth checks to be eligible to be picked, but the
+    algorithm does not consider previous (superseded) state changes in a fork.
+    For example, where Alice gives Bob power and then Bob gives Charlie power on
+    one branch of a conflict, when the latter power level event is authed
+    against the original power level (where Bob didn't have power), it fails.
+1.  The algorithm relies on the deprecated and untrustable depth parameter to
+    try and ensure that the "most recent" state is picked. Without having a copy
+    of the complete room DAG the algorithm doesn't know that e.g. one topic
+    event came strictly after another in the DAG.  For efficiency and storage
+    reasons servers are not required (or expected) to store the whole room DAG.
+1.  The algorithm always accepts events where there are no conflicting
+    alternatives in other forks. This means that if an admin changed the join
+    rules to `private`, then new joins on forks based on parts of the DAG which
+    predate that change would always be accepted without being authed against
+    the join_rules event.
 
 
 # Desirable Properties
 
-As well as the important properties listed in the "Background" section, there are also some other properties that would significantly improve the experience of end users, though not strictly essential. These include:
+As well as the important properties listed in the "Background" section, there
+are also some other properties that would significantly improve the experience
+of end users, though not strictly essential. These include:
 
-*   Banning and changing power levels should "do the right thing", i.e. end users shouldn't have to take extra steps to make the state resolution produce the "right" results.
-*   Minimise occurences of "state resets". Servers will sometimes point to disparate parts of the room DAG (due to a variety of reasons), which ideally should not result in changes in the state.
-*   Be efficient; state resolution can happen a lot on some large rooms. Ideally it would also support efficiently working on "state deltas" - i.e. the ability to calculate state resolution incrementally from snapshots rather than having to consider the full state of each fork each time a conflict is resolved
+*   Banning and changing power levels should "do the right thing", i.e. end
+    users shouldn't have to take extra steps to make the state resolution
+    produce the "right" results.
+*   Minimise occurences of "state resets". Servers will sometimes point to
+    disparate parts of the room DAG (due to a variety of reasons), which ideally
+    should not result in changes in the state.
+*   Be efficient; state resolution can happen a lot on some large rooms. Ideally
+    it would also support efficiently working on "state deltas" - i.e. the
+    ability to calculate state resolution incrementally from snapshots rather
+    than having to consider the full state of each fork each time a conflict is
+    resolved
 
 
 # Ideas for New Algorithm
@@ -132,7 +158,7 @@ maliciously forking.
 For that to work we need to ensure that there is a suitable ordering that puts
 e.g. bans before events sent in other forks. (However events can point to old
 parts of the DAG, for a variety of reasons, and ideally in that case the
-resolved state would closely match the recent state). 
+resolved state would closely match the recent state).
 
 
 ## Power Level Ordering
@@ -190,38 +216,69 @@ a room.)
 
 First we define:
 
-*   **"State sets"** are the sets of state that the resolution algorithm tries to resolve, i.e. the inputs to the algorithm.
-*   **"Power events"** are events that have the potential to remove the ability of another user to do something. These are power levels, join rules, bans and kicks.
-*   The **"unconflicted state map"** is the state where the value of each key exists and is the same in every state set. The **"conflicted state map"** is everything else. (Note that this is subtly different to the definition used in the existing algorithm, which considered the merge of a present event with an absent event to be unconflicted rather than conflicted)
-*   The "**auth difference"** is calculated by first calculating the full auth chain for each state set and taking every event that doesn't appear in every auth chain.
-*   The **"full conflicted set"** is the union of the conflicted state map and auth difference.
-*   The **"reverse topological power ordering"**[^4] of a set of events is an ordering of the given events, plus any events in their auth chains that appear in the auth difference, ordered such that x < y if:
+*   **"State sets"** are the sets of state that the resolution algorithm tries
+    to resolve, i.e. the inputs to the algorithm.
+*   **"Power events"** are events that have the potential to remove the ability
+    of another user to do something. These are power levels, join rules, bans
+    and kicks.
+*   The **"unconflicted state map"** is the state where the value of each key
+    exists and is the same in every state set. The **"conflicted state map"** is
+    everything else. (Note that this is subtly different to the definition used
+    in the existing algorithm, which considered the merge of a present event
+    with an absent event to be unconflicted rather than conflicted)
+*   The "**auth difference"** is calculated by first calculating the full auth
+    chain for each state set and taking every event that doesn't appear in every
+    auth chain.
+*   The **"full conflicted set"** is the union of the conflicted state map and
+    auth difference.
+*   The **"reverse topological power ordering"**[^4] of a set of events is an
+    ordering of the given events, plus any events in their auth chains that
+    appear in the auth difference, ordered such that x < y if:
 
     1.  x is in the auth chain of y, or if
-    1.  x's sender has a greater power level than y (calculated by looking at their respective auth events, or if
-    1.  x's origin_server_ts is less than y's, or if
-    1.  x's event_id is lexicographically less than y's
+    2.  x's sender has a greater power level than y (calculated by looking at
+        their respective auth events, or if
+    3.  x's origin_server_ts is less than y's, or if
+    4.  x's event_id is lexicographically less than y's
 
     This is also known as a lexicographical topological sort.
 
-*   The **"mainline ordering"** based on a power level event P of a set of events is calculated as follows:
-    1.  Generate the list of power levels starting at P and recursively take the power level from its auth events. This list is called the mainline, ordered such that P is last.
-    1.  We say the "closest mainline event" of an event is the first power level event encountered in mainline when iteratively descending through the power level events in the auth events.
+*   The **"mainline ordering"** based on a power level event P of a set of
+    events is calculated as follows:
+    1.  Generate the list of power levels starting at P and recursively take the
+        power level from its auth events. This list is called the mainline,
+        ordered such that P is last.
+    1.  We say the "closest mainline event" of an event is the first power level
+        event encountered in mainline when iteratively descending through the
+        power level events in the auth events.
     1.  Order the set of events such that x < y if:
-        1.  The closest mainline event of x appears strictly before the closest of y in the mainline list, or if
+        1.  The closest mainline event of x appears strictly before the closest
+            of y in the mainline list, or if
         1.  x's origin_server_ts is less than y's, or if
         1.  x's event_id lexicographically sorts before y's
-*   The **"iterative auth checks"** algorithm is where given a sorted list of events, the auth check algorithm is applied to each event in turn. The state events used to auth are built up from previous events that passed the auth checks, starting from a base set of state. If a required auth key doesn't exist in the state, then the one in the event's auth_events is used. (See _Variations_ and _Attack Vectors_ below).
+*   The **"iterative auth checks"** algorithm is where given a sorted list of
+    events, the auth check algorithm is applied to each event in turn. The state
+    events used to auth are built up from previous events that passed the auth
+    checks, starting from a base set of state. If a required auth key doesn't
+    exist in the state, then the one in the event's auth_events is used. (See
+    _Variations_ and _Attack Vectors_ below).
 
 The algorithm proceeds as follows:
 
 
-1.  Take all power events and any events in their auth chains that appear in the _full_ _conflicted set_ and order them by the _reverse topological power ordering._
-1.  Apply the _iterative auth checks_ algorithm based on the unconflicted state map to get a partial set of resolved state.
-1.  Take all remaining events that weren't picked in step 1 and order them by the _mainline ordering_ based on the power level in the partially resolved state.
-1.  Apply the _iterative auth checks algorithm_ based on the partial resolved state.
-1.  Update the result with the _unconflicted state_ to get the final resolved state[^5].
-(_Note_: this is different from the current algorithm, which considered different event types at distinct stages)
+1.  Take all power events and any events in their auth chains that appear in the
+    _full_ _conflicted set_ and order them by the _reverse topological power
+    ordering._
+1.  Apply the _iterative auth checks_ algorithm based on the unconflicted state
+    map to get a partial set of resolved state.
+1.  Take all remaining events that weren't picked in step 1 and order them by
+    the _mainline ordering_ based on the power level in the partially resolved
+    state.
+1.  Apply the _iterative auth checks algorithm_ based on the partial resolved
+    state.
+1.  Update the result with the _unconflicted state_ to get the final resolved
+    state[^5]. (_Note_: this is different from the current algorithm, which
+    considered different event types at distinct stages)
 
 An example python implementation can be found on github
 [here](https://github.com/matrix-org/matrix-test-state-resolution-ideas).
@@ -265,12 +322,11 @@ proposed algorithm.
 
 The proposed algorithm still has some potentially unexpected behaviour.
 
-One example of this is when Alice sets a topic and then gets banned. If an
-event gets created (potentially much later) that points to both before and
-after the topic and ban then the proposed algorithm will resolve and apply the
-ban before resolving the topic, causing the topic to be denied and dropped from
-the resolved state. This will result in no topic being set in the resolved
-state.
+One example of this is when Alice sets a topic and then gets banned. If an event
+gets created (potentially much later) that points to both before and after the
+topic and ban then the proposed algorithm will resolve and apply the ban before
+resolving the topic, causing the topic to be denied and dropped from the
+resolved state. This will result in no topic being set in the resolved state.
 
 
 ### Auth Events
@@ -299,9 +355,9 @@ authorization to do an action (and vice versa). For example, in the current
 model bans (basically) revoke the ability for a particular user from being able
 to join. If the user later gets unbanned and then rejoins, the join would point
 to the join rules as the authorization that lets them join, but would not
-(necessarily) point to the unban. This has the effect that if a state
-resolution happened between the new join and the ban, the unban would not be
-included in the resolution and so the join would be rejected.
+(necessarily) point to the unban. This has the effect that if a state resolution
+happened between the new join and the ban, the unban would not be included in
+the resolution and so the join would be rejected.
 
 The changes to the current model that would be required to make the above
 assumptions true would be, for example:
@@ -309,8 +365,10 @@ assumptions true would be, for example:
 
 
 1.  By default permissions are closed.
-1.  Bans would need to be a list in either the join rules event or a separate event type which all membership events pointed to.
-1.  Bans would only revoke the ability to join, not automatically remove users from the room.
+1.  Bans would need to be a list in either the join rules event or a separate
+    event type which all membership events pointed to.
+1.  Bans would only revoke the ability to join, not automatically remove users
+    from the room.
 1.  Change the defaults of join_rules to be closed by default
 
 
@@ -338,8 +396,11 @@ applying steps 3 and 4 to the state deltas. The properties are:
 
 
 1.  The delta contains no power events
-1.  The origin_server_ts of all events in state delta are strictly greater than those in the previous state sets
-1.  Any event that has been removed must not have been used to auth subsequent events (e.g. if we replaced a member event and that user had also set a topic)
+1.  The origin_server_ts of all events in state delta are strictly greater than
+    those in the previous state sets
+1.  Any event that has been removed must not have been used to auth subsequent
+    events (e.g. if we replaced a member event and that user had also set a
+    topic)
 
 These properties will likely hold true for most state updates that happen in a
 room, allowing servers to use this more efficient algorithm the majority of the
@@ -425,23 +486,24 @@ This gives the resolved state at _Message 3_ to be _Topic 4_.
 
 ## Notes
 
-[^1]:
-     In the current room protocol these are: the create event, power levels, membership, join rules and third party invites. See the [spec](https://matrix.org/docs/spec/server_server/unstable.html#pdu-fields).
+[^1]: In the current room protocol these are: the create event, power levels,
+     membership, join rules and third party invites. See the
+     [spec](https://matrix.org/docs/spec/server_server/unstable.html#pdu-fields).
 
-[^2]:
-     In the current protocol these are: power levels, kicks, bans and join rules.
+[^2]: In the current protocol these are: power levels, kicks, bans and join
+     rules.
 
-[^3]:
-     Future room versions may have a concept of server ban event that works like existing bans, which would also be included
+[^3]: Future room versions may have a concept of server ban event that works
+     like existing bans, which would also be included
 
-[^4]:
-     The topology being considered here is the auth chain DAG, rather than the room DAG, so this ordering is only applicable to events which appear in the auth chain DAG.
+[^4]: The topology being considered here is the auth chain DAG, rather than the
+     room DAG, so this ordering is only applicable to events which appear in the
+     auth chain DAG.
 
-[^5]:
-     We do this so that, if we receive events with misleading auth_events, this ensures that the unconflicted state at least is correct.
+[^5]: We do this so that, if we receive events with misleading auth_events, this
+     ensures that the unconflicted state at least is correct.
 
-[^6]:
-     This isn't true in the current protocol
+[^6]: This isn't true in the current protocol
 
 
 
