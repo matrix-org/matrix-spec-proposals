@@ -233,13 +233,13 @@ First we define:
     auth difference.
 *   The **"reverse topological power ordering"**[^4] of a set of events is an
     ordering of the given events, plus any events in their auth chains that
-    appear in the auth difference, ordered such that x < y if:
+    appear in the auth difference, topologically ordered by their auth chains
+    with ties broken such that x < y if:
 
-    1.  x is in the auth chain of y, or if
-    2.  x's sender has a greater power level than y (calculated by looking at
+    1.  x's sender has a greater power level than y (calculated by looking at
         their respective auth events, or if
-    3.  x's origin_server_ts is less than y's, or if
-    4.  x's event_id is lexicographically less than y's
+    2.  x's origin_server_ts is less than y's, or if
+    3.  x's event_id is lexicographically less than y's
 
     This is also known as a lexicographical topological sort.
 
