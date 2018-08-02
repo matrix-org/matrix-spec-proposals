@@ -440,6 +440,15 @@ The rules are as follows:
 
   I think there is some magic about 3pid invites too.
 
+Retrieving event authorization information
+++++++++++++++++++++++++++++++++++++++++++
+
+The homeserver may be missing event authorization information, or wish to check
+with other servers to ensure it is receiving the correct auth chain. These APIs
+give the homeserver an avenue for getting the information it needs.
+
+{{event_auth_ss_http_api}}
+
 EDUs
 ----
 
