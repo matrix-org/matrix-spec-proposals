@@ -106,15 +106,17 @@ Server implementation
 Retrieving Server Keys
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Version 2
-+++++++++
+.. NOTE::
+  There was once a "version 1" of the key exchange. It has been removed from the
+  specification due to lack of significance. It may be reviewed `here
+  <https://github.com/matrix-org/matrix-doc/blob/51faf8ed2e4a63d4cfd6d23183698ed169956cc0/specification/server_server_api.rst#232version-1>`_.
 
-Each homeserver publishes its public keys under ``/_matrix/key/v2/server/``.
-Homeservers query for keys by either getting ``/_matrix/key/v2/server/``
+Each homeserver publishes its public keys under ``/_matrix/key/v2/server/{keyId}``.
+Homeservers query for keys by either getting ``/_matrix/key/v2/server/{keyId}``
 directly or by querying an intermediate notary server using a
-``/_matrix/key/v2/query`` API. Intermediate notary servers query the
-``/_matrix/key/v2/server/`` API on behalf of another server and sign the
-response with their own key. A server may query multiple notary servers to
+``/_matrix/key/v2/query/{serverName}/{keyId}`` API. Intermediate notary servers 
+query the ``/_matrix/key/v2/server/{keyId}`` API on behalf of another server and
+sign the response with their own key. A server may query multiple notary servers to
 ensure that they all report the same public keys.
 
 This approach is borrowed from the `Perspectives Project`_, but modified to
@@ -126,113 +128,33 @@ server by querying other servers.
 .. _Perspectives Project: https://web.archive.org/web/20170702024706/https://perspectives-project.org/
 
 Publishing Keys
-^^^^^^^^^^^^^^^
++++++++++++++++
 
 Homeservers publish the allowed TLS fingerprints and signing keys in a JSON
 object at ``/_matrix/key/v2/server/{key_id}``. The response contains a list of
 ``verify_keys`` that are valid for signing federation requests made by the
-server and for signing events. It contains a list of ``old_verify_keys`` which
+homeserver and for signing events. It contains a list of ``old_verify_keys`` which
 are only valid for signing events. Finally the response contains a list of TLS
-certificate fingerprints to validate any connection made to the server.
-
-A server may have multiple keys active at a given time. A server may have any
-number of old keys. It is recommended that servers return a single JSON
-response listing all of its keys whenever any ``key_id`` is requested to reduce
-the number of round trips needed to discover the relevant keys for a server.
-However a server may return different responses for a different ``key_id``.
-
-The ``tls_certificates`` field contains a list of hashes of the X.509 TLS
-certificates currently used by the server. The list must include SHA-256 hashes
-for every certificate currently in use by the server. These fingerprints are
-valid until the millisecond POSIX timestamp in ``valid_until_ts``.
-
-The ``verify_keys`` can be used to sign requests and events made by the server
-until the millisecond POSIX timestamp in ``valid_until_ts``. If a homeserver
-receives an event with a ``origin_server_ts`` after the ``valid_until_ts`` then
-it should request that ``key_id`` for the originating server to check whether
-the key has expired.
-
-The ``old_verify_keys`` can be used to sign events with an ``origin_server_ts``
-before the ``expired_ts``. The ``expired_ts`` is a millisecond POSIX timestamp
-of when the originating server stopped using that key.
-
-Intermediate notary servers should cache a response for half of its remaining
-lifetime to avoid serving a stale response. Originating servers should avoid
-returning responses that expire in less than an hour to avoid repeated requests
-for a certificate that is about to expire. Requesting servers should limit how
-frequently they query for certificates to avoid flooding a server with
-requests.
-
-If a server goes offline intermediate notary servers should continue to return
-the last response they received from that server so that the signatures of old
-events sent by that server can still be checked.
+certificate fingerprints to validate any connection made to the homeserver.
 
 {{keys_server_ss_http_api}}
 
 
 Querying Keys Through Another Server
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+++++++++++++++++++++++++++++++++++++
 
-Servers may offer a query API ``/_matrix/key/v2/query/`` for getting the keys
-for another server. This API can be used to GET a list of JSON objects for a
-given server or to POST a bulk query for a number of keys from a number of
-servers. Either way the response is a list of JSON objects containing the
-JSON published by the server under ``/_matrix/key/v2/server/`` signed by
-both the originating server and by this server.
+Servers may query another server's keys through a notary server. The notary
+server may be another homeserver. The notary server will retrieve keys from
+the queried servers through use of the ``/_matrix/key/v2/server/{keyId}``
+API. The notary server will additionally sign the response from the queried
+server before returning the results.
 
-The ``minimum_valid_until_ts`` is a millisecond POSIX timestamp indicating
-when the returned certificate will need to be valid until to be useful to the
-requesting server. This can be set using the maximum ``origin_server_ts`` of
-a batch of events that a requesting server is trying to validate. This allows
-an intermediate notary server to give a prompt cached response even if the
-originating server is offline.
-
-This API can return keys for servers that are offline by using cached responses
-taken from when the server was online. Keys can be queried from multiple
-servers to mitigate against DNS spoofing.
+Notary servers can return keys for servers that are offline or having issues
+serving their own keys by using cached responses. Keys can be queried from
+multiple servers to mitigate against DNS spoofing.
 
 {{keys_query_ss_http_api}}
 
-Version 1
-+++++++++
-.. WARNING::
-  Version 1 of key distribution is obsolete.
-
-
-Homeservers publish their TLS certificates and signing keys in a JSON object
-at ``/_matrix/key/v1``.
-
-==================== =================== ======================================
- Key                  Type                Description
-==================== =================== ======================================
-``server_name``      String              DNS name of the homeserver.
-``verify_keys``      Object              Public keys of the homeserver for
-                                         verifying digital signatures.
-``signatures``       Object              Digital signatures for this object
-                                         signed using the ``verify_keys``.
-``tls_certificate``  String              The X.509 TLS certificate used by this
-                                         this server encoded as `Unpadded Base64`_.
-==================== =================== ======================================
-
-.. code:: json
-
-    {
-        "server_name": "example.org",
-        "signatures": {
-            "example.org": {
-                "ed25519:auto": "Base+64+Encoded+Signature"
-            }
-        },
-        "tls_certificate": "Base+64+Encoded+DER+Encoded+X509+TLS+Certificate",
-        "verify_keys": {
-            "ed25519:auto": "Base+64+Encoded+Signature+Verification+Key"
-        }
-    }
-
-When fetching the keys for a server the client should check that the TLS
-certificate in the JSON matches the TLS server certificate for the connection
-and should check that the JSON signatures are correct for the supplied
-``verify_keys``.
 
 Transactions
 ------------
@@ -687,8 +609,6 @@ All these URLs are name-spaced within a prefix of::
 {{events_ss_http_api}}
 
 
-{{joins_ss_http_api}}
-
 Joining Rooms
 -------------
 
@@ -740,94 +660,34 @@ homeservers, though most in practice will use just two.
   <---------- join response
 
 The first part of the handshake usually involves using the directory server to
-request the room ID and join candidates. This is covered in more detail on the
-directory server documentation, below. In the case of a new user joining a
-room as a result of a received invite, the joining user's homeserver could
-optimise this step away by picking the origin server of that invite message as
-the join candidate. However, the joining server should be aware that the origin
-server of the invite might since have left the room, so should be prepared to
-fall back on the regular join flow if this optimisation fails.
+request the room ID and join candidates through the |/query/directory|_
+API endpoint. In the case of a new user joining a room as a result of a received
+invite, the joining user's homeserver could optimise this step away by picking 
+the origin server of that invite message as the join candidate. However, the 
+joining server should be aware that the origin server of the invite might since
+have left the room, so should be prepared to fall back on the regular join flow 
+if this optimisation fails.
 
 Once the joining server has the room ID and the join candidates, it then needs
 to obtain enough information about the room to fill in the required fields of
 the ``m.room.member`` event. It obtains this by selecting a resident from the
-candidate list, and requesting the ``make_join`` endpoint using a ``GET``
-request, specifying the room ID and the user ID of the new member who is
-attempting to join.
+candidate list, and using the ``GET /make_join`` endpoint. The resident server
+will then reply with enough information for the joining server to fill in the
+event.
 
-The resident server replies to this request with a JSON-encoded object having a
-single key called ``event``; within this is an object whose fields contain some
-of the information that the joining server will need. Despite its name, this
-object is not a full event; notably it does not need to be hashed or signed by
-the resident homeserver. The required fields are:
-
-======================== ============ =========================================
- Key                      Type         Description
-======================== ============ =========================================
-``type``                 String       The value ``m.room.member``.
-``auth_events``          List         An event-reference list containing the
-                                      authorization events that would allow 
-                                      this member to join.
-``content``              Object       The event content.
-``depth``                Integer      (this field must be present but is 
-                                      ignored; it may be 0)
-``origin``               String       The name of the resident homeserver.
-``origin_server_ts``     Integer      A timestamp added by the resident
-                                      homeserver.
-``prev_events``          List         An event-reference list containing the
-                                      immediate predecessor events.
-``room_id``              String       The room ID of the room.
-``sender``               String       The user ID of the joining member.
-``state_key``            String       The user ID of the joining member.
-======================== ============ =========================================
-
-The ``content`` field itself must be an object, containing:
-
-======================== ============ =========================================
- Key                      Type         Description
-======================== ============ =========================================
-``membership``           String       The value ``join``.
-======================== ============ =========================================
-
-The joining server now has sufficient information to construct the real join
-event from these protoevent fields. It copies the values of most of them,
-adding (or replacing) the following fields:
-
-======================== ============ =========================================
- Key                      Type         Description
-======================== ============ =========================================
-``event_id``             String       A new event ID specified by the joining
-                                      homeserver.
-``origin``               String       The name of the joining homeserver.
-``origin_server_ts``     Integer      A timestamp added by the joining
-                                      homeserver.
-======================== ============ =========================================
-
-This will be a true event, so the joining server should apply the event-signing
-algorithm to it, resulting in the addition of the ``hashes`` and ``signatures``
-fields.
+The joining server is expected to add or replace the ``origin``, ``origin_server_ts``,
+and ``event_id`` on the templated event received by the resident server. This
+event is then signed by the joining server.
 
 To complete the join handshake, the joining server must now submit this new
-event to an resident homeserver, by using the ``send_join`` endpoint. This is
-invoked using the room ID and the event ID of the new member event.
+event to a resident homeserver, by using the ``PUT /send_join`` endpoint.
 
 The resident homeserver then accepts this event into the room's event graph,
 and responds to the joining server with the full set of state for the
-newly-joined room. This is returned as a two-element list, whose first element
-is the integer 200, and whose second element is an object which contains the
-following keys:
+newly-joined room. The resident server must also send the event to other servers
+participating in the room. 
 
-======================== ============ =========================================
- Key                      Type         Description
-======================== ============ =========================================
-``auth_chain``           List         A list of events giving all of the events
-                                      in the auth chains for the join event and
-                                      the events in ``state``.
-``state``                List         A complete list of the prevailing state
-                                      events at the instant just before
-                                      accepting the new ``m.room.member``
-                                      event.
-======================== ============ =========================================
+{{joins_ss_http_api}}
 
 .. TODO-spec
   - (paul) I don't really understand why the full auth_chain events are given
@@ -1285,6 +1145,9 @@ that are too long.
   ``hash`` and we might want to specify the maximum output size of a hash]]
   [[TODO(markjh) We might want to allow the server to omit the output of well
   known hash functions like SHA-256 when none of the keys have been redacted]]
+
+.. |/query/directory| replace:: ``/query/directory``
+.. _/query/directory: #get-matrix-federation-v1-query-directory
 
 .. _`Invitation storage`: ../identity_service/unstable.html#invitation-storage
 .. _`Identity Service API`: ../identity_service/unstable.html

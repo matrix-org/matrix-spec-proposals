@@ -13,6 +13,8 @@
 # limitations under the License.
 type: object
 description: Dictionary of supported third party protocols.
+additionalProperties:
+  $ref: protocol.yaml
 example: {
   "irc": {
     "user_fields": ["network", "nickname"],
