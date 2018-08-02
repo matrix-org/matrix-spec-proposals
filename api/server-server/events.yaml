@@ -27,7 +27,7 @@ paths:
     get:
       summary: Get all the state of a given room
       description: |-
-        Retrieves a snapshot of the entire current state of the given room.
+        Retrieves a snapshot of a room's state at a given event.
       operationId: getRoomState
       parameters:
         - in: path
@@ -36,11 +36,81 @@ paths:
           description: The room ID to get state for.
           required: true
           x-example: "!abc123:matrix.org"
+        - in: query
+          name: event_id
+          type: string
+          description: An event ID in the room to retrieve the state at.
+          required: true
+          x-example: "$helloworld:matrix.org"
       responses:
         200:
-          description: The room state for the room (kept under ``pdus``).
+          description: |-
+            The fully resolved state for the room, including the authorization
+            chain for the events.
           schema:
-            $ref: "definitions/transaction.yaml"
+            type: object
+            properties:
+              auth_chain:
+                type: list
+                description: |-
+                  The full set of authorization events that make up the state
+                  of the room, and their authorization events, recursively.
+                items:
+                  $ref: "definitions/pdu.yaml"
+                example: [{"$ref": "examples/pdu.json"}]
+              pdus:
+                type: list
+                description: |-
+                  The fully resolved state of the room at the given event.
+                items:
+                  $ref: "definitions/pdu.yaml"
+                example: [{"$ref": "examples/pdu.json"}]
+            required: ['auth_chain', 'pdus']
+  "/state_ids/{roomId}":
+    get:
+      summary: Get all the state event IDs of a given room
+      description: |-
+        Retrieves a snapshot of a room's state at a given event, in the form of
+        event IDs. This performs the same function as calling ``/state/{roomId}``,
+        however this returns just the event IDs rather than the full events.
+      operationId: getRoomStateIds
+      parameters:
+        - in: path
+          name: roomId
+          type: string
+          description: The room ID to get state for.
+          required: true
+          x-example: "!abc123:matrix.org"
+        - in: query
+          name: event_id
+          type: string
+          description: An event ID in the room to retrieve the state at.
+          required: true
+          x-example: "$helloworld:matrix.org"
+      responses:
+        200:
+          description: |-
+            The fully resolved state for the room, including the authorization
+            chain for the events.
+          schema:
+            type: object
+            properties:
+              auth_chain_ids:
+                type: list
+                description: |-
+                  The full set of authorization events that make up the state
+                  of the room, and their authorization events, recursively.
+                items:
+                  type: string
+                example: ["$an_event:domain.com"]
+              pdu_ids:
+                type: list
+                description: |-
+                  The fully resolved state of the room at the given event.
+                items:
+                  type: string
+                example: ["$an_event:domain.com"]
+            required: ['auth_chain_ids', 'pdu_ids']
   "/event/{eventId}":
     get:
       summary: Get a single event
