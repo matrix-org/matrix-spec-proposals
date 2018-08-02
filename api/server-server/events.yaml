@@ -51,7 +51,7 @@ paths:
             type: object
             properties:
               auth_chain:
-                type: list
+                type: array
                 description: |-
                   The full set of authorization events that make up the state
                   of the room, and their authorization events, recursively.
@@ -59,7 +59,7 @@ paths:
                   $ref: "definitions/pdu.yaml"
                 example: [{"$ref": "examples/pdu.json"}]
               pdus:
-                type: list
+                type: array
                 description: |-
                   The fully resolved state of the room at the given event.
                 items:
@@ -96,7 +96,7 @@ paths:
             type: object
             properties:
               auth_chain_ids:
-                type: list
+                type: array
                 description: |-
                   The full set of authorization events that make up the state
                   of the room, and their authorization events, recursively.
@@ -104,7 +104,7 @@ paths:
                   type: string
                 example: ["$an_event:domain.com"]
               pdu_ids:
-                type: list
+                type: array
                 description: |-
                   The fully resolved state of the room at the given event.
                 items:
