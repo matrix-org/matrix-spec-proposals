@@ -29,7 +29,6 @@ paths:
       description: |-
         Asks the receiving server to return information that the sending
         server will need to prepare a join event to get into the room.
-        This is part of the `Joining Rooms`_ handshake.
       operationId: makeJoin
       parameters:
         - in: path
@@ -95,7 +94,9 @@ paths:
                     type: array
                     description: |-
                       An event reference list containing the authorization events that would
-                      allow the member to join the room.
+                      allow the member to join the room. This should normally be the 
+                      ``m.room.create``, ``m.room.power_levels``, and ``m.room.join_rules``
+                      events.
                     items:
                       type: array
                       maxItems: 2
@@ -128,7 +129,12 @@ paths:
               "state_key": "@someone:example.org",
               "content": {
                   "membership": "join"
-              }
+              },
+              "auth_events": [
+                ["$room_cre4te_3vent:matrix.org", {"sha256": "abase64encodedsha256hashshouldbe43byteslong"}],
+                ["$room_j0in_rul3s_3vent:matrix.org", {"sha256": "abase64encodedsha256hashshouldbe43byteslong"}],
+                ["$room_p0wer_l3vels_3vent:matrix.org", {"sha256": "abase64encodedsha256hashshouldbe43byteslong"}]
+              ]
             }
   "/send_join/{roomId}/{eventId}":
     put:
@@ -250,27 +256,30 @@ paths:
                 title: Room State
                 description: The state for the room.
                 properties:
+                  origin:
+                    type: string
+                    description: The resident server's DNS name.
                   auth_chain:
                     type: array
                     description: The auth chain.
                     items:
                       type: object
-                      properties: {}
-                      # TODO: Verify schema
+                      schema:
+                        $ref: "definitions/pdu.yaml"
                   state:
                     type: array
                     description: The room state.
                     items:
                       type: object
-                      properties: {}
-                      # TODO: Verify schema
-                required: ["auth_chain", "state"]
+                      schema:
+                        $ref: "definitions/pdu.yaml"
+                required: ["auth_chain", "state", "origin"]
           examples:
             application/json: [
               200,
               {
-                # TODO: Use the appropriate refs (see TODOs in schema)
-                "auth_chain": [],
-                "state": []
+                "origin": "matrix.org",
+                "auth_chain": [{"$ref": "examples/pdu.json"}],
+                "state": [{"$ref": "examples/pdu.json"}]
               }
             ]
