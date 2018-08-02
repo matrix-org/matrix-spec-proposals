@@ -82,7 +82,9 @@ properties:
     example: 12
   auth_events:
     type: array
-    description: Event IDs and hashes for the "auth events" of this event.
+    description: |-
+      An event reference list containing the authorization events that would
+      allow this event to be in the room.
     items:
       type: array
       maxItems: 2
