@@ -759,7 +759,7 @@ and ``event_id`` on the templated event received by the resident server. This
 event is then signed by the joining server.
 
 To complete the join handshake, the joining server must now submit this new
-event to an resident homeserver, by using the ``PUT /send_join`` endpoint.
+event to a resident homeserver, by using the ``PUT /send_join`` endpoint.
 
 The resident homeserver then accepts this event into the room's event graph,
 and responds to the joining server with the full set of state for the
