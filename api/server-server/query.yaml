@@ -49,8 +49,7 @@ paths:
       description: |-
         Performs a query to get the mapped room ID and list of resident homeservers in
         the room for a given room alias. Homeservers should only query room aliases
-        that belong to the target server (idenfified by the DNS Name in the alias).
-        The target server may not appear in the resident servers list.
+        that belong to the target server (identified by the DNS Name in the alias).
 
         Servers may wish to cache the response to this query to avoid requesting the
         information too often.
@@ -91,17 +90,6 @@ paths:
                 "example.com",
                 "another.example.com:8449",
               ]
-            }
-        400:
-          description: |-
-            The room alias is not hosted on the server. This can happen if the directory
-            server is named "example.org" and the room alias ends with "matrix.org".
-          schema:
-            $ref: "../client-server/definitions/errors/error.yaml"
-          examples:
-            application/json: {
-              "errcode": "M_UNKNOWN",
-              "error": "Room alias not hosted on this homeserver."
             }
         404:
           description: The room alias was not found.
@@ -166,21 +154,6 @@ paths:
             application/json: {
               "displayname": "John Doe",
               "avatar_url": "mxc://matrix.org/MyC00lAvatar"
-            }
-        400:
-          description: |-
-            The request was missing parameters or had invalid values for the parameters. This
-            can happen for:
-
-            * The user not being hosted on the homeserver,
-            * Lack of a ``user_id`` in the request, or
-            * The ``field`` requested not being an allowed value.
-          schema:
-            $ref: "../client-server/definitions/errors/error.yaml"
-          examples:
-            application/json: {
-              "errcode": "M_INVALID_ARGUMENT_VALUE",
-              "error": "User is not hosted on this homeserver."
             }
         404:
           description: The user does not exist or does not have a profile.
