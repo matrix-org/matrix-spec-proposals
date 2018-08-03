@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO: Address any concerns about this being inaccurate (flagged as such in the EDUs section)
-
 type: object
 title: Ephemeral Data Unit
 description: An ephemeral data unit.
