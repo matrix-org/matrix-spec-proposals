@@ -168,6 +168,14 @@ also taken into account. This case can be handled if we also consider the
 difference in auth chains between the two sets, which in the previous example
 would include B.
 
+(This is also the root cause of the "Hotel California" issue, where left users
+get spontaneously rejoined to rooms. This happens when a user has a sequence of
+memberships changes of the form: leave (A), join (B) and then another leave (C).
+In the current algorithm a resoluton of A and C would pick A, and a resolution
+of A and B would then pick B, i.e. the join. This means that a suitably forked
+graph can reset the state to B. This is fixed if when resolving A and C we also
+consider B, since its in the auth chain of C.)
+
 
 ## Power Level Ordering
 
