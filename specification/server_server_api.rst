@@ -162,6 +162,97 @@ multiple servers to mitigate against DNS spoofing.
 
 {{keys_query_ss_http_api}}
 
+Authentication
+--------------
+
+Request Authentication
+~~~~~~~~~~~~~~~~~~~~~~
+
+Every HTTP request made by a homeserver is authenticated using public key
+digital signatures. The request method, target and body are signed by wrapping
+them in a JSON object and signing it using the JSON signing algorithm. The
+resulting signatures are added as an Authorization header with an auth scheme
+of ``X-Matrix``. Note that the target field should include the full path
+starting with ``/_matrix/...``, including the ``?`` and any query parameters if
+present, but should not include the leading ``https:``, nor the destination
+server's hostname.
+
+Step 1 sign JSON:
+
+.. code::
+
+    {
+        "method": "GET",
+        "uri": "/target",
+        "origin": "origin.hs.example.com",
+        "destination": "destination.hs.example.com",
+        "content": <request body>,
+        "signatures": {
+            "origin.hs.example.com": {
+                "ed25519:key1": "ABCDEF..."
+            }
+        }
+   }
+
+Step 2 add Authorization header:
+
+.. code::
+
+    GET /target HTTP/1.1
+    Authorization: X-Matrix origin=origin.example.com,key="ed25519:key1",sig="ABCDEF..."
+    Content-Type: application/json
+
+    <JSON-encoded request body>
+
+
+Example python code:
+
+.. code:: python
+
+    def authorization_headers(origin_name, origin_signing_key,
+                              destination_name, request_method, request_target,
+                              content=None):
+        request_json = {
+             "method": request_method,
+             "uri": request_target,
+             "origin": origin_name,
+             "destination": destination_name,
+        }
+
+        if content_json is not None:
+            request["content"] = content
+
+        signed_json = sign_json(request_json, origin_name, origin_signing_key)
+
+        authorization_headers = []
+
+        for key, sig in signed_json["signatures"][origin_name].items():
+            authorization_headers.append(bytes(
+                "X-Matrix origin=%s,key=\"%s\",sig=\"%s\"" % (
+                    origin_name, key, sig,
+                )
+            ))
+
+        return ("Authorization", authorization_headers)
+
+Response Authentication
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Responses are authenticated by the TLS server certificate. A homeserver should
+not send a request until it has authenticated the connected server to avoid
+leaking messages to eavesdroppers.
+
+Client TLS Certificates
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Requests are authenticated at the HTTP layer rather than at the TLS layer
+because HTTP services like Matrix are often deployed behind load balancers that
+handle the TLS and these load balancers make it difficult to check TLS client
+certificates.
+
+A homeserver may provide a TLS client certificate and the receiving homeserver
+may check that the client certificate matches the certificate of the origin
+homeserver.
 
 Transactions
 ------------
@@ -711,98 +802,6 @@ and the Matrix ID, and contains the invited user's Matrix ID and the token
 delivered when the invite was stored, this verification will prove that the
 ``m.room.member`` invite event comes from the user owning the invited third-party
 identifier.
-
-Authentication
---------------
-
-Request Authentication
-~~~~~~~~~~~~~~~~~~~~~~
-
-Every HTTP request made by a homeserver is authenticated using public key
-digital signatures. The request method, target and body are signed by wrapping
-them in a JSON object and signing it using the JSON signing algorithm. The
-resulting signatures are added as an Authorization header with an auth scheme
-of ``X-Matrix``. Note that the target field should include the full path
-starting with ``/_matrix/...``, including the ``?`` and any query parameters if
-present, but should not include the leading ``https:``, nor the destination
-server's hostname.
-
-Step 1 sign JSON:
-
-.. code::
-
-    {
-        "method": "GET",
-        "uri": "/target",
-        "origin": "origin.hs.example.com",
-        "destination": "destination.hs.example.com",
-        "content": <request body>,
-        "signatures": {
-            "origin.hs.example.com": {
-                "ed25519:key1": "ABCDEF..."
-            }
-        }
-   }
-
-Step 2 add Authorization header:
-
-.. code::
-
-    GET /target HTTP/1.1
-    Authorization: X-Matrix origin=origin.example.com,key="ed25519:key1",sig="ABCDEF..."
-    Content-Type: application/json
-
-    <JSON-encoded request body>
-
-
-Example python code:
-
-.. code:: python
-
-    def authorization_headers(origin_name, origin_signing_key,
-                              destination_name, request_method, request_target,
-                              content=None):
-        request_json = {
-             "method": request_method,
-             "uri": request_target,
-             "origin": origin_name,
-             "destination": destination_name,
-        }
-
-        if content_json is not None:
-            request["content"] = content
-
-        signed_json = sign_json(request_json, origin_name, origin_signing_key)
-
-        authorization_headers = []
-
-        for key, sig in signed_json["signatures"][origin_name].items():
-            authorization_headers.append(bytes(
-                "X-Matrix origin=%s,key=\"%s\",sig=\"%s\"" % (
-                    origin_name, key, sig,
-                )
-            ))
-
-        return ("Authorization", authorization_headers)
-
-Response Authentication
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Responses are authenticated by the TLS server certificate. A homeserver should
-not send a request until it has authenticated the connected server to avoid
-leaking messages to eavesdroppers.
-
-Client TLS Certificates
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Requests are authenticated at the HTTP layer rather than at the TLS layer
-because HTTP services like Matrix are often deployed behind load balancers that
-handle the TLS and these load balancers make it difficult to check TLS client
-certificates.
-
-A homeserver may provide a TLS client certificate and the receiving homeserver
-may check that the client certificate matches the certificate of the origin
-homeserver.
 
 Public Room Directory
 ---------------------
