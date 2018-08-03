@@ -52,7 +52,7 @@ paths:
         that belong to the target server (idenfified by the DNS Name in the alias).
         The target server may not appear in the resident servers list.
 
-        Servers may wish to cache the response to this query to prevent requesting the
+        Servers may wish to cache the response to this query to avoid requesting the
         information too often.
       operationId: queryRoomDirectory
       parameters:
@@ -76,7 +76,7 @@ paths:
               servers:
                 type: array
                 description: |-
-                  An array of server names that are likely to hold then given room. This 
+                  An array of server names that are likely to hold the given room. This 
                   list may or may not include the server answering the query.
                 items:
                   type: string
@@ -120,7 +120,7 @@ paths:
         for a given user. Homeservers should only query profiles for users that belong
         to the target server (identified by the DNS Name in the user ID).
 
-        Servers may wish to cache the response to this query to prevent requesting the
+        Servers may wish to cache the response to this query to avoid requesting the
         information too often.
       parameters:
         - in: query

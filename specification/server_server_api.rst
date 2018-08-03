@@ -968,7 +968,7 @@ Rejecting a presence invite::
 Querying for information
 ------------------------
 
-Queries are a way to retrieve information from a homeserver abotu a resource,
+Queries are a way to retrieve information from a homeserver about a resource,
 such as a user or room. The endpoints here are often called in conjunction with
 a request from a client on the client-server API in order to complete the call.
 
