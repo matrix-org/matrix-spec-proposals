@@ -681,6 +681,7 @@ class MatrixUnits(Units):
                     try:
                         example = get_example_for_schema(definition)
                     except:
+                        example = None
                         pass  # do nothing - we don't care
                     if 'title' not in definition:
                         definition['title'] = "NO_TITLE"
