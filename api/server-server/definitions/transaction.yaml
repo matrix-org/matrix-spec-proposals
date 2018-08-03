@@ -25,8 +25,10 @@ properties:
   origin_server_ts:
     type: integer
     format: int64
-    description: Timestamp in milliseconds on originating homeserver when this transaction started.
-    example: 1234567890
+    description: |-
+      POSIX timestamp in milliseconds on originating homeserver when this 
+      transaction started.
+    example: 1532991320875
   pdus:
     type: array
     description: List of persistent updates to rooms.
