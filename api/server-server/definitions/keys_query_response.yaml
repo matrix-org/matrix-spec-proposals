@@ -15,13 +15,13 @@ type: object
 description: Server keys
 example: {
   "server_keys": [{
-    $ref: "../examples/server_key.json"
+    $ref: "../examples/server_key_notary_signed.json"
   }]
 }
 properties:
   server_keys:
     type: array
     title: Server Keys
-    description: The server keys.
+    description: The queried server's keys, signed by the notary server.
     items:
       $ref: "keys.yaml"
