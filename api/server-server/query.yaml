@@ -23,6 +23,8 @@ schemes:
 basePath: /_matrix/federation/v1
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/query/{queryType}":
     get:
@@ -32,6 +34,8 @@ paths:
         arguments are dependent on which type of query is being made. Known query types
         are specified as their own endpoints as an extension to this definition.
       operationId: queryInfo
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: queryType
@@ -54,6 +58,8 @@ paths:
         Servers may wish to cache the response to this query to avoid requesting the
         information too often.
       operationId: queryRoomDirectory
+      security:
+        - signedRequest: []
       parameters:
         - in: query
           name: room_alias
@@ -110,6 +116,9 @@ paths:
 
         Servers may wish to cache the response to this query to avoid requesting the
         information too often.
+      operationId: queryProfile
+      security:
+        - signedRequest: []
       parameters:
         - in: query
           name: user_id

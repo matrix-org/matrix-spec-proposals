@@ -24,6 +24,8 @@ consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/event_auth/{roomId}/{eventId}":
     get:
@@ -31,6 +33,8 @@ paths:
       description: |-
         Retrieves the complete auth chain for a given event.
       operationId: getEventAuth
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: roomId
@@ -72,6 +76,8 @@ paths:
         bottom-up after sorting each chain by depth then by event ID. The differences
         are then discovered and returned as the response to this API call.
       operationId: compareEventAuth
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: roomId
