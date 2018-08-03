@@ -569,9 +569,6 @@ All these URLs are name-spaced within a prefix of::
 
   /_matrix/federation/v1/...
 
-
-{{events_ss_http_api}}
-
 {{query_general_ss_http_api}}
 
 Joining Rooms
@@ -698,6 +695,16 @@ that requested by the requester in the ``v`` parameter).
 .. TODO-spec
   Specify (or remark that it is unspecified) how the server handles divergent
   history. DFS? BFS? Anything weirder?
+
+Retriving events
+----------------
+
+In some circumstances, a homeserver may be missing a particular event or information
+about the room which cannot be easily determined from backfilling. These APIs provide
+homeservers with the option of getting events and the state of the room at a given
+point in the timeline.
+
+{{events_ss_http_api}}
 
 Inviting to a room
 ------------------
