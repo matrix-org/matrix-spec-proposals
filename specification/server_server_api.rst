@@ -893,6 +893,16 @@ A homeserver may provide a TLS client certificate and the receiving homeserver
 may check that the client certificate matches the certificate of the origin
 homeserver.
 
+Public Room Directory
+---------------------
+
+To compliment the `Client-Server API`_'s room directory, homeservers need a
+way to query the public rooms for another server. This can be done by making
+a request to the ``/publicRooms`` endpoint for the server the room directory
+should be retrieved for.
+
+{{public_rooms_ss_http_api}}
+
 
 Presence
 --------
