@@ -25,7 +25,7 @@ produces:
 paths:
   "/make_leave/{roomId}/{userId}":
     get:
-      summary: Get information required to make a join event for a room
+      summary: Get information required to make a leave event for a room
       description: |-
         Asks the receiving server to return information that the sending
         server will need to prepare a leave event to get out of the room.
