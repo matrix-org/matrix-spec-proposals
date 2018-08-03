@@ -257,7 +257,10 @@ First we define:
     2.  x's origin_server_ts is less than y's, or if
     3.  x's event_id is lexicographically less than y's
 
-    This is also known as a lexicographical topological sort.
+    This is also known as a lexicographical topological sort (i.e. this is the
+    unique topological ordering such that for an entry x all entries after it
+    must either have x in their auth chain or be greater than x as defined
+    above). This can be implemented using Kahn's algorithm.
 
 *   The **"mainline ordering"** based on a power level event P of a set of
     events is calculated as follows:
