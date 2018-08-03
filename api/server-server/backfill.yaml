@@ -27,7 +27,7 @@ paths:
     get:
       summary: Retrieves the events which precede the given event
       description: |-
-        Retreives a sliding-window history of previous PDUs that occurred in the given room.
+        Retrieves a sliding-window history of previous PDUs that occurred in the given room.
         Starting from the PDU ID(s) given in the ``v`` argument, the PDUs that preceded it
         are retrieved, up to the total number given by the ``limit``.
       operationId: backfillRoom
@@ -73,5 +73,69 @@ paths:
                   "$ref": "pdu.json",
                   "room_id": "!SomeRoom:matrix.org"
                 },
+              ]
+            }
+  "/get_missing_events/{roomId}":
+    post:
+      summary: Retrieves events that the sender is missing
+      description: |-
+        Retrieves the previous events that the sender is missing for a given set of
+        events.
+      operationId: getMissingPreviousEvents
+      parameters:
+        - in: path
+          name: roomId
+          type: string
+          description: The room ID to search in.
+          required: true
+          x-example: "!SomeRoom:matrix.org"
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              limit:
+                type: integer
+                description: The maximum number of events to retrieve. Defaults to 10.
+                example: 10
+              min_depth:
+                type: integer
+                description: The minimum depth of events to retrieve. Defaults to 0.
+                example: 0
+              earliest_events:
+                type: array
+                description: |-
+                  The events the sender is missing. The response will only contain events
+                  that didn't happen before these events.
+                items:
+                  type: string
+                example: ["$missing_event:domain.com"]
+              latest_events:
+                type: array
+                description: |-
+                  The events that the sender has, but does not have previous events for.
+                items:
+                  type: string
+                example: ["$event_that_has_the_missing_event_as_a_previous_event:domain.com"]
+            required: ['earliest_events', 'latest_events']
+      responses:
+        200:
+          description: |-
+            The events that happened after the ``earliest_events`` which are also previous
+            to the ``latest_events`` and have the minimum depth specified. Does not include
+            any of the events in the request.
+          schema:
+            type: object
+            properties:
+              events:
+                type: array
+                description: The missing events.
+                items:
+                  $ref: definitions/pdu.yaml
+            required: ['events']
+          examples:
+            application/json: {
+              "events": [
+                {"$ref": "examples/pdu.json"}
               ]
             }

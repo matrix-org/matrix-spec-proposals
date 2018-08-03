@@ -836,8 +836,8 @@ following keys:
     here. What purpose does it serve expanding them out in full, when surely
     they'll appear in the state anyway?
 
-Backfilling
------------
+Backfilling and retrieving missing events
+-----------------------------------------
 
 Once a homeserver has joined a room, it receives all the events emitted by
 other homeservers in that room, and is thus aware of the entire history of the
@@ -854,6 +854,10 @@ To request more history, the requesting homeserver picks another homeserver
 that it thinks may have more (most likely this should be a homeserver for 
 some of the existing users in the room at the earliest point in history it 
 has currently), and makes a ``/backfill`` request.
+
+Similar to backfilling a room's history, a server may not have all the events
+in the graph. That server may use the ``/get_missing_events`` API to acquire
+the events it is missing.
 
 .. TODO-spec
   Specify (or remark that it is unspecified) how the server handles divergent
