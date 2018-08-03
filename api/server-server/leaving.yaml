@@ -14,7 +14,7 @@
 
 swagger: '2.0'
 info:
-  title: "Matrix Federation Join Room API"
+  title: "Matrix Federation Leave Room API"
   version: "1.0.0"
 host: localhost:8448
 schemes:
@@ -23,31 +23,31 @@ basePath: /_matrix/federation/v1
 produces:
   - application/json
 paths:
-  "/make_join/{roomId}/{userId}":
+  "/make_leave/{roomId}/{userId}":
     get:
-      summary: Get information required to make a join event for a room
+      summary: Get information required to make a leave event for a room
       description: |-
         Asks the receiving server to return information that the sending
-        server will need to prepare a join event to get into the room.
-      operationId: makeJoin
+        server will need to prepare a leave event to get out of the room.
+      operationId: makeLeave
       parameters:
         - in: path
           name: roomId
           type: string
-          description: The room ID that is about to be joined.
+          description: The room ID that is about to be left.
           required: true
           x-example: "!abc123:matrix.org"
         - in: path
           name: userId
           type: string
-          description: The user ID the join event will be for.
+          description: The user ID the leave event will be for.
           required: true
           x-example: "@someone:example.org"
       responses:
         200:
           description: |-
-            An unsigned event that the server may now use as a template
-            for the rest of the `Joining Rooms`_ handshake.
+            An unsigned event that the sending server may use as a template
+            for when it calls ``/send_leave``.
           schema:
             allOf:
               - $ref: "definitions/unsigned_pdu.yaml"
@@ -56,7 +56,7 @@ paths:
                   # Note: we override a bunch of parameters to change their descriptions
                   sender:
                     type: string
-                    description: The user ID of the joining member.
+                    description: The user ID of the leaving member.
                     example: "@someone:example.org"
                   origin:
                     type: string
@@ -73,28 +73,24 @@ paths:
                     example: "m.room.member"
                   state_key:
                     type: string
-                    description: The user ID of the joining member.
+                    description: The user ID of the leaving member.
                     example: "@someone:example.org"
                   content:
                     type: object
                     title: Membership Event Content
                     description: The content of the event.
-                    example: {"membership": "join"}
+                    example: {"membership": "leave"}
                     properties:
                       membership:
                         type: string
-                        description: The value ``join``.
-                        example: "join"
+                        description: The value ``leave``.
+                        example: "leave"
                     required: ['membership']
-                  depth:
-                    type: integer
-                    description: This field must be present but is ignored; it may be 0.
-                    example: 12
                   auth_events:
                     type: array
                     description: |-
                       An event reference list containing the authorization events that would
-                      allow the member to join the room. This should normally be the 
+                      allow the member to leave the room. This should normally be the 
                       ``m.room.create``, ``m.room.power_levels``, and ``m.room.join_rules``
                       events.
                     items:
@@ -128,7 +124,7 @@ paths:
               "type": "m.room.member",
               "state_key": "@someone:example.org",
               "content": {
-                  "membership": "join"
+                  "membership": "leave"
               },
               "auth_events": [
                 ["$room_cre4te_3vent:matrix.org", {"sha256": "abase64encodedsha256hashshouldbe43byteslong"}],
@@ -136,24 +132,34 @@ paths:
                 ["$room_p0wer_l3vels_3vent:matrix.org", {"sha256": "abase64encodedsha256hashshouldbe43byteslong"}]
               ]
             }
-  "/send_join/{roomId}/{eventId}":
+        403:
+          description: |-
+            The request is not authorized. This could mean that the user is not in the room.
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_FORBIDDEN",
+              "error": "User is not in the room."
+            }
+  "/send_leave/{roomId}/{eventId}":
     put:
-      summary: Submit a signed join event to a resident server
+      summary: Submit a signed leave event to a resident server
       description: |-
-        Submits a signed join event to the resident server for it
+        Submits a signed leave event to the resident server for it
         to accept it into the room's graph.
-      operationId: sendJoin
+      operationId: sendLeave
       parameters:
         - in: path
           name: roomId
           type: string
-          description: The room ID that is about to be joined.
+          description: The room ID that is about to be left.
           required: true
           x-example: "!abc123:matrix.org"
         - in: path
           name: eventId
           type: string
-          description: The event ID for the join event.
+          description: The event ID for the leave event.
           required: true
           x-example: "$abc123:example.org"
         - in: body
@@ -168,16 +174,16 @@ paths:
                   # Note: we override a bunch of parameters to change their descriptions
                   sender:
                     type: string
-                    description: The user ID of the joining member.
+                    description: The user ID of the leaving member.
                     example: "@someone:example.org"
                   origin:
                     type: string
-                    description: The name of the joining homeserver.
+                    description: The name of the leaving homeserver.
                     example: "matrix.org"    
                   origin_server_ts:
                     type: integer
                     format: int64
-                    description: A timestamp added by the joining homeserver.
+                    description: A timestamp added by the leaving homeserver.
                     example: 1234567890
                   type:
                     type: string
@@ -185,18 +191,18 @@ paths:
                     example: "m.room.member"
                   state_key:
                     type: string
-                    description: The user ID of the joining member.
+                    description: The user ID of the leaving member.
                     example: "@someone:example.org"
                   content:
                     type: object
                     title: Membership Event Content
                     description: The content of the event.
-                    example: {"membership": "join"}
+                    example: {"membership": "leave"}
                     properties:
                       membership:
                         type: string
-                        description: The value ``join``.
-                        example: "join"
+                        description: The value ``leave``.
+                        example: "leave"
                     required: ['membership']
                   depth:
                     type: integer
@@ -206,7 +212,7 @@ paths:
                     type: array
                     description: |-
                       An event reference list containing the authorization events that would
-                      allow the member to join the room.
+                      allow the member to leave the room.
                     items:
                       type: array
                       maxItems: 2
@@ -237,13 +243,14 @@ paths:
             "type": "m.room.member",
             "state_key": "@someone:example.org",
             "content": {
-                "membership": "join"
+                "membership": "leave"
             }
           }
       responses:
         200:
           description: |-
-            The full state for the room, having accepted the join event.
+            An empty response to indicate the event was accepted into the graph by
+            the receiving homeserver.
           schema:
             type: array
             minItems: 2
@@ -253,33 +260,7 @@ paths:
                 description: The value ``200``.
                 example: 200
               - type: object
-                title: Room State
-                description: The state for the room.
-                properties:
-                  origin:
-                    type: string
-                    description: The resident server's DNS name.
-                  auth_chain:
-                    type: array
-                    description: The auth chain.
-                    items:
-                      type: object
-                      schema:
-                        $ref: "definitions/pdu.yaml"
-                  state:
-                    type: array
-                    description: The room state.
-                    items:
-                      type: object
-                      schema:
-                        $ref: "definitions/pdu.yaml"
-                required: ["auth_chain", "state", "origin"]
+                title: Empty Object
+                description: An empty object.
           examples:
-            application/json: [
-              200,
-              {
-                "origin": "matrix.org",
-                "auth_chain": [{"$ref": "examples/pdu.json"}],
-                "state": [{"$ref": "examples/pdu.json"}]
-              }
-            ]
+            application/json: [200, {}]
