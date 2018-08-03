@@ -20,6 +20,8 @@ host: localhost:8448
 schemes:
   - https
 basePath: /_matrix/federation/v1
+consumes: 
+  - application/json
 produces:
   - application/json
 paths:
