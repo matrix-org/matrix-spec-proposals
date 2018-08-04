@@ -46,8 +46,8 @@ HTTP_APIS = {
 SWAGGER_DEFINITIONS = {
     os.path.join(matrix_doc_dir, "api/application-service/definitions"): "as",
     os.path.join(matrix_doc_dir, "api/client-server/definitions"): "cs",
-    #os.path.join(matrix_doc_dir, "api/identity/definitions"): "is",
-    #os.path.join(matrix_doc_dir, "api/push-gateway/definitions"): "push",
+    os.path.join(matrix_doc_dir, "api/identity/definitions"): "is",
+    os.path.join(matrix_doc_dir, "api/push-gateway/definitions"): "push",
     os.path.join(matrix_doc_dir, "api/server-server/definitions"): "ss",
 }
 EVENT_EXAMPLES = os.path.join(matrix_doc_dir, "event-schemas/examples")
@@ -665,33 +665,45 @@ class MatrixUnits(Units):
     def load_swagger_definitions(self):
         defs = {}
         for path, prefix in SWAGGER_DEFINITIONS.items():
-            for filename in os.listdir(path):
-                if not filename.endswith(".yaml"):
-                    continue
-                filepath = os.path.join(path, filename)
-                logger.info("Reading swagger definition: %s" % filepath)
-                with open(filepath, "r") as f:
-                    # strip .yaml
-                    group_name = filename[:-5].replace("-", "_")
-                    group_name = "%s_%s" % (prefix, group_name)
-                    definition = yaml.load(f.read(), OrderedLoader)
-                    definition = resolve_references(filepath, definition)
-                    if 'type' not in definition:
-                        continue
-                    try:
-                        example = get_example_for_schema(definition)
-                    except:
-                        example = None
-                        pass  # do nothing - we don't care
-                    if 'title' not in definition:
-                        definition['title'] = "NO_TITLE"
-                    definition['tables'] = get_tables_for_schema(definition)
-                    defs[group_name] = {
-                        "definition": definition,
-                        "examples": [example] if example is not None else [],
-                    }
+            self._load_swagger_definitions_in_dir(defs, path, prefix)
         return defs
 
+    def _load_swagger_definitions_in_dir(self, defs, path, prefix, recurse=True):
+        if not os.path.exists(path):
+            return defs
+        for filename in os.listdir(path):
+            filepath = os.path.join(path, filename)
+            if os.path.isdir(filepath) and recurse:
+                safe_name = re.sub(r"[^a-zA-Z0-9_]", "_", filename)
+                dir_prefix = "_".join([prefix, safe_name])
+                # We don't recurse because we have to stop at some point
+                self._load_swagger_definitions_in_dir(
+                    defs, filepath, dir_prefix, recurse=False)
+            if not filename.endswith(".yaml"):
+                continue
+            filepath = os.path.join(path, filename)
+            logger.info("Reading swagger definition: %s" % filepath)
+            with open(filepath, "r") as f:
+                # strip .yaml
+                group_name = re.sub(r"[^a-zA-Z0-9_]", "_", filename[:-5])
+                group_name = "%s_%s" % (prefix, group_name)
+                definition = yaml.load(f.read(), OrderedLoader)
+                definition = resolve_references(filepath, definition)
+                if 'type' not in definition:
+                    continue
+                try:
+                    example = get_example_for_schema(definition)
+                except:
+                    example = None
+                    pass  # do nothing - we don't care
+                if 'title' not in definition:
+                    definition['title'] = "NO_TITLE"
+                definition['tables'] = get_tables_for_schema(definition)
+                defs[group_name] = {
+                    "definition": definition,
+                    "examples": [example] if example is not None else [],
+                }
+        return defs
 
     def load_common_event_fields(self):
         """Parse the core event schema files
