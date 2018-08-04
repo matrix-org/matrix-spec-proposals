@@ -1,0 +1,8 @@
+{
+    "edu_type": "m.presence",
+    "origin": "blue",
+    "destination": "orange",
+    "content": {
+        "key": "value"
+    }
+}

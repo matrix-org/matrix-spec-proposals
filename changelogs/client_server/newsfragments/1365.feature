@@ -1,0 +1,1 @@
+Document the CORS/preflight headers

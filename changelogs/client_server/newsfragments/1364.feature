@@ -1,0 +1,1 @@
+Document the ``server_name`` parameter on ``/join/{roomIdOrAlias}``

@@ -110,10 +110,12 @@ paths:
           examples:
             application/json: {
               "errcode": "M_FORBIDDEN", "error": "You are not invited to this room."}
+          schema:
+            "$ref": "definitions/errors/error.yaml"
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Room membership
   "/join/{roomIdOrAlias}":
@@ -143,6 +145,15 @@ paths:
           description: The room identifier or alias to join.
           required: true
           x-example: "#monkeys:matrix.org"
+        - in: query
+          type: array
+          items:
+            type: string
+          name: server_name
+          description: |-
+            The servers to attempt to join the room through. One of the servers
+            must be participating in the room.
+          x-example: ["matrix.org", "elsewhere.ca"]
         - in: body
           name: third_party_signed
           schema:
@@ -206,9 +217,11 @@ paths:
           examples:
             application/json: {
               "errcode": "M_FORBIDDEN", "error": "You are not invited to this room."}
+          schema:
+            "$ref": "definitions/errors/error.yaml"
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Room membership

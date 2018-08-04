@@ -1,0 +1,123 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+type: object
+title: Unsigned Persistent Data Unit
+description: An unsigned persistent data unit (event)
+example:
+  $ref: "../examples/unsigned_pdu.json"
+properties:
+  event_id:
+    type: string
+    description: The event ID for the PDU.
+    example: "$a4ecee13e2accdadf56c1025:example.com"
+  room_id:
+    type: string
+    description: Room identifier.
+    example: "!abc123:matrix.org"
+  sender:
+    type: string
+    description: The ID of the user sending the event.
+    example: "@someone:matrix.org"
+  origin:
+    type: string
+    description: The ``server_name`` of the homeserver that created this event.
+    example: "matrix.org"    
+  origin_server_ts:
+    type: integer
+    format: int64
+    description: Timestamp in milliseconds on origin homeserver when this event was created.
+    example: 1234567890
+  type:
+    type: string
+    description: Event type
+    example: "m.room.message"
+  state_key:
+    type: string
+    description: |-
+      If this key is present, the event is a state event, and it will replace previous events
+      with the same ``type`` and ``state_key`` in the room state.
+    example: "my_key"
+  content:
+    type: object
+    description: The content of the event.
+    example: {"key": "value"}
+  prev_events:
+    type: array
+    description: |-
+      Event IDs and hashes of the most recent events in the room that the homeserver was aware
+      of when it made this event.
+    items:
+      type: array
+      maxItems: 2
+      minItems: 2
+      items:
+        - type: string
+          title: Event ID
+          example: "$abc123:matrix.org"
+        - type: object
+          title: Event Hash
+          example: {
+            "sha256": "abase64encodedsha256hashshouldbe43byteslong"
+          }
+          properties:
+            sha256:
+              type: string
+              description: The event hash.
+              example: abase64encodedsha256hashshouldbe43byteslong
+          required: ['sha256']
+  depth:
+    type: integer
+    description: The maximum depth of the ``prev_events``, plus one.
+    example: 12
+  auth_events:
+    type: array
+    description: Event IDs and hashes for the "auth events" of this event.
+    items:
+      type: array
+      maxItems: 2
+      minItems: 2
+      items:
+        - type: string
+          title: Event ID
+          example: "$abc123:matrix.org"
+        - type: object
+          title: Event Hash
+          example: {
+            "sha256": "abase64encodedsha256hashshouldbe43byteslong"
+          }
+          properties:
+            sha256:
+              type: string
+              description: The event hash.
+              example: abase64encodedsha256hashshouldbe43byteslong
+          required: ['sha256']
+  redacts:
+    type: string
+    description: For redaction events, the ID of the event being redacted.
+    example: "$def456:matrix.org"
+  unsigned:
+    type: object
+    description: Additional data added by the origin server but not covered by the ``signatures``.
+    example: {"key": "value"}
+required:
+  - event_id
+  - room_id
+  - sender
+  - origin
+  - origin_server_ts
+  - type
+  - content
+  - prev_events
+  - depth
+  - auth_events

@@ -1,0 +1,88 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Federation Invite User To Room API"
+  version: "1.0.0"
+host: localhost:8448
+schemes:
+  - https
+basePath: /_matrix/federation/v1
+produces:
+  - application/json
+paths:
+  "/invite/{roomId}/{eventId}":
+    put:
+      summary: Invites a user to a room
+      description: |-
+        Invites a remote user to a room. Once the event has been 
+        signed by both the inviting homeserver and the invited 
+        homeserver, it can be sent to all of the users in the room.
+      operationId: sendInvite
+      parameters:
+        - in: path
+          name: roomId
+          type: string
+          description: The room ID that the user is being invited to.
+          required: true
+          x-example: "!abc123:matrix.org"
+        - in: path
+          name: eventId
+          type: string
+          description: The event ID for the invite event.
+          required: true
+          x-example: "$abc123:example.org"
+        - in: body
+          name: body
+          type: object
+          required: true
+          schema:
+            $ref: "definitions/invite_event.yaml"
+          example: {
+            "$ref": "examples/pdu.json",
+            "type": "m.room.member",
+            "state_key": "@someone:example.org",
+            "content": {
+                "membership": "invite"
+            },
+            "unsigned": {}
+          }
+      responses:
+        200:
+          description: |-
+            The event with the invited server's signature added. All other fields of the events
+            should remain untouched.
+          schema:
+            type: array
+            minItems: 2
+            maxItems: 2
+            items:
+              - type: integer
+                description: The value ``200``.
+                example: 200
+              - $ref: "definitions/invite_event.yaml"
+          examples:
+            application/json: [
+              200,
+              {
+                "$ref": "examples/pdu.json",
+                "type": "m.room.member",
+                "state_key": "@someone:example.org",
+                "content": {
+                    "membership": "invite"
+                },
+                "unsigned": {}
+              }
+            ]
