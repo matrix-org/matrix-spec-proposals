@@ -1,0 +1,190 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Federation Third Party Invites API"
+  version: "1.0.0"
+host: localhost:8448
+schemes:
+  - https
+basePath: /_matrix/federation/v1
+produces:
+  - application/json
+paths:
+  "/exchange_third_party_invite/{roomId}":
+    put:
+      summary: Request a server to auth a third party invite event
+      description: |-
+        The receiving server will verify the partial ``m.room.member`` event
+        given in the request body. If valid, the receiving server will issue
+        an invite as per the `Inviting to a room`_ section before returning a
+        response to this request.
+      operationId: exchangeThirdPartyInvite
+      parameters:
+        - in: path
+          name: roomId
+          type: string
+          description: The room ID to exchange a third party invite in
+          required: true
+          x-example: "!abc123:matrix.org"
+        - in: body
+          name: body
+          type: object
+          description: A partial ``m.room.member`` event
+          required: true
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                description: The event type. Must be ``m.room.member``
+                example: "m.room.member"
+              room_id:
+                type: string
+                description: |-
+                  The room ID the event is for. Must match the ID given in
+                  the path.
+                example: "!abc123:matrix.org"
+              sender:
+                type: string
+                description: |-
+                  The user ID of the user who sent the original ``m.room.third_party_invite``
+                  event.
+                example: "@joe:matrix.org"
+              state_key:
+                type: string
+                description: The user ID of the invited user
+                example: "@someone:example.org"
+              content:
+                type: object
+                description: The event content
+                title: Event Content
+                properties:
+                  membership:
+                    type: string
+                    description: The membership state. Must be ``invite``
+                    example: invite
+                  third_party_invite:
+                    type: object
+                    description: The third party invite
+                    properties:
+                      display_name:
+                        type: string
+                        description: |-
+                          A name which can be displayed to represent the user instead of their
+                          third party identifier.
+                        example: "alice"
+                      signed:
+                        type: object
+                        description: |-
+                          A block of content which has been signed, which servers can use to
+                          verify the event.
+                        properties:
+                          signatures:
+                            type: object
+                            description: The server signatures for this event.
+                            additionalProperties:
+                              type: object
+                              title: Server Signatures
+                              additionalProperties:
+                                type: string
+                            example: {
+                              "magic.forest": {
+                                "ed25519:3": "fQpGIW1Snz+pwLZu6sTy2aHy/DYWWTspTJRPyNp0PKkymfIsNffysMl6ObMMFdIJhk6g6pwlIqZ54rxo8SLmAg"
+                              }
+                            }
+                          mxid:
+                            type: string
+                            description: The invited matrix user ID
+                            example: "@alice:localhost"
+                          token:
+                            type: string
+                            description: The token used to verify the event
+                            example: abc123
+                        required: ['signatures', 'mxid', 'token']
+                        example: {
+                          "mxid": "@alice:localhost",
+                          "token": "abc123",
+                          "signatures": {
+                            "magic.forest": {
+                              "ed25519:3": "fQpGIW1Snz+pwLZu6sTy2aHy/DYWWTspTJRPyNp0PKkymfIsNffysMl6ObMMFdIJhk6g6pwlIqZ54rxo8SLmAg"
+                            }
+                          }
+                        }
+                    required: ['display_name', 'signed']
+                    example: {
+                      "display_name": "alice",
+                      "signed": {
+                        "mxid": "@alice:localhost",
+                        "token": "abc123",
+                        "signatures": {
+                          "magic.forest": {
+                            "ed25519:3": "fQpGIW1Snz+pwLZu6sTy2aHy/DYWWTspTJRPyNp0PKkymfIsNffysMl6ObMMFdIJhk6g6pwlIqZ54rxo8SLmAg"
+                          }
+                        }
+                      }
+                    }
+                required: ['membership', 'third_party_invite']
+                example: {
+                  "membership": "invite",
+                  "third_party_invite": {
+                    "display_name": "alice",
+                    "signed": {
+                      "mxid": "@alice:localhost",
+                      "token": "abc123",
+                      "signatures": {
+                        "magic.forest": {
+                          "ed25519:3": "fQpGIW1Snz+pwLZu6sTy2aHy/DYWWTspTJRPyNp0PKkymfIsNffysMl6ObMMFdIJhk6g6pwlIqZ54rxo8SLmAg"
+                        }
+                      }
+                    }
+                  }
+                }
+            required:
+              - type
+              - room_id
+              - sender
+              - state_key
+              - content
+          example: {
+            "type": "m.room.member",
+            "room_id": "!abc123:matrix.org",
+            "sender": "@joe:matrix.org",
+            "state_key": "@someone:example.org",
+            "content": {
+              "membership": "invite",
+              "third_party_invite": {
+                "display_name": "alice",
+                "signed": {
+                  "mxid": "@alice:localhost",
+                  "token": "abc123",
+                  "signatures": {
+                    "magic.forest": {
+                      "ed25519:3": "fQpGIW1Snz+pwLZu6sTy2aHy/DYWWTspTJRPyNp0PKkymfIsNffysMl6ObMMFdIJhk6g6pwlIqZ54rxo8SLmAg"
+                    }
+                  }
+                }
+              }
+            }
+          }
+      responses:
+        200:
+          description: The invite has been issued successfully.
+          examples:
+            application/json: {}
+          schema:
+            type: object
+            description: An empty object
+            example: {}
