@@ -49,6 +49,7 @@ SWAGGER_DEFINITIONS = {
     os.path.join(matrix_doc_dir, "api/identity/definitions"): "is",
     os.path.join(matrix_doc_dir, "api/push-gateway/definitions"): "push",
     os.path.join(matrix_doc_dir, "api/server-server/definitions"): "ss",
+    os.path.join(matrix_doc_dir, "api/server-server/definitions/presence"): "ss_presence",
 }
 EVENT_EXAMPLES = os.path.join(matrix_doc_dir, "event-schemas/examples")
 EVENT_SCHEMA = os.path.join(matrix_doc_dir, "event-schemas/schema")

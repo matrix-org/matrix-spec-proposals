@@ -1,0 +1,97 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+type: object
+title: Presence EDU
+description: |-
+  An EDU representing presence updates for users of the sending homeserver.
+  Can also be used to request additional presence updates for users of the
+  receiving homeserver.
+allOf:
+  - $ref: ../edu.yaml
+  - type: object
+    properties:
+      edu_type:
+        type: string
+        description: The string ``m.presence``
+        example: "m.presence"
+      content:
+        type: object
+        description: The presence updates and requests.
+        title: Presence Update
+        properties:
+          push:
+            type: array
+            description: |-
+              A list of presence updates that the receiving server is likely
+              to be interested in, or is subscribed to.
+            items:
+              type: object
+              title: User Presence Update
+              properties:
+                user_id:
+                  type: string
+                  description: The user ID this presence EDU is for.
+                  example: "@john:matrix.org"
+                presence:
+                  type: enum
+                  enum: ['offline', 'unavailable', 'online']
+                  description: The presence of the user.
+                  example: "online"
+                status_msg:
+                  type: string
+                  description: An optional description to accompany the presence.
+                  example: "Making cupcakes"
+                last_active_ago:
+                  type: integer
+                  format: int64
+                  description: |-
+                    The number of milliseconds that have ellapsed since the user
+                    last did something.
+                  example: 5000
+                currently_active:
+                  type: boolean
+                  description: |-
+                    Whether or not the user is currently using a device of theirs.
+                    Defaults to false.
+                  example: true
+              required: ['user_id', 'presence', 'last_active_ago']
+          poll:
+            type: array
+            description: |-
+              New user IDs that the sending server would like to subscribe to the
+              presence of. The sending server should not include users it has already
+              requested to be subscribed to.
+
+              The receiving server should ensure the sending server has reasonable
+              interest in subscribing to the provided users. The receiver may ignore 
+              a request to subscribe to a user the sender does not have reasonable
+              interest in. Reasonable interest may be residing in a room with the user,
+              being subscribed to a presence list, or some other requirement.
+
+              If non-empty, the receiving server should immediately send the presence
+              updates to the sender for the users requested.
+            items:
+              type: string
+            example: ["@alice:elsewhere.org"]
+          unpoll:
+            type: array
+            description: |-
+              New user IDs the sending server is no longer interested in receiving
+              presence updates for. The sending server should not include users it
+              has previously requested to be unsubscribed from.
+            items:
+              type: string
+            example: ["@bob:elsewhere.org"]
+        required: ['push']
