@@ -569,8 +569,6 @@ All these URLs are name-spaced within a prefix of::
 
   /_matrix/federation/v1/...
 
-{{query_general_ss_http_api}}
-
 Joining Rooms
 -------------
 
@@ -957,36 +955,18 @@ Rejecting a presence invite::
   - Explain the zero-byte presence inference logic
   See also: docs/client-server/model/presence
 
-Profiles
---------
+Querying for information
+------------------------
 
-The server API for profiles is based entirely on the following Federation
-Queries. There are no additional EDU or PDU types involved, other than the
-implicit ``m.presence`` and ``m.room.member`` events (see section below).
+Queries are a way to retrieve information from a homeserver about a resource,
+such as a user or room. The endpoints here are often called in conjunction with
+a request from a client on the client-server API in order to complete the call.
 
-Querying profile information::
+There are several types of queries that can be made. The generic endpoint to
+represent all queries is described first, followed by the more specific queries
+that can be made.
 
-  Query type: profile
-
-  Arguments:
-    user_id: the ID of the user whose profile to return
-    field: (optional) string giving a field name
-
-  Returns: JSON object containing the following keys:
-    displayname: string of free-form text
-    avatar_url: string containing an HTTP-scheme URL
-
-If the query contains the optional ``field`` key, it should give the name of a
-result field. If such is present, then the result should contain only a field
-of that name, with no others present. If not, the result should contain as much
-of the user's profile as the homeserver has available and can make public.
-
-Directory
----------
-
-The server API for directory queries is also based on Federation Queries.
-
-{{directory_ss_http_api}}
+{{query_ss_http_api}}
 
 Send-to-device messaging
 ------------------------
