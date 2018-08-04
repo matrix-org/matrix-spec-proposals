@@ -38,8 +38,21 @@ properties:
           itself, in the case of a Megolm event, or a map from the recipient
           Curve25519 identity key to ciphertext information, in the case of an
           Olm event. For more details, see `Messaging Algorithms`_.
+      sender_key:
+        type: string
+        description: The Curve25519 key of the sender.
+      device_id:
+        type: string
+        description: The ID of the sending device. Required with Megolm.
+      session_id:
+        type: string
+        description: |-
+          The ID of the session used to encrypt the message. Required with
+          Megolm.
     required:
       - algorithm
+      - sender_key
+      - ciphertext
     type: object
   type:
     enum:
