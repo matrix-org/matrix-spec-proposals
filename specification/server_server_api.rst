@@ -896,6 +896,18 @@ Rejecting a presence invite::
   - Explain the zero-byte presence inference logic
   See also: docs/client-server/model/presence
 
+Receipts
+--------
+
+Receipts are EDUs used to communicate a marker for a given event. Currently the
+only kind of receipt supported is a "read receipt", or where in the timeline a
+user has read up to.
+
+Read receipts for events events that a user sent do not need to be sent. It is
+implied that by sending the event the user has read up to the event.
+
+{{definition_ss_event_schemas_m_receipt}}
+
 Querying for information
 ------------------------
 
