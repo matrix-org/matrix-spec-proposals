@@ -629,7 +629,7 @@ if this optimisation fails.
 
 Once the joining server has the room ID and the join candidates, it then needs
 to obtain enough information about the room to fill in the required fields of
-the ``m.room.member`` event. It obtains this by selecting a resident from t
+the ``m.room.member`` event. It obtains this by selecting a resident from the
 candidate list, and using the ``GET /make_join`` endpoint. The resident server
 will then reply with enough information for the joining server to fill in the
 event.
