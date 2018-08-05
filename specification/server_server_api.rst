@@ -23,7 +23,7 @@ Federation API
 
 Matrix homeservers use the Federation APIs (also known as server-server APIs)
 to communicate with each other. Homeservers use these APIs to push messages to
-each other in real-time, to 
+each other in real-time, to
 historic messages from each other, and to
 query profile and presence information about users on each other's servers.
 
@@ -78,22 +78,21 @@ Server Discovery
 Resolving Server Names
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Each matrix homeserver is identified by a server name consisting of a DNS name
+Each matrix homeserver is identified by a server name consisting of a hostname
 and an optional TLS port.
 
 .. code::
 
-    server_name = dns_name [ ":" tls_port]
-    dns_name = <host, see [RFC 3986], Section 3.2.2>
+    server_name = hostname [ ":" tls_port]
     tls_port = *DIGIT
 
 .. **
 
 If the port is present then the server is discovered by looking up an AAAA or
-A record for the DNS name and connecting to the specified TLS port. If the port
+A record for the hostname and connecting to the specified TLS port. If the port
 is absent then the server is discovered by looking up a ``_matrix._tcp`` SRV
-record for the DNS name. If this record does not exist then the server is
-discovered by looking up an AAAA or A record on the DNS name and taking the
+record for the hostname. If this record does not exist then the server is
+discovered by looking up an AAAA or A record on the hostname and taking the
 default fallback port number of 8448.
 Homeservers may use SRV records to load balance requests between multiple TLS
 endpoints or to failover to another endpoint if an endpoint fails.
@@ -630,7 +629,7 @@ if this optimisation fails.
 
 Once the joining server has the room ID and the join candidates, it then needs
 to obtain enough information about the room to fill in the required fields of
-the ``m.room.member`` event. It obtains this by selecting a resident from the
+the ``m.room.member`` event. It obtains this by selecting a resident from t
 candidate list, and using the ``GET /make_join`` endpoint. The resident server
 will then reply with enough information for the joining server to fill in the
 event.
