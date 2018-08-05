@@ -84,7 +84,6 @@ and an optional TLS port.
 .. code::
 
     server_name = hostname [ ":" tls_port]
-    dns_name = <host, see [RFC 3986], Section 3.2.2>
     tls_port = *DIGIT
 
 .. **
