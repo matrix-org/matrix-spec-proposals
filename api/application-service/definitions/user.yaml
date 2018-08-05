@@ -27,5 +27,5 @@ properties:
     type: object
     example:
       "user": "jim"
-title: Location
+title: User
 type: object
