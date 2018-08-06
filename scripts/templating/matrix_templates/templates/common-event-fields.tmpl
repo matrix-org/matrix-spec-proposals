@@ -1,0 +1,13 @@
+{% import 'tables.tmpl' as tables -%}
+
+{{common_event.title}} Fields
+{{(7 + common_event.title | length) * title_kind}}
+
+{{common_event.desc}}
+
+{% for table in common_event.tables %}
+{{"``"+table.title+"``" if table.title else "" }}
+
+{{ tables.paramtable(table.rows, ["Key", "Type", "Description"]) }}
+
+{% endfor %}

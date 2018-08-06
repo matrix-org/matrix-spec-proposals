@@ -1,4 +1,6 @@
 .. Copyright 2016 OpenMarket Ltd
+.. Copyright 2017 Kamax.io
+.. Copyright 2017 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -52,6 +54,8 @@ necessarily provide evidence that they have validated associations, but claim to
 have done so. Establishing the trustworthiness of an individual identity service
 is left as an exercise for the client.
 
+3PID types are described in `3PID Types`_ Appendix.
+
 Privacy
 -------
 
@@ -62,6 +66,11 @@ connections between identities should be avoided. To this end, in general APIs
 should allow a 3pid to be mapped to a Matrix user identity, but not in the other
 direction (i.e. one should not be able to get all 3pids associated with a Matrix
 user ID, or get all 3pids associated with a 3pid).
+
+Status check
+------------
+
+{{ping_is_http_api}}
 
 Key management
 --------------
@@ -239,19 +248,27 @@ At a later point, if the owner of that particular 3pid binds it with a Matrix us
  Content-Type: application/json
 
  {
-   "invites": [{
-     "mxid": "@foo:bar.com",
-     "token": "abc123",
-     "signatures": {
-       "my.id.server": {
-         "ed25519:0": "def987"
-       }
-     }
-   }],
-
-   "medium": "email",
-   "address": "foo@bar.com",
-   "mxid": "@foo:bar.com"
+  "medium": "email",
+  "address": "foo@bar.baz",
+  "mxid": "@alice:example.tld",
+  "invites": [
+    {
+      "medium": "email",
+      "address": "foo@bar.baz",
+      "mxid": "@alice:example.tld",
+      "room_id": "!something:example.tld",
+      "sender": "@bob:example.tld",
+      "signed": {
+        "mxid": "@alice:example.tld",
+        "signatures": {
+          "vector.im": {
+            "ed25519:0": "somesignature"
+          }
+        },
+        "token": "sometoken"
+      }
+    }
+  ]
  }
 
 Where the signature is produced using a long-term private key.
@@ -283,3 +300,4 @@ It will look up ``token`` which was stored in a call to ``store-invite``, and fe
  }
 
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
+.. _`3PID Types`:  ../appendices.html#pid-types

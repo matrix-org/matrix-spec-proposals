@@ -2,9 +2,6 @@ targets:
   index:
     files:
       - index.rst
-  intro:
-    files:
-      - intro.rst
   client_server:
     files:
       - client_server_api.rst
@@ -34,8 +31,14 @@ targets:
       - appendices.rst
       - appendices/base64.rst
       - appendices/signing_json.rst
+      - appendices/identifier_grammar.rst
+      - appendices/threepids.rst
       - appendices/threat_model.rst
       - appendices/test_vectors.rst
+  proposals:
+    files:
+        - proposals_intro.rst
+        - proposals.rst
 groups:  # reusable blobs of files when prefixed with 'group:'
   modules:
     - modules/instant_messaging.rst
@@ -59,6 +62,10 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/event_context.rst
     - modules/cas_login.rst
     - modules/dm.rst
+    - modules/ignore_users.rst
+    - modules/stickers.rst
+    - modules/report_content.rst
+    - modules/third_party_networks.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`", "@", ":"]

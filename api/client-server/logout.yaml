@@ -33,11 +33,35 @@ paths:
       description: |-
         Invalidates an existing access token, so that it can no longer be used for
         authorization.
+      operationId: logout
       security:
         - accessToken: []
       responses:
         200:
           description: The access token used in the request was succesfully invalidated.
+          schema:
+            type: object
+            properties: {}
+      tags:
+        - Session management
+  "/logout/all":
+    post:
+      summary: Invalidates all access tokens for a user
+      description: |-
+        Invalidates all access tokens for a user, so that they can no longer be used for
+        authorization. This includes the access token that made this request. 
+
+        This endpoint does not require UI authorization because UI authorization is
+        designed to protect against attacks where the someone gets hold of a single access
+        token then takes over the account. This endpoint invalidates all access tokens for
+        the user, including the token used in the request, and therefore the attacker is
+        unable to take over the account in this way.
+      operationId: logout_all
+      security:
+        - accessToken: []
+      responses:
+        200:
+          description: The user's access tokens were succesfully invalidated.
           schema:
             type: object
             properties: {}

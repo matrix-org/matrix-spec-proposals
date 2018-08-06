@@ -35,6 +35,7 @@ paths:
         the rulesets by suffixing a ``scope`` to this path e.g.
         ``/pushrules/global/``. This will return a subset of this data under the
         specified key e.g. the ``global`` key.
+      operationId: getPushRules
       security:
         - accessToken: []
       responses:
@@ -52,8 +53,7 @@ paths:
                   "$ref": "definitions/push_ruleset.yaml"
                 ]
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "global": {
                     "content": [
                         {
@@ -248,6 +248,7 @@ paths:
       summary: Retrieve a push rule.
       description: |-
         Retrieve a single specified push rule.
+      operationId: getPushRule
       security:
         - accessToken: []
       parameters:
@@ -279,8 +280,7 @@ paths:
             The specific push rule. This will also include keys specific to the
             rule itself such as the rule's ``actions`` and ``conditions`` if set.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "actions": [
                     "dont_notify"
                 ],
@@ -301,6 +301,7 @@ paths:
       summary: Delete a push rule.
       description: |-
         This endpoint removes the push rule defined in the path.
+      operationId: deletePushRule
       security:
         - accessToken: []
       parameters:
@@ -330,8 +331,8 @@ paths:
         200:
           description: The push rule was deleted.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object  # empty json object
       tags:
@@ -342,6 +343,7 @@ paths:
         This endpoint allows the creation, modification and deletion of pushers
         for this user ID. The behaviour of this endpoint varies depending on the
         values in the JSON body.
+      operationId: setPushRule
       security:
         - accessToken: []
       parameters:
@@ -393,8 +395,7 @@ paths:
           required: true
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "pattern": "cake*lie",
                 "actions": ["notify"]
               }
@@ -425,24 +426,23 @@ paths:
         200:
           description: The pusher was set.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object  # empty json object
         400:
           description: There was a problem configuring this push rule.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "error": "before/after rule not found: someRuleId",
                 "errcode": "M_UNKNOWN"
               }
           schema:
-            type: object
+            "$ref": "definitions/errors/error.yaml"
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Push notifications
   "/pushrules/{scope}/{kind}/{ruleId}/enabled":
@@ -450,6 +450,7 @@ paths:
       summary: "Get whether a push rule is enabled"
       description:
         This endpoint gets whether the specified push rule is enabled.
+      operationId: isPushRuleEnabled
       security:
         - accessToken: []
       parameters:
@@ -480,8 +481,7 @@ paths:
         200:
           description: Whether the push rule is enabled.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "enabled": true
               }
           schema:
@@ -495,6 +495,7 @@ paths:
       summary: "Enable or disable a push rule."
       description: |-
         This endpoint allows clients to enable or disable the specified push rule.
+      operationId: setPushRuleEnabled
       security:
         - accessToken: []
       parameters:
@@ -532,16 +533,15 @@ paths:
                 type: boolean
                 description: Whether the push rule is enabled or not.
             required: ["enabled"]
-            example: |-
-              {
+            example: {
                 "enabled": true
               }
       responses:
         200:
           description: The push rule was enabled or disabled.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object
       tags:
@@ -551,6 +551,7 @@ paths:
       summary: "The actions for a push rule"
       description:
         This endpoint get the actions for the specified push rule.
+      operationId: getPushRuleActions
       security:
         - accessToken: []
       parameters:
@@ -581,8 +582,7 @@ paths:
         200:
           description: The actions for this push rule.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "actions": ["notify"]
               }
           schema:
@@ -599,6 +599,7 @@ paths:
       description: |-
         This endpoint allows clients to change the actions of a push rule.
         This can be used to change the actions of builtin rules.
+      operationId: setPushRuleActions
       security:
         - accessToken: []
       parameters:
@@ -640,16 +641,15 @@ paths:
                   enum: ["notify", "dont_notify", "coalesce", "set_tweak"]
                   # TODO: type: object e.g. {"set_sound":"beeroclock.wav"} :/
             required: ["actions"]
-            example: |-
-              {
+            example: {
                 "actions": ["notify"]
               }
       responses:
         200:
           description: The actions for the push rule were set.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object
       tags:

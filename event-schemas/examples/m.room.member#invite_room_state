@@ -1,7 +1,7 @@
 {
   "age": 242352,
   "content": {
-    "membership": "join",
+    "membership": "invite",
     "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF#auto",
     "displayname": "Alice Margatroid"
   },
@@ -17,7 +17,7 @@
       "type": "m.room.join_rules",
       "state_key": "",
       "content": {
-        "join_rules": "invite"
+        "join_rule": "invite"
       }
     }
   ],

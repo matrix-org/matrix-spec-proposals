@@ -35,6 +35,7 @@ paths:
         the activity time is updated to reflect that activity; the client does
         not need to specify the ``last_active_ago`` field. You cannot set the
         presence state of another user.
+      operationId: setPresence
       security:
         - accessToken: []
       parameters:
@@ -50,8 +51,7 @@ paths:
           required: true
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "presence": "online",
                 "status_msg": "I am here."
               }
@@ -68,20 +68,23 @@ paths:
         200:
           description: The new presence state was set.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object  # empty json object
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Presence
     get:
       summary: Get this user's presence state.
       description: |-
         Get the given user's presence state.
+      operationId: getPresence
+      security:
+        - accessToken: []
       parameters:
         - in: path
           type: string
@@ -93,8 +96,7 @@ paths:
         200:
           description: The presence state for this user.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "presence": "unavailable",
                 "last_active_ago": 420845
               }
@@ -121,6 +123,17 @@ paths:
           description: |-
             There is no presence state for this user. This user may not exist or
             isn't exposing presence information to you.
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+        403:
+          description: You are not allowed to see this user's presence status.
+          examples:
+            application/json: {
+              "errcode": "M_FORBIDDEN",
+              "error": "You are not allowed to see their presence"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Presence
   "/presence/list/{userId}":
@@ -128,6 +141,7 @@ paths:
       summary: Add or remove users from this presence list.
       description: |-
         Adds or removes users from this presence list.
+      operationId: modifyPresenceList
       security:
         - accessToken: []
       parameters:
@@ -143,8 +157,7 @@ paths:
           required: true
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "invite": [
                   "@bob:matrix.org"
                 ],
@@ -169,20 +182,21 @@ paths:
         200:
           description: The list was updated.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object  # empty json object
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Presence
     get:
       summary: Get presence events for this presence list.
       description: |-
         Retrieve a list of presence events for every user on this list.
+      operationId: getPresenceForList
       parameters:
         - in: path
           type: string
@@ -194,8 +208,7 @@ paths:
         200:
           description: A list of presence events for this list.
           examples:
-            application/json: |-
-              [
+            application/json: [
                 {
                   "content": {
                     "last_active_ago": 395,

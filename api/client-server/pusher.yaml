@@ -32,14 +32,14 @@ paths:
       summary: Gets the current pushers for the authenticated user
       description: |-
           Gets all currently active pushers for the authenticated user
+      operationId: getPushers
       security:
         - accessToken: []
       responses:
         200:
           description: The pushers for this user
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "pushers": [
                   {
                     "pushkey": "Xp/MzCt8/9DcSNE9cuiaoT5Ac55job3TdLSSmtmYl4A=",
@@ -124,6 +124,7 @@ paths:
         This endpoint allows the creation, modification and deletion of `pushers`_
         for this user ID. The behaviour of this endpoint varies depending on the
         values in the JSON body.
+      operationId: postPusher
       security:
         - accessToken: []
       parameters:
@@ -133,8 +134,7 @@ paths:
           required: true
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "lang": "en",
                 "kind": "http",
                 "app_display_name": "Mat Rix",
@@ -216,23 +216,22 @@ paths:
         200:
           description: The pusher was set.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object  # empty json object
         400:
           description: One or more of the pusher values were invalid.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "error": "Missing parameters: lang, data",
                 "errcode": "M_MISSING_PARAM"
               }
           schema:
-            type: object
+            "$ref": "definitions/errors/error.yaml"
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Push notifications

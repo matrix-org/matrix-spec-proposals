@@ -33,6 +33,7 @@ paths:
         Uploads a new filter definition to the homeserver.
         Returns a filter ID that may be used in future requests to
         restrict which events are returned to the client.
+      operationId: defineFilter
       security:
         - accessToken: []
       parameters:
@@ -52,8 +53,7 @@ paths:
             type: object
             allOf:
               - $ref: "definitions/sync_filter.yaml"
-            example: |-
-              {
+            example: {
                 "room": {
                   "state": {
                     "types": ["m.room.*"],
@@ -82,8 +82,7 @@ paths:
         200:
           description: The filter was created.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "filter_id": "66696p746572"
               }
           schema:
@@ -98,6 +97,9 @@ paths:
   "/user/{userId}/filter/{filterId}":
     get:
       summary: Download a filter
+      operationId: getFilter
+      security:
+        - accessToken: []
       parameters:
         - in: path
           name: userId
@@ -118,8 +120,7 @@ paths:
           description: |-
             "The filter defintion"
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "room": {
                   "state": {
                     "types": ["m.room.*"],
@@ -148,5 +149,7 @@ paths:
             type: object
             allOf:
               - $ref: "definitions/sync_filter.yaml"
+        404:
+          description: "Unknown filter."
       tags:
         - Room participation

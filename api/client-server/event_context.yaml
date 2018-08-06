@@ -34,6 +34,7 @@ paths:
         This API returns a number of events that happened just before and
         after the specified event. This allows clients to get the context
         surrounding an event.
+      operationId: getEventContext
       security:
         - accessToken: []
       parameters:
@@ -99,8 +100,7 @@ paths:
                   allOf:
                     - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
           examples:
-            application/json: |-
-                {
+            application/json: {
                   "end": "t29-57_2_0_2",
                   "events_after": [
                     {

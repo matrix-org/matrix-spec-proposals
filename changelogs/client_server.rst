@@ -1,10 +1,10 @@
-<Unreleased changes>
-====================
+r0.3.0
+======
 
 - Breaking changes:
 
-  - Change the rule kind of `.m.rule.contains_display_name` from
-    `underride` to `override`. This works with all known clients
+  - Change the rule kind of ``.m.rule.contains_display_name`` from
+    ``underride`` to ``override``. This works with all known clients
     which support push rules, but any other clients implementing
     the push rules API should be aware of this change. This
     makes it simple to mute rooms correctly in the API
@@ -13,6 +13,11 @@
     (`#395 <https://github.com/matrix-org/matrix-doc/pull/395>`_).
   - Remove requirement that tokens used in token-based login be macaroons
     (`#395 <https://github.com/matrix-org/matrix-doc/pull/395>`_).
+  - Move ``thumbnail_url`` and ``thumbnail_info`` members of json objects
+    for ``m.room.message`` events with msgtypes ``m.image``, ``m.file``
+    and ``m.location``, inside the ``info`` member, to match ``m.video``
+    events
+    (`#723 <https://github.com/matrix-org/matrix-doc/pull/723>`_).
 
 - Changes to the API which will be backwards-compatible for clients:
 
@@ -48,9 +53,39 @@
     (`#751 <https://github.com/matrix-org/matrix-doc/pull/751>`_).
   - Add key distribution APIs, for use with end-to-end encryption.
     (`#894 <https://github.com/matrix-org/matrix-doc/pull/894>`_).
+  - Add ``m.room.pinned_events`` state event for rooms.
+    (`#1007 <https://github.com/matrix-org/matrix-doc/pull/1007>`_).
+  - Add mention of ability to send Access Token via an Authorization Header.
+  - Add ``guest_can_join`` parameter to ``POST /createRoom``
+    (`#1093 <https://github.com/matrix-org/matrix-doc/pull/1093>`_).
+
+  - New endpoints:
+
+    - ``GET /joined_rooms``
+      (`#999 <https://github.com/matrix-org/matrix-doc/pull/999>`_).
+
+    - ``GET /rooms/{roomId}/joined_members``
+      (`#999 <https://github.com/matrix-org/matrix-doc/pull/999>`_).
+
+    - ``GET /account/whoami``
+      (`#1063 <https://github.com/matrix-org/matrix-doc/pull/1063>`_).
+
+    - ``GET /media/{version}/preview_url``
+      (`#1064 <https://github.com/matrix-org/matrix-doc/pull/1064>`_).
 
 - Spec clarifications:
 
+  - Add endpoints and logic for invites and third-party invites to the federation
+    spec and update the JSON of the request sent by the identity server upon 3PID
+    binding
+    (`#997 <https://github.com/matrix-org/matrix-doc/pull/997>`_)
+  - Fix "membership" property on third-party invite upgrade example
+    (`#995 <https://github.com/matrix-org/matrix-doc/pull/995>`_)
+  - Fix response format and 404 example for room alias lookup
+    (`#960 <https://github.com/matrix-org/matrix-doc/pull/960>`_)
+  - Fix examples of ``m.room.member`` event and room state change,
+    and added a clarification on the membership event sent upon profile update
+    (`#950 <https://github.com/matrix-org/matrix-doc/pull/950>`_).
   - Spell out the way that state is handled by ``POST /createRoom``
     (`#362 <https://github.com/matrix-org/matrix-doc/pull/362>`_).
   - Clarify the fields which are applicable to different types of push rule
@@ -66,6 +101,16 @@
   - Make ``m.notice`` description a bit harder in its phrasing to try to
     dissuade the same issues that occurred with IRC
     (`#750 <https://github.com/matrix-org/matrix-doc/pull/750>`_).
+  - ``GET /user/{userId}/filter/{filterId}`` requires authentication
+    (`#1003 <https://github.com/matrix-org/matrix-doc/pull/1003>`_).
+  - Add some clarifying notes on the behaviour of rooms with no
+    ``m.room.power_levels`` event
+    (`#1026 <https://github.com/matrix-org/matrix-doc/pull/1026>`_).
+  - Clarify the relationship between ``username`` and ``user_id`` in the
+    ``/register`` API
+    (`#1032 <https://github.com/matrix-org/matrix-doc/pull/1032>`_).
+  - Clarify rate limiting and security for content repository.
+    (`#1064 <https://github.com/matrix-org/matrix-doc/pull/1064>`_).
 
 r0.2.0
 ======

@@ -1,4 +1,5 @@
 # Copyright 2016 OpenMarket Ltd
+# Copyright 2018 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,7 +38,10 @@ paths:
         the new room, including checking power levels for each event. It MUST
         apply the events implied by the request in the following order:
 
-        1. Events set by ``presets``.
+        0. A default ``m.room.power_levels`` event, giving the room creator
+           (and not other members) permission to send state events.
+        
+        1. Events set by the ``preset``.
 
         2. Events listed in ``initial_state``, in the order that they are
            listed.
@@ -46,6 +50,17 @@ paths:
 
         4. Invite events implied by ``invite`` and ``invite_3pid``.
 
+        The available presets do the following with respect to room state:
+
+        ========================  ==============  ======================  ================  =========
+                 Preset           ``join_rules``  ``history_visibility``  ``guest_access``  Other
+        ========================  ==============  ======================  ================  =========
+        ``private_chat``          ``invite``      ``shared``              ``can_join``      
+        ``trusted_private_chat``  ``invite``      ``shared``              ``can_join``      All invitees are given the same power level as the room creator.
+        ``public_chat``           ``public``      ``shared``              ``forbidden``     
+        ========================  ==============  ======================  ================  =========
+
+      operationId: createRoom
       security:
         - accessToken: []
       parameters:
@@ -54,8 +69,7 @@ paths:
           description: The desired room configuration.
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "preset": "public_chat",
                 "room_alias_name": "thepub",
                 "name": "The Grand Duke Pub",
@@ -139,7 +153,7 @@ paths:
                   room. The expected format of the state events are an object
                   with type, state_key and content keys set.
 
-                  Takes precedence over events set by ``presets``, but gets
+                  Takes precedence over events set by ``preset``, but gets
                   overriden by ``name`` and ``topic`` keys.
                 items:
                   type: object
@@ -147,35 +161,30 @@ paths:
                   properties:
                     type:
                       type: string
+                      description: The type of event to send.
                     state_key:
                       type: string
+                      description: The state_key of the state event. Defaults to an empty string.
                     content:
-                      type: string
+                      type: object
+                      description: The content of the event.
+                  required: ["type", "content"]
               preset:
                 type: string
                 enum: ["private_chat", "public_chat", "trusted_private_chat"]
                 description: |-
                   Convenience parameter for setting various default state events
-                  based on a preset. Must be either:
-
-                  ``private_chat`` =>
-                    ``join_rules`` is set to ``invite``.
-                    ``history_visibility`` is set to ``shared``.
-
-                  ``trusted_private_chat`` =>
-                      ``join_rules`` is set to ``invite``.
-                      ``history_visibility`` is set to ``shared``.
-                      All invitees are given the same power level as the room creator.
-
-                  ``public_chat``: =>
-                      ``join_rules`` is set to ``public``.
-                      ``history_visibility`` is set to ``shared``.
+                  based on a preset.
               is_direct:
                 type: boolean
                 description: |-
                   This flag makes the server set the ``is_direct`` flag on the
                   ``m.room.member`` events sent to the users in ``invite`` and
                   ``invite_3pid``. See `Direct Messaging`_ for more information.
+              guest_can_join:
+                type: boolean
+                description: |-
+                  Allows guests to join the room. See `Guest Access`_ for more information.
       responses:
         200:
           description: Information about the newly created room.
@@ -188,8 +197,7 @@ paths:
                 description: |-
                   The created room's ID.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "room_id": "!sefiuhWgwghwWgh:example.com"
               }
         400:
@@ -208,6 +216,8 @@ paths:
               invalid: for example, the user's ``power_level`` is set below
               that necessary to set the room name (``errcode`` set to
               ``M_INVALID_ROOM_STATE``).
+          schema:
+            "$ref": "definitions/errors/error.yaml"
 
       tags:
         - Room creation

@@ -33,14 +33,14 @@ paths:
       description: |-
         This API provides credentials for the client to use when initiating
         calls.
+      operationId: getTurnServer
       security:
         - accessToken: []
       responses:
         200:
           description: The TURN server credentials.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "username":"1443779631:@user:example.com",
                 "password":"JlKfBy1QwLrO20385QyAtEyIv0=",
                 "uris":[
@@ -73,6 +73,6 @@ paths:
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - VOIP

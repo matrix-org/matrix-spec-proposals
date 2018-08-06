@@ -46,7 +46,7 @@ paths:
         Notifications are sent to the URL configured when the pusher is
         created. This means that the HTTP path may be different depending on the
         push gateway.
-
+      operationId: notify
       parameters:
         - in: body
           name: notification
@@ -54,8 +54,7 @@ paths:
           required: true
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "notification": {
                   "id": "$3957tyerfgewrf384",
                   "room_id": "!slw48wfj34rtnrf:example.com",
@@ -207,8 +206,7 @@ paths:
         200:
           description: A list of rejected push keys.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "rejected": [ "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/" ]
               }
           schema:

@@ -33,6 +33,7 @@ paths:
       description: |-
         This API returns a list of message and state events for a room. It uses
         pagination query parameters to paginate history in the room.
+      operationId: getRoomEvents
       security:
         - accessToken: []
       parameters:
@@ -106,9 +107,9 @@ paths:
                 items:
                   type: object
                   title: RoomEvent
+                  "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "start": "t47429-4392820_219380_26003_2265",
                 "end": "t47409-4357353_219380_26003_2265",
                 "chunk": [

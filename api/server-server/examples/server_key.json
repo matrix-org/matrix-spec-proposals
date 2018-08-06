@@ -1,0 +1,23 @@
+{
+    "server_name": "example.org",
+    "verify_keys": {
+        "ed25519:auto2": {
+        "key": "Base+64+Encoded+Signature+Verification+Key"
+        }
+    },
+    "old_verify_keys": {
+        "ed25519:auto1": {
+        "expired_ts": 922834800000,
+            "key": "Base+64+Encoded+Old+Verify+Key"
+        }
+    },
+    "signatures": {
+        "example.org": {
+        "ed25519:auto2": "Base+64+Encoded+Signature"
+        }
+    },
+    "tls_fingerprints": [{
+        "sha256": "Base+64+Encoded+SHA-256-Fingerprint"
+    }],
+    "valid_until_ts": 1052262000000
+}

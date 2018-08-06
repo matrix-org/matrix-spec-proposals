@@ -34,6 +34,7 @@ paths:
         Clients use this API when they first log in to get an initial snapshot
         of the state on the server, and then continue to call this API to get
         incremental deltas to the state, and to receive new messages.
+      operationId: sync
       security:
         - accessToken: []
       parameters:
@@ -88,8 +89,12 @@ paths:
           name: timeout
           type: integer
           description: |-
-            The maximum time to poll in milliseconds before returning this
-            request.
+            The maximum time to wait, in milliseconds, before returning this
+            request. If no events (or other data) become available before this
+            time elapses, the server will return a response with empty fields.
+
+            By default, this is ``0``, so the server will return immediately
+            even if the response is empty.
           x-example: 30000
       responses:
         200:
@@ -249,8 +254,7 @@ paths:
                   Information on end-to-end device updates, as specified in
                   |device_lists_sync|_.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "next_batch": "s72595_4483_1934",
                 "presence": {
                   "events": [

@@ -3,7 +3,7 @@
 window.onload = function() {
     var url = new URL(window.location);
     url.pathname += "api-docs.json";
-    var newLoc = "http://matrix.org/docs/api/client-server/?url=" + encodeURIComponent(url);
+    var newLoc = "http://petstore.swagger.io/?url=" + encodeURIComponent(url);
     document.getElementById("apidocs").href = newLoc;
 };
 </script>

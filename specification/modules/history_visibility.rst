@@ -82,7 +82,7 @@ For ``m.room.history_visibility`` events themselves, the user should be allowed
 to see the event if the ``history_visibility`` before *or* after the event
 would allow them to see it. (For example, a user should be able to see
 ``m.room.history_visibility`` events which change the ``history_visibility``
-from ``world_readable`` to ``joined`` *or* from ``joineded`` to
+from ``world_readable`` to ``joined`` *or* from ``joined`` to
 ``world_readable``, even if that user was not a member of the room.)
 
 Likewise, for the user's own ``m.room.member`` events, the user should be

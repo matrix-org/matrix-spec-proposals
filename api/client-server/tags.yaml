@@ -32,6 +32,7 @@ paths:
       summary: List the tags for a room.
       description: |-
         List the tags set by a user on a room.
+      operationId: getRoomTags
       security:
         - accessToken: []
       parameters:
@@ -61,8 +62,7 @@ paths:
                 title: Tags
                 type: object
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "tags": {
                   "work": {"order": "1"},
                   "pinned": {}
@@ -75,6 +75,7 @@ paths:
       summary: Add a tag to a room.
       description: |-
         Add a tag to the room.
+      operationId: setRoomTag
       security:
         - accessToken: []
       parameters:
@@ -107,8 +108,8 @@ paths:
             Extra data for the tag, e.g. ordering.
           schema:
             type: object
-            example: |-
-              {"order": "1"}
+            example: {
+              "order": "1"}
       responses:
         200:
           description:
@@ -116,14 +117,15 @@ paths:
           schema:
             type: object
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
       tags:
         - User data
     delete:
       summary: Remove a tag from the room.
       description: |-
         Remove a tag from the room.
+      operationId: deleteRoomTag
       security:
         - accessToken: []
       parameters:
@@ -156,7 +158,7 @@ paths:
           schema:
             type: object
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
       tags:
         - User data

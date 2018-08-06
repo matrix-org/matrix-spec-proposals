@@ -1,4 +1,5 @@
 # Copyright 2016 OpenMarket Ltd
+# Copyright 2018 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,6 +33,7 @@ paths:
       summary: Upload end-to-end encryption keys.
       description: |-
         Publishes end-to-end encryption keys for the device.
+      operationId: uploadKeys
       security:
         - accessToken: []
       parameters:
@@ -100,6 +102,7 @@ paths:
       summary: Download device identity keys.
       description: |-
         Returns the current devices and identity keys for the given users.
+      operationId: queryKeys
       security:
         - accessToken: []
       parameters:
@@ -129,6 +132,13 @@ paths:
                     description: "device ID"
                 example:
                   "@alice:example.com": []
+              token:
+                type: string
+                description: |-
+                  If the client is fetching keys as a result of a device update received
+                  in a sync request, this should be the 'since' token of that sync request,
+                  or any later sync token. This allows the server to ensure its response
+                  contains the keys advertised by the notification in that sync.
             required:
               - device_keys
 
@@ -208,6 +218,7 @@ paths:
       summary: Claim one-time encryption keys.
       description: |-
         Claims one-time keys for use in pre-key messages.
+      operationId: claimKeys
       security:
         - accessToken: []
       parameters:
@@ -263,7 +274,7 @@ paths:
                 type: object
                 description: |-
                   One-time keys for the queried devices. A map from user ID, to a
-                  map from ``<algorithm>:<key_id>`` to the key object.
+                  map from devices to a map from ``<algorithm>:<key_id>`` to the key object.
                 additionalProperties:
                   type: object
                   additionalProperties:
@@ -293,6 +304,7 @@ paths:
           membership state ``join``); *and*
         * added new device identity keys or removed an existing device with
           identity keys, between ``from`` and ``to``.
+      operationId: getKeysChanges
       security:
         - accessToken: []
       parameters:
@@ -324,7 +336,7 @@ paths:
           schema:
             type: object
             properties:
-              changes:
+              changed:
                 type: array
                 items:
                   type: string
@@ -332,5 +344,14 @@ paths:
                   The Matrix User IDs of all users who updated their device
                   identity keys.
                 example: ["@alice:example.com", "@bob:example.org"]
+              left:
+                type: array
+                items:
+                  type: string
+                description: |-
+                  The Matrix User IDs of all users who may have left all
+                  the end-to-end encrypted rooms they previously shared
+                  with the user.
+                example: ["@clara:example.com", "@doug:example.org"]
       tags:
         - End-to-end encryption

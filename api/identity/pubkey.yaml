@@ -28,6 +28,7 @@ paths:
       summary: Get a public key.
       description: |-
         Get the public key for the passed key ID.
+      operationId: getPubKey
       parameters:
         - in: path
           type: string
@@ -43,8 +44,7 @@ paths:
           description:
             The public key exists.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "public_key": "VXuGitF39UH5iRfvbIknlvlAVKgD1BsLDMvBf0pmp7c"
               }
           schema:
@@ -57,6 +57,7 @@ paths:
       summary: Check whether a long-term public key is valid.
       description: |-
         Check whether a long-term public key is valid.
+      operationId: isPubKeyValid
       parameters:
         - in: query
           type: string
@@ -70,8 +71,7 @@ paths:
           description:
             The validity of the public key.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "valid": true
               }
           schema:
@@ -85,6 +85,7 @@ paths:
       summary: Check whether a short-term public key is valid.
       description: |-
         Check whether a short-term public key is valid.
+      operationId: isEphemeralPubKeyValid
       parameters:
         - in: query
           type: string
@@ -98,8 +99,7 @@ paths:
           description:
             The validity of the public key.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "valid": true
               }
           schema:
