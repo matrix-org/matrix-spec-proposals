@@ -41,7 +41,7 @@ after the rooms with that tag that have an ``order`` key.
 
 The name of a tag MUST not exceed 255 bytes.
 
-Tags namespaces are defined in the following way, depending on how the client are expected to interpret them:
+The tag namespace is defined as follows:
 
 * The namespace ``m.*`` is reserved for tags defined in the Matrix specification. Clients must ignore
   any tags in this namespace they don't understand.
