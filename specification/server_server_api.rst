@@ -693,7 +693,7 @@ that requested by the requester in the ``v`` parameter).
   Specify (or remark that it is unspecified) how the server handles divergent
   history. DFS? BFS? Anything weirder?
 
-Retriving events
+Retrieving events
 ----------------
 
 In some circumstances, a homeserver may be missing a particular event or information
