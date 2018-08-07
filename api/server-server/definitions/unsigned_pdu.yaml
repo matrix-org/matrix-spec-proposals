@@ -120,10 +120,6 @@ properties:
         type: integer
         description: The number of milliseconds that have passed since this message was sent.
         example: 4612
-      age_ts:
-        type: integer
-        format: int64
-        description: The POSIX timestamp this message was sent at in milliseconds.
       replaces_state:
         type: string
         description: The event ID of the state event this event replaces.
