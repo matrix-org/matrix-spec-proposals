@@ -97,6 +97,15 @@ default fallback port number of 8448.
 Homeservers may use SRV records to load balance requests between multiple TLS
 endpoints or to failover to another endpoint if an endpoint fails.
 
+If the DNS name is a literal IP address, the port specified or the fallback
+port should be used.
+
+When making requests to servers, use the DNS name of the target server in the
+``Host`` header, regardless of the host given in the SRV record. For example,
+if making a request to ``example.org``, and the SRV record resolves to ``matrix.
+example.org``, the ``Host`` header in the request should be ``example.org``. The
+port number for target server should not appear in the ``Host`` header.
+
 Server implementation
 ~~~~~~~~~~~~~~~~~~~~~~
 
