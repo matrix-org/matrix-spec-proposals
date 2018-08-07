@@ -33,4 +33,4 @@ properties:
   content:
     type: object
     description: The content of the ephemeral message.
-required: ['edu_type', 'origin', 'destination', 'content']
+required: ['edu_type', 'content']
