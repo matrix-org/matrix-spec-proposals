@@ -23,7 +23,7 @@ Federation API
 
 Matrix homeservers use the Federation APIs (also known as server-server APIs)
 to communicate with each other. Homeservers use these APIs to push messages to
-each other in real-time, to 
+each other in real-time, to
 historic messages from each other, and to
 query profile and presence information about users on each other's servers.
 
@@ -78,25 +78,33 @@ Server Discovery
 Resolving Server Names
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Each matrix homeserver is identified by a server name consisting of a DNS name
+Each matrix homeserver is identified by a server name consisting of a hostname
 and an optional TLS port.
 
 .. code::
 
-    server_name = dns_name [ ":" tls_port]
-    dns_name = <host, see [RFC 3986], Section 3.2.2>
+    server_name = hostname [ ":" tls_port]
     tls_port = *DIGIT
 
 .. **
 
 If the port is present then the server is discovered by looking up an AAAA or
-A record for the DNS name and connecting to the specified TLS port. If the port
+A record for the hostname and connecting to the specified TLS port. If the port
 is absent then the server is discovered by looking up a ``_matrix._tcp`` SRV
-record for the DNS name. If this record does not exist then the server is
-discovered by looking up an AAAA or A record on the DNS name and taking the
+record for the hostname. If this record does not exist then the server is
+discovered by looking up an AAAA or A record on the hostname and taking the
 default fallback port number of 8448.
 Homeservers may use SRV records to load balance requests between multiple TLS
 endpoints or to failover to another endpoint if an endpoint fails.
+
+If the DNS name is a literal IP address, the port specified or the fallback
+port should be used.
+
+When making requests to servers, use the DNS name of the target server in the
+``Host`` header, regardless of the host given in the SRV record. For example,
+if making a request to ``example.org``, and the SRV record resolves to ``matrix.
+example.org``, the ``Host`` header in the request should be ``example.org``. The
+port number for target server should not appear in the ``Host`` header.
 
 Server implementation
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -440,6 +448,15 @@ The rules are as follows:
 
   I think there is some magic about 3pid invites too.
 
+Retrieving event authorization information
+++++++++++++++++++++++++++++++++++++++++++
+
+The homeserver may be missing event authorization information, or wish to check
+with other servers to ensure it is receiving the correct auth chain. These APIs
+give the homeserver an avenue for getting the information it needs.
+
+{{event_auth_ss_http_api}}
+
 EDUs
 ----
 
@@ -569,8 +586,6 @@ All these URLs are name-spaced within a prefix of::
 
   /_matrix/federation/v1/...
 
-{{query_general_ss_http_api}}
-
 Joining Rooms
 -------------
 
@@ -685,7 +700,7 @@ the events it is missing.
 
 {{backfill_ss_http_api}}
 
-Retriving events
+Retrieving events
 ----------------
 
 In some circumstances, a homeserver may be missing a particular event or information
@@ -882,6 +897,16 @@ A homeserver may provide a TLS client certificate and the receiving homeserver
 may check that the client certificate matches the certificate of the origin
 homeserver.
 
+Public Room Directory
+---------------------
+
+To compliment the `Client-Server API`_'s room directory, homeservers need a
+way to query the public rooms for another server. This can be done by making
+a request to the ``/publicRooms`` endpoint for the server the room directory
+should be retrieved for.
+
+{{public_rooms_ss_http_api}}
+
 
 Presence
 --------
@@ -946,36 +971,18 @@ Rejecting a presence invite::
   - Explain the zero-byte presence inference logic
   See also: docs/client-server/model/presence
 
-Profiles
---------
+Querying for information
+------------------------
 
-The server API for profiles is based entirely on the following Federation
-Queries. There are no additional EDU or PDU types involved, other than the
-implicit ``m.presence`` and ``m.room.member`` events (see section below).
+Queries are a way to retrieve information from a homeserver about a resource,
+such as a user or room. The endpoints here are often called in conjunction with
+a request from a client on the client-server API in order to complete the call.
 
-Querying profile information::
+There are several types of queries that can be made. The generic endpoint to
+represent all queries is described first, followed by the more specific queries
+that can be made.
 
-  Query type: profile
-
-  Arguments:
-    user_id: the ID of the user whose profile to return
-    field: (optional) string giving a field name
-
-  Returns: JSON object containing the following keys:
-    displayname: string of free-form text
-    avatar_url: string containing an HTTP-scheme URL
-
-If the query contains the optional ``field`` key, it should give the name of a
-result field. If such is present, then the result should contain only a field
-of that name, with no others present. If not, the result should contain as much
-of the user's profile as the homeserver has available and can make public.
-
-Directory
----------
-
-The server API for directory queries is also based on Federation Queries.
-
-{{directory_ss_http_api}}
+{{query_ss_http_api}}
 
 Send-to-device messaging
 ------------------------
