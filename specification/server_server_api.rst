@@ -1182,7 +1182,7 @@ that are too long.
 
 .. _`Invitation storage`: ../identity_service/unstable.html#invitation-storage
 .. _`Identity Service API`: ../identity_service/unstable.html
-.. _`Client-Server API`: ../client_server/unstable.html#m-room-member
+.. _`Client-Server API`: ../client_server/unstable.html
 .. _`Inviting to a room`: #inviting-to-a-room
 .. _`Canonical JSON`: ../appendices.html#canonical-json
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
