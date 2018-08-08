@@ -73,16 +73,35 @@ paths:
                   "type": "m.room.message",
                   "user_id": "@bob:localhost"
                 }
+              ],
+              "edus": [
+                {
+                  "type": "m.typing",
+                  "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
+                  "content": {
+                    "user_ids": ["@alice:localhost"]
+                  }
+                }
               ]
             }
             description: "Transaction informations"
             properties:
               events:
                 type: array
-                description: A list of events
+                description: A list of events. May be empty.
                 items:
                   type: object
                   title: Event
+              edus:
+                  type: array
+                  description: |-
+                    A list of ephemeral events the application service may be
+                    interested in. These have the same format as the EDUs defined
+                    in the Client-Server API.
+                  items:
+                    type: object
+                    title: Ephemeral Event
+                    # TODO: Reference client schema for EDUs
             required: ["events"]
       responses:
         200:
