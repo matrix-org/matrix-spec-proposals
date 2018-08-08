@@ -833,6 +833,16 @@ should be retrieved for.
 {{public_rooms_ss_http_api}}
 
 
+Typing Notifications
+--------------------
+
+When a server's users send typing notifications, those notifications need to
+be sent to other servers in the room so their users are aware of the same
+state. Receiving servers should verify that the user is in the room, and is
+a user belonging to the sending server.
+
+{{definition_ss_event_schemas_m_typing}}
+
 Presence
 --------
 The server API for presence is based entirely on exchange of the following
