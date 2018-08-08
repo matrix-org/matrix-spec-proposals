@@ -82,7 +82,9 @@ properties:
     example: 12
   auth_events:
     type: array
-    description: Event IDs and hashes for the "auth events" of this event.
+    description: |-
+      An event reference list containing the authorization events that would
+      allow this event to be in the room.
     items:
       type: array
       maxItems: 2
@@ -108,8 +110,35 @@ properties:
     example: "$def456:matrix.org"
   unsigned:
     type: object
-    description: Additional data added by the origin server but not covered by the ``signatures``.
+    title: Example Unsigned Data
+    description: |-
+      Additional data added by the origin server but not covered by the ``signatures``. More
+      keys than those defined here may be used.
     example: {"key": "value"}
+    properties:
+      age:
+        type: integer
+        description: The number of milliseconds that have passed since this message was sent.
+        example: 4612
+      replaces_state:
+        type: string
+        description: The event ID of the state event this event replaces.
+        example: "$state_event:domain.com"
+      prev_sender:
+        type: string
+        description: The sender of the replaced state event.
+        example: "@someone:domain.com"
+      prev_content:
+        type: object
+        description: The content of the replaced state event.
+        example: {
+          "membership": "join",
+          "displayname": "Bob"
+        }
+      redacted_because:
+        type: string
+        description: A reason for why the event was redacted.
+        example: "Inappropriate content"
 required:
   - event_id
   - room_id

@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO: Address any concerns about this being inaccurate (flagged as such in the EDUs section)
-
 type: object
 title: Ephemeral Data Unit
-description: An ephemeral data unit
+description: An ephemeral data unit.
 example:
   $ref: "../examples/edu.json"
 properties:
@@ -24,17 +22,7 @@ properties:
     type: string
     description: The type of ephemeral message.
     example: "m.presence"
-    required: true
-  origin:
-    type: string
-    description: The server name sending the ephemeral message.
-    example: "matrix.org"
-    required: true
-  destination:
-    type: string
-    description: The server name receiving the ephemeral message.
-    example: "elsewhere.com"
-    required: true
   content:
     type: object
     description: The content of the ephemeral message.
+required: ['edu_type', 'content']
