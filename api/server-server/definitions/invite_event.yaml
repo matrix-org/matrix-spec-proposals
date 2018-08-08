@@ -47,7 +47,7 @@ allOf:
         title: Membership Event Content
         description: |-
           The content of the event, matching what is available in the 
-          `Client-Server API`_.
+          `Client-Server API`_. Must include a ``membership`` of ``invite``.
         example: {"membership": "invite"}
         properties:
           membership:
@@ -85,4 +85,3 @@ allOf:
     required:
       # Every other field is already flagged as required by the $ref
       - state_key
-      - unsigned # TODO: apparently this is required? Verify.

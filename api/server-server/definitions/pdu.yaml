@@ -36,7 +36,7 @@ allOf:
       signatures:
         type: object
         description: |-
-          Signatures of the redacted PDU, following the algorithm specified in `Signing Events`_.
+          Signatures for the PDU, following the algorithm specified in `Signing Events`_.
         example: {
           "example.com": {
             "ed25519:key_version:": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
