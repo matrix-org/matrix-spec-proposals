@@ -81,8 +81,9 @@ paths:
     post:
       summary: Retrieves events that the sender is missing
       description: |-
-        Retrieves the previous events that the sender is missing for a given set of
-        events.
+        Retrieves previous events that the sender is missing. This is done by doing a breadth-first
+        walk of the ``prev_events`` for the ``latest_events``, ignoring any events in ``earliest_events``
+        and stopping at the ``limit``.
       operationId: getMissingPreviousEvents
       parameters:
         - in: path
@@ -107,15 +108,14 @@ paths:
               earliest_events:
                 type: array
                 description: |-
-                  The events the sender is missing. The response will only contain events
-                  that didn't happen before these events.
+                  The latest events that the sender already has. These are skipped when retrieving
+                  the previous events of ``latest_events``.
                 items:
                   type: string
                 example: ["$missing_event:domain.com"]
               latest_events:
                 type: array
-                description: |-
-                  The events that the sender has, but does not have previous events for.
+                description: The events to retrieve the previous events for.
                 items:
                   type: string
                 example: ["$event_that_has_the_missing_event_as_a_previous_event:domain.com"]
@@ -123,9 +123,8 @@ paths:
       responses:
         200:
           description: |-
-            The events that happened after the ``earliest_events`` which are also previous
-            to the ``latest_events`` and have the minimum depth specified. Does not include
-            any of the events in the request.
+            The previous events for ``latest_events``, excluding any ``earliest_events``, up to the 
+            provided ``limit``.
           schema:
             type: object
             properties:
