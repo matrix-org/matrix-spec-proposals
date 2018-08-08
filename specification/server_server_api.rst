@@ -934,6 +934,20 @@ the following EDU::
         for the user
 
 
+Content Repository
+------------------
+
+Attachments to events (images, files, etc) are uploaded to a homeserver via the
+Content Repository described in the `Client-Server API`_. When a server wishes
+to serve content originating from a remote server, it needs to ask the remote
+server for the media.
+
+Servers should use the server described in the Matrix Content URI, which has the
+format ``mxc://{ServerName}/{MediaID}``. Servers should use the download endpoint
+described in the `Client-Server API`_, being sure to use the ``allow_remote``
+parameter (set to ``false``).
+
+
 Signing Events
 --------------
 
@@ -1082,7 +1096,7 @@ that are too long.
 
 .. _`Invitation storage`: ../identity_service/unstable.html#invitation-storage
 .. _`Identity Service API`: ../identity_service/unstable.html
-.. _`Client-Server API`: ../client_server/unstable.html#m-room-member
+.. _`Client-Server API`: ../client_server/unstable.html
 .. _`Inviting to a room`: #inviting-to-a-room
 .. _`Canonical JSON`: ../appendices.html#canonical-json
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
