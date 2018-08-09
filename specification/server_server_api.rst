@@ -576,7 +576,44 @@ A *conflict* occurs between states where those states have different
 affected are said to be *conflicting* events.
 
 
+Backfilling and retrieving missing events
+-----------------------------------------
 
+Once a homeserver has joined a room, it receives all the events emitted by
+other homeservers in that room, and is thus aware of the entire history of the
+room from that moment onwards. Since users in that room are able to request the
+history by the ``/messages`` client API endpoint, it's possible that they might
+step backwards far enough into history before the homeserver itself was a
+member of that room.
+
+To cover this case, the federation API provides a server-to-server analog of
+the ``/messages`` client API, allowing one homeserver to fetch history from
+another. This is the ``/backfill`` API.
+
+To request more history, the requesting homeserver picks another homeserver 
+that it thinks may have more (most likely this should be a homeserver for 
+some of the existing users in the room at the earliest point in history it 
+has currently), and makes a ``/backfill`` request.
+
+Similar to backfilling a room's history, a server may not have all the events
+in the graph. That server may use the ``/get_missing_events`` API to acquire
+the events it is missing.
+
+.. TODO-spec
+  Specify (or remark that it is unspecified) how the server handles divergent
+  history. DFS? BFS? Anything weirder?
+
+{{backfill_ss_http_api}}
+
+Retrieving events
+----------------
+
+In some circumstances, a homeserver may be missing a particular event or information
+about the room which cannot be easily determined from backfilling. These APIs provide
+homeservers with the option of getting events and the state of the room at a given
+point in the timeline.
+
+{{events_ss_http_api}}
 
 
 Joining Rooms
@@ -663,45 +700,6 @@ participating in the room.
   - (paul) I don't really understand why the full auth_chain events are given
     here. What purpose does it serve expanding them out in full, when surely
     they'll appear in the state anyway?
-
-Backfilling and retrieving missing events
------------------------------------------
-
-Once a homeserver has joined a room, it receives all the events emitted by
-other homeservers in that room, and is thus aware of the entire history of the
-room from that moment onwards. Since users in that room are able to request the
-history by the ``/messages`` client API endpoint, it's possible that they might
-step backwards far enough into history before the homeserver itself was a
-member of that room.
-
-To cover this case, the federation API provides a server-to-server analog of
-the ``/messages`` client API, allowing one homeserver to fetch history from
-another. This is the ``/backfill`` API.
-
-To request more history, the requesting homeserver picks another homeserver 
-that it thinks may have more (most likely this should be a homeserver for 
-some of the existing users in the room at the earliest point in history it 
-has currently), and makes a ``/backfill`` request.
-
-Similar to backfilling a room's history, a server may not have all the events
-in the graph. That server may use the ``/get_missing_events`` API to acquire
-the events it is missing.
-
-.. TODO-spec
-  Specify (or remark that it is unspecified) how the server handles divergent
-  history. DFS? BFS? Anything weirder?
-
-{{backfill_ss_http_api}}
-
-Retrieving events
-----------------
-
-In some circumstances, a homeserver may be missing a particular event or information
-about the room which cannot be easily determined from backfilling. These APIs provide
-homeservers with the option of getting events and the state of the room at a given
-point in the timeline.
-
-{{events_ss_http_api}}
 
 Inviting to a room
 ------------------
