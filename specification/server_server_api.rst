@@ -580,8 +580,8 @@ participating in the room.
     here. What purpose does it serve expanding them out in full, when surely
     they'll appear in the state anyway?
 
-Backfilling
------------
+Backfilling and retrieving missing events
+-----------------------------------------
 
 Once a homeserver has joined a room, it receives all the events emitted by
 other homeservers in that room, and is thus aware of the entire history of the
@@ -594,31 +594,20 @@ To cover this case, the federation API provides a server-to-server analog of
 the ``/messages`` client API, allowing one homeserver to fetch history from
 another. This is the ``/backfill`` API.
 
-To request more history, the requesting homeserver picks another homeserver
-that it thinks may have more (most likely this should be a homeserver for some
-of the existing users in the room at the earliest point in history it has
-currently), and makes a ``/backfill`` request. The parameters of this request
-give an event ID that the requesting homeserver wishes to obtain, and a number
-specifying how many more events of history before that one to return at most.
+To request more history, the requesting homeserver picks another homeserver 
+that it thinks may have more (most likely this should be a homeserver for 
+some of the existing users in the room at the earliest point in history it 
+has currently), and makes a ``/backfill`` request.
 
-The response to this request is an object with the following keys:
-
-======================== ============ =========================================
- Key                      Type         Description
-======================== ============ =========================================
-``pdus``                 List         A list of events.
-``origin``               String       The name of the resident homeserver.
-``origin_server_ts``     Integer      A timestamp added by the resident
-                                      homeserver.
-======================== ============ =========================================
-
-The list of events given in ``pdus`` is returned in reverse chronological
-order; having the most recent event first (i.e. the event whose event ID is
-that requested by the requester in the ``v`` parameter).
+Similar to backfilling a room's history, a server may not have all the events
+in the graph. That server may use the ``/get_missing_events`` API to acquire
+the events it is missing.
 
 .. TODO-spec
   Specify (or remark that it is unspecified) how the server handles divergent
   history. DFS? BFS? Anything weirder?
+
+{{backfill_ss_http_api}}
 
 Retrieving events
 ----------------

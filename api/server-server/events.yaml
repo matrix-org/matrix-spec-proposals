@@ -129,35 +129,3 @@ paths:
           description: A transaction containing a single PDU which is the event requested.
           schema:
             $ref: "definitions/transaction.yaml"
-  "/backfill/{roomId}":
-    get:
-      summary: Retrieves the events which precede the given event
-      description: |-
-        Retreives a sliding-window history of previous PDUs that occurred in the given room.
-        Starting from the PDU ID(s) given in the ``v`` argument, the PDUs that preceded it
-        are retrieved, up to the total number given by the ``limit``.
-      operationId: backfillRoom
-      parameters:
-        - in: path
-          name: roomId
-          type: string
-          description: The room ID to backfill.
-          required: true
-          x-example: "!abc123:matrix.org"
-        - in: query
-          name: v
-          type: string # TODO: The description says this is plural - figure out how to specify multiple, and spec it
-          description: The event ID to backfill from.
-          required: true
-          x-example: "$abc123:matrix.org"
-        - in: query
-          name: limit
-          type: integer
-          description: The maximum number of events to retrieve.
-          required: true
-          x-example: 10
-      responses:
-        200:
-          description: A transaction containing the PDUs that preceded the given event(s).
-          schema:
-            $ref: "definitions/transaction.yaml"
