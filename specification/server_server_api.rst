@@ -23,14 +23,13 @@ Federation API
 
 Matrix homeservers use the Federation APIs (also known as server-server APIs)
 to communicate with each other. Homeservers use these APIs to push messages to
-each other in real-time, to
-historic messages from each other, and to
+each other in real-time, to retrieve historic messages from each other, and to
 query profile and presence information about users on each other's servers.
 
-The APIs are implemented using HTTPS GETs and PUTs between each of the
-servers. These HTTPS requests are strongly authenticated using public key
-signatures at the TLS transport layer and using public key signatures in
-HTTP Authorization headers at the HTTP layer.
+The APIs are implemented using HTTPS requests between each of the servers. 
+These HTTPS requests are strongly authenticated using public key signatures 
+at the TLS transport layer and using public key signatures in HTTP 
+Authorization headers at the HTTP layer.
 
 There are three main kinds of communication that occur between homeservers:
 
@@ -163,6 +162,97 @@ multiple servers to mitigate against DNS spoofing.
 
 {{keys_query_ss_http_api}}
 
+Authentication
+--------------
+
+Request Authentication
+~~~~~~~~~~~~~~~~~~~~~~
+
+Every HTTP request made by a homeserver is authenticated using public key
+digital signatures. The request method, target and body are signed by wrapping
+them in a JSON object and signing it using the JSON signing algorithm. The
+resulting signatures are added as an Authorization header with an auth scheme
+of ``X-Matrix``. Note that the target field should include the full path
+starting with ``/_matrix/...``, including the ``?`` and any query parameters if
+present, but should not include the leading ``https:``, nor the destination
+server's hostname.
+
+Step 1 sign JSON:
+
+.. code::
+
+    {
+        "method": "GET",
+        "uri": "/target",
+        "origin": "origin.hs.example.com",
+        "destination": "destination.hs.example.com",
+        "content": <request body>,
+        "signatures": {
+            "origin.hs.example.com": {
+                "ed25519:key1": "ABCDEF..."
+            }
+        }
+   }
+
+Step 2 add Authorization header:
+
+.. code::
+
+    GET /target HTTP/1.1
+    Authorization: X-Matrix origin=origin.example.com,key="ed25519:key1",sig="ABCDEF..."
+    Content-Type: application/json
+
+    <JSON-encoded request body>
+
+
+Example python code:
+
+.. code:: python
+
+    def authorization_headers(origin_name, origin_signing_key,
+                              destination_name, request_method, request_target,
+                              content=None):
+        request_json = {
+             "method": request_method,
+             "uri": request_target,
+             "origin": origin_name,
+             "destination": destination_name,
+        }
+
+        if content_json is not None:
+            request["content"] = content
+
+        signed_json = sign_json(request_json, origin_name, origin_signing_key)
+
+        authorization_headers = []
+
+        for key, sig in signed_json["signatures"][origin_name].items():
+            authorization_headers.append(bytes(
+                "X-Matrix origin=%s,key=\"%s\",sig=\"%s\"" % (
+                    origin_name, key, sig,
+                )
+            ))
+
+        return ("Authorization", authorization_headers)
+
+Response Authentication
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Responses are authenticated by the TLS server certificate. A homeserver should
+not send a request until it has authenticated the connected server to avoid
+leaking messages to eavesdroppers.
+
+Client TLS Certificates
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Requests are authenticated at the HTTP layer rather than at the TLS layer
+because HTTP services like Matrix are often deployed behind load balancers that
+handle the TLS and these load balancers make it difficult to check TLS client
+certificates.
+
+A homeserver may provide a TLS client certificate and the receiving homeserver
+may check that the client certificate matches the certificate of the origin
+homeserver.
 
 Transactions
 ------------
@@ -485,15 +575,46 @@ A *conflict* occurs between states where those states have different
 ``event_ids`` for the same ``(state_type, state_key)``. The events thus
 affected are said to be *conflicting* events.
 
-Protocol URLs
--------------
 
-.. WARNING::
-  This section may be misleading or inaccurate.
+Backfilling and retrieving missing events
+-----------------------------------------
 
-All these URLs are name-spaced within a prefix of::
+Once a homeserver has joined a room, it receives all the events emitted by
+other homeservers in that room, and is thus aware of the entire history of the
+room from that moment onwards. Since users in that room are able to request the
+history by the ``/messages`` client API endpoint, it's possible that they might
+step backwards far enough into history before the homeserver itself was a
+member of that room.
 
-  /_matrix/federation/v1/...
+To cover this case, the federation API provides a server-to-server analog of
+the ``/messages`` client API, allowing one homeserver to fetch history from
+another. This is the ``/backfill`` API.
+
+To request more history, the requesting homeserver picks another homeserver 
+that it thinks may have more (most likely this should be a homeserver for 
+some of the existing users in the room at the earliest point in history it 
+has currently), and makes a ``/backfill`` request.
+
+Similar to backfilling a room's history, a server may not have all the events
+in the graph. That server may use the ``/get_missing_events`` API to acquire
+the events it is missing.
+
+.. TODO-spec
+  Specify (or remark that it is unspecified) how the server handles divergent
+  history. DFS? BFS? Anything weirder?
+
+{{backfill_ss_http_api}}
+
+Retrieving events
+----------------
+
+In some circumstances, a homeserver may be missing a particular event or information
+about the room which cannot be easily determined from backfilling. These APIs provide
+homeservers with the option of getting events and the state of the room at a given
+point in the timeline.
+
+{{events_ss_http_api}}
+
 
 Joining Rooms
 -------------
@@ -579,45 +700,6 @@ participating in the room.
   - (paul) I don't really understand why the full auth_chain events are given
     here. What purpose does it serve expanding them out in full, when surely
     they'll appear in the state anyway?
-
-Backfilling and retrieving missing events
------------------------------------------
-
-Once a homeserver has joined a room, it receives all the events emitted by
-other homeservers in that room, and is thus aware of the entire history of the
-room from that moment onwards. Since users in that room are able to request the
-history by the ``/messages`` client API endpoint, it's possible that they might
-step backwards far enough into history before the homeserver itself was a
-member of that room.
-
-To cover this case, the federation API provides a server-to-server analog of
-the ``/messages`` client API, allowing one homeserver to fetch history from
-another. This is the ``/backfill`` API.
-
-To request more history, the requesting homeserver picks another homeserver 
-that it thinks may have more (most likely this should be a homeserver for 
-some of the existing users in the room at the earliest point in history it 
-has currently), and makes a ``/backfill`` request.
-
-Similar to backfilling a room's history, a server may not have all the events
-in the graph. That server may use the ``/get_missing_events`` API to acquire
-the events it is missing.
-
-.. TODO-spec
-  Specify (or remark that it is unspecified) how the server handles divergent
-  history. DFS? BFS? Anything weirder?
-
-{{backfill_ss_http_api}}
-
-Retrieving events
-----------------
-
-In some circumstances, a homeserver may be missing a particular event or information
-about the room which cannot be easily determined from backfilling. These APIs provide
-homeservers with the option of getting events and the state of the room at a given
-point in the timeline.
-
-{{events_ss_http_api}}
 
 Inviting to a room
 ------------------
@@ -718,98 +800,6 @@ and the Matrix ID, and contains the invited user's Matrix ID and the token
 delivered when the invite was stored, this verification will prove that the
 ``m.room.member`` invite event comes from the user owning the invited third-party
 identifier.
-
-Authentication
---------------
-
-Request Authentication
-~~~~~~~~~~~~~~~~~~~~~~
-
-Every HTTP request made by a homeserver is authenticated using public key
-digital signatures. The request method, target and body are signed by wrapping
-them in a JSON object and signing it using the JSON signing algorithm. The
-resulting signatures are added as an Authorization header with an auth scheme
-of ``X-Matrix``. Note that the target field should include the full path
-starting with ``/_matrix/...``, including the ``?`` and any query parameters if
-present, but should not include the leading ``https:``, nor the destination
-server's hostname.
-
-Step 1 sign JSON:
-
-.. code::
-
-    {
-        "method": "GET",
-        "uri": "/target",
-        "origin": "origin.hs.example.com",
-        "destination": "destination.hs.example.com",
-        "content": <request body>,
-        "signatures": {
-            "origin.hs.example.com": {
-                "ed25519:key1": "ABCDEF..."
-            }
-        }
-   }
-
-Step 2 add Authorization header:
-
-.. code::
-
-    GET /target HTTP/1.1
-    Authorization: X-Matrix origin=origin.example.com,key="ed25519:key1",sig="ABCDEF..."
-    Content-Type: application/json
-
-    <JSON-encoded request body>
-
-
-Example python code:
-
-.. code:: python
-
-    def authorization_headers(origin_name, origin_signing_key,
-                              destination_name, request_method, request_target,
-                              content=None):
-        request_json = {
-             "method": request_method,
-             "uri": request_target,
-             "origin": origin_name,
-             "destination": destination_name,
-        }
-
-        if content_json is not None:
-            request["content"] = content
-
-        signed_json = sign_json(request_json, origin_name, origin_signing_key)
-
-        authorization_headers = []
-
-        for key, sig in signed_json["signatures"][origin_name].items():
-            authorization_headers.append(bytes(
-                "X-Matrix origin=%s,key=\"%s\",sig=\"%s\"" % (
-                    origin_name, key, sig,
-                )
-            ))
-
-        return ("Authorization", authorization_headers)
-
-Response Authentication
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Responses are authenticated by the TLS server certificate. A homeserver should
-not send a request until it has authenticated the connected server to avoid
-leaking messages to eavesdroppers.
-
-Client TLS Certificates
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Requests are authenticated at the HTTP layer rather than at the TLS layer
-because HTTP services like Matrix are often deployed behind load balancers that
-handle the TLS and these load balancers make it difficult to check TLS client
-certificates.
-
-A homeserver may provide a TLS client certificate and the receiving homeserver
-may check that the client certificate matches the certificate of the origin
-homeserver.
 
 Public Room Directory
 ---------------------
