@@ -23,14 +23,13 @@ Federation API
 
 Matrix homeservers use the Federation APIs (also known as server-server APIs)
 to communicate with each other. Homeservers use these APIs to push messages to
-each other in real-time, to
-historic messages from each other, and to
+each other in real-time, to retrieve historic messages from each other, and to
 query profile and presence information about users on each other's servers.
 
-The APIs are implemented using HTTPS GETs and PUTs between each of the
-servers. These HTTPS requests are strongly authenticated using public key
-signatures at the TLS transport layer and using public key signatures in
-HTTP Authorization headers at the HTTP layer.
+The APIs are implemented using HTTPS requests between each of the servers. 
+These HTTPS requests are strongly authenticated using public key signatures 
+at the TLS transport layer and using public key signatures in HTTP 
+Authorization headers at the HTTP layer.
 
 There are three main kinds of communication that occur between homeservers:
 
@@ -485,15 +484,9 @@ A *conflict* occurs between states where those states have different
 ``event_ids`` for the same ``(state_type, state_key)``. The events thus
 affected are said to be *conflicting* events.
 
-Protocol URLs
--------------
 
-.. WARNING::
-  This section may be misleading or inaccurate.
 
-All these URLs are name-spaced within a prefix of::
 
-  /_matrix/federation/v1/...
 
 Joining Rooms
 -------------
