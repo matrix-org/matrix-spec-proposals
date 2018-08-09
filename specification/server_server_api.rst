@@ -734,6 +734,10 @@ event to other servers in the room.
 Third-party invites
 -------------------
 
+.. NOTE::
+   More information about third party invites is available in the `Client-Server API`_
+   under the Third Party Invites module.
+
 When an user wants to invite another user in a room but doesn't know the Matrix
 ID to invite, they can do so using a third-party identifier (e.g. an e-mail or a
 phone number).

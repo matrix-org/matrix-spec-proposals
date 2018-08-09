@@ -40,6 +40,7 @@ with ``content.membership`` = ``invite``, as well as a
 ``content.third_party_invite`` property which contains proof that the invitee
 does indeed own that third party identifier.
 
+
 Events
 ------
 
@@ -55,41 +56,79 @@ A client asks a server to invite a user by their third party identifier.
 Server behaviour
 ----------------
 
+Upon receipt of an ``/invite``, the server is expected to look up the third party
+identifier with the provided identity server. If the lookup yields a result for
+a Matrix User ID then the normal invite process can be initiated. This process
+ends up looking like this:
+
+::
+
+    +---------+                         +-------------+                                    +-----------------+
+    | Client  |                         | Homeserver  |                                    | IdentityServer  |
+    +---------+                         +-------------+                                    +-----------------+
+        |                                     |                                                    |
+        | POST /invite                        |                                                    |
+        |------------------------------------>|                                                    |
+        |                                     |                                                    |
+        |                                     | GET /lookup                                        |
+        |                                     |--------------------------------------------------->|
+        |                                     |                                                    |
+        |                                     |                                     User ID result |
+        |                                     |<---------------------------------------------------|
+        |                                     |                                                    |
+        |                                     | Invite process for the discovered User ID          |
+        |                                     |------------------------------------------          |
+        |                                     |                                         |          |
+        |                                     |<-----------------------------------------          |
+        |                                     |                                                    |
+        |        Complete the /invite request |                                                    |
+        |<------------------------------------|                                                    |
+        |                                     |                                                    |
+
+
+However, if the lookup does not yield a bound User ID, the homeserver must store
+the invite on the identity server and emit a valid ``m.room.third_party_invite``
+event to the room. This process ends up looking like this:
+
+::
+
+    +---------+                         +-------------+                                               +-----------------+
+    | Client  |                         | Homeserver  |                                               | IdentityServer  |
+    +---------+                         +-------------+                                               +-----------------+
+        |                                     |                                                               |
+        | POST /invite                        |                                                               |
+        |------------------------------------>|                                                               |
+        |                                     |                                                               |
+        |                                     | GET /lookup                                                   |
+        |                                     |-------------------------------------------------------------->|
+        |                                     |                                                               |
+        |                                     |                                             "no users" result |
+        |                                     |<--------------------------------------------------------------|
+        |                                     |                                                               |
+        |                                     | POST /store-invite                                            |
+        |                                     |-------------------------------------------------------------->|
+        |                                     |                                                               |
+        |                                     |          Information needed for the m.room.third_party_invite |
+        |                                     |<--------------------------------------------------------------|
+        |                                     |                                                               |
+        |                                     | Emit m.room.third_party_invite to the room                    |
+        |                                     |-------------------------------------------                    |
+        |                                     |                                          |                    |
+        |                                     |<------------------------------------------                    |
+        |                                     |                                                               |
+        |        Complete the /invite request |                                                               |
+        |<------------------------------------|                                                               |
+        |                                     |                                                               |
+
+
 All homeservers MUST verify the signature in the event's
 ``content.third_party_invite.signed`` object.
 
-When a homeserver inserts an ``m.room.member`` ``invite`` event into the graph
-because of an ``m.room.third_party_invite`` event,
-that homesever MUST validate that the public
-key used for signing is still valid, by checking ``key_validity_url`` from the ``m.room.third_party_invite``. It does
-this by making an HTTP GET request to ``key_validity_url``:
-
-.. TODO: Link to identity server spec when it exists
-
-Schema::
-
-    => GET $key_validity_url?public_key=$public_key
-    <= HTTP/1.1 200 OK
-    {
-        "valid": true|false
-    }
-
-
-Example::
-
-    key_validity_url = https://identity.server/is_valid
-    public_key = ALJWLAFQfqffQHFqFfeqFUOEHf4AIHfefh4
-    => GET https://identity.server/is_valid?public_key=ALJWLAFQfqffQHFqFfeqFUOEHf4AIHfefh4
-    <= HTTP/1.1 200 OK
-    {
-        "valid": true
-    }
-
-with the querystring
-?public_key=``public_key``. A JSON object will be returned.
-The invitation is valid if the object contains a key named ``valid`` which is
-``true``. Otherwise, the invitation MUST be rejected. This request is
-idempotent and may be retried by the homeserver.
+The third party user will then need to verify their identity, which results in
+a call from the Identity Server to the homeserver that bound the third party
+identifier to a user. The homeserver then exchanges the ``m.room.third_party_invite``
+event in the room for a complete ``m.room.member`` event for ``membership: invite``
+for the user that has bound the third party identifier.
 
 If a homeserver is joining a room for the first time because of an
 ``m.room.third_party_invite``, the server which is already participating in the
@@ -102,26 +141,85 @@ No other homeservers may reject the joining of the room on the basis of
 the room. They may, however, indicate to their clients that a member's'
 membership is questionable.
 
-For example:
+For example, given H1, H2, and H3 as homeservers, UserA as a user of H1, and an
+identity server IS, the full sequence for a third party invite would look like
+the following. This diagram assumes H1 and H2 are residents of the room while
+H3 is attempting to join.
 
-#. Room R has two participating homeservers, H1, H2
+::
 
-#. User A on H1 invites a third party identifier to room R
+    +-------+ +-----------------+         +-----+                                          +-----+           +-----+                      +-----+
+    | UserA | | ThirdPartyUser  |         | H1  |                                          | H2  |           | H3  |                      | IS  |
+    +-------+ +-----------------+         +-----+                                          +-----+           +-----+                      +-----+
+        |              |                     |                                                |                 |                            |
+        | POST /invite for ThirdPartyUser    |                                                |                 |                            |
+        |----------------------------------->|                                                |                 |                            |
+        |              |                     |                                                |                 |                            |
+        |              |                     | GET /lookup                                    |                 |                            |
+        |              |                     |---------------------------------------------------------------------------------------------->|
+        |              |                     |                                                |                 |                            |
+        |              |                     |                                                |                Lookup results (empty object) |
+        |              |                     |<----------------------------------------------------------------------------------------------|
+        |              |                     |                                                |                 |                            |
+        |              |                     | POST /store-invite                             |                 |                            |
+        |              |                     |---------------------------------------------------------------------------------------------->|
+        |              |                     |                                                |                 |                            |
+        |              |                     |                                                |      Token, keys, etc for third party invite |
+        |              |                     |<----------------------------------------------------------------------------------------------|
+        |              |                     |                                                |                 |                            |
+        |              |                     | (Federation) Emit m.room.third_party_invite    |                 |                            |
+        |              |                     |----------------------------------------------->|                 |                            |
+        |              |                     |                                                |                 |                            |
+        |           Complete /invite request |                                                |                 |                            |
+        |<-----------------------------------|                                                |                 |                            |
+        |              |                     |                                                |                 |                            |
+        |              | Verify identity     |                                                |                 |                            |
+        |              |-------------------------------------------------------------------------------------------------------------------->|
+        |              |                     |                                                |                 |                            |
+        |              |                     |                                                |                 |          POST /3pid/onbind |
+        |              |                     |                                                |                 |<---------------------------|
+        |              |                     |                                                |                 |                            |
+        |              |                     |                         PUT /exchange_third_party_invite/:roomId |                            |
+        |              |                     |<-----------------------------------------------------------------|                            |
+        |              |                     |                                                |                 |                            |
+        |              |                     | Verify the request                             |                 |                            |
+        |              |                     |-------------------                             |                 |                            |
+        |              |                     |                  |                             |                 |                            |
+        |              |                     |<------------------                             |                 |                            |
+        |              |                     |                                                |                 |                            |
+        |              |                     | (Federation) Emit m.room.member for invite     |                 |                            |
+        |              |                     |----------------------------------------------->|                 |                            |
+        |              |                     |                                                |                 |                            |
+        |              |                     |                                                | Accept event    |                            |
+        |              |                     |                                                |-------------    |                            |
+        |              |                     |                                                |            |    |                            |
+        |              |                     |                                                |<------------    |                            |
+        |              |                     |                                                |                 |                            |
+        |              |                     | (Federation) Emit the m.room.member event sent to H2             |                            |
+        |              |                     |----------------------------------------------------------------->|                            |
+        |              |                     |                                                |                 |                            |
+        |              |                     | Complete /exchange_third_party_invite/:roomId request            |                            |
+        |              |                     |----------------------------------------------------------------->|                            |
+        |              |                     |                                                |                 |                            |
+        |              |                     |                                                |                 | Participate in the room    |
+        |              |                     |                                                |                 |------------------------    |
+        |              |                     |                                                |                 |                       |    |
+        |              |                     |                                                |                 |<-----------------------    |
+        |              |                     |                                                |                 |                            |
 
-#. H1 asks the identity server for a binding to a Matrix user ID, and has none,
-   so issues an ``m.room.third_party_invite`` event to the room.
 
-#. When the third party user validates their identity, their homeserver H3
-   is notified and attempts to issue an ``m.room.member`` event to participate
-   in the room.
+Note that when H1 sends the ``m.room.member`` event to H2 and H3 it does not
+have to block on either server's receipt of the event. Likewise, H1 may complete
+the ``/exchange_third_party_invite/:roomId`` request at the same time as sending
+the ``m.room.member`` event to H2 and H3. Additionally, H3 may complete the 
+``/3pid/onbind`` request it got from IS at any time - the completion is not shown
+in the diagram.
 
-#. H3 validates the signature given to it by the identity server.
-
-#. H3 then asks H1 to join it to the room. H1 *must* validate the ``signed``
-   property *and* check ``key_validity_url``.
-
-#. Having validated these things, H1 writes the invite event to the room, and H3
-   begins participating in the room. H2 *must* accept this event.
+H1 MUST verify the request from H3 to ensure the ``signed`` property is correct
+as well as the ``key_validity_url`` as still being valid. This is done by making
+a request to the `Identity Server /isvalid`_ endpoint, using the provided URL
+rather than constructing a new one. The query string and response for the provided
+URL must match the Identity Server specification.
 
 The reason that no other homeserver may reject the event based on checking
 ``key_validity_url`` is that we must ensure event acceptance is deterministic.
@@ -158,3 +256,6 @@ There is some risk of denial of service attacks by flooding homeservers or
 identity servers with many requests, or much state to store. Defending against
 these is left to the implementer's discretion.
 
+
+
+.. _`Identity Server /isvalid`: ../identity_service/unstable.html#get-matrix-identity-api-v1-pubkey-isvalid
