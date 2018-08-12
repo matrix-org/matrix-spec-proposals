@@ -21,3 +21,25 @@ Example:
     name: fields...
     type: string
 ```
+
+## Using oneOf to provide type alternatives
+
+<!-- TODO: Remove this section after upgrading to OpenAPI v3 -->
+
+`oneOf` (available in JSON Schema and Swagger/OpenAPI v3 but not in v2)
+is used in cases when a simpler type specification as a list of types
+doesn't work, as in the following example:
+```
+  properties:
+    old: # compliant with old Swagger
+      type:
+        - string
+        - object # Cannot specify a schema here
+    new: # uses oneOf extension
+      oneOf:
+        - type: string
+        - type: object
+          title: CustomSchemaForTheWin
+          properties:
+            ...
+```
