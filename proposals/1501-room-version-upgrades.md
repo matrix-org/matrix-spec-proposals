@@ -56,7 +56,7 @@ When this is called, the server:
    }
    ```
 
- * Replicates PL/privacy/topic/etc settings to the new room.
+ * Replicates PL/privacy/topic/etc events to the new room.
 
  * Moves any local aliases to the new room.
 
