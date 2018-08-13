@@ -190,3 +190,126 @@ paths:
             type: object
             description: An empty object
             example: {}
+  "/3pid/onbind":
+    put:
+      summary: |-
+        Notifies the server that a third party identifier has been bound to one
+        of its users.
+      description: |-
+        Used by Identity Servers to notify the homeserver that one of its users
+        has bound a third party identifier successfully, including any pending
+        room invites the Identity Server has been made aware of.
+      operationId: onBindThirdPartyIdentifier
+      parameters:
+        - in: body
+          name: body
+          type: object
+          required: true
+          schema:
+            type: object
+            properties:
+              medium:
+                type: string
+                description: |-
+                  The type of third party identifier. Currently only "email" is
+                  a possible value.
+                example: "email"
+              address:
+                type: string
+                description: |-
+                  The third party identifier itself. For example, an email address.
+                example: "alice@domain.com"
+              mxid:
+                type: string
+                description: The user that is now bound to the third party identifier.
+                example: "@alice:matrix.org"
+              invites:
+                type: array
+                description: |-
+                  A list of pending invites that the third party identifier has received.
+                items:
+                  type: object
+                  title: Third Party Invite
+                  properties:
+                    medium:
+                      type: string
+                      description: |-
+                        The type of third party invite issues. Currently only
+                        "email" is used.
+                      example: "email"
+                    address:
+                      type: string
+                      description: |-
+                        The third party identifier that received the invite.
+                      example: "alice@domain.com"
+                    mxid:
+                      type: string
+                      description: The now-bound user ID that received the invite.
+                      example: "@alice:matrix.org"
+                    room_id:
+                      type: string
+                      description: The room ID the invite is valid for.
+                      example: "!somewhere:example.org"
+                    sender:
+                      type: string
+                      description: The user ID that sent the invite.
+                      example: "@bob:matrix.org"
+                    # TODO (TravisR): Make this reusable when doing IS spec changes
+                    #   also make sure it isn't lying about anything, like the key version
+                    signed:
+                      type: object
+                      title: Identity Server Signatures
+                      description: |-
+                        Signature from the Identity Server using a long-term private
+                        key.
+                      properties:
+                        mxid:
+                          type: string
+                          description: |-
+                            The user ID that has been bound to the third party
+                            identifier.
+                          example: "@alice:matrix.org"
+                        token:
+                          type: string
+                          # TODO: What is this actually?
+                          description: A token.
+                          example: "Hello World"
+                        signatures:
+                          type: object
+                          title: Identity Server Signature
+                          description: |-
+                            The signature from the identity server. The ``string`` key
+                            is the identity server's domain name, such as vector.im
+                          additionalProperties:
+                            type: object
+                            title: Identity Server Domain Signature
+                            description: The signature for the identity server.
+                            properties:
+                              "ed25519:0":
+                                type: string
+                                description: The signature.
+                                example: "SomeSignatureGoesHere"
+                            required: ['ed25519:0']
+                          example: {
+                            "vector.im": {
+                              "ed25519:0": "SomeSignatureGoesHere"
+                            }
+                          }
+                      required: ['mxid', 'token', 'signatures']
+                  required:
+                    - medium
+                    - address
+                    - mxid
+                    - room_id
+                    - sender
+                    - signed
+            required: ['medium', 'address', 'mxid', 'invites']
+      responses:
+        200:
+          description: The homeserver has processed the notification.
+          examples:
+            application/json: {}
+          schema:
+            type: object
+            description: An empty object
+            example: {}
