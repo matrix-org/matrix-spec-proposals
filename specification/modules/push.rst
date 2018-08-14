@@ -65,6 +65,9 @@ APNS or Google's GCM. This happens as follows:
    notifications.
 5. The Push Provider sends the notification to the device.
 
+Homeservers may optionally support email notifications or other push kinds
+of push, identified by the ``kind`` field of the pusher configuration.
+
 Definitions for terms used in this section are below:
 
 Push Provider

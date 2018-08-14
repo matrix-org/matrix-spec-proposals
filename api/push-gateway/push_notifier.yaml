@@ -1,4 +1,5 @@
 # Copyright 2016 OpenMarket Ltd
+# Copyright 2018 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +20,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/push/%CLIENT_MAJOR_VERSION%
+basePath: /_matrix/push/v1
 consumes:
   - application/json
 produces:
@@ -38,14 +39,14 @@ paths:
 
         Notifications about a particular event will normally cause the user to be
         alerted in some way. It is therefore necessary to perform duplicate
-        suppression for such notifications using the `event_id` field to avoid
+        suppression for such notifications using the ``event_id`` field to avoid
         retries of this HTTP API causing duplicate alerts. The operation of
         updating counts of unread notifications should be idempotent and
         therefore do not require duplicate suppression.
 
-        Notifications are sent to the URL configured when the pusher is
-        created. This means that the HTTP path may be different depending on the
-        push gateway.
+        Notifications are sent to the URL configured when the pusher is created.
+        This means that the HTTP path may be different depending on the push
+        gateway.
       operationId: notify
       parameters:
         - in: body
@@ -55,36 +56,36 @@ paths:
           schema:
             type: object
             example: {
-                "notification": {
-                  "id": "$3957tyerfgewrf384",
-                  "room_id": "!slw48wfj34rtnrf:example.com",
-                  "type": "m.room.message",
-                  "sender": "@exampleuser:matrix.org",
-                  "sender_display_name": "Major Tom",
-                  "room_name": "Mission Control",
-                  "room_alias": "#exampleroom:matrix.org",
-                  "prio": "high",
-                  "content": {
-                    "msgtype": "m.text",
-                    "body": "I'm floating in a most peculiar way."
-                  },
-                  "counts": {
-                     "unread" : 2,
-                     "missed_calls": 1
-                  },
-                  "devices": [
-                    {
-                       "app_id": "org.matrix.matrixConsole.ios",
-                       "pushkey": "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/",
-                       "pushkey_ts": 12345678,
-                       "data" : {},
-                       "tweaks": {
-                         "sound": "bing"
-                        }
+              "notification": {
+                "id": "$3957tyerfgewrf384",
+                "room_id": "!slw48wfj34rtnrf:example.com",
+                "type": "m.room.message",
+                "sender": "@exampleuser:matrix.org",
+                "sender_display_name": "Major Tom",
+                "room_name": "Mission Control",
+                "room_alias": "#exampleroom:matrix.org",
+                "prio": "high",
+                "content": {
+                  "msgtype": "m.text",
+                  "body": "I'm floating in a most peculiar way."
+                },
+                "counts": {
+                  "unread" : 2,
+                  "missed_calls": 1
+                },
+                "devices": [
+                  {
+                    "app_id": "org.matrix.matrixConsole.ios",
+                    "pushkey": "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/",
+                    "pushkey_ts": 12345678,
+                    "data" : {},
+                    "tweaks": {
+                      "sound": "bing"
                     }
-                  ]
-                }
+                  }
+                ]
               }
+            }
             required: ["notification"]
             properties:
               notification:
@@ -111,14 +112,10 @@ paths:
                     type: string
                     description: |-
                       The type of the event as in the event's ``type`` field.
-                      Required if the notification relates to a specific
-                      Matrix event.
                   sender:
                     type: string
                     description: |-
                       The sender of the event as in the corresponding event field.
-                      Required if the notification relates to a specific
-                      Matrix event.
                   sender_display_name:
                     type: string
                     description: |-
@@ -149,14 +146,15 @@ paths:
                     title: EventContent
                     description: |-
                       The ``content`` field from the event, if present. If the
-                      event had no content field, this field is omitted.
+                      event had no content field or the pusher wishes to not include
+                      it, this field is omitted.
                   counts:
                     type: object
                     title: Counts
                     description: |-
                       This is a dictionary of the current number of unacknowledged
                       communications for the recipient user. Counts whose value is
-                      zero are omitted.
+                      zero should be omitted.
                     properties:
                       unread:
                         type: integer
@@ -180,10 +178,10 @@ paths:
                         app_id:
                           type: string
                           description: |-
-                            The app_id given when the pusher was created.
+                            The ``app_id`` given when the pusher was created.
                         pushkey:
                           type: string
-                          description: The pushkey given when the pusher was created.
+                          description: The ``pushkey`` given when the pusher was created.
                         pushkey_ts:
                           type: integer
                           description: |-
@@ -202,13 +200,14 @@ paths:
                           description: |-
                             A dictionary of customisations made to the way this
                             notification is to be presented. These are added by push rules.
+                      required: ['app_id', 'pushkey']
       responses:
         200:
           description: A list of rejected push keys.
           examples:
             application/json: {
-                "rejected": [ "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/" ]
-              }
+              "rejected": [ "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/" ]
+            }
           schema:
             type: object  # empty json object
             properties:
@@ -222,7 +221,8 @@ paths:
                   pushkeys and remove the associated pushers. It may not
                   necessarily be the notification in the request that failed:
                   it could be that a previous notification to the same pushkey
-                  failed.
+                  failed. May be empty.
                 items:
                   type: string
-                  description: A pushkey
+                  description: A pushkey that has been rejected.
+            required: ['rejected']
