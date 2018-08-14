@@ -16,8 +16,9 @@ description: |-
   Used by clients to discover identity server information.
 type: object
 properties:
-    base_url:
-        type: string
-        description: The base URL for the identity server for client-server connections.
+  base_url:
+    type: string
+    description: The base URL for the identity server for client-server connections.
+    example: https://identity.example.com
 required:
   - base_url

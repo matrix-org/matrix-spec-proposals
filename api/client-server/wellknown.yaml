@@ -13,7 +13,7 @@
 # limitations under the License.
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server server discovery API"
+  title: "Matrix Client-Server Server Discovery API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
@@ -26,7 +26,7 @@ paths:
     get:
       summary: Gets Matrix server discovery information about the domain.
       description: |-
-        Gets discovery information about the domain.  The file may include
+        Gets discovery information about the domain. The file may include
         additional keys, which MUST follow the Java package naming convention,
         e.g. ``com.example.myapp.property``. This ensures property names are
         suitably namespaced for each application and reduces the risk of
@@ -37,7 +37,7 @@ paths:
       operationId: getWellknown
       responses:
         200:
-          description: Server discovery information
+          description: Server discovery information.
           examples:
             application/json: {
                 "m.homeserver": {
@@ -61,6 +61,6 @@ paths:
             required:
               - m.homeserver
         404:
-          description: No server discovery information available
+          description: No server discovery information available.
       tags:
         - Server administration

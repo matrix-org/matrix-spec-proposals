@@ -219,12 +219,12 @@ Well-known URI
 ++++++++++++++
 
 The ``.well-known`` method uses a JSON file at a predetermined location to
-specify parameter values.  The flow for this method is as follows:
+specify parameter values. The flow for this method is as follows:
 
 1. Extract the server name from the user's Matrix ID by splitting the Matrix ID
    at the first colon.
-2. Extract the DNS name from the server name.
-3. Make a GET request to ``https://dns_name/.well-known/matrix/client``.
+2. Extract the hostname from the server name.
+3. Make a GET request to ``https://hostname/.well-known/matrix/client``.
 
    a. If the returned status code is 404, then ``IGNORE``.
    b. If the returned status code is not 200, or the response body is empty,
@@ -233,17 +233,17 @@ specify parameter values.  The flow for this method is as follows:
 
       i. If the content cannot be parsed, then ``FAIL_PROMPT``.
 
-   d. Extract the ``base_url`` value from the ``m.homeserver`` property.  This
+   d. Extract the ``base_url`` value from the ``m.homeserver`` property. This
       value is to be used as the base URL of the homeserver.
 
       i. If this value is not provided, then ``FAIL_PROMPT``.
 
    e. Validate the homeserver base URL:
 
-      i. Parse it as a URL.  If it is not a URL, then ``FAIL_ERROR``.
+      i. Parse it as a URL. If it is not a URL, then ``FAIL_ERROR``.
       ii. Clients SHOULD validate that the URL points to a valid homeserver
           before accepting it by connecting to the ``/_matrix/client/versions``
-          endpoint, and parsing and validating the data.  If any step in the
+          endpoint, and parsing and validating the data. If any step in the
           validation fails, then ``FAIL_ERROR``. Validation is done as a simple
           check against configuration errors, before sending sensitive
           information such as a user's password to the server.
@@ -251,7 +251,7 @@ specify parameter values.  The flow for this method is as follows:
    f. If the ``m.identity_server`` property is present, extract the
       ``base_url`` value for use as the base URL of the identity server.
       Validation for this URL is done as in the step above, but using
-      ``/_matrix/identity/api/v1`` as the endpoint to connect to.  If the
+      ``/_matrix/identity/api/v1`` as the endpoint to connect to. If the
       ``m.identity_server`` property is present, but does not have a
       ``base_url`` value, then ``FAIL_ERROR``.
 
