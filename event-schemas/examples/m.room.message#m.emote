@@ -2,7 +2,9 @@
   "age": 242352,
   "content": {
     "body": "thinks this is an example emote",
-    "msgtype": "m.emote"
+    "msgtype": "m.emote",
+    "format": "org.matrix.custom.html",
+    "formatted_body": "thinks <b>this</b> is an example emote"
   },
   "origin_server_ts": 1431961217939,
   "event_id": "$WLGTSEFSEF:localhost",

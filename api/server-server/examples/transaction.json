@@ -1,0 +1,5 @@
+{
+    "origin": "matrix.org",
+    "origin_server_ts": 1234567890,
+    "pdus": [{"$ref": "pdu.json"}]
+}

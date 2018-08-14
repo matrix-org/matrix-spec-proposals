@@ -98,9 +98,9 @@ check for certain user attributes in the response. Any required attributes
 should be configured by the server administrator.
 
 Once the ticket has been validated, the server MUST map the CAS ``user_id``
-to a valid `Matrix user identifier <../intro.html#user-identifiers>`_. The
+to a valid `Matrix user identifier <../index.html#user-identifiers>`_. The
 guidance in `Mapping from other character sets
-<../intro.html#mapping-from-other-character-sets>`_ may be useful.
+<../index.html#mapping-from-other-character-sets>`_ may be useful.
 
 If the generated user identifier represents a new user, it should be registered
 as a new user.
