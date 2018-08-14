@@ -183,7 +183,7 @@ headers to be returned by servers on all requests are:
   Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization
 
 Server Discovery
-~~~~~~~~~~~~~~~~
+----------------
 
 In order to allow users to connect to a Matrix server without needing to
 explicitly specify the homeserver's URL or other parameters, clients SHOULD use
@@ -216,7 +216,7 @@ In this section, the following terms are used with specific meanings:
   what to do next.
 
 Well-known URI
-++++++++++++++
+~~~~~~~~~~~~~~
 
 The ``.well-known`` method uses a JSON file at a predetermined location to
 specify parameter values. The flow for this method is as follows:
