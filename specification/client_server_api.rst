@@ -210,7 +210,7 @@ support:
 Clients are encouraged to use the ``Authorization`` header where possible
 to prevent the access token being leaked in access/HTTP logs. The query
 string should only be used in cases where the ``Authorization`` header is
-unaccessible for the client.
+inaccessible for the client.
 
 When credentials are required but missing or invalid, the HTTP call will
 return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
