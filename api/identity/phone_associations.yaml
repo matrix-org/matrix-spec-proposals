@@ -103,7 +103,8 @@ paths:
           description: |
             An error ocurred. Some possible errors are:
 
-            - FIXME: sydent doesn\'t seem to send any error codes at all
+            - ``M_INVALID_ADDRESS``: The phone number provided was invalid.
+            - ``M_SEND_ERROR``: The validation SMS could not be sent.
   "/validate/msisdn/submitToken":
     post:
       summary: Validate ownership of a phone number.

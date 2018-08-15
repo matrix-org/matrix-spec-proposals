@@ -149,7 +149,7 @@ paths:
           description: An email was sent to the given address.
   "/account/3pid/msisdn/requestToken":
     post:
-      summary: Requests a validation token be sent to the given email address for the purpose of adding a phone number address to an account.
+      summary: Requests a validation token be sent to the given email address for the purpose of adding a phone number to an account.
       description: |-
         Proxies the identity server API ``validate/msisdn/requestToken``, but
         first checks that the given phone number is **not** already associated
