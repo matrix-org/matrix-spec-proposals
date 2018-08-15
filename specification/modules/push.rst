@@ -65,9 +65,6 @@ APNS or Google's GCM. This happens as follows:
    notifications.
 5. The Push Provider sends the notification to the device.
 
-Homeservers may optionally support email notifications or other push kinds
-of push, identified by the ``kind`` field of the pusher configuration.
-
 Definitions for terms used in this section are below:
 
 Push Provider
@@ -625,3 +622,5 @@ shouldn't be sent in the push itself where possible. Instead, Push Gateways
 should send a "sync" command to instruct the client to get new events from the
 homeserver directly.
 
+
+.. _`Push Gateway Specification`: ../push_gateway/unstable.html

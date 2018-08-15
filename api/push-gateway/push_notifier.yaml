@@ -145,9 +145,9 @@ paths:
                     type: object
                     title: EventContent
                     description: |-
-                      The ``content`` field from the event, if present. If the
-                      event had no content field or the pusher wishes to not include
-                      it, this field is omitted.
+                      The ``content`` field from the event, if present. The pusher
+                      may omit this if the event had no content or for any other
+                      reason.
                   counts:
                     type: object
                     title: Counts

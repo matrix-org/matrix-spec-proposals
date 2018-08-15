@@ -226,12 +226,11 @@ paths:
                   format:
                     type: string
                     description: |-
-                      The format to send notifications in to Push Gateways. If
-                      unset or unrecognized, the homeserver should populate as
-                      many fields as it can in the push notification. If set to
-                      ``"event_id_only"``, the homeserver should only send the
-                      absolute minimum amount of information possible to the push
-                      gateway by not including optional fields.
+                      The format to send notifications in to Push Gateways if the
+                      ``kind`` is ``http``. The details about what fields the
+                      homeserver should send to the push gateway are defined in the
+                      `Push Gateway Specification`_. Currently the only format
+                      available is 'event_id_only'.
               append:
                 type: boolean
                 description: |-
