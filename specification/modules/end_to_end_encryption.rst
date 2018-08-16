@@ -357,7 +357,7 @@ client must not persist a session or remove one-time keys used by a session
 until it has successfully decrypted a message using that session.
 
 Messages with type 1 can only be decrypted with an existing session. If there
-is no matching session, the client should show this as an invalid message.
+is no matching session, the client must treat this as an invalid message.
 
 The plaintext payload is of the form:
 
