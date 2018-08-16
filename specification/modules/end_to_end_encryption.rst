@@ -292,8 +292,8 @@ Messaging Algorithm Names
 Messaging algorithm names use the extensible naming scheme used throughout this
 specification. Algorithm names that start with ``m.`` are reserved for
 algorithms defined by this specification. Implementations wanting to experiment
-with new algorithms are encouraged to pick algorithm names that start with
-their domain to reduce the risk of collisions.
+with new algorithms must be uniquely globally namespaced following Java's package
+naming conventions.
 
 Algorithm names should be short and meaningful, and should list the primitives
 used by the algorithm so that it is easier to see if the algorithm is using a
