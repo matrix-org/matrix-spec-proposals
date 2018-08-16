@@ -1,4 +1,5 @@
 # Copyright 2016 OpenMarket Ltd
+# Copyright 2018 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,30 +32,30 @@ paths:
     get:
       summary: Gets the current pushers for the authenticated user
       description: |-
-          Gets all currently active pushers for the authenticated user
+          Gets all currently active pushers for the authenticated user.
       operationId: getPushers
       security:
         - accessToken: []
       responses:
         200:
-          description: The pushers for this user
+          description: The pushers for this user.
           examples:
             application/json: {
-                "pushers": [
-                  {
-                    "pushkey": "Xp/MzCt8/9DcSNE9cuiaoT5Ac55job3TdLSSmtmYl4A=",
-                    "kind": "http",
-                    "app_id": "face.mcapp.appy.prod",
-                    "app_display_name": "Appy McAppface",
-                    "device_display_name": "Alice's Phone",
-                    "profile_tag": "xyz",
-                    "lang": "en-US",
-                    "data": {
-                        "url": "https://example.com/_matrix/push/v1/notify"
-                    }
+              "pushers": [
+                {
+                  "pushkey": "Xp/MzCt8/9DcSNE9cuiaoT5Ac55job3TdLSSmtmYl4A=",
+                  "kind": "http",
+                  "app_id": "face.mcapp.appy.prod",
+                  "app_display_name": "Appy McAppface",
+                  "device_display_name": "Alice's Phone",
+                  "profile_tag": "xyz",
+                  "lang": "en-US",
+                  "data": {
+                    "url": "https://example.com/_matrix/push/v1/notify"
                   }
-                ]
-              }
+                }
+              ]
+            }
           schema:
             type: object
             properties:
@@ -70,7 +71,7 @@ paths:
                     pushkey:
                       type: string
                       description: |-
-                        This is a unique identifier for this pusher. See `/set` for
+                        This is a unique identifier for this pusher. See ``/set`` for
                         more detail.
                         Max length, 512 bytes.
                     kind:
@@ -115,6 +116,19 @@ paths:
                           description: |-
                             Required if ``kind`` is ``http``. The URL to use to send
                             notifications to.
+                        format:
+                          type: string
+                          description: |-
+                            The format to use when sending notifications to the Push
+                            Gateway.
+                  required:
+                    - pushkey
+                    - app_id
+                    - kind
+                    - app_display_name
+                    - device_display_name
+                    - lang
+                    - data
       tags:
         - Push notifications
   "/pushers/set":
@@ -130,23 +144,24 @@ paths:
       parameters:
         - in: body
           name: pusher
-          description: The pusher information
+          description: The pusher information.
           required: true
           schema:
             type: object
             example: {
-                "lang": "en",
-                "kind": "http",
-                "app_display_name": "Mat Rix",
-                "device_display_name": "iPhone 9",
-                "profile_tag": "xxyyzz",
-                "app_id": "com.example.app.ios",
-                "pushkey": "APA91bHPRgkF3JUikC4ENAHEeMrd41Zxv3hVZjC9KtT8OvPVGJ-hQMRKRrZuJAEcl7B338qju59zJMjw2DELjzEvxwYv7hH5Ynpc1ODQ0aT4U4OFEeco8ohsN5PjL1iC2dNtk2BAokeMCg2ZXKqpc8FXKmhX94kIxQ",
-                "data": {
-                  "url": "https://push-gateway.location.here"
-                },
-                "append": false
-              }
+              "lang": "en",
+              "kind": "http",
+              "app_display_name": "Mat Rix",
+              "device_display_name": "iPhone 9",
+              "profile_tag": "xxyyzz",
+              "app_id": "com.example.app.ios",
+              "pushkey": "APA91bHPRgkF3JUikC4ENAHEeMrd41Zxv3hVZjC9KtT8OvPVGJ-hQMRKRrZuJAEcl7B338qju59zJMjw2DELjzEvxwYv7hH5Ynpc1ODQ0aT4U4OFEeco8ohsN5PjL1iC2dNtk2BAokeMCg2ZXKqpc8FXKmhX94kIxQ",
+              "data": {
+                "url": "https://push-gateway.location.here/_matrix/push/v1/notify",
+                "format": "event_id_only"
+              },
+              "append": false
+            }
             properties:
               pushkey:
                 type: string
@@ -157,11 +172,15 @@ paths:
                   for APNS or the Registration ID for GCM. If your notification
                   client has no such concept, use any unique identifier.
                   Max length, 512 bytes.
+
+                  If the ``kind`` is ``"email"``, this is the email address to
+                  send notifications to.
               kind:
                 type: string
                 description: |-
                   The kind of pusher to configure. ``"http"`` makes a pusher that
-                  sends HTTP pokes. ``null`` deletes the pusher.
+                  sends HTTP pokes. ``"email"`` makes a pusher that emails the
+                  user with unread notifications. ``null`` deletes the pusher.
               app_id:
                 type: string
                 description: |-
@@ -169,6 +188,8 @@ paths:
                   It is recommended that this end with the platform, such that
                   different platform versions get different app identifiers.
                   Max length, 64 chars.
+
+                  If the ``kind`` is ``"email"``, this is ``"m.email"``.
               app_display_name:
                 type: string
                 description: |-
@@ -188,7 +209,7 @@ paths:
                 type: string
                 description: |-
                   The preferred language for receiving notifications (e.g. 'en'
-                  or 'en-US')
+                  or 'en-US').
               data:
                 type: object
                 description: |-
@@ -202,6 +223,14 @@ paths:
                     description: |-
                       Required if ``kind`` is ``http``. The URL to use to send
                       notifications to.
+                  format:
+                    type: string
+                    description: |-
+                      The format to send notifications in to Push Gateways if the
+                      ``kind`` is ``http``. The details about what fields the
+                      homeserver should send to the push gateway are defined in the
+                      `Push Gateway Specification`_. Currently the only format
+                      available is 'event_id_only'.
               append:
                 type: boolean
                 description: |-
@@ -216,17 +245,17 @@ paths:
         200:
           description: The pusher was set.
           examples:
-            application/json: {
-              }
+            application/json: {}
           schema:
-            type: object  # empty json object
+            type: object
+            description: An empty object.
         400:
           description: One or more of the pusher values were invalid.
           examples:
             application/json: {
-                "error": "Missing parameters: lang, data",
-                "errcode": "M_MISSING_PARAM"
-              }
+              "error": "Missing parameters: lang, data",
+              "errcode": "M_MISSING_PARAM"
+            }
           schema:
             "$ref": "definitions/errors/error.yaml"
         429:

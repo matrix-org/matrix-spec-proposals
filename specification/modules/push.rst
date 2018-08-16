@@ -622,3 +622,5 @@ shouldn't be sent in the push itself where possible. Instead, Push Gateways
 should send a "sync" command to instruct the client to get new events from the
 homeserver directly.
 
+
+.. _`Push Gateway Specification`: ../push_gateway/unstable.html
