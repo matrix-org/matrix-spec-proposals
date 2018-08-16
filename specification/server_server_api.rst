@@ -606,7 +606,7 @@ the events it is missing.
 {{backfill_ss_http_api}}
 
 Retrieving events
-----------------
+-----------------
 
 In some circumstances, a homeserver may be missing a particular event or information
 about the room which cannot be easily determined from backfilling. These APIs provide
