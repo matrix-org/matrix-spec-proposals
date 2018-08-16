@@ -519,6 +519,10 @@ if __name__ == '__main__':
         help="The server-server release tag to generate, e.g. r1.2"
     )
     parser.add_argument(
+        "--push_gateway_release", "-p", action="store", default="unstable",
+        help="The push gateway release tag to generate, e.g. r1.2"
+    )
+    parser.add_argument(
         "--list_targets", action="store_true",
         help="Do not update the specification. Instead print a list of targets.",
     )
@@ -542,6 +546,8 @@ if __name__ == '__main__':
         "%CLIENT_MAJOR_VERSION%": "r0",
         "%SERVER_RELEASE_LABEL%": args.server_release,
         "%SERVER_MAJOR_VERSION%": extract_major(args.server_release),
+        "%PUSH_GATEWAY_MAJOR_VERSION%": "v1",
+        "%PUSH_GATEWAY_RELEASE_LABEL%": args.push_gateway_release,
     }
 
     exit (main(args.target or ["all"], args.dest, args.nodelete, substitutions))
