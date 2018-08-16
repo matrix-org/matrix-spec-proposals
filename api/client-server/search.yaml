@@ -53,16 +53,16 @@ paths:
                     "keys": [
                       "content.body"
                     ],
-                    "search_term": "martians and men"
-                  }
-                },
-                "order_by": "recent",
-                "groupings": {
-                  "group_by": [
-                    {
-                      "key": "room_id"
+                    "search_term": "martians and men",
+                    "order_by": "recent",
+                    "groupings": {
+                      "group_by": [
+                        {
+                          "key": "room_id"
+                        }
+                      ]
                     }
-                  ]
+                  }
                 }
               }
             properties:
@@ -74,7 +74,7 @@ paths:
                 properties:
                   room_events:
                     type: object
-                    title: "Room Events"
+                    title: Room Events Criteria
                     description: Mapping of category name to search criteria.
                     properties:
                       search_term:
@@ -103,7 +103,7 @@ paths:
                           The order in which to search for results.
                           By default, this is ``"rank"``.
                       event_context:
-                        title: "Event Context"
+                        title: Include Event Context
                         type: object
                         description: |-
                           Configures whether any context for the events
@@ -169,18 +169,24 @@ paths:
             properties:
               search_categories:
                 type: object
-                title: Categories
+                title: Result Categories
                 description: Describes which categories to search in and
                   their criteria.
                 properties:
                   room_events:
                     type: object
-                    title: Room Event Results
+                    title: Result Room Events
                     description: Mapping of category name to search criteria.
                     properties:
                       count:
                         type: number
                         description: An approximate count of the total number of results found.
+                      highlights:
+                        type: array
+                        title: Highlights
+                        description: List of words which should be highlighted, useful for stemming which may change the query terms.
+                        items:
+                          type: string
                       results:
                         type: array
                         title: Results
@@ -221,6 +227,9 @@ paths:
                                   description: |-
                                     The historic profile information of the
                                     users that sent the events returned.
+
+                                    The ``string`` key is the user ID for which
+                                    the profile belongs to.
                                   additionalProperties:
                                     type: object
                                     title: User Profile
@@ -254,15 +263,24 @@ paths:
                           The current state for every room in the results.
                           This is included if the request had the
                           ``include_state`` key set with a value of ``true``.
+
+                          The ``string`` key is the room ID for which the ``State
+                          Event`` array belongs to.
                         additionalProperties:
                           type: array
                           title: Room State
                           items:
+                            type: object
                             "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
                       groups:
                         type: object
                         title: Groups
-                        description: Any groups that were requested.
+                        description: |-
+                          Any groups that were requested.
+
+                          The outer ``string`` key is the group key requested (eg: ``room_id``
+                          or ``sender``). The inner ``string`` key is the grouped value (eg: 
+                          a room's ID or a user's ID).
                         additionalProperties:
                           type: object
                           title: Group Key
@@ -318,6 +336,10 @@ paths:
                           }
                         }
                       },
+                      "highlights": [
+                        "martians",
+                        "men"
+                      ],
                       "next_batch": "5FdgFsd234dfgsdfFD",
                       "count": 1224,
                       "results": [
@@ -345,6 +367,6 @@ paths:
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Search

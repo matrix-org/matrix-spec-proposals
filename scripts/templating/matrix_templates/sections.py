@@ -189,3 +189,17 @@ class MatrixSections(Sections):
         template = self.env.get_template("apis.tmpl")
         apis = self.units.get("apis")
         return template.render(apis=apis)
+
+    def render_swagger_definition(self):
+        rendered = {}
+        template = self.env.get_template("schema-definition.tmpl")
+        subtitle_title_char = self.units.get("spec_targets")[
+            "relative_title_styles"
+        ]["subtitle"]
+        definitions = self.units.get("swagger_definitions")
+        for group, swagger_def in definitions.items():
+            rendered["definition_" + group] = template.render(
+                definition=swagger_def['definition'],
+                examples=swagger_def['examples'],
+                title_kind=subtitle_title_char)
+        return rendered

@@ -98,6 +98,9 @@ func makeWalker(base string, w *fsnotify.Watcher) filepath.WalkFunc {
 			log.Fatalf("Failed to get relative path of %s: %v", path, err)
 		}
 
+		// Normalize slashes
+		rel = filepath.ToSlash(rel)
+
 		// skip a few things that we know don't form part of the spec
 		if rel == "api/node_modules" ||
 			rel == "scripts/gen" ||
@@ -120,8 +123,19 @@ func filter(e fsnotify.Event) bool {
 		return false
 	}
 
-	// Avoid some temp files that vim writes
-	if strings.HasSuffix(e.Name, "~") || strings.HasSuffix(e.Name, ".swp") || strings.HasPrefix(e.Name, ".") {
+	_, fname := filepath.Split(e.Name)
+
+	// Avoid some temp files that vim or emacs writes
+	if strings.HasSuffix(e.Name, "~") || strings.HasSuffix(e.Name, ".swp") || strings.HasPrefix(fname, ".") ||
+		(strings.HasPrefix(fname, "#") && strings.HasSuffix(fname, "#")) {
+		return false
+	}
+
+	// Forcefully ignore directories we don't care about (Windows, at least, tries to notify about some directories)
+	filePath := filepath.ToSlash(e.Name) // normalize slashes
+	if strings.Contains(filePath, "/scripts/tmp") ||
+		strings.Contains(filePath, "/scripts/gen") ||
+		strings.Contains(filePath, "/api/node_modules") {
 		return false
 	}
 
@@ -147,7 +161,7 @@ func serve(w http.ResponseWriter, req *http.Request) {
 	if file[0] == '/' {
 		file = file[1:]
 	}
-	b, ok = m.bytes[file]
+	b, ok = m.bytes[filepath.FromSlash(file)] // de-normalize slashes
 
 	if ok && file == "api-docs.json" {
 		w.Header().Set("Access-Control-Allow-Origin", "*")

@@ -1,5 +1,6 @@
 .. Copyright 2016 OpenMarket Ltd
 .. Copyright 2017 New Vector Ltd
+.. Copyright 2018 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -16,15 +17,19 @@
 Federation API
 ==============
 
+.. WARNING::
+  This API is unstable and will change without warning or discussion while
+  we work towards a r0 release (scheduled for August 2018).
+
 Matrix homeservers use the Federation APIs (also known as server-server APIs)
 to communicate with each other. Homeservers use these APIs to push messages to
-each other in real-time, to request historic messages from each other, and to
+each other in real-time, to retrieve historic messages from each other, and to
 query profile and presence information about users on each other's servers.
 
-The APIs are implemented using HTTPS GETs and PUTs between each of the
-servers. These HTTPS requests are strongly authenticated using public key
-signatures at the TLS transport layer and using public key signatures in
-HTTP Authorization headers at the HTTP layer.
+The APIs are implemented using HTTPS requests between each of the servers. 
+These HTTPS requests are strongly authenticated using public key signatures 
+at the TLS transport layer and using public key signatures in HTTP 
+Authorization headers at the HTTP layer.
 
 There are three main kinds of communication that occur between homeservers:
 
@@ -72,25 +77,33 @@ Server Discovery
 Resolving Server Names
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Each matrix homeserver is identified by a server name consisting of a DNS name
+Each matrix homeserver is identified by a server name consisting of a hostname
 and an optional TLS port.
 
 .. code::
 
-    server_name = dns_name [ ":" tls_port]
-    dns_name = <host, see [RFC 3986], Section 3.2.2>
+    server_name = hostname [ ":" tls_port]
     tls_port = *DIGIT
 
 .. **
 
 If the port is present then the server is discovered by looking up an AAAA or
-A record for the DNS name and connecting to the specified TLS port. If the port
+A record for the hostname and connecting to the specified TLS port. If the port
 is absent then the server is discovered by looking up a ``_matrix._tcp`` SRV
-record for the DNS name. If this record does not exist then the server is
-discovered by looking up an AAAA or A record on the DNS name and taking the
+record for the hostname. If this record does not exist then the server is
+discovered by looking up an AAAA or A record on the hostname and taking the
 default fallback port number of 8448.
 Homeservers may use SRV records to load balance requests between multiple TLS
 endpoints or to failover to another endpoint if an endpoint fails.
+
+If the DNS name is a literal IP address, the port specified or the fallback
+port should be used.
+
+When making requests to servers, use the DNS name of the target server in the
+``Host`` header, regardless of the host given in the SRV record. For example,
+if making a request to ``example.org``, and the SRV record resolves to ``matrix.
+example.org``, the ``Host`` header in the request should be ``example.org``. The
+port number for target server should not appear in the ``Host`` header.
 
 Server implementation
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -100,15 +113,17 @@ Server implementation
 Retrieving Server Keys
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Version 2
-+++++++++
+.. NOTE::
+  There was once a "version 1" of the key exchange. It has been removed from the
+  specification due to lack of significance. It may be reviewed `here
+  <https://github.com/matrix-org/matrix-doc/blob/51faf8ed2e4a63d4cfd6d23183698ed169956cc0/specification/server_server_api.rst#232version-1>`_.
 
-Each homeserver publishes its public keys under ``/_matrix/key/v2/server/``.
-Homeservers query for keys by either getting ``/_matrix/key/v2/server/``
+Each homeserver publishes its public keys under ``/_matrix/key/v2/server/{keyId}``.
+Homeservers query for keys by either getting ``/_matrix/key/v2/server/{keyId}``
 directly or by querying an intermediate notary server using a
-``/_matrix/key/v2/query`` API. Intermediate notary servers query the
-``/_matrix/key/v2/server/`` API on behalf of another server and sign the
-response with their own key. A server may query multiple notary servers to
+``/_matrix/key/v2/query/{serverName}/{keyId}`` API. Intermediate notary servers 
+query the ``/_matrix/key/v2/server/{keyId}`` API on behalf of another server and
+sign the response with their own key. A server may query multiple notary servers to
 ensure that they all report the same public keys.
 
 This approach is borrowed from the `Perspectives Project`_, but modified to
@@ -120,185 +135,124 @@ server by querying other servers.
 .. _Perspectives Project: https://web.archive.org/web/20170702024706/https://perspectives-project.org/
 
 Publishing Keys
-^^^^^^^^^^^^^^^
++++++++++++++++
 
 Homeservers publish the allowed TLS fingerprints and signing keys in a JSON
 object at ``/_matrix/key/v2/server/{key_id}``. The response contains a list of
 ``verify_keys`` that are valid for signing federation requests made by the
-server and for signing events. It contains a list of ``old_verify_keys``
-which are only valid for signing events. Finally the response contains a list
-of TLS certificate fingerprints to validate any connection made to the server.
+homeserver and for signing events. It contains a list of ``old_verify_keys`` which
+are only valid for signing events. Finally the response contains a list of TLS
+certificate fingerprints to validate any connection made to the homeserver.
 
-A server may have multiple keys active at a given time. A server may have any
-number of old keys. It is recommended that servers return a single JSON
-response listing all of its keys whenever any ``key_id`` is requested to reduce
-the number of round trips needed to discover the relevant keys for a server.
-However a server may return a different responses for a different ``key_id``.
+{{keys_server_ss_http_api}}
 
-The ``tls_certificates`` contain a list of hashes of the X.509 TLS certificates
-currently used by the server. The list must include SHA-256 hashes for every
-certificate currently in use by the server. These fingerprints are valid until
-the millisecond POSIX timestamp in ``valid_until_ts``.
-
-The ``verify_keys`` can be used to sign requests and events made by the server
-until the millisecond POSIX timestamp in ``valid_until_ts``. If a homeserver
-receives an event with a ``origin_server_ts`` after the ``valid_until_ts`` then
-it should request that ``key_id`` for the originating server to check whether
-the key has expired.
-
-The ``old_verify_keys`` can be used to sign events with an ``origin_server_ts``
-before the ``expired_ts``. The ``expired_ts`` is a millisecond POSIX timestamp
-of when the originating server stopped using that key.
-
-Intermediate notary servers should cache a response for half of its remaining
-life time to avoid serving a stale response. Originating servers should avoid
-returning responses that expire in less than an hour to avoid repeated requests
-for an about to expire certificate. Requesting servers should limit how
-frequently they query for certificates to avoid flooding a server with requests.
-
-If a server goes offline intermediate notary servers should continue to return
-the last response they received from that server so that the signatures of old
-events sent by that server can still be checked.
-
-==================== =================== ======================================
-    Key                    Type                         Description
-==================== =================== ======================================
-``server_name``      String              DNS name of the homeserver.
-``verify_keys``      Object              Public keys of the homeserver for
-                                         verifying digital signatures.
-``old_verify_keys``  Object              The public keys that the server used
-                                         to use and when it stopped using them.
-``signatures``       Object              Digital signatures for this object
-                                         signed using the ``verify_keys``.
-``tls_fingerprints`` Array of Objects    Hashes of X.509 TLS certificates used
-                                         by this this server encoded as `Unpadded Base64`_.
-``valid_until_ts``   Integer             POSIX timestamp when the list of valid
-                                         keys should be refreshed.
-==================== =================== ======================================
-
-
-.. code:: json
-
-    {
-        "old_verify_keys": {
-            "ed25519:auto1": {
-                "expired_ts": 922834800000,
-                "key": "Base+64+Encoded+Old+Verify+Key"
-            }
-        },
-        "server_name": "example.org",
-        "signatures": {
-            "example.org": {
-                "ed25519:auto2": "Base+64+Encoded+Signature"
-            }
-        },
-        "tls_fingerprints": [
-            {
-                "sha256": "Base+64+Encoded+SHA-256-Fingerprint"
-            }
-        ],
-        "valid_until_ts": 1052262000000,
-        "verify_keys": {
-            "ed25519:auto2": {
-                "key": "Base+64+Encoded+Signature+Verification+Key"
-            }
-        }
-    }
 
 Querying Keys Through Another Server
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+++++++++++++++++++++++++++++++++++++
 
-Servers may offer a query API ``_matrix/key/v2/query/`` for getting the keys
-for another server. This API can be used to GET at list of JSON objects for a
-given server or to POST a bulk query for a number of keys from a number of
-servers. Either way the response is a list of JSON objects containing the
-JSON published by the server under ``_matrix/key/v2/server/`` signed by
-both the originating server and by this server.
+Servers may query another server's keys through a notary server. The notary
+server may be another homeserver. The notary server will retrieve keys from
+the queried servers through use of the ``/_matrix/key/v2/server/{keyId}``
+API. The notary server will additionally sign the response from the queried
+server before returning the results.
 
-The ``minimum_valid_until_ts`` is a millisecond POSIX timestamp indicating
-when the returned certificate will need to be valid until to be useful to the
-requesting server. This can be set using the maximum ``origin_server_ts`` of
-an batch of events that a requesting server is trying to validate. This allows
-an intermediate notary server to give a prompt cached response even if the
-originating server is offline.
+Notary servers can return keys for servers that are offline or having issues
+serving their own keys by using cached responses. Keys can be queried from
+multiple servers to mitigate against DNS spoofing.
 
-This API can return keys for servers that are offline be using cached responses
-taken from when the server was online. Keys can be queried from multiple
-servers to mitigate against DNS spoofing.
+{{keys_query_ss_http_api}}
 
-Requests:
+Authentication
+--------------
 
-.. code::
+Request Authentication
+~~~~~~~~~~~~~~~~~~~~~~
 
-    GET /_matrix/key/v2/query/${server_name}/${key_id}/?minimum_valid_until_ts=${minimum_valid_until_ts} HTTP/1.1
+Every HTTP request made by a homeserver is authenticated using public key
+digital signatures. The request method, target and body are signed by wrapping
+them in a JSON object and signing it using the JSON signing algorithm. The
+resulting signatures are added as an Authorization header with an auth scheme
+of ``X-Matrix``. Note that the target field should include the full path
+starting with ``/_matrix/...``, including the ``?`` and any query parameters if
+present, but should not include the leading ``https:``, nor the destination
+server's hostname.
 
-    POST /_matrix/key/v2/query HTTP/1.1
-    Content-Type: application/json
-
-    {
-        "server_keys": {
-            "$server_name": {
-                "$key_id": {
-                    "minimum_valid_until_ts": $posix_timestamp
-                }
-            }
-        }
-    }
-
-
-Response:
+Step 1 sign JSON:
 
 .. code::
 
-    HTTP/1.1 200 OK
-    Content-Type: application/json
     {
-        "server_keys": [
-           # List of responses with same format as /_matrix/key/v2/server
-           # signed by both the originating server and this server.
-        ]
-    }
-
-Version 1
-+++++++++
-.. WARNING::
-  Version 1 of key distribution is obsolete
-
-
-Homeservers publish their TLS certificates and signing keys in a JSON object
-at ``/_matrix/key/v1``.
-
-==================== =================== ======================================
-    Key                    Type                         Description
-==================== =================== ======================================
-``server_name``      String              DNS name of the homeserver.
-``verify_keys``      Object              Public keys of the homeserver for
-                                         verifying digital signatures.
-``signatures``       Object              Digital signatures for this object
-                                         signed using the ``verify_keys``.
-``tls_certificate``  String              The X.509 TLS certificate used by this
-                                         this server encoded as `Unpadded Base64`_.
-==================== =================== ======================================
-
-.. code:: json
-
-    {
-        "server_name": "example.org",
+        "method": "GET",
+        "uri": "/target",
+        "origin": "origin.hs.example.com",
+        "destination": "destination.hs.example.com",
+        "content": <request body>,
         "signatures": {
-            "example.org": {
-                "ed25519:auto": "Base+64+Encoded+Signature"
+            "origin.hs.example.com": {
+                "ed25519:key1": "ABCDEF..."
             }
-        },
-        "tls_certificate": "Base+64+Encoded+DER+Encoded+X509+TLS+Certificate",
-        "verify_keys": {
-            "ed25519:auto": "Base+64+Encoded+Signature+Verification+Key"
         }
-    }
+   }
 
-When fetching the keys for a server the client should check that the TLS
-certificate in the JSON matches the TLS server certificate for the connection
-and should check that the JSON signatures are correct for the supplied
-``verify_keys``
+Step 2 add Authorization header:
+
+.. code::
+
+    GET /target HTTP/1.1
+    Authorization: X-Matrix origin=origin.example.com,key="ed25519:key1",sig="ABCDEF..."
+    Content-Type: application/json
+
+    <JSON-encoded request body>
+
+
+Example python code:
+
+.. code:: python
+
+    def authorization_headers(origin_name, origin_signing_key,
+                              destination_name, request_method, request_target,
+                              content=None):
+        request_json = {
+             "method": request_method,
+             "uri": request_target,
+             "origin": origin_name,
+             "destination": destination_name,
+        }
+
+        if content_json is not None:
+            request["content"] = content
+
+        signed_json = sign_json(request_json, origin_name, origin_signing_key)
+
+        authorization_headers = []
+
+        for key, sig in signed_json["signatures"][origin_name].items():
+            authorization_headers.append(bytes(
+                "X-Matrix origin=%s,key=\"%s\",sig=\"%s\"" % (
+                    origin_name, key, sig,
+                )
+            ))
+
+        return ("Authorization", authorization_headers)
+
+Response Authentication
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Responses are authenticated by the TLS server certificate. A homeserver should
+not send a request until it has authenticated the connected server to avoid
+leaking messages to eavesdroppers.
+
+Client TLS Certificates
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Requests are authenticated at the HTTP layer rather than at the TLS layer
+because HTTP services like Matrix are often deployed behind load balancers that
+handle the TLS and these load balancers make it difficult to check TLS client
+certificates.
+
+A homeserver may provide a TLS client certificate and the receiving homeserver
+may check that the client certificate matches the certificate of the origin
+homeserver.
 
 Transactions
 ------------
@@ -308,116 +262,13 @@ of Transaction messages, which are encoded as JSON objects, passed over an HTTP
 PUT request. A Transaction is meaningful only to the pair of homeservers that
 exchanged it; they are not globally-meaningful.
 
-Each transaction has:
- - An opaque transaction ID, unique among transactions from the same origin.
- - A timestamp (UNIX epoch time in milliseconds) generated by its origin
-   server.
- - An origin and destination server name.
- - A list of PDUs and EDUs - the actual message payload that the Transaction
-   carries.
-
-Transaction Fields
-~~~~~~~~~~~~~~~~~~
-
-==================== =================== ======================================
-    Key              Type                         Description
-==================== =================== ======================================
-``origin``           String              **Required**. ``server_name`` of homeserver sending
-                                         this transaction.
-``origin_server_ts`` Integer             **Required**. Timestamp in milliseconds on
-                                         originating homeserver when this
-                                         transaction started.
-``pdus``             List of Objects     **Required**. List of persistent updates to rooms.
-``edus``             List of Objects     List of ephemeral messages. May be omitted
-                                         if there are no ephemeral messages to
-                                         be sent.
-==================== =================== ======================================
-
-Example:
-
-.. code:: json
-
- {
-  "origin_server_ts":1404835423000,
-  "origin":"matrix.org",
-  "pdus":[...],
-  "edus":[...]
- }
+{{transactions_ss_http_api}}
 
 PDUs
 ----
 
 Each PDU contains a single Room Event which the origin server wants to send to
 the destination.
-
-
-PDU Fields
-~~~~~~~~~~
-
-==================== ================== =======================================
- Key                  Type               Description
-==================== ================== =======================================
-``room_id``          String             **Required**. Room identifier.
-``sender``           String             **Required**. The ID of the user sending
-                                        the event.
-``origin``           String             **Required**. ``server_name`` of the
-                                        homeserver that created this event.
-``event_id``         String             **Required**. Unique identifier for the
-                                        event being sent.
-``origin_server_ts`` Integer            **Required**. Timestamp in milliseconds
-                                        on origin homeserver when this event
-                                        was created.
-``type``             String             **Required**. Event type
-``state_key``        String             Optional. If this key is present, the
-                                        event is a state event, and it will
-                                        replace previous events with the same
-                                        ``type`` and ``state_key`` in the room
-                                        state.
-``content``          Object             **Required**. The content of the event.
-``prev_events``      List of (String,   **Required**. Event IDs and hashes of
-                     {String: String})  the most recent events in the room that
-                     pairs              the homeserver was aware of when it
-                                        made this event
-``depth``            Integer            **Required**. The maximum depth of the
-                                        ``prev_events``, plus one
-``auth_events``      List of (String,   **Required**. Event IDs and hashes for
-                     {String: String})  the "auth events" of this event.
-                     pairs
-``hashes``           {String: String}   **Required**. Hashes of the PDU,
-                                        following the algorithm specified in
-                                        `Signing Events`_.
-``signatures``       {String:           **Required**. Signatures of the redacted
-                     {String: String}}  PDU, following the algorithm specified
-                                        in `Signing Events`_.
-``redacts``          String             Optional. For redaction events, the ID
-                                        of the event being redacted
-``unsigned``         Object             Optional. Additional data added by the
-                                        origin server but not covered by the
-                                        ``signatures``.
-==================== ================== =======================================
-
-Example:
-
-.. code:: json
-
- {
-  "room_id": "!UcYsUzyxTGDxLBEvLy:example.org",
-  "sender": "@alice:example.com",
-  "origin": "example.com",
-  "event_id": "$a4ecee13e2accdadf56c1025:example.com",
-  "origin_server_ts": 1404838188000,
-  "type": "m.room.message",
-  "prev_events": [
-    ["$af232176:example.org", {"sha256": "abase64encodedsha256hashshouldbe43byteslong"}]
-  ],
-  "hashes": {"sha256": "thishashcoversallfieldsincasethisisredacted"},
-  "signatures": {
-    "example.com": {
-      "ed25519:key_version:": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
-    }
-  },
-  "content": {...}
- }
 
 The ``prev_events`` field of a PDU identifies the "parents" of the event, and
 thus establishes a partial ordering on events within the room by linking them
@@ -448,6 +299,8 @@ following subset of the room state:
 - The current ``m.room.power_levels`` event, if any.
 - The current ``m.room.join_rules`` event, if any.
 - The sender's current ``m.room.member`` event, if any.
+
+{{definition_ss_pdu}}
 
 Authorization of PDUs
 ~~~~~~~~~~~~~~~~~~~~~
@@ -499,145 +352,139 @@ the state of the room.
           state of the room. For example, a redacted ``join`` event will still
           result in the user being considered joined.
 
+The rules are as follows:
+
 1. If type is ``m.room.create``, allow if and only if it has no
    previous events - *i.e.* it is the first event in the room.
 
-#. If type is ``m.room.member``:
+2. If type is ``m.room.member``:
 
-   a. If ``membership`` is ``join``:
+  a. If ``membership`` is ``join``:
 
-      i. If the only previous event is an ``m.room.create``
-         and the ``state_key`` is the creator, allow.
+    i. If the only previous event is an ``m.room.create``
+       and the ``state_key`` is the creator, allow.
 
-      #. If the ``sender`` does not match ``state_key``, reject.
+    #. If the ``sender`` does not match ``state_key``, reject.
 
-      #. If the user's current membership state is ``invite`` or ``join``,
-         allow.
+    #. If the user's current membership state is ``invite`` or ``join``,
+       allow.
 
-      #. If the ``join_rule`` is ``public``, allow.
+    #. If the ``join_rule`` is ``public``, allow.
 
-      #. Otherwise, reject.
+    #. Otherwise, reject.
 
-   #. If ``membership`` is ``invite``:
+  b. If ``membership`` is ``invite``:
 
-      i. If the ``sender``'s current membership state is not ``join``, reject.
+    i. If the ``sender``'s current membership state is not ``join``, reject.
 
-      #. If *target user*'s current membership state is ``join`` or ``ban``,
-         reject.
+    #. If *target user*'s current membership state is ``join`` or ``ban``,
+       reject.
 
-      #. If the ``sender``'s power level is greater than or equal to the *invite
-         level*, allow.
+    #. If the ``sender``'s power level is greater than or equal to the *invite
+       level*, allow.
 
-      #. Otherwise, reject.
+    #. Otherwise, reject.
 
-   #. If ``membership`` is ``leave``:
+  c. If ``membership`` is ``leave``:
 
-      i. If the ``sender`` matches ``state_key``, allow if and only if that user's
-         current membership state is ``invite`` or ``join``.
+    i. If the ``sender`` matches ``state_key``, allow if and only if that user's
+       current membership state is ``invite`` or ``join``.
 
-      #. If the ``sender``'s current membership state is not ``join``, reject.
+    #. If the ``sender``'s current membership state is not ``join``, reject.
 
-      #. If the *target user*'s current membership state is ``ban``, and the
-         ``sender``'s power level is less than the *ban level*, reject.
+    #. If the *target user*'s current membership state is ``ban``, and the
+       ``sender``'s power level is less than the *ban level*, reject.
 
-      #. If the ``sender``'s power level is greater than or equal to the *kick
-         level*, and the *target user*'s power level is less than the
-         ``sender``'s power level, allow.
+    #. If the ``sender``'s power level is greater than or equal to the *kick
+       level*, and the *target user*'s power level is less than the
+       ``sender``'s power level, allow.
 
-      #. Otherwise, reject.
+    #. Otherwise, reject.
 
-   #. If ``membership`` is ``ban``:
+  d. If ``membership`` is ``ban``:
 
-      i. If the ``sender``'s current membership state is not ``join``, reject.
+    i. If the ``sender``'s current membership state is not ``join``, reject.
 
-      #. If the ``sender``'s power level is greater than or equal to the *ban
-         level*, and the *target user*'s power level is less than the
-         ``sender``'s power level, allow.
+    #. If the ``sender``'s power level is greater than or equal to the *ban
+       level*, and the *target user*'s power level is less than the
+       ``sender``'s power level, allow.
 
-      #. Otherwise, reject.
+    #. Otherwise, reject.
 
-   #. Otherwise, the membership is unknown. Reject.
+  e. Otherwise, the membership is unknown. Reject.
 
-#. If the ``sender``'s current membership state is not ``join``, reject.
+3. If the ``sender``'s current membership state is not ``join``, reject.
 
-#. If the event type's *required power level* is greater than the ``sender``'s power
+4. If the event type's *required power level* is greater than the ``sender``'s power
    level, reject.
 
-#. If type is ``m.room.power_levels``:
+5. If type is ``m.room.power_levels``:
 
-   a. If there is no previous ``m.room.power_levels`` event in the room, allow.
+  a. If there is no previous ``m.room.power_levels`` event in the room, allow.
 
-   #. For each of the keys ``users_default``, ``events_default``,
-      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
-      each entry being changed under the ``events`` or ``users`` keys:
+  b. For each of the keys ``users_default``, ``events_default``,
+     ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
+     each entry being changed under the ``events`` or ``users`` keys:
 
-      i. If the current value is higher than the ``sender``'s current power level,
-         reject.
+    i. If the current value is higher than the ``sender``'s current power level,
+       reject.
 
-      #. If the new value is higher than the ``sender``'s current power level,
-         reject.
+    #. If the new value is higher than the ``sender``'s current power level,
+       reject.
 
-   #. For each entry being changed under the ``users`` key, other than the
-      ``sender``'s own entry:
+  c. For each entry being changed under the ``users`` key, other than the
+     ``sender``'s own entry:
 
-      i. If the current value is equal to the ``sender``'s current power level,
-         reject.
+    i. If the current value is equal to the ``sender``'s current power level,
+       reject.
 
-   #. Otherwise, allow.
+  d. Otherwise, allow.
 
-#. If type is ``m.room.redaction``:
+6. If type is ``m.room.redaction``:
 
-   #. If the ``sender``'s power level is greater than or equal to the *redact
-      level*, allow.
+  a. If the ``sender``'s power level is greater than or equal to the *redact
+     level*, allow.
 
-   #. If the ``sender`` of the event being redacted is the same as the
-      ``sender`` of the ``m.room.redaction``, allow.
+  #. If the ``sender`` of the event being redacted is the same as the
+     ``sender`` of the ``m.room.redaction``, allow.
 
-   #. Otherwise, reject.
+  #. Otherwise, reject.
 
-#. Otherwise, allow.
+7. Otherwise, allow.
 
 .. NOTE::
 
-   Some consequences of these rules:
+  Some consequences of these rules:
 
-   * Unless you are a member of the room, the only permitted operations (apart
-     from the intial create/join) are: joining a public room; accepting or
-     rejecting an invitation to a room.
+  * Unless you are a member of the room, the only permitted operations (apart
+    from the intial create/join) are: joining a public room; accepting or
+    rejecting an invitation to a room.
 
-   * To unban somebody, you must have power level greater than or equal to both
-     the kick *and* ban levels, *and* greater than the target user's power
-     level.
+  * To unban somebody, you must have power level greater than or equal to both
+    the kick *and* ban levels, *and* greater than the target user's power
+    level.
 
 .. TODO-spec
 
-   I think there is some magic about 3pid invites too.
+  I think there is some magic about 3pid invites too.
+
+Retrieving event authorization information
+++++++++++++++++++++++++++++++++++++++++++
+
+The homeserver may be missing event authorization information, or wish to check
+with other servers to ensure it is receiving the correct auth chain. These APIs
+give the homeserver an avenue for getting the information it needs.
+
+{{event_auth_ss_http_api}}
 
 EDUs
 ----
 
-.. WARNING::
-  This section may be misleading or inaccurate.
-
 EDUs, by comparison to PDUs, do not have an ID, a room ID, or a list of
-"previous" IDs. The only mandatory fields for these are the type, origin and
-destination homeserver names, and the actual nested content.
+"previous" IDs. They are intended to be non-persistent data such as user
+presence, typing notifications, etc.
 
-======================== ============ =========================================
- Key                      Type          Description
-======================== ============ =========================================
-``edu_type``             String       The type of the ephemeral message.
-``content``              Object       Content of the ephemeral message.
-======================== ============ =========================================
-
-.. code:: json
-
- {
-  "edu_type":"m.presence",
-  "origin":"blue",
-  "destination":"orange",
-  "content":{...}
- }
+{{definition_ss_edu}}
 
 Room State Resolution
 ---------------------
@@ -728,102 +575,58 @@ A *conflict* occurs between states where those states have different
 ``event_ids`` for the same ``(state_type, state_key)``. The events thus
 affected are said to be *conflicting* events.
 
-Protocol URLs
--------------
 
-.. WARNING::
-  This section may be misleading or inaccurate.
+Backfilling and retrieving missing events
+-----------------------------------------
 
-All these URLs are name-spaced within a prefix of::
+Once a homeserver has joined a room, it receives all the events emitted by
+other homeservers in that room, and is thus aware of the entire history of the
+room from that moment onwards. Since users in that room are able to request the
+history by the ``/messages`` client API endpoint, it's possible that they might
+step backwards far enough into history before the homeserver itself was a
+member of that room.
 
-  /_matrix/federation/v1/...
+To cover this case, the federation API provides a server-to-server analog of
+the ``/messages`` client API, allowing one homeserver to fetch history from
+another. This is the ``/backfill`` API.
 
-For active pushing of messages representing live activity "as it happens"::
+To request more history, the requesting homeserver picks another homeserver 
+that it thinks may have more (most likely this should be a homeserver for 
+some of the existing users in the room at the earliest point in history it 
+has currently), and makes a ``/backfill`` request.
 
-  PUT .../send/<transaction_id>/
-    Body: JSON encoding of a single Transaction
-    Response: TODO-doc
+Similar to backfilling a room's history, a server may not have all the events
+in the graph. That server may use the ``/get_missing_events`` API to acquire
+the events it is missing.
 
-The transaction_id path argument will override any ID given in the JSON body.
-The destination name will be set to that of the receiving server itself. Each
-embedded PDU in the transaction body will be processed.
+.. TODO-spec
+  Specify (or remark that it is unspecified) how the server handles divergent
+  history. DFS? BFS? Anything weirder?
 
+{{backfill_ss_http_api}}
 
-To fetch all the state of a given room::
+Retrieving events
+-----------------
 
-  GET .../state/<room_id>/
-    Response: JSON encoding of a single Transaction containing multiple PDUs
+In some circumstances, a homeserver may be missing a particular event or information
+about the room which cannot be easily determined from backfilling. These APIs provide
+homeservers with the option of getting events and the state of the room at a given
+point in the timeline.
 
-Retrieves a snapshot of the entire current state of the given room. The
-response will contain a single Transaction, inside which will be a list of PDUs
-that encode the state.
+{{events_ss_http_api}}
 
-
-To fetch a particular event::
-
-  GET .../event/<event_id>/
-    Response: JSON encoding of a partial Transaction containing the event
-
-Retrieves a single event. The response will contain a partial Transaction,
-having just the ``origin``, ``origin_server_ts`` and ``pdus`` fields; the
-event will be encoded as the only PDU in the ``pdus`` list.
-
-
-To backfill events on a given room::
-
-  GET .../backfill/<room_id>/
-    Query args: v, limit
-    Response: JSON encoding of a single Transaction containing multiple PDUs
-
-Retrieves a sliding-window history of previous PDUs that occurred on the given
-room. Starting from the PDU ID(s) given in the "v" argument, the PDUs that
-preceded it are retrieved, up to a total number given by the "limit" argument.
-
-
-To stream events all the events::
-
-  GET .../pull/
-    Query args: origin, v
-    Response: JSON encoding of a single Transaction consisting of multiple PDUs
-
-Retrieves all of the transactions later than any version given by the "v"
-arguments.
-
-
-To make a query::
-
-  GET .../query/<query_type>
-    Query args: as specified by the individual query types
-    Response: JSON encoding of a response object
-
-Performs a single query request on the receiving homeserver. The Query Type
-part of the path specifies the kind of query being made, and its query
-arguments have a meaning specific to that kind of query. The response is a
-JSON-encoded object whose meaning also depends on the kind of query.
-
-
-To join a room::
-
-  GET .../make_join/<room_id>/<user_id>
-    Response: JSON encoding of a join proto-event
-
-  PUT .../send_join/<room_id>/<event_id>
-    Response: JSON encoding of the state of the room at the time of the event
-
-Performs the room join handshake. For more information, see "Joining Rooms"
-below.
 
 Joining Rooms
 -------------
 
-When a new user wishes to join room that the user's homeserver already knows
+When a new user wishes to join a room that the user's homeserver already knows
 about, the homeserver can immediately determine if this is allowable by
-inspecting the state of the room, and if it is acceptable, it can generate,
-sign, and emit a new ``m.room.member`` state event adding the user into that
-room. When the homeserver does not yet know about the room it cannot do this
+inspecting the state of the room. If it is acceptable, it can generate, sign,
+and emit a new ``m.room.member`` state event adding the user into that room.
+When the homeserver does not yet know about the room it cannot do this
 directly. Instead, it must take a longer multi-stage handshaking process by
 which it first selects a remote homeserver which is already participating in
-that room, and uses it to assist in the joining process. This is the remote
+that room, and use it to assist in the joining process. This is the remote
 join handshake.
 
 This handshake involves the homeserver of the new member wishing to join
@@ -864,192 +667,69 @@ homeservers, though most in practice will use just two.
   <---------- join response
 
 The first part of the handshake usually involves using the directory server to
-request the room ID and join candidates. This is covered in more detail on the
-directory server documentation, below. In the case of a new user joining a
-room as a result of a received invite, the joining user's homeserver could
-optimise this step away by picking the origin server of that invite message as
-the join candidate. However, the joining server should be aware that the origin
-server of the invite might since have left the room, so should be prepared to
-fall back on the regular join flow if this optimisation fails.
+request the room ID and join candidates through the |/query/directory|_
+API endpoint. In the case of a new user joining a room as a result of a received
+invite, the joining user's homeserver could optimise this step away by picking 
+the origin server of that invite message as the join candidate. However, the 
+joining server should be aware that the origin server of the invite might since
+have left the room, so should be prepared to fall back on the regular join flow 
+if this optimisation fails.
 
 Once the joining server has the room ID and the join candidates, it then needs
 to obtain enough information about the room to fill in the required fields of
 the ``m.room.member`` event. It obtains this by selecting a resident from the
-candidate list, and requesting the ``make_join`` endpoint using a ``GET``
-request, specifying the room ID and the user ID of the new member who is
-attempting to join.
+candidate list, and using the ``GET /make_join`` endpoint. The resident server
+will then reply with enough information for the joining server to fill in the
+event.
 
-The resident server replies to this request with a JSON-encoded object having a
-single key called ``event``; within this is an object whose fields contain some
-of the information that the joining server will need. Despite its name, this
-object is not a full event; notably it does not need to be hashed or signed by
-the resident homeserver. The required fields are:
-
-==================== ======== ============
- Key                  Type     Description
-==================== ======== ============
-``type``             String   The value ``m.room.member``
-``auth_events``      List     An event-reference list containing the
-                              authorization events that would allow this member
-                              to join
-``content``          Object   The event content
-``depth``            Integer  (this field must be present but is ignored; it
-                              may be 0)
-``origin``           String   The name of the resident homeserver
-``origin_server_ts`` Integer  A timestamp added by the resident homeserver
-``prev_events``      List     An event-reference list containing the immediate
-                              predecessor events
-``room_id``          String   The room ID of the room
-``sender``           String   The user ID of the joining member
-``state_key``        String   The user ID of the joining member
-==================== ======== ============
-
-The ``content`` field itself must be an object, containing:
-
-============== ====== ============
- Key            Type   Description
-============== ====== ============
-``membership`` String The value ``join``
-============== ====== ============
-
-The joining server now has sufficient information to construct the real join
-event from these protoevent fields. It copies the values of most of them,
-adding (or replacing) the following fields:
-
-==================== ======= ============
- Key                  Type    Description
-==================== ======= ============
-``event_id``         String  A new event ID specified by the joining homeserver
-``origin``           String  The name of the joining homeserver
-``origin_server_ts`` Integer A timestamp added by the joining homeserver
-==================== ======= ============
-
-This will be a true event, so the joining server should apply the event-signing
-algorithm to it, resulting in the addition of the ``hashes`` and ``signatures``
-fields.
+The joining server is expected to add or replace the ``origin``, ``origin_server_ts``,
+and ``event_id`` on the templated event received by the resident server. This
+event is then signed by the joining server.
 
 To complete the join handshake, the joining server must now submit this new
-event to an resident homeserver, by using the ``send_join`` endpoint. This is
-invoked using the room ID and the event ID of the new member event.
+event to a resident homeserver, by using the ``PUT /send_join`` endpoint.
 
 The resident homeserver then accepts this event into the room's event graph,
-and responds to the joining server with the full set of state for the newly-
-joined room. This is returned as a two-element list, whose first element is the
-integer 200, and whose second element is an object which contains the
-following keys:
+and responds to the joining server with the full set of state for the
+newly-joined room. The resident server must also send the event to other servers
+participating in the room. 
 
-============== ===== ============
- Key            Type  Description
-============== ===== ============
-``auth_chain`` List  A list of events giving all of the events in the auth
-                     chains for the join event and the events in ``state``.
-``state``      List  A complete list of the prevailing state events at the
-                     instant just before accepting the new ``m.room.member``
-                     event.
-============== ===== ============
+{{joins_ss_http_api}}
 
 .. TODO-spec
   - (paul) I don't really understand why the full auth_chain events are given
     here. What purpose does it serve expanding them out in full, when surely
     they'll appear in the state anyway?
 
-Backfilling
------------
-
-Once a homeserver has joined a room, it receives all the events emitted by
-other homeservers in that room, and is thus aware of the entire history of the
-room from that moment onwards. Since users in that room are able to request the
-history by the ``/messages`` client API endpoint, it's possible that they might
-step backwards far enough into history before the homeserver itself was a
-member of that room.
-
-To cover this case, the federation API provides a server-to-server analog of
-the ``/messages`` client API, allowing one homeserver to fetch history from
-another. This is the ``/backfill`` API.
-
-To request more history, the requesting homeserver picks another homeserver
-that it thinks may have more (most likely this should be a homeserver for some
-of the existing users in the room at the earliest point in history it has
-currently), and makes a ``/backfill`` request. The parameters of this request
-give an event ID that the requesting homeserver wishes to obtain, and a number
-specifying how many more events of history before that one to return at most.
-
-The response to this request is an object with the following keys:
-
-==================== ======== ============
- Key                  Type     Description
-==================== ======== ============
-``pdus``             List     A list of events
-``origin``           String   The name of the resident homeserver
-``origin_server_ts`` Integer  A timestamp added by the resident homeserver
-==================== ======== ============
-
-The list of events given in ``pdus`` is returned in reverse chronological
-order; having the most recent event first (i.e. the event whose event ID is
-that requested by the requestor in the ``v`` parameter).
-
-.. TODO-spec
-  Specify (or remark that it is unspecified) how the server handles divergent
-  history. DFS? BFS? Anything weirder?
-
 Inviting to a room
 ------------------
 
-When a user wishes to invite an other user to a local room and the other user
-is on a different server, the inviting server will send a request to the invited
-server::
+When a user on a given homeserver invites another user on the same homeserver,
+the homeserver may sign the membership event itself and skip the process defined
+here. However, when a user invites another user on a different homeserver, a request
+to that homeserver to have the event signed and verified must be made.
 
-  PUT .../invite/{roomId}/{eventId}
+{{invites_ss_http_api}}
 
-The required fields in the JSON body are:
+Leaving Rooms (Rejecting Invites)
+---------------------------------
 
-==================== ======== ============
- Key                  Type     Description
-==================== ======== ============
-``room_id``          String   The room ID of the room. Must be the same as the
-                              room ID specified in the path.
-``event_id``         String   The ID of the event. Must be the same as the event
-                              ID specified in the path.
-``type``             String   The value ``m.room.member``.
-``auth_events``      List     An event-reference list containing the IDs of the
-                              authorization events that would allow this member
-                              to be invited in the room.
-``content``          Object   The content of the event.
-``depth``            Integer  The depth of the event.
-``origin``           String   The name of the inviting homeserver.
-``origin_server_ts`` Integer  A timestamp added by the inviting homeserver.
-``prev_events``      List     An event-reference list containing the IDs of the
-                              immediate predecessor events.
-``sender``           String   The Matrix ID of the user who sent the original
-                              `m.room.third_party_invite`.
-``state_key``        String   The Matrix ID of the invited user.
-``signatures``       Object   The signature of the event from the origin server.
-``unsigned``         Object   An object containing the properties that aren't
-                              part of the signature's computation.
-==================== ======== ============
+Normally homeservers can send appropriate ``m.room.member`` events to have users
+leave the room, or to reject local invites. Remote invites from other homeservers
+do not involve the server in the graph and therefore need another approach to 
+reject the invite. Joining the room and promptly leaving is not recommended as 
+clients and servers will interpret that as accepting the invite, then leaving the
+room rather than rejecting the invite.
 
-Where the ``content`` key contains the content for the ``m.room.member`` event
-specified in the `Client-Server API`_. Note that the ``membership`` property of
-the content must be ``invite``.
+Similar to the `Joining Rooms`_ handshake, the server which wishes to leave the
+room starts with sending a ``/make_leave`` request to a resident server. In the
+case of rejecting invites, the resident server may be the server which sent the
+invite. After receiving a template event from ``/make_leave``, the leaving server
+signs the event and replaces the ``event_id`` with it's own. This is then sent to
+the resident server via ``/send_leave``. The resident server will then send the
+event to other servers in the room.
 
-Upon receiving this request, the invited homeserver will append its signature to
-the event and respond to the request with the following JSON body::
-
- [
-   200,
-   "event": {...}
- ]
-
-Where ``event`` contains the event signed by both homeservers, using the same
-JSON keys as the initial request on ``/invite/{roomId}/{eventId}``. Note that,
-except for the ``signatures`` object (which now contains an additional signature),
-all of the event's keys remain the same as in the event initially provided.
-
-This response format is due to a typo in Synapse, the first implementation of
-Matrix's APIs, and is preserved to maintain compatibility.
-
-Now that the event has been signed by both the inviting homeserver and the
-invited homeserver, it can be sent to all of the users in the room.
+{{leaving_ss_http_api}}
 
 Third-party invites
 -------------------
@@ -1079,7 +759,7 @@ and public keys the identity server provided as a response to the invite storage
 request.
 
 When a third-party identifier with pending invites gets bound to a Matrix ID,
-the identity server will send a ``POST`` request to the ID's homeserver as described
+the identity server will send a POST request to the ID's homeserver as described
 in the `Invitation Storage`_ section of the Identity Service API.
 
 The following process applies for each invite sent by the identity server:
@@ -1092,38 +772,9 @@ If the invited homeserver is in the room the invite came from, it can auth the
 event and send it.
 
 However, if the invited homeserver isn't in the room the invite came from, it
-will need to request the room's homeserver to auth the event::
+will need to request the room's homeserver to auth the event.
 
-  PUT .../exchange_third_party_invite/{roomId}
-
-Where ``roomId`` is the ID of the room the invite is for.
-
-The required fields in the JSON body are:
-
-==================== ======= ==================================================
- Key                  Type   Description
-==================== ======= ==================================================
-``type``             String  The event type. Must be `m.room.member`.
-``room_id``          String  The ID of the room the event is for. Must be the
-                             same as the ID specified in the path.
-``sender``           String  The Matrix ID of the user who sent the original
-                             `m.room.third_party_invite`.
-``state_key``        String  The Matrix ID of the invited user.
-``content``          Object  The content of the event.
-==================== ======= ==================================================
-
-Where the ``content`` key contains the content for the ``m.room.member`` event
-as described in the `Client-Server API`_. Its ``membership`` key must be
-``invite`` and its content must include the ``third_party_invite`` object.
-
-The inviting homeserver will then be able to authenticate the event. It will send
-a fully authenticated event to the invited homeserver as described in the `Inviting
-to a room`_ section above.
-
-Once the invited homeserver responded with the event to which it appended its
-signature, the inviting homeserver will respond with ``200 OK`` and an empty body
-(``{}``) to the initial request on ``/exchange_third_party_invite/{roomId}`` and
-send the now verified ``m.room.member`` invite event to the room's members.
+{{third_party_invite_ss_http_api}}
 
 Verifying the invite
 ++++++++++++++++++++
@@ -1143,105 +794,33 @@ It will then use these keys to verify that the ``signed`` object (in the
 ``third_party_invite`` object from the ``m.room.member`` event's content) was
 signed by the same identity server.
 
-Since this ``signed`` object can only be delivered once in the ``POST`` request
+Since this ``signed`` object can only be delivered once in the POST request
 emitted by the identity server upon binding between the third-party identifier
 and the Matrix ID, and contains the invited user's Matrix ID and the token
 delivered when the invite was stored, this verification will prove that the
 ``m.room.member`` invite event comes from the user owning the invited third-party
 identifier.
 
-Authentication
---------------
+Public Room Directory
+---------------------
 
-Request Authentication
-~~~~~~~~~~~~~~~~~~~~~~
+To compliment the `Client-Server API`_'s room directory, homeservers need a
+way to query the public rooms for another server. This can be done by making
+a request to the ``/publicRooms`` endpoint for the server the room directory
+should be retrieved for.
 
-Every HTTP request made by a homeserver is authenticated using public key
-digital signatures. The request method, target and body are signed by wrapping
-them in a JSON object and signing it using the JSON signing algorithm. The
-resulting signatures are added as an Authorization header with an auth scheme
-of X-Matrix. Note that the target field should include the full path starting with
-``/_matrix/...``, including the ``?`` and any query parameters if present, but
-should not include the leading ``https:``, nor the destination server's
-hostname.
-
-Step 1 sign JSON:
-
-.. code::
-
-    {
-        "method": "GET",
-        "uri": "/target",
-        "origin": "origin.hs.example.com",
-        "destintation": "destination.hs.example.com",
-        "content": <request body>,
-        "signatures": {
-            "origin.hs.example.com": {
-                "ed25519:key1": "ABCDEF..."
-            }
-        }
-   }
-
-Step 2 add Authorization header:
-
-.. code::
-
-    GET /target HTTP/1.1
-    Authorization: X-Matrix origin=origin.example.com,key="ed25519:key1",sig="ABCDEF..."
-    Content-Type: application/json
-
-    <JSON-encoded request body>
+{{public_rooms_ss_http_api}}
 
 
-Example python code:
+Typing Notifications
+--------------------
 
-.. code:: python
+When a server's users send typing notifications, those notifications need to
+be sent to other servers in the room so their users are aware of the same
+state. Receiving servers should verify that the user is in the room, and is
+a user belonging to the sending server.
 
-    def authorization_headers(origin_name, origin_signing_key,
-                              destination_name, request_method, request_target,
-                              content=None):
-        request_json = {
-             "method": request_method,
-             "uri": request_target,
-             "origin": origin_name,
-             "destination": destination_name,
-        }
-
-        if content_json is not None:
-            request["content"] = content
-
-        signed_json = sign_json(request_json, origin_name, origin_signing_key)
-
-        authorization_headers = []
-
-        for key, sig in signed_json["signatures"][origin_name].items():
-            authorization_headers.append(bytes(
-                "X-Matrix origin=%s,key=\"%s\",sig=\"%s\"" % (
-                    origin_name, key, sig,
-                )
-            ))
-
-        return ("Authorization", authorization_headers)
-
-Response Authentication
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Responses are authenticated by the TLS server certificate. A homeserver should
-not send a request until it has authenticated the connected server to avoid
-leaking messages to eavesdroppers.
-
-Client TLS Certificates
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Requests are authenticated at the HTTP layer rather than at the TLS layer
-because HTTP services like Matrix are often deployed behind load balancers that
-handle the TLS and these load balancers make it difficult to check TLS client
-certificates.
-
-A homeserver may provide a TLS client certificate and the receiving homeserver
-may check that the client certificate matches the certificate of the origin
-homeserver.
-
+{{definition_ss_event_schemas_m_typing}}
 
 Presence
 --------
@@ -1306,36 +885,18 @@ Rejecting a presence invite::
   - Explain the zero-byte presence inference logic
   See also: docs/client-server/model/presence
 
-Profiles
---------
+Querying for information
+------------------------
 
-The server API for profiles is based entirely on the following Federation
-Queries. There are no additional EDU or PDU types involved, other than the
-implicit ``m.presence`` and ``m.room.member`` events (see section below).
+Queries are a way to retrieve information from a homeserver about a resource,
+such as a user or room. The endpoints here are often called in conjunction with
+a request from a client on the client-server API in order to complete the call.
 
-Querying profile information::
+There are several types of queries that can be made. The generic endpoint to
+represent all queries is described first, followed by the more specific queries
+that can be made.
 
-  Query type: profile
-
-  Arguments:
-    user_id: the ID of the user whose profile to return
-    field: (optional) string giving a field name
-
-  Returns: JSON object containing the following keys:
-    displayname: string of free-form text
-    avatar_url: string containing an HTTP-scheme URL
-
-If the query contains the optional ``field`` key, it should give the name of a
-result field. If such is present, then the result should contain only a field
-of that name, with no others present. If not, the result should contain as much
-of the user's profile as the homeserver has available and can make public.
-
-Directory
----------
-
-The server API for directory queries is also based on Federation Queries.
-
-{{directory_ss_http_api}}
+{{query_ss_http_api}}
 
 Send-to-device messaging
 ------------------------
@@ -1359,7 +920,21 @@ the following EDU::
 
     messages: The messages to send. A map from user ID, to a map from device ID
         to message body. The device ID may also be *, meaning all known devices
-        for the user.
+        for the user
+
+
+Content Repository
+------------------
+
+Attachments to events (images, files, etc) are uploaded to a homeserver via the
+Content Repository described in the `Client-Server API`_. When a server wishes
+to serve content originating from a remote server, it needs to ask the remote
+server for the media.
+
+Servers should use the server described in the Matrix Content URI, which has the
+format ``mxc://{ServerName}/{MediaID}``. Servers should use the download endpoint
+described in the `Client-Server API`_, being sure to use the ``allow_remote``
+parameter (set to ``false``).
 
 
 Signing Events
@@ -1491,7 +1066,7 @@ Servers can then transmit the entire event or the event with the non-essential
 keys removed. If the entire event is present, receiving servers can then check
 the event by computing the SHA-256 of the event, excluding the ``hash`` object.
 If the keys have been redacted, then the ``hash`` object is included when
-calculating the SHA-256 instead.
+calculating the SHA-256 hash instead.
 
 New hash functions can be introduced by adding additional keys to the ``hash``
 object. Since the ``hash`` object cannot be redacted a server shouldn't allow
@@ -1505,9 +1080,12 @@ that are too long.
   [[TODO(markjh) We might want to allow the server to omit the output of well
   known hash functions like SHA-256 when none of the keys have been redacted]]
 
+.. |/query/directory| replace:: ``/query/directory``
+.. _/query/directory: #get-matrix-federation-v1-query-directory
+
 .. _`Invitation storage`: ../identity_service/unstable.html#invitation-storage
 .. _`Identity Service API`: ../identity_service/unstable.html
-.. _`Client-Server API`: ../client_server/unstable.html#m-room-member
+.. _`Client-Server API`: ../client_server/unstable.html
 .. _`Inviting to a room`: #inviting-to-a-room
 .. _`Canonical JSON`: ../appendices.html#canonical-json
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64

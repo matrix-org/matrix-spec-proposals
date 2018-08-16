@@ -41,9 +41,9 @@ specs and event schemas in this repository.
 Preparation
 -----------
 
-To use the scripts, it is best to create a Python 2.x virtualenv as follows::
+To use the scripts, it is best to create a Python 3.4+ virtualenv as follows::
 
-  virtualenv env
+  virtualenv -p python3 env
   env/bin/pip install -r scripts/requirements.txt
 
 (Benjamin Synders has contributed a script for `Nix`_ users, which can be
@@ -68,10 +68,10 @@ Windows users
 ~~~~~~~~~~~~~
 
 If you're on Windows Vista or higher, be sure that the "Symbolic Links"
-option was selected when installing Git prior to cloning this repository. If 
-you're still seeing errors about files not being found it is likely because 
-the symlink at ``api/client-server/definitions/event-schemas`` looks like a 
-file. To correct the problem, open an Administrative/Elevated shell in your 
+option was selected when installing Git prior to cloning this repository. If
+you're still seeing errors about files not being found it is likely because
+the symlink at ``api/client-server/definitions/event-schemas`` looks like a
+file. To correct the problem, open an Administrative/Elevated shell in your
 cloned matrix-doc directory and run the following::
 
   cd api\client-server\definitions
@@ -121,7 +121,7 @@ changes.
 It is written in Go, so you will need the ``go`` compiler installed on your
 computer. You will also need to install fsnotify by running::
 
-  go get gopkg.in/fsnotify.v1
+  go get gopkg.in/fsnotify/fsnotify.v1
 
 Then, create a virtualenv as described above under `Preparation`_,
 and::

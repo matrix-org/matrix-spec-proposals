@@ -1,4 +1,5 @@
 # Copyright 2016 OpenMarket Ltd
+# Copyright 2018 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,8 +30,8 @@ paths:
     put:
       summary: Send some events to the application service.
       description: |-
-        This API is called by the HS when the HS wants to push an event (or
-        batch of events) to the AS.
+        This API is called by the homeserver when it wants to push an event
+        (or batch of events) to the application service.
       operationId: sendTransaction
       parameters:
         - in: path
@@ -47,33 +48,33 @@ paths:
           schema:
             type: object
             example: {
-                "events": [
-                  {
-                    "age": 32,
-                    "content": {
-                        "body": "incoming message",
-                        "msgtype": "m.text"
-                    },
-                    "event_id": "$14328055551tzaee:localhost",
-                    "origin_server_ts": 1432804485886,
-                    "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
-                    "type": "m.room.message",
-                    "user_id": "@bob:localhost"
+              "events": [
+                {
+                  "age": 32,
+                  "content": {
+                      "body": "incoming message",
+                      "msgtype": "m.text"
                   },
-                  {
-                    "age": 1984,
-                    "content": {
-                        "body": "another incoming message",
-                        "msgtype": "m.text"
-                    },
-                    "event_id": "$1228055551ffsef:localhost",
-                    "origin_server_ts": 1432804485886,
-                    "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
-                    "type": "m.room.message",
-                    "user_id": "@bob:localhost"
-                  }
-                ]
-              }
+                  "event_id": "$14328055551tzaee:localhost",
+                  "origin_server_ts": 1432804485886,
+                  "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
+                  "type": "m.room.message",
+                  "user_id": "@bob:localhost"
+                },
+                {
+                  "age": 1984,
+                  "content": {
+                      "body": "another incoming message",
+                      "msgtype": "m.text"
+                  },
+                  "event_id": "$1228055551ffsef:localhost",
+                  "origin_server_ts": 1432804485886,
+                  "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
+                  "type": "m.room.message",
+                  "user_id": "@bob:localhost"
+                }
+              ]
+            }
             description: "Transaction informations"
             properties:
               events:
@@ -88,10 +89,9 @@ paths:
           description: The transaction was processed successfully.
           examples:
             application/json: {
-              }
+            }
           schema:
             type: object
-
   "/rooms/{roomAlias}":
     get:
       summary: Query if a room alias should exist on the application service.
@@ -119,7 +119,7 @@ paths:
             before responding.
           examples:
             application/json: {
-              }
+            }
           schema:
             type: object
         401:
@@ -128,29 +128,29 @@ paths:
             Optional error information can be included in the body of this response.
           examples:
             application/json: {
-                "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
           schema:
-            type: object
+            $ref: ../client-server/definitions/errors/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
           examples:
             application/json: {
-                "errcode": "M_FORBIDDEN"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
+            }
           schema:
-            type: object
+            $ref: ../client-server/definitions/errors/error.yaml
         404:
           description: |-
             The application service indicates that this room alias does not exist.
             Optional error information can be included in the body of this response.
           examples:
             application/json: {
-                "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
+            }
           schema:
-            type: object
+            $ref: ../client-server/definitions/errors/error.yaml
   "/users/{userId}":
     get:
       summary: Query if a user should exist on the application service.
@@ -175,7 +175,7 @@ paths:
             service MUST create the user using the client-server API.
           examples:
             application/json: {
-              }
+            }
           schema:
             type: object
         401:
@@ -184,26 +184,266 @@ paths:
             Optional error information can be included in the body of this response.
           examples:
             application/json: {
-                "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
           schema:
-            type: object
+            $ref: ../client-server/definitions/errors/error.yaml
         403:
           description: |-
             The credentials supplied by the homeserver were rejected.
           examples:
             application/json: {
-                "errcode": "M_FORBIDDEN"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
+            }
           schema:
-            type: object
+            $ref: ../client-server/definitions/errors/error.yaml
         404:
           description: |-
             The application service indicates that this user does not exist.
             Optional error information can be included in the body of this response.
           examples:
             application/json: {
-                "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
-              }
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
+            }
           schema:
-            type: object
+            $ref: ../client-server/definitions/errors/error.yaml
+  "/_matrix/app/unstable/thirdparty/protocol/{protocol}":
+    get:
+      summary: Retrieve metadata about a specific protocol that the application service supports.
+      description: |-
+        This API is called by the homeserver when it wants to present clients
+        with specific information about the various third party networks that
+        an application service supports.
+      operationId: getProtocolMetadata
+      parameters:
+        - in: path
+          name: protocol
+          type: string
+          description: The protocol ID.
+          required: true
+          x-example: "irc"
+      responses:
+        200:
+          description: The protocol was found and metadata returned.
+          schema:
+            $ref: definitions/protocol_metadata.yaml
+        401:
+          description: |-
+            The homeserver has not supplied credentials to the application service.
+            Optional error information can be included in the body of this response.
+          examples:
+            application/json: {
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
+          schema:
+            $ref: ../client-server/definitions/errors/error.yaml
+        403:
+          description: |-
+            The credentials supplied by the homeserver were rejected.
+          examples:
+            application/json: {
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
+            }
+          schema:
+            $ref: ../client-server/definitions/errors/error.yaml
+        404:
+          description: No protocol was found with the given path.
+          examples:
+            application/json: {
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
+            }
+          schema:
+            $ref: ../client-server/definitions/errors/error.yaml
+  "/_matrix/app/unstable/thirdparty/user/{protocol}":
+    get:
+      summary: Retrieve the Matrix User ID of a corresponding third party user.
+      description: |-
+        This API is called by the homeserver in order to retrieve a Matrix
+        User ID linked to a user on the third party network, given a set of
+        user parameters.
+      operationId: queryUserByProtocol
+      parameters:
+        - in: path
+          name: protocol
+          type: string
+          description: The protocol ID.
+          required: true
+          x-example: irc
+        - in: query
+          name: fields...
+          type: string
+          description: |-
+            One or more custom fields that are passed to the application
+            service to help identify the user.
+      responses:
+        200:
+          description: The Matrix User IDs found with the given parameters.
+          schema:
+            $ref: definitions/user_batch.yaml
+        401:
+          description: |-
+            The homeserver has not supplied credentials to the application service.
+            Optional error information can be included in the body of this response.
+          examples:
+            application/json: {
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
+          schema:
+            $ref: ../client-server/definitions/errors/error.yaml
+        403:
+          description: |-
+            The credentials supplied by the homeserver were rejected.
+          examples:
+            application/json: {
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
+            }
+          schema:
+            $ref: ../client-server/definitions/errors/error.yaml
+        404:
+          description: No users were found with the given parameters.
+          examples:
+            application/json: {
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
+            }
+          schema:
+            $ref: ../client-server/definitions/errors/error.yaml
+  "/_matrix/app/unstable/thirdparty/location/{protocol}":
+    get:
+      summary: Retreive Matrix-side portal rooms leading to a third party location.
+      description: |-
+        Retrieve a list of Matrix portal rooms that lead to the matched third party location.
+      operationId: queryLocationByProtocol
+      parameters:
+        - in: path
+          name: protocol
+          type: string
+          description: The protocol ID.
+          required: true
+          x-example: irc
+        - in: query
+          name: fields...
+          type: string
+          description: |-
+            One or more custom fields that are passed to the application
+            service to help identify the third party location.
+      responses:
+        200:
+          description: At least one portal room was found.
+          schema:
+            $ref: definitions/location_batch.yaml
+        401:
+          description: |-
+            The homeserver has not supplied credentials to the application service.
+            Optional error information can be included in the body of this response.
+          examples:
+            application/json: {
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
+          schema:
+            $ref: ../client-server/definitions/errors/error.yaml
+        403:
+          description: |-
+            The credentials supplied by the homeserver were rejected.
+          examples:
+            application/json: {
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
+            }
+          schema:
+            $ref: ../client-server/definitions/errors/error.yaml
+        404:
+          description: No mappings were found with the given parameters.
+          examples:
+            application/json: {
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
+            }
+          schema:
+            $ref: ../client-server/definitions/errors/error.yaml
+  "/_matrix/app/unstable/thirdparty/location":
+    get:
+      summary: Reverse-lookup third party locations given a Matrix room alias.
+      description: |-
+        Retreive an array of third party network locations from a Matrix room
+        alias.
+      operationId: queryLocationByAlias
+      parameters:
+        - in: query
+          name: alias
+          type: string
+          description: The Matrix room alias to look up.
+      responses:
+        200:
+          description: |-
+            All found third party locations.
+          schema:
+            $ref: definitions/location_batch.yaml
+        401:
+          description: |-
+            The homeserver has not supplied credentials to the application service.
+            Optional error information can be included in the body of this response.
+          examples:
+            application/json: {
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
+          schema:
+            $ref: ../client-server/definitions/errors/error.yaml
+        403:
+          description: |-
+            The credentials supplied by the homeserver were rejected.
+          examples:
+            application/json: {
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
+            }
+          schema:
+            $ref: ../client-server/definitions/errors/error.yaml
+        404:
+          description: No mappings were found with the given parameters.
+          examples:
+            application/json: {
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
+            }
+          schema:
+            $ref: ../client-server/definitions/errors/error.yaml
+  "/_matrix/app/unstable/thirdparty/user":
+    get:
+      summary: Reverse-lookup third party users given a Matrix User ID.
+      description: |-
+        Retreive an array of third party users from a Matrix User ID.
+      operationId: queryUserByID
+      parameters:
+        - in: query 
+          name: userid
+          type: string
+          description: The Matrix User ID to look up.
+      responses:
+        200:
+          description: |-
+            An array of third party users.
+          schema:
+            $ref: definitions/user_batch.yaml
+        401:
+          description: |-
+            The homeserver has not supplied credentials to the application service.
+            Optional error information can be included in the body of this response.
+          examples:
+            application/json: {
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
+          schema:
+            $ref: ../client-server/definitions/errors/error.yaml
+        403:
+          description: |-
+            The credentials supplied by the homeserver were rejected.
+          examples:
+            application/json: {
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
+            }
+          schema:
+            $ref: ../client-server/definitions/errors/error.yaml
+        404:
+          description: No mappings were found with the given parameters.
+          examples:
+            application/json: {
+              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
+            }
+          schema:
+            $ref: ../client-server/definitions/errors/error.yaml

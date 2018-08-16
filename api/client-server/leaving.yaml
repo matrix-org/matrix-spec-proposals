@@ -64,7 +64,7 @@ paths:
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Room membership
   "/rooms/{roomId}/forget":
@@ -78,8 +78,8 @@ paths:
         for this room. If all users on a homeserver forget a room, the room is
         eligible for deletion from that homeserver.
 
-        If the user is currently joined to the room, they will implicitly leave
-        the room as part of this API call.
+        If the user is currently joined to the room, they must leave the room
+        before calling this API.
       operationId: forgetRoom
       security:
         - accessToken: []
@@ -99,9 +99,18 @@ paths:
               }
           schema:
             type: object
+        400:
+          description: The user has not left the room
+          examples:
+            application/json: {
+              "errcode": "M_UNKNOWN",
+              "error": "User @example:matrix.org is in room !au1ba7o:matrix.org"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Room membership

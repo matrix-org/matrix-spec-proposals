@@ -288,6 +288,8 @@ paths:
           description: The room to get the member events for.
           required: true
           x-example: "!636q39766251:example.com"
+      security:
+        - accessToken: []
       responses:
         200:
           description: |-
