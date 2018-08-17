@@ -24,7 +24,8 @@ allOf:
   - type: object
     properties:
       edu_type:
-        type: string
+        type: enum
+        enum: ['m.receipt']
         description: The string ``m.receipt``
         example: "m.receipt"
       content:
@@ -46,8 +47,7 @@ allOf:
                 event_ids:
                   type: array
                   description: |-
-                    The event ID that the user has read up to. Must be exactly
-                    one element in length.
+                    The extremity event IDs that the user has read up to.
                   minItems: 1
                   maxItems: 1
                   items:
