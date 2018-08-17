@@ -20,7 +20,8 @@ allOf:
   - type: object
     properties:
       edu_type:
-        type: string
+        type: enum
+        enum: ['m.typing']
         description: The string ``m.typing``
         example: "m.typing"
       content:
