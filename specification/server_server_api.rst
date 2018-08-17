@@ -841,13 +841,7 @@ EDUs. There are no PDUs or Federation Queries involved.
 Servers should only send presence updates for users that the receiving server
 would be interested in. This can include the receiving server sharing a room
 with a given user, or a user on the receiving server has added one of the 
-sending server's users to their presence list. 
-
-Servers may also request additional users by including them in the ``poll``
-array on an ``m.presence`` update. The receiving server may ignore users
-requested in this array. The receiving server should maintain a list of
-subscribed users for the sending server, which is appended to by the ``poll``
-array and deleted from by the ``unpoll`` array.
+sending server's users to their presence list.
 
 .. TODO-doc
   - Explain the timing-based round-trip reduction mechanism for presence

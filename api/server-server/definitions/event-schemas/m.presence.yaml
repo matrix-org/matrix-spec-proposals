@@ -16,8 +16,6 @@ type: object
 title: Presence EDU
 description: |-
   An EDU representing presence updates for users of the sending homeserver.
-  Can also be used to request additional presence updates for users of the
-  receiving homeserver.
 allOf:
   - $ref: ../edu.yaml
   - type: object
@@ -35,7 +33,7 @@ allOf:
             type: array
             description: |-
               A list of presence updates that the receiving server is likely
-              to be interested in, or is subscribed to.
+              to be interested in.
             items:
               type: object
               title: User Presence Update
@@ -67,31 +65,4 @@ allOf:
                     Defaults to false.
                   example: true
               required: ['user_id', 'presence', 'last_active_ago']
-          poll:
-            type: array
-            description: |-
-              New user IDs that the sending server would like to subscribe to the
-              presence of. The sending server should not include users it has already
-              requested to be subscribed to.
-
-              The receiving server should ensure the sending server has reasonable
-              interest in subscribing to the provided users. The receiver may ignore 
-              a request to subscribe to a user the sender does not have reasonable
-              interest in. Reasonable interest may be residing in a room with the user,
-              being subscribed to a presence list, or some other requirement.
-
-              If non-empty, the receiving server should immediately send the presence
-              updates to the sender for the users requested.
-            items:
-              type: string
-            example: ["@alice:elsewhere.org"]
-          unpoll:
-            type: array
-            description: |-
-              New user IDs the sending server is no longer interested in receiving
-              presence updates for. The sending server should not include users it
-              has previously requested to be unsubscribed from.
-            items:
-              type: string
-            example: ["@bob:elsewhere.org"]
         required: ['push']
