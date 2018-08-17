@@ -242,11 +242,13 @@ specify parameter values. The flow for this method is as follows:
 
       i. Parse it as a URL. If it is not a URL, then ``FAIL_ERROR``.
       ii. Clients SHOULD validate that the URL points to a valid homeserver
-          before accepting it by connecting to the ``/_matrix/client/versions``
-          endpoint, and parsing and validating the data. If any step in the
-          validation fails, then ``FAIL_ERROR``. Validation is done as a simple
-          check against configuration errors, before sending sensitive
-          information such as a user's password to the server.
+          before accepting it by connecting to the |/_matrix/client/versions|_
+          endpoint, ensuring that it does not return an error, and parsing and
+          validating that the data conforms with the expected response
+          format. If any step in the validation fails, then
+          ``FAIL_ERROR``. Validation is done as a simple check against
+          configuration errors, in order to ensure that the discovered address
+          points to a valid homeserver.
 
    f. If the ``m.identity_server`` property is present, extract the
       ``base_url`` value for use as the base URL of the identity server.
@@ -1648,6 +1650,9 @@ have to wait in milliseconds before they can try again.
 
 .. |/user/<user_id>/account_data/<type>| replace:: ``/user/<user_id>/account_data/<type>``
 .. _/user/<user_id>/account_data/<type>: #put-matrix-client-%CLIENT_MAJOR_VERSION%-user-userid-account-data-type
+
+.. |/_matrix/client/versions| replace:: ``/_matrix/client/versions``
+.. _/_matrix/client/versions: #get-matrix-client-versions
 
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
 .. _`3PID Types`:  ../appendices.html#pid-types
