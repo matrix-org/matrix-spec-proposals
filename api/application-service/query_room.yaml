@@ -1,3 +1,4 @@
+# Copyright 2016 OpenMarket Ltd
 # Copyright 2018 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +40,7 @@ paths:
         - in: path
           name: roomAlias
           type: string
-          description: The room alias being queried.
+          description: The URL encoded room alias being queried.
           required: true
           x-example: "#magicforest:example.com"
       responses:
@@ -51,8 +52,7 @@ paths:
             information about the room such as its name and topic can be set
             before responding.
           examples:
-            application/json: {
-            }
+            application/json: {}
           schema:
             type: object
         401:

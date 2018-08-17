@@ -1,3 +1,4 @@
+# Copyright 2016 OpenMarket Ltd
 # Copyright 2018 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,13 +34,13 @@ paths:
         the existence of a given user ID. The homeserver will only query user IDs
         inside the application service's ``users`` namespace. The homeserver will
         send this request when it receives an event for an unknown user ID in
-        the application service's namespace.
+        the application service's namespace, such as a room invite.
       operationId: queryUserById
       parameters:
         - in: path
           name: userId
           type: string
-          description: The user ID being queried.
+          description: The URL encoded user ID being queried.
           required: true
           x-example: "@alice:example.com"
       responses:
@@ -48,8 +49,7 @@ paths:
             The application service indicates that this user exists. The application
             service MUST create the user using the client-server API.
           examples:
-            application/json: {
-            }
+            application/json: {}
           schema:
             type: object
         401:
