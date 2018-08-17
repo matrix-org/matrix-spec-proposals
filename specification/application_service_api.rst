@@ -69,7 +69,13 @@ Registration
 Application services register "namespaces" of user IDs, room aliases and room IDs.
 These namespaces are represented as regular expressions. An application service
 is said to be "interested" in a given event if one of the IDs in the event match
-the regular expression provided by the application service. An application
+the regular expression provided by the application service, such as the room having
+an alias or ID in the relevant namespaces. Similarly, the application service is
+said to be interested in a given event if one of the application service's namespaced
+users is the target of the event, or is a joined member of the room where the event
+occurred.
+
+An application
 service can also state whether they should be the only ones who
 can manage a specified namespace. This is referred to as an "exclusive"
 namespace. An exclusive namespace prevents humans and other application
