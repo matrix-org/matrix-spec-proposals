@@ -56,7 +56,7 @@ allOf:
                   type: integer
                   format: int64
                   description: |-
-                    The number of milliseconds that have ellapsed since the user
+                    The number of milliseconds that have elapsed since the user
                     last did something.
                   example: 5000
                 currently_active:
