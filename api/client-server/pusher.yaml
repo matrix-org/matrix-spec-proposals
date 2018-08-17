@@ -222,8 +222,8 @@ paths:
                     type: string
                     description: |-
                       Required if ``kind`` is ``http``. The URL to use to send
-                      notifications to. MUST be an HTTPS URL with a path pointing
-                      to ``/_matrix/push/v1/notify``.
+                      notifications to. MUST be an HTTPS URL with a path of 
+                      ``/_matrix/push/v1/notify``.
                     example: "https://push-gateway.location.here/_matrix/push/v1/notify"
                   format:
                     type: string
