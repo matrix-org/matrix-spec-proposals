@@ -13,7 +13,7 @@
 # limitations under the License.
 
 type: object
-title: Presence EDU
+title: ``m.presence`` EDU
 description: |-
   An EDU representing presence updates for users of the sending homeserver.
 allOf:

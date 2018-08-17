@@ -13,7 +13,7 @@
 # limitations under the License.
 
 type: object
-title: Presence Invite EDU
+title: ``m.presence_invite`` EDU
 description: |-
   An EDU representing a request to subscribe to a user's presence.
 allOf:
