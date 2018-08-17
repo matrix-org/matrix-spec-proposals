@@ -192,22 +192,28 @@ they wish to be acting on behalf of. For real users, this would require
 additional permissions granting the AS permission to masquerade as a matrix user.
 
 Inputs:
- - Application service token (``access_token``)
+ - Application service token (``as_token``)
  - User ID in the AS namespace to act as.
 
 Notes:
- - This will apply on all aspects of the CS API, except for Account Management.
+ - This will apply on all aspects of the Client-Server API, except for Account Management.
  - The ``as_token`` is inserted into ``access_token`` which is usually where the
-   client token is. This is done on purpose to allow application services to
-   reuse client SDKs.
+   client token is, such as via the query string or ``Authorization`` header. This 
+   is done on purpose to allow application services to reuse client SDKs.
+ - The ``access_token`` should be supplied through the ``Authorization`` header where
+   possible to prevent the token appearing in HTTP request logs by accident.
 
-::
+The application service may specify the virtual user to act as through use of a
+``user_id`` query string parameter on the request. The user specified in the query
+string must be covered by one of the application service's ``user`` namespaces. If
+the parameter is missing, the homeserver is to assume the application service intends
+to act as the user implied by the ``sender_localpart`` property of the registration.
 
- /path?access_token=$token&user_id=$userid
+An example request would be::
 
- Query Parameters:
-   access_token: The application service token
-   user_id: The desired user ID to act as.
+ GET /_matrix/client/%CLIENT_MAJOR_VERSION%/account/whoami?user_id=@_irc_user:example.org
+ Authorization: Bearer YourApplicationServiceTokenHere
+
 
 Timestamp massaging
 +++++++++++++++++++
@@ -223,11 +229,10 @@ Notes:
 
 ::
 
- /path?access_token=$token&ts=$timestamp
+ PUT /_matrix/client/r0/rooms/!somewhere:domain.com/send/m.room.message/txnId?ts=1534535223283
+  Authorization: Bearer YourApplicationServiceTokenHere
 
- Query Parameters added to the send event APIs only:
-   access_token: The application service token
-   ts: The desired timestamp
+ Content: The event to send, as per the Client-Server API.
 
 Server admin style permissions
 ++++++++++++++++++++++++++++++
@@ -250,12 +255,13 @@ including the AS token on a ``/register`` request, along with a login type of
 
 ::
 
-  /register?access_token=$as_token
+  POST /_matrix/client/%CLIENT_MAJOR_VERSION%/register
+  Authorization: Bearer YourApplicationServiceTokenHere
 
   Content:
   {
     type: "m.login.application_service",
-    username: "<desired user localpart in AS namespace>"
+    username: "_irc_example"
   }
 
 Application services which attempt to create users or aliases *outside* of
