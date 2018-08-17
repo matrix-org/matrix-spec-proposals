@@ -264,6 +264,14 @@ normal users who attempt to create users or aliases *inside* an application
 service-defined namespace will receive the same ``M_EXCLUSIVE`` error code,
 but only if the application service has defined the namespace as ``exclusive``.
 
+Using ``/sync`` and ``/events``
++++++++++++++++++++++++++++++++
+
+Application services wishing to use ``/sync`` or ``/events`` from the Client-Server
+API MUST do so with a virtual user (provide a ``user_id`` via the query string). It
+is expectected that the application service use the transactions pushed to it to
+handle events rather than syncing with the user implied by ``sender_localpart``.
+
 ID conventions
 ~~~~~~~~~~~~~~
 .. TODO-spec
