@@ -163,6 +163,10 @@ this request (e.g. to join a room alias).
   the application service about information about the entity such as room ID to
   room alias mappings.
 
+{{query_user_as_http_api}}
+
+{{query_room_as_http_api}}
+
 
 HTTP APIs
 +++++++++
@@ -171,10 +175,6 @@ This contains application service APIs which are used by the homeserver. All
 application services MUST implement these APIs. These APIs are defined below.
 
 {{application_service_as_http_api}}
-
-{{query_user_as_http_api}}
-
-{{query_room_as_http_api}}
 
 
 .. _create the user: `sect:asapi-permissions`_
