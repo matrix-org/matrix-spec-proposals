@@ -21,7 +21,8 @@ allOf:
   - type: object
     properties:
       edu_type:
-        type: string
+        type: enum
+        enum: ['m.presence']
         description: The string ``m.presence``
         example: "m.presence"
       content:
