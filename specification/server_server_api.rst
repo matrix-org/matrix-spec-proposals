@@ -843,6 +843,12 @@ would be interested in. This can include the receiving server sharing a room
 with a given user, or a user on the receiving server has added one of the 
 sending server's users to their presence list.
 
+Clients may define lists of users that they are interested in via "Presence
+Lists" through the `Client-Server API`_. When users are added to a presence
+list, a ``m.presence_invite`` EDU is sent to them. The user may then accept
+or deny their involvement in the list by sending either an ``m.presence_accept``
+or ``m.presence_deny`` EDU back.
+
 .. TODO-doc
   - Explain the timing-based round-trip reduction mechanism for presence
     messages
@@ -855,7 +861,7 @@ sending server's users to their presence list.
 
 {{definition_ss_event_schemas_m_presence_accept}} 
 
-{{definition_ss_event_schemas_m_presence_accept}}
+{{definition_ss_event_schemas_m_presence_deny}}
 
 Querying for information
 ------------------------
