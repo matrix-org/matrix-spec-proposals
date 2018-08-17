@@ -32,6 +32,10 @@ paths:
       description: |-
         This API is called by the homeserver when it wants to push an event
         (or batch of events) to the application service.
+
+        The application service should take care to ensure that it handles
+        state events by the presence of a ``state_key``, not by the event
+        type.
       operationId: sendTransaction
       parameters:
         - in: path
@@ -44,7 +48,7 @@ paths:
           x-example: "35"
         - in: body
           name: body
-          description: A list of events
+          description: A list of events.
           schema:
             type: object
             example: {
