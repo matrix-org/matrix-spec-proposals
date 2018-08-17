@@ -22,6 +22,8 @@ schemes:
 basePath: /_matrix/federation/v1
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/publicRooms":
     get:
@@ -31,6 +33,8 @@ paths:
         rooms that are listed on another homeserver's directory, just those
         listed on the receiving homeserver's directory.
       operationId: getPublicRooms
+      security:
+        - signedRequest: []
       parameters:
         - in: query
           name: limit
