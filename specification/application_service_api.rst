@@ -172,6 +172,10 @@ application services MUST implement these APIs. These APIs are defined below.
 
 {{application_service_as_http_api}}
 
+{{query_user_as_http_api}}
+
+{{query_room_as_http_api}}
+
 
 .. _create the user: `sect:asapi-permissions`_
 
