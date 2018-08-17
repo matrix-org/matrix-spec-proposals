@@ -1,4 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
+.. Copyright 2018 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -39,7 +40,7 @@ This version of the specification is generated from
 Application Services
 --------------------
 Application services are passive and can only observe events from a given
-homeserver. They can inject events into rooms they are participating in.
+homeserver (HS). They can inject events into rooms they are participating in.
 They cannot prevent events from being sent, nor can they modify the content of
 the event being sent. In order to observe events from a homeserver, the
 homeserver needs to be configured to pass certain types of traffic to the
@@ -217,7 +218,8 @@ need to be able to adjust the ``origin_server_ts`` value to do this.
 
 Inputs:
  - Application service token (``as_token``)
- - Desired timestamp
+ - Desired timestamp in milliseconds since the unix epoch
+
 Notes:
  - This will only apply when sending events.
 
