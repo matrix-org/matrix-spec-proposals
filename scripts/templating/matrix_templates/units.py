@@ -287,7 +287,9 @@ def get_json_schema_object_fields(obj, enforce_title=False):
 def process_data_type(prop, required=False, enforce_title=True):
     prop = inherit_parents(prop)
 
-    prop_type = prop['type']
+    prop_type = prop.get('oneOf', prop.get('type', []))
+    assert prop_type
+
     tables = []
     enum_desc = None
     is_object = False
@@ -318,6 +320,19 @@ def process_data_type(prop, required=False, enforce_title=True):
             tables = nested["tables"]
             enum_desc = nested["enum_desc"]
 
+    elif isinstance(prop_type, list):
+        prop_title = []
+        for t in prop_type:
+            if isinstance(t, dict):
+                nested = process_data_type(t)
+                tables.extend(nested['tables'])
+                prop_title.append(nested['title'])
+                # Assuming there's at most one enum among type options
+                enum_desc = nested['enum_desc']
+                if enum_desc:
+                    enum_desc = "%s if the type is enum" % enum_desc
+            else:
+                prop_title.append(t)
     else:
         prop_title = prop_type
 

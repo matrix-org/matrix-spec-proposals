@@ -1,4 +1,5 @@
 # Copyright 2016 OpenMarket Ltd
+# Copyright 2018 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -85,7 +86,10 @@ paths:
             type: object
             example: {
                 "type": "m.login.password",
-                "user": "cheeky_monkey",
+                "identifier": {
+                  "type": "m.id.user",
+                  "user": "cheeky_monkey"
+                },
                 "password": "ilovebananas",
                 "initial_device_display_name": "Jungle Phone"
               }
@@ -94,15 +98,18 @@ paths:
                 type: string
                 enum: ["m.login.password", "m.login.token"]
                 description: The login type being used.
+              identifier:
+                description: Identification information for the user.
+                "$ref": "definitions/user_identifier.yaml"
               user:
                 type: string
-                description: The fully qualified user ID or just local part of the user ID, to log in.
+                description: The fully qualified user ID or just local part of the user ID, to log in.  Deprecated in favour of ``identifier``.
               medium:
                 type: string
-                description: When logging in using a third party identifier, the medium of the identifier. Must be 'email'.
+                description: When logging in using a third party identifier, the medium of the identifier. Must be 'email'.  Deprecated in favour of ``identifier``.
               address:
                 type: string
-                description: Third party identifier for the user.
+                description: Third party identifier for the user.  Deprecated in favour of ``identifier``.
               password:
                 type: string
                 description: |-
