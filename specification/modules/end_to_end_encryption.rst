@@ -366,7 +366,6 @@ The plaintext payload is of the form:
    {
      "type": "<type of the plaintext event>",
      "content": "<content for the plaintext event>",
-     "room_id": "<the room_id>",
      "sender": "<sender_user_id>",
      "recipient": "<recipient_user_id>",
      "recipient_keys": {
@@ -378,9 +377,6 @@ The plaintext payload is of the form:
    }
 
 The type and content of the plaintext message event are given in the payload.
-
-We include the room ID in the payload, because otherwise the homeserver would
-be able to change the room a message was sent in.
 
 Other properties are included in order to prevent an attacker from publishing
 someone else's curve25519 keys as their own and subsequently claiming to have
@@ -432,6 +428,9 @@ The encrypted payload can contain any message event. The plaintext is of the for
       "content": "<event_content>",
       "room_id": "<the room_id>"
     }
+
+We include the room ID in the payload, because otherwise the homeserver would
+be able to change the room a message was sent in.
 
 Clients must guard against replay attacks by keeping track of the ratchet indices
 of Megolm sessions. They should reject messages with a ratchet index that they
