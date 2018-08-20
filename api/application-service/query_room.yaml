@@ -40,7 +40,7 @@ paths:
         - in: path
           name: roomAlias
           type: string
-          description: The URL encoded room alias being queried.
+          description: The room alias being queried.
           required: true
           x-example: "#magicforest:example.com"
       responses:

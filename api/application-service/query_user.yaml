@@ -40,7 +40,7 @@ paths:
         - in: path
           name: userId
           type: string
-          description: The URL encoded user ID being queried.
+          description: The user ID being queried.
           required: true
           x-example: "@alice:example.com"
       responses:
