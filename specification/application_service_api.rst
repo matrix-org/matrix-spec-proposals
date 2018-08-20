@@ -185,18 +185,17 @@ homeserver.
 Identity assertion
 ++++++++++++++++++
 The client-server API infers the user ID from the ``access_token`` provided in
-every request. It would be an annoying amount of book-keeping to maintain tokens
-for every virtual user. It would be preferable if the application service could
-use the CS API with its own ``as_token`` instead, and specify the virtual user
-they wish to be acting on behalf of. For real users, this would require
-additional permissions granting the AS permission to masquerade as a matrix user.
+every request. To avoid the application service from having to keep track of each
+user's access token, the application service should identify itself to the Client-Server
+API by providing its ``as_token`` instead for the ``access_token`` alongside the
+user the application service would like to masquerade as.
 
 Inputs:
  - Application service token (``as_token``)
  - User ID in the AS namespace to act as.
 
 Notes:
- - This will apply on all aspects of the Client-Server API, except for Account Management.
+ - This applies to all aspects of the Client-Server API, except for Account Management.
  - The ``as_token`` is inserted into ``access_token`` which is usually where the
    client token is, such as via the query string or ``Authorization`` header. This 
    is done on purpose to allow application services to reuse client SDKs.
