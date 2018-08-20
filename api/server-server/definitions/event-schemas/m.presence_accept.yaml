@@ -13,7 +13,7 @@
 # limitations under the License.
 
 type: object
-title: ``m.presence_accept`` EDU
+title: m.presence_accept
 description: |-
   An EDU representing approval for the observing user to subscribe to the
   presence of the the observed user.

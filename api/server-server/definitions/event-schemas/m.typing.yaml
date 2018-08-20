@@ -13,7 +13,7 @@
 # limitations under the License.
 
 type: object
-title: ``m.typing`` EDU
+title: m.typing
 description: A typing notification EDU for a user in a room.
 allOf:
   - $ref: ../edu.yaml

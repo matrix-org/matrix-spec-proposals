@@ -13,7 +13,7 @@
 # limitations under the License.
 
 type: object
-title: ``m.presence_deny`` EDU
+title: m.presence_deny
 description: |-
   An EDU representing a declination or revocation for the observing user
   to subscribe to the presence of the observed user.
