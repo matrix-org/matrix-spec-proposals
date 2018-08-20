@@ -18,7 +18,7 @@ The mechanics of this are as follows. When Alice upgrades a room, her client
 hits a new C-S api:
 
 ```
-POST /_matrix/client/r0/room/{roomId}/upgrade
+POST /_matrix/client/r0/rooms/{roomId}/upgrade
 ```
 ```json
 {
