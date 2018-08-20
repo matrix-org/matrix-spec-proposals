@@ -68,8 +68,13 @@ message contents:
   `m.key.verification.reciprocate` message
 - `signatures`: signature of the key and transaction ID, signed using Bob's key
 
-Tradeoffs
----------
+Tradeoffs/Alternatives
+----------------------
+
+The exact format for the QR code is not nailed down.  Another possibility is
+that it could be a URL, so that a user can scan the code in any QR code
+scanner, and have it automatically open the user's Matrix client to begin the
+verification.
 
 Security Considerations
 -----------------------
