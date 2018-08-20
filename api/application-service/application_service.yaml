@@ -33,9 +33,9 @@ paths:
         This API is called by the homeserver when it wants to push an event
         (or batch of events) to the application service.
 
-        The application service should take care to ensure that it handles
-        state events by the presence of a ``state_key``, not by the event
-        type.
+        Note that the application service should distinguish state events
+        from message events via the presence of a ``state_key``, rather than
+        via the event type.
       operationId: sendTransaction
       parameters:
         - in: path

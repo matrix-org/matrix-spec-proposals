@@ -224,7 +224,7 @@ need to be able to adjust the ``origin_server_ts`` value to do this.
 
 Inputs:
  - Application service token (``as_token``)
- - Desired timestamp in milliseconds since the unix epoch
+ - Desired timestamp (in milliseconds since the unix epoch)
 
 Notes:
  - This will only apply when sending events.
