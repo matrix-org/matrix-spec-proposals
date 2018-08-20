@@ -214,16 +214,10 @@ paths:
                 type: string
                 description: |-
                   The created room's ID.
-              room_alias:
-                type: string
-                description: |-
-                  The complete room alias for the room, if a room alias was created
-                  for the room.
             required: ['room_id']
           examples:
             application/json: {
-              "room_id": "!sefiuhWgwghwWgh:example.com",
-              "room_alias": "#thepub:example.com"
+              "room_id": "!sefiuhWgwghwWgh:example.com"
             }
         400:
           description: |-
