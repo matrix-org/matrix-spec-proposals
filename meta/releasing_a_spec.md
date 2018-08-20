@@ -21,12 +21,13 @@ The remainder of the process is as follows:
 1. Update the changelog section of the specification you're releasing to make a reference
    to the new version.
 1. Update any version/link references across all specifications.
-1. Update the index to list the version correctly.
+1. Ensure the `targets.yml` file lists the version correctly.
+1. Commit the changes and PR them to master.
+1. Tag the release with the format `client_server/r0.4.0`.
 1. Add the changes to the matrix-org/matrix.org repository (for historic tracking).
    * This is done by making a PR to the `unstyled_docs/spec` folder for the version and
      specification you're releasing.
-1. Commit the changes and PR them to master.
-1. Tag the release with the format `client_server/r0.4.0`.
+  * Don't forget to symlink the new release as `latest`.
 1. Perform a release on GitHub to tag the release.
 1. Yell from the mountaintop to the world about the new release.
 
