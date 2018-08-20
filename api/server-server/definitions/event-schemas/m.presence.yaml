@@ -62,10 +62,10 @@ allOf:
                 currently_active:
                   type: boolean
                   description: |-
-                    Whether or not the user is currently using a device of theirs.
-                    For example, if the user's ``last_active_ago`` was within the
-                    last few minutes, they may be considered ``currently_active``.
-                    Defaults to false.
+                    True if the user is likely to be interacting with their
+                    client. This may be indicated by the user having a 
+                    ``last_active_ago`` within the last few minutes. Defaults
+                    to false.
                   example: true
               required: ['user_id', 'presence', 'last_active_ago']
         required: ['push']
