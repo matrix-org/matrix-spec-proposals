@@ -208,10 +208,9 @@ paths:
                 title: Power Level Event Content
                 description: |-
                   The power level content to override in the default power level
-                  event. This object is applied on top of the generated power
-                  level event prior to it being sent to the room. Defaults
-                  to overriding nothing.
-                $ref: "definitions/event-schemas/power_level_content_schema.yaml"
+                  event. This object is applied on top of the generated `m.room.power_levels`_
+                  event content prior to it being sent to the room. Defaults to
+                  overriding nothing.
       responses:
         200:
           description: Information about the newly created room.
