@@ -83,6 +83,21 @@ Step 4 is to ensure that Bob does not present a QR code claiming to be Carol's
 key.  Without this check, Bob will be able to trick Alice into verifying a key
 under his control, and evesdropping on Alice's communications with Carol.
 
+The security of verifying Alice's key depends on Bob not hitting the "Verified"
+button until after Alice's device indicates success.  However, users have a
+tendency to click on buttons without reading what the screen says.  This might
+be addressed by:
+
+- allowing Bob to easily undo the verification if Alice's device subsequently
+  gives an error
+- posing Bob a dummy question that he cannot answer until after Alice's device
+  displays the check results.  For example: "Does Alice's device show a cat or
+  a dog?"  Alice's device will show one or the other after it has checked the
+  key received from Bob, forcing Bob to wait for the check to complete.
+  (Whether a cat or a dog is displayed could be keyed to, for example, a bit in
+  the transaction ID.)
+- (possibly other ways)
+
 Other Issues
 ------------
 
