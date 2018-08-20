@@ -5,10 +5,10 @@ specification, server-server specification, and identity server specification. E
 of these gets released independently of each other with their own version numbers.
 
 Once a specification is ready for release, a branch should be created to track the
-changes in. This should be the name of the specification (as it appears in the directory
-structure of this project) followed by a forward slash and the version being released,
-followed by `_updates`. For example, if the Client-Server Specification was getting 
-an r0.4.0 release, the branch name would be `client_server/r0.4.0_updates`.
+changes in and to hold potential future hotfixes. This should be the name of the
+specification (as it appears in the directory structure of this project) followed
+by "release-" and the release version. For example, if the Client-Server Specification
+was getting an r0.4.0 release, the branch name would be `client_server/release-r0.4.0`.
 
 *Note*: Historical releases prior to this process may or may not have an appropriate
 release branch. Releases after this document came into place will have an appropriate
