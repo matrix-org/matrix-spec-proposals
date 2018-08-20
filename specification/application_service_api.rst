@@ -1,4 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
+.. Copyright 2018 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -39,7 +40,7 @@ This version of the specification is generated from
 Application Services
 --------------------
 Application services are passive and can only observe events from a given
-homeserver. They can inject events into rooms they are participating in.
+homeserver (HS). They can inject events into rooms they are participating in.
 They cannot prevent events from being sent, nor can they modify the content of
 the event being sent. In order to observe events from a homeserver, the
 homeserver needs to be configured to pass certain types of traffic to the
@@ -68,7 +69,13 @@ Registration
 Application services register "namespaces" of user IDs, room aliases and room IDs.
 These namespaces are represented as regular expressions. An application service
 is said to be "interested" in a given event if one of the IDs in the event match
-the regular expression provided by the application service. An application
+the regular expression provided by the application service, such as the room having
+an alias or ID in the relevant namespaces. Similarly, the application service is
+said to be interested in a given event if one of the application service's namespaced
+users is the target of the event, or is a joined member of the room where the event
+occurred.
+
+An application
 service can also state whether they should be the only ones who
 can manage a specified namespace. This is referred to as an "exclusive"
 namespace. An exclusive namespace prevents humans and other application
@@ -83,7 +90,7 @@ regular expressions and look like:
 
    users:
      - exclusive: true
-       regex: @irc.freenode.net_.*
+       regex: @_irc.freenode.net_.*
 
 
 The registration is represented by a series of key-value pairs, which this
@@ -105,11 +112,16 @@ traffic to the AS is:
       aliases: []  # Namespaces of room aliases which should be delegated to the AS
       rooms: [] # Namespaces of room ids which should be delegated to the AS
 
+Exclusive user and alias namespaces should begin with an underscore after the
+sigil to avoid collisions with other users on the homeserver. Application
+services should additionally attempt to identify the service they represent
+in the reserved namespace. For example, ``@_irc_.*`` would be a good namespace
+to register for an application service which deals with IRC.
+
 .. WARNING::
   If the homeserver in question has multiple application services, each
   ``as_token`` and ``id`` MUST be unique per application service as these are
   used to identify the application service. The homeserver MUST enforce this.
-
 
 Homeserver -> Application Service API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -221,7 +233,8 @@ need to be able to adjust the ``origin_server_ts`` value to do this.
 
 Inputs:
  - Application service token (``as_token``)
- - Desired timestamp
+ - Desired timestamp (in milliseconds since the unix epoch)
+
 Notes:
  - This will only apply when sending events.
 
@@ -267,6 +280,14 @@ their defined namespaces will receive an error code ``M_EXCLUSIVE``. Similarly,
 normal users who attempt to create users or aliases *inside* an application
 service-defined namespace will receive the same ``M_EXCLUSIVE`` error code,
 but only if the application service has defined the namespace as ``exclusive``.
+
+Using ``/sync`` and ``/events``
++++++++++++++++++++++++++++++++
+
+Application services wishing to use ``/sync`` or ``/events`` from the Client-Server
+API MUST do so with a virtual user (provide a ``user_id`` via the query string). It
+is expectected that the application service use the transactions pushed to it to
+handle events rather than syncing with the user implied by ``sender_localpart``.
 
 Event fields
 ~~~~~~~~~~~~
