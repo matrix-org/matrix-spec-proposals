@@ -83,7 +83,7 @@ regular expressions and look like:
 
    users:
      - exclusive: true
-       regex: @irc.freenode.net_.*
+       regex: @_irc.freenode.net_.*
 
 
 The registration is represented by a series of key-value pairs, which this
@@ -105,11 +105,16 @@ traffic to the AS is:
       aliases: []  # Namespaces of room aliases which should be delegated to the AS
       rooms: [] # Namespaces of room ids which should be delegated to the AS
 
+Exclusive user and alias namespaces should begin with an underscore after the
+sigil to avoid collisions with other users on the homeserver. Application
+services should additionally attempt to identify the service they represent
+in the reserved namespace. For example, ``@_irc_.*`` would be a good namespace
+to register for an application service which deals with IRC.
+
 .. WARNING::
   If the homeserver in question has multiple application services, each
   ``as_token`` and ``id`` MUST be unique per application service as these are
   used to identify the application service. The homeserver MUST enforce this.
-
 
 Homeserver -> Application Service API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
