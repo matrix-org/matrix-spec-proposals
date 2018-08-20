@@ -253,6 +253,14 @@ paths:
                 description: |-
                   Information on end-to-end device updates, as specified in
                   |device_lists_sync|_.
+              device_one_time_keys_count:
+                title: One-time keys count
+                type: object
+                additionalProperties:
+                  type: integer
+                description: |-
+                  Information on end-to-end encryption keys, as specified
+                  in |device_lists_sync|_.
           examples:
             application/json: {
                 "next_batch": "s72595_4483_1934",

@@ -194,7 +194,7 @@ paths:
                       "user_id": "@alice:example.com",
                       "device_id": "JLAFKJWSCS",
                       "algorithms": [
-                        "m.olm.curve25519-aes-sha256",
+                        "m.olm.v1.curve25519-aes-sha256",
                         "m.megolm.v1.aes-sha"
                       ],
                       "keys": {
@@ -247,7 +247,7 @@ paths:
                     description: algorithm
                     example: "signed_curve25519"
                 example:
-                  "@alice:example.com": { "JLAFKJWSCS": "curve25519" }
+                  "@alice:example.com": { "JLAFKJWSCS": "signed_curve25519" }
             required:
               - one_time_keys
       responses:
