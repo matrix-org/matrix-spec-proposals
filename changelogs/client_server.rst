@@ -48,6 +48,14 @@ Unreleased changes
     (`#1142 <https://github.com/matrix-org/matrix-doc/pull/1142>`_).
   - Add the ``/register/available`` endpoint for username availability
     (`#1151 <https://github.com/matrix-org/matrix-doc/pull/1151>`_).
+  - Add ``allow_remote`` to the content repo to avoid routing loops
+    (`#1265 <https://github.com/matrix-org/matrix-doc/pull/1265>`_).
+  - Add report content API
+    (`#1264 <https://github.com/matrix-org/matrix-doc/pull/1264>`_).
+  - Document ``/logout/all`` endpoint
+    (`#1263 <https://github.com/matrix-org/matrix-doc/pull/1263>`_).
+  - Document `highlights` field in /search response
+    (`#1274 <https://github.com/matrix-org/matrix-doc/pull/1274>`_).
 
 r0.3.0
 ======

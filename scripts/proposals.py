@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 # proposals.py: generate an RST file (proposals.rst) from queries to github.com/matrix.org/matrix-doc/issues.
 # v0.0.1
 
@@ -22,7 +24,7 @@ def getpage(url, page):
 def getbylabel(label):
     pagecount = 1
     json = list()
-    urlbase = 'https://api.github.com/repos/matrix-org/matrix-doc/issues?state=open&labels=' + label + '&page='
+    urlbase = 'https://api.github.com/repos/matrix-org/matrix-doc/issues?state=all&labels=' + label + '&page='
     print(urlbase)
     json.extend(getpage(urlbase, 1))
     for page in range(2, int(pagecount) + 1):
@@ -100,7 +102,7 @@ for label in labels:
         text_file.write("     - " + updated.strftime('%Y-%m-%d') + "\n")
 
         # list of document links (urls comma-separated)
-        maindoc = re.search('^Documentation: (.+?)\n', str(item['body']))
+        maindoc = re.search('^Documentation: (.+?)$', str(item['body']), flags=re.MULTILINE)
         if maindoc is not None:
             maindoc = maindoc.group(1)
             doc_list_formatted = ["`" + str(item['number']) + "-" + str(i) + " <" + x.strip() + ">`_" for i, x in enumerate(maindoc.split(','),1)]

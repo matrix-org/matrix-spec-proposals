@@ -18,7 +18,8 @@ Federation API
 
 Matrix homeservers use the Federation APIs (also known as server-server APIs)
 to communicate with each other. Homeservers use these APIs to push messages to
-each other in real-time, to request historic messages from each other, and to
+each other in real-time, to 
+historic messages from each other, and to
 query profile and presence information about users on each other's servers.
 
 The APIs are implemented using HTTPS GETs and PUTs between each of the
@@ -1173,7 +1174,7 @@ Step 1 sign JSON:
         "method": "GET",
         "uri": "/target",
         "origin": "origin.hs.example.com",
-        "destintation": "destination.hs.example.com",
+        "destination": "destination.hs.example.com",
         "content": <request body>,
         "signatures": {
             "origin.hs.example.com": {
