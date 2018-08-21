@@ -198,16 +198,30 @@ previously obtained credentials in the form of an ``access_token`` query
 parameter or through an Authorization Header of ``Bearer $access_token``.
 An access token is typically obtained via the `Login`_ or `Registration`_ processes.
 
-When credentials are required but missing or invalid, the HTTP call will
-return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
-``M_UNKNOWN_TOKEN`` respectively.
-
 .. NOTE::
 
    This specification does not mandate a particular format for the access
    token. Clients should treat it as an opaque byte sequence. Servers are free
    to choose an appropriate format. Server implementors may like to investigate
    `macaroons <macaroon_>`_.
+
+Using access tokens
+~~~~~~~~~~~~~~~~~~~
+
+Access tokens may be provided in two ways, both of which the homeserver MUST
+support:
+
+1. Via a query string parameter, ``access_token=TheTokenHere``.
+#. Via a request header, ``Authorization: Bearer TheTokenHere``.
+
+Clients are encouraged to use the ``Authorization`` header where possible
+to prevent the access token being leaked in access/HTTP logs. The query
+string should only be used in cases where the ``Authorization`` header is
+inaccessible for the client.
+
+When credentials are required but missing or invalid, the HTTP call will
+return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
+``M_UNKNOWN_TOKEN`` respectively.
 
 Relationship between access tokens and devices
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

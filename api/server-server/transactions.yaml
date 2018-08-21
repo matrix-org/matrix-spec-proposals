@@ -24,6 +24,8 @@ consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/send/{txnId}":
     put:
@@ -36,6 +38,8 @@ paths:
         The sending server must wait and retry for a 200 OK response before sending a
         transaction with a different ``txnId`` to the receiving server.
       operationId: sendTransaction
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: txnId

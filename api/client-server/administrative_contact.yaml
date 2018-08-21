@@ -66,7 +66,7 @@ paths:
                     medium:
                       type: string
                       description: The medium of the third party identifier.
-                      enum: ["email"]
+                      enum: ["email", "msisdn"]
                     address:
                       type: string
                       description: The third party identifier address.
@@ -143,7 +143,21 @@ paths:
         validation tokens when adding an email address to an account. This API's
         parameters and response is identical to that of the HS API
         |/register/email/requestToken|_ endpoint.
-      operationId: requestTokenTo3PID
+      operationId: requestTokenTo3PIDEmail
       responses:
         200:
-          description: An email was sent to the given address
+          description: An email was sent to the given address.
+  "/account/3pid/msisdn/requestToken":
+    post:
+      summary: Requests a validation token be sent to the given email address for the purpose of adding a phone number to an account.
+      description: |-
+        Proxies the identity server API ``validate/msisdn/requestToken``, but
+        first checks that the given phone number is **not** already associated
+        with an account on this Home Server. This API should be used to request
+        validation tokens when adding a phone number to an account. This API's
+        parameters and response is identical to that of the HS API
+        |/register/msisdn/requestToken|_ endpoint.
+      operationId: requestTokenTo3PIDMSISDN
+      responses:
+        200:
+          description: An SMS message was sent to the given phone number.

@@ -24,6 +24,8 @@ consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/make_join/{roomId}/{userId}":
     get:
@@ -32,6 +34,8 @@ paths:
         Asks the receiving server to return information that the sending
         server will need to prepare a join event to get into the room.
       operationId: makeJoin
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: roomId
@@ -178,6 +182,8 @@ paths:
         Submits a signed join event to the resident server for it
         to accept it into the room's graph.
       operationId: sendJoin
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: roomId

@@ -1,4 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
+.. Copyright 2018 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -39,7 +40,7 @@ This version of the specification is generated from
 Application Services
 --------------------
 Application services are passive and can only observe events from a given
-homeserver. They can inject events into rooms they are participating in.
+homeserver (HS). They can inject events into rooms they are participating in.
 They cannot prevent events from being sent, nor can they modify the content of
 the event being sent. In order to observe events from a homeserver, the
 homeserver needs to be configured to pass certain types of traffic to the
@@ -68,7 +69,13 @@ Registration
 Application services register "namespaces" of user IDs, room aliases and room IDs.
 These namespaces are represented as regular expressions. An application service
 is said to be "interested" in a given event if one of the IDs in the event match
-the regular expression provided by the application service. An application
+the regular expression provided by the application service, such as the room having
+an alias or ID in the relevant namespaces. Similarly, the application service is
+said to be interested in a given event if one of the application service's namespaced
+users is the target of the event, or is a joined member of the room where the event
+occurred.
+
+An application
 service can also state whether they should be the only ones who
 can manage a specified namespace. This is referred to as an "exclusive"
 namespace. An exclusive namespace prevents humans and other application
@@ -83,7 +90,7 @@ regular expressions and look like:
 
    users:
      - exclusive: true
-       regex: @irc.freenode.net_.*
+       regex: @_irc.freenode.net_.*
 
 
 The registration is represented by a series of key-value pairs, which this
@@ -105,11 +112,16 @@ traffic to the AS is:
       aliases: []  # Namespaces of room aliases which should be delegated to the AS
       rooms: [] # Namespaces of room ids which should be delegated to the AS
 
+Exclusive user and alias namespaces should begin with an underscore after the
+sigil to avoid collisions with other users on the homeserver. Application
+services should additionally attempt to identify the service they represent
+in the reserved namespace. For example, ``@_irc_.*`` would be a good namespace
+to register for an application service which deals with IRC.
+
 .. WARNING::
   If the homeserver in question has multiple application services, each
   ``as_token`` and ``id`` MUST be unique per application service as these are
   used to identify the application service. The homeserver MUST enforce this.
-
 
 Homeserver -> Application Service API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -163,6 +175,10 @@ this request (e.g. to join a room alias).
   the application service about information about the entity such as room ID to
   room alias mappings.
 
+{{query_user_as_http_api}}
+
+{{query_room_as_http_api}}
+
 
 HTTP APIs
 +++++++++
@@ -185,29 +201,34 @@ homeserver.
 Identity assertion
 ++++++++++++++++++
 The client-server API infers the user ID from the ``access_token`` provided in
-every request. It would be an annoying amount of book-keeping to maintain tokens
-for every virtual user. It would be preferable if the application service could
-use the CS API with its own ``as_token`` instead, and specify the virtual user
-they wish to be acting on behalf of. For real users, this would require
-additional permissions granting the AS permission to masquerade as a matrix user.
+every request. To avoid the application service from having to keep track of each
+user's access token, the application service should identify itself to the Client-Server
+API by providing its ``as_token`` for the ``access_token`` alongside the user the
+application service would like to masquerade as.
 
 Inputs:
- - Application service token (``access_token``)
+ - Application service token (``as_token``)
  - User ID in the AS namespace to act as.
 
 Notes:
- - This will apply on all aspects of the CS API, except for Account Management.
+ - This applies to all aspects of the Client-Server API, except for Account Management.
  - The ``as_token`` is inserted into ``access_token`` which is usually where the
-   client token is. This is done on purpose to allow application services to
-   reuse client SDKs.
+   client token is, such as via the query string or ``Authorization`` header. This 
+   is done on purpose to allow application services to reuse client SDKs.
+ - The ``access_token`` should be supplied through the ``Authorization`` header where
+   possible to prevent the token appearing in HTTP request logs by accident.
 
-::
+The application service may specify the virtual user to act as through use of a
+``user_id`` query string parameter on the request. The user specified in the query
+string must be covered by one of the application service's ``user`` namespaces. If
+the parameter is missing, the homeserver is to assume the application service intends
+to act as the user implied by the ``sender_localpart`` property of the registration.
 
- /path?access_token=$token&user_id=$userid
+An example request would be::
 
- Query Parameters:
-   access_token: The application service token
-   user_id: The desired user ID to act as.
+ GET /_matrix/client/%CLIENT_MAJOR_VERSION%/account/whoami?user_id=@_irc_user:example.org
+ Authorization: Bearer YourApplicationServiceTokenHere
+
 
 Timestamp massaging
 +++++++++++++++++++
@@ -217,17 +238,17 @@ need to be able to adjust the ``origin_server_ts`` value to do this.
 
 Inputs:
  - Application service token (``as_token``)
- - Desired timestamp
+ - Desired timestamp (in milliseconds since the unix epoch)
+
 Notes:
  - This will only apply when sending events.
 
 ::
 
- /path?access_token=$token&ts=$timestamp
+ PUT /_matrix/client/r0/rooms/!somewhere:domain.com/send/m.room.message/txnId?ts=1534535223283
+  Authorization: Bearer YourApplicationServiceTokenHere
 
- Query Parameters added to the send event APIs only:
-   access_token: The application service token
-   ts: The desired timestamp
+ Content: The event to send, as per the Client-Server API.
 
 Server admin style permissions
 ++++++++++++++++++++++++++++++
@@ -250,12 +271,13 @@ including the AS token on a ``/register`` request, along with a login type of
 
 ::
 
-  /register?access_token=$as_token
+  POST /_matrix/client/%CLIENT_MAJOR_VERSION%/register
+  Authorization: Bearer YourApplicationServiceTokenHere
 
   Content:
   {
     type: "m.login.application_service",
-    username: "<desired user localpart in AS namespace>"
+    username: "_irc_example"
   }
 
 Application services which attempt to create users or aliases *outside* of
@@ -264,78 +286,19 @@ normal users who attempt to create users or aliases *inside* an application
 service-defined namespace will receive the same ``M_EXCLUSIVE`` error code,
 but only if the application service has defined the namespace as ``exclusive``.
 
-ID conventions
-~~~~~~~~~~~~~~
-.. TODO-spec
-  - Giving HSes the freedom to namespace still feels like the Right Thing here.
-  - Exposing a public API provides the consistency which was the main complaint
-    against namespacing.
-  - This may have knock-on effects for the AS registration API. E.g. why don't
-    we let ASes specify the *URI* regex they want?
+Using ``/sync`` and ``/events``
++++++++++++++++++++++++++++++++
 
-This concerns the well-defined conventions for mapping 3P network IDs to matrix
-IDs, which we expect clients to be able to do by themselves.
-
-User IDs
-++++++++
-Matrix users may wish to directly contact a virtual user, e.g. to send an email.
-The URI format is a well-structured way to represent a number of different ID
-types, including:
-
-- MSISDNs (``tel``)
-- Email addresses (``mailto``)
-- IRC nicks (``irc`` - https://tools.ietf.org/html/draft-butcher-irc-url-04)
-- XMPP (XEP-0032)
-- SIP URIs (RFC 3261)
-
-As a result, virtual user IDs SHOULD relate to their URI counterpart. This
-mapping from URI to user ID can be expressed in a number of ways:
-
-- Expose a C-S API on the HS which takes URIs and responds with user IDs.
-- Munge the URI with the user ID.
-
-Exposing an API would allow HSes to internally map user IDs however they like,
-at the cost of an extra round trip (of which the response can be cached).
-Munging the URI would allow clients to apply the mapping locally, but would force
-user X on service Y to always map to the same munged user ID. Considering the
-exposed API could just be applying this munging, there is more flexibility if
-an API is exposed.
-
-::
-
-  GET /_matrix/app/%CLIENT_MAJOR_VERSION%/user?uri=$url_encoded_uri
-
-  Returns 200 OK:
-  {
-    user_id: <complete user ID on local HS>
-  }
-
-Room Aliases
-++++++++++++
-We may want to expose some 3P network rooms so Matrix users can join them directly,
-e.g. IRC rooms. We don't want to expose every 3P network room though, e.g.
-``mailto``, ``tel``. Rooms which are publicly accessible (e.g. IRC rooms) can be
-exposed as an alias by the application service. Private rooms
-(e.g. sending an email to someone) should not
-be exposed in this way, but should instead operate using normal invite/join semantics.
-Therefore, the ID conventions discussed below are only valid for public rooms which
-expose room aliases.
-
-Matrix users may wish to join XMPP rooms (e.g. using XEP-0045) or IRC rooms. In both
-cases, these rooms can be expressed as URIs. For consistency, these "room" URIs
-SHOULD be mapped in the same way as "user" URIs.
-
-::
-
-  GET /_matrix/app/%CLIENT_MAJOR_VERSION%/alias?uri=$url_encoded_uri
-
-  Returns 200 OK:
-  {
-    alias: <complete room alias on local HS>
-  }
+Application services wishing to use ``/sync`` or ``/events`` from the Client-Server
+API MUST do so with a virtual user (provide a ``user_id`` via the query string). It
+is expected that the application service use the transactions pushed to it to
+handle events rather than syncing with the user implied by ``sender_localpart``.
 
 Event fields
-++++++++++++
+~~~~~~~~~~~~
+
+.. TODO-TravisR: Fix this section to be a general "3rd party networks" section
+
 We recommend that any events that originated from a remote network should
 include an ``external_url`` field in their content to provide a way for Matrix
 clients to link into the 'native' client from which the event originated.

@@ -24,6 +24,8 @@ consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/exchange_third_party_invite/{roomId}":
     put:
@@ -34,6 +36,8 @@ paths:
         an invite as per the `Inviting to a room`_ section before returning a
         response to this request.
       operationId: exchangeThirdPartyInvite
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: roomId

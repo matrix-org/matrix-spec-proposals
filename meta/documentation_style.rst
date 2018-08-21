@@ -32,6 +32,12 @@ complete specification to be merged correctly. These characters are:
 If you find yourself using ``^`` or beyond, you should rethink your document
 layout if possible.
 
+Correct capitalisation for long section names
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Headings should start with a capital letter, and use lower-case otherwise.
+
+
 TODOs
 -----
 
