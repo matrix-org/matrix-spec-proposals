@@ -13,34 +13,33 @@
 # limitations under the License.
 
 type: object
-title: m.typing
-description: A typing notification EDU for a user in a room.
+title: m.presence_invite
+description: |-
+  An EDU representing a request to subscribe to a user's presence.
 allOf:
   - $ref: ../edu.yaml
   - type: object
     properties:
       edu_type:
         type: enum
-        enum: ['m.typing']
-        description: The string ``m.typing``
-        example: "m.typing"
+        enum: ['m.presence_invite']
+        description: The string ``m.presence_invite``
+        example: "m.presence_invite"
       content:
         type: object
-        description: The typing notification.
-        title: Typing Notification
+        description: The invite information.
+        title: Invite Information
         properties:
-          room_id:
+          observed_user:
             type: string
             description: |-
-              The room where the user's typing status has been updated.
-            example: "!somewhere:matrix.org"
-          user_id:
+              The user ID the ``observer_user`` would like to subscribe
+              to the presence of.
+            example: "@alice:elsewhere.com"
+          observer_user:
             type: string
             description: |-
-              The user ID that has had their typing status changed.
+              The user ID that is wishing to subscribe to the presence of
+              the ``observed_user``.
             example: "@john:matrix.org"
-          typing:
-            type: boolean
-            description: Whether the user is typing in the room or not.
-            example: true
-        required: ['room_id', 'user_id', 'typing']
+        required: ['observer_user', 'observed_user']

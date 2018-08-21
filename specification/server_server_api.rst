@@ -827,63 +827,31 @@ Presence
 The server API for presence is based entirely on exchange of the following
 EDUs. There are no PDUs or Federation Queries involved.
 
-Performing a presence update and poll subscription request::
+Servers should only send presence updates for users that the receiving server
+would be interested in. This can include the receiving server sharing a room
+with a given user, or a user on the receiving server has added one of the 
+sending server's users to their presence list.
 
-  EDU type: m.presence
-
-  Content keys:
-    push: (optional): list of push operations.
-      Each should be an object with the following keys:
-        user_id: string containing a User ID
-        presence: "offline"|"unavailable"|"online"|"free_for_chat"
-        status_msg: (optional) string of free-form text
-        last_active_ago: milliseconds since the last activity by the user
-
-    poll: (optional): list of strings giving User IDs
-
-    unpoll: (optional): list of strings giving User IDs
-
-The presence of this combined message is two-fold: it informs the recipient
-server of the current status of one or more users on the sending server (by the
-``push`` key), and it maintains the list of users on the recipient server that
-the sending server is interested in receiving updates for, by adding (by the
-``poll`` key) or removing them (by the ``unpoll`` key). The ``poll`` and
-``unpoll`` lists apply *changes* to the implied list of users; any existing IDs
-that the server sent as ``poll`` operations in a previous message are not
-removed until explicitly requested by a later ``unpoll``.
-
-On receipt of a message containing a non-empty ``poll`` list, the receiving
-server should immediately send the sending server a presence update EDU of its
-own, containing in a ``push`` list the current state of every user that was in
-the original EDU's ``poll`` list.
-
-Sending a presence invite::
-
-  EDU type: m.presence_invite
-
-  Content keys:
-    observed_user: string giving the User ID of the user whose presence is
-      requested (i.e. the recipient of the invite)
-    observer_user: string giving the User ID of the user who is requesting to
-      observe the presence (i.e. the sender of the invite)
-
-Accepting a presence invite::
-
-  EDU type: m.presence_accept
-
-  Content keys - as for m.presence_invite
-
-Rejecting a presence invite::
-
-  EDU type: m.presence_deny
-
-  Content keys - as for m.presence_invite
+Clients may define lists of users that they are interested in via "Presence
+Lists" through the `Client-Server API`_. When users are added to a presence
+list, a ``m.presence_invite`` EDU is sent to them. The user may then accept
+or deny their involvement in the list by sending either an ``m.presence_accept``
+or ``m.presence_deny`` EDU back.
 
 .. TODO-doc
   - Explain the timing-based round-trip reduction mechanism for presence
     messages
   - Explain the zero-byte presence inference logic
   See also: docs/client-server/model/presence
+
+{{definition_ss_event_schemas_m_presence}}
+
+{{definition_ss_event_schemas_m_presence_invite}}
+
+{{definition_ss_event_schemas_m_presence_accept}} 
+
+{{definition_ss_event_schemas_m_presence_deny}}
+
 
 Receipts
 --------
