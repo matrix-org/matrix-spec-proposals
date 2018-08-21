@@ -41,7 +41,7 @@ class Units(object):
             trace = inspect.stack()
             if len(trace) > 1 and len(trace[1]) > 2:
                 func_name = trace[1][3] + ":"
-            print "batesian:units:%s %s" % (func_name, text)
+            print("batesian:units:%s %s" % (func_name, text))
 
     def get_units(self, debug=False):
         unit_list = inspect.getmembers(self, predicate=inspect.ismethod)
@@ -50,7 +50,7 @@ class Units(object):
             if not func_name.startswith("load_"):
                 continue
             unit_key = func_name[len("load_"):]
-            if len(inspect.getargs(func.func_code).args) > 1:
+            if len(inspect.getargs(func.__code__).args) > 1:
                 unit_dict[unit_key] = func(self.substitutions)
             else:
                 unit_dict[unit_key] = func()

@@ -31,6 +31,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 docs_dir = os.path.dirname(script_dir)
 spec_dir = os.path.join(docs_dir, "specification")
 tmp_dir = os.path.join(script_dir, "tmp")
+changelog_dir = os.path.join(docs_dir, "changelogs")
 
 VERBOSE = False
 
@@ -151,7 +152,7 @@ def is_title_line(prev_line, line, title_styles):
 
 def get_rst(file_info, title_level, title_styles, spec_dir, adjust_titles):
     # string are file paths to RST blobs
-    if isinstance(file_info, basestring):
+    if isinstance(file_info, str):
         log("%s %s" % (">" * (1 + title_level), file_info))
         with open(os.path.join(spec_dir, file_info), "r") as f:
             rst = None
@@ -194,7 +195,7 @@ def build_spec(target, out_filename):
                 spec_dir=spec_dir,
                 adjust_titles=True
             )
-            outfile.write(section)
+            outfile.write(section.encode('UTF-8'))
 
 
 """
@@ -279,15 +280,16 @@ def rst2html(i, o, stylesheets):
 def addAnchors(path):
     log("add anchors %s" % path)
 
-    with open(path, "r") as f:
+    with open(path, "rb") as f:
         lines = f.readlines()
 
-    replacement = replacement = r'<p><a class="anchor" id="\3"></a></p>\n\1'
-    with open(path, "w") as f:
+    replacement = r'<p><a class="anchor" id="\2"></a></p>\n\1'
+    with open(path, "wb") as f:
         for line in lines:
+            line = line.decode("UTF-8")
             line = re.sub(r'(<h\d id="#?(.*?)">)', replacement, line.rstrip())
-            line = re.sub(r'(<div class="section" (id)="(.*?)">)', replacement, line.rstrip())
-            f.write(line + "\n")
+            line = re.sub(r'(<div class="section" id="(.*?)">)', replacement, line.rstrip())
+            f.write((line + "\n").encode('UTF-8'))
 
 
 def run_through_template(input_files, set_verbose, substitutions):
@@ -364,7 +366,7 @@ def get_build_target(all_targets, target_name):
     resolved_files = []
     for file_entry in target["files"]:
         # file_entry is a group id
-        if isinstance(file_entry, basestring) and file_entry.startswith("group:"):
+        if isinstance(file_entry, str) and file_entry.startswith("group:"):
             group = get_group(file_entry, 0)
             # The group may be resolved to a list of file entries, in which case
             # we want to extend the array to insert each of them rather than
@@ -376,8 +378,8 @@ def get_build_target(all_targets, target_name):
         # file_entry is a dict which has more file entries as values
         elif isinstance(file_entry, dict):
             resolved_entry = {}
-            for (depth, entry) in file_entry.iteritems():
-                if not isinstance(entry, basestring):
+            for (depth, entry) in file_entry.items():
+                if not isinstance(entry, str):
                     raise Exception(
                         "Double-nested depths are not supported. Entry: %s" % (file_entry,)
                     )
@@ -395,11 +397,11 @@ def get_build_target(all_targets, target_name):
     return build_target
 
 def log(line):
-    print "gendoc: %s" % line
+    print("gendoc: %s" % line)
 
 def logv(line):
     if VERBOSE:
-        print "gendoc:V: %s" % line
+        print("gendoc:V: %s" % line)
 
 
 def cleanup_env():
@@ -445,7 +447,7 @@ def main(targets, dest_dir, keep_intermediates, substitutions):
 
     stylesheets = glob.glob(os.path.join(script_dir, "css", "*.css"))
 
-    for target_name, templated_file in templated_files.iteritems():
+    for target_name, templated_file in templated_files.items():
         target = target_defs["targets"].get(target_name)
         version_label = None
         if target:
@@ -480,7 +482,7 @@ def list_targets():
     with open(os.path.join(spec_dir, "targets.yaml"), "r") as targ_file:
         target_defs = yaml.load(targ_file.read())
     targets = target_defs["targets"].keys()
-    print "\n".join(targets)
+    print("\n".join(targets))
 
 
 def extract_major(s):

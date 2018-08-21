@@ -1,0 +1,1 @@
+Add the ``/register/available`` endpoint for username availability

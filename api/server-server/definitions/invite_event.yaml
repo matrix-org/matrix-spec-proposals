@@ -1,0 +1,87 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+type: object
+title: Invite Event
+description: An invite event
+allOf:
+  - $ref: "pdu.yaml"
+  - type: object
+    properties:
+      # Note: we override a bunch of parameters to change their descriptions
+      sender:
+        type: string
+        # TODO: Verify/clarify this - it doesn't seem right, given this is a 'regular' invite
+        description: |-
+          The matrix ID of the user who sent the original ``m.room.third_party_invite``.
+        example: "@someone:example.org"
+      origin:
+        type: string
+        description: The name of the inviting homeserver.
+        example: "matrix.org"
+      origin_server_ts:
+        type: integer
+        format: int64
+        description: A timestamp added by the inviting homeserver.
+        example: 1234567890
+      type:
+        type: string
+        description: The value ``m.room.member``.
+        example: "m.room.member"
+      state_key:
+        type: string
+        description: The user ID of the invited member.
+        example: "@joe:elsewhere.com"
+      content:
+        type: object
+        title: Membership Event Content
+        description: |-
+          The content of the event, matching what is available in the 
+          `Client-Server API`_. Must include a ``membership`` of ``invite``.
+        example: {"membership": "invite"}
+        properties:
+          membership:
+            type: string
+            description: The value ``invite``.
+            example: "invite"
+        required: ['membership']
+      auth_events:
+        type: array
+        description: |-
+          An event reference list containing the authorization events that would
+          allow the member to be invited to the room.
+        items:
+          type: array
+          maxItems: 2
+          minItems: 2
+          items:
+            - type: string
+              title: Event ID
+              example: "$abc123:matrix.org"
+            - type: object
+              title: Event Hash
+              example: {
+                "sha256": "abase64encodedsha256hashshouldbe43byteslong"
+              }
+              properties:
+                sha256:
+                  type: string
+                  description: The event hash.
+                  example: abase64encodedsha256hashshouldbe43byteslong
+              required: ['sha256']
+      redacts:
+        type: string
+        description: Not used.
+    required:
+      # Every other field is already flagged as required by the $ref
+      - state_key

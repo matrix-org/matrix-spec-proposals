@@ -2,9 +2,6 @@ targets:
   index:
     files:
       - index.rst
-  intro:
-    files:
-      - intro.rst
   client_server:
     files:
       - client_server_api.rst
@@ -68,6 +65,8 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/ignore_users.rst
     - modules/stickers.rst
     - modules/report_content.rst
+    - modules/third_party_networks.rst
+    - modules/openid.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`", "@", ":"]

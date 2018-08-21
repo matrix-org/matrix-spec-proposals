@@ -32,6 +32,12 @@ complete specification to be merged correctly. These characters are:
 If you find yourself using ``^`` or beyond, you should rethink your document
 layout if possible.
 
+Correct capitalisation for long section names
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Headings should start with a capital letter, and use lower-case otherwise.
+
+
 TODOs
 -----
 
@@ -63,7 +69,11 @@ have English as their first language.
 Prefer British English (colour, -ise) to American English.
 
 The word "homeserver" is spelt thus (rather than "home server", "Homeserver",
-or (argh) "Home Server").
+or (argh) "Home Server"). However, an identity server is two words.
+
+.. Rationale: "homeserver" distinguishes from a "home server" which is a server 
+   you have at home. "Identity server" is clear, whereas "identityserver" is 
+   horrible.
 
 Lists should:
 
@@ -96,3 +106,7 @@ When writing OpenAPI specifications for the API endpoints, follow these rules:
 
   The description is also the place to define default values for optional
   properties. Use the wording "Defaults to X [if unspecified]."
+  
+  Some descriptions start with the word "Optional" to explicitly mark optional 
+  properties and parameters. This is redundant. Instead, use the ``required``
+  property to mark those that are required.

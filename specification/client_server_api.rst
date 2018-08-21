@@ -164,6 +164,25 @@ recommended.
 
 {{versions_cs_http_api}}
 
+Web Browser Clients
+-------------------
+
+It is realistic to expect that some clients will be written to be run within a
+web browser or similar environment. In these cases, the homeserver should respond
+to pre-flight requests and supply Cross-Origin Resource Sharing (CORS) headers on
+all requests.
+
+When a client approaches the server with a pre-flight (``OPTIONS``) request, the
+server should respond with the CORS headers for that route. The recommended CORS
+headers to be returned by servers on all requests are:
+
+.. code::
+
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+  Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization
+
+
 Client Authentication
 ---------------------
 
@@ -172,16 +191,30 @@ previously obtained credentials in the form of an ``access_token`` query
 parameter or through an Authorization Header of ``Bearer $access_token``.
 An access token is typically obtained via the `Login`_ or `Registration`_ processes.
 
-When credentials are required but missing or invalid, the HTTP call will
-return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
-``M_UNKNOWN_TOKEN`` respectively.
-
 .. NOTE::
 
    This specification does not mandate a particular format for the access
    token. Clients should treat it as an opaque byte sequence. Servers are free
    to choose an appropriate format. Server implementors may like to investigate
    `macaroons <macaroon_>`_.
+
+Using access tokens
+~~~~~~~~~~~~~~~~~~~
+
+Access tokens may be provided in two ways, both of which the homeserver MUST
+support:
+
+1. Via a query string parameter, ``access_token=TheTokenHere``.
+#. Via a request header, ``Authorization: Bearer TheTokenHere``.
+
+Clients are encouraged to use the ``Authorization`` header where possible
+to prevent the access token being leaked in access/HTTP logs. The query
+string should only be used in cases where the ``Authorization`` header is
+inaccessible for the client.
+
+When credentials are required but missing or invalid, the HTTP call will
+return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
+``M_UNKNOWN_TOKEN`` respectively.
 
 Relationship between access tokens and devices
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -442,7 +475,7 @@ Password-based
 :Type:
   ``m.login.password``
 :Description:
-  The client submits a username and secret password, both sent in plain-text.
+  The client submits an identifier and secret password, both sent in plain-text.
 
 To use this authentication type, clients should submit an auth dict as follows:
 
@@ -450,7 +483,26 @@ To use this authentication type, clients should submit an auth dict as follows:
 
   {
     "type": "m.login.password",
-    "user": "<user_id or user localpart>",
+    "identifier": {
+      ...
+    },
+    "password": "<password>",
+    "session": "<session ID>"
+  }
+
+where the ``identifier`` property is a user identifier object, as described in
+`Identifier types`_.
+
+For example, to authenticate using the user's Matrix ID, clients whould submit:
+
+.. code:: json
+
+  {
+    "type": "m.login.password",
+    "identifier": {
+      "type": "m.id.user",
+      "user": "<user_id or user localpart>"
+    },
     "password": "<password>",
     "session": "<session ID>"
   }
@@ -463,8 +515,11 @@ follows:
 
   {
     "type": "m.login.password",
-    "medium": "<The medium of the third party identifier. Must be 'email'>",
-    "address": "<The third party address of the user>",
+    "identifier": {
+      "type": "m.id.thirdparty",
+      "medium": "<The medium of the third party identifier.>",
+      "address": "<The third party address of the user>"
+    },
     "password": "<password>",
     "session": "<session ID>"
   }
@@ -695,6 +750,78 @@ handle unknown login types:
   }
 
 
+Identifier types
+++++++++++++++++
+
+Some authentication mechanisms use a user identifier object to identify a
+user.  The user identifier object has a ``type`` field to indicate the type of
+identifier being used, and depending on the type, has other fields giving the
+information required to identify the user as described below.
+
+This specification defines the following identifier types:
+ - ``m.id.user``
+ - ``m.id.thirdparty``
+ - ``m.id.phone``
+
+Matrix User ID
+<<<<<<<<<<<<<<
+:Type:
+  ``m.id.user``
+:Description:
+  The user is identified by their Matrix ID.
+
+A client can identify a user using their Matrix ID.  This can either be the
+fully qualified Matrix user ID, or just the localpart of the user ID.
+
+.. code:: json
+
+  "identifier": {
+    "type": "m.id.user",
+    "user": "<user_id or user localpart>"
+  }
+
+Third-party ID
+<<<<<<<<<<<<<<
+:Type:
+  ``m.id.thirdparty``
+:Description:
+  The user is identified by a third-party identifer in canonicalised form.
+
+A client can identify a user using a 3pid associated with the user's account on
+the homeserver, where the 3pid was previously associated using the
+|/account/3pid|_ API.  See the `3PID Types`_ Appendix for a list of Third-party
+ID media.
+
+.. code:: json
+
+  "identifier": {
+    "type": "m.id.thirdparty",
+    "medium": "<The medium of the third party identifier>",
+    "address": "<The canonicalised third party address of the user>"
+  }
+
+Phone number
+<<<<<<<<<<<<
+:Type:
+  ``m.id.phone``
+:Description:
+  The user is identified by a phone number.
+
+A client can identify a user using a phone number associated with the user's
+account, where the phone number was previously associated using the
+|/account/3pid|_ API.  The phone number can be passed in as entered by the
+user; the homeserver will be responsible for canonicalising it.  If the client
+wishes to canonicalise the phone number, then it can use the
+``m.id.thirdparty`` identifier type with a ``medium`` of ``msisdn`` instead.
+
+.. code:: json
+
+  "identifier": {
+    "type": "m.id.phone",
+    "country": "<The country that the phone number is from>",
+    "phone": "<The phone number>"
+  }
+
 Login
 ~~~~~
 
@@ -710,7 +837,10 @@ request as follows:
 
   {
     "type": "m.login.password",
-    "user": "<user_id or user localpart>",
+    "identifier": {
+      "type": "m.id.user",
+      "user": "<user_id or user localpart>"
+    },
     "password": "<password>"
   }
 
@@ -722,8 +852,10 @@ explicitly, as follows:
 
   {
     "type": "m.login.password",
-    "medium": "<The medium of the third party identifier. Must be 'email'>",
-    "address": "<The third party address of the user>",
+    "identifier": {
+      "medium": "<The medium of the third party identifier>",
+      "address": "<The canonicalised third party address of the user>"
+    },
     "password": "<password>"
   }
 
@@ -1398,7 +1530,7 @@ have to wait in milliseconds before they can try again.
 .. References
 
 .. _`macaroon`: http://research.google.com/pubs/pub41892.html
-.. _`devices`: ../intro.html#devices
+.. _`devices`: ../index.html#devices
 
 .. Links through the external API docs are below
 .. =============================================
@@ -1458,3 +1590,4 @@ have to wait in milliseconds before they can try again.
 .. _/user/<user_id>/account_data/<type>: #put-matrix-client-%CLIENT_MAJOR_VERSION%-user-userid-account-data-type
 
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
+.. _`3PID Types`:  ../appendices.html#pid-types

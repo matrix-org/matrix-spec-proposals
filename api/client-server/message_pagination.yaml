@@ -107,6 +107,7 @@ paths:
                 items:
                   type: object
                   title: RoomEvent
+                  "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
           examples:
             application/json: {
                 "start": "t47429-4392820_219380_26003_2265",

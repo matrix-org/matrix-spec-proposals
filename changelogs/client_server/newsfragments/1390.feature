@@ -1,0 +1,1 @@
+Add new user identifier object for logging in
