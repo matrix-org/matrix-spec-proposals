@@ -75,8 +75,7 @@ said to be interested in a given event if one of the application service's names
 users is the target of the event, or is a joined member of the room where the event
 occurred.
 
-An application
-service can also state whether they should be the only ones who
+An application service can also state whether they should be the only ones who
 can manage a specified namespace. This is referred to as an "exclusive"
 namespace. An exclusive namespace prevents humans and other application
 services from creating/deleting entities in that namespace. Typically,
@@ -91,7 +90,6 @@ regular expressions and look like:
    users:
      - exclusive: true
        regex: "@_irc.freenode.net_.*"
-       group_id: "+irc:matrix.org"
 
 Application services may define the following namespaces (with none being explicitly required):
 
@@ -115,22 +113,11 @@ Each individual namespace MUST declare the following fields:
 | regex            | **Required** A regular expression defining which values this namespace includes.                                                  |
 +------------------+-----------------------------------------------------------------------------------------------------------------------------------+
 
-An application service's users and regex field MUST begin with an underscore (``_``), in
-order to provide a visually clear distinction between AS users and regular
-users. An optional ``group_id`` field may be added to the ``users`` namespace:
-
-+------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Name             | Description                                                                                                                                                                                                                                                                |
-+==================+============================================================================================================================================================================================================================================================================+
-| group_id         | An existing group that all matching user IDs will be considered a part of. Users who are joined to this group through an application service are not to be listed when querying for the group's members, however the group should be listed when querying a user's groups. |
-+------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-
-.. WARNING::
-
-  Users that are matched by ``group_id`` should not be publicly listed by
-  Homeservers. The intention is to differentiate users, perhaps with a flair,
-  rather than having a list of people to spam.
-
+Exclusive user and alias namespaces should begin with an underscore after the
+sigil to avoid collisions with other users on the homeserver. Application
+services should additionally attempt to identify the service they represent
+in the reserved namespace. For example, ``@_irc_.*`` would be a good namespace
+to register for an application service which deals with IRC.
 
 The registration is represented by a series of key-value pairs, which this
 specification will present as YAML. See below for the possible options along
@@ -173,12 +160,6 @@ An example registration file for an IRC-bridging application service is below:
         - exclusive: false 
           regex: "#_irc_bridge_.*"
       rooms: []
-
-Exclusive user and alias namespaces should begin with an underscore after the
-sigil to avoid collisions with other users on the homeserver. Application
-services should additionally attempt to identify the service they represent
-in the reserved namespace. For example, ``@_irc_.*`` would be a good namespace
-to register for an application service which deals with IRC.
 
 .. WARNING::
   If the homeserver in question has multiple application services, each
