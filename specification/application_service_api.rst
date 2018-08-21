@@ -187,8 +187,8 @@ Identity assertion
 The client-server API infers the user ID from the ``access_token`` provided in
 every request. To avoid the application service from having to keep track of each
 user's access token, the application service should identify itself to the Client-Server
-API by providing its ``as_token`` instead for the ``access_token`` alongside the
-user the application service would like to masquerade as.
+API by providing its ``as_token`` for the ``access_token`` alongside the user the
+application service would like to masquerade as.
 
 Inputs:
  - Application service token (``as_token``)
