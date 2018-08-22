@@ -370,7 +370,7 @@ Definition:
 
 
 ``.m.rule.roomnotif``
-`````````````````````````````````
+`````````````````````
 Matches any message whose content is unencrypted and contains the
 text ``@room``, signifying the whole room should be notified of
 the event.
@@ -466,7 +466,7 @@ Definition:
     }
 
 ``.m.rule.encrypted_room_one_to_one``
-```````````````````````````
+`````````````````````````````````````
 Matches any encrypted event sent in a room with exactly two members.
 
 Definition:
@@ -561,7 +561,7 @@ Definition:
    }
 
 ``.m.rule.encrypted``
-```````````````````
+`````````````````````
 Matches all encrypted events.
 
 Definition:
