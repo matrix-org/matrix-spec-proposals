@@ -1,0 +1,69 @@
+---
+title: Server ACL
+description: |-
+  An event to indicate which servers are permitted to participate in the
+  room. Server ACLs may allow or deny groups of hosts. All servers participating
+  in the room, including those that are denied, are expected to uphold the
+  server ACL. Servers that do not uphold the ACLs are recommended to be
+  added to the denied hosts list.
+
+  The ``allow`` and ``deny`` lists are lists of globs supporting ``?`` and ``*``
+  as wildcards. When comparing against the server ACLs, the suspect server's port
+  number must not be considered. Therefore ``evil.com``, ``evil.com:8448``, and
+  ``evil.com:1234`` would all match rules that apply to ``evil.com``, for example.
+
+  The ACLs are applied to servers when they make requests, and are applied in
+  the following order:
+
+  1. If there is no ``m.room.server_acl`` event in the room state, allow.
+  #. If the server name is an IP address (v4 or v6) literal, and ``allow_ip_literals``
+     is present and ``false``, deny.
+  #. If the server name matches an entry in the ``deny`` list, deny.
+  #. If the server name matches an entry in the ``allow`` list, allow.
+  #. Otherwise, deny.
+
+  .. WARNING::
+     Failing to provide an ``allow`` rule of some kind will prevent **all**
+     servers from participating in the room, including the sender. This renders
+     the room unusable. A common allow rule is ``[ "*" ]`` which would still
+     permit the use of the ``deny`` list without losing the room.
+allOf:
+  - $ref: core-event-schema/state_event.yaml
+type: object
+properties:
+  content:
+    properties:
+      allow_ip_literals:
+        type: boolean
+        description: |-
+          True to allow server names that are IP address literals. False to
+          deny. Defaults to true if missing or otherwise not a boolean.
+      allow:
+        type: array
+        description: |-
+          The server names to allow in the room, excluding any port information.
+          Wildcards may be used to cover a wider range of hosts, where ``*``
+          matches zero or more characters and ``?`` matches one or more characters.
+
+          **This defaults to an empty list when not provided, effectively disallowing
+          every server.**
+        items:
+          type: string
+      deny:
+        type: array
+        description: |-
+          The server names to disallow in the room, excluding any port information.
+          Wildcards may be used to cover a wider range of hosts, where ``*``
+          matches zero or more characters and ``?`` matches one or more characters.
+
+          This defaults to an empty list when not provided.
+        items:
+          type: string
+    type: object
+  state_key:
+    description: A zero-length string.
+    pattern: '^$'
+    type: string
+  type:
+    enum: ['m.room.server_acl']
+    type: enum
