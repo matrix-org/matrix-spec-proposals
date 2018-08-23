@@ -180,6 +180,26 @@ this request (e.g. to join a room alias).
 {{query_room_as_http_api}}
 
 
+Third party networks
+++++++++++++++++++++
+
+Application services may declare which protocols they support via their registration
+file. These networks are generally for third party services such as IRC that the
+application service is managing. Application services may populate a Matrix room
+directory for their registered protocols, as defined in the Client-Server API Extensions.
+
+Each protocol may have several "locations". A location within a protocol is a place
+in the third party network, such as an IRC channel. Users of the third party network
+may also be represented by the application service.
+
+Locations and users can be searched by fields defined by the application service, such
+as by display name or other attribute. When clients request the homeserver to search
+in a particular "network" (protocol), the search fields will be passed along to the
+application service for filtering.
+
+{{protocols_as_http_api}}
+
+
 HTTP APIs
 +++++++++
 
