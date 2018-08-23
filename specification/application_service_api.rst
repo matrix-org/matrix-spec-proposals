@@ -155,6 +155,8 @@ be made without blocking other aspects of the homeserver. Homeservers MUST NOT
 alter (e.g. add more) events they were going to send within that transaction ID
 on retries, as the AS may have already processed the events.
 
+{{transactions_as_http_api}}
+
 Querying
 ++++++++
 
