@@ -44,6 +44,13 @@ This version of the specification is generated from
 For the full historical changelog, see
 https://github.com/matrix-org/matrix-doc/blob/master/changelogs/application_service.rst
 
+Other versions of this specification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following other versions are also available, in reverse chronological order:
+
+- `HEAD <https://matrix.org/docs/spec/application_service/unstable.html>`_: Includes all changes since the latest versioned release.
+
 
 Application Services
 --------------------
