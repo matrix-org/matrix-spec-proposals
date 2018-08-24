@@ -6,9 +6,8 @@ Background
 
 We *optionally* let clients store a copy of their megolm inbound session keys
 on the HS so that they can recover history if all devices are lost without an
-explicit key export; transparently share history between a user's devices;
-transparently share missing keys between a user's devices to fix UISIs; support
-clients with limited local storage for keys.
+explicit key export; fix UISIs; support clients with limited local storage for
+keys.
 
 See also:
 
@@ -28,9 +27,14 @@ server to manage the backups, overwriting backups with "better" versions of the
 keys.  The user is given a private recovery key to save for recovering the keys
 from the backup.
 
-Clients can create new versions of backups.  A client would start a new version
-of a backup when, for example, a user loses a device, and wants to ensure that
-that device does not get any new decryption keys.
+Clients can create new versions of backups.  Aside from the initial backup
+creation, a client might start a new version of a backup when, for example, a
+user loses a device, and wants to ensure that that device does not get any new
+decryption keys.
+
+Once one client has created a backup version, other clients can fetch the
+public key for the backup from the server and add keys to the backup, if they
+trust that the backup was not created by a malicious device.
 
 ### Possible UX for interactive clients
 
@@ -49,10 +53,11 @@ On receipt of encryption keys (1st time):
       key¹, or enter recovery key (which can derive the backup key).
       1. User can also decide to create a new backup, in which case, go to 1.1.
 2. send key to backup: `PUT /room_keys/keys/${roomId}/${sessionId}?version=$v`
-3. continue backing up keys as we receive them (may receive a 403 error if a
-   new backup version has been created: see below)
+3. continue backing up keys as we receive them (may receive a
+   `M_WRONG_ROOM_KEYS_VERSION` error if a new backup version has been created:
+   see below)
 
-On 403 error when trying to `PUT` keys:
+On `M_WRONG_ROOM_KEYS_VERSION` error when trying to `PUT` keys:
 
 1. get the current version
 2. notify the user that there is a new backup version, and display relevant
@@ -71,6 +76,9 @@ On receipt of undecryptable message:
    the user wants to request keys from other devices.)
 2. if yes, prompt for private key, and get keys: `GET /room_keys/keys`
 
+Users can also set up or disable backups, or restore from backup via user
+settings.
+
 ### API
 
 #### Backup versions
@@ -86,7 +94,7 @@ Body parameters:
   name to include the encryption method)
 - `auth_data` (string or object): Required. algorithm-dependent data.  For
   `m.megolm_backup.v1`, this is a signedjson object with the following keys:
-  - `public_key` (string): ...
+  - `public_key` (string): the public key used to encrypt the backups
   - `signatures` (object): signatures of the public key
 
 Example:
@@ -95,12 +103,10 @@ Example:
 {
   "algorithm": "m.megolm_backup.v1",
   "auth_data": {
-    "public_key": {
-      "public_key": "abcdefg",
-      "signatures": {
-        "something": {
-          "ed25519:something": "hijklmnop"
-        }
+    "public_key": "abcdefg",
+    "signatures": {
+      "something": {
+        "ed25519:something": "hijklmnop"
       }
     }
   }
@@ -123,6 +129,10 @@ On success, returns a JSON object with keys:
   `POST /room_keys/version`.
 - `version` (integer): the backup version
 
+Error codes:
+
+- `M_UNKNOWN`: No backup version has been created. FIXME: why not
+  `M_NOT_FOUND`?
 
 #### Storing keys
 
@@ -142,10 +152,21 @@ Body parameters:
   forwarded.
 - `is_verified` (boolean): Whether the device backing up the key has verified
   the device that the key is from.
-- `session_data` (string): The backup of the key, encrypted according to the
-  backup algorithm.
+- `session_data` (string or object): Algorithm-dependent data.  For
+  `m.megolm_backup.v1`, this is an object with the following keys:
+  - `ciphertext` (string): the encrypted version of the session key.  See below
+    for how the session key is encoded.
+  - `ephemeral` (string): the public ephemeral key that was used to encrypt the
+    session key.
+  - `mac` (string): the message authentication code for the ciphertext. FIXME:
+    more details
 
 On success, returns ... ?
+
+Error codes:
+
+- `M_WRONG_ROOM_KEYS_VERSION`: the version specified does not match the current
+  backup version
 
 ##### `PUT /room_keys/keys/${roomId}?version=$v`
 
@@ -159,7 +180,7 @@ Body paremeters:
   values are objects of the same form as the body in `PUT
   /room_keys/keys/${roomId}/${sessionId}?version=$v`.
 
-On success, returns same as `PUT
+Returns the same as `PUT
 /room_keys/keys/${roomId}/${sessionId}?version=$v`
 
 ##### `PUT /room_keys/keys/?version=$v`
@@ -178,6 +199,18 @@ On success, returns same as `PUT
 ##### `DELETE /room_keys/keys/${roomId}?version=$v`
 ##### `DELETE /room_keys/keys/?version=$v`
 
+#### Key format
+
+Session keys are encoded as a JSON object with the properties:
+
+- `algorithm` (string): `m.megolm.v1.aes-sha2`
+- `sender_key` (string): base64-encoded device curve25519 key
+- `sender_claimed_keys` (object): object containing the identity keys for the
+  sending device
+- `forwardingCurve25519KeyChain` (array): zero or more curve25519 keys for
+  devices who forwarded the session key
+- `session_key` (string): base64-encoded session key
+
 Tradeoffs
 ---------
 
@@ -186,6 +219,10 @@ Security Considerations
 
 An attacker who gains access to a user's account can delete or corrupt their
 key backup.  This proposal does not attempt to protect against that.
+
+An attacker who gains access to a user's account can create a new backup
+version using a key that they control.  For this reason, clients SHOULD confirm
+with users before sending keys to a new backup version.
 
 Other Issues
 ------------
