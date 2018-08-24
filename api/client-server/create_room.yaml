@@ -147,14 +147,22 @@ paths:
                       type: string
                       description: The invitee's third party identifier.
                   required: ["id_server", "medium", "address"]
+              room_version:
+                type: string
+                description: |-
+                  The room version to set for the room. If not provided, the homeserver is
+                  to use its configured default. If provided, the homeserver will return a
+                  400 error with the errcode ``M_UNSUPPORTED_ROOM_VERSION`` if it does not
+                  support the room version.
+                example: "1"
               creation_content:
                 title: CreationContent
                 type: object
                 description: |-
                   Extra keys, such as ``m.federate``, to be added to the content
                   of the `m.room.create`_ event. The server will clobber the following
-                  keys: ``creator``. Future versions of the specification may allow
-                  the server to clobber other keys.
+                  keys: ``creator``, ``room_version``. Future versions of the specification
+                  may allow the server to clobber other keys.
               initial_state:
                 type: array
                 description: |-
