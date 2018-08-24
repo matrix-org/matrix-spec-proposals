@@ -19,7 +19,7 @@ host: localhost:8090
 schemes:
   - https
   - http
-basePath: /_matrix/identity/api/v1
+basePath: /_matrix/identity/api/%IDENTITY_MAJOR_VERSION%
 produces:
   - application/json
 paths:
@@ -46,7 +46,7 @@ paths:
         ``address`` parameter, notifying them of the invitation.
 
         Also, the generated ephemeral public key will be listed as valid on
-        requests to ``/_matrix/identity/api/v1/pubkey/ephemeral/isvalid``.
+        requests to ``/_matrix/identity/api/%IDENTITY_MAJOR_VERSION%/pubkey/ephemeral/isvalid``.
       operationId: storeInvite
       parameters:
         - in: body

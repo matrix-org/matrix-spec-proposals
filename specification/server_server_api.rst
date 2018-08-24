@@ -64,12 +64,26 @@ request.
 .. contents:: Table of Contents
 .. sectnum::
 
-Specification version
----------------------
+Changelog
+---------
+
+.. topic:: Version: %SERVER_RELEASE_LABEL%
+{{server_server_changelog}}
 
 This version of the specification is generated from
 `matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
 `{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
+
+For the full historical changelog, see
+https://github.com/matrix-org/matrix-doc/blob/master/changelogs/server_server.rst
+
+
+Other versions of this specification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following other versions are also available, in reverse chronological order:
+
+- `HEAD <https://matrix.org/docs/spec/server_server/unstable.html>`_: Includes all changes since the latest versioned release.
 
 Server Discovery
 ----------------
@@ -118,11 +132,11 @@ Retrieving Server Keys
   specification due to lack of significance. It may be reviewed `here
   <https://github.com/matrix-org/matrix-doc/blob/51faf8ed2e4a63d4cfd6d23183698ed169956cc0/specification/server_server_api.rst#232version-1>`_.
 
-Each homeserver publishes its public keys under ``/_matrix/key/v2/server/{keyId}``.
-Homeservers query for keys by either getting ``/_matrix/key/v2/server/{keyId}``
+Each homeserver publishes its public keys under ``/_matrix/key/%KEYS_MAJOR_VERSION%/server/{keyId}``.
+Homeservers query for keys by either getting ``/_matrix/key/%KEYS_MAJOR_VERSION%/server/{keyId}``
 directly or by querying an intermediate notary server using a
-``/_matrix/key/v2/query/{serverName}/{keyId}`` API. Intermediate notary servers 
-query the ``/_matrix/key/v2/server/{keyId}`` API on behalf of another server and
+``/_matrix/key/%KEYS_MAJOR_VERSION%/query/{serverName}/{keyId}`` API. Intermediate notary servers 
+query the ``/_matrix/key/%KEYS_MAJOR_VERSION%/server/{keyId}`` API on behalf of another server and
 sign the response with their own key. A server may query multiple notary servers to
 ensure that they all report the same public keys.
 
@@ -138,7 +152,7 @@ Publishing Keys
 +++++++++++++++
 
 Homeservers publish the allowed TLS fingerprints and signing keys in a JSON
-object at ``/_matrix/key/v2/server/{key_id}``. The response contains a list of
+object at ``/_matrix/key/%KEYS_MAJOR_VERSION%/server/{key_id}``. The response contains a list of
 ``verify_keys`` that are valid for signing federation requests made by the
 homeserver and for signing events. It contains a list of ``old_verify_keys`` which
 are only valid for signing events. Finally the response contains a list of TLS
@@ -152,7 +166,7 @@ Querying Keys Through Another Server
 
 Servers may query another server's keys through a notary server. The notary
 server may be another homeserver. The notary server will retrieve keys from
-the queried servers through use of the ``/_matrix/key/v2/server/{keyId}``
+the queried servers through use of the ``/_matrix/key/%KEYS_MAJOR_VERSION%/server/{keyId}``
 API. The notary server will additionally sign the response from the queried
 server before returning the results.
 
@@ -1073,7 +1087,7 @@ that are too long.
   known hash functions like SHA-256 when none of the keys have been redacted]]
 
 .. |/query/directory| replace:: ``/query/directory``
-.. _/query/directory: #get-matrix-federation-v1-query-directory
+.. _/query/directory: #get-matrix-federation-%SERVER_MAJOR_VERSION%-query-directory
 
 .. _`Invitation storage`: ../identity_service/unstable.html#invitation-storage
 .. _`Identity Service API`: ../identity_service/unstable.html

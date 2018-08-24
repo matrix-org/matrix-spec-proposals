@@ -23,7 +23,7 @@ basePath: /_matrix/identity
 produces:
   - application/json
 paths:
-  "/api/v1":
+  "/api/%IDENTITY_MAJOR_VERSION%":
     get:
       summary: Checks that an Identity server is available at this API endpopint.
       description: |-

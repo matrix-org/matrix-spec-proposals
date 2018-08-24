@@ -19,7 +19,7 @@ info:
 host: localhost:8448
 schemes:
   - https
-basePath: /_matrix/key/v2
+basePath: /_matrix/key/%KEYS_MAJOR_VERSION%
 consumes:
   - application/json
 produces:

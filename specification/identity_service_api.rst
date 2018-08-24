@@ -28,12 +28,26 @@ practice has only been applied specifically to email addresses.
 .. contents:: Table of Contents
 .. sectnum::
 
-Specification version
----------------------
+Changelog
+---------
+
+.. topic:: Version: %IDENTITY_RELEASE_LABEL%
+{{identity_service_changelog}}
 
 This version of the specification is generated from
 `matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
 `{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
+
+For the full historical changelog, see
+https://github.com/matrix-org/matrix-doc/blob/master/changelogs/identity_service.rst
+
+
+Other versions of this specification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following other versions are also available, in reverse chronological order:
+
+- `HEAD <https://matrix.org/docs/spec/identity_service/unstable.html>`_: Includes all changes since the latest versioned release.
 
 General principles
 ------------------
@@ -138,7 +152,7 @@ associated with a Matrix user ID.
 
 At a later point, if the owner of that particular 3pid binds it with a Matrix user ID, the identity server will attempt to make an HTTP POST to the Matrix user's homeserver which looks roughly as below::
 
- POST https://bar.com:8448/_matrix/federation/v1/3pid/onbind
+ POST https://bar.com:8448/_matrix/federation/%SERVER_MAJOR_VERSION%/3pid/onbind
  Content-Type: application/json
 
  {
