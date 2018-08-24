@@ -23,6 +23,8 @@ schemes:
 basePath: "/"
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/transactions/{txnId}":
     put:
@@ -35,6 +37,8 @@ paths:
         from message events via the presence of a ``state_key``, rather than
         via the event type.
       operationId: sendTransaction
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: path
           name: txnId
