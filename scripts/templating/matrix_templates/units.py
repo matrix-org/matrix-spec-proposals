@@ -792,7 +792,7 @@ class MatrixUnits(Units):
             logger.info("Reading event example: %s" % filepath)
             try:
                 with open(filepath, "r") as f:
-                    example = json.load(f)
+                    example = resolve_references(filepath, json.load(f))
                     examples[filename] = examples.get(filename, [])
                     examples[filename].append(example)
                     if filename != event_name:

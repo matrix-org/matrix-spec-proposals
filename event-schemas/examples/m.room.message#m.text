@@ -1,14 +1,10 @@
 {
-  "age": 242352,
+  "$ref": "core/room_event.json",
+  "type": "m.room.message",
   "content": {
     "body": "This is an example text message",
     "msgtype": "m.text",
     "format": "org.matrix.custom.html",
     "formatted_body": "<b>This is an example text message</b>"
-  },
-  "origin_server_ts": 1431961217939,
-  "event_id": "$WLGTSEFSEF:localhost",
-  "type": "m.room.message",
-  "room_id": "!Cuyf34gef24t:localhost",
-  "sender": "@example:localhost"
+  }
 }

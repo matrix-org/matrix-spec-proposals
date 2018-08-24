@@ -1,4 +1,5 @@
 {
+  "$ref": "core/event.json",
   "type": "m.tag",
   "content": {
     "tags": {
