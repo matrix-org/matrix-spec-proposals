@@ -51,11 +51,11 @@ paths:
           schema:
             type: object
             example: {
-                "client_secret": "monkeys_are_GREAT",
-                "country": "GB",
-                "phone_number": "07700900001",
-                "send_attempt": 1
-              }
+              "client_secret": "monkeys_are_GREAT",
+              "country": "GB",
+              "phone_number": "07700900001",
+              "send_attempt": 1
+            }
             properties:
               client_secret:
                 type: string
@@ -91,8 +91,8 @@ paths:
             Session created.
           examples:
             application/json: {
-                "sid": "1234"
-              }
+              "sid": "1234"
+            }
           schema:
             type: object
             properties:
@@ -106,6 +106,13 @@ paths:
 
             - ``M_INVALID_ADDRESS``: The phone number provided was invalid.
             - ``M_SEND_ERROR``: The validation SMS could not be sent.
+          examples:
+            application/json: {
+              "errcode": "M_INVALID_ADDRESS",
+              "error": "The phone number is not valid"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
   "/validate/msisdn/submitToken":
     post:
       summary: Validate ownership of a phone number.
@@ -129,10 +136,10 @@ paths:
           schema:
             type: object
             example: {
-                "sid": "1234",
-                "client_secret": "monkeys_are_GREAT",
-                "token": "atoken"
-              }
+              "sid": "1234",
+              "client_secret": "monkeys_are_GREAT",
+              "token": "atoken"
+            }
             properties:
               sid:
                 type: string
@@ -150,8 +157,8 @@ paths:
             The success of the validation.
           examples:
             application/json: {
-                "success": true
-              }
+              "success": true
+            }
           schema:
             type: object
             properties:

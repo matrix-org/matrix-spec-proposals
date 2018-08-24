@@ -45,13 +45,25 @@ paths:
             The public key exists.
           examples:
             application/json: {
-                "public_key": "VXuGitF39UH5iRfvbIknlvlAVKgD1BsLDMvBf0pmp7c"
-              }
+              "public_key": "VXuGitF39UH5iRfvbIknlvlAVKgD1BsLDMvBf0pmp7c"
+            }
           schema:
             type: object
             properties:
               public_key:
                 type: string
+                description: Unpadded Base64 encoded public key.
+            required: ['public_key']
+        404:
+          description:
+            The public key was not found.
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "The public key was not found"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
   "/pubkey/isvalid":
     get:
       summary: Check whether a long-term public key is valid.
@@ -72,8 +84,8 @@ paths:
             The validity of the public key.
           examples:
             application/json: {
-                "valid": true
-              }
+              "valid": true
+            }
           schema:
             type: object
             properties:

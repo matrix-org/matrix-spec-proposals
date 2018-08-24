@@ -23,7 +23,7 @@ user identifiers. From time to time, it is useful to refer to users by other
 number. This identity service specification describes how mappings between
 third-party identifiers and Matrix user identifiers can be established,
 validated, and used. This description technically may apply to any 3pid, but in
-practice has only been applied specifically to email addresses.
+practice has only been applied specifically to email addresses and phone numbers.
 
 .. contents:: Table of Contents
 .. sectnum::

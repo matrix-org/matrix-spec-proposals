@@ -51,10 +51,10 @@ paths:
           schema:
             type: object
             example: {
-                "client_secret": "monkeys_are_GREAT",
-                "email": "foo@example.com",
-                "send_attempt": 1
-              }
+              "client_secret": "monkeys_are_GREAT",
+              "email": "foo@example.com",
+              "send_attempt": 1
+            }
             properties:
               client_secret:
                 type: string
@@ -85,8 +85,8 @@ paths:
             Session created.
           examples:
             application/json: {
-                "sid": "1234"
-              }
+              "sid": "1234"
+            }
           schema:
             type: object
             properties:
@@ -100,6 +100,13 @@ paths:
 
             - ``M_INVALID_EMAIL``: The email address provided was invalid.
             - ``M_EMAIL_SEND_ERROR``: The validation email could not be sent.
+          examples:
+            application/json: {
+              "errcode": "M_INVALID_EMAIL",
+              "error": "The email address is not valid"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
   "/validate/email/submitToken":
     post:
       summary: Validate ownership of an email address.
@@ -123,10 +130,10 @@ paths:
           schema:
             type: object
             example: {
-                "sid": "1234",
-                "client_secret": "monkeys_are_GREAT",
-                "token": "atoken"
-              }
+              "sid": "1234",
+              "client_secret": "monkeys_are_GREAT",
+              "token": "atoken"
+            }
             properties:
               sid:
                 type: string
@@ -144,8 +151,8 @@ paths:
             The success of the validation.
           examples:
             application/json: {
-                "success": true
-              }
+              "success": true
+            }
           schema:
             type: object
             properties:
