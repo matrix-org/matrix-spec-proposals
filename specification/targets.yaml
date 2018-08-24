@@ -13,7 +13,7 @@ targets:
   application_service:
     files:
       - application_service_api.rst
-    version_label: unstable
+    version_label: "%APPSERVICE_RELEASE_LABEL%"
   server_server:
     files:
       - server_server_api.rst

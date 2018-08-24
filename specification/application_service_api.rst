@@ -30,12 +30,20 @@ irrespective of the underlying homeserver implementation.
 .. contents:: Table of Contents
 .. sectnum::
 
-Specification version
----------------------
+Changelog
+---------
+
+
+.. topic:: Version: unstable
+{{application_service_changelog}}
 
 This version of the specification is generated from
 `matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
 `{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
+
+For the full historical changelog, see
+https://github.com/matrix-org/matrix-doc/blob/master/changelogs/application_service.rst
+
 
 Application Services
 --------------------
