@@ -99,6 +99,7 @@ paths:
               sid:
                 type: string
                 description: The session ID.
+            required: ['sid']
         400:
           description: |
             An error ocurred. Some possible errors are:
@@ -157,6 +158,7 @@ paths:
               success:
                 type: boolean
                 description: Whether the validation was successful or not.
+            required: ['success']
     get:
       summary: Validate ownership of a phone number.
       description: |-

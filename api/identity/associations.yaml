@@ -62,6 +62,7 @@ paths:
               validated_at:
                 type: integer
                 description: Timestamp indicating the time that the 3pid was validated.
+            required: ['medium', 'address', 'validated_at']
         400:
           description: |-
             The session has not been validated.
@@ -158,6 +159,14 @@ paths:
               signatures:
                 type: object
                 description: The signatures of the verifying identity services which show that the association should be trusted, if you trust the verifying identity services.
+            required:
+              - address
+              - medium
+              - mxid
+              - not_before
+              - not_after
+              - ts
+              - signatures
         400:
           description: |-
             The association was not published.

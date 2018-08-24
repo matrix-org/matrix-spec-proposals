@@ -71,6 +71,7 @@ paths:
               token:
                 type: string
                 description: The token for the invitation.
+            required: ['mxid', 'sender', 'signatures', 'token']
           examples:
             application/json: {
               "mxid": "@foo:bar.com",

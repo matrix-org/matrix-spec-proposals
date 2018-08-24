@@ -86,6 +86,14 @@ paths:
               signatures:
                 type: object
                 description: The signatures of the verifying identity services which show that the association should be trusted, if you trust the verifying identity services.
+            required:
+              - address
+              - medium
+              - mxid
+              - not_before
+              - not_after
+              - ts
+              - signatures
   "/bulk_lookup":
     post:
       summary: Lookup Matrix user IDs for a list of 3pids.

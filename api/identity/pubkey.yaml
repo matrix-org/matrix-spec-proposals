@@ -80,6 +80,7 @@ paths:
               valid:
                 type: boolean
                 description: Whether the public key is recognised and is currently valid.
+            required: ['valid']
   "/pubkey/ephemeral/isvalid":
     get:
       summary: Check whether a short-term public key is valid.
@@ -108,3 +109,4 @@ paths:
               valid:
                 type: boolean
                 description: Whether the public key is recognised and is currently valid.
+            required: ['valid']

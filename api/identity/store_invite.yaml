@@ -90,6 +90,7 @@ paths:
               display_name:
                 type: string
                 description: The generated (redacted) display_name.
+            required: ['token', 'public_keys', 'display_name']
             example:
               application/json: {
                   "token": "sometoken",
