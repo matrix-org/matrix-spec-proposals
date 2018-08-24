@@ -218,6 +218,9 @@ Application services can use a more powerful version of the
 client-server API by identifying itself as an application service to the
 homeserver.
 
+Endpoints defined in this section MUST be supported by homeservers in the
+client-server API as accessible only by application services.
+
 Identity assertion
 ++++++++++++++++++
 The client-server API infers the user ID from the ``access_token`` provided in
@@ -313,6 +316,15 @@ Application services wishing to use ``/sync`` or ``/events`` from the Client-Ser
 API MUST do so with a virtual user (provide a ``user_id`` via the query string). It
 is expected that the application service use the transactions pushed to it to
 handle events rather than syncing with the user implied by ``sender_localpart``.
+
+Application service room directories
+++++++++++++++++++++++++++++++++++++
+
+Application services can maintain their own room directories for their defined
+third party protocols. These room directories may be accessed by clients through
+additional parameters on the ``/publicRooms`` client-server endpoint.
+
+{{appservice_room_directory_cs_http_api}}
 
 Event fields
 ~~~~~~~~~~~~
