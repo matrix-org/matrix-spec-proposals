@@ -21,7 +21,7 @@ properties:
           The Curve25519 key of the device which initiated the session originally.
       session_id:
         type: string
-        description: The ID of the session holding the key.
+        description: The ID of the session that the key is for.
       session_key:
         type: string
         description: The key to be exchanged.
