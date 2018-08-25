@@ -1,1 +1,1 @@
-Share room encryption keys between devices
+Share room decryption keys between devices
