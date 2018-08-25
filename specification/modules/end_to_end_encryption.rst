@@ -291,6 +291,17 @@ through his phone for the first time, he may want to have access to the previous
 exchanged messages. To address this issue, events exist for requesting and sending
 keys from device to device.
 
+When a device is missing keys to decrypt messages, it can request the keys by
+sending `m.room_key_request`_ to-device messages to other devices with
+``action`` set to ``request``. If a device wishes to share the keys with that
+device, it can forward the keys to the first device by sending an encrypted
+`m.forwarded_room_key`_ to-device message. The first device should then send an
+`m.room_key_request`_ to-device message with ``action`` set to
+``cancel_request`` to the other devices that it had originally sent the key
+request to; a device that receives a ``cancel_request`` should disregard any
+previously-received ``request`` message with the same ``request_id`` and
+``requesting_device_id``.
+
 .. NOTE::
 
   Key sharing can be a big attack vector, thus it must be done very carefully.
