@@ -9,7 +9,9 @@ properties:
   content:
     properties:
       body:
-        description: Information about the requested key.
+        description: |-
+          Information about the requested key. Required when ``action`` is
+          ``request``.
         properties:
           algorithm:
             type: string
