@@ -18,7 +18,15 @@
           "description": "The tags on the room and their contents.",
           "additionalProperties": {
             "title": "Tag",
-            "type": "object"
+            "type": "object",
+            "properties": {
+              "order": {
+                "type": "number",
+                "format": "float",
+                "description":
+                  "A number in a range ``[0,1]`` describing a relative position of the room under the given tag."
+              }
+            }
           }
         }
       }

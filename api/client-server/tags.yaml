@@ -60,13 +60,23 @@ paths:
             type: object
             properties:
               tags:
-                title: Tags
                 type: object
+                additionalProperties:
+                  title: Tag
+                  type: object
+                  properties:
+                    order:
+                      type: number
+                      format: float
+                      description: |-
+                        A number in a range ``[0,1]`` describing a relative
+                        position of the room under the given tag.
+                  additionalProperties: true
           examples:
             application/json: {
                 "tags": {
-                  "m.favourite": {},
-                  "u.Work": {"order": "1"},
+                  "m.favourite": {"order": 0.1},
+                  "u.Work": {"order": 0.7},
                   "u.Customers": {}
                 }
               }
@@ -110,8 +120,17 @@ paths:
             Extra data for the tag, e.g. ordering.
           schema:
             type: object
+            properties:
+              order:
+                type: number
+                format: float
+                description: |-
+                  A number in a range ``[0,1]`` describing a relative
+                  position of the room under the given tag.
+            additionalProperties: true
             example: {
-              "order": "1"}
+              "order": 0.25
+            }
       responses:
         200:
           description:
