@@ -1,6 +1,6 @@
 {
   "content": {
-    "algorithm": "m.megolm.v1.aes-sha2",
+    "algorithm": "m.megolm.v1.aes-sha256",
     "ciphertext": "AwgAEnACgAkLmt6qF84IK++J7UDH2Za1YVchHyprqTqsg...",
     "device_id": "RJYKSTBOIE",
     "sender_key": "IlRMeOPX2e0MurIyfWEucYBRVOEEUMrOHqn/8mLqMjA",
