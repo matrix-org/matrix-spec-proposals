@@ -41,7 +41,8 @@ Client behaviour
 ----------------
 
 In addition to using the appropriate ``matrix.to URI`` for the mention,
-clients should use the following guidelines when making mentions:
+clients should use the following guidelines when making mentions in events
+to be sent:
 
 * When mentioning users, use the user's potentially ambigious display name for
   the anchor's text. If the user does not have a display name, use the user's

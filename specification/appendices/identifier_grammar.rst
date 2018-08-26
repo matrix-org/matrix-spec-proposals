@@ -274,6 +274,11 @@ parameter is only used in the case of permalinks where an event ID is referenced
 The matrix.to URI, when referenced, must always start with ``https://matrix.to/#/``
 followed by the identifier. 
 
+Clients should not rely on matrix.to URIs falling back to a web server if accessed
+and instead should perform some sort of action within the client. For example, if
+the user where to click on a matrix.to URI for a room alias, the client may open
+a view for the user to participate in the room.
+
 Examples of matrix.to URIs are:
 
 * Room: ``https://matrix.to/#/!somewhere:domain.com``
