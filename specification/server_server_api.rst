@@ -890,6 +890,20 @@ nothing else.
 
 {{openid_ss_http_api}}
 
+End-to-End Encryption
+---------------------
+
+This section compliments the `End-to-End Encryption module`_ of the Client-Server
+API. For detailed information about end-to-end encryption, please see that module.
+
+The APIs defined here are designed to be able to proxy much of the client's request
+through to federation, and have the response also be proxied through to the client.
+
+{{user_keys_ss_http_api}}
+
+{{user_devices_ss_http_api}}
+
+
 Send-to-device messaging
 ------------------------
 
@@ -1077,7 +1091,8 @@ that are too long.
 
 .. _`Invitation storage`: ../identity_service/unstable.html#invitation-storage
 .. _`Identity Service API`: ../identity_service/unstable.html
-.. _`Client-Server API`: ../client_server/unstable.html
+.. _`Client-Server API`: ../client_server/%CLIENT_RELEASE_LABEL%.html
 .. _`Inviting to a room`: #inviting-to-a-room
 .. _`Canonical JSON`: ../appendices.html#canonical-json
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
+.. _`End-to-End Encryption module`: ../client-server/%CLIENT_RELEASE_LABEL%.html#end-to-end-encryption
