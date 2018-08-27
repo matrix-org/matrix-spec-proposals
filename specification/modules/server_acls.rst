@@ -47,7 +47,8 @@ event. Clients should describe changes to the server ACLs to the user in the
 user interface, such as in the timeline.
 
 Clients may wish to kick affected users from the room prior to denying a server
-access to the room to help prevent those servers from participating.
+access to the room to help prevent those servers from participating and to
+provide feedback to the users that they have been excluded from the room.
 
 Server behaviour
 ----------------
