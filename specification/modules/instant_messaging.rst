@@ -66,7 +66,7 @@ Clients should limit the HTML they render to avoid Cross-Site Scripting, HTML
 injection, and similar attacks. The strongly suggested set of HTML tags to permit,
 denying the use and rendering of anything else, is: ``font``, ``del``, ``h1``, 
 ``h2``, ``h3``, ``h4``, ``h5``, ``h6``, ``blockquote``, ``p``, ``a``, ``ul``,
-``ol``, ``sup``, ``sub``, ``nl``, ``li``, ``b``, ``i``, ``u``, ``strong``, ``em``,
+``ol``, ``sup``, ``sub``, ``li``, ``b``, ``i``, ``u``, ``strong``, ``em``,
 ``strike``, ``code``, ``hr``, ``br``, ``div``, ``table``, ``thead``, ``tbody``,
 ``tr``, ``th``, ``td``, ``caption``, ``pre``, ``span``, ``img``.
 
