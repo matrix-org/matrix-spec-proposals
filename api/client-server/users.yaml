@@ -31,8 +31,13 @@ paths:
     post:
       summary: Searches the user directory.
       description: |-
-        This API performs a server-side search over all users registered on the server.
-        It searches user ID and displayname case-insensitively for users that you share a room with or that are in public rooms.
+        Performs a search for users on the homeserver. The homeserver may
+        determine which subset of users are searched, however the homeserver
+        is encouraged to only consider users the requesting user shares a
+        room with and those who reside in public rooms.
+
+        The search is performed case-insensitively on user IDs and display
+        names.
       operationId: searchUserDirectory
       security:
         - accessToken: []
@@ -48,7 +53,7 @@ paths:
                 example: "foo"
               limit:
                 type: number
-                description: The maximum number of results to return (Defaults to 10).
+                description: The maximum number of results to return. Defaults to 10.
                 example: 10
             required: ["search_term"]
       responses:
@@ -56,15 +61,15 @@ paths:
           description: The results of the search.
           examples:
             application/json: {
-                  "results": [
-                    {
-                      "user_id": "@foo:bar.com",
-                      "display_name": "Foo",
-                      "avatar_url": "mxc://bar.com/foo"
-                    }
-                  ],
-                  "limited": false
-              }
+              "results": [
+                {
+                  "user_id": "@foo:bar.com",
+                  "display_name": "Foo",
+                  "avatar_url": "mxc://bar.com/foo"
+                }
+              ],
+              "limited": false
+            }
           schema:
             type: object
             required: ["results", "limited"]
