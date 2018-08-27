@@ -343,6 +343,8 @@ paths:
         This endpoint allows the creation, modification and deletion of pushers
         for this user ID. The behaviour of this endpoint varies depending on the
         values in the JSON body.
+
+        When creating push rules, they MUST be enabled by default.
       operationId: setPushRule
       security:
         - accessToken: []
@@ -424,7 +426,7 @@ paths:
             required: ["actions"]
       responses:
         200:
-          description: The pusher was set.
+          description: The push rule was created/updated.
           examples:
             application/json: {
               }

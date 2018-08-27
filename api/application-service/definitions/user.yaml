@@ -21,11 +21,13 @@ properties:
   protocol:
     description: The protocol ID that the third party location is a part of.
     type: string
-    example: gitter
+    example: "gitter"
   fields:
     description: Information used to identify this third party location.
     type: object
-    example:
+    example: {
       "user": "jim"
+    }
+required: ['userid', 'protocol', 'fields']
 title: User
 type: object

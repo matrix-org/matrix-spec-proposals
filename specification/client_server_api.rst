@@ -148,6 +148,13 @@ Some requests have unique error codes:
 :``M_SERVER_NOT_TRUSTED``:
   The client's request used a third party server, eg. ID server, that this server does not trust.
 
+:``M_UNSUPPORTED_ROOM_VERSION``:
+  The client's request to create a room used a room version that the server does not support.
+
+:``M_INCOMPATIBLE_ROOM_VERSION``:
+  The client attempted to join a room that has a version the server does not support. Inspect the
+  ``room_version`` property of the error response for the room's version.
+
 .. _sect:txn_ids:
 
 The client-server API typically uses ``HTTP PUT`` to submit requests with a

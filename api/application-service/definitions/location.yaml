@@ -19,12 +19,14 @@ properties:
   protocol:
     description: The protocol ID that the third party location is a part of.
     type: string
-    example: irc
+    example: "irc"
   fields:
     description: Information used to identify this third party location.
     type: object
-    example:
-      "network": "freenode"
+    example: {
+      "network": "freenode",
       "channel": "#matrix"
+    }
+required: ['alias', 'protocol', 'fields']
 title: Location
 type: object

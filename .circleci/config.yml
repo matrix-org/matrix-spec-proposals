@@ -23,9 +23,29 @@ buildswaggerui: &buildswaggerui
     wget https://raw.githubusercontent.com/matrix-org/matrix.org/master/scripts/swagger-ui.patch
     patch api/client-server/index.html swagger-ui.patch
 
+checkexamples: &checkexamples
+  name: Check Event Examples
+  command: |
+    source /env/bin/activate
+    cd event-schemas
+    ./check_examples.py
+
+genmatrixassets: &genmatrixassets
+  name: Generate/Verify matrix.org assets
+  command: |
+    source /env/bin/activate
+    ./scripts/generate-matrix-org-assets
+
 
 version: 2
 jobs:
+  check-docs:
+    docker:
+      - image: uhoreg/matrix-doc-build
+    steps:
+      - checkout
+      - run: *checkexamples
+      - run: *genmatrixassets # We don't actually use the assets, but we do want to make sure they build
   build-docs:
     docker:
       - image: uhoreg/matrix-doc-build
