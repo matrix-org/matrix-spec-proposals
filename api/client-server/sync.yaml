@@ -134,7 +134,7 @@ paths:
                             ``timeline``, if ``since`` is not given, or
                             ``full_state`` is true).
                           allOf:
-                            - $ref: "definitions/event_batch.yaml"
+                            - $ref: "definitions/state_event_batch.yaml"
                         timeline:
                           title: Timeline
                           type: object
@@ -202,7 +202,7 @@ paths:
                             delta against the archived ``state`` not the
                             ``invite_state``.
                           allOf:
-                            - $ref: "definitions/event_batch.yaml"
+                            - $ref: "definitions/state_event_batch.yaml"
                   leave:
                     title: Left rooms
                     type: object
@@ -218,7 +218,7 @@ paths:
                           description: |-
                             The state updates for the room up to the start of the timeline.
                           allOf:
-                            - $ref: "definitions/event_batch.yaml"
+                            - $ref: "definitions/state_event_batch.yaml"
                         timeline:
                           title: Timeline
                           type: object
@@ -261,6 +261,8 @@ paths:
                 description: |-
                   Information on end-to-end encryption keys, as specified
                   in |device_lists_sync|_.
+            required:
+              - next_batch
           examples:
             application/json: {
                 "next_batch": "s72595_4483_1934",
@@ -312,7 +314,6 @@ paths:
                           {
                             "sender": "@alice:example.com",
                             "type": "m.room.message",
-                            "age": 124524,
                             "txn_id": "1234",
                             "content": {
                               "body": "I am a fish",
