@@ -13,9 +13,7 @@ properties:
       algorithm:
         type: string
         enum:
-          - m.olm.curve25519-aes-sha256
           - m.olm.v1.curve25519-aes-sha2
-          - m.megolm.v1.aes-sha
           - m.megolm.v1.aes-sha2
         description: |-
           The encryption algorithm used to encrypt this event. The
