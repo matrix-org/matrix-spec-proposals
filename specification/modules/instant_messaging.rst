@@ -89,8 +89,7 @@ for the tag.
   matching one of: ``https``, ``http``, ``ftp``, ``mailto``, ``magnet``)
 
 :``img``:
-  ``width``, ``height``, ``alt``, ``title``, ``src`` (provided it is a Matrix Content
-  URI)
+  ``width``, ``height``, ``alt``, ``title``, ``src`` (provided it is a `Matrix Content (MXC) URI`_)
 
 :``ol``:
   ``start``
@@ -345,3 +344,4 @@ Clients should sanitise **all displayed keys** for unsafe HTML to prevent Cross-
 Scripting (XSS) attacks. This includes room names and topics.
 
 .. _`E2E module`: `module:e2e`_
+.. _`Matrix Content (MXC) URI`: `module:content`_
