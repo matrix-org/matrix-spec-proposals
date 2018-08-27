@@ -34,12 +34,14 @@ description: |-
      permit the use of the ``deny`` list without losing the room.
   
   .. WARNING::
-     Servers that do not uphold the ACLs MUST be manually appended to the denied hosts
-     list. To accomplish this, events should have their ``prev_events`` inspected for
-     denied hosts, therefore detecting servers which are not upholding the ACLs. Server
-     versions can also be used to detect hosts that will not uphold the ACLs, although
-     this is less effective. Server ACLs were added in Synapse v0.32.0 although other
-     server implementations and versions exist in the world.
+     All compliant servers must implement server ACLs.  However, legacy or noncompliant
+     servers exist which do not uphold ACLs, and these MUST be manually appended to
+     the denied hosts list when setting an ACL to prevent them from leaking events from
+     banned servers into a room. Currently, the only way to determine noncompliant hosts is
+     to check the ``prev_events`` of leaked events, therefore detecting servers which
+     are not upholding the ACLs. Server versions can also be used to try to detect hosts that
+     will not uphold the ACLs, although this is not comprehensive. Server ACLs were added
+     in Synapse v0.32.0, although other server implementations and versions exist in the world.
 allOf:
   - $ref: core-event-schema/state_event.yaml
 type: object
