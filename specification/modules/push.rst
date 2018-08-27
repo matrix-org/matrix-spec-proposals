@@ -468,6 +468,10 @@ Definition:
 ``.m.rule.encrypted_room_one_to_one``
 `````````````````````````````````````
 Matches any encrypted event sent in a room with exactly two members.
+Unlike other push rules, this rule cannot be matched against the content
+of the event by nature of it being encrypted. This causes the rule to
+be an "all or nothing" match where it either matches *all* events that
+are encrypted (in 1:1 rooms) or none.
 
 Definition:
 
@@ -492,6 +496,11 @@ Definition:
             {
                 "set_tweak": "highlight",
                 "value": false
+            },
+            {
+                "kind": "event_match",
+                "key": "type",
+                "pattern": "m.room.encrypted"
             }
         ]
     }
@@ -512,11 +521,6 @@ Definition:
             {
                 "kind": "room_member_count",
                 "is": "2"
-            },
-            {
-                "kind": "event_match",
-                "key": "type",
-                "pattern": "m.room.encrypted"
             }
         ],
         "actions": [
@@ -562,7 +566,10 @@ Definition:
 
 ``.m.rule.encrypted``
 `````````````````````
-Matches all encrypted events.
+Matches all encrypted events. Unlike other push rules, this rule cannot
+be matched against the content of the event by nature of it being encrypted.
+This causes the rule to be an "all or nothing" match where it either
+matches *all* events that are encrypted (in 1:1 rooms) or none.
 
 Definition:
 
@@ -628,11 +635,11 @@ rule determines its behaviour. The following conditions are defined:
 
   Parameters:
 
-  * ``key``: The notification power level to require the sender to have. Refer to
-    the `m.room.power_levels`_ event schema for information about what the defaults
-    are and how to interpret the event. The ``key`` is used to look up a specific
-    notification type from the ``notifications`` object in the power level event
-    content.
+  * ``key``: A string that determines the power level the sender must have to trigger
+    notifications of a given type, such as ``room``. Refer to the `m.room.power_levels`_
+    event schema for information about what the defaults are and how to interpret the event.
+    The ``key`` is used to look up the power level required to send a notification type
+    from the ``notifications`` object in the power level event content.
 
 Unrecognised conditions MUST NOT match any events, effectively making the push
 rule disabled.
