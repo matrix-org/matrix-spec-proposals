@@ -91,7 +91,12 @@ paths:
               filter_id:
                 type: string
                 description: |-
-                  The ID of the filter that was created.
+                  The ID of the filter that was created. Cannot start
+                  with a ``{`` as this character is used to determine
+                  if the filter provided is inline JSON or a previously
+                  declared filter by homeservers on some APIs.
+                example: "66696p746572"
+            required: ['filter_id']
       tags:
         - Room participation
   "/user/{userId}/filter/{filterId}":
