@@ -105,7 +105,8 @@ paths:
                                   type: string
                                   description: Most recently seen IP address of the session.
                                 last_seen:
-                                  type: number
+                                  type: integer
+                                  format: int64
                                   description: Unix timestamp that the session was last active.
                                 user_agent:
                                   type: string
