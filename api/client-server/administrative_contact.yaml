@@ -148,6 +148,51 @@ paths:
             "$ref": "definitions/errors/error.yaml"
       tags:
         - User data
+  "/account/3pid/delete":
+    post:
+      summary: Deletes a third party identifier from the user's account
+      description: |-
+        Removes a third party identifier from the user's account. The homeserver
+        should attempt to unbind the identifier from the identity service, if the
+        homeserver is able to reasonably determine the identity service used.
+      operationId: delete3pidFromAccount
+      security:
+        - accessToken: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              medium:
+                type: string
+                description: The medium of the third party identifier being removed.
+                enum: ["email", "msisdn"]
+                example: "email"
+              address:
+                type: string
+                description: The third party address being removed.
+                example: "example@domain.com"
+            required: ['medium', 'address']
+      responses:
+        200:
+          description: |-
+            The homeserver has disassociated the third party identifier from the
+            user.
+          schema:
+            type: object
+            properties:
+              id_server_unbind_result:
+                type: string
+                description: |-
+                  The result of the homeserver's attempt to unbind the identifier from
+                  the identity service. ``success`` indicates that the homeserver was
+                  able to unbind the identifier while ``no-support`` means the homeserver
+                  was not able to unbind, likely due to the identity service not supporting
+                  the operation. Defaults to ``no-support``.
+                example: "success"
+      tags:
+        - User data
   "/account/3pid/email/requestToken":
     post:
       summary: Requests a validation token be sent to the given email address for the purpose of adding an email address to an account
