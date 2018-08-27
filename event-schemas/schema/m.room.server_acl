@@ -4,8 +4,8 @@ description: |-
   An event to indicate which servers are permitted to participate in the
   room. Server ACLs may allow or deny groups of hosts. All servers participating
   in the room, including those that are denied, are expected to uphold the
-  server ACL. Servers that do not uphold the ACLs are recommended to be
-  added to the denied hosts list.
+  server ACL. Servers that do not uphold the ACLs MUST be added to the denied hosts
+  list in order for the ACLs to remain effective.
 
   The ``allow`` and ``deny`` lists are lists of globs supporting ``?`` and ``*``
   as wildcards. When comparing against the server ACLs, the suspect server's port
@@ -27,6 +27,14 @@ description: |-
      servers from participating in the room, including the sender. This renders
      the room unusable. A common allow rule is ``[ "*" ]`` which would still
      permit the use of the ``deny`` list without losing the room.
+  
+  .. WARNING::
+     Servers that do not uphold the ACLs MUST be manually appended to the denied hosts
+     list. To accomplish this, events should have their ``prev_events`` inspected for
+     denied hosts, therefore detecting servers which are not upholding the ACLs. Server
+     versions can also be used to detect hosts that will not uphold the ACLs, although
+     this is less effective. Server ACLs were added in Synapse v0.32.0 although other
+     server implementations and versions exist in the world.
 allOf:
   - $ref: core-event-schema/state_event.yaml
 type: object
