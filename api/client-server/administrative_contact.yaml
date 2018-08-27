@@ -47,13 +47,15 @@ paths:
           description: The lookup was successful.
           examples:
             application/json: {
-                "threepids": [
-                  {
-                    "medium": "email",
-                    "address": "monkey@banana.island"
-                  }
-                ]
-              }
+              "threepids": [
+                {
+                  "medium": "email",
+                  "address": "monkey@banana.island",
+                  "validated_at": 1535176800000,
+                  "added_at": 1535336848756
+                }
+              ]
+            }
           schema:
             type: object
             properties:
@@ -70,6 +72,19 @@ paths:
                     address:
                       type: string
                       description: The third party identifier address.
+                    validated_at:
+                      type: integer
+                      format: int64
+                      description: |-
+                        The timestamp, in milliseconds, when the identifier was
+                        validated by the identity service.
+                    added_at:
+                      type: integer
+                      format: int64
+                      description:
+                        The timestamp, in milliseconds, when the homeserver
+                        associated the third party identifier with the user.
+                  required: ['medium', 'address', 'validated_at', 'added_at']
       tags:
         - User data
     post:
