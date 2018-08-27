@@ -102,6 +102,9 @@ Additionally, clients should ensure that *all* ``a`` tags get a ``rel="noopener"
 to prevent the target page from referencing the client's tab/window.
 
 
+.. Note::
+   A future iteration of the specification will support more powerful and extensible
+   message formatting options, such as the proposal `MSC1225 <https://github.com/matrix-org/matrix-doc/issues/1225>`_.
 
 {{msgtype_events}}
 
