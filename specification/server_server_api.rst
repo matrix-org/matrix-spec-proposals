@@ -890,6 +890,19 @@ nothing else.
 
 {{openid_ss_http_api}}
 
+
+Device Management
+-----------------
+
+.. TODO: TravisR - Incorporate https://github.com/matrix-org/matrix-doc/issues/1212
+
+A user's devices may need to be queried over federation for different purposes, such
+as end-to-end encryption or for utilizing send-to-device messaging. This section is
+intended to compliment the `Device Management module`_ of the Client-Server API.
+
+{{user_devices_ss_http_api}}
+
+
 End-to-End Encryption
 ---------------------
 
@@ -900,8 +913,6 @@ The APIs defined here are designed to be able to proxy much of the client's requ
 through to federation, and have the response also be proxied through to the client.
 
 {{user_keys_ss_http_api}}
-
-{{user_devices_ss_http_api}}
 
 
 Send-to-device messaging
@@ -1095,4 +1106,5 @@ that are too long.
 .. _`Inviting to a room`: #inviting-to-a-room
 .. _`Canonical JSON`: ../appendices.html#canonical-json
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
+.. _`Device Management module`: ../client-server/%CLIENT_RELEASE_LABEL%.html#device-management
 .. _`End-to-End Encryption module`: ../client-server/%CLIENT_RELEASE_LABEL%.html#end-to-end-encryption
