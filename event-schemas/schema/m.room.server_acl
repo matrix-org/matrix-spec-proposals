@@ -51,6 +51,10 @@ properties:
         description: |-
           True to allow server names that are IP address literals. False to
           deny. Defaults to true if missing or otherwise not a boolean.
+
+          This is strongly recommended to be set to ``false`` as servers running
+          with IP literal names are strongly discouraged in order to require 
+          legitimate homeservers to be backed by a valid registered domain name.
       allow:
         type: array
         description: |-

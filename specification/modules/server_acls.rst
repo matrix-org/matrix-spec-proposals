@@ -17,7 +17,7 @@ Server Access Control Lists (ACLs) for rooms
 
 .. _module:server-acls:
 
-In some scenarios room operators may wish to prevent a malicous or untrusted
+In some scenarios room operators may wish to prevent a malicious or untrusted
 server from participating in their room. Sending an `m.room.server_acl`_ state
 event into a room is an effective way to prevent the server from participating
 in the room at the federation level.
@@ -30,7 +30,10 @@ similar to setting the ``m.federate`` value on the `m.room.create`_ event.
 
 .. Note::
    Port numbers are not supported because it is unclear to parsers whether a
-   port number should be matched or an IP address literal.
+   port number should be matched or an IP address literal. Additionally, it
+   is unlikely that one would trust a server running on a particular domain's
+   port but not a different port, especially considering the server host can
+   easily change ports.
 
 .. Note::
    CIDR notation is not supported for IP addresses because Matrix does not
