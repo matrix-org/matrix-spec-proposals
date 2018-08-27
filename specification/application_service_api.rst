@@ -180,6 +180,27 @@ this request (e.g. to join a room alias).
 {{query_room_as_http_api}}
 
 
+Third party networks
+++++++++++++++++++++
+
+Application services may declare which protocols they support via their registration
+configuration for the homeserver. These networks are generally for third party services
+such as IRC that the application service is managing. Application services may populate
+a Matrix room directory for their registered protocols, as defined in the Client-Server
+API Extensions.
+
+Each protocol may have several "locations" (also known as "third party locations" or "3PLs").
+A location within a protocol is a place in the third party network, such as an IRC channel.
+Users of the third party network may also be represented by the application service.
+
+Locations and users can be searched by fields defined by the application service, such
+as by display name or other attribute. When clients request the homeserver to search
+in a particular "network" (protocol), the search fields will be passed along to the
+application service for filtering.
+
+{{protocols_as_http_api}}
+
+
 HTTP APIs
 +++++++++
 
@@ -197,6 +218,9 @@ Client-Server API Extensions
 Application services can use a more powerful version of the
 client-server API by identifying itself as an application service to the
 homeserver.
+
+Endpoints defined in this section MUST be supported by homeservers in the
+client-server API as accessible only by application services.
 
 Identity assertion
 ++++++++++++++++++
@@ -293,6 +317,15 @@ Application services wishing to use ``/sync`` or ``/events`` from the Client-Ser
 API MUST do so with a virtual user (provide a ``user_id`` via the query string). It
 is expected that the application service use the transactions pushed to it to
 handle events rather than syncing with the user implied by ``sender_localpart``.
+
+Application service room directories
+++++++++++++++++++++++++++++++++++++
+
+Application services can maintain their own room directories for their defined
+third party protocols. These room directories may be accessed by clients through
+additional parameters on the ``/publicRooms`` client-server endpoint.
+
+{{appservice_room_directory_cs_http_api}}
 
 Event fields
 ~~~~~~~~~~~~
