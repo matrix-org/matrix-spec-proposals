@@ -22,6 +22,11 @@ description: |-
   #. If the server name matches an entry in the ``allow`` list, allow.
   #. Otherwise, deny.
 
+  .. Note::
+     Server ACLs do not restrict the events relative to the room DAG via authorisation
+     rules, but instead act purely at the network layer to determine which servers are
+     allowed to connect and interact with a given room.
+
   .. WARNING::
      Failing to provide an ``allow`` rule of some kind will prevent **all**
      servers from participating in the room, including the sender. This renders
@@ -51,7 +56,7 @@ properties:
         description: |-
           The server names to allow in the room, excluding any port information.
           Wildcards may be used to cover a wider range of hosts, where ``*``
-          matches zero or more characters and ``?`` matches one or more characters.
+          matches zero or more characters and ``?`` matches exactly one character.
 
           **This defaults to an empty list when not provided, effectively disallowing
           every server.**
@@ -62,7 +67,7 @@ properties:
         description: |-
           The server names to disallow in the room, excluding any port information.
           Wildcards may be used to cover a wider range of hosts, where ``*``
-          matches zero or more characters and ``?`` matches one or more characters.
+          matches zero or more characters and ``?`` matches exactly one character.
 
           This defaults to an empty list when not provided.
         items:
