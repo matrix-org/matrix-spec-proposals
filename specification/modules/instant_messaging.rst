@@ -98,9 +98,13 @@ for the tag.
   ``class`` (only classes which start with ``language-`` for syntax highlighting)
 
 
-Additionally, clients should ensure that *all* ``a`` tags get a ``rel="noopener"``
+Additionally, web clients should ensure that *all* ``a`` tags get a ``rel="noopener"``
 to prevent the target page from referencing the client's tab/window.
 
+Tags must not be nested more than 100 levels deep. Clients should only support the subset
+of tags they can render, falling back to other representations of the tags where possible.
+For example, a client may not be able to render tables correctly and instead could fall
+back to rendering tab-delimited text.
 
 .. Note::
    A future iteration of the specification will support more powerful and extensible
