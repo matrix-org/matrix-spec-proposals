@@ -83,7 +83,8 @@ paths:
             polling this API. If this parameter is omitted then the client is
             automatically marked as online when it uses this API. Otherwise if
             the parameter is set to "offline" then the client is not marked as
-            being online when it uses this API.
+            being online when it uses this API. When set to "unavailable", the
+            client is marked as being idle.
           x-example: "offline"
         - in: query
           name: timeout
