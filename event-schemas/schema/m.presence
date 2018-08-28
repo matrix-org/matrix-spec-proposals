@@ -29,21 +29,17 @@
                 "currently_active": {
                     "type": boolean,
                     "description": "Whether the user is currently active"
-                },
-                "user_id": {
-                    "type": "string",
-                    "description": "The user's ID."
                 }
             },
-            "required": ["presence", "user_id"]
+            "required": ["presence"]
         },
         "type": {
             "type": "string",
             "enum": ["m.presence"]
         },
-        "event_id": {
+        "sender": {
             "type": "string"
         }
     },
-    "required": ["event_id", "type", "content"]
+    "required": ["sender", "type", "content"]
 }

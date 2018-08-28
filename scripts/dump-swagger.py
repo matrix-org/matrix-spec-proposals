@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # dump-swagger reads all of the swagger API docs used in spec generation and
 # outputs a JSON file which merges them all, for use as input to a swagger UI
@@ -19,45 +19,49 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+import argparse
 import errno
 import json
 import logging
 import os.path
 import re
-import shutil
 import sys
 import yaml
 
+
 scripts_dir = os.path.dirname(os.path.abspath(__file__))
-templating_dir = os.path.join(os.path.dirname(scripts_dir), "templating")
+templating_dir = os.path.join(scripts_dir, "templating")
 api_dir = os.path.join(os.path.dirname(scripts_dir), "api")
 
 sys.path.insert(0, templating_dir)
 
-from matrix_templates.units import resolve_references, MatrixUnits
+from matrix_templates import units
 
-if len(sys.argv) > 3:
-    sys.stderr.write("usage: %s [output_file] [client_release_label]\n" % (sys.argv[0],))
-    sys.exit(1)
+parser = argparse.ArgumentParser(
+    "dump-swagger.py - assemble the Swagger specs into a single JSON file"
+)
+parser.add_argument(
+    "--client_release", "-c", metavar="LABEL",
+    default="unstable",
+    help="""The client-server release version to gneerate for. Default:
+    %(default)s""",
+)
+parser.add_argument(
+    "-o", "--output",
+    default=os.path.join(scripts_dir, "swagger", "api-docs.json"),
+    help="File to write the output to. Default: %(default)s"
+)
+args = parser.parse_args()
 
-if len(sys.argv) > 1:
-    output_file = os.path.abspath(sys.argv[1])
-else:
-    output_file = os.path.join(scripts_dir, "swagger", "api-docs.json")
-
-release_label = sys.argv[2] if len(sys.argv) > 2 else "unstable"
+output_file = os.path.abspath(args.output)
+release_label = args.client_release
 
 major_version = release_label
-match = re.match("^(r\d)+(\.\d+)*$", major_version)
+match = re.match("^(r\d+)(\.\d+)*$", major_version)
 if match:
     major_version = match.group(1)
 
-
 logging.basicConfig()
-
-os.chdir(templating_dir)
-apis = MatrixUnits().load_swagger_apis()
 
 output = {
     "basePath": "/",
@@ -74,23 +78,32 @@ output = {
     "swagger": "2.0",
 }
 
-with open(os.path.join(api_dir, 'client-server', 'definitions',
+cs_api_dir = os.path.join(api_dir, 'client-server')
+with open(os.path.join(cs_api_dir, 'definitions',
                        'security.yaml')) as f:
     output['securityDefinitions'] = yaml.load(f)
 
-for file, contents in apis.items():
-    basePath = contents['basePath']
-    for path, methods in contents["paths"].items():
-        path = (basePath + path).replace('%CLIENT_MAJOR_VERSION%',
-                                         major_version)
-        for method, spec in methods.items():
-            if "tags" in spec.keys():
-                if path not in output["paths"]:
-                    output["paths"][path] = {}
-                output["paths"][path][method] = spec
+for filename in os.listdir(cs_api_dir):
+    if not filename.endswith(".yaml"):
+        continue
+    filepath = os.path.join(cs_api_dir, filename)
 
+    print("Reading swagger API: %s" % filepath)
+    with open(filepath, "r") as f:
+        api = yaml.load(f.read())
+        api = units.resolve_references(filepath, api)
 
-print "Generating %s" % output_file
+        basePath = api['basePath']
+        for path, methods in api["paths"].items():
+            path = (basePath + path).replace('%CLIENT_MAJOR_VERSION%',
+                                             major_version)
+            for method, spec in methods.items():
+                if "tags" in spec.keys():
+                    if path not in output["paths"]:
+                        output["paths"][path] = {}
+                    output["paths"][path][method] = spec
+
+print("Generating %s" % output_file)
 
 try:
     os.makedirs(os.path.dirname(output_file))

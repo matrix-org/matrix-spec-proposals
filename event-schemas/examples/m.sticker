@@ -1,0 +1,25 @@
+{
+  "age": 242352,
+  "content": {
+    "body": "Landing",
+    "info": {
+      "mimetype": "image/png",
+      "thumbnail_info": {
+        "mimetype": "image/png",
+        "h": 200,
+        "w": 140,
+        "size": 73602
+      },
+      "h": 200,
+      "thumbnail_url": "mxc://matrix.org/sHhqkFCvSkFwtmvtETOtKnLP",
+      "w": 140,
+      "size": 73602
+    },
+    "url": "mxc://matrix.org/sHhqkFCvSkFwtmvtETOtKnLP"
+  },
+  "origin_server_ts": 1431961217939,
+  "event_id": "$WLGTSEFSEF:localhost",
+  "type": "m.sticker",
+  "room_id": "!Cuyf34gef24t:localhost",
+  "sender": "@example:localhost"
+}

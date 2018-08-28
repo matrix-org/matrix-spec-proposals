@@ -1,0 +1,84 @@
+# Copyright 2017 Travis Ralston
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Account Identification API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/account/whoami":
+    get:
+      summary: Gets information about the owner of an access token.
+      description: |-
+        Gets information about the owner of a given access token. 
+        
+        Note that, as with the rest of the Client-Server API, 
+        Application Services may masquerade as users within their 
+        namespace by giving a ``user_id`` query parameter. In this 
+        situation, the server should verify that the given ``user_id``
+        is registered by the appservice, and return it in the response 
+        body.
+      operationId: getTokenOwner
+      security:
+        - accessToken: []
+      parameters: []
+      responses:
+        200:
+          description:
+            The token belongs to a known user.
+          examples:
+            application/json: {
+              "user_id": "@joe:example.org"
+            }
+          schema:
+            type: object
+            required: ["user_id"]
+            properties:
+              user_id:
+                type: string
+                description: The user id that owns the access token.
+        401:
+          description:
+            The token is not recognised
+          examples:
+            application/json: {
+              "errcode": "M_UNKNOWN_TOKEN",
+              "error": "Unrecognised access token."
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+        403:
+          description:
+            The appservice cannot masquerade as the user or has not registered them.
+          examples:
+            application/json: {
+              "errcode": "M_FORBIDDEN",
+              "error": "Application service has not registered this user."
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - User data

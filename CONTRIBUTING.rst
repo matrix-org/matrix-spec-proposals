@@ -1,55 +1,35 @@
 Contributing to matrix-doc
 ==========================
 
-Everyone is welcome to contribute to the ``matrix-doc`` project, provided that they
-are willing to license their contributions under the same license as the
-project itself. We follow a simple 'inbound=outbound' model for contributions:
-the act of submitting an 'inbound' contribution means that the contributor
-agrees to license the code under the same terms as the project's overall
-'outbound' license - in our case, this is Apache Software License
-v2 (see LICENSE).
+Everyone is welcome to contribute to the Matrix specification!
+
+Please ensure that you sign off your contributions. See `Sign off`_ below.
+
+Code style
+----------
+
+The documentation style is described at
+https://github.com/matrix-org/matrix-doc/blob/master/meta/documentation_style.rst.
+
+Python code within the ``matrix-doc`` project should follow the same style as
+synapse, which is documented at
+https://github.com/matrix-org/synapse/tree/master/docs/code_style.rst.
+
+Matrix-doc workflows
+--------------------
 
 Specification changes
 ~~~~~~~~~~~~~~~~~~~~~
 
-The Matrix specification documents the APIs which Matrix clients can use. For
-this to be effective, the APIs need to be present and working correctly in a
-server before they can be documented in the specification. This process can
-take some time to complete.
+The Matrix specification documents the APIs which Matrix clients and servers use.
+For this to be effective, the APIs need to be present and working correctly in a
+server before they can be documented in the specification. This process can take
+some time to complete.
 
 For this reason, we have not found the github pull-request model effective for
-discussing changes to the specification. Instead, we have adopted the following
-workflow:
-
-1. Create a discussion document outlining the proposed change. The document
-   should include details such as the HTTP endpoint being changed (or the
-   suggested URL for a new endpoint), any new or changed parameters and response
-   fields, and generally as much detail about edge-cases and error handling as
-   is practical at this stage.
-
-   The Matrix Core Team's preferred tool for such discussion documents is
-   `Google Docs <https://docs.google.com>`_ thanks to its support for comment
-   threads. Works in progress are kept in a folder at
-   https://drive.google.com/drive/folders/0B4wHq8qP86r2ck15MHEwMmlNVUk.
-
-2. Seek feedback on the proposal. `#matrix-dev:matrix.org
-   <http://matrix.to/#/#matrix-dev:matrix.org>`_ is a good place to reach the
-   core team and others who may be interested in your proposal.
-
-3. Implement the changes in servers and clients. Refer to the CONTRIBUTING files
-   of the relevant projects for details of how best to do this.
-
-   In general we will be unable to publish specification updates until the
-   reference server implements them, and they have been proven by a working
-   client implementation.
-
-4. Iterate steps 1-3 as necessary.
-
-5. Write the specification for the change, and create a `pull request`_ for
-   it. It may be that much of the text of the change can be taken directly from
-   the discussion document, though typically some effort will be needed to
-   change to the ReST syntax and to ensure that the text is as clear as
-   possible.
+discussing changes to the specification. Instead, we have adopted the workflow
+as described at https://matrix.org/docs/spec/proposals - *please read this for
+details on how to contribute spec changes*.
 
 
 Other changes
@@ -59,43 +39,81 @@ The above process is unnecessary for smaller changes, and those which do not
 put new requirements on servers. This category of changes includes the
 following:
 
-* changes to supporting documentation
+* Changes to the scripts used to generate the specification.
 
-* changes to the scripts used to generate the specification
+* Addition of features which have been in use in practice for some time, but
+  have never made it into the spec (including anything with the `spec-omission
+  <https://github.com/matrix-org/matrix-doc/labels/spec-omission>`_ label).
 
-* clarifications to the specification which do not change the behaviour of
+* Likewise, corrections to the specification, to fix situations where, in
+  practice, servers and clients behave differently to the specification,
+  including anything with the `spec-bug
+  <https://github.com/matrix-org/matrix-doc/labels/spec-bug>`_ label.
+
+  (If there is any doubt about whether it is the spec or the implementations
+  that need fixing, please discuss it with us first in `#matrix-dev:matrix.org
+  <http://matrix.to/#/#matrix-dev:matrix.org>`_.)
+
+* Clarifications to the specification which do not change the behaviour of
   Matrix servers or clients in a way which might introduce compatibility
-  problems for existing deployments. For example, recommendations for UI
-  behaviour do not require a proposal document. On the other hand, changes to
-  event contents would be best discussed in a proposal document even though no
-  changes would be necessary to server implementations.
+  problems for existing deployments. This includes anything with the
+  `clarification <https://github.com/matrix-org/matrix-doc/labels/clarification>`_
+  label.
+
+  For example, recommendations for UI behaviour do not require a proposal
+  document. On the other hand, changes to event contents would be best
+  discussed in a proposal document even though no changes would be necessary to
+  server implementations.
 
 For such changes, please do just open a `pull request`_.
 
+.. _pull request: https://help.github.com/articles/about-pull-requests
 
-Pull requests
-~~~~~~~~~~~~~
-.. _pull request: `Pull requests`_
 
-The preferred and easiest way to contribute changes to the ``matrix-doc`` project
-is to fork it on github, and then create a pull request to ask us to pull your
-changes into our repo (https://help.github.com/articles/using-pull-requests/).
+Adding to the changelog
+~~~~~~~~~~~~~~~~~~~~~~~
 
-(Note that, unlike most of the other matrix.org projects, pull requests for
-matrix-doc should be based on the ``master`` branch.)
+Currently only changes to the client-server API need to end up in a changelog. The
+other APIs are not yet stable and therefore do not have a changelog. Adding to the
+changelog can only be done after you've opened your pull request, so be sure to do
+that first. 
 
-Code style
-~~~~~~~~~~
+The changelog is managed by Towncrier (https://github.com/hawkowl/towncrier) in the
+form of "news fragments". The news fragments for the client-server API are stored
+under ``changelogs/client_server/newsfragments``. 
 
-The documentation style is described at
-https://github.com/matrix-org/matrix-doc/blob/master/meta/documentation_style.rst.
+To create a changelog entry, create a file named in the format ``prNumber.type`` in
+the ``newsfragments`` directory. The ``type`` can be one of the following:
 
-Python code within the ``matrix-doc`` project should follow the same style as
-synapse, which is documented at
-https://github.com/matrix-org/synapse/tree/master/docs/code_style.rst.
+* ``new`` - Used when adding new endpoints. Please have the file contents be the
+  method and route being added, surrounded in RST code tags. For example: ``POST
+  /accounts/whoami``
+
+* ``feature`` - Used when adding backwards-compatible changes to the API.
+
+* ``clarification`` - Used when an area of the spec is being improved upon and does
+  not change or introduce any functionality.
+
+* ``breaking`` - Used when the change is not backwards compatible.
+
+* ``deprecation`` - Used when deprecating something
+
+All news fragments must have a brief summary explaining the change in the contents
+of the file.
+
+Changes that do not change the spec, such as changes to the build script, formatting,
+CSS, etc should not get a news fragment.
 
 Sign off
-~~~~~~~~
+--------
+
+We ask that everybody who contributes to their project signs off their
+contributions, as explained below.
+
+We follow a simple 'inbound=outbound' model for contributions: the act of
+submitting an 'inbound' contribution means that the contributor agrees to
+license their contribution under the same terms as the project's overall 'outbound'
+license - in our case, this is Apache Software License v2 (see LICENSE).
 
 In order to have a concrete record that your contribution is intentional
 and you agree to license it under the same terms as the project's license, we've adopted the

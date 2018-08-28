@@ -33,6 +33,7 @@ paths:
       description: |-
         This API updates the marker for the given receipt type to the event ID
         specified.
+      operationId: postReceipt
       security:
         - accessToken: []
       parameters:
@@ -62,19 +63,19 @@ paths:
             server will automatically set the ``ts`` field.
           schema:
             type: object
-            example: |-
-              {}
+            example: {
+              }
       responses:
         200:
           description: The receipt was sent.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object  # empty json object
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Room participation

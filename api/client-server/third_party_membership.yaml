@@ -75,6 +75,7 @@ paths:
         append a ``m.room.third_party_invite`` event to the room.
 
         .. _joining rooms section: `invite-by-user-id-endpoint`_
+      operationId: inviteBy3PID
       security:
         - accessToken: []
       parameters:
@@ -89,8 +90,7 @@ paths:
           required: true
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "id_server": "matrix.org",
                 "medium": "email",
                 "address": "cheeky@monkey.com"
@@ -111,8 +111,8 @@ paths:
         200:
           description: The user has been invited to join the room.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object
         403:
@@ -124,11 +124,13 @@ paths:
             - The inviter is not currently in the room.
             - The inviter's power level is insufficient to invite users to the room.
           examples:
-            application/json: |-
-              {"errcode": "M_FORBIDDEN", "error": "@cheeky_monkey:matrix.org is banned from the room"}
+            application/json: {
+              "errcode": "M_FORBIDDEN", "error": "@cheeky_monkey:matrix.org is banned from the room"}
+          schema:
+            "$ref": "definitions/errors/error.yaml"
         429:
           description: This request was rate-limited.
           schema:
-            "$ref": "definitions/error.yaml"
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Room membership

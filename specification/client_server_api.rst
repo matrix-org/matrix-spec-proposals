@@ -37,15 +37,13 @@ This version of the specification is generated from
 For the full historical changelog, see
 https://github.com/matrix-org/matrix-doc/blob/master/changelogs/client_server.rst
 
-If this is an unstable snapshot, any changes since the last release may be
-viewed using ``git log``.
-
 Other versions of this specification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following other versions are also available, in reverse chronological order:
 
-- `HEAD <https://matrix.org/speculator/spec/HEAD/client_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `HEAD <https://matrix.org/docs/spec/client_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.3.0 <https://matrix.org/docs/spec/client_server/r0.3.0.html>`_
 - `r0.2.0 <https://matrix.org/docs/spec/client_server/r0.2.0.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/client_server/r0.1.0.html>`_
 - `r0.0.1 <https://matrix.org/docs/spec/r0.0.1/client_server.html>`_
@@ -150,6 +148,13 @@ Some requests have unique error codes:
 :``M_SERVER_NOT_TRUSTED``:
   The client's request used a third party server, eg. ID server, that this server does not trust.
 
+:``M_UNSUPPORTED_ROOM_VERSION``:
+  The client's request to create a room used a room version that the server does not support.
+
+:``M_INCOMPATIBLE_ROOM_VERSION``:
+  The client attempted to join a room that has a version the server does not support. Inspect the
+  ``room_version`` property of the error response for the room's version.
+
 .. _sect:txn_ids:
 
 The client-server API typically uses ``HTTP PUT`` to submit requests with a
@@ -166,17 +171,32 @@ recommended.
 
 {{versions_cs_http_api}}
 
+Web Browser Clients
+-------------------
+
+It is realistic to expect that some clients will be written to be run within a
+web browser or similar environment. In these cases, the homeserver should respond
+to pre-flight requests and supply Cross-Origin Resource Sharing (CORS) headers on
+all requests.
+
+When a client approaches the server with a pre-flight (``OPTIONS``) request, the
+server should respond with the CORS headers for that route. The recommended CORS
+headers to be returned by servers on all requests are:
+
+.. code::
+
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+  Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization
+
+
 Client Authentication
 ---------------------
 
 Most API endpoints require the user to identify themselves by presenting
 previously obtained credentials in the form of an ``access_token`` query
-parameter. An access token is typically obtained via the `Login`_ or
-`Registration`_ processes.
-
-When credentials are required but missing or invalid, the HTTP call will
-return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
-``M_UNKNOWN_TOKEN`` respectively.
+parameter or through an Authorization Header of ``Bearer $access_token``.
+An access token is typically obtained via the `Login`_ or `Registration`_ processes.
 
 .. NOTE::
 
@@ -184,6 +204,24 @@ return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
    token. Clients should treat it as an opaque byte sequence. Servers are free
    to choose an appropriate format. Server implementors may like to investigate
    `macaroons <macaroon_>`_.
+
+Using access tokens
+~~~~~~~~~~~~~~~~~~~
+
+Access tokens may be provided in two ways, both of which the homeserver MUST
+support:
+
+1. Via a query string parameter, ``access_token=TheTokenHere``.
+#. Via a request header, ``Authorization: Bearer TheTokenHere``.
+
+Clients are encouraged to use the ``Authorization`` header where possible
+to prevent the access token being leaked in access/HTTP logs. The query
+string should only be used in cases where the ``Authorization`` header is
+inaccessible for the client.
+
+When credentials are required but missing or invalid, the HTTP call will
+return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
+``M_UNKNOWN_TOKEN`` respectively.
 
 Relationship between access tokens and devices
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -194,7 +232,7 @@ requests can be handled correctly.
 
 By default, the `Login`_ and `Registration`_ processes auto-generate a new
 ``device_id``. A client is also free to generate its own ``device_id`` or,
-provided the user remains the same, reuse a device: in ether case the client
+provided the user remains the same, reuse a device: in either case the client
 should pass the ``device_id`` in the request body. If the client sets the
 ``device_id``, the server will invalidate any access token previously assigned
 to that device. There is therefore at most one active access token assigned to
@@ -444,7 +482,7 @@ Password-based
 :Type:
   ``m.login.password``
 :Description:
-  The client submits a username and secret password, both sent in plain-text.
+  The client submits an identifier and secret password, both sent in plain-text.
 
 To use this authentication type, clients should submit an auth dict as follows:
 
@@ -452,7 +490,26 @@ To use this authentication type, clients should submit an auth dict as follows:
 
   {
     "type": "m.login.password",
-    "user": "<user_id or user localpart>",
+    "identifier": {
+      ...
+    },
+    "password": "<password>",
+    "session": "<session ID>"
+  }
+
+where the ``identifier`` property is a user identifier object, as described in
+`Identifier types`_.
+
+For example, to authenticate using the user's Matrix ID, clients whould submit:
+
+.. code:: json
+
+  {
+    "type": "m.login.password",
+    "identifier": {
+      "type": "m.id.user",
+      "user": "<user_id or user localpart>"
+    },
     "password": "<password>",
     "session": "<session ID>"
   }
@@ -465,8 +522,11 @@ follows:
 
   {
     "type": "m.login.password",
-    "medium": "<The medium of the third party identifier. Must be 'email'>",
-    "address": "<The third party address of the user>",
+    "identifier": {
+      "type": "m.id.thirdparty",
+      "medium": "<The medium of the third party identifier.>",
+      "address": "<The third party address of the user>"
+    },
     "password": "<password>",
     "session": "<session ID>"
   }
@@ -512,8 +572,9 @@ To use this authentication type, clients should submit an auth dict as follows:
 The ``nonce`` should be a random string generated by the client for the
 request. The same ``nonce`` should be used if retrying the request.
 
-There are many ways a client may receive a ``token``, including via an email or
-from an existing logged in device.
+A client may receive a login ``token`` via some external service, such as email
+or SMS. Note that a login token is separate from an access token, the latter
+providing general authentication to various API endpoints.
 
 The ``txn_id`` may be used by the server to disallow other devices from using
 the token, thus providing "single use" tokens while still allowing the device
@@ -696,6 +757,78 @@ handle unknown login types:
   }
 
 
+Identifier types
+++++++++++++++++
+
+Some authentication mechanisms use a user identifier object to identify a
+user.  The user identifier object has a ``type`` field to indicate the type of
+identifier being used, and depending on the type, has other fields giving the
+information required to identify the user as described below.
+
+This specification defines the following identifier types:
+ - ``m.id.user``
+ - ``m.id.thirdparty``
+ - ``m.id.phone``
+
+Matrix User ID
+<<<<<<<<<<<<<<
+:Type:
+  ``m.id.user``
+:Description:
+  The user is identified by their Matrix ID.
+
+A client can identify a user using their Matrix ID.  This can either be the
+fully qualified Matrix user ID, or just the localpart of the user ID.
+
+.. code:: json
+
+  "identifier": {
+    "type": "m.id.user",
+    "user": "<user_id or user localpart>"
+  }
+
+Third-party ID
+<<<<<<<<<<<<<<
+:Type:
+  ``m.id.thirdparty``
+:Description:
+  The user is identified by a third-party identifer in canonicalised form.
+
+A client can identify a user using a 3pid associated with the user's account on
+the homeserver, where the 3pid was previously associated using the
+|/account/3pid|_ API.  See the `3PID Types`_ Appendix for a list of Third-party
+ID media.
+
+.. code:: json
+
+  "identifier": {
+    "type": "m.id.thirdparty",
+    "medium": "<The medium of the third party identifier>",
+    "address": "<The canonicalised third party address of the user>"
+  }
+
+Phone number
+<<<<<<<<<<<<
+:Type:
+  ``m.id.phone``
+:Description:
+  The user is identified by a phone number.
+
+A client can identify a user using a phone number associated with the user's
+account, where the phone number was previously associated using the
+|/account/3pid|_ API.  The phone number can be passed in as entered by the
+user; the homeserver will be responsible for canonicalising it.  If the client
+wishes to canonicalise the phone number, then it can use the
+``m.id.thirdparty`` identifier type with a ``medium`` of ``msisdn`` instead.
+
+.. code:: json
+
+  "identifier": {
+    "type": "m.id.phone",
+    "country": "<The country that the phone number is from>",
+    "phone": "<The phone number>"
+  }
+
 Login
 ~~~~~
 
@@ -711,7 +844,10 @@ request as follows:
 
   {
     "type": "m.login.password",
-    "user": "<user_id or user localpart>",
+    "identifier": {
+      "type": "m.id.user",
+      "user": "<user_id or user localpart>"
+    },
     "password": "<password>"
   }
 
@@ -723,8 +859,10 @@ explicitly, as follows:
 
   {
     "type": "m.login.password",
-    "medium": "<The medium of the third party identifier. Must be 'email'>",
-    "address": "<The third party address of the user>",
+    "identifier": {
+      "medium": "<The medium of the third party identifier>",
+      "address": "<The canonicalised third party address of the user>"
+    },
     "password": "<password>"
   }
 
@@ -785,6 +923,11 @@ A homeserver may keep some contact information for administrative use.
 This is independent of any information kept by any Identity Servers.
 
 {{administrative_contact_cs_http_api}}
+
+Current account information
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+{{whoami_cs_http_api}}
 
 Pagination
 ----------
@@ -880,6 +1023,8 @@ Where $streamtoken is an opaque token which can be used in another query to
 get the next set of results. The "start" and "end" keys can only be omitted if
 the complete dataset is provided in "chunk".
 
+.. _`filter`:
+
 Filtering
 ---------
 
@@ -949,11 +1094,11 @@ You can visualise the range of events being returned as::
 
 Clients then receive new events by "long-polling" the homeserver via the
 ``/sync`` API, passing the value of the ``next_batch`` field from the response
-to the previous call as the ``since`` parameter. This involves specifying a
-timeout in the request which will hold open the HTTP connection for a short
-period of time waiting for new events, returning early if an event occurs. Only
-the ``/sync`` API (and the deprecated ``/events`` API) support long-polling in
-this way.
+to the previous call as the ``since`` parameter. The client should also pass a
+``timeout`` parameter. The server will then hold open the HTTP connection for a
+short period of time waiting for new events, returning early if an event
+occurs. Only the ``/sync`` API (and the deprecated ``/events`` API) support
+long-polling in this way.
 
 The response for such an incremental sync can be visualised as::
 
@@ -1260,6 +1405,7 @@ The allowable state transitions of membership are::
   ----------------------------------------------+ +----------------------+
                   /ban
 
+{{list_joined_rooms_cs_http_api}}
 
 Joining rooms
 +++++++++++++
@@ -1329,20 +1475,30 @@ Listing rooms
 
 {{list_public_rooms_cs_http_api}}
 
+
+User Data
+---------
+
+User Directory
+~~~~~~~~~~~~~~
+
+{{users_cs_http_api}}
+
+
 Profiles
---------
+~~~~~~~~
 
 {{profile_cs_http_api}}
 
 Events on Change of Profile Information
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++++++++++++++++++++++++++++++++++++++++
 Because the profile display name and avatar information are likely to be used in
 many places of a client's display, changes to these fields cause an automatic
 propagation event to occur, informing likely-interested parties of the new
 values. This change is conveyed using two separate mechanisms:
 
-- a ``m.room.member`` event is sent to every room the user is a member of,
-  to update the ``displayname`` and ``avatar_url``.
+- a ``m.room.member`` event (with a ``join`` membership) is sent to every room
+  the user is a member of, to update the ``displayname`` and ``avatar_url``.
 - a ``m.presence`` presence status update is sent, again containing the new
   values of the ``displayname`` and ``avatar_url`` keys, in addition to the
   required ``presence`` key containing the current presence state of the user.
@@ -1381,7 +1537,7 @@ have to wait in milliseconds before they can try again.
 .. References
 
 .. _`macaroon`: http://research.google.com/pubs/pub41892.html
-.. _`devices`: ../intro.html#devices
+.. _`devices`: ../index.html#devices
 
 .. Links through the external API docs are below
 .. =============================================
@@ -1431,8 +1587,14 @@ have to wait in milliseconds before they can try again.
 .. |/rooms/{roomId}/context/{eventId}| replace:: ``/rooms/{roomId}/context/{eventId}``
 .. _/rooms/{roomId}/context/{eventId}: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-context-eventid
 
+.. |/rooms/{roomId}/event/{eventId}| replace:: ``/rooms/{roomId}/event/{eventId}``
+.. _/rooms/{roomId}/event/{eventId}: #get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-event-eventid
+
 .. |/account/3pid| replace:: ``/account/3pid``
 .. _/account/3pid: #post-matrix-client-%CLIENT_MAJOR_VERSION%-account-3pid
 
 .. |/user/<user_id>/account_data/<type>| replace:: ``/user/<user_id>/account_data/<type>``
 .. _/user/<user_id>/account_data/<type>: #put-matrix-client-%CLIENT_MAJOR_VERSION%-user-userid-account-data-type
+
+.. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
+.. _`3PID Types`:  ../appendices.html#pid-types

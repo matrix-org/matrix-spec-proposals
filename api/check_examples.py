@@ -43,28 +43,23 @@ except ImportError as e:
     raise
 
 
+def check_schema(filepath, example, schema):
+    example = resolve_references(filepath, example)
+    schema = resolve_references(filepath, schema)
+    resolver = jsonschema.RefResolver(filepath, schema, handlers={"file": load_file})
+    jsonschema.validate(example, schema, resolver=resolver)
+
+
 def check_parameter(filepath, request, parameter):
     schema = parameter.get("schema")
-    example = None
-    try:
-        example_json = schema.get('example')
-        if example_json and not schema.get("format") == "byte":
-            example = json.loads(example_json)
-    except Exception as e:
-        raise ValueError("Error parsing JSON example request for %r" % (
-            request
-        ), e)
-    fileurl = "file://" + os.path.abspath(filepath)
+    example = schema.get('example')
+
     if example and schema:
         try:
-            print ("Checking request schema for: %r %r" % (
+            print("Checking request schema for: %r %r" % (
                 filepath, request
             ))
-            # Setting the 'id' tells jsonschema where the file is so that it
-            # can correctly resolve relative $ref references in the schema
-            schema['id'] = fileurl
-            resolver = jsonschema.RefResolver(filepath, schema, handlers={"file": load_yaml})
-            jsonschema.validate(example, schema, resolver=resolver)
+            check_schema(filepath, example, schema)
         except Exception as e:
             raise ValueError("Error validating JSON schema for %r" % (
                 request
@@ -72,27 +67,14 @@ def check_parameter(filepath, request, parameter):
 
 
 def check_response(filepath, request, code, response):
-    example = None
-    try:
-        example_json = response.get('examples', {}).get('application/json')
-        if example_json:
-            example = json.loads(example_json)
-    except Exception as e:
-        raise ValueError("Error parsing JSON example response for %r %r" % (
-            request, code
-        ), e)
+    example = response.get('examples', {}).get('application/json')
     schema = response.get('schema')
-    fileurl = "file://" + os.path.abspath(filepath)
     if example and schema:
         try:
             print ("Checking response schema for: %r %r %r" % (
                 filepath, request, code
             ))
-            # Setting the 'id' tells jsonschema where the file is so that it
-            # can correctly resolve relative $ref references in the schema
-            schema['id'] = fileurl
-            resolver = jsonschema.RefResolver(filepath, schema, handlers={"file": load_yaml})
-            jsonschema.validate(example, schema, resolver=resolver)
+            check_schema(filepath, example, schema)
         except Exception as e:
             raise ValueError("Error validating JSON schema for %r %r" % (
                 request, code
@@ -119,12 +101,39 @@ def check_swagger_file(filepath):
                 check_response(filepath, request, code, response)
 
 
-def load_yaml(path):
-    if not path.startswith("file:///"):
+def resolve_references(path, schema):
+    if isinstance(schema, dict):
+        # do $ref first
+        if '$ref' in schema:
+            value = schema['$ref']
+            path = os.path.abspath(os.path.join(os.path.dirname(path), value))
+            ref = load_file("file://" + path)
+            result = resolve_references(path, ref)
+            del schema['$ref']
+        else:
+            result = {}
+
+        for key, value in schema.items():
+            result[key] = resolve_references(path, value)
+        return result
+    elif isinstance(schema, list):
+        return [resolve_references(path, value) for value in schema]
+    else:
+        return schema
+
+
+def load_file(path):
+    print("Loading reference: %s" % path)
+    if not path.startswith("file://"):
         raise Exception("Bad ref: %s" % (path,))
     path = path[len("file://"):]
     with open(path, "r") as f:
-        return yaml.load(f)
+        if path.endswith(".json"):
+            return json.load(f)
+        else:
+            # We have to assume it's YAML because some of the YAML examples
+            # do not have file extensions.
+            return yaml.load(f)
 
 
 if __name__ == '__main__':

@@ -34,6 +34,7 @@ paths:
       description: |-
         This endpoint is used to send send-to-device events to a set of
         client devices.
+      operationId: sendToDevice
       security:
         - accessToken: []
       parameters:
@@ -83,7 +84,7 @@ paths:
           description:
             The message was successfully sent.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
       tags:
         - Send-to-Device messaging

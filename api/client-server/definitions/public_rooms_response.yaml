@@ -1,0 +1,105 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+type: object
+description: A list of the rooms on the server.
+required: ["chunk"]
+properties:
+  chunk:
+    title: "PublicRoomsChunks"
+    type: array
+    description: |-
+      A paginated chunk of public rooms.
+    items:
+      type: object
+      title: "PublicRoomsChunk"
+      required:
+        - room_id
+        - num_joined_members
+        - world_readable
+        - guest_can_join
+      properties:
+        aliases:
+          type: array
+          description: |-
+            Aliases of the room. May be empty.
+          items:
+            type: string
+        canonical_alias:
+          type: string
+          description: |-
+            The canonical alias of the room, if any.
+        name:
+          type: string
+          description: |-
+            The name of the room, if any.
+        num_joined_members:
+          type: integer
+          description: |-
+            The number of members joined to the room.
+        room_id:
+          type: string
+          description: |-
+            The ID of the room.
+        topic:
+          type: string
+          description: |-
+            The topic of the room, if any.
+        world_readable:
+          type: boolean
+          description: |-
+            Whether the room may be viewed by guest users without joining.
+        guest_can_join:
+          type: boolean
+          description: |-
+            Whether guest users may join the room and participate in it.
+            If they can, they will be subject to ordinary power level
+            rules like any other user.
+        avatar_url:
+          type: string
+          description: The URL for the room's avatar, if one is set.
+  next_batch:
+    type: string
+    description: |-
+      A pagination token for the response. The absence of this token
+      means there are no more results to fetch and the client should
+      stop paginating.
+  prev_batch:
+    type: string
+    description: |-
+      A pagination token that allows fetching previous results. The
+      absence of this token means there are no results before this
+      batch, i.e. this is the first batch.
+  total_room_count_estimate:
+    type: integer
+    description: |-
+        An estimate on the total number of public rooms, if the
+        server has an estimate.
+example: {
+  "chunk": [
+    {
+      "aliases": ["#murrays:cheese.bar"],
+      "avatar_url": "mxc://bleeker.street/CHEDDARandBRIE",
+      "guest_can_join": false,
+      "name": "CHEESE",
+      "num_joined_members": 37,
+      "room_id": "!ol19s:bleecker.street",
+      "topic": "Tasty tasty cheese",
+      "world_readable": true
+    }
+  ],
+  "next_batch": "p190q",
+  "prev_batch": "p1902",
+  "total_room_count_estimate": 115
+}

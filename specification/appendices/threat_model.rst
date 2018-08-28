@@ -65,7 +65,7 @@ making the chatroom unusable.
 Threat: Banning users without necessary authorisation
 +++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-An attacker could attempt to ban a user from a chatroom with the necessary
+An attacker could attempt to ban a user from a chatroom without the necessary
 authorisation.
 
 Spoofing
@@ -134,7 +134,7 @@ An attacker could try to convince servers within a chatroom to send messages to
 a server it controls that was not authorised to be within the chatroom.
 
 Threat: Disclosure to Servers Within Chatroom
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++++++++++++++++++++++++++++++++++++++++++++++
 
 An attacker could take control of a server within a chatroom to expose message
 contents or metadata for messages in that room.

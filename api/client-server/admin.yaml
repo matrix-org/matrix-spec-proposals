@@ -36,6 +36,7 @@ paths:
         This API may be restricted to only be called by the user being looked
         up, or by a server admin. Server-local administrator privileges are not
         specified in this document.
+      operationId: getWhoIs
       security:
         - accessToken: []
       parameters:
@@ -49,8 +50,7 @@ paths:
         200:
           description: The lookup was successful.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "user_id": "@peter:rabbit.rocks",
                 "devices": {
                   "teapot": {
@@ -105,7 +105,8 @@ paths:
                                   type: string
                                   description: Most recently seen IP address of the session.
                                 last_seen:
-                                  type: number
+                                  type: integer
+                                  format: int64
                                   description: Unix timestamp that the session was last active.
                                 user_agent:
                                   type: string

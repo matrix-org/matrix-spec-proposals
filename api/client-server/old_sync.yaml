@@ -38,6 +38,7 @@ paths:
         should instead call the |/sync|_ API with a ``since`` parameter. See
         the `migration guide
         <https://matrix.org/docs/guides/client-server-migrating-from-v1.html#deprecated-endpoints>`_.
+      operationId: getEvents
       security:
         - accessToken: []
       parameters:
@@ -59,8 +60,7 @@ paths:
         200:
           description: "The events received, which may be none."
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "start": "s3456_9_0",
                 "end": "s3457_9_0",
                 "chunk": [
@@ -115,6 +115,7 @@ paths:
         should instead call the |/sync|_ API with no ``since`` parameter. See
         the `migration guide
         <https://matrix.org/docs/guides/client-server-migrating-from-v1.html#deprecated-endpoints>`_.
+      operationId: initialSync
       security:
         - accessToken: []
       parameters:
@@ -138,8 +139,7 @@ paths:
         200:
           description: The user's current state.
           examples:
-            application/json: |-
-              {
+            application/json: {
                   "end": "s3456_9_0",
                   "presence": [
                       {
@@ -407,7 +407,9 @@ paths:
         retrieve this event e.g. by being a member in the room for this event.
 
         This endpoint was deprecated in r0 of this specification. Clients
-        should instead call the |/rooms/{roomId}/context/{eventId}|_ API.
+        should instead call the |/rooms/{roomId}/event/{eventId}|_ API
+        or the |/rooms/{roomId}/context/{eventId}|_ API.
+      operationId: getOneEvent
       security:
         - accessToken: []
       parameters:
@@ -421,8 +423,7 @@ paths:
         200:
           description: The full event.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "content": {
                   "body": "Hello world!",
                   "msgtype": "m.text"

@@ -32,8 +32,11 @@ server-server API.
 Size limits
 -----------
 
-The total size of any event MUST NOT exceed 65 KB. There are additional
-restrictions on sizes per key:
+The complete event MUST NOT be larger than 65535 bytes, when formatted as a
+`PDU for the Server-Server protocol <../server_server/%SERVER_RELEASE_LABEL%#pdus>`_,
+including any signatures, and encoded as `Canonical JSON`_.
+
+There are additional restrictions on sizes per key:
 
 - ``sender`` MUST NOT exceed 255 bytes (including domain).
 - ``room_id`` MUST NOT exceed 255 bytes.
@@ -67,3 +70,4 @@ prefixed with ``m.``
 
 {{m_room_redaction_event}}
 
+.. _`Canonical JSON`: ../appendices.html#canonical-json

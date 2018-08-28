@@ -24,6 +24,7 @@ paths:
         direct replacement; the relevant information is returned by the
         |/sync|_ API. See the `migration guide
         <https://matrix.org/docs/guides/client-server-migrating-from-v1.html#deprecated-endpoints>`_.
+      operationId: roomInitialSync
       security:
         - accessToken: []
       parameters:
@@ -37,8 +38,7 @@ paths:
         200:
           description: The current state of the room
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "membership": "join",
                 "messages": {
                   "chunk": [

@@ -34,6 +34,7 @@ paths:
         Set some account_data for the client. This config is only visible to the user
         that set the account_data. The config will be synced to clients in the
         top-level ``account_data``.
+      operationId: setAccountData
       security:
         - accessToken: []
       parameters:
@@ -60,8 +61,8 @@ paths:
             The content of the account_data
           schema:
             type: object
-            example: |-
-              {"custom_account_data_key": "custom_config_value"}
+            example: {
+              "custom_account_data_key": "custom_config_value"}
       responses:
         200:
           description:
@@ -75,6 +76,7 @@ paths:
         Set some account_data for the client on a given room. This config is only
         visible to the user that set the account_data. The config will be synced to
         clients in the per-room ``account_data``.
+      operationId: setAccountDataPerRoom
       security:
         - accessToken: []
       parameters:
@@ -108,8 +110,8 @@ paths:
             The content of the account_data
           schema:
             type: object
-            example: |-
-              {"custom_account_data_key": "custom_account_data_value"}
+            example: {
+              "custom_account_data_key": "custom_account_data_value"}
       responses:
         200:
           description:

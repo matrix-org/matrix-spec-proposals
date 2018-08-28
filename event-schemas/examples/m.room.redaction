@@ -9,6 +9,6 @@
   "event_id": "$WLGTSEFSEF:localhost",
   "type": "m.room.redaction",
   "room_id": "!Cuyf34gef24t:localhost",
-  "redacts": "!fukweghifu23:localhost",
+  "redacts": "$fukweghifu23:localhost",
   "sender": "@example:localhost"
 }

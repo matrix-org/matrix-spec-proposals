@@ -159,7 +159,7 @@ func generate(dir string) error {
 
 	// cheekily dump the swagger docs into the gen directory so they can be
 	// served by serveSpec
-	cmd = exec.Command("python", "dump-swagger.py", "gen/api-docs.json")
+	cmd = exec.Command("python", "dump-swagger.py", "-o", "gen/api-docs.json")
 	cmd.Dir = path.Join(dir, "scripts")
 	cmd.Stderr = &b
 	if err := cmd.Run(); err != nil {
@@ -664,13 +664,23 @@ function redirectToApiDocs(relativePath) {
 	branchNames = append(branchNames, "HEAD")
 	for _, branch := range branchNames {
 		href := "spec/" + url.QueryEscape(branch) + "/"
-		fmt.Fprintf(&b, `<li><a href="%s">%s</a></li>`, href, branch)
+		fmt.Fprintf(&b, "<li><a href=\"%s\">%s</a></li>\n", href, branch)
 		if *includesDir != "" {
-			fmt.Fprintf(&b, `<li><a href="%s?matrixdotorgstyle=1">%s, styled like matrix.org</a></li>`,
+			fmt.Fprintf(&b, "<li><a href=\"%s?matrixdotorgstyle=1\">%s, styled like matrix.org</a></li>\n",
 				href, branch)
 		}
 	}
-	b.Write([]byte("</ul></div></body>"))
+	b.Write([]byte("</ul></div>\n\n"))
+
+	b.Write([]byte("<div>View the API docs at:<ul>"))
+	for _, branch := range branchNames {
+		fmt.Fprintf(&b,
+			"<li><a href=\"#\" onclick=\"redirectToApiDocs('spec/%s/api-docs.json')\">%s</a></li>\n",
+			url.QueryEscape(branch), branch)
+	}
+	b.Write([]byte("</ul></div>"))
+
+	b.Write([]byte("</body>"))
 	b.WriteTo(w)
 }
 
@@ -691,8 +701,8 @@ func ignoreExitCodeOne(err error) error {
 
 func main() {
 	flag.Parse()
-	// It would be great to read this from github, but there's no convenient way to do so.
-	// Most of these memberships are "private", so would require some kind of auth.
+	// It would be great to read this from github
+	// cf https://github.com/matrix-org/matrix-doc/issues/1384
 	allowedMembers = map[string]bool{
 		"dbkr":          true,
 		"erikjohnston":  true,
@@ -702,6 +712,14 @@ func main() {
 		"richvdh":       true,
 		"ara4n":         true,
 		"leonerd":       true,
+		"rxl881":        true,
+		"uhoreg":        true,
+		"turt2live":     true,
+		"Half-Shot":     true,
+		"anoadragon453": true,
+		"mujx":          true,
+		"benparsons":    true,
+		"KitsuneRal":    true,
 	}
 	if err := initCache(); err != nil {
 		log.Fatal(err)

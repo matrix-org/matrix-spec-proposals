@@ -18,15 +18,24 @@ info:
 host: localhost:8008
 schemes:
   - https
+  - http
 basePath: /_matrix/media/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+  - "*/*"
 produces:
   - application/json
   - "*/*"
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/upload":
     post:
       summary: Upload some content to the content repository.
+      operationId: uploadContent
       produces: ["application/json"]
+      security:
+        - accessToken: []
       parameters:
         - in: header
           name: Content-Type
@@ -57,15 +66,19 @@ paths:
                 type: string
                 description: "The MXC URI to the uploaded content."
           examples:
-            "application/json": |-
-              {
+            application/json: {
                 "content_uri": "mxc://example.com/AQwafuaFswefuhsfAFAgsw"
               }
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Media
   "/download/{serverName}/{mediaId}":
     get:
       summary: "Download content from the content repository."
+      operationId: getContent
       produces: ["*/*"]
       parameters:
         - in: path
@@ -82,6 +95,16 @@ paths:
           required: true
           description: |
             The media ID from the ``mxc://`` URI (the path component)
+        - in: query
+          type: boolean
+          name: allow_remote
+          x-example: false
+          required: false
+          default: true
+          description: |
+            Indicates to the server that it should not attempt to fetch the media if it is deemed
+            remote. This is to prevent routing loops where the server contacts itself. Defaults to 
+            true if not provided.
       responses:
         200:
           description: "The content that was previously uploaded."
@@ -94,11 +117,16 @@ paths:
               type: "string"
           schema:
             type: file
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Media
   "/download/{serverName}/{mediaId}/{fileName}":
     get:
       summary: "Download content from the content repository as a given filename."
+      operationId: getContentOverrideName
       produces: ["*/*"]
       parameters:
         - in: path
@@ -122,6 +150,16 @@ paths:
           required: true
           description: |
             The filename to give in the Content-Disposition
+        - in: query
+          type: boolean
+          name: allow_remote
+          x-example: false
+          required: false
+          default: true
+          description: |
+            Indicates to the server that it should not attempt to fetch the media if it is deemed
+            remote. This is to prevent routing loops where the server contacts itself. Defaults to 
+            true if not provided.
       responses:
         200:
           description: "The content that was previously uploaded."
@@ -134,11 +172,16 @@ paths:
               type: "string"
           schema:
             type: file
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Media
   "/thumbnail/{serverName}/{mediaId}":
     get:
       summary: "Download a thumbnail of the content from the content repository."
+      operationId: getContentThumbnail
       produces: ["image/jpeg", "image/png"]
       parameters:
         - in: path
@@ -175,6 +218,16 @@ paths:
           name: method
           x-example: "scale"
           description: The desired resizing method.
+        - in: query
+          type: boolean
+          name: allow_remote
+          x-example: false
+          required: false
+          default: true
+          description: |
+            Indicates to the server that it should not attempt to fetch the media if it is deemed
+            remote. This is to prevent routing loops where the server contacts itself. Defaults to 
+            true if not provided.
       responses:
         200:
           description: "A thumbnail of the requested content."
@@ -185,5 +238,108 @@ paths:
               enum: ["image/jpeg", "image/png"]
           schema:
             type: file
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - Media
+  "/preview_url":
+    get:
+      summary: "Get information about a URL for a client"
+      operationId: getUrlPreview
+      produces: ["application/json"]
+      security:
+        - accessToken: []
+      parameters:
+        - in: query
+          type: string
+          x-example: "https://matrix.org"
+          name: url
+          description: "The URL to get a preview of"
+          required: true
+        - in: query
+          type: integer
+          format: int64
+          x-example: 1510610716656
+          name: ts
+          description: |-
+            The preferred point in time to return a preview for. The server may
+            return a newer version if it does not have the requested version
+            available.
+      responses:
+        200:
+          description: |-
+            The OpenGraph data for the URL, which may be empty. Some values are
+            replaced with matrix equivalents if they are provided in the response.
+            The differences from the OpenGraph protocol are described here.
+          schema:
+            type: object
+            properties:
+              "matrix:image:size":
+                type: integer
+                format: int64
+                description: |-
+                  The byte-size of the image. Omitted if there is no image attached.
+              "og:image":
+                type: string
+                description: |-
+                  An MXC URI to the image. Omitted if there is no image.
+          examples:
+            application/json: {
+                "og:title": "Matrix Blog Post",
+                "og:description": "This is a really cool blog post from matrix.org",
+                "og:image": "mxc://example.com/ascERGshawAWawugaAcauga",
+                "og:image:type": "image/png",
+                "og:image:height": 48,
+                "og:image:width": 48,
+                "matrix:image:size": 102400
+              }
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - Media
+  "/config":
+    get:
+      summary: Get the configuration for the content repository.
+      description: |-
+        This endpoint allows clients to retrieve the configuration of the content
+        repository, such as upload limitations.
+        Clients SHOULD use this as a guide when using content repository endpoints.
+        All values are intentionally left optional. Clients SHOULD follow
+        the advice given in the field description when the field is not available.
+
+        **NOTE:** Both clients and server administrators should be aware that proxies
+        between the client and the server may affect the apparent behaviour of content
+        repository APIs, for example, proxies may enforce a lower upload size limit
+        than is advertised by the server on this endpoint.
+      operationId: getConfig
+      produces: ["application/json"]
+      security:
+        - accessToken: []
+      responses:
+        200:
+          description: The public content repository configuration for the matrix server.
+          schema:
+            type: object
+            properties:
+              m.upload.size:
+                type: integer
+                format: int64
+                description: |- 
+                  The maximum size an upload can be in bytes.
+                  Clients SHOULD use this as a guide when uploading content.
+                  If not listed or null, the size limit should be treated as unknown.
+          examples:
+            application/json: {
+               "m.upload.size": 50000000
+            }
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+
       tags:
         - Media

@@ -27,11 +27,11 @@ import subprocess
 import sys
 import yaml
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-stylesheets = {
-    "stylesheet_path": glob.glob("css/*.css"),
-}
+script_dir = os.path.dirname(os.path.abspath(__file__))
+docs_dir = os.path.dirname(script_dir)
+spec_dir = os.path.join(docs_dir, "specification")
+tmp_dir = os.path.join(script_dir, "tmp")
+changelog_dir = os.path.join(docs_dir, "changelogs")
 
 VERBOSE = False
 
@@ -54,20 +54,14 @@ Example:
 """
 def load_with_adjusted_titles(filename, file_stream, title_level, title_styles):
     rst_lines = []
-    title_chars = "".join(title_styles)
-    title_regex = re.compile("^[" + re.escape(title_chars) + "]{3,}$")
 
     prev_line_title_level = 0 # We expect the file to start with '=' titles
     file_offset = None
     prev_non_title_line = None
-    for i, line in enumerate(file_stream, 1):
-        # ignore anything which isn't a title (e.g. '===============')
-        if not title_regex.match(line):
-            rst_lines.append(line)
-            prev_non_title_line = line
-            continue
-        # The title underline must match at a minimum the length of the title
-        if len(prev_non_title_line) > len(line):
+    for i, line in enumerate(file_stream):
+        if (prev_non_title_line is None
+            or not is_title_line(prev_non_title_line, line, title_styles)
+        ):
             rst_lines.append(line)
             prev_non_title_line = line
             continue
@@ -131,9 +125,34 @@ def load_with_adjusted_titles(filename, file_stream, title_level, title_styles):
     return "".join(rst_lines)
 
 
+def is_title_line(prev_line, line, title_styles):
+    # The title underline must match at a minimum the length of the title
+    if len(prev_line) > len(line):
+        return False
+
+    line = line.rstrip()
+
+    # must be at least 3 chars long
+    if len(line) < 3:
+        return False
+
+    # must start with a title char
+    title_char = line[0]
+    if title_char not in title_styles:
+        return False
+
+    # all characters must be the same
+    for char in line[1:]:
+        if char != title_char:
+            return False
+
+    # looks like a title line
+    return True
+
+
 def get_rst(file_info, title_level, title_styles, spec_dir, adjust_titles):
     # string are file paths to RST blobs
-    if isinstance(file_info, basestring):
+    if isinstance(file_info, str):
         log("%s %s" % (">" * (1 + title_level), file_info))
         with open(os.path.join(spec_dir, file_info), "r") as f:
             rst = None
@@ -173,10 +192,10 @@ def build_spec(target, out_filename):
                 file_info=file_info,
                 title_level=0,
                 title_styles=target["title_styles"],
-                spec_dir="../specification/",
+                spec_dir=spec_dir,
                 adjust_titles=True
             )
-            outfile.write(section)
+            outfile.write(section.encode('UTF-8'))
 
 
 """
@@ -242,7 +261,7 @@ def fix_relative_titles(target, filename, out_filename):
 
 
 
-def rst2html(i, o):
+def rst2html(i, o, stylesheets):
     log("rst2html %s -> %s" % (i, o))
     with open(i, "r") as in_file:
         with open(o, "w") as out_file:
@@ -252,28 +271,31 @@ def rst2html(i, o):
                 reader_name="standalone",
                 parser_name="restructuredtext",
                 writer_name="html",
-                settings_overrides=stylesheets
+                settings_overrides={
+                    "stylesheet_path": stylesheets,
+                },
             )
 
 
 def addAnchors(path):
     log("add anchors %s" % path)
 
-    with open(path, "r") as f:
+    with open(path, "rb") as f:
         lines = f.readlines()
 
-    replacement = replacement = r'<p><a class="anchor" id="\3"></a></p>\n\1'
-    with open(path, "w") as f:
+    replacement = r'<p><a class="anchor" id="\2"></a></p>\n\1'
+    with open(path, "wb") as f:
         for line in lines:
+            line = line.decode("UTF-8")
             line = re.sub(r'(<h\d id="#?(.*?)">)', replacement, line.rstrip())
-            line = re.sub(r'(<div class="section" (id)="(.*?)">)', replacement, line.rstrip())
-            f.write(line + "\n")
+            line = re.sub(r'(<div class="section" id="(.*?)">)', replacement, line.rstrip())
+            f.write((line + "\n").encode('UTF-8'))
 
 
 def run_through_template(input_files, set_verbose, substitutions):
     args = [
-        'python', 'build.py',
-        "-o", "../scripts/tmp",
+        'python', script_dir+'/templating/build.py',
+        "-o", tmp_dir,
         "-i", "matrix_templates",
     ]
 
@@ -283,14 +305,11 @@ def run_through_template(input_files, set_verbose, substitutions):
     if set_verbose:
         args.insert(2, "-v")
 
-    args.extend("../scripts/"+f for f in input_files)
+    args.extend(input_files)
 
     log("EXEC: %s" % " ".join(args))
     log(" ==== build.py output ==== ")
-    subprocess.check_call(
-        args,
-        cwd="../templating"
-    )
+    subprocess.check_call(args)
 
 """
 Extract and resolve groups for the given target in the given targets listing.
@@ -347,7 +366,7 @@ def get_build_target(all_targets, target_name):
     resolved_files = []
     for file_entry in target["files"]:
         # file_entry is a group id
-        if isinstance(file_entry, basestring) and file_entry.startswith("group:"):
+        if isinstance(file_entry, str) and file_entry.startswith("group:"):
             group = get_group(file_entry, 0)
             # The group may be resolved to a list of file entries, in which case
             # we want to extend the array to insert each of them rather than
@@ -359,8 +378,8 @@ def get_build_target(all_targets, target_name):
         # file_entry is a dict which has more file entries as values
         elif isinstance(file_entry, dict):
             resolved_entry = {}
-            for (depth, entry) in file_entry.iteritems():
-                if not isinstance(entry, basestring):
+            for (depth, entry) in file_entry.items():
+                if not isinstance(entry, str):
                     raise Exception(
                         "Double-nested depths are not supported. Entry: %s" % (file_entry,)
                     )
@@ -378,51 +397,57 @@ def get_build_target(all_targets, target_name):
     return build_target
 
 def log(line):
-    print "gendoc: %s" % line
+    print("gendoc: %s" % line)
 
 def logv(line):
     if VERBOSE:
-        print "gendoc:V: %s" % line
-
-
-def prepare_env():
-    try:
-        os.makedirs("./gen")
-    except OSError:
-        pass
-    try:
-        os.makedirs("./tmp")
-    except OSError:
-        pass
+        print("gendoc:V: %s" % line)
 
 
 def cleanup_env():
-    shutil.rmtree("./tmp")
+    shutil.rmtree(tmp_dir)
 
 
-def main(targets, keep_intermediates, substitutions):
-    prepare_env()
+def mkdirp(d) :
+    if not os.path.exists(d):
+        os.makedirs(d)
 
-    with open("../specification/targets.yaml", "r") as targ_file:
+
+def main(targets, dest_dir, keep_intermediates, substitutions):
+    try:
+        mkdirp(dest_dir)
+    except Exception as e:
+        log("Error creating destination directory '%s': %s" % (dest_dir, str(e)))
+        return 1
+    try:
+        mkdirp(tmp_dir)
+    except Exception as e:
+        log("Error creating temporary directory '%s': %s" % (tmp_dir, str(e)))
+        return 1
+
+    with open(os.path.join(spec_dir, "targets.yaml"), "r") as targ_file:
         target_defs = yaml.load(targ_file.read())
 
     if targets == ["all"]:
         targets = target_defs["targets"].keys()
 
-    log("Building spec [target=%s]" % targets)
+    log("Building spec [targets=%s]" % targets)
 
-    templated_files = []
+    templated_files = {}  # map from target name to templated file
+
     for target_name in targets:
-        templated_file = "tmp/templated_%s.rst" % (target_name,)
+        templated_file = os.path.join(tmp_dir, "templated_%s.rst" % (target_name,))
 
         target = get_build_target(target_defs, target_name)
         build_spec(target=target, out_filename=templated_file)
-        templated_files.append(templated_file)
+        templated_files[target_name] = templated_file
 
     # we do all the templating at once, because it's slow
-    run_through_template(templated_files, VERBOSE, substitutions)
+    run_through_template(templated_files.values(), VERBOSE, substitutions)
 
-    for target_name in targets:
+    stylesheets = glob.glob(os.path.join(script_dir, "css", "*.css"))
+
+    for target_name, templated_file in templated_files.items():
         target = target_defs["targets"].get(target_name)
         version_label = None
         if target:
@@ -431,37 +456,38 @@ def main(targets, keep_intermediates, substitutions):
                 for old, new in substitutions.items():
                     version_label = version_label.replace(old, new)
 
-        templated_file = "tmp/templated_%s.rst" % (target_name,)
-        rst_file = "tmp/spec_%s.rst" % (target_name,)
+        rst_file = os.path.join(tmp_dir, "spec_%s.rst" % (target_name,))
         if version_label:
-            d = os.path.join("gen", target_name)
+            d = os.path.join(dest_dir, target_name)
             if not os.path.exists(d):
                 os.mkdir(d)
             html_file = os.path.join(d, "%s.html" % version_label)
         else:
-            html_file = "gen/%s.html" % (target_name, )
+            html_file = os.path.join(dest_dir, "%s.html" % (target_name, ))
 
         fix_relative_titles(
             target=target_defs, filename=templated_file,
             out_filename=rst_file,
         )
-        rst2html(rst_file, html_file)
+        rst2html(rst_file, html_file, stylesheets=stylesheets)
         addAnchors(html_file)
 
     if not keep_intermediates:
         cleanup_env()
 
+    return 0
+
 
 def list_targets():
-    with open("../specification/targets.yaml", "r") as targ_file:
+    with open(os.path.join(spec_dir, "targets.yaml"), "r") as targ_file:
         target_defs = yaml.load(targ_file.read())
     targets = target_defs["targets"].keys()
-    print "\n".join(targets)
+    print("\n".join(targets))
 
 
 def extract_major(s):
     major_version = s
-    match = re.match("^(r\d)+(\.\d+)*$", s)
+    match = re.match("^(r\d+)(\.\d+)*$", s)
     if match:
         major_version = match.group(1)
     return major_version
@@ -469,11 +495,11 @@ def extract_major(s):
 
 if __name__ == '__main__':
     parser = ArgumentParser(
-        "gendoc.py - Generate the Matrix specification as HTML to the gen/ folder."
+        "gendoc.py - Generate the Matrix specification as HTML."
     )
     parser.add_argument(
         "--nodelete", "-n", action="store_true",
-        help="Do not delete intermediate files. They will be found in tmp/"
+        help="Do not delete intermediate files. They will be found in scripts/tmp/"
     )
     parser.add_argument(
         "--target", "-t", action="append",
@@ -496,6 +522,10 @@ if __name__ == '__main__':
         "--list_targets", action="store_true",
         help="Do not update the specification. Instead print a list of targets.",
     )
+    parser.add_argument(
+        "--dest", "-d", default=os.path.join(script_dir, "gen"),
+        help="Set destination directory (default: scripts/gen)",
+    )
 
     args = parser.parse_args()
     VERBOSE = args.verbose
@@ -506,8 +536,12 @@ if __name__ == '__main__':
 
     substitutions = {
         "%CLIENT_RELEASE_LABEL%": args.client_release,
-        "%CLIENT_MAJOR_VERSION%": extract_major(args.client_release),
+        # we hardcode a major version of r0. This ends up in the
+        # example API URLs. When we have released a new major version,
+        # we'll have to bump it.
+        "%CLIENT_MAJOR_VERSION%": "r0",
         "%SERVER_RELEASE_LABEL%": args.server_release,
         "%SERVER_MAJOR_VERSION%": extract_major(args.server_release),
     }
-    main(args.target or ["all"], args.nodelete, substitutions)
+
+    exit (main(args.target or ["all"], args.dest, args.nodelete, substitutions))

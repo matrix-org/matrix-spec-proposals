@@ -34,6 +34,11 @@ paths:
         Kick a user from the room.
 
         The caller must have the required power level in order to perform this operation.
+        
+        Kicking a user adjusts the target member's membership state to be ``leave`` with an
+        optional ``reason``. Like with other membership changes, a user can directly adjust
+        the target member's state by making a request to ``/rooms/<room id>/state/m.room.member/<user id>``.
+      operationId: kick
       security:
         - accessToken: []
       parameters:
@@ -48,8 +53,7 @@ paths:
           required: true
           schema:
             type: object
-            example: |-
-              {
+            example: {
                 "reason": "Telling unfunny jokes",
                 "user_id": "@cheeky_monkey:matrix.org"
               }
@@ -59,14 +63,16 @@ paths:
                 description: The fully qualified user ID of the user being kicked.
               reason:
                 type: string
-                description: The reason the user has been kicked.
+                description: |-
+                  The reason the user has been kicked. This will be supplied as the 
+                  ``reason`` on the target's updated `m.room.member`_ event.
             required: ["user_id"]
       responses:
         200:
           description: The user has been kicked from the room.
           examples:
-            application/json: |-
-              {}
+            application/json: {
+              }
           schema:
             type: object
         403:
@@ -77,10 +83,11 @@ paths:
             - The kickee is not currently in the room.
             - The kicker's power level is insufficient to kick users from the room.
           examples:
-            application/json: |-
-              {
+            application/json: {
                 "errcode": "M_FORBIDDEN",
                 "error": "You do not have a high enough power level to kick from this room."
               }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Room membership

@@ -39,6 +39,7 @@ paths:
 
         If validation is unsuccessful, the server should respond with a ``401
         Unauthorized`` error, the body of which will be displayed to the user.
+      operationId: loginByCASTicket
       parameters:
         - in: query
           type: string

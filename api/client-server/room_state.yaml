@@ -42,6 +42,7 @@ paths:
         The body of the request should be the content object of the event; the
         fields in this object will vary depending on the type of event. See
         `Room Events`_ for the ``m.`` event specification.
+      operationId: setRoomStateWithKey
       security:
         - accessToken: []
       parameters:
@@ -56,28 +57,28 @@ paths:
           name: eventType
           description: The type of event to send.
           required: true
-          x-example: "m.room.name"
+          x-example: "m.room.member"
         - in: path
           type: string
           name: stateKey
           description: The state_key for the state to send. Defaults to the empty string.
           required: true
-          x-example: ""
+          x-example: "@alice:example.com"
         - in: body
           name: body
           schema:
             type: object
-            example: |-
-              {
-                  "name": "New name for the room"
+            example: {
+                "membership": "join",
+                "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF#auto",
+                "displayname": "Alice Margatroid"
               }
       responses:
         200:
           description: "An ID for the sent event."
           examples:
-            application/json: |-
-              {
-                  "event_id": "YUwRidLecu"
+            application/json: {
+                  "event_id": "$YUwRidLecu:example.com"
               }
           schema:
             type: object
@@ -104,6 +105,7 @@ paths:
         The body of the request should be the content object of the event; the
         fields in this object will vary depending on the type of event. See
         `Room Events`_ for the ``m.`` event specification.
+      operationId: setRoomState
       security:
         - accessToken: []
       parameters:
@@ -123,17 +125,15 @@ paths:
           name: body
           schema:
             type: object
-            example: |-
-              {
+            example: {
                   "name": "New name for the room"
               }
       responses:
         200:
           description: "An ID for the sent event."
           examples:
-            application/json: |-
-              {
-                  "event_id": "YUwRidLecu"
+            application/json: {
+                  "event_id": "$YUwRidLecu:example.com"
               }
           schema:
             type: object

@@ -11,6 +11,9 @@ properties:
       m.federate:
         description: Whether users on other servers can join this room. Defaults to ``true`` if key does not exist.
         type: boolean
+      room_version:
+        description: The version of the room. Defaults to ``"1"`` if the key does not exist.
+        type: string
     required:
       - creator
     type: object

@@ -1,0 +1,70 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Federation Public Rooms API"
+  version: "1.0.0"
+host: localhost:8448
+schemes:
+  - https
+basePath: /_matrix/federation/v1
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/publicRooms":
+    get:
+      summary: Get all the public rooms for a homeserver
+      description: |-
+        Gets all the public rooms for the homeserver. This should not return
+        rooms that are listed on another homeserver's directory, just those
+        listed on the receiving homeserver's directory.
+      operationId: getPublicRooms
+      security:
+        - signedRequest: []
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          description: |-
+            The maximum number of rooms to return. Defaults to 0 (no limit).
+          x-example: 10
+        - in: query
+          name: since
+          type: string
+          description: |-
+            A pagination token from a previous call to this endpoint to fetch more
+            rooms.
+          x-example: "GetMoreRoomsTokenHere"
+        - in: query
+          name: include_all_networks
+          type: boolean
+          description: |-
+            Whether or not to include all networks/protocols defined by application
+            services on the homeserver. Defaults to false.
+          x-example: false
+        - in: query
+          name: third_party_instance_id
+          type: string
+          description: |-
+            The specific third party network/protocol to request from the homeserver.
+            Can only be used if ``include_all_networks`` is false.
+          x-example: "irc"
+      responses:
+        200:
+          description: The public room list for the homeserver.
+          schema:
+            $ref: "../client-server/definitions/public_rooms_response.yaml"

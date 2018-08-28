@@ -86,13 +86,162 @@ insignificant whitespace, fractions, exponents and redundant character escapes
            / %x75.30.30.30 (%x30-37 / %x62 / %x65-66) ; u000X
            / %x75.30.30.31 (%x30-39 / %x61-66)        ; u001X
 
+Examples
+++++++++
+
+To assist in the development of compatible implementations, the following test
+values may be useful for verifying the canonical transformation code.
+
+Given the following JSON object:
+
+.. code:: json
+
+    {}
+
+The following canonical JSON should be produced:
+
+.. code:: json
+
+    {}
+
+Given the following JSON object:
+
+.. code:: json
+
+    {
+        "one": 1,
+        "two": "Two"
+    }
+
+The following canonical JSON should be produced:
+
+.. code:: json
+
+    {"one":1,"two":"Two"}
+
+Given the following JSON object:
+
+.. code:: json
+
+    {
+        "b": "2",
+        "a": "1"
+    }
+
+The following canonical JSON should be produced:
+
+.. code:: json
+
+    {"a":"1","b":"2"}
+
+Given the following JSON object:
+
+.. code:: json
+
+    {"b":"2","a":"1"}
+
+The following canonical JSON should be produced:
+
+.. code:: json
+
+    {"a":"1","b":"2"}
+
+Given the following JSON object:
+
+.. code:: json
+
+    {
+        "auth": {
+            "success": true,
+            "mxid": "@john.doe:example.com",
+            "profile": {
+                "display_name": "John Doe",
+                "three_pids": [
+                    {
+                        "medium": "email",
+                        "address": "john.doe@example.org"
+                    },
+                    {
+                        "medium": "msisdn",
+                        "address": "123456789"
+                    }
+                ]
+            }
+        }
+    }
+
+
+The following canonical JSON should be produced:
+
+.. code:: json
+
+    {"auth":{"mxid":"@john.doe:example.com","profile":{"display_name":"John Doe","three_pids":[{"address":"john.doe@example.org","medium":"email"},{"address":"123456789","medium":"msisdn"}]},"success":true}}
+
+
+Given the following JSON object:
+
+.. code:: json
+
+    {
+        "a": "日本語"
+    }
+
+The following canonical JSON should be produced:
+
+.. code:: json
+
+    {"a":"日本語"}
+
+Given the following JSON object:
+
+.. code:: json
+
+    {
+        "本": 2,
+        "日": 1
+    }
+
+The following canonical JSON should be produced:
+
+.. code:: json
+
+    {"日":1,"本":2}
+
+Given the following JSON object:
+
+.. code:: json
+
+    {
+        "a": "\u65E5"
+    }
+
+The following canonical JSON should be produced:
+
+.. code:: json
+
+    {"a":"日"}
+
+Given the following JSON object:
+
+.. code:: json
+
+    {
+        "a": null
+    }
+
+The following canonical JSON should be produced:
+
+.. code:: json
+
+    {"a":null}
+
 Signing Details
 ~~~~~~~~~~~~~~~
 
 JSON is signed by encoding the JSON object without ``signatures`` or keys grouped
 as ``unsigned``, using the canonical encoding described above. The JSON bytes are then signed using the
-signature algorithm and the signature is encoded using base64 with the padding
-stripped. The resulting base64 signature is added to an object under the
+signature algorithm and the signature is encoded using `unpadded Base64`_.
+The resulting base64 signature is added to an object under the
 *signing key identifier* which is added to the ``signatures`` object under the
 name of the entity signing it which is added back to the original JSON object
 along with the ``unsigned`` object.

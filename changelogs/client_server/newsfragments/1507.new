@@ -1,0 +1,1 @@
+``POST /account/3pid/msisdn/requestToken``, ``POST /register/msisdn/requestToken``, and ``POST /account/password/msisdn/requestToken``
