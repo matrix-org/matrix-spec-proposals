@@ -1089,9 +1089,9 @@ that are too long.
 .. |/query/directory| replace:: ``/query/directory``
 .. _/query/directory: #get-matrix-federation-%SERVER_MAJOR_VERSION%-query-directory
 
-.. _`Invitation storage`: ../identity_service/unstable.html#invitation-storage
-.. _`Identity Service API`: ../identity_service/unstable.html
-.. _`Client-Server API`: ../client_server/unstable.html
+.. _`Invitation storage`: ../identity_service/%IDENTITY_RELEASE_LABEL%.html#invitation-storage
+.. _`Identity Service API`: ../identity_service/%IDENTITY_RELEASE_LABEL%.html
+.. _`Client-Server API`: ../client_server/%CLIENT_RELEASE_LABEL%.html
 .. _`Inviting to a room`: #inviting-to-a-room
 .. _`Canonical JSON`: ../appendices.html#canonical-json
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
