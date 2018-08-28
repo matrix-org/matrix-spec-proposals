@@ -49,13 +49,13 @@ buildspeculator: &buildspeculator
   name: Build Speculator
   command: |
     cd scripts/speculator
-    go build
+    go build -v
 
 buildcontinuserv: &buildcontinuserv
   name: Build Continuserv
   command: |
     cd scripts/continuserv
-    go build
+    go build -v
 
 version: 2
 jobs:
@@ -103,8 +103,8 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
-            go get github.com/hashicorp/golang-lru
-            go get gopkg.in/fsnotify/fsnotify.v1
+            go get -v github.com/hashicorp/golang-lru
+            go get -v gopkg.in/fsnotify/fsnotify.v1
       - run: *buildcontinuserv
       - run: *buildspeculator
 
