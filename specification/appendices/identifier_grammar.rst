@@ -287,8 +287,10 @@ domain).
 matrix.to navigation
 ++++++++++++++++++++
 
-.. NOTE:
+.. NOTE::
    This namespacing is in place pending a ``matrix://`` (or similar) URI scheme.
+   This is **not** meant to be interpreted as an available web service - see 
+   below for more details.
 
 Rooms, users, aliases, and groups may be represented as a "matrix.to" URI.
 This URI can be used to reference particular objects in a given context, such
@@ -307,14 +309,19 @@ followed by the identifier.
 
 Clients should not rely on matrix.to URIs falling back to a web server if accessed
 and instead should perform some sort of action within the client. For example, if
-the user where to click on a matrix.to URI for a room alias, the client may open
+the user were to click on a matrix.to URI for a room alias, the client may open
 a view for the user to participate in the room.
 
 Examples of matrix.to URIs are:
 
-* Room: ``https://matrix.to/#/!somewhere:domain.com``
 * Room alias: ``https://matrix.to/#/#somewhere:domain.com``
+* Room: ``https://matrix.to/#/!somewhere:domain.com``
 * Permalink by room: ``https://matrix.to/#/!somewhere:domain.com/$event:example.org``
 * Permalink by room alias: ``https://matrix.to/#/#somewhere:domain.com/$event:example.org``
 * User: ``https://matrix.to/#/@alice:example.org``
 * Group: ``https://matrix.to/#/+example:domain.com``
+
+.. Note::
+   Room ID permalinks are unroutable as there is no reliable domain to send requests
+   to upon receipt of the permalink. Clients should do their best route Room IDs to
+   where they need to go, however they should also be aware of `issue #1579 <https://github.com/matrix-org/matrix-doc/issues/1579>`_.
