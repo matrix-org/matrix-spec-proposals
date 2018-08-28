@@ -33,8 +33,10 @@ paths:
       description: |-
         Performs a search for users on the homeserver. The homeserver may
         determine which subset of users are searched, however the homeserver
-        is encouraged to only consider users the requesting user shares a
-        room with and those who reside in public rooms.
+        MUST at a minimum consider the users the requesting user shares a
+        room with and those who reside in public rooms (known to the homeserver).
+        The search MUST consider local users to the homeserver, and SHOULD
+        query remote users as part of the search.
 
         The search is performed case-insensitively on user IDs and display
         names preferably using a collation determined based upon the 
