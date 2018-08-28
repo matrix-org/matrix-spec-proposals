@@ -75,8 +75,7 @@ said to be interested in a given event if one of the application service's names
 users is the target of the event, or is a joined member of the room where the event
 occurred.
 
-An application
-service can also state whether they should be the only ones who
+An application service can also state whether they should be the only ones who
 can manage a specified namespace. This is referred to as an "exclusive"
 namespace. An exclusive namespace prevents humans and other application
 services from creating/deleting entities in that namespace. Typically,
@@ -90,33 +89,77 @@ regular expressions and look like:
 
    users:
      - exclusive: true
-       regex: @_irc.freenode.net_.*
+       regex: "@_irc.freenode.net_.*"
 
+Application services may define the following namespaces (with none being explicitly required):
 
-The registration is represented by a series of key-value pairs, which this
-specification will present as YAML. An example HS configuration required to pass
-traffic to the AS is:
++------------------+-----------------------------------------------------------+
+| Name             | Description                                               |
++==================+===========================================================+
+| users            | Events which are sent from certain users.                 |
++------------------+-----------------------------------------------------------+
+| aliases          | Events which are sent in rooms with certain room aliases. |
++------------------+-----------------------------------------------------------+
+| rooms            | Events which are sent in rooms with certain room IDs.     |
++------------------+-----------------------------------------------------------+
 
-.. code-block:: yaml
+Each individual namespace MUST declare the following fields:
 
-    id: <user-defined unique ID of AS which will never change>
-    url: <base url of AS>
-    as_token: <token AS will add to requests to HS>
-    hs_token: <token HS will add to requests to AS>
-    sender_localpart: <localpart of AS user>
-    namespaces:
-      users:  # Namespaces of users which should be delegated to the AS
-        - exclusive: <bool>
-          regex: <regex>
-        - ...
-      aliases: []  # Namespaces of room aliases which should be delegated to the AS
-      rooms: [] # Namespaces of room ids which should be delegated to the AS
++------------------+-----------------------------------------------------------------------------------------------------------------------------------+
+| Name             | Description                                                                                                                       |
++==================+===================================================================================================================================+
+| exclusive        | **Required** A true or false value stating whether this application service has exclusive access to events within this namespace. |
++------------------+-----------------------------------------------------------------------------------------------------------------------------------+
+| regex            | **Required** A regular expression defining which values this namespace includes.                                                  |
++------------------+-----------------------------------------------------------------------------------------------------------------------------------+
 
 Exclusive user and alias namespaces should begin with an underscore after the
 sigil to avoid collisions with other users on the homeserver. Application
 services should additionally attempt to identify the service they represent
 in the reserved namespace. For example, ``@_irc_.*`` would be a good namespace
 to register for an application service which deals with IRC.
+
+The registration is represented by a series of key-value pairs, which this
+specification will present as YAML. See below for the possible options along
+with their explanation:
+
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| Name             | Description                                                                                                                                        |
++==================+====================================================================================================================================================+
+| id               | **Required.** A unique, user-defined ID of the application service which will never change.                                                        |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| url              | **Required.** The URL for the application service. May include a path after the domain name. Optionally set to ``null`` if no traffic is required. |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| as_token         | **Required.** A unique token for application services to use to authenticate requests to Homeservers.                                              |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| hs_token         | **Required.** A unique token for Homeservers to use to authenticate requests to application services.                                              |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| sender_localpart | **Required.** The localpart of the user associated with the application service.                                                                   |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| namespaces       | **Required.** A list of ``users``, ``aliases`` and ``rooms`` namespaces that the application service controls.                                     |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| rate_limited     | Whether requests from masqueraded users are rate-limited. The sender is excluded.                                                                  |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| protocols        | The external protocols which the application service provides (e.g. IRC).                                                                          |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+
+An example registration file for an IRC-bridging application service is below:
+
+.. code-block:: yaml
+
+    id: "IRC Bridge"
+    url: "http://127.0.0.1:1234"
+    as_token: "30c05ae90a248a4188e620216fa72e349803310ec83e2a77b34fe90be6081f46"
+    hs_token: "312df522183efd404ec1cd22d2ffa4bbc76a8c1ccf541dd692eef281356bb74e"
+    sender_localpart: "_irc_bot" # Will result in @_irc_bot:domain.com
+    namespaces:
+      users:
+        - exclusive: true
+          regex: "@_irc_bridge_.*"
+      aliases:
+        - exclusive: false 
+          regex: "#_irc_bridge_.*"
+      rooms: []
 
 .. WARNING::
   If the homeserver in question has multiple application services, each
@@ -155,6 +198,8 @@ be made without blocking other aspects of the homeserver. Homeservers MUST NOT
 alter (e.g. add more) events they were going to send within that transaction ID
 on retries, as the AS may have already processed the events.
 
+{{transactions_as_http_api}}
+
 Querying
 ++++++++
 
@@ -180,13 +225,25 @@ this request (e.g. to join a room alias).
 {{query_room_as_http_api}}
 
 
-HTTP APIs
-+++++++++
+Third party networks
+++++++++++++++++++++
 
-This contains application service APIs which are used by the homeserver. All
-application services MUST implement these APIs. These APIs are defined below.
+Application services may declare which protocols they support via their registration
+configuration for the homeserver. These networks are generally for third party services
+such as IRC that the application service is managing. Application services may populate
+a Matrix room directory for their registered protocols, as defined in the Client-Server
+API Extensions.
 
-{{application_service_as_http_api}}
+Each protocol may have several "locations" (also known as "third party locations" or "3PLs").
+A location within a protocol is a place in the third party network, such as an IRC channel.
+Users of the third party network may also be represented by the application service.
+
+Locations and users can be searched by fields defined by the application service, such
+as by display name or other attribute. When clients request the homeserver to search
+in a particular "network" (protocol), the search fields will be passed along to the
+application service for filtering.
+
+{{protocols_as_http_api}}
 
 
 .. _create the user: `sect:asapi-permissions`_
@@ -197,6 +254,9 @@ Client-Server API Extensions
 Application services can use a more powerful version of the
 client-server API by identifying itself as an application service to the
 homeserver.
+
+Endpoints defined in this section MUST be supported by homeservers in the
+client-server API as accessible only by application services.
 
 Identity assertion
 ++++++++++++++++++
@@ -293,6 +353,15 @@ Application services wishing to use ``/sync`` or ``/events`` from the Client-Ser
 API MUST do so with a virtual user (provide a ``user_id`` via the query string). It
 is expected that the application service use the transactions pushed to it to
 handle events rather than syncing with the user implied by ``sender_localpart``.
+
+Application service room directories
+++++++++++++++++++++++++++++++++++++
+
+Application services can maintain their own room directories for their defined
+third party protocols. These room directories may be accessed by clients through
+additional parameters on the ``/publicRooms`` client-server endpoint.
+
+{{appservice_room_directory_cs_http_api}}
 
 Event fields
 ~~~~~~~~~~~~

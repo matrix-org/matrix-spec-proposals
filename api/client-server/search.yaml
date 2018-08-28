@@ -41,7 +41,7 @@ paths:
           type: string
           description: |-
             The point to return events from. If given, this should be a
-            `next_batch` result from a previous call to this endpoint.
+            ``next_batch`` result from a previous call to this endpoint.
           x-example: "YWxsCgpOb25lLDM1ODcwOA"
         - in: body
           name: body
@@ -95,6 +95,7 @@ paths:
                         # for now :/
                         description: |-
                           This takes a `filter`_.
+                        $ref: "definitions/room_event_filter.yaml"
                       order_by:
                         title: "Ordering"
                         type: string

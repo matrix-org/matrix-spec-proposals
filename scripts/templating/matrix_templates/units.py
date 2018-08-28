@@ -875,15 +875,6 @@ class MatrixUnits(Units):
             Units.prop(json_schema, "properties/content")
         )
 
-        # This is horrible because we're special casing a key on m.room.member.
-        # We need to do this because we want to document a non-content object.
-        if schema["type"] == "m.room.member":
-            invite_room_state = get_tables_for_schema(
-                json_schema["properties"]["invite_room_state"]["items"],
-            )
-            schema["content_fields"].extend(invite_room_state)
-
-
         # grab msgtype if it is the right kind of event
         msgtype = Units.prop(
             json_schema, "properties/content/properties/msgtype/enum"
