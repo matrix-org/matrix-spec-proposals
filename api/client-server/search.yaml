@@ -198,7 +198,7 @@ paths:
                           description: The result object.
                           properties:
                             rank:
-                              type: integer
+                              type: number
                               description: A number that describes how closely
                                 this result matches the search. Higher is
                                 closer.
