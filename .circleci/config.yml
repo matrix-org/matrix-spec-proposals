@@ -45,6 +45,18 @@ validateapi: &validateapi
     npm install
     node validator.js -s "client-server"
 
+buildspeculator: &buildspeculator
+  name: Build Speculator
+  command: |
+    cd scripts/speculator
+    go build
+
+buildcontinuserv: &buildcontinuserv
+  name: Build Continuserv
+  command: |
+    cd scripts/continuserv
+    go build
+
 version: 2
 jobs:
   validate-docs:
@@ -71,7 +83,6 @@ jobs:
       - run:
           name: "Doc build is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/scripts/gen/index.html"; echo $DOCS_URL
-
   build-swagger:
     docker:
       - image: uhoreg/matrix-doc-build
@@ -84,6 +95,18 @@ jobs:
       - run:
           name: "Swagger UI is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/api/client-server/index.html"; echo $DOCS_URL
+  build-dev-scripts:
+    docker:
+      - image: golang:1.8
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            go get github.com/hashicorp/golang-lru
+            go get gopkg.in/fsnotify/fsnotify.v1
+      - run: *buildcontinuserv
+      - run: *buildspeculator
 
 workflows:
   version: 2
