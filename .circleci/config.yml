@@ -78,6 +78,7 @@ workflows:
     jobs:
       - build-docs
       - build-swagger
+      - check-docs
 
 notify:
   webhooks:
