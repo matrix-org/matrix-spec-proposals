@@ -26,8 +26,7 @@ properties:
     description: The globally unique event identifier.
     type: string
   sender:
-    description: Contains the fully-qualified ID of the user who *sent*
-      this event.
+    description: Contains the fully-qualified ID of the user who sent this event.
     type: string
   origin_server_ts:
     description: Timestamp in milliseconds on originating homeserver

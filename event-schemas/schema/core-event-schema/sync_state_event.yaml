@@ -27,7 +27,7 @@ properties:
   state_key:
     description: A unique key which defines the overwriting semantics for this piece
       of room state. This value is often a zero-length string. The presence of this
-      key makes this event a State Event. The key MUST NOT start with '_'.
+      key makes this event a State Event.
     type: string
 required:
 - state_key
