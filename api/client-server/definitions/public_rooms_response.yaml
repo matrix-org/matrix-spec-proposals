@@ -45,7 +45,7 @@ properties:
           description: |-
             The name of the room, if any.
         num_joined_members:
-          type: number
+          type: integer
           description: |-
             The number of members joined to the room.
         room_id:
@@ -82,7 +82,7 @@ properties:
       absence of this token means there are no results before this
       batch, i.e. this is the first batch.
   total_room_count_estimate:
-    type: number
+    type: integer
     description: |-
         An estimate on the total number of public rooms, if the
         server has an estimate.

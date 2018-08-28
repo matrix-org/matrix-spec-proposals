@@ -218,7 +218,7 @@ paths:
                 description: The email address
                 example: "example@example.com"
               send_attempt:
-                type: number
+                type: integer
                 description: Used to distinguish protocol level retries from requests to re-send the email.
                 example: 1
             required: ["client_secret", "email", "send_attempt"]
@@ -283,7 +283,7 @@ paths:
                 description: The phone number.
                 example: "example@example.com"
               send_attempt:
-                type: number
+                type: integer
                 description: Used to distinguish protocol level retries from requests to re-send the SMS message.
                 example: 1
             required: ["client_secret", "country", "phone_number", "send_attempt"]

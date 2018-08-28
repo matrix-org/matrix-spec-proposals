@@ -46,10 +46,10 @@ properties:
     properties:
       ban:
         description: The level required to ban a user. Defaults to 50 if unspecified.
-        type: number
+        type: integer
       events:
         additionalProperties:
-          type: number
+          type: integer
         description: The level required to send specific event types. This is a mapping from event type to power level required.
         title: Event power levels
         type: object
@@ -57,25 +57,25 @@ properties:
         description: |-
             The default level required to send message events. Can be
             overridden by the ``events`` key.  Defaults to 0 if unspecified.
-        type: number
+        type: integer
       invite:
         description: The level required to invite a user. Defaults to 50 if unspecified.
-        type: number
+        type: integer
       kick:
         description: The level required to kick a user. Defaults to 50 if unspecified.
-        type: number
+        type: integer
       redact:
         description: The level required to redact an event. Defaults to 50 if unspecified.
-        type: number
+        type: integer
       state_default:
         description: |-
             The default level required to send state events. Can be overridden
             by the ``events`` key. Defaults to 50 if unspecified, but 0 if
             there is no ``m.room.power_levels`` event at all.
-        type: number
+        type: integer
       users:
         additionalProperties:
-          type: number
+          type: integer
         description: The power levels for specific users. This is a mapping from ``user_id`` to power level for that user.
         title: User power levels
         type: object
@@ -84,7 +84,7 @@ properties:
             The default power level for every user in the room, unless their
             ``user_id`` is mentioned in the ``users`` key. Defaults to 0 if
             unspecified.
-        type: number
+        type: integer
     type: object
   state_key:
     description: A zero-length string.

@@ -180,7 +180,7 @@ paths:
                     description: Mapping of category name to search criteria.
                     properties:
                       count:
-                        type: number
+                        type: integer
                         description: An approximate count of the total number of results found.
                       highlights:
                         type: array
@@ -198,7 +198,7 @@ paths:
                           description: The result object.
                           properties:
                             rank:
-                              type: number
+                              type: integer
                               description: A number that describes how closely
                                 this result matches the search. Higher is
                                 closer.
