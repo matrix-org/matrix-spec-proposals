@@ -50,7 +50,7 @@ paths:
         200:
           description: |-
             The fully resolved state for the room, including the authorization
-            chain for the events.
+            chain for the events, excluding the requested event.
           schema:
             type: object
             properties:
@@ -97,7 +97,7 @@ paths:
         200:
           description: |-
             The fully resolved state for the room, including the authorization
-            chain for the events.
+            chain for the events, excluding the requested event.
           schema:
             type: object
             properties:
