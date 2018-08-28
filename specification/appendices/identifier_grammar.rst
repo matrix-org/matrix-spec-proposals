@@ -43,7 +43,7 @@ following grammar::
 
     dns-char    = DIGIT / ALPHA / "-" / "."
 
--- in other words, the server name is the hostname, followed by an optional
+— in other words, the server name is the hostname, followed by an optional
 numeric port specifier. The hostname may be a dotted-quad IPv4 address literal,
 an IPv6 address literal surrounded with square brackets, or a DNS name.
 
