@@ -38,9 +38,21 @@ genmatrixassets: &genmatrixassets
     source /env/bin/activate
     ./scripts/generate-matrix-org-assets
 
+validateapi: &validateapi
+  name: Validate OpenAPI specifications
+  command: |
+    cd api
+    npm install
+    node validator.js -s "client-server"
 
 version: 2
 jobs:
+  validate-docs:
+    docker:
+      - image: node:alpine
+    steps:
+      - checkout
+      - run: *validateapi
   check-docs:
     docker:
       - image: uhoreg/matrix-doc-build
@@ -81,6 +93,7 @@ workflows:
       - build-docs
       - build-swagger
       - check-docs
+      - validate-docs
 
 notify:
   webhooks:
