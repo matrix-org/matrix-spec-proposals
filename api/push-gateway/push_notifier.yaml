@@ -20,7 +20,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/push/%PUSH_GATEWAY_MAJOR_VERSION%
+basePath: /_matrix/push/v1
 consumes:
   - application/json
 produces:

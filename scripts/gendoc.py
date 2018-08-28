@@ -546,7 +546,6 @@ if __name__ == '__main__':
         "%CLIENT_MAJOR_VERSION%": "r0",
         "%SERVER_RELEASE_LABEL%": args.server_release,
         "%SERVER_MAJOR_VERSION%": extract_major(args.server_release),
-        "%PUSH_GATEWAY_MAJOR_VERSION%": "v1",
         "%PUSH_GATEWAY_RELEASE_LABEL%": args.push_gateway_release,
     }
 
