@@ -23,13 +23,38 @@ A homeserver is uniquely identified by its server name. This value is used in a
 number of identifiers, as described below.
 
 The server name represents the address at which the homeserver in question can
-be reached by other homeservers. The complete grammar is::
+be reached by other homeservers. All valid server names are included by the
+following grammar::
 
-    server_name = host [ ":" port]
-    port = *DIGIT
+    server_name = host [ ":" port ]
 
-where ``host`` is as defined by `RFC3986, section 3.2.2
-<https://tools.ietf.org/html/rfc3986#section-3.2.2>`_.
+    port        = *DIGIT
+
+    host        = IPv4address / "[" IPv6address "]" / dns-name
+
+    IPv4address = 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT
+
+    IPv6address = 2*45IPv6char
+
+    IPv6char    = DIGIT / %x41-46 / %x61-66 / ":" / "."
+                      ; 0-9, A-F, a-f, :, .
+
+    dns-name    = *255dns-char
+
+    dns-char    = DIGIT / ALPHA / "-" / "."
+
+-- in other words, the server name is the hostname, followed by an optional
+numeric port specifier. The hostname may be a dotted-quad IPv4 address literal,
+an IPv6 address literal surrounded with square brackets, or a DNS name.
+
+IPv4 literals must be a sequence of four decimal numbers in the
+range 0 to 255, separated by ".". IPv6 literals must be as specified by
+`RFC3513, section 2.2 <https://tools.ietf.org/html/rfc3513#section-2.2>`_.
+
+DNS names for use with Matrix should follow the conventional restrictions for
+internet hostnames: they should consist of a series of labels separated by
+dots, where each label consists of the alphanumeric characters or
+hyphens.
 
 Examples of valid server names are:
 
@@ -39,6 +64,20 @@ Examples of valid server names are:
 * ``1.2.3.4:1234`` (IPv4 literal with explicit port)
 * ``[1234:5678::abcd]`` (IPv6 literal)
 * ``[1234:5678::abcd]:5678`` (IPv6 literal with explicit port)
+
+.. Note::
+
+   This grammar is based on the standard for internet host names, as specified
+   by `RFC1123, section 2.1 <https://tools.ietf.org/html/rfc1123#page-13>`_,
+   with an extension for IPv6 literals.
+
+Server names must be treated case-sensitively: in other words,
+``@user:matrix.org`` is a different person from ``@user:MATRIX.ORG``.
+
+Some recommendations for a choice of server name follow:
+
+* The length of the complete server name should not exceed 230 characters.
+* Server names should not use upper-case characters.
 
 
 Room Versions
@@ -51,7 +90,7 @@ not understanding the new rules.
 
 A room version is defined as a string of characters which MUST NOT exceed 32
 codepoints in length. Room versions MUST NOT be empty and SHOULD contain only
-the characters ``a-z``, ``0-9``, ``.``, and ``-``. 
+the characters ``a-z``, ``0-9``, ``.``, and ``-``.
 
 Room versions are not intended to be parsed and should be treated as opaque
 identifiers. Room versions consisting only of the characters ``0-9`` and ``.``
