@@ -48,13 +48,12 @@ numeric port specifier. The hostname may be a dotted-quad IPv4 address literal,
 an IPv6 address literal surrounded with square brackets, or a DNS name.
 
 IPv4 literals must be a sequence of four decimal numbers in the
-range 0 to 255, separated by ".". IPv6 literals must be as specified by
+range 0 to 255, separated by ``.``. IPv6 literals must be as specified by
 `RFC3513, section 2.2 <https://tools.ietf.org/html/rfc3513#section-2.2>`_.
 
 DNS names for use with Matrix should follow the conventional restrictions for
 internet hostnames: they should consist of a series of labels separated by
-dots, where each label consists of the alphanumeric characters or
-hyphens.
+``.``, where each label consists of the alphanumeric characters or hyphens.
 
 Examples of valid server names are:
 
