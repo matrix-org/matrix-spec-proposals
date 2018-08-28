@@ -117,6 +117,7 @@ workflows:
       - build-swagger
       - check-docs
       - validate-docs
+      - build-dev-scripts
 
 notify:
   webhooks:
