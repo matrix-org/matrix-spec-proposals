@@ -29,6 +29,8 @@ checkexamples: &checkexamples
     source /env/bin/activate
     cd event-schemas
     ./check_examples.py
+    cd ../api
+    ./check_examples.py
 
 genmatrixassets: &genmatrixassets
   name: Generate/Verify matrix.org assets
