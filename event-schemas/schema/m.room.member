@@ -105,7 +105,10 @@ properties:
     title: EventContent
     type: object
   state_key:
-    description: The ``user_id`` this membership event relates to.
+    description: |-
+      The ``user_id`` this membership event relates to. In all cases except for when ``membership`` is
+      ``join``, the user ID sending the event does not need to match the user ID in the ``state_key``,
+      unlike other events. Regular authorisation rules still apply.
     type: string
   type:
     enum:
