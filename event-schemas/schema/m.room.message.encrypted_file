@@ -17,7 +17,7 @@ properties:
         description: The original filename of the uploaded file.
         type: string
       info:
-        description: Information about the file referred to in ``url``.
+        description: Information about the file referred to in ``file``.
         properties:
           mimetype:
             description: The mimetype of the file e.g. ``application/msword``.
@@ -46,7 +46,7 @@ properties:
             description: The URL to the file.
             type: string
           key:
-            description: A JSON web key object (as defined in RFC7517 LINK).
+            description: A `JSON web key`_ object.
             type: object
             title: JWK
             properties:
@@ -66,19 +66,24 @@ properties:
                 description: The key, encoded as urlsafe unpadded base64.
                 type: string
               ext:
-                description: Extractable. Must be ``true``.(W3C link)
+                description: Extractable. Must be ``true``. This is a `W3C extension`_.
                 type: boolean
           iv:
-            description: The Initialisation Vector used by AES-CTR.
+            description: |-
+              The Initialisation Vector used by AES-CTR, encoded as unpadded
+              base64.
             type: string
           hashes:
-            description: A map from an algorithm name to a hash of the ciphertext.
+            description: |-
+              A map from an algorithm name to a hash of the ciphertext, encoded
+              as unpadded base64. Clients should support the SHA-256 hash.
             type: object
             additionalProperties:
               type: string
           v:
             description: Version of the encrypted attachments protocol.
             type: string
+            enum: ["v2"]
         title: EncryptedFile
         type: object
     required:
