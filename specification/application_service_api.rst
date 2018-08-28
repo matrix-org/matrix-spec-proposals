@@ -198,6 +198,8 @@ be made without blocking other aspects of the homeserver. Homeservers MUST NOT
 alter (e.g. add more) events they were going to send within that transaction ID
 on retries, as the AS may have already processed the events.
 
+{{transactions_as_http_api}}
+
 Querying
 ++++++++
 
@@ -242,15 +244,6 @@ in a particular "network" (protocol), the search fields will be passed along to 
 application service for filtering.
 
 {{protocols_as_http_api}}
-
-
-HTTP APIs
-+++++++++
-
-This contains application service APIs which are used by the homeserver. All
-application services MUST implement these APIs. These APIs are defined below.
-
-{{application_service_as_http_api}}
 
 
 .. _create the user: `sect:asapi-permissions`_
