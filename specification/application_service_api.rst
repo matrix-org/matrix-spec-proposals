@@ -289,26 +289,27 @@ An example request would be::
  GET /_matrix/client/%CLIENT_MAJOR_VERSION%/account/whoami?user_id=@_irc_user:example.org
  Authorization: Bearer YourApplicationServiceTokenHere
 
+.. TODO-TravisR: Temporarily take out timestamp massaging while we're releasing r0.
+   See https://github.com/matrix-org/matrix-doc/issues/1585
+.. Timestamp massaging
+   +++++++++++++++++++
+   The application service may want to inject events at a certain time (reflecting
+   the time on the network they are tracking e.g. irc, xmpp). Application services
+   need to be able to adjust the ``origin_server_ts`` value to do this.
 
-Timestamp massaging
-+++++++++++++++++++
-The application service may want to inject events at a certain time (reflecting
-the time on the network they are tracking e.g. irc, xmpp). Application services
-need to be able to adjust the ``origin_server_ts`` value to do this.
+   Inputs:
+   - Application service token (``as_token``)
+   - Desired timestamp (in milliseconds since the unix epoch)
 
-Inputs:
- - Application service token (``as_token``)
- - Desired timestamp (in milliseconds since the unix epoch)
+   Notes:
+   - This will only apply when sending events.
 
-Notes:
- - This will only apply when sending events.
+   ::
 
-::
+    PUT /_matrix/client/r0/rooms/!somewhere:domain.com/send/m.room.message/txnId?ts=1534535223283
+    Authorization: Bearer YourApplicationServiceTokenHere
 
- PUT /_matrix/client/r0/rooms/!somewhere:domain.com/send/m.room.message/txnId?ts=1534535223283
-  Authorization: Bearer YourApplicationServiceTokenHere
-
- Content: The event to send, as per the Client-Server API.
+    Content: The event to send, as per the Client-Server API.
 
 Server admin style permissions
 ++++++++++++++++++++++++++++++
