@@ -112,7 +112,7 @@ Bob's client also understands the `predecessor` field in the `m.room.create`, an
 ### Summary: client changes needed
 
  * Ability for an op to view the current room version and upgrade it (by
-   hitting `/upgrade_room`).
+   hitting `/upgrade`).
 
    * Also the ability for an op to see what versions the servers in the current
      room supports (nb via a cap API) and so how many users will get locked out
