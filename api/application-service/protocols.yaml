@@ -1,4 +1,3 @@
-# Copyright 2016 OpenMarket Ltd
 # Copyright 2018 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,76 +25,6 @@ consumes:
 produces:
   - application/json
 paths:
-  "/transactions/{txnId}":
-    put:
-      summary: Send some events to the application service.
-      description: |-
-        This API is called by the homeserver when it wants to push an event
-        (or batch of events) to the application service.
-
-        Note that the application service should distinguish state events
-        from message events via the presence of a ``state_key``, rather than
-        via the event type.
-      operationId: sendTransaction
-      parameters:
-        - in: path
-          name: txnId
-          type: string
-          description: |-
-            The transaction ID for this set of events. Homeservers generate
-            these IDs and they are used to ensure idempotency of requests.
-          required: true
-          x-example: "35"
-        - in: body
-          name: body
-          description: A list of events.
-          schema:
-            type: object
-            example: {
-              "events": [
-                {
-                  "age": 32,
-                  "content": {
-                      "body": "incoming message",
-                      "msgtype": "m.text"
-                  },
-                  "event_id": "$14328055551tzaee:localhost",
-                  "origin_server_ts": 1432804485886,
-                  "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
-                  "type": "m.room.message",
-                  "user_id": "@bob:localhost"
-                },
-                {
-                  "age": 1984,
-                  "content": {
-                      "body": "another incoming message",
-                      "msgtype": "m.text"
-                  },
-                  "event_id": "$1228055551ffsef:localhost",
-                  "origin_server_ts": 1432804485886,
-                  "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
-                  "type": "m.room.message",
-                  "user_id": "@bob:localhost"
-                }
-              ]
-            }
-            description: "Transaction informations"
-            properties:
-              events:
-                type: array
-                description: A list of events
-                items:
-                  type: object
-                  title: Event
-            required: ["events"]
-      responses:
-        200:
-          description: The transaction was processed successfully.
-          examples:
-            application/json: {
-            }
-          schema:
-            type: object
   "/_matrix/app/unstable/thirdparty/protocol/{protocol}":
     get:
       summary: Retrieve metadata about a specific protocol that the application service supports.
@@ -198,7 +127,7 @@ paths:
             $ref: ../client-server/definitions/errors/error.yaml
   "/_matrix/app/unstable/thirdparty/location/{protocol}":
     get:
-      summary: Retreive Matrix-side portal rooms leading to a third party location.
+      summary: Retrieve Matrix-side portal rooms leading to a third party location.
       description: |-
         Retrieve a list of Matrix portal rooms that lead to the matched third party location.
       operationId: queryLocationByProtocol
@@ -251,7 +180,7 @@ paths:
     get:
       summary: Reverse-lookup third party locations given a Matrix room alias.
       description: |-
-        Retreive an array of third party network locations from a Matrix room
+        Retrieve an array of third party network locations from a Matrix room
         alias.
       operationId: queryLocationByAlias
       parameters:
@@ -296,7 +225,7 @@ paths:
     get:
       summary: Reverse-lookup third party users given a Matrix User ID.
       description: |-
-        Retreive an array of third party users from a Matrix User ID.
+        Retrieve an array of third party users from a Matrix User ID.
       operationId: queryUserByID
       parameters:
         - in: query 

@@ -124,7 +124,7 @@ There are different "kinds" of push rules and each rule has an associated
 priority. Every push rule MUST have a ``kind`` and ``rule_id``. The ``rule_id``
 is a unique string within the kind of rule and its' scope: ``rule_ids`` do not
 need to be unique between rules of the same kind on different devices. Rules may
-have extra keys depending on the value of ``kind``.The different kinds of rule
+have extra keys depending on the value of ``kind``. The different kinds of rule
 in descending order of priority are:
 
 Override Rules ``override``
@@ -369,6 +369,41 @@ Definition:
     }
 
 
+``.m.rule.roomnotif``
+`````````````````````
+Matches any message whose content is unencrypted and contains the
+text ``@room``, signifying the whole room should be notified of
+the event.
+
+Definition:
+
+.. code:: json
+
+    {
+        "rule_id": ".m.rule.roomnotif",
+        "default": true,
+        "enabled": true,
+        "conditions": [
+            {
+                "kind": "event_match",
+                "key": "content.body",
+                "pattern": "@room"
+            },
+            {
+                "kind": "sender_notification_permission",
+                "key": "room"
+            }
+        ],
+        "actions": [
+            "notify",
+            {
+                "set_tweak": "highlight",
+                "value": true
+            }
+        ]
+    }
+
+
 Default Content Rules
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -428,7 +463,47 @@ Definition:
                 "value": false
             }
         ]
-    },
+    }
+
+``.m.rule.encrypted_room_one_to_one``
+`````````````````````````````````````
+Matches any encrypted event sent in a room with exactly two members.
+Unlike other push rules, this rule cannot be matched against the content
+of the event by nature of it being encrypted. This causes the rule to
+be an "all or nothing" match where it either matches *all* events that
+are encrypted (in 1:1 rooms) or none.
+
+Definition:
+
+.. code:: json
+
+    {
+        "rule_id": ".m.rule.encrypted_room_one_to_one",
+        "default": true,
+        "enabled": true,
+        "conditions": [
+            {
+                "kind": "room_member_count",
+                "is": "2"
+            }
+        ],
+        "actions": [
+            "notify",
+            {
+                "set_tweak": "sound",
+                "value": "default"
+            },
+            {
+                "set_tweak": "highlight",
+                "value": false
+            },
+            {
+                "kind": "event_match",
+                "key": "type",
+                "pattern": "m.room.encrypted"
+            }
+        ]
+    }
 
 ``.m.rule.room_one_to_one``
 ```````````````````````````
@@ -489,6 +564,37 @@ Definition:
         ]
    }
 
+``.m.rule.encrypted``
+`````````````````````
+Matches all encrypted events. Unlike other push rules, this rule cannot
+be matched against the content of the event by nature of it being encrypted.
+This causes the rule to be an "all or nothing" match where it either
+matches *all* events that are encrypted (in 1:1 rooms) or none.
+
+Definition:
+
+.. code:: json
+
+   {
+        "rule_id": ".m.rule.encrypted",
+        "default": true,
+        "enabled": true,
+        "conditions": [
+            {
+                "kind": "event_match",
+                "key": "type",
+                "pattern": "m.room.encrypted"
+            }
+        ],
+        "actions": [
+            "notify",
+            {
+                "set_tweak": "highlight",
+                "value": false
+            }
+        ]
+   }
+
 
 Conditions
 ++++++++++
@@ -522,6 +628,21 @@ rule determines its behaviour. The following conditions are defined:
     ``>``, ``>=`` or ``<=``. A prefix of ``<`` matches rooms where the member
     count is strictly less than the given number and so forth. If no prefix is
     present, this parameter defaults to ``==``.
+
+``sender_notification_permission``
+  This takes into account the current power levels in the room, ensuring the
+  sender of the event has high enough power to trigger the notification.
+
+  Parameters:
+
+  * ``key``: A string that determines the power level the sender must have to trigger
+    notifications of a given type, such as ``room``. Refer to the `m.room.power_levels`_
+    event schema for information about what the defaults are and how to interpret the event.
+    The ``key`` is used to look up the power level required to send a notification type
+    from the ``notifications`` object in the power level event content.
+
+Unrecognised conditions MUST NOT match any events, effectively making the push
+rule disabled.
 
 Push Rules: API
 ~~~~~~~~~~~~~~~

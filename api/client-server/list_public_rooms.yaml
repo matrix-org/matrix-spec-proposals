@@ -194,8 +194,26 @@ paths:
                       description: |-
                         A string to search for in the room metadata, e.g. name,
                         topic, canonical alias etc. (Optional).
+              include_all_networks:
+                type: boolean
+                description: |-
+                  Whether or not to include all known networks/protocols from
+                  application services on the homeserver. Defaults to false.
+                example: false
+              third_party_instance_id:
+                type: string
+                description: |-
+                  The specific third party network/protocol to request from the
+                  homeserver. Can only be used if ``include_all_networks`` is false.
+                example: "irc"
             example: {
-              "limit": 10, "filter": {"generic_search_term": "foo"}}
+              "limit": 10, 
+              "filter": {
+                "generic_search_term": "foo"
+              },
+              "include_all_networks": false,
+              "third_party_instance_id": "irc"
+            }
       responses:
         200:
           description: A list of the rooms on the server.

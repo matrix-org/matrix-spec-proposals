@@ -929,6 +929,32 @@ described in the `Client-Server API`_, being sure to use the ``allow_remote``
 parameter (set to ``false``).
 
 
+Server Access Control Lists (ACLs)
+----------------------------------
+
+Server ACLs and their purpose are described in the `Server ACLs`_ section of the
+Client-Server API.
+
+When a remote server makes a request, it MUST be verified to be allowed by the
+server ACLs. If the server is denied access to a room, the receiving server
+MUST reply with a 403 HTTP status code and an ``errcode`` of ``M_FORBIDDEN``.
+
+The following endpoint prefixes MUST be protected:
+
+* ``/_matrix/federation/v1/send`` (on a per-PDU basis)
+* ``/_matrix/federation/v1/make_join``
+* ``/_matrix/federation/v1/make_leave``
+* ``/_matrix/federation/v1/send_join``
+* ``/_matrix/federation/v1/send_leave``
+* ``/_matrix/federation/v1/invite``
+* ``/_matrix/federation/v1/state``
+* ``/_matrix/federation/v1/state_ids``
+* ``/_matrix/federation/v1/backfill``
+* ``/_matrix/federation/v1/event_auth``
+* ``/_matrix/federation/v1/query_auth``
+* ``/_matrix/federation/v1/get_missing_events``
+
+
 Signing Events
 --------------
 
