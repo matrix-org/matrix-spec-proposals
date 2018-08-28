@@ -56,6 +56,60 @@ of message being sent. Each type has their own required and optional keys, as
 outlined below. If a client cannot display the given ``msgtype`` then it SHOULD
 display the fallback plain text ``body`` key instead.
 
+Some message types support HTML in the event content that clients should prefer
+to display if available. Currently ``m.text``, ``m.emote``, and ``m.notice``
+support an additional ``format`` parameter of ``org.matrix.custom.html``. When
+this field is present, a ``formatted_body`` with the HTML must be provided. The
+plain text version of the HTML should be provided in the ``body``.
+
+Clients should limit the HTML they render to avoid Cross-Site Scripting, HTML 
+injection, and similar attacks. The strongly suggested set of HTML tags to permit,
+denying the use and rendering of anything else, is: ``font``, ``del``, ``h1``, 
+``h2``, ``h3``, ``h4``, ``h5``, ``h6``, ``blockquote``, ``p``, ``a``, ``ul``,
+``ol``, ``sup``, ``sub``, ``li``, ``b``, ``i``, ``u``, ``strong``, ``em``,
+``strike``, ``code``, ``hr``, ``br``, ``div``, ``table``, ``thead``, ``tbody``,
+``tr``, ``th``, ``td``, ``caption``, ``pre``, ``span``, ``img``.
+
+Not all attributes on those tags should be permitted as they may be avenues for
+other disruption attempts, such as adding ``onclick`` handlers or excessively
+large text. Clients should only permit the attributes listed for the tags below.
+Where ``data-mx-bg-color`` and ``data-mx-color`` are listed, clients should 
+translate the value (a 6-character hex color code) to the appropriate CSS/attributes
+for the tag.
+
+
+:``font``:
+  ``data-mx-bg-color``, ``data-mx-color``
+
+:``span``:
+  ``data-mx-bg-color``, ``data-mx-color``
+
+:``a``:
+  ``name``, ``target``, ``href`` (provided the value is not relative and has a scheme
+  matching one of: ``https``, ``http``, ``ftp``, ``mailto``, ``magnet``)
+
+:``img``:
+  ``width``, ``height``, ``alt``, ``title``, ``src`` (provided it is a `Matrix Content (MXC) URI`_)
+
+:``ol``:
+  ``start``
+
+:``code``:
+  ``class`` (only classes which start with ``language-`` for syntax highlighting)
+
+
+Additionally, web clients should ensure that *all* ``a`` tags get a ``rel="noopener"``
+to prevent the target page from referencing the client's tab/window.
+
+Tags must not be nested more than 100 levels deep. Clients should only support the subset
+of tags they can render, falling back to other representations of the tags where possible.
+For example, a client may not be able to render tables correctly and instead could fall
+back to rendering tab-delimited text.
+
+.. Note::
+   A future iteration of the specification will support more powerful and extensible
+   message formatting options, such as the proposal `MSC1225 <https://github.com/matrix-org/matrix-doc/issues/1225>`_.
+
 {{msgtype_events}}
 
 
@@ -297,3 +351,4 @@ Clients should sanitise **all displayed keys** for unsafe HTML to prevent Cross-
 Scripting (XSS) attacks. This includes room names and topics.
 
 .. _`E2E module`: `module:e2e`_
+.. _`Matrix Content (MXC) URI`: `module:content`_
