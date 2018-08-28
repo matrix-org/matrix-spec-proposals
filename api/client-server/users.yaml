@@ -37,7 +37,8 @@ paths:
         room with and those who reside in public rooms.
 
         The search is performed case-insensitively on user IDs and display
-        names.
+        names preferably using a collation determined based upon the 
+        ``Accept-Language`` header provided in the request, if present.
       operationId: searchUserDirectory
       security:
         - accessToken: []
