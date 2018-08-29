@@ -48,10 +48,12 @@ following constitute invalid localparts for room aliases:
 XXX: we need to figure out which of thes things to actually forbid:
 
 - invalid utf8
+
   - invalid byte sequences
   - utf-16 surrogates U+D800 to U+DFFF
   - codepoints after U+10FFFF
   - overlong encodings
+
 - strings not in NFC
 - characters forbidden by NAMEPREP
   https://tools.ietf.org/html/rfc3491#section-5 ?
@@ -69,6 +71,10 @@ XXX: we need to figure out which of thes things to actually forbid:
   includes a lot fof things which didn't exist in 2010, like emoji, so I don't
   think we should take this list as-is.)
 - Complicated rules about CONTEXTO or CONTEXTJ code points in `RFC5892`_.
+
+
+The total length of the (utf-8 encoded) room alias, including the sigil and the
+server name, must not exceed 255 characters.
 
 Servers should not allow clients to create aliases which are considered invalid
 according to any of the above rules. Servers should also reject attempts to
