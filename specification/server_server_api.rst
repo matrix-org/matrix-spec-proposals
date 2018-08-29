@@ -359,100 +359,100 @@ The rules are as follows:
 1. If type is ``m.room.create``, allow if and only if it has no
    previous events - *i.e.* it is the first event in the room.
 
-2. If type is ``m.room.member``:
+#. If type is ``m.room.member``:
 
-  a. If ``membership`` is ``join``:
+    a. If ``membership`` is ``join``:
 
-    i. If the only previous event is an ``m.room.create``
-       and the ``state_key`` is the creator, allow.
+        i. If the only previous event is an ``m.room.create``
+           and the ``state_key`` is the creator, allow.
 
-    #. If the ``sender`` does not match ``state_key``, reject.
+        #. If the ``sender`` does not match ``state_key``, reject.
 
-    #. If the user's current membership state is ``invite`` or ``join``,
-       allow.
+        #. If the user's current membership state is ``invite`` or ``join``,
+           allow.
 
-    #. If the ``join_rule`` is ``public``, allow.
+        #. If the ``join_rule`` is ``public``, allow.
 
-    #. Otherwise, reject.
+        #. Otherwise, reject.
 
-  b. If ``membership`` is ``invite``:
+    #. If ``membership`` is ``invite``:
 
-    i. If the ``sender``'s current membership state is not ``join``, reject.
+        i. If the ``sender``'s current membership state is not ``join``, reject.
 
-    #. If *target user*'s current membership state is ``join`` or ``ban``,
-       reject.
+        #. If *target user*'s current membership state is ``join`` or ``ban``,
+           reject.
 
-    #. If the ``sender``'s power level is greater than or equal to the *invite
-       level*, allow.
+        #. If the ``sender``'s power level is greater than or equal to the *invite
+           level*, allow.
 
-    #. Otherwise, reject.
+        #. Otherwise, reject.
 
-  c. If ``membership`` is ``leave``:
+    #. If ``membership`` is ``leave``:
 
-    i. If the ``sender`` matches ``state_key``, allow if and only if that user's
-       current membership state is ``invite`` or ``join``.
+        i. If the ``sender`` matches ``state_key``, allow if and only if that user's
+           current membership state is ``invite`` or ``join``.
 
-    #. If the ``sender``'s current membership state is not ``join``, reject.
+        #. If the ``sender``'s current membership state is not ``join``, reject.
 
-    #. If the *target user*'s current membership state is ``ban``, and the
-       ``sender``'s power level is less than the *ban level*, reject.
+        #. If the *target user*'s current membership state is ``ban``, and the
+           ``sender``'s power level is less than the *ban level*, reject.
 
-    #. If the ``sender``'s power level is greater than or equal to the *kick
-       level*, and the *target user*'s power level is less than the
-       ``sender``'s power level, allow.
+        #. If the ``sender``'s power level is greater than or equal to the *kick
+           level*, and the *target user*'s power level is less than the
+           ``sender``'s power level, allow.
 
-    #. Otherwise, reject.
+        #. Otherwise, reject.
 
-  d. If ``membership`` is ``ban``:
+    #. If ``membership`` is ``ban``:
 
-    i. If the ``sender``'s current membership state is not ``join``, reject.
+        i. If the ``sender``'s current membership state is not ``join``, reject.
 
-    #. If the ``sender``'s power level is greater than or equal to the *ban
-       level*, and the *target user*'s power level is less than the
-       ``sender``'s power level, allow.
+        #. If the ``sender``'s power level is greater than or equal to the *ban
+           level*, and the *target user*'s power level is less than the
+           ``sender``'s power level, allow.
 
-    #. Otherwise, reject.
+        #. Otherwise, reject.
 
-  e. Otherwise, the membership is unknown. Reject.
+    #. Otherwise, the membership is unknown. Reject.
 
-3. If the ``sender``'s current membership state is not ``join``, reject.
+#. If the ``sender``'s current membership state is not ``join``, reject.
 
-4. If the event type's *required power level* is greater than the ``sender``'s power
+#. If the event type's *required power level* is greater than the ``sender``'s power
    level, reject.
 
-5. If type is ``m.room.power_levels``:
+#. If type is ``m.room.power_levels``:
 
-  a. If there is no previous ``m.room.power_levels`` event in the room, allow.
+    a. If there is no previous ``m.room.power_levels`` event in the room, allow.
 
-  b. For each of the keys ``users_default``, ``events_default``,
-     ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
-     each entry being changed under the ``events`` or ``users`` keys:
+    #. For each of the keys ``users_default``, ``events_default``,
+       ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
+       each entry being changed under the ``events`` or ``users`` keys:
 
-    i. If the current value is higher than the ``sender``'s current power level,
-       reject.
+        i. If the current value is higher than the ``sender``'s current power level,
+           reject.
 
-    #. If the new value is higher than the ``sender``'s current power level,
-       reject.
+        #. If the new value is higher than the ``sender``'s current power level,
+           reject.
 
-  c. For each entry being changed under the ``users`` key, other than the
-     ``sender``'s own entry:
+    #. For each entry being changed under the ``users`` key, other than the
+       ``sender``'s own entry:
 
-    i. If the current value is equal to the ``sender``'s current power level,
-       reject.
+        i. If the current value is equal to the ``sender``'s current power level,
+           reject.
 
-  d. Otherwise, allow.
+    #. Otherwise, allow.
 
-6. If type is ``m.room.redaction``:
+#. If type is ``m.room.redaction``:
 
-  a. If the ``sender``'s power level is greater than or equal to the *redact
-     level*, allow.
+    a. If the ``sender``'s power level is greater than or equal to the *redact
+       level*, allow.
 
-  #. If the ``sender`` of the event being redacted is the same as the
-     ``sender`` of the ``m.room.redaction``, allow.
+    #. If the ``sender`` of the event being redacted is the same as the
+       ``sender`` of the ``m.room.redaction``, allow.
 
-  #. Otherwise, reject.
+    #. Otherwise, reject.
 
-7. Otherwise, allow.
+#. Otherwise, allow.
 
 .. NOTE::
 
