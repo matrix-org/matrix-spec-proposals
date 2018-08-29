@@ -227,6 +227,14 @@ paths:
                             room up to the point when the user left.
                           allOf:
                             - $ref: "definitions/timeline_batch.yaml"
+                        account_data:
+                          title: Account Data
+                          type: object
+                          description: |-
+                            The private data that this user has attached to
+                            this room.
+                          allOf:
+                          - $ref: "definitions/event_batch.yaml"
               presence:
                 title: Presence
                 type: object
@@ -253,6 +261,14 @@ paths:
                 description: |-
                   Information on end-to-end device updates, as specified in
                   |device_lists_sync|_.
+              device_one_time_keys_count:
+                title: One-time keys count
+                type: object
+                additionalProperties:
+                  type: integer
+                description: |-
+                  Information on end-to-end encryption keys, as specified
+                  in |device_lists_sync|_.
           examples:
             application/json: {
                 "next_batch": "s72595_4483_1934",

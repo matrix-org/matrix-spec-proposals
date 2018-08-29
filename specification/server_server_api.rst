@@ -26,9 +26,9 @@ to communicate with each other. Homeservers use these APIs to push messages to
 each other in real-time, to retrieve historic messages from each other, and to
 query profile and presence information about users on each other's servers.
 
-The APIs are implemented using HTTPS requests between each of the servers. 
-These HTTPS requests are strongly authenticated using public key signatures 
-at the TLS transport layer and using public key signatures in HTTP 
+The APIs are implemented using HTTPS requests between each of the servers.
+These HTTPS requests are strongly authenticated using public key signatures
+at the TLS transport layer and using public key signatures in HTTP
 Authorization headers at the HTTP layer.
 
 There are three main kinds of communication that occur between homeservers:
@@ -121,7 +121,7 @@ Retrieving Server Keys
 Each homeserver publishes its public keys under ``/_matrix/key/v2/server/{keyId}``.
 Homeservers query for keys by either getting ``/_matrix/key/v2/server/{keyId}``
 directly or by querying an intermediate notary server using a
-``/_matrix/key/v2/query/{serverName}/{keyId}`` API. Intermediate notary servers 
+``/_matrix/key/v2/query/{serverName}/{keyId}`` API. Intermediate notary servers
 query the ``/_matrix/key/v2/server/{keyId}`` API on behalf of another server and
 sign the response with their own key. A server may query multiple notary servers to
 ensure that they all report the same public keys.
@@ -261,6 +261,8 @@ The transfer of EDUs and PDUs between homeservers is performed by an exchange
 of Transaction messages, which are encoded as JSON objects, passed over an HTTP
 PUT request. A Transaction is meaningful only to the pair of homeservers that
 exchanged it; they are not globally-meaningful.
+
+Transactions are limited in size; they can have at most 50 PDUs and 100 EDUs.
 
 {{transactions_ss_http_api}}
 
@@ -590,9 +592,9 @@ To cover this case, the federation API provides a server-to-server analog of
 the ``/messages`` client API, allowing one homeserver to fetch history from
 another. This is the ``/backfill`` API.
 
-To request more history, the requesting homeserver picks another homeserver 
-that it thinks may have more (most likely this should be a homeserver for 
-some of the existing users in the room at the earliest point in history it 
+To request more history, the requesting homeserver picks another homeserver
+that it thinks may have more (most likely this should be a homeserver for
+some of the existing users in the room at the earliest point in history it
 has currently), and makes a ``/backfill`` request.
 
 Similar to backfilling a room's history, a server may not have all the events
@@ -606,7 +608,7 @@ the events it is missing.
 {{backfill_ss_http_api}}
 
 Retrieving events
-----------------
+-----------------
 
 In some circumstances, a homeserver may be missing a particular event or information
 about the room which cannot be easily determined from backfilling. These APIs provide
@@ -669,10 +671,10 @@ homeservers, though most in practice will use just two.
 The first part of the handshake usually involves using the directory server to
 request the room ID and join candidates through the |/query/directory|_
 API endpoint. In the case of a new user joining a room as a result of a received
-invite, the joining user's homeserver could optimise this step away by picking 
-the origin server of that invite message as the join candidate. However, the 
+invite, the joining user's homeserver could optimise this step away by picking
+the origin server of that invite message as the join candidate. However, the
 joining server should be aware that the origin server of the invite might since
-have left the room, so should be prepared to fall back on the regular join flow 
+have left the room, so should be prepared to fall back on the regular join flow
 if this optimisation fails.
 
 Once the joining server has the room ID and the join candidates, it then needs
@@ -692,7 +694,7 @@ event to a resident homeserver, by using the ``PUT /send_join`` endpoint.
 The resident homeserver then accepts this event into the room's event graph,
 and responds to the joining server with the full set of state for the
 newly-joined room. The resident server must also send the event to other servers
-participating in the room. 
+participating in the room.
 
 {{joins_ss_http_api}}
 
@@ -716,8 +718,8 @@ Leaving Rooms (Rejecting Invites)
 
 Normally homeservers can send appropriate ``m.room.member`` events to have users
 leave the room, or to reject local invites. Remote invites from other homeservers
-do not involve the server in the graph and therefore need another approach to 
-reject the invite. Joining the room and promptly leaving is not recommended as 
+do not involve the server in the graph and therefore need another approach to
+reject the invite. Joining the room and promptly leaving is not recommended as
 clients and servers will interpret that as accepting the invite, then leaving the
 room rather than rejecting the invite.
 
@@ -827,63 +829,43 @@ Presence
 The server API for presence is based entirely on exchange of the following
 EDUs. There are no PDUs or Federation Queries involved.
 
-Performing a presence update and poll subscription request::
+Servers should only send presence updates for users that the receiving server
+would be interested in. This can include the receiving server sharing a room
+with a given user, or a user on the receiving server has added one of the
+sending server's users to their presence list.
 
-  EDU type: m.presence
-
-  Content keys:
-    push: (optional): list of push operations.
-      Each should be an object with the following keys:
-        user_id: string containing a User ID
-        presence: "offline"|"unavailable"|"online"|"free_for_chat"
-        status_msg: (optional) string of free-form text
-        last_active_ago: milliseconds since the last activity by the user
-
-    poll: (optional): list of strings giving User IDs
-
-    unpoll: (optional): list of strings giving User IDs
-
-The presence of this combined message is two-fold: it informs the recipient
-server of the current status of one or more users on the sending server (by the
-``push`` key), and it maintains the list of users on the recipient server that
-the sending server is interested in receiving updates for, by adding (by the
-``poll`` key) or removing them (by the ``unpoll`` key). The ``poll`` and
-``unpoll`` lists apply *changes* to the implied list of users; any existing IDs
-that the server sent as ``poll`` operations in a previous message are not
-removed until explicitly requested by a later ``unpoll``.
-
-On receipt of a message containing a non-empty ``poll`` list, the receiving
-server should immediately send the sending server a presence update EDU of its
-own, containing in a ``push`` list the current state of every user that was in
-the original EDU's ``poll`` list.
-
-Sending a presence invite::
-
-  EDU type: m.presence_invite
-
-  Content keys:
-    observed_user: string giving the User ID of the user whose presence is
-      requested (i.e. the recipient of the invite)
-    observer_user: string giving the User ID of the user who is requesting to
-      observe the presence (i.e. the sender of the invite)
-
-Accepting a presence invite::
-
-  EDU type: m.presence_accept
-
-  Content keys - as for m.presence_invite
-
-Rejecting a presence invite::
-
-  EDU type: m.presence_deny
-
-  Content keys - as for m.presence_invite
+Clients may define lists of users that they are interested in via "Presence
+Lists" through the `Client-Server API`_. When users are added to a presence
+list, a ``m.presence_invite`` EDU is sent to them. The user may then accept
+or deny their involvement in the list by sending either an ``m.presence_accept``
+or ``m.presence_deny`` EDU back.
 
 .. TODO-doc
   - Explain the timing-based round-trip reduction mechanism for presence
     messages
   - Explain the zero-byte presence inference logic
   See also: docs/client-server/model/presence
+
+{{definition_ss_event_schemas_m_presence}}
+
+{{definition_ss_event_schemas_m_presence_invite}}
+
+{{definition_ss_event_schemas_m_presence_accept}}
+
+{{definition_ss_event_schemas_m_presence_deny}}
+
+
+Receipts
+--------
+
+Receipts are EDUs used to communicate a marker for a given event. Currently the
+only kind of receipt supported is a "read receipt", or where in the event graph
+the user has read up to.
+
+Read receipts for events events that a user sent do not need to be sent. It is
+implied that by sending the event the user has read up to the event.
+
+{{definition_ss_event_schemas_m_receipt}}
 
 Querying for information
 ------------------------
@@ -897,6 +879,18 @@ represent all queries is described first, followed by the more specific queries
 that can be made.
 
 {{query_ss_http_api}}
+
+OpenID
+------
+
+Third party services can exchange an access token previously generated by the
+`Client-Server API` for information about a user. This can help verify that a
+user is who they say they are without granting full access to the user's account.
+
+Access tokens generated by the OpenID API are only good for the OpenID API and
+nothing else.
+
+{{openid_ss_http_api}}
 
 Send-to-device messaging
 ------------------------
@@ -935,6 +929,32 @@ Servers should use the server described in the Matrix Content URI, which has the
 format ``mxc://{ServerName}/{MediaID}``. Servers should use the download endpoint
 described in the `Client-Server API`_, being sure to use the ``allow_remote``
 parameter (set to ``false``).
+
+
+Server Access Control Lists (ACLs)
+----------------------------------
+
+Server ACLs and their purpose are described in the `Server ACLs`_ section of the
+Client-Server API.
+
+When a remote server makes a request, it MUST be verified to be allowed by the
+server ACLs. If the server is denied access to a room, the receiving server
+MUST reply with a 403 HTTP status code and an ``errcode`` of ``M_FORBIDDEN``.
+
+The following endpoint prefixes MUST be protected:
+
+* ``/_matrix/federation/v1/send`` (on a per-PDU basis)
+* ``/_matrix/federation/v1/make_join``
+* ``/_matrix/federation/v1/make_leave``
+* ``/_matrix/federation/v1/send_join``
+* ``/_matrix/federation/v1/send_leave``
+* ``/_matrix/federation/v1/invite``
+* ``/_matrix/federation/v1/state``
+* ``/_matrix/federation/v1/state_ids``
+* ``/_matrix/federation/v1/backfill``
+* ``/_matrix/federation/v1/event_auth``
+* ``/_matrix/federation/v1/query_auth``
+* ``/_matrix/federation/v1/get_missing_events``
 
 
 Signing Events

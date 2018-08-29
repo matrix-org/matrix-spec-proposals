@@ -24,6 +24,8 @@ consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/invite/{roomId}/{eventId}":
     put:
@@ -33,6 +35,8 @@ paths:
         homeserver and the invited homeserver, it can be sent to all of the servers in the 
         room by the inviting homeserver.
       operationId: sendInvite
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: roomId

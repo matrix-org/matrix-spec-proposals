@@ -50,6 +50,8 @@ The following API endpoints are allowed to be accessed by guest accounts for
 retrieving events:
 
 * `GET /rooms/:room_id/state <#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state>`_
+* `GET /rooms/:room_id/context/:event_id <#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-context-eventid>`_
+* `GET /rooms/:room_id/event/:event_id <#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-event-eventid>`_
 * `GET /rooms/:room_id/state/:event_type/:state_key <#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state-eventtype-statekey>`_
 * `GET /rooms/:room_id/messages <#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-messages>`_
 * `GET /rooms/:room_id/initialSync <#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-initialsync>`_

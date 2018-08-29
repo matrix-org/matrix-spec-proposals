@@ -24,6 +24,8 @@ consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/make_join/{roomId}/{userId}":
     get:
@@ -32,6 +34,8 @@ paths:
         Asks the receiving server to return information that the sending
         server will need to prepare a join event to get into the room.
       operationId: makeJoin
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: roomId
@@ -45,6 +49,15 @@ paths:
           description: The user ID the join event will be for.
           required: true
           x-example: "@someone:example.org"
+        - in: query
+          type: array
+          items:
+            type: string
+          name: ver
+          description: |-
+            The room versions the sending server has support for. Defaults
+            to ``[1]``.
+          x-example: ["1", "2"]
       responses:
         200:
           description: |-
@@ -138,6 +151,30 @@ paths:
                 ["$room_p0wer_l3vels_3vent:matrix.org", {"sha256": "abase64encodedsha256hashshouldbe43byteslong"}]
               ]
             }
+        400:
+          description: |-
+            The request is invalid or the room the server is attempting
+            to join has a version that is not listed in the ``ver``
+            parameters.
+
+            The error should be passed through to clients so that they
+            may give better feedback to users.
+          schema:
+            allOf:
+              - $ref: "../client-server/definitions/errors/error.yaml"
+              - type: object
+                properties:
+                  room_version:
+                    type: string
+                    description: |-
+                      The version of the room. Required if the ``errcode``
+                      is ``M_INCOMPATIBLE_ROOM_VERSION``.
+          examples:
+            application/json: {
+              "errcode": "M_INCOMPATIBLE_ROOM_VERSION",
+              "error": "Your homeserver does not support the features required to join this room",
+              "room_version": "3"
+            }
   "/send_join/{roomId}/{eventId}":
     put:
       summary: Submit a signed join event to a resident server
@@ -145,6 +182,8 @@ paths:
         Submits a signed join event to the resident server for it
         to accept it into the room's graph.
       operationId: sendJoin
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: roomId
