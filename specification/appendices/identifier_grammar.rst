@@ -26,11 +26,11 @@ The server name represents the address at which the homeserver in question can
 be reached by other homeservers. All valid server names are included by the
 following grammar::
 
-    server_name = host [ ":" port ]
+    server_name = hostname [ ":" port ]
 
     port        = *DIGIT
 
-    host        = IPv4address / "[" IPv6address "]" / dns-name
+    hostname    = IPv4address / "[" IPv6address "]" / dns-name
 
     IPv4address = 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT
 
