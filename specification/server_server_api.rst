@@ -100,11 +100,12 @@ address and port using the following process:
   endpoints or to failover to another endpoint if an endpoint fails.
 
 When making requests to servers, use the hostname of the target server in the
-``Host`` header, regardless of the any hostname given in the SRV record. For
+``Host`` header, regardless of any hostname given in the SRV record. For
 example, if the server name is ``example.org``, and the SRV record resolves to
 ``matrix.example.org``, the ``Host`` header in the request should be
-``example.org``. The port number for target server should **not** appear in the
-``Host`` header.
+``example.org``.  If an explicit port was given in the server name, it should be
+included in the ``Host`` header; otherwise, no port number should be given in
+the ``Host`` header.
 
 Server implementation
 ~~~~~~~~~~~~~~~~~~~~~~
