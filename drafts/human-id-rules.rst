@@ -1,10 +1,12 @@
 Abstract
 ========
 
-This document outlines the format for human-readable IDs within Matrix.
+This document proposes a format for human-readable IDs (specifically, room
+aliases) within Matrix.
 
 Background
 ----------
+
 UTF-8 is the dominant character encoding for Unicode on the web. However,
 using Unicode as the character set for human-readable IDs is troublesome. There
 are many different characters which appear identical to each other, but would
@@ -17,65 +19,71 @@ introduced. A variety of checks were put in place in order to protect users. If
 an address failed the check, the raw punycode would be displayed to
 disambiguate the address.
 
-The human-readable IDs in Matrix are Room Aliases and User IDs.
-Room aliases look like ``#localpart:domain``. These aliases point to opaque
-non human-readable room IDs. These pointers can change to point at a different
-room ID at any time. User IDs look like ``@localpart:domain``. These represent
-actual end-users (there is no indirection).
+The only human-readable IDs currently in Matrix are Room Aliases.  Room aliases
+look like ``#localpart:domain``. These aliases point to opaque non
+human-readable room IDs. These pointers can change to point at a different room
+ID at any time.
 
 Proposal
 ========
 
-User IDs and Room Aliases MUST be Unicode as UTF-8. Checks are performed on
-these IDs by homeservers to protect users from phishing/spoofing attacks.
-These checks are:
+Room aliases have the format::
 
-User ID Localparts:
- - MUST NOT contain a ``:`` or start with a ``@`` or ``.``
- - MUST NOT contain one of the 107 blacklisted characters on this list:
-     http://kb.mozillazine.org/Network.IDN.blacklist_chars
- - After stripping " 0-9, +, -, [, ], _, and the space character it MUST NOT
-   contain characters from >1 language, defined by the `exemplar characters`_
-   on http://cldr.unicode.org/
+  #localpart:domain
 
+As with other identifiers using the common identifier format, the ``domain`` is
+a `server name`_ - in this case, the server hosting this alias which may be
+contacted to resolve the alias to a room ID. The ``domain`` may be an
+internationalized domain name, encoded using `punycode`_. When displaying the
+alias to users, Matrix clients may optionally decode any punycode-encoded parts
+of the domain to unicode.
+
+.. _punycode: https://tools.ietf.org/html/rfc3492
+.. _RFC3490: https://tools.ietf.org/html/rfc3490
+.. _server name: https://matrix.org/docs/spec/appendices.html#server-name
+
+The ``localpart`` is a UTF-8-encoded, `NFC`_\-normalised unicode string.  The
+following constitute invalid localparts for room aliases:
+
+XXX: we need to figure out which of thes things to actually forbid:
+
+- invalid utf8
+  - invalid byte sequences
+  - utf-16 surrogates U+D800 to U+DFFF
+  - codepoints after U+10FFFF
+  - overlong encodings
+- strings not in NFC
+- characters forbidden by NAMEPREP
+  https://tools.ietf.org/html/rfc3491#section-5 ?
+- strings which contain any of the 107 blacklisted characters listed at
+  http://kb.mozillazine.org/Network.IDN.blacklist_chars ?
+- strings which do not meet the bidi requirements
+  https://tools.ietf.org/html/rfc5893 ?
+  https://tools.ietf.org/html/rfc3454#section-6 ?
+- Things from more than one language? ["After stripping ``"``, ``0-9``, ``+``, ``-``, ``[``, ``]``, ``_``, and the
+  space character `` `` it MUST NOT
+  contain characters from more than one language, defined by the `exemplar characters`_
+  on http://cldr.unicode.org/ ]
+- strings whose first character is a Unicode combining mark?
+- strings which include the DISALLOWED code points in `RFC5892`_. (This
+  includes a lot fof things which didn't exist in 2010, like emoji, so I don't
+  think we should take this list as-is.)
+- Complicated rules about CONTEXTO or CONTEXTJ code points in `RFC5892`_.
+
+Servers should not allow clients to create aliases which are considered invalid
+according to any of the above rules. Servers should also reject attempts to
+resolve such aliases.
+
+Provided an alias is valid, the following rules should be followed to normalise
+an alias for storage and lookup:
+
+- Normalise to NFKC
+- Remove characters listed in https://tools.ietf.org/html/rfc3454#appendix-B.1
+- Case-map according to https://tools.ietf.org/html/rfc3454#appendix-B.2
+
+.. _NFC: http://unicode.org/reports/tr15/
 .. _exemplar characters: http://cldr.unicode.org/translation/characters#TOC-Exemplar-Characters
-
-Room Alias Localparts:
- - MUST NOT contain a ``:``
- - MUST NOT contain one of the 107 blacklisted characters on this list:
-   http://kb.mozillazine.org/Network.IDN.blacklist_chars
- - After stripping " 0-9, +, -, [, ], _, and the space character it MUST NOT
-   contain characters from >1 language, defined by the `exemplar characters`_
-   on http://cldr.unicode.org/
-
-.. _exemplar characters: http://cldr.unicode.org/translation/characters#TOC-Exemplar-Characters
-
-In the event of a failed user ID check, well behaved homeservers MUST:
- - Rewrite user IDs in the offending events to be punycode with an additional ``@``
-   prefix **before** delivering them to clients. There are no guarantees for
-   consistency between homeserver ID checking implementations. As a result, user
-   IDs MUST be sent in their *original* form over federation. This can be done in
-   a stateless manner as the punycode form has no information loss.
-
-In the event of a failed room alias check, well behaved homeservers MUST:
- - Send an HTTP status code 400 with an ``errcode`` of ``M_FAILED_HUMAN_ID_CHECK``
-   to the client if the client is attempting to *create* this alias.
- - Send an HTTP status code 400 with an ``errcode`` of ``M_FAILED_HUMAN_ID_CHECK``
-   to the client if the client is attempting to *join* a room via this alias.
-
-Examples::
-
-  @ebаy:domain.com (Cyrillic 'a', everything else English)
-  @@xn--eby-7cd:domain.com (Punycode with additional '@')
-
-Homeservers SHOULD NOT allow two user IDs that differ only by case. This
-SHOULD be applied based on the capitalisation rules in the CLDR dataset:
-http://cldr.unicode.org/
-
-This check SHOULD be applied when the user ID is created, in order to prevent
-registration with the same name and different capitalisations, e.g.
-``@foo:bar`` vs ``@Foo:bar`` vs ``@FOO:bar``. Homeservers MAY canonicalise
-the user ID to be completely lower-case if desired.
+.. _RFC5892: https://tools.ietf.org/html/rfc5892
 
 Rationale
 =========
@@ -90,43 +98,5 @@ English). This would always result in a failed check. Even with this though
 there are limitations. For example, сахар is entirely Cyrillic, whereas caxap is
 entirely Latin.
 
-.. _Google Chrome for IDN handling: https://www.chromium.org/developers/design-documents/idn-in-google-chrome
-
-User ID localparts cannot start with ``@`` so that a namespace of localparts
-beginning with ``@`` can be created. This namespace is used for user IDs which
-fail the ID checks. A failed ID could look like ``@@xn--c1yn36f:domain.com``.
-
-If a user ID fails the check, the user ID on the event is renamed. This doesn't
-require extra work for clients, and users will see an odd user ID rather than a
-spoofed name. Renaming is done in order to protect users of a given HS, so if a
-malicious HS doesn't rename their IDs, it doesn't affect any other HS.
-
-Room aliases cannot be rewritten as punycode and sent to the HS the alias is
-referring to as the HS will not necessarily understand the rewritten alias.
-
-Other rejected solutions for failed checks
-------------------------------------------
-- Additional key: Informational key on the event attached by HS to say "unsafe
-  ID". Problem: clients can just ignore it, and since it will appear only very
-  rarely, easy to forget when implementing clients.
-- Require client handshake: Forces clients to implement
-  a check, else they cannot communicate with the misleading ID. However, this
-  is extra overhead in both client implementations and round-trips.
-- Reject event: Outright rejection of the ID at the point of creation /
-  receiving event. Point of creation rejection is preferable to avoid the ID
-  entering the system in the first place. However, malicious HSes can just
-  allow the ID. Hence, other homeservers must reject them if they see them in
-  events. Client never sees the problem ID, provided the HS is correctly
-  implemented. However, it is difficult to ensure that ALL HSes will come to the
-  same conclusion (given the CLDR dataset does come out with new versions).
-
-Outstanding Problems
-====================
-
-Capitalisation
---------------
-
-The capitalisation rules outlined above are nice but do not fully resolve issues
-where ``@alice:example.com`` tries to speak with ``@bob:domain.com`` using
-``@Bob:domain.com``. It is up to ``domain.com`` to map ``Bob`` to ``bob`` in
-a sensible way.
+.. _Google Chrome for IDN handling:
+  https://www.chromium.org/developers/design-documents/idn-in-google-chrome
