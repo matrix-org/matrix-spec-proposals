@@ -450,10 +450,7 @@ The rules are as follows:
 
   #. Otherwise, reject.
 
-7. If the ``state_key`` starts with ``@`` and the ``state_key`` does not match
-   the ``sender``, reject.
-
-8. Otherwise, allow.
+7. Otherwise, allow.
 
 .. NOTE::
 
