@@ -342,6 +342,7 @@ be inserted. The types of state events that affect authorization are:
 - ``m.room.member``
 - ``m.room.join_rules``
 - ``m.room.power_levels``
+- ``m.room.third_party_invite``
 
 Servers should not create new events that reference unauthorized events.
 However, any event that does reference an unauthorized event is not itself
@@ -393,7 +394,33 @@ The rules are as follows:
 
     #. If ``membership`` is ``invite``:
 
-        i. If the ``sender``'s current membership state is not ``join``, reject.
+        i. If ``content`` has ``third_party_invite`` key:
+
+            #. Reject if *target user* is banned.
+
+            #. Reject if ``content.third_party_invite`` does not have a
+               ``signed`` key.
+
+            #. Reject if ``signed`` does not have ``mxid`` and ``token`` keys.
+
+            #. Reject if ``mxid`` does not match ``state_key``
+
+            #. Reject if no ``m.room.third_party_invite`` event in
+               current state with ``state_key`` matching ``token``.
+
+            #. Reject if ``sender`` does not match ``sender`` of third party
+               invite.
+
+            #. If any signature in ``signed`` matches any public key in third
+               party invite, allow. The public keys are in ``content`` of
+               third party invite under:
+
+                #. A single public key in ``public_key`` field
+                #. A list of public keys in ``public_keys`` field
+
+            #. Otherwise, reject.
+
+        #. If the ``sender``'s current membership state is not ``join``, reject.
 
         #. If *target user*'s current membership state is ``join`` or ``ban``,
            reject.
@@ -432,6 +459,11 @@ The rules are as follows:
     #. Otherwise, the membership is unknown. Reject.
 
 #. If the ``sender``'s current membership state is not ``join``, reject.
+
+#. If type is ``m.room.third_party_invite``:
+
+    a. Allow if and only if ``sender``'s current power level is greater than
+       or equal to the *invite level*.
 
 #. If the event type's *required power level* is greater than the ``sender``'s power
    level, reject.
@@ -489,9 +521,6 @@ The rules are as follows:
     the kick *and* ban levels, *and* greater than the target user's power
     level.
 
-.. TODO-spec
-
-  I think there is some magic about 3pid invites too.
 
 Retrieving event authorization information
 ++++++++++++++++++++++++++++++++++++++++++
