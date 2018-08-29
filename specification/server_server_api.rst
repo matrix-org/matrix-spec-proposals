@@ -299,8 +299,15 @@ following subset of the room state:
 
 - The ``m.room.create`` event.
 - The current ``m.room.power_levels`` event, if any.
-- The current ``m.room.join_rules`` event, if any.
 - The sender's current ``m.room.member`` event, if any.
+- If type is ``m.room.member``:
+
+    - The target's current ``m.room.member`` event, if any.
+    - If ``join`` or ``invite`` then the current ``m.room.join_rules`` event,
+      if any.
+    - If ``invite`` with ``third_party_invite`` in ``content``, then add
+      ``m.room.third_party_invite`` with state_key of ``token`` in ``signed``
+      field of ``third_party_invite``, if any.
 
 {{definition_ss_pdu}}
 
