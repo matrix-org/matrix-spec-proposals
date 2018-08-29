@@ -189,7 +189,8 @@ and used in the C-S API and the S-S API.
 They must be URI-safe to be sensibly embedded in `mxc://` URIs.
 
 [Synapse](https://github.com/matrix-org/synapse/blob/74854a97191191b08101821753c2672efc2a65fd/synapse/rest/media/v1/media_repository.py#L153)
-uses `[A-Za-z]{24}`.
+uses `[A-Za-z]{24}`, though it also uses `[0-9A-Za-z_-]{27}` for
+[URL previews](https://github.com/matrix-org/synapse/blob/74854a97191191b08101821753c2672efc2a65fd/synapse/rest/media/v1/preview_url_resource.py#L285).
 
 ### Filter IDs
 
