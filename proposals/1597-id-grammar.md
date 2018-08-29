@@ -190,7 +190,11 @@ They must be URI-safe to be sensibly embedded in `mxc://` URIs.
 
 [Synapse](https://github.com/matrix-org/synapse/blob/74854a97191191b08101821753c2672efc2a65fd/synapse/rest/media/v1/media_repository.py#L153)
 uses `[A-Za-z]{24}`, though it also uses `[0-9A-Za-z_-]{27}` for
-[URL previews](https://github.com/matrix-org/synapse/blob/74854a97191191b08101821753c2672efc2a65fd/synapse/rest/media/v1/preview_url_resource.py#L285).
+[URL
+previews](https://github.com/matrix-org/synapse/blob/74854a97191191b08101821753c2672efc2a65fd/synapse/rest/media/v1/preview_url_resource.py#L285).
+
+[matrix-media-repo](https://github.com/turt2live/matrix-media-repo/blob/539f25ee75ba6cdbb0410314b29978f4b8b1d7fe/src/github.com/turt2live/matrix-media-repo/controllers/upload_controller/upload_controller.go#L50)
+uses `[A-Za-z0-9]{32}`, via [random.go](https://github.com/turt2live/matrix-media-repo/blob/539f25ee75ba6cdbb0410314b29978f4b8b1d7fe/src/github.com/turt2live/matrix-media-repo/util/random.go#L18-L27).
 
 ### Filter IDs
 
