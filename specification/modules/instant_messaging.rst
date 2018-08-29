@@ -106,6 +106,13 @@ of tags they can render, falling back to other representations of the tags where
 For example, a client may not be able to render tables correctly and instead could fall
 back to rendering tab-delimited text.
 
+A special tag, ``mx-reply``, may appear on rich replies (described below) and should be
+allowed if, and only if, the tag appears as the very first tag in the ``formatted_body``.
+The tag cannot be nested and cannot be located after another tag in the tree. Because the
+tag contains HTML, an ``mx-reply`` is expected to have a partner closing tag and should
+be treated similar to a ``div``. Clients that support rich replies will end up stripping
+the tag and its contents and therefore may wish to exclude the tag entirely.
+
 .. Note::
    A future iteration of the specification will support more powerful and extensible
    message formatting options, such as the proposal `MSC1225 <https://github.com/matrix-org/matrix-doc/issues/1225>`_.
@@ -334,6 +341,170 @@ change unexpectedly.
   How can we make this less painful for clients to implement, without forcing
   an English-language implementation on them all? See
   https://matrix.org/jira/browse/SPEC-425.
+
+
+Forming relationships between events
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In some cases, events may wish to reference other events. This could be to form
+a thread of messages for the user to follow along with, or to provide more context
+as to what a particular event is describing. Currently, the only kind of relation
+defined is a "rich reply" where a user may reference another message to create a
+thread-like conversation.
+
+Relationships are defined under an ``m.relates_to`` key in the event's ``content``.
+If the event is of the type ``m.room.encrypted``, the ``m.relates_to`` key MUST NOT
+be covered by the encryption and instead be put alongside the encryption information
+held in the ``content``.
+
+Rich replies
+++++++++++++
+
+Users may wish to reference another message when forming their own message, and
+clients may wish to better embed the referenced message for the user to have a
+better context for the conversation being had. This sort of embedding another
+message in a message is known as a "rich reply", or occasionally just a "reply".
+
+Rich replies may reference another event which also has a rich reply, infinitely.
+A rich reply is formed through use of an ``m.relates_to`` relation for ``m.in_reply_to``
+where a single key, ``event_id``, is used to reference the event being replied to.
+The referenced event ID MUST belong to the same room where the reply is being sent.
+Rich replies can only be constructed in the form of ``m.room.message`` events with
+a ``msgtype`` of ``m.text`` or ``m.notice``. Due to the fallback requirements, rich
+replies cannot be constructed for types of ``m.emote``, ``m.file``, etc. Rich replies
+may reference any other ``m.room.message`` event, however.
+
+Fallbacks and event representation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some clients may not have support for rich replies and therefore need a fallback
+to use instead. Clients that do not support rich replies should render the event
+as if rich replies were not special.
+
+Clients that do support rich replies MUST provide the fallback format on replies,
+and MUST strip the fallback before rendering the reply. Rich replies MUST supply
+a ``format`` of ``org.matrix.custom.html`` and therefore a ``formatted_body``
+alongside the ``body`` and appropriate ``msgtype``. The specific fall back text
+is different for each ``msgtype``, however the general format for the ``body`` is:
+
+.. code-block:: text
+
+  > <@alice:example.org> This is the original body
+
+  This is where the reply goes
+
+
+The ``formatted_body`` ends up using the following template:
+
+.. code-block:: html
+
+  <mx-reply>
+    <blockquote>
+      <a href="https://matrix.to/#/!somewhere:domain.com/$event:domain.com">In reply to</a>
+      <a href="https://matrix.to/#/@alice:example.org">@alice:example.org</a>
+      <br />
+      <!-- This is where the related event's HTML would be. -->
+    </blockquote>
+  </mx-reply>
+  This is where the reply goes.
+
+
+If the related event does not have a ``formatted_body``, the event's ``body`` should
+be considered after encoding any HTML special characters. Note that the ``href`` in
+both of the anchors use a `matrix.to URI <../appendices.html#matrix-to-navigation>`_.
+
+Stripping the fallback
+``````````````````````
+
+Clients which support rich replies MUST strip the fallback from the event before
+rendering the event. This is because the text provided in the fallback cannot be
+trusted to be an accurate representation of the event. After removing the fallback,
+clients are recommended to represent the event referenced by ``m.in_reply_to``
+similar to the fallback's representation, although clients do have creative freedom
+for their user interface. Clients should prefer the ``formatted_body`` over the
+``body``, just like with other ``m.room.message`` events.
+
+To strip the fallback on the ``body``, the client should iterate over each line of
+the string, removing any lines that start with the fallback prefix ("> ",
+including the space, without quotes) and stopping when a line is encountered without
+the prefix. This prefix is known as the "fallback prefix sequence".
+
+To strip the fallback on the ``formatted_body``, the client should remove the
+entirety of the ``mx-reply`` tag.
+
+Fallback for ``m.text``, ``m.notice``, and unrecognised message types
+`````````````````````````````````````````````````````````````````````
+
+Using the prefix sequence, the first line of the related event's ``body`` should
+be prefixed with the user's ID, followed by each line being prefixed with the fallback
+prefix sequence. For example::
+
+  > <@alice:example.org> This is the first line
+  > This is the second line
+
+  This is the reply
+
+
+The ``formatted_body`` uses the template defined earlier in this section.
+
+Fallback for ``m.emote``
+````````````````````````
+
+Similar to the fallback for ``m.text``, each line gets prefixed with the fallback
+prefix sequence. However an asterisk should be inserted before the user's ID, like
+so::
+
+  > * <@alice:example.org> feels like today is going to be a great day
+
+  This is the reply
+
+
+The ``formatted_body`` has a subtle difference for the template where the asterisk
+is also inserted ahead of the user's ID:
+
+.. code-block:: html
+
+  <mx-reply>
+    <blockquote>
+      <a href="https://matrix.to/#/!somewhere:domain.com/$event:domain.com">In reply to</a>
+      * <a href="https://matrix.to/#/@alice:example.org">@alice:example.org</a>
+      <br />
+      <!-- This is where the related event's HTML would be. -->
+    </blockquote>
+  </mx-reply>
+  This is where the reply goes.
+
+
+Fallback for ``m.image``, ``m.video``, ``m.audio``, and ``m.file``
+``````````````````````````````````````````````````````````````````
+
+The related event's ``body`` would be a file name, which may not be very descriptive.
+The related event should additionally not have a ``format`` or ``formatted_body``
+in the ``content`` - if the event does, it should be ignored. Because the filename
+alone may not be descriptive, the related event's ``body`` should be considered 
+to be ``"sent a file."`` such that the output looks similar to the following::
+
+  > <@alice:example.org> sent a file.
+
+  This is the reply
+
+
+.. code-block:: html
+
+  <mx-reply>
+    <blockquote>
+      <a href="https://matrix.to/#/!somewhere:domain.com/$event:domain.com">In reply to</a>
+      <a href="https://matrix.to/#/@alice:example.org">@alice:example.org</a>
+      <br />
+      sent a file.
+    </blockquote>
+  </mx-reply>
+  This is where the reply goes.
+
+
+For ``m.image``, the text should be ``"sent an image."``. For ``m.video``, the text
+should be ``"sent a video."``. For ``m.audio``, the text should be ``"sent an audio file"``.
+
 
 Server behaviour
 ----------------
