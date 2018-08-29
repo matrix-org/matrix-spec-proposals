@@ -78,14 +78,7 @@ Resolving Server Names
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Each matrix homeserver is identified by a server name consisting of a hostname
-and an optional TLS port.
-
-.. code::
-
-    server_name = hostname [ ":" tls_port]
-    tls_port = *DIGIT
-
-.. **
+and an optional port, as described by the `grammar <../appendices.html#server-name>`_.
 
 If the port is present then the server is discovered by looking up an AAAA or
 A record for the hostname and connecting to the specified TLS port. If the port
