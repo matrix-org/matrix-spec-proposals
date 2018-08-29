@@ -804,7 +804,7 @@ identifier.
 Public Room Directory
 ---------------------
 
-To compliment the `Client-Server API`_'s room directory, homeservers need a
+To complement the `Client-Server API`_'s room directory, homeservers need a
 way to query the public rooms for another server. This can be done by making
 a request to the ``/publicRooms`` endpoint for the server the room directory
 should be retrieved for.
@@ -906,7 +906,7 @@ intended to compliment the `Device Management module`_ of the Client-Server API.
 End-to-End Encryption
 ---------------------
 
-This section compliments the `End-to-End Encryption module`_ of the Client-Server
+This section complements the `End-to-End Encryption module`_ of the Client-Server
 API. For detailed information about end-to-end encryption, please see that module.
 
 The APIs defined here are designed to be able to proxy much of the client's request
