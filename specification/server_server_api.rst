@@ -356,20 +356,36 @@ the state of the room.
 
 The rules are as follows:
 
-1. If type is ``m.room.create``, allow if and only if it has no
-   previous events - *i.e.* it is the first event in the room.
+1. If type is ``m.room.create``:
+
+    a. Reject if it has any previous events
+    b. Reject if the domain of the ``room_id`` does not match the domain of the
+       ``sender``.
+    c. Reject if ``content.room_version`` key is an unrecognized version
+    d. Otherwise, allow.
+
+#. Reject if event does not have a ``m.room.create`` in its ``auth_events``
+
+#. If type is ``m.room.aliases``:
+
+    a. Reject if event has no ``state_key``
+    b. Allow if and only if sender's domain matches ``state_key``
 
 #. If type is ``m.room.member``:
 
-    a. If ``membership`` is ``join``:
+    a. Reject if no ``state_key`` key or ``membership`` key in ``content``.
+
+    #. If ``membership`` is ``join``:
 
         i. If the only previous event is an ``m.room.create``
            and the ``state_key`` is the creator, allow.
 
         #. If the ``sender`` does not match ``state_key``, reject.
 
-        #. If the user's current membership state is ``invite`` or ``join``,
-           allow.
+        #. If the ``sender`` is banned, reject.
+
+        #. If the ``join_rule`` is ``invite`` then allow if membership state
+           is ``invite`` or ``join``.
 
         #. If the ``join_rule`` is ``public``, allow.
 
@@ -420,9 +436,16 @@ The rules are as follows:
 #. If the event type's *required power level* is greater than the ``sender``'s power
    level, reject.
 
+#. If the event has a ``state_key`` that starts with an ``@`` and does not match
+   the ``sender``, reject.
+
 #. If type is ``m.room.power_levels``:
 
-    a. If there is no previous ``m.room.power_levels`` event in the room, allow.
+    a. If ``users`` key in ``content`` is not a dictionary with keys that are
+       valid user IDs with values that are integers (or a string that is an
+       integer), reject.
+
+    #. If there is no previous ``m.room.power_levels`` event in the room, allow.
 
     #. For each of the keys ``users_default``, ``events_default``,
        ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
@@ -447,8 +470,8 @@ The rules are as follows:
     a. If the ``sender``'s power level is greater than or equal to the *redact
        level*, allow.
 
-    #. If the ``sender`` of the event being redacted is the same as the
-       ``sender`` of the ``m.room.redaction``, allow.
+    #. If the domain of the ``event_id`` of the event being redacted is the same
+       as the domain of the ``event_id`` of the ``m.room.redaction``, allow.
 
     #. Otherwise, reject.
 
