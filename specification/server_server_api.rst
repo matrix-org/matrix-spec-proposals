@@ -891,18 +891,6 @@ nothing else.
 {{openid_ss_http_api}}
 
 
-Device Management
------------------
-
-.. TODO: TravisR - Incorporate https://github.com/matrix-org/matrix-doc/issues/1212
-
-A user's devices may need to be queried over federation for different purposes, such
-as end-to-end encryption or for utilizing send-to-device messaging. This section is
-intended to compliment the `Device Management module`_ of the Client-Server API.
-
-{{user_devices_ss_http_api}}
-
-
 End-to-End Encryption
 ---------------------
 
