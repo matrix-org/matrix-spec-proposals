@@ -391,6 +391,12 @@ this check, a client cannot be sure that the sender device owns the private
 part of the ed25519 key it claims to have in the Olm payload.
 This is crucial when the ed25519 key corresponds to a verified device.
 
+If a client has multiple sessions established with another device, it should
+use the session from which it last received a message.  A client may expire old
+sessions by defining a maximum number of olm sessions that it will maintain for
+each device, and expiring sessions on a Least Recently Used basis.  The maximum
+number of olm sessions maintained per device should be at least 4.
+
 ``m.megolm.v1.aes-sha2``
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
