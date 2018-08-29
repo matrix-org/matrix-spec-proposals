@@ -71,36 +71,40 @@ This version of the specification is generated from
 `matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
 `{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
 
-Server Discovery
+Server discovery
 ----------------
 
-Resolving Server Names
+Resolving server names
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Each matrix homeserver is identified by a server name consisting of a hostname
-and an optional port, as described by the `grammar <../appendices.html#server-name>`_.
+and an optional port, as described by the `grammar
+<../appendices.html#server-name>`_.  Server names should be resolved to an IP
+address and port using the following process:
 
-If the hostname is an IP literal, then that IP address should be used, together
-with the given port number, or 8448 if no port is given.
+* If the hostname is an IP literal, then that IP address should be used,
+  together with the given port number, or 8448 if no port is given.
 
-Otherwise, if the port is present, then an IP address is discovered by looking
-up an AAAA or A record for the hostname, and the specified port is used.
+* Otherwise, if the port is present, then an IP address is discovered by
+  looking up an AAAA or A record for the hostname, and the specified port is
+  used.
 
-If the hostname is not an IP literal and no port is given, the server is
-discovered by first looking up a ``_matrix._tcp`` SRV record for the hostname,
-which may give a hostname (to be looked up using AAAA or A queries) and port.
-If the SRV record does not exist, then the server is discovered by looking up
-an AAAA or A record on the hostname and taking the default fallback port number
-of 8448.
+* If the hostname is not an IP literal and no port is given, the server is
+  discovered by first looking up a ``_matrix._tcp`` SRV record for the
+  hostname, which may give a hostname (to be looked up using AAAA or A queries)
+  and port.  If the SRV record does not exist, then the server is discovered by
+  looking up an AAAA or A record on the hostname and taking the default
+  fallback port number of 8448.
 
-Homeservers may use SRV records to load balance requests between multiple TLS
-endpoints or to failover to another endpoint if an endpoint fails.
+  Homeservers may use SRV records to load balance requests between multiple TLS
+  endpoints or to failover to another endpoint if an endpoint fails.
 
-When making requests to servers, use the DNS name of the target server in the
-``Host`` header, regardless of the host given in the SRV record. For example,
-if making a request to ``example.org``, and the SRV record resolves to ``matrix.
-example.org``, the ``Host`` header in the request should be ``example.org``. The
-port number for target server should not appear in the ``Host`` header.
+When making requests to servers, use the hostname of the target server in the
+``Host`` header, regardless of the any hostname given in the SRV record. For
+example, if the server name is ``example.org``, and the SRV record resolves to
+``matrix.example.org``, the ``Host`` header in the request should be
+``example.org``. The port number for target server should **not** appear in the
+``Host`` header.
 
 Server implementation
 ~~~~~~~~~~~~~~~~~~~~~~
