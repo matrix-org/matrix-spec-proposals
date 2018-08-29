@@ -41,7 +41,6 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/push_gateway/unstable.html>`_: Includes all changes since the latest versioned release.
-- `r0.1.0 <https://matrix.org/docs/spec/push_gateway/r0.1.0.html>`_
 
 Overview
 --------
