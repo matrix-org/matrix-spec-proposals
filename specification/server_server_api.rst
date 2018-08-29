@@ -80,17 +80,21 @@ Resolving Server Names
 Each matrix homeserver is identified by a server name consisting of a hostname
 and an optional port, as described by the `grammar <../appendices.html#server-name>`_.
 
-If the port is present then the server is discovered by looking up an AAAA or
-A record for the hostname and connecting to the specified TLS port. If the port
-is absent then the server is discovered by looking up a ``_matrix._tcp`` SRV
-record for the hostname. If this record does not exist then the server is
-discovered by looking up an AAAA or A record on the hostname and taking the
-default fallback port number of 8448.
+If the hostname is an IP literal, then that IP address should be used, together
+with the given port number, or 8448 if no port is given.
+
+Otherwise, if the port is present, then an IP address is discovered by looking
+up an AAAA or A record for the hostname, and the specified port is used.
+
+If the hostname is not an IP literal and no port is given, the server is
+discovered by first looking up a ``_matrix._tcp`` SRV record for the hostname,
+which may give a hostname (to be looked up using AAAA or A queries) and port.
+If the SRV record does not exist, then the server is discovered by looking up
+an AAAA or A record on the hostname and taking the default fallback port number
+of 8448.
+
 Homeservers may use SRV records to load balance requests between multiple TLS
 endpoints or to failover to another endpoint if an endpoint fails.
-
-If the DNS name is a literal IP address, the port specified or the fallback
-port should be used.
 
 When making requests to servers, use the DNS name of the target server in the
 ``Host`` header, regardless of the host given in the SRV record. For example,
