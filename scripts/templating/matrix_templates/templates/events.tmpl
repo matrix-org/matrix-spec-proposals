@@ -12,7 +12,6 @@
 {{event.desc}}
 
 {% for table in event.content_fields %}
-{{"``"+table.title+"``" if table.title else "" }}
 
 {{ tables.paramtable(table.rows, [(table.title or "Content") ~ " Key", "Type", "Description"]) }}
 

@@ -18,8 +18,8 @@ Request format:
 {{ tables.split_paramtable(endpoint.req_param_by_loc) }}
 {% if (endpoint.req_body_tables) %}
 {% for table in endpoint.req_body_tables -%}
-{{"``"+table.title+"``" if table.title else "" }}
-{{ tables.paramtable(table.rows) }}
+{{ tables.paramtable(table.rows, [(table.title or "") ~ " Parameter", "Type", "Description"] ) }}
+
 {% endfor -%}
 {% endif -%}
 
@@ -37,9 +37,9 @@ Response headers:
 Response format:
 
 {% for table in endpoint.res_tables -%}
-{{"``"+table.title+"``" if table.title else "" }}
 
-{{ tables.paramtable(table.rows) }}
+{{ tables.paramtable(table.rows, [(table.title or "") ~ " Parameter", "Type", "Description"] ) }}
+
 
 {% endfor %}
 {% endif -%}

@@ -36,6 +36,14 @@
 {% set fieldwidths = (([titlerow] + flatrows) |
         fieldwidths(rowkeys[0:-1], [10, 10])) + [50] -%}
 
+{% set caption = titlerow['key'] | replace (' Key', '') | replace ('Parameter', '') -%}
+{% if caption == 'Content' -%}
+{% set caption = '' -%}
+{% endif -%}
+
+{{".. table:: "}}{{ caption }}
+{{"  :widths: auto"}}
+{{""}}
 {{ tableheader(fieldwidths) }}
 {{ tablerow(fieldwidths, titlerow, rowkeys) }}
 {{ tableheader(fieldwidths) }}
@@ -59,7 +67,7 @@
  # Write a table header row, for the given column widths
  #}
 {% macro tableheader(widths) -%}
-{% for arg in widths -%}
+{{"  "}}{% for arg in widths -%}
 {{"="*arg}} {% endfor -%}
 {% endmacro %}
 
@@ -71,7 +79,7 @@
  # attributes of 'row' to look up for values to put in the columns.
  #}
 {% macro tablerow(widths, row, keys) -%}
-{% for key in keys -%}
+{{"  "}}{% for key in keys -%}
 {% set value=row[key] -%}
 {% if not loop.last -%}
    {# the first few columns need space after them -#}
@@ -81,7 +89,7 @@
    the preceding columns, plus the number of preceding columns (for the
    separators)) -#}
    {{ value | wrap(widths[loop.index0]) |
-         indent_block(widths[0:-1]|sum + loop.index0) -}}
+         indent_block(widths[0:-1]|sum + loop.index0 + 2) -}}
 {% endif -%}
 {% endfor -%}
 {% endmacro %}
@@ -93,10 +101,10 @@
  # write a tablespan row. This is a single value which spans the entire table.
  #}
 {% macro tablespan(widths, value) -%}
-{{value}}
+{{"  "}}{{value}}
 {# we write a trailing space to stop the separator being misinterpreted
  # as a header line. -#}
-{{"-"*(widths|sum + widths|length -1)}} {% endmacro %}
+{{"  "}}{{"-"*(widths|sum + widths|length -1)}} {% endmacro %}
 
 
 

@@ -318,6 +318,29 @@ table.citation td {
     border-bottom: none;
 }
 
+table.colwidths-auto caption {
+    font-family: monospace;
+    font-size: x-large;
+    padding: 2px;
+}
+
+table.colwidths-auto {
+    width:100%;
+    margin-top: 20px;
+}
+
+table.colwidths-auto tr td:nth-child(1) {
+    width: 15%;
+}
+
+table.colwidths-auto tr td:nth-child(2) {
+    width: 15%;
+}
+
+table.colwidths-auto tr td:nth-child(3) {
+    width: 70%;
+}
+
 /* -- other body styles ----------------------------------------------------- */
 
 ol.arabic {
