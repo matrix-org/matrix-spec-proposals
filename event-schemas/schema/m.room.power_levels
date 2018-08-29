@@ -88,10 +88,10 @@ properties:
       notifications:
         properties:
           room:
-            type: number
+            type: integer
             description: The level required to trigger an ``@room`` notification. Defaults to 50 if unspecified.
         additionalProperties:
-          type: number
+          type: integer
         description: |-
             The power level requirements for specific notification types.
             This is a mapping from ``key`` to power level for that notifications key.
