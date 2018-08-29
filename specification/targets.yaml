@@ -66,6 +66,9 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/stickers.rst
     - modules/report_content.rst
     - modules/third_party_networks.rst
+    - modules/openid.rst
+    - modules/server_acls.rst
+    - modules/mentions.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`", "@", ":"]

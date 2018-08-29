@@ -119,6 +119,11 @@ Email associations
 
 {{email_associations_is_http_api}}
 
+Phone number associations
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+{{phone_associations_is_http_api}}
+
 General
 ~~~~~~~
 

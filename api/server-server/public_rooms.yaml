@@ -22,6 +22,8 @@ schemes:
 basePath: /_matrix/federation/v1
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/publicRooms":
     get:
@@ -31,6 +33,8 @@ paths:
         rooms that are listed on another homeserver's directory, just those
         listed on the receiving homeserver's directory.
       operationId: getPublicRooms
+      security:
+        - signedRequest: []
       parameters:
         - in: query
           name: limit
@@ -45,6 +49,20 @@ paths:
             A pagination token from a previous call to this endpoint to fetch more
             rooms.
           x-example: "GetMoreRoomsTokenHere"
+        - in: query
+          name: include_all_networks
+          type: boolean
+          description: |-
+            Whether or not to include all networks/protocols defined by application
+            services on the homeserver. Defaults to false.
+          x-example: false
+        - in: query
+          name: third_party_instance_id
+          type: string
+          description: |-
+            The specific third party network/protocol to request from the homeserver.
+            Can only be used if ``include_all_networks`` is false.
+          x-example: "irc"
       responses:
         200:
           description: The public room list for the homeserver.

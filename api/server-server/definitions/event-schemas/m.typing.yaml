@@ -13,14 +13,15 @@
 # limitations under the License.
 
 type: object
-title: Typing Notification EDU
+title: m.typing
 description: A typing notification EDU for a user in a room.
 allOf:
   - $ref: ../edu.yaml
   - type: object
     properties:
       edu_type:
-        type: string
+        type: enum
+        enum: ['m.typing']
         description: The string ``m.typing``
         example: "m.typing"
       content:
