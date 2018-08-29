@@ -320,8 +320,9 @@ table.citation td {
 
 table.colwidths-auto caption {
     font-family: monospace;
-    font-size: x-large;
+    font-size: large;
     padding: 2px;
+    text-align: left;
 }
 
 table.colwidths-auto {
