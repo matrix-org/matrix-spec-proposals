@@ -27,12 +27,17 @@ don't think we spell it out anywhere in the spec.
 
 User IDs are
 [well-specified](https://matrix.org/docs/spec/appendices.html#user-identifiers),
-however we should consider dropping `/` from the list of allowed characters, as
-it interferes with URI escaping (XXX: how, specifically?)
+however we should consider dropping `/` from the list of allowed characters,
+because HTTP proxies might rewrite
+`/_matrix/client/r0/profile/@foo%25bar:matrix.org/displayname` to
+`/_matrix/client/r0/profile/@foo/bar:matrix.org/displayname`, messing things
+up.
 
-History: `/` was introduced to act as a heirarchical namespacing character "as
-bridged IDs for things like gitter were looking incredibly ugly and using `.`
-or `_` for namespacing rather than a more natural `/` feels ugly too".
+History: `/` was introduced with the intention of acting as a hierarchical
+namespacing character, particularly with consideration to the gitter protocol
+which uses it as a hierarchical separator. However, this was not as effective
+as hoped because `@foo/bar:example.com` looks like the ID is partitioned into
+`@foo` and `bar:example.com`.
 
 Proposal:
 
@@ -163,7 +168,9 @@ future servers.
 [Spec](https://matrix.org/docs/spec/client_server/unstable.html#m-call-invite)
 
 These are only used within the body of `m.call.*` events, as far as I am
-aware. However, they are treated as globally-unique identifiers.
+aware. They should be unique within the lifetime of a room. (Some
+implementations currently treat them as globally unique, but that is considered
+an implementation bug.)
 
 [matrix-js-sdk](https://github.com/matrix-org/matrix-js-sdk/blob/4d310cd4618db4e98a8e6b5eb812480102ee4dee/src/webrtc/call.js#L72) uses `c[0-9.]{32}`.
 [matrix-android-sdk](https://github.com/matrix-org/matrix-android-sdk/blob/5c6f785e53632e7b6fb3f3859a90c3d85b040e7f/matrix-sdk/src/main/java/org/matrix/androidsdk/call/MXWebRtcCall.java#L221) uses `c[0-9]{13}`.
