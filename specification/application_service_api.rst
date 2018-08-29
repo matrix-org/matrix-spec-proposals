@@ -311,6 +311,16 @@ An example request would be::
 
     Content: The event to send, as per the Client-Server API.
 
+Timestamp massaging
++++++++++++++++++++
+
+Previous drafts of the Application Service API permitted application services
+to alter the timestamp of their sent events by providing a ``ts`` query parameter
+when sending an event. This API has been excluded from the first release due to
+design concerns, however some servers may still support the feature. Please visit
+`issue #1585 <https://github.com/matrix-org/matrix-doc/issues/1585>`_ for more
+information.
+
 Server admin style permissions
 ++++++++++++++++++++++++++++++
 
