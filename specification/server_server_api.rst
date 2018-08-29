@@ -365,6 +365,12 @@ The rules are as follows:
     c. Reject if ``content.room_version`` key is an unrecognized version
     d. Otherwise, allow.
 
+#. Reject if event has ``auth_events`` that:
+
+    a. have duplicate entries for a given ``type`` and ``state_key`` pair
+    #. have entries whose ``type`` and ``state_key`` don't match those
+       specified by the algorithm described previously.
+
 #. Reject if event does not have a ``m.room.create`` in its ``auth_events``
 
 #. If type is ``m.room.aliases``:
