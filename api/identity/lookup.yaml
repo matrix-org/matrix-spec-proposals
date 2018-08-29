@@ -121,8 +121,11 @@ paths:
                   minItems: 2
                   maxItems: 2
                   items:
-                    - type: 3PID Medium
-                    - type: 3PID Address
+                    # TODO: Give real names to these values. Adding a `title` does not work.
+                    #- type: 3PID Medium
+                    #- type: 3PID Address
+                    - type: string
+                    - type: string
                 description: an array of arrays containing the `3PID Types`_ with the ``medium`` in first position and the ``address`` in second position.
             required:
               - "threepids"
@@ -147,9 +150,13 @@ paths:
                   minItems: 3
                   maxItems: 3
                   items:
-                    - type: 3PID Medium
-                    - type: 3PID Address
-                    - type: Matrix User ID
+                    # TODO: Give real names to these values. Adding a `title` does not work.
+                    #- type: 3PID Medium
+                    #- type: 3PID Address
+                    #- type: Matrix User ID
+                    - type: string
+                    - type: string
+                    - type: string
                 description: an array of array containing the `3PID Types`_ with the ``medium`` in first position, the ``address`` in second position and Matrix ID in third position.
             required:
               - "threepids"
