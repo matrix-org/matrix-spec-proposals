@@ -72,16 +72,6 @@ Proposal:
 > v1 rooms should be more tolerant.
 
 
-## Room Aliases
-
-[Issue](https://github.com/matrix-org/matrix-doc/issues/668)
-[Spec](https://matrix.org/docs/spec/appendices.html#room-aliases)
-
-We probably want to inherit some rules from IDNs and consider unicode normalisation.
-
-XXX: UTF-8, presumably?
-XXX: the maxlen is 255 *bytes*??
-
 ## Key IDs (for federation and e2e)
 
 These are always of the form `<algorithm>:<tok>`. 
@@ -263,3 +253,9 @@ These are used in the server-server API for
 
 Synapse uses `[A-Za-z]{16}`, and accepts anything that fits in a postgres TEXT
 field. Ref: [devicemessage.py](https://github.com/matrix-org/synapse/blob/74854a97191191b08101821753c2672efc2a65fd/synapse/handlers/devicemessage.py#L102).
+
+
+## Room Aliases
+
+These are a complex topic and are discussed in [MSC
+1608](https://github.com/matrix-org/matrix-doc/issues/1608).
