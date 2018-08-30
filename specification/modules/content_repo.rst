@@ -33,10 +33,9 @@ recipient's local homeserver, which must first transfer the content from the
 origin homeserver using the same API (unless the origin and destination
 homeservers are the same).
 
-When serving content, the server MUST provide a ``Content-Security-Policy``
-header. The policy may be more restrictive, however the minimum policy is
-``default-src 'none'; script-src 'none'; plugin-types application/pdf; 
-style-src 'unsafe-inline'; object-src 'self';``.
+When serving content, the server SHOULD provide a ``Content-Security-Policy``
+header. The recommended policy is ``default-src 'none'; script-src 'none';
+plugin-types application/pdf; style-src 'unsafe-inline'; object-src 'self';``.
 
 Client behaviour
 ----------------
