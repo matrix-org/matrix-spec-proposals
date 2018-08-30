@@ -55,7 +55,7 @@ paths:
                     description: algorithm
                     example: "signed_curve25519"
                 example: {
-                  "@alice:example.com": { 
+                  "@alice:example.com": {
                     "JLAFKJWSCS": "signed_curve25519"
                   }
                 }
@@ -126,6 +126,7 @@ paths:
                 example: {
                   "@alice:example.com": []
                 }
+            required: ['device_keys']
       responses:
         200:
           description: The device information.
@@ -178,7 +179,7 @@ paths:
                       "@alice:example.com": {
                         "ed25519:JLAFKJWSCS": "dSO80A01XiigH3uBiDVx/EjzaoycHcjq9lfQX0uWsqxl2giMIiSPR8a4d291W1ihKJL/a+myXS367WT6NAIcBA"
                       }
-                    },      
+                    },
                     "unsigned": {
                       "device_display_name": "Alice's mobile phone"
                     }
