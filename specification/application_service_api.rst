@@ -169,6 +169,34 @@ An example registration file for an IRC-bridging application service is below:
 Homeserver -> Application Service API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Legacy routes
++++++++++++++
+
+Previous drafts of the application service specification had a mix of endpoints
+that have been used in the wild for a significant amount of time. The application
+service specification now defines a version on all endpoints to be more compatible
+with the rest of the Matrix specification and the future.
+
+Homeservers should attempt to use the specified endpoints first when communicating
+with application services. However, if the application service receives an http status
+code that does not indicate success (ie: 404, 500, 501, etc) then the homeserver
+should fall back to the older endpoints for the application service.
+
+The older endpoints have the exact same request body and response format, they
+just belong at a different path. The equivalent path for each is as follows:
+
+* ``/_matrix/app/v1/transactions/{txnId}`` becomes ``/transactions/{txnId}``
+* ``/_matrix/app/v1/users/{userId}`` becomes ``/users/{userId}``
+* ``/_matrix/app/v1/rooms/{roomAlias}`` becomes ``/rooms/{roomAlias}``
+* ``/_matrix/app/v1/thirdparty/protocol/{protocol}`` becomes ``/_matrix/app/unstable/thirdparty/protocol/{protocol}``
+* ``/_matrix/app/v1/thirdparty/user/{user}`` becomes ``/_matrix/app/unstable/thirdparty/user/{user}``
+* ``/_matrix/app/v1/thirdparty/location/{location}`` becomes ``/_matrix/app/unstable/thirdparty/location/{location}``
+* ``/_matrix/app/v1/thirdparty/user`` becomes ``/_matrix/app/unstable/thirdparty/user``
+* ``/_matrix/app/v1/thirdparty/location`` becomes ``/_matrix/app/unstable/thirdparty/location``
+
+Homeservers should periodically try again for the newer endpoints because the
+application service may have been updated.
+
 Pushing events
 ++++++++++++++
 
