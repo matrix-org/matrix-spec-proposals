@@ -5,7 +5,7 @@
 
 {% if (event.typeof | length) %}
 *{{event.typeof}}*
-    {{event.typeof_info}}
+    {{event.typeof_info | indent_block(4)}}
 
 {% endif -%}
 
