@@ -19,7 +19,7 @@ info:
 host: localhost:8448
 schemes:
   - https
-basePath: /_matrix/federation/%SERVER_MAJOR_VERSION%
+basePath: /_matrix/federation/v1
 produces:
   - application/json
 paths:

@@ -19,7 +19,7 @@ host: localhost:8090
 schemes:
   - https
   - http
-basePath: /_matrix/identity/api/%IDENTITY_MAJOR_VERSION%
+basePath: /_matrix/identity/api/v1
 produces:
   - application/json
 paths:

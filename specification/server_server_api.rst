@@ -132,8 +132,8 @@ Retrieving Server Keys
   specification due to lack of significance. It may be reviewed `here
   <https://github.com/matrix-org/matrix-doc/blob/51faf8ed2e4a63d4cfd6d23183698ed169956cc0/specification/server_server_api.rst#232version-1>`_.
 
-Each homeserver publishes its public keys under ``/_matrix/key/%KEYS_MAJOR_VERSION%/server/{keyId}``.
-Homeservers query for keys by either getting ``/_matrix/key/%KEYS_MAJOR_VERSION%/server/{keyId}``
+Each homeserver publishes its public keys under ``/_matrix/key/v2/server/{keyId}``.
+Homeservers query for keys by either getting ``/_matrix/key/v2/server/{keyId}``
 directly or by querying an intermediate notary server using a
 ``/_matrix/key/v2/query/{serverName}/{keyId}`` API. Intermediate notary servers
 query the ``/_matrix/key/v2/server/{keyId}`` API on behalf of another server and
@@ -152,7 +152,7 @@ Publishing Keys
 +++++++++++++++
 
 Homeservers publish the allowed TLS fingerprints and signing keys in a JSON
-object at ``/_matrix/key/%KEYS_MAJOR_VERSION%/server/{key_id}``. The response contains a list of
+object at ``/_matrix/key/v2/server/{key_id}``. The response contains a list of
 ``verify_keys`` that are valid for signing federation requests made by the
 homeserver and for signing events. It contains a list of ``old_verify_keys`` which
 are only valid for signing events. Finally the response contains a list of TLS
@@ -166,7 +166,7 @@ Querying Keys Through Another Server
 
 Servers may query another server's keys through a notary server. The notary
 server may be another homeserver. The notary server will retrieve keys from
-the queried servers through use of the ``/_matrix/key/%KEYS_MAJOR_VERSION%/server/{keyId}``
+the queried servers through use of the ``/_matrix/key/v2/server/{keyId}``
 API. The notary server will additionally sign the response from the queried
 server before returning the results.
 
@@ -1115,7 +1115,7 @@ that are too long.
   known hash functions like SHA-256 when none of the keys have been redacted]]
 
 .. |/query/directory| replace:: ``/query/directory``
-.. _/query/directory: #get-matrix-federation-%SERVER_MAJOR_VERSION%-query-directory
+.. _/query/directory: #get-matrix-federation-v1-query-directory
 
 .. _`Invitation storage`: ../identity_service/%IDENTITY_RELEASE_LABEL%.html#invitation-storage
 .. _`Identity Service API`: ../identity_service/%IDENTITY_RELEASE_LABEL%.html

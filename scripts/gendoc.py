@@ -548,9 +548,6 @@ if __name__ == '__main__':
         # API URLs. When we have released a new major version, we'll
         # have to bump them.
         "%CLIENT_MAJOR_VERSION%": "r0",
-        "%SERVER_MAJOR_VERSION%": "v1",
-        "%IDENTITY_MAJOR_VERSION%": "v1",
-        "%KEYS_MAJOR_VERSION%": "v2",
         "%SERVER_RELEASE_LABEL%": args.server_release,
         "%IDENTITY_RELEASE_LABEL%": args.identity_release,
         "%PUSH_GATEWAY_RELEASE_LABEL%": args.push_gateway_release,

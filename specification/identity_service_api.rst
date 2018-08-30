@@ -221,7 +221,7 @@ associated with a Matrix user ID.
 
 At a later point, if the owner of that particular 3pid binds it with a Matrix user ID, the identity server will attempt to make an HTTP POST to the Matrix user's homeserver which looks roughly as below::
 
- POST https://bar.com:8448/_matrix/federation/%SERVER_MAJOR_VERSION%/3pid/onbind
+ POST https://bar.com:8448/_matrix/federation/v1/3pid/onbind
  Content-Type: application/json
 
  {
