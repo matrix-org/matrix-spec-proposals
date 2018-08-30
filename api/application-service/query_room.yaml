@@ -20,11 +20,13 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: "/"
+basePath: /_matrix/app/v1
 consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/rooms/{roomAlias}":
     get:
@@ -36,6 +38,8 @@ paths:
         homeserver will send this request when it receives a request to join a
         room alias within the application service's namespace.
       operationId: queryRoomByAlias
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: path
           name: roomAlias

@@ -27,7 +27,7 @@ The remainder of the process is as follows:
 1. Add the changes to the matrix-org/matrix.org repository (for historic tracking).
    * This is done by making a PR to the `unstyled_docs/spec` folder for the version and
      specification you're releasing.
-  * Don't forget to symlink the new release as `latest`.
+   * Don't forget to symlink the new release as `latest`.
 1. Perform a release on GitHub to tag the release.
 1. Yell from the mountaintop to the world about the new release.
 

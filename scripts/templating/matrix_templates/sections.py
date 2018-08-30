@@ -45,6 +45,10 @@ class MatrixSections(Sections):
         changelogs = self.units.get("changelogs")
         return changelogs["server_server"]
 
+    def render_application_service_changelog(self):
+        changelogs = self.units.get("changelogs")
+        return changelogs["application_service"]
+
     def _render_events(self, filterFn, sortFn):
         template = self.env.get_template("events.tmpl")
         examples = self.units.get("event_examples")
