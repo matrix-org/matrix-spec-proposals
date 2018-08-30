@@ -342,6 +342,10 @@ table.colwidths-auto tr td:nth-child(3) {
     width: 70%;
 }
 
+table.colwidths-auto tr:nth-child(even) {
+    background-color: #f4f4f4;
+}
+
 /* -- other body styles ----------------------------------------------------- */
 
 ol.arabic {
