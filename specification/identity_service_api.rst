@@ -227,36 +227,10 @@ An identity service can store pending invitations to a user's 3pid, which will
 be retrieved and can be either notified on or look up when the 3pid is
 associated with a Matrix user ID.
 
-At a later point, if the owner of that particular 3pid binds it with a Matrix user ID, the identity server will attempt to make an HTTP POST to the Matrix user's homeserver which looks roughly as below::
-
- POST https://bar.com:8448/_matrix/federation/v1/3pid/onbind
- Content-Type: application/json
-
- {
-  "medium": "email",
-  "address": "foo@bar.baz",
-  "mxid": "@alice:example.tld",
-  "invites": [
-    {
-      "medium": "email",
-      "address": "foo@bar.baz",
-      "mxid": "@alice:example.tld",
-      "room_id": "!something:example.tld",
-      "sender": "@bob:example.tld",
-      "signed": {
-        "mxid": "@alice:example.tld",
-        "signatures": {
-          "vector.im": {
-            "ed25519:0": "somesignature"
-          }
-        },
-        "token": "sometoken"
-      }
-    }
-  ]
- }
-
-Where the signature is produced using a long-term private key.
+At a later point, if the owner of that particular 3pid binds it with a Matrix user
+ID, the identity service will attempt to make an HTTP POST to the Matrix user's
+homeserver via the `/3pid/onbind`_ endpoint. The request MUST be signed with a
+long-term private key for the identity service.
 
 {{store_invite_is_http_api}}
 
