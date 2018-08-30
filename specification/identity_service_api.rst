@@ -199,6 +199,12 @@ session, within a 24 hour period since its most recent modification. Any
 attempts to perform these actions after the expiry will be rejected, and a new
 session should be created and used instead.
 
+To start a session, the client makes a request to the appropriate ``/requestToken``
+endpoint. The user then receives a validation token which should be provided
+to the client. The client then provides the token to the appropriate ``/submitToken``
+endpoint, completing the session. At this point, the client should ``/bind`` the
+third party identifier or leave it for another entity to bind.
+
 Email associations
 ~~~~~~~~~~~~~~~~~~
 
