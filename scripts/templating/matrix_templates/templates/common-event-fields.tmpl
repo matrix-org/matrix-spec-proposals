@@ -7,6 +7,6 @@
 
 {% for table in common_event.tables %}
 
-{{ tables.paramtable(table.rows, [(table.title or "") ~ " Key", "Type", "Description"]) }}
+{{ tables.paramtable(table.rows, ["Key", "Type", "Description"], (table.title or "")) }}
 
 {% endfor %}

@@ -13,7 +13,7 @@
 
 {% for table in event.content_fields %}
 
-{{ tables.paramtable(table.rows, [(table.title or "Content") ~ " Key", "Type", "Description"]) }}
+{{ tables.paramtable(table.rows, [(table.title or "Content") ~ " Key", "Type", "Description"], (table.title or "")) }}
 
 {% endfor %}
 Example{% if examples | length > 1 %}s{% endif %}:

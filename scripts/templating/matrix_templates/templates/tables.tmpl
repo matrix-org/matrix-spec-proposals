@@ -8,8 +8,8 @@
  #
  # 'rows' is the list of parameters. Each row should be a TypeTableRow.
  #}
-{% macro paramtable(rows, titles=["Parameter", "Type", "Description"]) -%}
-{{ split_paramtable({None: rows}, titles) }}
+{% macro paramtable(rows, titles=["Parameter", "Type", "Description"], caption="") -%}
+{{ split_paramtable({None: rows}, titles, caption) }}
 {% endmacro %}
 
 
@@ -21,7 +21,7 @@
  # written for that location. This is used by the standard 'paramtable' macro.
  #}
 {% macro split_paramtable(rows_by_loc,
-      titles=["Parameter", "Type", "Description"]) -%}
+      titles=["Parameter", "Type", "Description"], caption="") -%}
 
 {% set rowkeys = ['key', 'title', 'desc'] %}
 {% set titlerow = {'key': titles[0], 'title': titles[1], 'desc': titles[2]} %}
@@ -35,11 +35,6 @@
  # column. -#}
 {% set fieldwidths = (([titlerow] + flatrows) |
         fieldwidths(rowkeys[0:-1], [10, 10])) + [50] -%}
-
-{% set caption = titlerow['key'] | replace (' Key', '') | replace ('Parameter', '') -%}
-{% if caption == 'Content' -%}
-{% set caption = '' -%}
-{% endif -%}
 
 {{".. table:: "}}{{ caption }}
 {{"  :widths: auto"}}

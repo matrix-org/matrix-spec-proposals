@@ -5,13 +5,7 @@
 {{event.desc | wrap(80)}}
 {% for table in event.content_fields -%}
 
-{% if table.title -%}
-{% set tabletitle = table.title -%}
-{% else -%}
-{% set tabletitle = "" -%}
-{% endif -%}
-
-{{ tables.paramtable(table.rows, [(table.title or "Content") ~ " Key", "Type", "Description"] ) }}
+{{ tables.paramtable(table.rows, [(table.title or "Content") ~ " Key", "Type", "Description"], (table.title or "")) }}
 
 {% endfor %}
 Example:
