@@ -1110,9 +1110,9 @@ Example code
 .. _`Inviting to a room`: #inviting-to-a-room
 .. _`Canonical JSON`: ../appendices.html#canonical-json
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
-.. _`Server ACLs`:  ../client_server/unstable.html#module-server-acls
-.. _`redaction algorithm`: ../client_server/unstable.html#redactions
+.. _`Server ACLs`:  ../client_server/%CLIENT_RELEASE_LABEL%.html#module-server-acls
+.. _`redaction algorithm`: ../client_server/%CLIENT_RELEASE_LABEL%.html#redactions
 .. _`Signing JSON`: ../appendices.html#signing-json
 .. _`Checking for a signature`: ../appendices.html#checking-for-a-signature
-.. _`Device Management module`: ../client-server/%CLIENT_RELEASE_LABEL%.html#device-management
-.. _`End-to-End Encryption module`: ../client-server/%CLIENT_RELEASE_LABEL%.html#end-to-end-encryption
+.. _`Device Management module`: ../client_server/%CLIENT_RELEASE_LABEL%.html#device-management
+.. _`End-to-End Encryption module`: ../client_server/%CLIENT_RELEASE_LABEL%.html#end-to-end-encryption
