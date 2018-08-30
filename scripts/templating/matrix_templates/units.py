@@ -754,6 +754,7 @@ class MatrixUnits(Units):
     def load_apis(self, substitutions):
         cs_ver = substitutions.get("%CLIENT_RELEASE_LABEL%", "unstable")
         fed_ver = substitutions.get("%SERVER_RELEASE_LABEL%", "unstable")
+        is_ver = substitutions.get("%IDENTITY_RELEASE_LABEL%", "unstable")
         as_ver = substitutions.get("%APPSERVICE_RELEASE_LABEL%", "unstable")
         push_gw_ver = substitutions.get("%PUSH_GATEWAY_RELEASE_LABEL%", "unstable")
 
@@ -772,7 +773,7 @@ class MatrixUnits(Units):
                 as_ver,
                 "Privileged server plugins",
             ), TypeTableRow(
-                "`Identity Service API <identity_service/unstable.html>`_",
+                "`Identity Service API <identity_service/"+is_ver+".html>`_",
                 "unstable",
                 "Mapping of third party IDs to Matrix IDs",
             ), TypeTableRow(
