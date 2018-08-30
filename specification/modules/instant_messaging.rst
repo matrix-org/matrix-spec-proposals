@@ -109,7 +109,8 @@ back to rendering tab-delimited text.
 In addition to not rendering unsafe HTML, clients should not emit unsafe HTML in events.
 Likewise, clients should not generate HTML that is not needed, such as extra paragraph tags
 surrounding text due to Rich Text Editors. HTML included in events should otherwise be valid,
-such as having appropriate closing tags, valid attributes, and generally valid structure.
+such as having appropriate closing tags, appropriate attributes (considering the custom ones
+defined in this specification), and generally valid structure.
 
 .. Note::
    A future iteration of the specification will support more powerful and extensible
