@@ -1,4 +1,3 @@
-# Copyright 2016 OpenMarket Ltd
 # Copyright 2018 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,194 +19,15 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: "/"
+basePath: /_matrix/app/v1
 consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
-  "/transactions/{txnId}":
-    put:
-      summary: Send some events to the application service.
-      description: |-
-        This API is called by the homeserver when it wants to push an event
-        (or batch of events) to the application service.
-      operationId: sendTransaction
-      parameters:
-        - in: path
-          name: txnId
-          type: string
-          description: |-
-            The transaction ID for this set of events. Homeservers generate
-            these IDs and they are used to ensure idempotency of requests.
-          required: true
-          x-example: "35"
-        - in: body
-          name: body
-          description: A list of events
-          schema:
-            type: object
-            example: {
-              "events": [
-                {
-                  "age": 32,
-                  "content": {
-                      "body": "incoming message",
-                      "msgtype": "m.text"
-                  },
-                  "event_id": "$14328055551tzaee:localhost",
-                  "origin_server_ts": 1432804485886,
-                  "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
-                  "type": "m.room.message",
-                  "user_id": "@bob:localhost"
-                },
-                {
-                  "age": 1984,
-                  "content": {
-                      "body": "another incoming message",
-                      "msgtype": "m.text"
-                  },
-                  "event_id": "$1228055551ffsef:localhost",
-                  "origin_server_ts": 1432804485886,
-                  "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
-                  "type": "m.room.message",
-                  "user_id": "@bob:localhost"
-                }
-              ]
-            }
-            description: "Transaction informations"
-            properties:
-              events:
-                type: array
-                description: A list of events
-                items:
-                  type: object
-                  title: Event
-            required: ["events"]
-      responses:
-        200:
-          description: The transaction was processed successfully.
-          examples:
-            application/json: {
-            }
-          schema:
-            type: object
-  "/rooms/{roomAlias}":
-    get:
-      summary: Query if a room alias should exist on the application service.
-      description: |-
-        This endpoint is invoked by the homeserver on an application service to query
-        the existence of a given room alias. The homeserver will only query room
-        aliases inside the application service's ``aliases`` namespace. The
-        homeserver will send this request when it receives a request to join a
-        room alias within the application service's namespace.
-      operationId: queryRoomByAlias
-      parameters:
-        - in: path
-          name: roomAlias
-          type: string
-          description: The room alias being queried.
-          required: true
-          x-example: "#magicforest:example.com"
-      responses:
-        200:
-          description: |-
-            The application service indicates that this room alias exists. The
-            application service MUST have created a room and associated it with
-            the queried room alias using the client-server API. Additional
-            information about the room such as its name and topic can be set
-            before responding.
-          examples:
-            application/json: {
-            }
-          schema:
-            type: object
-        401:
-          description: |-
-            The homeserver has not supplied credentials to the application service.
-            Optional error information can be included in the body of this response.
-          examples:
-            application/json: {
-              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
-            }
-          schema:
-            $ref: ../client-server/definitions/errors/error.yaml
-        403:
-          description: |-
-            The credentials supplied by the homeserver were rejected.
-          examples:
-            application/json: {
-              "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
-            }
-          schema:
-            $ref: ../client-server/definitions/errors/error.yaml
-        404:
-          description: |-
-            The application service indicates that this room alias does not exist.
-            Optional error information can be included in the body of this response.
-          examples:
-            application/json: {
-              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
-            }
-          schema:
-            $ref: ../client-server/definitions/errors/error.yaml
-  "/users/{userId}":
-    get:
-      summary: Query if a user should exist on the application service.
-      description: |-
-        This endpoint is invoked by the homeserver on an application service to query
-        the existence of a given user ID. The homeserver will only query user IDs
-        inside the application service's ``users`` namespace. The homeserver will
-        send this request when it receives an event for an unknown user ID in
-        the application service's namespace.
-      operationId: queryUserById
-      parameters:
-        - in: path
-          name: userId
-          type: string
-          description: The user ID being queried.
-          required: true
-          x-example: "@alice:example.com"
-      responses:
-        200:
-          description: |-
-            The application service indicates that this user exists. The application
-            service MUST create the user using the client-server API.
-          examples:
-            application/json: {
-            }
-          schema:
-            type: object
-        401:
-          description: |-
-            The homeserver has not supplied credentials to the application service.
-            Optional error information can be included in the body of this response.
-          examples:
-            application/json: {
-              "errcode": "COM.EXAMPLE.MYAPPSERVICE_UNAUTHORIZED"
-            }
-          schema:
-            $ref: ../client-server/definitions/errors/error.yaml
-        403:
-          description: |-
-            The credentials supplied by the homeserver were rejected.
-          examples:
-            application/json: {
-              "errcode": "COM.EXAMPLE.MYAPPSERVICE_FORBIDDEN"
-            }
-          schema:
-            $ref: ../client-server/definitions/errors/error.yaml
-        404:
-          description: |-
-            The application service indicates that this user does not exist.
-            Optional error information can be included in the body of this response.
-          examples:
-            application/json: {
-              "errcode": "COM.EXAMPLE.MYAPPSERVICE_NOT_FOUND"
-            }
-          schema:
-            $ref: ../client-server/definitions/errors/error.yaml
-  "/_matrix/app/unstable/thirdparty/protocol/{protocol}":
+  "/thirdparty/protocol/{protocol}":
     get:
       summary: Retrieve metadata about a specific protocol that the application service supports.
       description: |-
@@ -215,6 +35,8 @@ paths:
         with specific information about the various third party networks that
         an application service supports.
       operationId: getProtocolMetadata
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: path
           name: protocol
@@ -254,7 +76,7 @@ paths:
             }
           schema:
             $ref: ../client-server/definitions/errors/error.yaml
-  "/_matrix/app/unstable/thirdparty/user/{protocol}":
+  "/thirdparty/user/{protocol}":
     get:
       summary: Retrieve the Matrix User ID of a corresponding third party user.
       description: |-
@@ -262,6 +84,8 @@ paths:
         User ID linked to a user on the third party network, given a set of
         user parameters.
       operationId: queryUserByProtocol
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: path
           name: protocol
@@ -307,12 +131,14 @@ paths:
             }
           schema:
             $ref: ../client-server/definitions/errors/error.yaml
-  "/_matrix/app/unstable/thirdparty/location/{protocol}":
+  "/thirdparty/location/{protocol}":
     get:
-      summary: Retreive Matrix-side portal rooms leading to a third party location.
+      summary: Retrieve Matrix-side portal rooms leading to a third party location.
       description: |-
         Retrieve a list of Matrix portal rooms that lead to the matched third party location.
       operationId: queryLocationByProtocol
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: path
           name: protocol
@@ -358,13 +184,15 @@ paths:
             }
           schema:
             $ref: ../client-server/definitions/errors/error.yaml
-  "/_matrix/app/unstable/thirdparty/location":
+  "/thirdparty/location":
     get:
       summary: Reverse-lookup third party locations given a Matrix room alias.
       description: |-
-        Retreive an array of third party network locations from a Matrix room
+        Retrieve an array of third party network locations from a Matrix room
         alias.
       operationId: queryLocationByAlias
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: query
           name: alias
@@ -403,12 +231,14 @@ paths:
             }
           schema:
             $ref: ../client-server/definitions/errors/error.yaml
-  "/_matrix/app/unstable/thirdparty/user":
+  "/thirdparty/user":
     get:
       summary: Reverse-lookup third party users given a Matrix User ID.
       description: |-
-        Retreive an array of third party users from a Matrix User ID.
+        Retrieve an array of third party users from a Matrix User ID.
       operationId: queryUserByID
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: query 
           name: userid

@@ -31,7 +31,7 @@ The client recieves the account data as events in the ``account_data`` sections
 of a ``/sync``.
 
 These events can also be received in a ``/events`` response or in the
-``account_data`` section of a room in ``/initialSync``. ``m.tag``
+``account_data`` section of a room in ``/sync``. ``m.tag``
 events appearing in ``/events`` will have a ``room_id`` with the room
 the tags are for.
 

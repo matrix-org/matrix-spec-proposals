@@ -1,4 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
+.. Copyright 2018 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -21,12 +22,26 @@ the homeserver. This is managed by a distinct entity called the Push Gateway.
 .. contents:: Table of Contents
 .. sectnum::
 
-Specification version
----------------------
+Changelog
+---------
+
+.. topic:: Version: %PUSH_GATEWAY_RELEASE_LABEL%
+{{push_gateway_changelog}}
 
 This version of the specification is generated from
 `matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
 `{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
+
+For the full historical changelog, see
+https://github.com/matrix-org/matrix-doc/blob/master/changelogs/push_gateway.rst
+
+Other versions of this specification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following other versions are also available, in reverse chronological order:
+
+- `HEAD <https://matrix.org/docs/spec/push_gateway/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.1.0 <https://matrix.org/docs/spec/push_gateway/r0.1.0.html>`_
 
 Overview
 --------
@@ -66,5 +81,10 @@ Homeserver behaviour
 This describes the format used by "HTTP" pushers to send notifications of
 events to Push Gateways. If the endpoint returns an HTTP error code, the
 homeserver SHOULD retry for a reasonable amount of time using exponential backoff.
+
+When pushing notifications for events, the hoemserver is expected to include all of
+the event-related fields in the ``/notify`` request. When the homeserver is performing
+a push where the ``format`` is ``"event_id_only"``, only the ``event_id``, ``room_id``,
+``counts``, and ``devices`` are required to be populated.
 
 {{push_notifier_push_http_api}}

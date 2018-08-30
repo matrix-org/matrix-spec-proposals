@@ -24,6 +24,8 @@ consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/backfill/{roomId}":
     get:
@@ -33,6 +35,8 @@ paths:
         Starting from the PDU ID(s) given in the ``v`` argument, the PDUs that preceded it
         are retrieved, up to the total number given by the ``limit``.
       operationId: backfillRoom
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: roomId
@@ -85,6 +89,8 @@ paths:
         walk of the ``prev_events`` for the ``latest_events``, ignoring any events in ``earliest_events``
         and stopping at the ``limit``.
       operationId: getMissingPreviousEvents
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: roomId

@@ -1,5 +1,5 @@
 .. Copyright 2016 Openmarket Ltd.
-.. Copyright 2017 New Vector Ltd.
+.. Copyright 2017, 2018 New Vector Ltd.
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -23,13 +23,37 @@ A homeserver is uniquely identified by its server name. This value is used in a
 number of identifiers, as described below.
 
 The server name represents the address at which the homeserver in question can
-be reached by other homeservers. The complete grammar is::
+be reached by other homeservers. All valid server names are included by the
+following grammar::
 
-    server_name = host [ ":" port]
-    port = *DIGIT
+    server_name = hostname [ ":" port ]
 
-where ``host`` is as defined by `RFC3986, section 3.2.2
-<https://tools.ietf.org/html/rfc3986#section-3.2.2>`_.
+    port        = *DIGIT
+
+    hostname    = IPv4address / "[" IPv6address "]" / dns-name
+
+    IPv4address = 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT
+
+    IPv6address = 2*45IPv6char
+
+    IPv6char    = DIGIT / %x41-46 / %x61-66 / ":" / "."
+                      ; 0-9, A-F, a-f, :, .
+
+    dns-name    = *255dns-char
+
+    dns-char    = DIGIT / ALPHA / "-" / "."
+
+— in other words, the server name is the hostname, followed by an optional
+numeric port specifier. The hostname may be a dotted-quad IPv4 address literal,
+an IPv6 address literal surrounded with square brackets, or a DNS name.
+
+IPv4 literals must be a sequence of four decimal numbers in the
+range 0 to 255, separated by ``.``. IPv6 literals must be as specified by
+`RFC3513, section 2.2 <https://tools.ietf.org/html/rfc3513#section-2.2>`_.
+
+DNS names for use with Matrix should follow the conventional restrictions for
+internet hostnames: they should consist of a series of labels separated by
+``.``, where each label consists of the alphanumeric characters or hyphens.
 
 Examples of valid server names are:
 
@@ -39,6 +63,51 @@ Examples of valid server names are:
 * ``1.2.3.4:1234`` (IPv4 literal with explicit port)
 * ``[1234:5678::abcd]`` (IPv6 literal)
 * ``[1234:5678::abcd]:5678`` (IPv6 literal with explicit port)
+
+.. Note::
+
+   This grammar is based on the standard for internet host names, as specified
+   by `RFC1123, section 2.1 <https://tools.ietf.org/html/rfc1123#page-13>`_,
+   with an extension for IPv6 literals.
+
+Server names must be treated case-sensitively: in other words,
+``@user:matrix.org`` is a different person from ``@user:MATRIX.ORG``.
+
+Some recommendations for a choice of server name follow:
+
+* The length of the complete server name should not exceed 230 characters.
+* Server names should not use upper-case characters.
+
+
+Room Versions
+~~~~~~~~~~~~~
+
+Room versions are used to change properties of rooms that may not be compatible
+with other servers. For example, changing the rules for event authorization would
+cause older servers to potentially end up in a split-brain situation due to them
+not understanding the new rules.
+
+A room version is defined as a string of characters which MUST NOT exceed 32
+codepoints in length. Room versions MUST NOT be empty and SHOULD contain only
+the characters ``a-z``, ``0-9``, ``.``, and ``-``.
+
+Room versions are not intended to be parsed and should be treated as opaque
+identifiers. Room versions consisting only of the characters ``0-9`` and ``.``
+are reserved for future versions of the Matrix protocol.
+
+The complete grammar for a legal room version is::
+
+  room_version = 1*room_version_char
+  room_version_char = DIGIT
+                    / %x61-7A         ; a-z
+                    / "-" / "."
+
+Examples of valid room versions are:
+
+* ``1`` (would be reserved by the Matrix protocol)
+* ``1.2`` (would be reserved by the Matrix protocol)
+* ``1.2-beta``
+* ``com.example.version``
 
 
 Common Identifier Format
@@ -252,3 +321,45 @@ domain).
 
 .. TODO-spec
   - Need to specify precise grammar for Room Aliases. https://matrix.org/jira/browse/SPEC-391
+
+matrix.to navigation
+++++++++++++++++++++
+
+.. NOTE::
+   This namespacing is in place pending a ``matrix://`` (or similar) URI scheme.
+   This is **not** meant to be interpreted as an available web service - see 
+   below for more details.
+
+Rooms, users, aliases, and groups may be represented as a "matrix.to" URI.
+This URI can be used to reference particular objects in a given context, such
+as mentioning a user in a message or linking someone to a particular point
+in the room's history (a permalink).
+
+A matrix.to URI has the following format, based upon the specification defined
+in RFC 3986:
+
+  https://matrix.to/#/<identifier>/<extra parameter>
+
+The identifier may be a room ID, room alias, user ID, or group ID. The extra
+parameter is only used in the case of permalinks where an event ID is referenced.
+The matrix.to URI, when referenced, must always start with ``https://matrix.to/#/``
+followed by the identifier. 
+
+Clients should not rely on matrix.to URIs falling back to a web server if accessed
+and instead should perform some sort of action within the client. For example, if
+the user were to click on a matrix.to URI for a room alias, the client may open
+a view for the user to participate in the room.
+
+Examples of matrix.to URIs are:
+
+* Room alias: ``https://matrix.to/#/#somewhere:domain.com``
+* Room: ``https://matrix.to/#/!somewhere:domain.com``
+* Permalink by room: ``https://matrix.to/#/!somewhere:domain.com/$event:example.org``
+* Permalink by room alias: ``https://matrix.to/#/#somewhere:domain.com/$event:example.org``
+* User: ``https://matrix.to/#/@alice:example.org``
+* Group: ``https://matrix.to/#/+example:domain.com``
+
+.. Note::
+   Room ID permalinks are unroutable as there is no reliable domain to send requests
+   to upon receipt of the permalink. Clients should do their best route Room IDs to
+   where they need to go, however they should also be aware of `issue #1579 <https://github.com/matrix-org/matrix-doc/issues/1579>`_.

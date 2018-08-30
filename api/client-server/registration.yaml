@@ -196,11 +196,9 @@ paths:
       description: |-
         Proxies the identity server API ``validate/email/requestToken``, but
         first checks that the given email address is not already associated
-        with an account on this Home Server. Note that, for consistency,
-        this API takes JSON objects, though the Identity Server API takes
-        ``x-www-form-urlencoded`` parameters. See the Identity Server API for
+        with an account on this Home Server. See the Identity Server API for
         further information.
-      operationId: requestTokenToRegister
+      operationId: requestTokenToRegisterEmail
       parameters:
         - in: body
           name: body
@@ -220,7 +218,7 @@ paths:
                 description: The email address
                 example: "example@example.com"
               send_attempt:
-                type: number
+                type: integer
                 description: Used to distinguish protocol level retries from requests to re-send the email.
                 example: 1
             required: ["client_secret", "email", "send_attempt"]
@@ -242,6 +240,71 @@ paths:
               However, if the home server has the ability to send email, it is recommended that the server
               instead send an email to the user with instructions on how to reset their password.
               This prevents malicious parties from being able to determine if a given email address
+              has an account on the Home Server in question.
+            * ``M_SERVER_NOT_TRUSTED`` : The ``id_server`` parameter refers to an ID server
+              that is not trusted by this Home Server.
+          examples:
+            application/json: {
+                "errcode": "M_THREEPID_IN_USE",
+                "error": "The specified address is already in use"
+              }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+  "/register/msisdn/requestToken":
+    post:
+      summary: Requests a validation token be sent to the given phone number for the purpose of registering an account
+      description: |-
+        Proxies the identity server API ``validate/msisdn/requestToken``, but
+        first checks that the given phone number is not already associated
+        with an account on this Home Server. See the Identity Server API for
+        further information.
+      operationId: requestTokenToRegisterMSISDN
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              id_server:
+                type: string
+                description: The ID server to send the onward request to as a hostname with an appended colon and port number if the port is not the default.
+                example: "id.matrix.org"
+              client_secret:
+                type: string
+                description: Client-generated secret string used to protect this session.
+                example: "this_is_my_secret_string"
+              country:
+                type: string
+                description: |-
+                  The two-letter uppercase ISO country code that the number in
+                  ``phone_number`` should be parsed as if it were dialled from.
+              phone_number:
+                type: string
+                description: The phone number.
+                example: "example@example.com"
+              send_attempt:
+                type: integer
+                description: Used to distinguish protocol level retries from requests to re-send the SMS message.
+                example: 1
+            required: ["client_secret", "country", "phone_number", "send_attempt"]
+      responses:
+        200:
+          description: |-
+            An SMS message has been sent to the specified phone number.
+            Note that this may be an SMS message containing the validation token or it may be informing
+            the user of an error.
+          examples:
+            application/json: {}
+          schema:
+            type: object
+        400:
+          description: |-
+            Part of the request was invalid. This may include one of the following error codes:
+
+            * ``M_THREEPID_IN_USE`` : The phone number is already registered to an account on this server.
+              However, if the home server has the ability to send SMS message, it is recommended that the server
+              instead send an SMS message to the user with instructions on how to reset their password.
+              This prevents malicious parties from being able to determine if a given phone number
               has an account on the Home Server in question.
             * ``M_SERVER_NOT_TRUSTED`` : The ``id_server`` parameter refers to an ID server
               that is not trusted by this Home Server.
@@ -319,10 +382,32 @@ paths:
         .. |/register/email/requestToken| replace:: ``/register/email/requestToken``
 
         .. _/register/email/requestToken: #post-matrix-client-%CLIENT_MAJOR_VERSION%-register-email-requesttoken
-      operationId: requestTokenToResetPassword
+      operationId: requestTokenToResetPasswordEmail
       responses:
         200:
           description: An email was sent to the given address
+  "/account/password/msisdn/requestToken":
+    post:
+      summary: Requests a validation token be sent to the given phone number for the purpose of resetting a user's password.
+      description: |-
+        Proxies the identity server API ``validate/msisdn/requestToken``, but
+        first checks that the given phone number **is** associated with an account
+        on this Home Server. This API should be used to request
+        validation tokens when authenticating for the
+        `account/password` endpoint. This API's parameters and response are
+        identical to that of the HS API |/register/msisdn/requestToken|_ except that
+        `M_THREEPID_NOT_FOUND` may be returned if no account matching the
+        given email address could be found. The server may instead send an
+        SMS message to the given address prompting the user to create an account.
+        `M_THREEPID_IN_USE` may not be returned.
+
+        .. |/register/msisdn/requestToken| replace:: ``/register/msisdn/requestToken``
+
+        .. _/register/msisdn/requestToken: #post-matrix-client-%CLIENT_MAJOR_VERSION%-register-email-requesttoken
+      operationId: requestTokenToResetPasswordMSISDN
+      responses:
+        200:
+          description: An SMS message was sent to the given phone number.
   "/account/deactivate":
     post:
       summary: "Deactivate a user's account."

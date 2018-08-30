@@ -148,6 +148,13 @@ Some requests have unique error codes:
 :``M_SERVER_NOT_TRUSTED``:
   The client's request used a third party server, eg. ID server, that this server does not trust.
 
+:``M_UNSUPPORTED_ROOM_VERSION``:
+  The client's request to create a room used a room version that the server does not support.
+
+:``M_INCOMPATIBLE_ROOM_VERSION``:
+  The client attempted to join a room that has a version the server does not support. Inspect the
+  ``room_version`` property of the error response for the room's version.
+
 .. _sect:txn_ids:
 
 The client-server API typically uses ``HTTP PUT`` to submit requests with a
@@ -182,6 +189,82 @@ headers to be returned by servers on all requests are:
   Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
   Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization
 
+Server Discovery
+----------------
+
+In order to allow users to connect to a Matrix server without needing to
+explicitly specify the homeserver's URL or other parameters, clients SHOULD use
+an auto-discovery mechanism to determine the server's URL based on a user's
+Matrix ID. Auto-discovery should only be done at login time.
+
+In this section, the following terms are used with specific meanings:
+
+``PROMPT``
+  Retrieve the specific piece of information from the user in a way which
+  fits within the existing client user experience, if the client is inclined to
+  do so. Failure can take place instead if no good user experience for this is
+  possible at this point.
+
+``IGNORE``
+  Stop the current auto-discovery mechanism. If no more auto-discovery
+  mechanisms are available, then the client may use other methods of
+  determining the required parameters, such as prompting the user, or using
+  default values.
+
+``FAIL_PROMPT``
+  Inform the user that auto-discovery failed due to invalid/empty data and
+  ``PROMPT`` for the parameter.
+
+``FAIL_ERROR``
+  Inform the user that auto-discovery did not return any usable URLs. Do not
+  continue further with the current login process. At this point, valid data
+  was obtained, but no homeserver is available to serve the client. No further
+  guess should be attempted and the user should make a conscientious decision
+  what to do next.
+
+Well-known URI
+~~~~~~~~~~~~~~
+
+The ``.well-known`` method uses a JSON file at a predetermined location to
+specify parameter values. The flow for this method is as follows:
+
+1. Extract the server name from the user's Matrix ID by splitting the Matrix ID
+   at the first colon.
+2. Extract the hostname from the server name.
+3. Make a GET request to ``https://hostname/.well-known/matrix/client``.
+
+   a. If the returned status code is 404, then ``IGNORE``.
+   b. If the returned status code is not 200, or the response body is empty,
+      then ``FAIL_PROMPT``.
+   c. Parse the response body as a JSON object
+
+      i. If the content cannot be parsed, then ``FAIL_PROMPT``.
+
+   d. Extract the ``base_url`` value from the ``m.homeserver`` property. This
+      value is to be used as the base URL of the homeserver.
+
+      i. If this value is not provided, then ``FAIL_PROMPT``.
+
+   e. Validate the homeserver base URL:
+
+      i. Parse it as a URL. If it is not a URL, then ``FAIL_ERROR``.
+      ii. Clients SHOULD validate that the URL points to a valid homeserver
+          before accepting it by connecting to the |/_matrix/client/versions|_
+          endpoint, ensuring that it does not return an error, and parsing and
+          validating that the data conforms with the expected response
+          format. If any step in the validation fails, then
+          ``FAIL_ERROR``. Validation is done as a simple check against
+          configuration errors, in order to ensure that the discovered address
+          points to a valid homeserver.
+
+   f. If the ``m.identity_server`` property is present, extract the
+      ``base_url`` value for use as the base URL of the identity server.
+      Validation for this URL is done as in the step above, but using
+      ``/_matrix/identity/api/v1`` as the endpoint to connect to. If the
+      ``m.identity_server`` property is present, but does not have a
+      ``base_url`` value, then ``FAIL_ERROR``.
+
+{{wellknown_cs_http_api}}
 
 Client Authentication
 ---------------------
@@ -191,16 +274,30 @@ previously obtained credentials in the form of an ``access_token`` query
 parameter or through an Authorization Header of ``Bearer $access_token``.
 An access token is typically obtained via the `Login`_ or `Registration`_ processes.
 
-When credentials are required but missing or invalid, the HTTP call will
-return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
-``M_UNKNOWN_TOKEN`` respectively.
-
 .. NOTE::
 
    This specification does not mandate a particular format for the access
    token. Clients should treat it as an opaque byte sequence. Servers are free
    to choose an appropriate format. Server implementors may like to investigate
    `macaroons <macaroon_>`_.
+
+Using access tokens
+~~~~~~~~~~~~~~~~~~~
+
+Access tokens may be provided in two ways, both of which the homeserver MUST
+support:
+
+1. Via a query string parameter, ``access_token=TheTokenHere``.
+#. Via a request header, ``Authorization: Bearer TheTokenHere``.
+
+Clients are encouraged to use the ``Authorization`` header where possible
+to prevent the access token being leaked in access/HTTP logs. The query
+string should only be used in cases where the ``Authorization`` header is
+inaccessible for the client.
+
+When credentials are required but missing or invalid, the HTTP call will
+return with a status of 401 and the error code, ``M_MISSING_TOKEN`` or
+``M_UNKNOWN_TOKEN`` respectively.
 
 Relationship between access tokens and devices
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1574,6 +1671,9 @@ have to wait in milliseconds before they can try again.
 
 .. |/user/<user_id>/account_data/<type>| replace:: ``/user/<user_id>/account_data/<type>``
 .. _/user/<user_id>/account_data/<type>: #put-matrix-client-%CLIENT_MAJOR_VERSION%-user-userid-account-data-type
+
+.. |/_matrix/client/versions| replace:: ``/_matrix/client/versions``
+.. _/_matrix/client/versions: #get-matrix-client-versions
 
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
 .. _`3PID Types`:  ../appendices.html#pid-types

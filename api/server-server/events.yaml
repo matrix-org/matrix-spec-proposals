@@ -22,6 +22,8 @@ schemes:
 basePath: /_matrix/federation/v1
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/state/{roomId}":
     get:
@@ -29,6 +31,8 @@ paths:
       description: |-
         Retrieves a snapshot of a room's state at a given event.
       operationId: getRoomState
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: roomId
@@ -45,7 +49,8 @@ paths:
       responses:
         200:
           description: |-
-            The fully resolved state for the room, including the authorization
+            The fully resolved state for the room, prior to considering any state
+            changes induced by the requested event. Includes the authorization
             chain for the events.
           schema:
             type: object
@@ -74,6 +79,8 @@ paths:
         event IDs. This performs the same function as calling ``/state/{roomId}``,
         however this returns just the event IDs rather than the full events.
       operationId: getRoomStateIds
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: roomId
@@ -90,7 +97,8 @@ paths:
       responses:
         200:
           description: |-
-            The fully resolved state for the room, including the authorization
+            The fully resolved state for the room, prior to considering any state
+            changes induced by the requested event. Includes the authorization
             chain for the events.
           schema:
             type: object
@@ -117,6 +125,8 @@ paths:
       description: |-
         Retrieves a single event.
       operationId: getEvent
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: eventId

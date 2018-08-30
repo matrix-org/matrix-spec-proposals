@@ -24,6 +24,8 @@ consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/send/{txnId}":
     put:
@@ -36,6 +38,8 @@ paths:
         The sending server must wait and retry for a 200 OK response before sending a
         transaction with a different ``txnId`` to the receiving server.
       operationId: sendTransaction
+      security:
+        - signedRequest: []
       parameters:
         - in: path
           name: txnId
@@ -56,8 +60,8 @@ paths:
                   edus:
                     type: array
                     description: |-
-                      List of ephemeral messages. May be omitted if there are no ephemeral 
-                      messages to be sent.
+                      List of ephemeral messages. May be omitted if there are no ephemeral
+                      messages to be sent. Must not include more than 100 EDUs.
                     items:
                       $ref: "definitions/edu.yaml"
           example: {
