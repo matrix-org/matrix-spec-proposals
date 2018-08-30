@@ -374,13 +374,14 @@ additional parameters on the ``/publicRooms`` client-server endpoint.
 
 {{appservice_room_directory_cs_http_api}}
 
-Event fields
-~~~~~~~~~~~~
+Referencing messages from a third party network
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. TODO-TravisR: Fix this section to be a general "3rd party networks" section
+Application services should include an ``external_url`` in the ``content`` of
+events it emits to indicate where the message came from. This typically applies
+to application services that bridge other networks into Matrix, such as IRC,
+where an HTTP URL may be available to reference. 
 
-We recommend that any events that originated from a remote network should
-include an ``external_url`` field in their content to provide a way for Matrix
-clients to link into the 'native' client from which the event originated.
-For instance, this could contain the message-ID for emails/nntp posts, or a link
-to a blog comment when bridging blog comment traffic in & out of Matrix.
+Clients should provide users with a way to access the ``external_url`` if it
+is present. Clients should additionally ensure the URL has a scheme of ``https``
+or ``http`` before making use of it.
