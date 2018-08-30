@@ -167,9 +167,14 @@ message which they receive from the event stream. The echo of the same message
 from the event stream is referred to as "remote echo". Both echoes need to be
 identified as the same message in order to prevent duplicate messages being
 displayed. Ideally this pairing would occur transparently to the user: the UI
-would not flicker as it transitions from local to remote. Flickering cannot be
-fully avoided in the current client-server API. Two scenarios need to be
-considered:
+would not flicker as it transitions from local to remote. Flickering can be
+reduced through clients making use of the transaction ID they used to send
+a particular event. The transaction ID used will be included in the event's
+``unsigned`` data as ``transaction_id`` when it arrives through the event stream.
+
+Clients unable to make use of the transaction ID are more likely to experience
+flickering due to the following two scenarios, however the effect can be mitigated
+to a degree:
 
 - The client sends a message and the remote echo arrives on the event stream
   *after* the request to send the message completes.
