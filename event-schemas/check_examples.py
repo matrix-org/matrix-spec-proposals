@@ -106,6 +106,9 @@ def check_example_dir(exampledir, schemadir):
             if filename.startswith("."):
                 # Skip over any vim .swp files.
                 continue
+            if os.dirname(os.path.join(root, filename)) == "core":
+                # Skip checking the underlying definitions
+                continue
             examplepath = os.path.join(root, filename)
             schemapath = examplepath.replace(exampledir, schemadir)
             if schemapath.find("#") >= 0:
