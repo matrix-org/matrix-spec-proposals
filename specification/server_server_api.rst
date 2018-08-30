@@ -1111,3 +1111,4 @@ that are too long.
 .. _`Inviting to a room`: #inviting-to-a-room
 .. _`Canonical JSON`: ../appendices.html#canonical-json
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
+.. _`Server ACLs`:  ../client_server/unstable.html#module-server-acls
