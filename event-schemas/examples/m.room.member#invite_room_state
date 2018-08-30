@@ -6,6 +6,7 @@
     "displayname": "Alice Margatroid"
   },
   "unsigned": {
+    "age": 1234,
     "invite_room_state": [
       {
         "type": "m.room.name",
