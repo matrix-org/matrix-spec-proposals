@@ -755,6 +755,7 @@ class MatrixUnits(Units):
         cs_ver = substitutions.get("%CLIENT_RELEASE_LABEL%", "unstable")
         fed_ver = substitutions.get("%SERVER_RELEASE_LABEL%", "unstable")
         as_ver = substitutions.get("%APPSERVICE_RELEASE_LABEL%", "unstable")
+        push_gw_ver = substitutions.get("%PUSH_GATEWAY_RELEASE_LABEL%", "unstable")
 
         # we abuse the typetable to return this info to the templates
         return TypeTable(rows=[
@@ -775,8 +776,8 @@ class MatrixUnits(Units):
                 "unstable",
                 "Mapping of third party IDs to Matrix IDs",
             ), TypeTableRow(
-                "`Push Gateway API <push_gateway/unstable.html>`_",
-                "unstable",
+                "`Push Gateway API <push_gateway/"+push_gw_ver+".html>`_",
+                push_gw_ver,
                 "Push notifications for Matrix events",
             ),
         ])
@@ -875,15 +876,6 @@ class MatrixUnits(Units):
         schema["content_fields"] = get_tables_for_schema(
             Units.prop(json_schema, "properties/content")
         )
-
-        # This is horrible because we're special casing a key on m.room.member.
-        # We need to do this because we want to document a non-content object.
-        if schema["type"] == "m.room.member":
-            invite_room_state = get_tables_for_schema(
-                json_schema["properties"]["invite_room_state"]["items"],
-            )
-            schema["content_fields"].extend(invite_room_state)
-
 
         # grab msgtype if it is the right kind of event
         msgtype = Units.prop(

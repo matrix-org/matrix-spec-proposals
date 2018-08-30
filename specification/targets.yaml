@@ -25,7 +25,7 @@ targets:
   push_gateway:
     files:
       - push_gateway.rst
-    version_label: unstable
+    version_label: "%PUSH_GATEWAY_RELEASE_LABEL%"
   appendices:
     files:
       - appendices.rst
@@ -68,6 +68,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/third_party_networks.rst
     - modules/openid.rst
     - modules/server_acls.rst
+    - modules/mentions.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`", "@", ":"]

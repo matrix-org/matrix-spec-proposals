@@ -1,0 +1,1 @@
+Move the ``invite_room_state`` definition under ``unsigned`` where it actually resides.

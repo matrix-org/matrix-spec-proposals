@@ -1,5 +1,5 @@
 .. Copyright 2016 Openmarket Ltd.
-.. Copyright 2017 New Vector Ltd.
+.. Copyright 2017, 2018 New Vector Ltd.
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -283,3 +283,45 @@ domain).
 
 .. TODO-spec
   - Need to specify precise grammar for Room Aliases. https://matrix.org/jira/browse/SPEC-391
+
+matrix.to navigation
+++++++++++++++++++++
+
+.. NOTE::
+   This namespacing is in place pending a ``matrix://`` (or similar) URI scheme.
+   This is **not** meant to be interpreted as an available web service - see 
+   below for more details.
+
+Rooms, users, aliases, and groups may be represented as a "matrix.to" URI.
+This URI can be used to reference particular objects in a given context, such
+as mentioning a user in a message or linking someone to a particular point
+in the room's history (a permalink).
+
+A matrix.to URI has the following format, based upon the specification defined
+in RFC 3986:
+
+  https://matrix.to/#/<identifier>/<extra parameter>
+
+The identifier may be a room ID, room alias, user ID, or group ID. The extra
+parameter is only used in the case of permalinks where an event ID is referenced.
+The matrix.to URI, when referenced, must always start with ``https://matrix.to/#/``
+followed by the identifier. 
+
+Clients should not rely on matrix.to URIs falling back to a web server if accessed
+and instead should perform some sort of action within the client. For example, if
+the user were to click on a matrix.to URI for a room alias, the client may open
+a view for the user to participate in the room.
+
+Examples of matrix.to URIs are:
+
+* Room alias: ``https://matrix.to/#/#somewhere:domain.com``
+* Room: ``https://matrix.to/#/!somewhere:domain.com``
+* Permalink by room: ``https://matrix.to/#/!somewhere:domain.com/$event:example.org``
+* Permalink by room alias: ``https://matrix.to/#/#somewhere:domain.com/$event:example.org``
+* User: ``https://matrix.to/#/@alice:example.org``
+* Group: ``https://matrix.to/#/+example:domain.com``
+
+.. Note::
+   Room ID permalinks are unroutable as there is no reliable domain to send requests
+   to upon receipt of the permalink. Clients should do their best route Room IDs to
+   where they need to go, however they should also be aware of `issue #1579 <https://github.com/matrix-org/matrix-doc/issues/1579>`_.

@@ -85,4 +85,4 @@ properties:
     type: string
   type:
     enum: ['m.room.server_acl']
-    type: enum
+    type: string

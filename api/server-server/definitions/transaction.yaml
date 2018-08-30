@@ -31,7 +31,7 @@ properties:
     example: 1532991320875
   pdus:
     type: array
-    description: List of persistent updates to rooms.
+    description: List of persistent updates to rooms. Must not include more than 50 PDUs.
     items:
       $ref: "pdu.yaml"
 required: ['origin', 'origin_server_ts', 'pdus']

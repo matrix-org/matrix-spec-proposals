@@ -26,9 +26,9 @@ to communicate with each other. Homeservers use these APIs to push messages to
 each other in real-time, to retrieve historic messages from each other, and to
 query profile and presence information about users on each other's servers.
 
-The APIs are implemented using HTTPS requests between each of the servers. 
-These HTTPS requests are strongly authenticated using public key signatures 
-at the TLS transport layer and using public key signatures in HTTP 
+The APIs are implemented using HTTPS requests between each of the servers.
+These HTTPS requests are strongly authenticated using public key signatures
+at the TLS transport layer and using public key signatures in HTTP
 Authorization headers at the HTTP layer.
 
 There are three main kinds of communication that occur between homeservers:
@@ -121,7 +121,7 @@ Retrieving Server Keys
 Each homeserver publishes its public keys under ``/_matrix/key/v2/server/{keyId}``.
 Homeservers query for keys by either getting ``/_matrix/key/v2/server/{keyId}``
 directly or by querying an intermediate notary server using a
-``/_matrix/key/v2/query/{serverName}/{keyId}`` API. Intermediate notary servers 
+``/_matrix/key/v2/query/{serverName}/{keyId}`` API. Intermediate notary servers
 query the ``/_matrix/key/v2/server/{keyId}`` API on behalf of another server and
 sign the response with their own key. A server may query multiple notary servers to
 ensure that they all report the same public keys.
@@ -261,6 +261,8 @@ The transfer of EDUs and PDUs between homeservers is performed by an exchange
 of Transaction messages, which are encoded as JSON objects, passed over an HTTP
 PUT request. A Transaction is meaningful only to the pair of homeservers that
 exchanged it; they are not globally-meaningful.
+
+Transactions are limited in size; they can have at most 50 PDUs and 100 EDUs.
 
 {{transactions_ss_http_api}}
 
@@ -590,9 +592,9 @@ To cover this case, the federation API provides a server-to-server analog of
 the ``/messages`` client API, allowing one homeserver to fetch history from
 another. This is the ``/backfill`` API.
 
-To request more history, the requesting homeserver picks another homeserver 
-that it thinks may have more (most likely this should be a homeserver for 
-some of the existing users in the room at the earliest point in history it 
+To request more history, the requesting homeserver picks another homeserver
+that it thinks may have more (most likely this should be a homeserver for
+some of the existing users in the room at the earliest point in history it
 has currently), and makes a ``/backfill`` request.
 
 Similar to backfilling a room's history, a server may not have all the events
@@ -669,10 +671,10 @@ homeservers, though most in practice will use just two.
 The first part of the handshake usually involves using the directory server to
 request the room ID and join candidates through the |/query/directory|_
 API endpoint. In the case of a new user joining a room as a result of a received
-invite, the joining user's homeserver could optimise this step away by picking 
-the origin server of that invite message as the join candidate. However, the 
+invite, the joining user's homeserver could optimise this step away by picking
+the origin server of that invite message as the join candidate. However, the
 joining server should be aware that the origin server of the invite might since
-have left the room, so should be prepared to fall back on the regular join flow 
+have left the room, so should be prepared to fall back on the regular join flow
 if this optimisation fails.
 
 Once the joining server has the room ID and the join candidates, it then needs
@@ -692,7 +694,7 @@ event to a resident homeserver, by using the ``PUT /send_join`` endpoint.
 The resident homeserver then accepts this event into the room's event graph,
 and responds to the joining server with the full set of state for the
 newly-joined room. The resident server must also send the event to other servers
-participating in the room. 
+participating in the room.
 
 {{joins_ss_http_api}}
 
@@ -716,8 +718,8 @@ Leaving Rooms (Rejecting Invites)
 
 Normally homeservers can send appropriate ``m.room.member`` events to have users
 leave the room, or to reject local invites. Remote invites from other homeservers
-do not involve the server in the graph and therefore need another approach to 
-reject the invite. Joining the room and promptly leaving is not recommended as 
+do not involve the server in the graph and therefore need another approach to
+reject the invite. Joining the room and promptly leaving is not recommended as
 clients and servers will interpret that as accepting the invite, then leaving the
 room rather than rejecting the invite.
 
@@ -829,7 +831,7 @@ EDUs. There are no PDUs or Federation Queries involved.
 
 Servers should only send presence updates for users that the receiving server
 would be interested in. This can include the receiving server sharing a room
-with a given user, or a user on the receiving server has added one of the 
+with a given user, or a user on the receiving server has added one of the
 sending server's users to their presence list.
 
 Clients may define lists of users that they are interested in via "Presence
@@ -848,7 +850,7 @@ or ``m.presence_deny`` EDU back.
 
 {{definition_ss_event_schemas_m_presence_invite}}
 
-{{definition_ss_event_schemas_m_presence_accept}} 
+{{definition_ss_event_schemas_m_presence_accept}}
 
 {{definition_ss_event_schemas_m_presence_deny}}
 
@@ -881,11 +883,11 @@ that can be made.
 OpenID
 ------
 
-Third party services can exchange an access token previously generated by the 
+Third party services can exchange an access token previously generated by the
 `Client-Server API` for information about a user. This can help verify that a
 user is who they say they are without granting full access to the user's account.
 
-Access tokens generated by the OpenID API are only good for the OpenID API and 
+Access tokens generated by the OpenID API are only good for the OpenID API and
 nothing else.
 
 {{openid_ss_http_api}}

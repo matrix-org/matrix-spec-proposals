@@ -60,8 +60,8 @@ paths:
                   edus:
                     type: array
                     description: |-
-                      List of ephemeral messages. May be omitted if there are no ephemeral 
-                      messages to be sent.
+                      List of ephemeral messages. May be omitted if there are no ephemeral
+                      messages to be sent. Must not include more than 100 EDUs.
                     items:
                       $ref: "definitions/edu.yaml"
           example: {
