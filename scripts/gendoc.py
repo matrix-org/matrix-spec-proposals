@@ -526,6 +526,10 @@ if __name__ == '__main__':
         help="The push gateway release tag to generate, e.g. r1.2"
     )
     parser.add_argument(
+        "--identity_release", "-i", action="store", default="unstable",
+        help="The identity service release tag to generate, e.g. r1.2"
+    )
+    parser.add_argument(
         "--list_targets", action="store_true",
         help="Do not update the specification. Instead print a list of targets.",
     )
@@ -543,13 +547,13 @@ if __name__ == '__main__':
 
     substitutions = {
         "%CLIENT_RELEASE_LABEL%": args.client_release,
-        # we hardcode a major version of r0. This ends up in the
-        # example API URLs. When we have released a new major version,
-        # we'll have to bump it.
+        # we hardcode the major versions. This ends up in the example 
+        # API URLs. When we have released a new major version, we'll
+        # have to bump them.
         "%CLIENT_MAJOR_VERSION%": "r0",
         "%SERVER_RELEASE_LABEL%": args.server_release,
-        "%SERVER_MAJOR_VERSION%": extract_major(args.server_release),
         "%APPSERVICE_RELEASE_LABEL%": args.appservice_release,
+        "%IDENTITY_RELEASE_LABEL%": args.identity_release,
         "%PUSH_GATEWAY_RELEASE_LABEL%": args.push_gateway_release,
     }
 

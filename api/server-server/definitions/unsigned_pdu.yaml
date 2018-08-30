@@ -55,8 +55,8 @@ properties:
   prev_events:
     type: array
     description: |-
-      Event IDs and hashes of the most recent events in the room that the homeserver was aware
-      of when it made this event.
+      Event IDs and reference hashes for the most recent events in the room
+      that the homeserver was aware of when it made this event.
     items:
       type: array
       maxItems: 2
@@ -86,7 +86,7 @@ properties:
   auth_events:
     type: array
     description: |-
-      An event reference list containing the authorization events that would
+      Event IDs and reference hashes for the authorization events that would
       allow this event to be in the room.
     items:
       type: array

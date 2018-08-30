@@ -37,6 +37,14 @@ class MatrixSections(Sections):
         changelogs = self.units.get("changelogs")
         return changelogs["push_gateway"]
 
+    def render_identity_service_changelog(self):
+        changelogs = self.units.get("changelogs")
+        return changelogs["identity_service"]
+
+    def render_server_server_changelog(self):
+        changelogs = self.units.get("changelogs")
+        return changelogs["server_server"]
+
     def render_application_service_changelog(self):
         changelogs = self.units.get("changelogs")
         return changelogs["application_service"]
