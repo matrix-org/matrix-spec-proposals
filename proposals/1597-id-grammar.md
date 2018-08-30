@@ -77,7 +77,7 @@ Proposal:
 > v1 rooms should be more tolerant.
 
 
-## Key IDs (for federation and e2e)
+## Key IDs (for federation, e2e, and identity servers)
 
 These are always of the form `<algorithm>:<tok>`. 
 
