@@ -19,7 +19,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: "/"
+basePath: /_matrix/app/v1
 consumes:
   - application/json
 produces:
@@ -27,7 +27,7 @@ produces:
 securityDefinitions:
   $ref: definitions/security.yaml
 paths:
-  "/_matrix/app/unstable/thirdparty/protocol/{protocol}":
+  "/thirdparty/protocol/{protocol}":
     get:
       summary: Retrieve metadata about a specific protocol that the application service supports.
       description: |-
@@ -76,7 +76,7 @@ paths:
             }
           schema:
             $ref: ../client-server/definitions/errors/error.yaml
-  "/_matrix/app/unstable/thirdparty/user/{protocol}":
+  "/thirdparty/user/{protocol}":
     get:
       summary: Retrieve the Matrix User ID of a corresponding third party user.
       description: |-
@@ -131,7 +131,7 @@ paths:
             }
           schema:
             $ref: ../client-server/definitions/errors/error.yaml
-  "/_matrix/app/unstable/thirdparty/location/{protocol}":
+  "/thirdparty/location/{protocol}":
     get:
       summary: Retrieve Matrix-side portal rooms leading to a third party location.
       description: |-
@@ -184,7 +184,7 @@ paths:
             }
           schema:
             $ref: ../client-server/definitions/errors/error.yaml
-  "/_matrix/app/unstable/thirdparty/location":
+  "/thirdparty/location":
     get:
       summary: Reverse-lookup third party locations given a Matrix room alias.
       description: |-
@@ -231,7 +231,7 @@ paths:
             }
           schema:
             $ref: ../client-server/definitions/errors/error.yaml
-  "/_matrix/app/unstable/thirdparty/user":
+  "/thirdparty/user":
     get:
       summary: Reverse-lookup third party users given a Matrix User ID.
       description: |-

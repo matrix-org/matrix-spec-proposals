@@ -20,7 +20,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: "/"
+basePath: /_matrix/app/v1
 produces:
   - application/json
 securityDefinitions:
