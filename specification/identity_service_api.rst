@@ -1,6 +1,7 @@
 .. Copyright 2016 OpenMarket Ltd
 .. Copyright 2017 Kamax.io
 .. Copyright 2017 New Vector Ltd
+.. Copyright 2018 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -56,7 +57,7 @@ is left as an exercise for the client.
 
 3PID types are described in `3PID Types`_ Appendix.
 
-API Standards
+API standards
 -------------
 
 The mandatory baseline for identity service communication in Matrix is exchanging
@@ -146,25 +147,24 @@ Key management
 
 An identity service has some long-term public-private keypairs. These are named
 in a scheme ``algorithm:identifier``, e.g. ``ed25519:0``. When signing an
-association, the Matrix standard JSON signing format is used, as specified in
-the server-server API specification under the heading "Signing Events".
+association, the standard `Signing JSON`_ algorithm applies.
 
 In the event of key compromise, the identity service may revoke any of its keys.
 An HTTP API is offered to get public keys, and check whether a particular key is
 valid.
 
-The identity server may also keep track of some short-term public-private
+The identity service may also keep track of some short-term public-private
 keypairs, which may have different usage and lifetime characteristics than the
 service's long-term keys.
 
 {{pubkey_is_http_api}}
 
-Association Lookup
+Association lookup
 ------------------
 
 {{lookup_is_http_api}}
 
-Establishing Associations
+Establishing associations
 -------------------------
 
 The flow for creating an association is session-based.
@@ -198,7 +198,7 @@ General
 
 {{associations_is_http_api}}
 
-Invitation Storage
+Invitation storage
 ------------------
 
 An identity service can store pending invitations to a user's 3pid, which will
@@ -241,10 +241,14 @@ Where the signature is produced using a long-term private key.
 Ephemeral invitation signing
 ----------------------------
 
-To aid clients who may not be able to perform crypto themselves, the identity service offers some crypto functionality to help in accepting invitations.
-This is less secure than the client doing it itself, but may be useful where this isn't possible.
+To aid clients who may not be able to perform crypto themselves, the identity
+service offers some crypto functionality to help in accepting invitations.
+This is less secure than the client doing it itself, but may be useful where
+this isn't possible.
 
 {{invitation_signing_is_http_api}}
 
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
 .. _`3PID Types`:  ../appendices.html#pid-types
+.. _`Signing JSON`: ../appendices.html#signing-json
+.. _`/3pid/onbind`: ../server_server.html#put-matrix-federation-v1-3pid-onbind
