@@ -10,5 +10,5 @@
       "hPQNcabIABgGnx3/ACv/jmMmiQHoeFfuLB17tzWp6Hw"
     ]
   },
-  "type": "m.room_key"
+  "type": "m.forwarded_room_key"
 }
