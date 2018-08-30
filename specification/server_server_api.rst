@@ -515,8 +515,9 @@ is at the top)::
 Suppose E3 and E4 are both ``m.room.name`` events which set the name of the
 room. What should the name of the room be at E5?
 
-Servers should follow one of the following recursively-defined algorithms to
-determine the room state at a given point on the DAG.
+Servers should follow one of the following recursively-defined algorithms,
+depending on the room version, to determine the room state at a given point on
+the DAG.
 
 State resolution algorithm for version 2 rooms
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -549,11 +550,12 @@ Power events
   ``state_key``. The idea behind this is that power events are events that have
   may remove someone's ability to do something in the room.
 
-Unconflicted and conflicted state maps
+Unconflicted state map and conflicted state set
   The *unconflicted state map* is the state where the value of each key exists
-  and is the same in each state :math:`S_i`.  The *conflicted state map* is the
-  set of all other state events. Note that the conflicted state map is a set of
-  events, rather than  a map of ``(event_type, state_key)`` to ``event_id``.
+  and is the same in each state :math:`S_i`.  The *conflicted state set* is the
+  set of all other state events. Note that the unconflicted state map only has
+  one event per ``(event_type, state_key)``, whereas the conflicted state set
+  may have multiple events.
 
 Auth difference
   The *auth difference* is calculated by first calculating the full auth chain
@@ -563,7 +565,7 @@ Auth difference
   the auth difference is :math:`\cup C_i - \cap C_i`.
 
 Full conflicted set
-  The *full conflicted set* is the union of the conflicted state map and the
+  The *full conflicted set* is the union of the conflicted state set and the
   auth difference.
 
 Reverse topological power ordering
@@ -594,12 +596,11 @@ Mainline ordering
   such that :math:`P` is last. Given another event :math:`e`, the *closest
   mainline event to* :math:`e` is the first event encountered in the mainline
   when iteratively descending through the ``m.room.power_levels`` events in the
-  ``auth_events`` starting at :math:`e`. If :math:`e` is not an
-  ``m.room.power_levels`` event, and does not have an ``m.room.power_levels``
-  event in its ``auth_events`` (this happens if the :math:`e` is sent before
-  the first ``m.room.power_levels`` event), then the closest mainline event to
-  :math:`e` can be considered to be a dummy event that is before any other
-  event in the mainline of :math:`P` for the purposes of condition 1 below.
+  ``auth_events`` starting at :math:`e`. If no mainline event is encountered
+  when iteratively descending through the ``m.room.power_levels`` events, then
+  the closest mainline event to :math:`e` can be considered to be a dummy event
+  that is before any other event in the mainline of :math:`P` for the purposes
+  of condition 1 below.
 
   The *mainline ordering based on* :math:`P` of a set of events is the
   ordering, from smallest to largest, using the following comparision relation
@@ -628,9 +629,9 @@ Algorithm
 
 The *resolution* of a set of states is obtained as follows:
 
-1. Take all *power events* and any events in their auth chains that appear in
-   the *full conflicted set* and order them by the *reverse topological power
-   ordering*.
+1. Take all *power events* and any events in their auth chains, recursively,
+   that appear in the *full conflicted set* and order them by the *reverse
+   topological power ordering*.
 2. Apply the *iterative auth checks algorithm* on the *unconflicted state map*
    and the list of events from the previous step to get a partially resolved
    state.
