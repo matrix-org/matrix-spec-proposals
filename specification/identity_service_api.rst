@@ -80,9 +80,11 @@ in a scheme ``algorithm:identifier``, e.g. ``ed25519:0``. When signing an
 association, the Matrix standard JSON signing format is used, as specified in
 the server-server API specification under the heading "Signing Events".
 
-In the event of key compromise, the identity service may revoke any of its keys.
-An HTTP API is offered to get public keys, and check whether a particular key is
-valid.
+.. TODO: Actually allow identity services to revoke all keys
+         See: https://github.com/matrix-org/matrix-doc/issues/1633
+.. In the event of key compromise, the identity service may revoke any of its keys.
+   An HTTP API is offered to get public keys, and check whether a particular key is
+   valid.
 
 The identity server may also keep track of some short-term public-private
 keypairs, which may have different usage and lifetime characteristics than the
