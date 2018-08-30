@@ -283,6 +283,31 @@ Device verification may reach one of several conclusions. For example:
    decrypted by such a device. For the Olm protocol, this is documented at
    https://matrix.org/git/olm/about/docs/signing.rst.
 
+Key sharing
+-----------
+
+If Bob has an encrypted conversation with Alice on his computer, and then logs in
+through his phone for the first time, he may want to have access to the previously
+exchanged messages. To address this issue, events exist for requesting and sending
+keys from device to device.
+
+When a device is missing keys to decrypt messages, it can request the keys by
+sending `m.room_key_request`_ to-device messages to other devices with
+``action`` set to ``request``. If a device wishes to share the keys with that
+device, it can forward the keys to the first device by sending an encrypted
+`m.forwarded_room_key`_ to-device message. The first device should then send an
+`m.room_key_request`_ to-device message with ``action`` set to
+``cancel_request`` to the other devices that it had originally sent the key
+request to; a device that receives a ``cancel_request`` should disregard any
+previously-received ``request`` message with the same ``request_id`` and
+``requesting_device_id``.
+
+.. NOTE::
+
+  Key sharing can be a big attack vector, thus it must be done very carefully.
+  A reasonable stategy is for a user's client to only send keys requested by the
+  verified devices of the same user.
+
 Messaging Algorithms
 --------------------
 
@@ -391,6 +416,12 @@ this check, a client cannot be sure that the sender device owns the private
 part of the ed25519 key it claims to have in the Olm payload.
 This is crucial when the ed25519 key corresponds to a verified device.
 
+If a client has multiple sessions established with another device, it should
+use the session from which it last received a message.  A client may expire old
+sessions by defining a maximum number of olm sessions that it will maintain for
+each device, and expiring sessions on a Least Recently Used basis.  The maximum
+number of olm sessions maintained per device should be at least 4.
+
 ``m.megolm.v1.aes-sha2``
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -463,6 +494,10 @@ Events
 {{m_room_encrypted_event}}
 
 {{m_room_key_event}}
+
+{{m_room_key_request_event}}
+
+{{m_forwarded_room_key_event}}
 
 Key management API
 ~~~~~~~~~~~~~~~~~~

@@ -125,7 +125,7 @@ def resolve_references(path, schema):
         if '$ref' in schema:
             value = schema['$ref']
             path = os.path.join(os.path.dirname(path), value)
-            with open(path) as f:
+            with open(path, encoding="utf-8") as f:
                 ref = yaml.load(f, OrderedLoader)
             result = resolve_references(path, ref)
             del schema['$ref']
@@ -664,11 +664,11 @@ class MatrixUnits(Units):
                     continue
                 filepath = os.path.join(path, filename)
                 logger.info("Reading swagger API: %s" % filepath)
-                with open(filepath, "r") as f:
+                with open(filepath, "r", encoding="utf-8") as f:
                     # strip .yaml
                     group_name = filename[:-5].replace("-", "_")
                     group_name = "%s_%s" % (group_name, suffix)
-                    api = yaml.load(f.read(), OrderedLoader)
+                    api = yaml.load(f, OrderedLoader)
                     api = resolve_references(filepath, api)
                     api["__meta"] = self._load_swagger_meta(
                         api, group_name
@@ -698,11 +698,11 @@ class MatrixUnits(Units):
                 continue
             filepath = os.path.join(path, filename)
             logger.info("Reading swagger definition: %s" % filepath)
-            with open(filepath, "r") as f:
+            with open(filepath, "r", encoding="utf-8") as f:
                 # strip .yaml
                 group_name = re.sub(r"[^a-zA-Z0-9_]", "_", filename[:-5])
                 group_name = "%s_%s" % (prefix, group_name)
-                definition = yaml.load(f.read(), OrderedLoader)
+                definition = yaml.load(f, OrderedLoader)
                 definition = resolve_references(filepath, definition)
                 if 'type' not in definition:
                     continue
@@ -741,7 +741,7 @@ class MatrixUnits(Units):
             event_type = filename[:-5]  # strip the ".yaml"
             logger.info("Reading event schema: %s" % filepath)
 
-            with open(filepath) as f:
+            with open(filepath, encoding="utf-8") as f:
                 event_schema = yaml.load(f, OrderedLoader)
 
             schema_info = process_data_type(
@@ -754,6 +754,8 @@ class MatrixUnits(Units):
     def load_apis(self, substitutions):
         cs_ver = substitutions.get("%CLIENT_RELEASE_LABEL%", "unstable")
         fed_ver = substitutions.get("%SERVER_RELEASE_LABEL%", "unstable")
+        as_ver = substitutions.get("%APPSERVICE_RELEASE_LABEL%", "unstable")
+        push_gw_ver = substitutions.get("%PUSH_GATEWAY_RELEASE_LABEL%", "unstable")
 
         # we abuse the typetable to return this info to the templates
         return TypeTable(rows=[
@@ -766,16 +768,16 @@ class MatrixUnits(Units):
                 fed_ver,
                 "Federation between servers",
             ), TypeTableRow(
-                "`Application Service API <application_service/unstable.html>`_",
-                "unstable",
+                "`Application Service API <application_service/"+as_ver+".html>`_",
+                as_ver,
                 "Privileged server plugins",
             ), TypeTableRow(
                 "`Identity Service API <identity_service/unstable.html>`_",
                 "unstable",
                 "Mapping of third party IDs to Matrix IDs",
             ), TypeTableRow(
-                "`Push Gateway API <push_gateway/unstable.html>`_",
-                "unstable",
+                "`Push Gateway API <push_gateway/"+push_gw_ver+".html>`_",
+                push_gw_ver,
                 "Push notifications for Matrix events",
             ),
         ])
@@ -791,7 +793,7 @@ class MatrixUnits(Units):
             filepath = os.path.join(path, filename)
             logger.info("Reading event example: %s" % filepath)
             try:
-                with open(filepath, "r") as f:
+                with open(filepath, "r", encoding="utf-8") as f:
                     example = json.load(f)
                     examples[filename] = examples.get(filename, [])
                     examples[filename].append(example)
@@ -829,7 +831,7 @@ class MatrixUnits(Units):
     def read_event_schema(self, filepath):
         logger.info("Reading %s" % filepath)
 
-        with open(filepath, "r") as f:
+        with open(filepath, "r", encoding="utf-8") as f:
             json_schema = yaml.load(f, OrderedLoader)
 
         schema = {
@@ -941,7 +943,7 @@ class MatrixUnits(Units):
 
             title_part = None
             changelog_lines = []
-            with open(path, "r") as f:
+            with open(path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
             prev_line = None
             for line in (tc_lines + lines):
