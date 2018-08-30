@@ -152,9 +152,8 @@ paths:
     post:
       summary: Deletes a third party identifier from the user's account
       description: |-
-        Removes a third party identifier from the user's account. The homeserver
-        should attempt to unbind the identifier from the identity service, if the
-        homeserver is able to reasonably determine the identity service used.
+        Removes a third party identifier from the user's account. This may not
+        cause an unbind of the identifier from the identity service.
       operationId: delete3pidFromAccount
       security:
         - accessToken: []
@@ -181,16 +180,6 @@ paths:
             user.
           schema:
             type: object
-            properties:
-              id_server_unbind_result:
-                type: string
-                description: |-
-                  The result of the homeserver's attempt to unbind the identifier from
-                  the identity service. ``success`` indicates that the homeserver was
-                  able to unbind the identifier while ``no-support`` means the homeserver
-                  was not able to unbind, likely due to the identity service not supporting
-                  the operation. Defaults to ``no-support``.
-                example: "success"
       tags:
         - User data
   "/account/3pid/email/requestToken":
