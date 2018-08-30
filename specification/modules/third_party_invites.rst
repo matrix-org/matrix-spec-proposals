@@ -190,10 +190,6 @@ H3 is attempting to join.
         |              |                     | (Federation) Emit m.room.member for invite     |                 |                            |
         |              |                     |----------------------------------------------->|                 |                            |
         |              |                     |                                                |                 |                            |
-        |              |                     |                                                | Accept event    |                            |
-        |              |                     |                                                |-------------    |                            |
-        |              |                     |                                                |            |    |                            |
-        |              |                     |                                                |<------------    |                            |
         |              |                     |                                                |                 |                            |
         |              |                     | (Federation) Emit the m.room.member event sent to H2             |                            |
         |              |                     |----------------------------------------------------------------->|                            |
