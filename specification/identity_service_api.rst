@@ -18,6 +18,8 @@
 Identity Service API
 ====================
 
+{{unstable_warning_block_IDENTITY_RELEASE_LABEL}}
+
 The Matrix client-server and server-server APIs are largely expressed in Matrix
 user identifiers. From time to time, it is useful to refer to users by other
 ("third-party") identifiers, or "3pid"s, e.g. their email address or phone

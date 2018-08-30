@@ -15,6 +15,8 @@
 Client-Server API
 =================
 
+{{unstable_warning_block_CLIENT_RELEASE_LABEL}}
+
 The client-server API provides a simple lightweight API to let clients send
 messages, control rooms and synchronise conversation history. It is designed to
 support both lightweight clients which store no state and lazy-load data from
