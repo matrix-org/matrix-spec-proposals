@@ -138,7 +138,7 @@ validate that the public key used for signing is still valid, by checking
 
 No other homeservers may reject the joining of the room on the basis of
 ``key_validity_url``, this is so that all homeservers have a consistent view of
-the room. They may, however, indicate to their clients that a member's'
+the room. They may, however, indicate to their clients that a member's
 membership is questionable.
 
 For example, given H1, H2, and H3 as homeservers, UserA as a user of H1, and an
