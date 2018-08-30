@@ -137,6 +137,22 @@ should allow a 3pid to be mapped to a Matrix user identity, but not in the other
 direction (i.e. one should not be able to get all 3pids associated with a Matrix
 user ID, or get all 3pids associated with a 3pid).
 
+Web browser clients
+-------------------
+
+It is realistic to expect that some clients will be written to be run within a web
+browser or similar environment. In these cases, the identity service should respond to
+pre-flight requests and supply Cross-Origin Resource Sharing (CORS) headers on all
+requests.
+
+When a client approaches the server with a pre-flight (OPTIONS) request, the server
+should respond with the CORS headers for that route. The recommended CORS headers
+to be returned by servers on all requests are::
+
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+  Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization
+
 Status check
 ------------
 
