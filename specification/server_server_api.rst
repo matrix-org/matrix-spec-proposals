@@ -64,12 +64,26 @@ request.
 .. contents:: Table of Contents
 .. sectnum::
 
-Specification version
----------------------
+Changelog
+---------
+
+.. topic:: Version: %SERVER_RELEASE_LABEL%
+{{server_server_changelog}}
 
 This version of the specification is generated from
 `matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
 `{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
+
+For the full historical changelog, see
+https://github.com/matrix-org/matrix-doc/blob/master/changelogs/server_server.rst
+
+
+Other versions of this specification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following other versions are also available, in reverse chronological order:
+
+- `HEAD <https://matrix.org/docs/spec/server_server/unstable.html>`_: Includes all changes since the latest versioned release.
 
 Server discovery
 ----------------
@@ -1077,12 +1091,13 @@ Example code
 .. |/query/directory| replace:: ``/query/directory``
 .. _/query/directory: #get-matrix-federation-v1-query-directory
 
-.. _`Invitation storage`: ../identity_service/unstable.html#invitation-storage
-.. _`Identity Service API`: ../identity_service/unstable.html
-.. _`Client-Server API`: ../client_server/unstable.html
+.. _`Invitation storage`: ../identity_service/%IDENTITY_RELEASE_LABEL%.html#invitation-storage
+.. _`Identity Service API`: ../identity_service/%IDENTITY_RELEASE_LABEL%.html
+.. _`Client-Server API`: ../client_server/%CLIENT_RELEASE_LABEL%.html
 .. _`Inviting to a room`: #inviting-to-a-room
 .. _`Canonical JSON`: ../appendices.html#canonical-json
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
+.. _`Server ACLs`:  ../client_server/unstable.html#module-server-acls
 .. _`redaction algorithm`: ../client_server/unstable.html#redactions
 .. _`Signing JSON`: ../appendices.html#signing-json
 .. _`Checking for a signature`: ../appendices.html#checking-for-a-signature

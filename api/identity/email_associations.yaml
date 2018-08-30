@@ -18,8 +18,9 @@ info:
 host: localhost:8090
 schemes:
   - https
-  - http
 basePath: /_matrix/identity/api/v1
+consumes:
+  - application/json
 produces:
   - application/json
 paths:
@@ -34,13 +35,13 @@ paths:
         that that user was able to read the email for that email address, and
         so we validate ownership of the email address.
 
-        Note that Home Servers offer APIs that proxy this API, adding
+        Note that homeservers offer APIs that proxy this API, adding
         additional behaviour on top, for example,
         ``/register/email/requestToken`` is designed specifically for use when
         registering an account and therefore will inform the user if the email
         address given is already registered on the server.
 
-        Note: for backwards compatibility with older versions of this
+        Note: for backwards compatibility with previous drafts of this
         specification, the parameters may also be specified as
         ``application/x-form-www-urlencoded`` data.  However, this usage is
         deprecated.
@@ -58,7 +59,7 @@ paths:
             properties:
               client_secret:
                 type: string
-                description: A unique string used to identify the validation attempt
+                description: A unique string used to identify the validation attempt.
               email:
                 type: string
                 description: The email address to validate.
@@ -119,7 +120,7 @@ paths:
         associate the email address with any Matrix user ID. Specifically,
         calls to ``/lookup`` will not show a binding.
 
-        Note: for backwards compatibility with older versions of this
+        Note: for backwards compatibility with previous drafts of this
         specification, the parameters may also be specified as
         ``application/x-form-www-urlencoded`` data.  However, this usage is
         deprecated.

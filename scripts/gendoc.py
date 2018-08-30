@@ -154,7 +154,7 @@ def get_rst(file_info, title_level, title_styles, spec_dir, adjust_titles):
     # string are file paths to RST blobs
     if isinstance(file_info, str):
         log("%s %s" % (">" * (1 + title_level), file_info))
-        with open(os.path.join(spec_dir, file_info), "r") as f:
+        with open(os.path.join(spec_dir, file_info), "r", encoding="utf-8") as f:
             rst = None
             if adjust_titles:
                 rst = load_with_adjusted_titles(
@@ -186,7 +186,7 @@ def get_rst(file_info, title_level, title_styles, spec_dir, adjust_titles):
 
 def build_spec(target, out_filename):
     log("Building templated file %s" % out_filename)
-    with open(out_filename, "wb") as outfile:
+    with open(out_filename, "w", encoding="utf-8") as outfile:
         for file_info in target["files"]:
             section = get_rst(
                 file_info=file_info,
@@ -195,7 +195,7 @@ def build_spec(target, out_filename):
                 spec_dir=spec_dir,
                 adjust_titles=True
             )
-            outfile.write(section.encode('UTF-8'))
+            outfile.write(section)
 
 
 """
@@ -223,8 +223,8 @@ def fix_relative_titles(target, filename, out_filename):
         "^[" + re.escape("".join(title_styles)) + "]{3,}$"
     )
     current_title_style = None
-    with open(filename, "r") as infile:
-        with open(out_filename, "w") as outfile:
+    with open(filename, "r", encoding="utf-8") as infile:
+        with open(out_filename, "w", encoding="utf-8") as outfile:
             for line in infile.readlines():
                 if not relative_title_matcher.match(line):
                     if title_matcher.match(line):
@@ -263,8 +263,8 @@ def fix_relative_titles(target, filename, out_filename):
 
 def rst2html(i, o, stylesheets):
     log("rst2html %s -> %s" % (i, o))
-    with open(i, "r") as in_file:
-        with open(o, "w") as out_file:
+    with open(i, "r", encoding="utf-8") as in_file:
+        with open(o, "w", encoding="utf-8") as out_file:
             publish_file(
                 source=in_file,
                 destination=out_file,
@@ -280,16 +280,15 @@ def rst2html(i, o, stylesheets):
 def addAnchors(path):
     log("add anchors %s" % path)
 
-    with open(path, "rb") as f:
+    with open(path, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
     replacement = r'<p><a class="anchor" id="\2"></a></p>\n\1'
-    with open(path, "wb") as f:
+    with open(path, "w", encoding="utf-8") as f:
         for line in lines:
-            line = line.decode("UTF-8")
             line = re.sub(r'(<h\d id="#?(.*?)">)', replacement, line.rstrip())
             line = re.sub(r'(<div class="section" id="(.*?)">)', replacement, line.rstrip())
-            f.write((line + "\n").encode('UTF-8'))
+            f.write(line + "\n")
 
 
 def run_through_template(input_files, set_verbose, substitutions):
@@ -519,8 +518,16 @@ if __name__ == '__main__':
         help="The server-server release tag to generate, e.g. r1.2"
     )
     parser.add_argument(
+        "--appservice_release", "-a", action="store", default="unstable",
+        help="The appservice release tag to generate, e.g. r1.2"
+    )
+    parser.add_argument(
         "--push_gateway_release", "-p", action="store", default="unstable",
         help="The push gateway release tag to generate, e.g. r1.2"
+    )
+    parser.add_argument(
+        "--identity_release", "-i", action="store", default="unstable",
+        help="The identity service release tag to generate, e.g. r1.2"
     )
     parser.add_argument(
         "--list_targets", action="store_true",
@@ -540,12 +547,13 @@ if __name__ == '__main__':
 
     substitutions = {
         "%CLIENT_RELEASE_LABEL%": args.client_release,
-        # we hardcode a major version of r0. This ends up in the
-        # example API URLs. When we have released a new major version,
-        # we'll have to bump it.
+        # we hardcode the major versions. This ends up in the example 
+        # API URLs. When we have released a new major version, we'll
+        # have to bump them.
         "%CLIENT_MAJOR_VERSION%": "r0",
         "%SERVER_RELEASE_LABEL%": args.server_release,
-        "%SERVER_MAJOR_VERSION%": extract_major(args.server_release),
+        "%APPSERVICE_RELEASE_LABEL%": args.appservice_release,
+        "%IDENTITY_RELEASE_LABEL%": args.identity_release,
         "%PUSH_GATEWAY_RELEASE_LABEL%": args.push_gateway_release,
     }
 
