@@ -23,7 +23,8 @@ allOf:
       hashes:
         type: object
         title: Event Hash
-        description: Hashes of the PDU, following the algorithm specified in `Signing Events`_.
+        description: |-
+          Content hashes of the PDU, following the algorithm specified in `Signing Events`_.
         example: {
           "sha256": "thishashcoversallfieldsincasethisisredacted"
         }
