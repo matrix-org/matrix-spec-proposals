@@ -49,7 +49,8 @@ paths:
       responses:
         200:
           description: |-
-            The fully resolved state for the room, including the authorization
+            The fully resolved state for the room, prior to considering any state
+            changes induced by the requested event. Includes the authorization
             chain for the events.
           schema:
             type: object
@@ -96,7 +97,8 @@ paths:
       responses:
         200:
           description: |-
-            The fully resolved state for the room, including the authorization
+            The fully resolved state for the room, prior to considering any state
+            changes induced by the requested event. Includes the authorization
             chain for the events.
           schema:
             type: object

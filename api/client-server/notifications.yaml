@@ -45,7 +45,7 @@ paths:
           required: false
           x-example: "xxxxx"
         - in: query
-          type: number
+          type: integer
           name: limit
           description: Limit on the number of events to return in this request.
           required: false

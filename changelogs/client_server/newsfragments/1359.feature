@@ -1,0 +1,1 @@
+Add ``.well-known`` server discovery method
