@@ -152,7 +152,7 @@ paths:
     post:
       summary: Deletes a third party identifier from the user's account
       description: |-
-        Removes a third party identifier from the user's account. This may not
+        Removes a third party identifier from the user's account. This might not
         cause an unbind of the identifier from the identity service.
       operationId: delete3pidFromAccount
       security:
