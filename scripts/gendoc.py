@@ -519,6 +519,10 @@ if __name__ == '__main__':
         help="The server-server release tag to generate, e.g. r1.2"
     )
     parser.add_argument(
+        "--push_gateway_release", "-p", action="store", default="unstable",
+        help="The push gateway release tag to generate, e.g. r1.2"
+    )
+    parser.add_argument(
         "--identity_release", "-i", action="store", default="unstable",
         help="The identity service release tag to generate, e.g. r1.2"
     )
@@ -549,6 +553,7 @@ if __name__ == '__main__':
         "%KEYS_MAJOR_VERSION%": "v2",
         "%SERVER_RELEASE_LABEL%": args.server_release,
         "%IDENTITY_RELEASE_LABEL%": args.identity_release,
+        "%PUSH_GATEWAY_RELEASE_LABEL%": args.push_gateway_release,
     }
 
     exit (main(args.target or ["all"], args.dest, args.nodelete, substitutions))

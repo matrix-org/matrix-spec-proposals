@@ -90,7 +90,7 @@ paths:
                   The homeserver domain the consumer should use when attempting to
                   verify the user's identity.
               expires_in:
-                type: int
+                type: integer
                 description: |-
                   The number of seconds before this token expires and a new one must
                   be generated.

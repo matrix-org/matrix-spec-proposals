@@ -23,7 +23,7 @@ user identifiers. From time to time, it is useful to refer to users by other
 number. This identity service specification describes how mappings between
 third-party identifiers and Matrix user identifiers can be established,
 validated, and used. This description technically may apply to any 3pid, but in
-practice has only been applied specifically to email addresses.
+practice has only been applied specifically to email addresses and phone numbers.
 
 .. contents:: Table of Contents
 .. sectnum::
@@ -69,6 +69,75 @@ have done so. Establishing the trustworthiness of an individual identity service
 is left as an exercise for the client.
 
 3PID types are described in `3PID Types`_ Appendix.
+
+API Standards
+-------------
+
+The mandatory baseline for identity service communication in Matrix is exchanging
+JSON objects over HTTP APIs. HTTPS is required for communication, and all API calls
+use a Content-Type of ``application/json``. In addition, strings MUST be encoded as
+UTF-8.
+
+Any errors which occur at the Matrix API level MUST return a "standard error response".
+This is a JSON object which looks like:
+
+.. code:: json
+
+  {
+    "errcode": "<error code>",
+    "error": "<error message>"
+  }
+
+The ``error`` string will be a human-readable error message, usually a sentence
+explaining what went wrong. The ``errcode`` string will be a unique string
+which can be used to handle an error message e.g. ``M_FORBIDDEN``. There may be
+additional keys depending on the error, but the keys ``error`` and ``errcode``
+MUST always be present.
+
+Some standard error codes are below:
+
+:``M_NOT_FOUND``:
+  The resource requested could not be located.
+
+:``M_MISSING_PARAMS``:
+  The request was missing one or more parameters.
+
+:``M_INVALID_PARAM``:
+  The request contained one or more invalid parameters.
+
+:``M_SESSION_NOT_VALIDATED``:
+  The session has not been validated.
+
+:``M_NO_VALID_SESSION``:
+  A session could not be located for the given parameters.
+
+:``M_SESSION_EXPIRED``:
+  The session has expired and must be renewed.
+
+:``M_INVALID_EMAIL``:
+  The email address provided was not valid.
+
+:``M_EMAIL_SEND_ERROR``:
+  There was an error sending an email. Typically seen when attempting to verify
+  ownership of a given email address.
+
+:``M_INVALID_ADDRESS``:
+  The provided third party address was not valid.
+
+:``M_SEND_ERROR``:
+  There was an error sending a notification. Typically seen when attempting to
+  verify ownership of a given third party address.
+
+:``M_UNRECOGNIZED``:
+  The request contained an unrecognised value, such as an unknown token or medium.
+
+:``M_THREEPID_IN_USE``:
+  The third party identifier is already in use by another user. Typically this
+  error will have an additional ``mxid`` property to indicate who owns the
+  third party identifier.
+
+:``M_UNKNOWN``:
+  An unknown error has occurred. 
 
 Privacy
 -------

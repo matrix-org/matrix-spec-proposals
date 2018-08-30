@@ -49,6 +49,20 @@ paths:
             A pagination token from a previous call to this endpoint to fetch more
             rooms.
           x-example: "GetMoreRoomsTokenHere"
+        - in: query
+          name: include_all_networks
+          type: boolean
+          description: |-
+            Whether or not to include all networks/protocols defined by application
+            services on the homeserver. Defaults to false.
+          x-example: false
+        - in: query
+          name: third_party_instance_id
+          type: string
+          description: |-
+            The specific third party network/protocol to request from the homeserver.
+            Can only be used if ``include_all_networks`` is false.
+          x-example: "irc"
       responses:
         200:
           description: The public room list for the homeserver.

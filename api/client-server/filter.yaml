@@ -54,44 +54,45 @@ paths:
             allOf:
               - $ref: "definitions/sync_filter.yaml"
             example: {
-                "room": {
-                  "state": {
-                    "types": ["m.room.*"],
-                    "not_rooms": ["!726s6s6q:example.com"]
-                  },
-                  "timeline": {
-                    "limit": 10,
-                    "types": ["m.room.message"],
-                    "not_rooms": ["!726s6s6q:example.com"],
-                    "not_senders": ["@spam:example.com"]
-                  },
-                  "ephemeral": {
-                    "types": ["m.receipt", "m.typing"],
-                    "not_rooms": ["!726s6s6q:example.com"],
-                    "not_senders": ["@spam:example.com"]
-                  }
+              "room": {
+                "state": {
+                  "types": ["m.room.*"],
+                  "not_rooms": ["!726s6s6q:example.com"]
                 },
-                "presence": {
-                  "types": ["m.presence"],
-                  "not_senders": ["@alice:example.com"]
+                "timeline": {
+                  "limit": 10,
+                  "types": ["m.room.message"],
+                  "not_rooms": ["!726s6s6q:example.com"],
+                  "not_senders": ["@spam:example.com"]
                 },
-                "event_format": "client",
-                "event_fields": ["type", "content", "sender"]
-              }
+                "ephemeral": {
+                  "types": ["m.receipt", "m.typing"],
+                  "not_rooms": ["!726s6s6q:example.com"],
+                  "not_senders": ["@spam:example.com"]
+                }
+              },
+              "presence": {
+                "types": ["m.presence"],
+                "not_senders": ["@alice:example.com"]
+              },
+              "event_format": "client",
+              "event_fields": ["type", "content", "sender"]
+            }
       responses:
         200:
           description: The filter was created.
-          examples:
-            application/json: {
-                "filter_id": "66696p746572"
-              }
           schema:
             type: object
             properties:
               filter_id:
                 type: string
                 description: |-
-                  The ID of the filter that was created.
+                  The ID of the filter that was created. Cannot start
+                  with a ``{`` as this character is used to determine
+                  if the filter provided is inline JSON or a previously
+                  declared filter by homeservers on some APIs.
+                example: "66696p746572"
+            required: ['filter_id']
       tags:
         - Room participation
   "/user/{userId}/filter/{filterId}":

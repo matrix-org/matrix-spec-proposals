@@ -68,9 +68,11 @@ paths:
               signatures:
                 type: object
                 description: The signature of the mxid, sender, and token.
+                $ref: "../../schemas/server-signatures.yaml"
               token:
                 type: string
                 description: The token for the invitation.
+            required: ['mxid', 'sender', 'signatures', 'token']
           examples:
             application/json: {
               "mxid": "@foo:bar.com",
@@ -84,7 +86,10 @@ paths:
             }
         404:
           description: Token was not found.
-          example: {
+          examples: 
+            application/json: {
               "errcode": "M_UNRECOGNIZED",
               "error": "Didn't recognize token"
             }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"

@@ -49,19 +49,18 @@ paths:
             The association for that 3pid, or the empty object if no association is known.
           examples:
             application/json: {
-                "address": "louise@bobs.burgers",
-                "medium": "email",
-                "mxid": "@ears:matrix.org",
-                "not_before": 1428825849161,
-                "not_after": 4582425849161,
-                "ts": 1428825849161,
-
-                "signatures": {
-                  "matrix.org": {
-                    "ed25519:0": "ENiU2YORYUJgE6WBMitU0mppbQjidDLanAusj8XS2nVRHPu+0t42OKA/r6zV6i2MzUbNQ3c3MiLScJuSsOiVDQ"
-                  }
+              "address": "louise@bobs.burgers",
+              "medium": "email",
+              "mxid": "@ears:matrix.org",
+              "not_before": 1428825849161,
+              "not_after": 4582425849161,
+              "ts": 1428825849161,
+              "signatures": {
+                "matrix.org": {
+                  "ed25519:0": "ENiU2YORYUJgE6WBMitU0mppbQjidDLanAusj8XS2nVRHPu+0t42OKA/r6zV6i2MzUbNQ3c3MiLScJuSsOiVDQ"
                 }
               }
+            }
           schema:
             type: object
             properties:
@@ -86,6 +85,15 @@ paths:
               signatures:
                 type: object
                 description: The signatures of the verifying identity services which show that the association should be trusted, if you trust the verifying identity services.
+                $ref: "../../schemas/server-signatures.yaml"
+            required:
+              - address
+              - medium
+              - mxid
+              - not_before
+              - not_after
+              - ts
+              - signatures
   "/bulk_lookup":
     post:
       summary: Lookup Matrix user IDs for a list of 3pids.
@@ -110,9 +118,14 @@ paths:
                 items:
                   type: array
                   title: 3PID mappings
+                  minItems: 2
+                  maxItems: 2
                   items:
-                    type: string
-                    title: 3PID medium or address
+                    # TODO: Give real names to these values. Adding a `title` does not work.
+                    #- type: 3PID Medium
+                    #- type: 3PID Address
+                    - type: string
+                    - type: string
                 description: an array of arrays containing the `3PID Types`_ with the ``medium`` in first position and the ``address`` in second position.
             required:
               - "threepids"
@@ -134,9 +147,16 @@ paths:
                 items:
                   type: array
                   title: 3PID mappings
+                  minItems: 3
+                  maxItems: 3
                   items:
-                    type: string
-                    title: 3PID medium or address or the Matrix ID
+                    # TODO: Give real names to these values. Adding a `title` does not work.
+                    #- type: 3PID Medium
+                    #- type: 3PID Address
+                    #- type: Matrix User ID
+                    - type: string
+                    - type: string
+                    - type: string
                 description: an array of array containing the `3PID Types`_ with the ``medium`` in first position, the ``address`` in second position and Matrix ID in third position.
             required:
               - "threepids"
