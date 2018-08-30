@@ -1,6 +1,7 @@
 .. Copyright 2016 OpenMarket Ltd
 .. Copyright 2017 Kamax.io
 .. Copyright 2017 New Vector Ltd
+.. Copyright 2018 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -56,7 +57,7 @@ is left as an exercise for the client.
 
 3PID types are described in `3PID Types`_ Appendix.
 
-API Standards
+API standards
 -------------
 
 The mandatory baseline for identity service communication in Matrix is exchanging
@@ -136,6 +137,22 @@ should allow a 3pid to be mapped to a Matrix user identity, but not in the other
 direction (i.e. one should not be able to get all 3pids associated with a Matrix
 user ID, or get all 3pids associated with a 3pid).
 
+Web browser clients
+-------------------
+
+It is realistic to expect that some clients will be written to be run within a web
+browser or similar environment. In these cases, the identity service should respond to
+pre-flight requests and supply Cross-Origin Resource Sharing (CORS) headers on all
+requests.
+
+When a client approaches the server with a pre-flight (OPTIONS) request, the server
+should respond with the CORS headers for that route. The recommended CORS headers
+to be returned by servers on all requests are::
+
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+  Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization
+
 Status check
 ------------
 
@@ -146,25 +163,24 @@ Key management
 
 An identity service has some long-term public-private keypairs. These are named
 in a scheme ``algorithm:identifier``, e.g. ``ed25519:0``. When signing an
-association, the Matrix standard JSON signing format is used, as specified in
-the server-server API specification under the heading "Signing Events".
+association, the standard `Signing JSON`_ algorithm applies.
 
 In the event of key compromise, the identity service may revoke any of its keys.
 An HTTP API is offered to get public keys, and check whether a particular key is
 valid.
 
-The identity server may also keep track of some short-term public-private
+The identity service may also keep track of some short-term public-private
 keypairs, which may have different usage and lifetime characteristics than the
 service's long-term keys.
 
 {{pubkey_is_http_api}}
 
-Association Lookup
+Association lookup
 ------------------
 
 {{lookup_is_http_api}}
 
-Establishing Associations
+Establishing associations
 -------------------------
 
 The flow for creating an association is session-based.
@@ -183,6 +199,12 @@ session, within a 24 hour period since its most recent modification. Any
 attempts to perform these actions after the expiry will be rejected, and a new
 session should be created and used instead.
 
+To start a session, the client makes a request to the appropriate ``/requestToken``
+endpoint. The user then receives a validation token which should be provided
+to the client. The client then provides the token to the appropriate ``/submitToken``
+endpoint, completing the session. At this point, the client should ``/bind`` the
+third party identifier or leave it for another entity to bind.
+
 Email associations
 ~~~~~~~~~~~~~~~~~~
 
@@ -198,53 +220,31 @@ General
 
 {{associations_is_http_api}}
 
-Invitation Storage
+Invitation storage
 ------------------
 
 An identity service can store pending invitations to a user's 3pid, which will
 be retrieved and can be either notified on or look up when the 3pid is
 associated with a Matrix user ID.
 
-At a later point, if the owner of that particular 3pid binds it with a Matrix user ID, the identity server will attempt to make an HTTP POST to the Matrix user's homeserver which looks roughly as below::
-
- POST https://bar.com:8448/_matrix/federation/v1/3pid/onbind
- Content-Type: application/json
-
- {
-  "medium": "email",
-  "address": "foo@bar.baz",
-  "mxid": "@alice:example.tld",
-  "invites": [
-    {
-      "medium": "email",
-      "address": "foo@bar.baz",
-      "mxid": "@alice:example.tld",
-      "room_id": "!something:example.tld",
-      "sender": "@bob:example.tld",
-      "signed": {
-        "mxid": "@alice:example.tld",
-        "signatures": {
-          "vector.im": {
-            "ed25519:0": "somesignature"
-          }
-        },
-        "token": "sometoken"
-      }
-    }
-  ]
- }
-
-Where the signature is produced using a long-term private key.
+At a later point, if the owner of that particular 3pid binds it with a Matrix user
+ID, the identity service will attempt to make an HTTP POST to the Matrix user's
+homeserver via the `/3pid/onbind`_ endpoint. The request MUST be signed with a
+long-term private key for the identity service.
 
 {{store_invite_is_http_api}}
 
 Ephemeral invitation signing
 ----------------------------
 
-To aid clients who may not be able to perform crypto themselves, the identity service offers some crypto functionality to help in accepting invitations.
-This is less secure than the client doing it itself, but may be useful where this isn't possible.
+To aid clients who may not be able to perform crypto themselves, the identity
+service offers some crypto functionality to help in accepting invitations.
+This is less secure than the client doing it itself, but may be useful where
+this isn't possible.
 
 {{invitation_signing_is_http_api}}
 
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
 .. _`3PID Types`:  ../appendices.html#pid-types
+.. _`Signing JSON`: ../appendices.html#signing-json
+.. _`/3pid/onbind`: ../server_server.html#put-matrix-federation-v1-3pid-onbind

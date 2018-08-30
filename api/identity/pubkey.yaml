@@ -18,8 +18,9 @@ info:
 host: localhost:8090
 schemes:
   - https
-  - http
 basePath: /_matrix/identity/api/v1
+consumes:
+  - application/json
 produces:
   - application/json
 paths:
@@ -113,8 +114,8 @@ paths:
             The validity of the public key.
           examples:
             application/json: {
-                "valid": true
-              }
+              "valid": true
+            }
           schema:
             type: object
             properties:
