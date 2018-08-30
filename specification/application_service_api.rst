@@ -385,3 +385,7 @@ where an HTTP URL may be available to reference.
 Clients should provide users with a way to access the ``external_url`` if it
 is present. Clients should additionally ensure the URL has a scheme of ``https``
 or ``http`` before making use of it.
+
+The presence of an ``external_url`` on an event does not necessarily mean the
+event was sent from an application service. Clients should be wary of the URL
+contained within, as it may not be a legitimate reference to the event's source.
