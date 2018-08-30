@@ -550,7 +550,6 @@ if __name__ == '__main__':
         "%CLIENT_MAJOR_VERSION%": "r0",
         "%SERVER_RELEASE_LABEL%": args.server_release,
         "%SERVER_MAJOR_VERSION%": extract_major(args.server_release),
-        "%APPSERVICE_MAJOR_VERSION%": "unstable",
         "%APPSERVICE_RELEASE_LABEL%": args.appservice_release,
         "%PUSH_GATEWAY_RELEASE_LABEL%": args.push_gateway_release,
     }
