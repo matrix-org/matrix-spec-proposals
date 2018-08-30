@@ -16,6 +16,8 @@
     "users": {
       "@example:localhost": 100
     },
-    "users_default": 0
-  }
+    "users_default": 0,
+    "notifications": {
+      "room": 20
+    }
 }

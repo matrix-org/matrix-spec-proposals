@@ -62,11 +62,12 @@ paths:
           x-example: "!somewhere:domain.com"
         - in: body
           name: body
+          required: true
           schema:
             type: object
             properties:
               visibility:
-                type: enum
+                type: string
                 enum: ["public", "private"]
                 description: |-
                   Whether the room should be visible (public) in the directory

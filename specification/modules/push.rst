@@ -744,4 +744,4 @@ should send a "sync" command to instruct the client to get new events from the
 homeserver directly.
 
 
-.. _`Push Gateway Specification`: ../push_gateway/unstable.html
+.. _`Push Gateway Specification`: ../push_gateway/%PUSH_GATEWAY_RELEASE_LABEL%.html
