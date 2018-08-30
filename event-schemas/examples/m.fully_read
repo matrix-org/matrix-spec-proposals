@@ -1,0 +1,8 @@
+{
+  "$ref": "core/event.json",
+  "type": "m.fully_read",
+  "room_id": "!somewhere:domain.com",
+  "content": {
+    "event_id": "$someplace:domain.com"
+  }
+}
