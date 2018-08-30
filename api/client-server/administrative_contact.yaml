@@ -180,6 +180,7 @@ paths:
             user.
           schema:
             type: object
+            properties: {}
       tags:
         - User data
   "/account/3pid/email/requestToken":
