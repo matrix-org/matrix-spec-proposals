@@ -1,4 +1,5 @@
 {
+  "$ref": "core/event.json",
   "type": "m.ignored_user_list",
   "content": {
     "ignored_users": {

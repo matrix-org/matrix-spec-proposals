@@ -1,0 +1,4 @@
+{
+    "$ref": "room_event.json",
+    "state_key": "ArbitraryString"
+}

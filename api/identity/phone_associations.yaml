@@ -18,8 +18,9 @@ info:
 host: localhost:8090
 schemes:
   - https
-  - http
 basePath: /_matrix/identity/api/v1
+consumes:
+  - application/json
 produces:
   - application/json
 paths:
@@ -34,13 +35,13 @@ paths:
         indicates that that user was able to read the SMS for that phone
         number, and so we validate ownership of the phone number.
 
-        Note that Home Servers offer APIs that proxy this API, adding
+        Note that homeservers offer APIs that proxy this API, adding
         additional behaviour on top, for example,
         ``/register/msisdn/requestToken`` is designed specifically for use when
         registering an account and therefore will inform the user if the phone
         number given is already registered on the server.
 
-        Note: for backwards compatibility with older versions of this
+        Note: for backwards compatibility with previous drafts of this
         specification, the parameters may also be specified as
         ``application/x-form-www-urlencoded`` data. However, this usage is
         deprecated.
@@ -51,11 +52,11 @@ paths:
           schema:
             type: object
             example: {
-                "client_secret": "monkeys_are_GREAT",
-                "country": "GB",
-                "phone_number": "07700900001",
-                "send_attempt": 1
-              }
+              "client_secret": "monkeys_are_GREAT",
+              "country": "GB",
+              "phone_number": "07700900001",
+              "send_attempt": 1
+            }
             properties:
               client_secret:
                 type: string
@@ -91,20 +92,30 @@ paths:
             Session created.
           examples:
             application/json: {
-                "sid": "1234"
-              }
+              "sid": "1234"
+            }
           schema:
             type: object
             properties:
               sid:
                 type: string
                 description: The session ID.
+            required: ['sid']
         400:
           description: |
             An error ocurred. Some possible errors are:
 
             - ``M_INVALID_ADDRESS``: The phone number provided was invalid.
             - ``M_SEND_ERROR``: The validation SMS could not be sent.
+            - ``M_DESTINATION_REJECTED``: The identity service cannot deliver an
+              SMS to the provided country or region.
+          examples:
+            application/json: {
+              "errcode": "M_INVALID_ADDRESS",
+              "error": "The phone number is not valid"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
   "/validate/msisdn/submitToken":
     post:
       summary: Validate ownership of a phone number.
@@ -117,7 +128,7 @@ paths:
         associate the phone number address with any Matrix user
         ID. Specifically, calls to ``/lookup`` will not show a binding.
 
-        Note: for backwards compatibility with older versions of this
+        Note: for backwards compatibility with previous drafts of this
         specification, the parameters may also be specified as
         ``application/x-form-www-urlencoded`` data. However, this usage is
         deprecated.
@@ -128,10 +139,10 @@ paths:
           schema:
             type: object
             example: {
-                "sid": "1234",
-                "client_secret": "monkeys_are_GREAT",
-                "token": "atoken"
-              }
+              "sid": "1234",
+              "client_secret": "monkeys_are_GREAT",
+              "token": "atoken"
+            }
             properties:
               sid:
                 type: string
@@ -149,14 +160,15 @@ paths:
             The success of the validation.
           examples:
             application/json: {
-                "success": true
-              }
+              "success": true
+            }
           schema:
             type: object
             properties:
               success:
                 type: boolean
                 description: Whether the validation was successful or not.
+            required: ['success']
     get:
       summary: Validate ownership of a phone number.
       description: |-

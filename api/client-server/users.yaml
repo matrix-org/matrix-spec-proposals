@@ -47,7 +47,7 @@ paths:
                 description: The term to search for
                 example: "foo"
               limit:
-                type: number
+                type: integer
                 description: The maximum number of results to return (Defaults to 10).
                 example: 10
             required: ["search_term"]

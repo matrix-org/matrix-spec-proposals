@@ -1,5 +1,6 @@
 {
-  "age": 242352,
+  "$ref": "core/room_event.json",
+  "type": "m.room.message",
   "content": {
     "body": "filename.jpg",
     "info": {
@@ -8,12 +9,7 @@
         "mimetype": "image/jpeg",
         "size": 31037
     },
-    "url": "mxc://localhost/JWEIFJgwEIhweiWJE",
+    "url": "mxc://domain.com/JWEIFJgwEIhweiWJE",
     "msgtype": "m.image"
-  },
-  "origin_server_ts": 1431961217939,
-  "event_id": "$WLGTSEFSEF:localhost",
-  "type": "m.room.message",
-  "room_id": "!Cuyf34gef24t:localhost",
-  "sender": "@example:localhost"
+  }
 }

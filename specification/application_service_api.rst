@@ -30,22 +30,37 @@ irrespective of the underlying homeserver implementation.
 .. contents:: Table of Contents
 .. sectnum::
 
-Specification version
----------------------
+Changelog
+---------
+
+
+.. topic:: Version: unstable
+{{application_service_changelog}}
 
 This version of the specification is generated from
 `matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
 `{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
 
+For the full historical changelog, see
+https://github.com/matrix-org/matrix-doc/blob/master/changelogs/application_service.rst
+
+Other versions of this specification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following other versions are also available, in reverse chronological order:
+
+- `HEAD <https://matrix.org/docs/spec/application_service/unstable.html>`_: Includes all changes since the latest versioned release.
+
+
 Application Services
 --------------------
-Application services are passive and can only observe events from a given
-homeserver (HS). They can inject events into rooms they are participating in.
+Application services are passive and can only observe events from homeserver.
+They can inject events into rooms they are participating in.
 They cannot prevent events from being sent, nor can they modify the content of
 the event being sent. In order to observe events from a homeserver, the
 homeserver needs to be configured to pass certain types of traffic to the
 application service.  This is achieved by manually configuring the homeserver
-with information about the application service (AS).
+with information about the application service.
 
 Registration
 ~~~~~~~~~~~~
@@ -75,8 +90,7 @@ said to be interested in a given event if one of the application service's names
 users is the target of the event, or is a joined member of the room where the event
 occurred.
 
-An application
-service can also state whether they should be the only ones who
+An application service can also state whether they should be the only ones who
 can manage a specified namespace. This is referred to as an "exclusive"
 namespace. An exclusive namespace prevents humans and other application
 services from creating/deleting entities in that namespace. Typically,
@@ -90,33 +104,77 @@ regular expressions and look like:
 
    users:
      - exclusive: true
-       regex: @_irc.freenode.net_.*
+       regex: "@_irc.freenode.net_.*"
 
+Application services may define the following namespaces (with none being explicitly required):
 
-The registration is represented by a series of key-value pairs, which this
-specification will present as YAML. An example HS configuration required to pass
-traffic to the AS is:
++------------------+-----------------------------------------------------------+
+| Name             | Description                                               |
++==================+===========================================================+
+| users            | Events which are sent from certain users.                 |
++------------------+-----------------------------------------------------------+
+| aliases          | Events which are sent in rooms with certain room aliases. |
++------------------+-----------------------------------------------------------+
+| rooms            | Events which are sent in rooms with certain room IDs.     |
++------------------+-----------------------------------------------------------+
 
-.. code-block:: yaml
+Each individual namespace MUST declare the following fields:
 
-    id: <user-defined unique ID of AS which will never change>
-    url: <base url of AS>
-    as_token: <token AS will add to requests to HS>
-    hs_token: <token HS will add to requests to AS>
-    sender_localpart: <localpart of AS user>
-    namespaces:
-      users:  # Namespaces of users which should be delegated to the AS
-        - exclusive: <bool>
-          regex: <regex>
-        - ...
-      aliases: []  # Namespaces of room aliases which should be delegated to the AS
-      rooms: [] # Namespaces of room ids which should be delegated to the AS
++------------------+-----------------------------------------------------------------------------------------------------------------------------------+
+| Name             | Description                                                                                                                       |
++==================+===================================================================================================================================+
+| exclusive        | **Required** A true or false value stating whether this application service has exclusive access to events within this namespace. |
++------------------+-----------------------------------------------------------------------------------------------------------------------------------+
+| regex            | **Required** A regular expression defining which values this namespace includes.                                                  |
++------------------+-----------------------------------------------------------------------------------------------------------------------------------+
 
 Exclusive user and alias namespaces should begin with an underscore after the
 sigil to avoid collisions with other users on the homeserver. Application
 services should additionally attempt to identify the service they represent
 in the reserved namespace. For example, ``@_irc_.*`` would be a good namespace
 to register for an application service which deals with IRC.
+
+The registration is represented by a series of key-value pairs, which this
+specification will present as YAML. See below for the possible options along
+with their explanation:
+
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| Name             | Description                                                                                                                                        |
++==================+====================================================================================================================================================+
+| id               | **Required.** A unique, user-defined ID of the application service which will never change.                                                        |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| url              | **Required.** The URL for the application service. May include a path after the domain name. Optionally set to ``null`` if no traffic is required. |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| as_token         | **Required.** A unique token for application services to use to authenticate requests to Homeservers.                                              |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| hs_token         | **Required.** A unique token for Homeservers to use to authenticate requests to application services.                                              |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| sender_localpart | **Required.** The localpart of the user associated with the application service.                                                                   |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| namespaces       | **Required.** A list of ``users``, ``aliases`` and ``rooms`` namespaces that the application service controls.                                     |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| rate_limited     | Whether requests from masqueraded users are rate-limited. The sender is excluded.                                                                  |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| protocols        | The external protocols which the application service provides (e.g. IRC).                                                                          |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+
+An example registration file for an IRC-bridging application service is below:
+
+.. code-block:: yaml
+
+    id: "IRC Bridge"
+    url: "http://127.0.0.1:1234"
+    as_token: "30c05ae90a248a4188e620216fa72e349803310ec83e2a77b34fe90be6081f46"
+    hs_token: "312df522183efd404ec1cd22d2ffa4bbc76a8c1ccf541dd692eef281356bb74e"
+    sender_localpart: "_irc_bot" # Will result in @_irc_bot:domain.com
+    namespaces:
+      users:
+        - exclusive: true
+          regex: "@_irc_bridge_.*"
+      aliases:
+        - exclusive: false 
+          regex: "#_irc_bridge_.*"
+      rooms: []
 
 .. WARNING::
   If the homeserver in question has multiple application services, each
@@ -125,6 +183,34 @@ to register for an application service which deals with IRC.
 
 Homeserver -> Application Service API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Legacy routes
++++++++++++++
+
+Previous drafts of the application service specification had a mix of endpoints
+that have been used in the wild for a significant amount of time. The application
+service specification now defines a version on all endpoints to be more compatible
+with the rest of the Matrix specification and the future.
+
+Homeservers should attempt to use the specified endpoints first when communicating
+with application services. However, if the application service receives an http status
+code that does not indicate success (ie: 404, 500, 501, etc) then the homeserver
+should fall back to the older endpoints for the application service.
+
+The older endpoints have the exact same request body and response format, they
+just belong at a different path. The equivalent path for each is as follows:
+
+* ``/_matrix/app/v1/transactions/{txnId}`` becomes ``/transactions/{txnId}``
+* ``/_matrix/app/v1/users/{userId}`` becomes ``/users/{userId}``
+* ``/_matrix/app/v1/rooms/{roomAlias}`` becomes ``/rooms/{roomAlias}``
+* ``/_matrix/app/v1/thirdparty/protocol/{protocol}`` becomes ``/_matrix/app/unstable/thirdparty/protocol/{protocol}``
+* ``/_matrix/app/v1/thirdparty/user/{user}`` becomes ``/_matrix/app/unstable/thirdparty/user/{user}``
+* ``/_matrix/app/v1/thirdparty/location/{location}`` becomes ``/_matrix/app/unstable/thirdparty/location/{location}``
+* ``/_matrix/app/v1/thirdparty/user`` becomes ``/_matrix/app/unstable/thirdparty/user``
+* ``/_matrix/app/v1/thirdparty/location`` becomes ``/_matrix/app/unstable/thirdparty/location``
+
+Homeservers should periodically try again for the newer endpoints because the
+application service may have been updated.
 
 Pushing events
 ++++++++++++++
@@ -136,24 +222,26 @@ events. Each list of events includes a transaction ID, which works as follows:
 
  Typical
  HS ---> AS : Homeserver sends events with transaction ID T.
-    <---    : AS sends back 200 OK.
+    <---    : Application Service sends back 200 OK.
 
  AS ACK Lost
  HS ---> AS : Homeserver sends events with transaction ID T.
     <-/-    : AS 200 OK is lost.
  HS ---> AS : Homeserver retries with the same transaction ID of T.
-    <---    : AS sends back 200 OK. If the AS had processed these events
-              already, it can NO-OP this request (and it knows if it is the same
-              events based on the transaction ID).
+    <---    : Application Service sends back 200 OK. If the AS had processed these
+              events already, it can NO-OP this request (and it knows if it is the
+              same events based on the transaction ID).
 
 The events sent to the application service should be linearised, as if they were
 from the event stream. The homeserver MUST maintain a queue of transactions to
-send to the AS. If the application service cannot be reached, the homeserver
-SHOULD backoff exponentially until the application service is reachable again.
+send to the application service. If the application service cannot be reached, the
+homeserver SHOULD backoff exponentially until the application service is reachable again.
 As application services cannot *modify* the events in any way, these requests can
 be made without blocking other aspects of the homeserver. Homeservers MUST NOT
 alter (e.g. add more) events they were going to send within that transaction ID
-on retries, as the AS may have already processed the events.
+on retries, as the application service may have already processed the events.
+
+{{transactions_as_http_api}}
 
 Querying
 ++++++++
@@ -180,13 +268,25 @@ this request (e.g. to join a room alias).
 {{query_room_as_http_api}}
 
 
-HTTP APIs
-+++++++++
+Third party networks
+++++++++++++++++++++
 
-This contains application service APIs which are used by the homeserver. All
-application services MUST implement these APIs. These APIs are defined below.
+Application services may declare which protocols they support via their registration
+configuration for the homeserver. These networks are generally for third party services
+such as IRC that the application service is managing. Application services may populate
+a Matrix room directory for their registered protocols, as defined in the Client-Server
+API Extensions.
 
-{{application_service_as_http_api}}
+Each protocol may have several "locations" (also known as "third party locations" or "3PLs").
+A location within a protocol is a place in the third party network, such as an IRC channel.
+Users of the third party network may also be represented by the application service.
+
+Locations and users can be searched by fields defined by the application service, such
+as by display name or other attribute. When clients request the homeserver to search
+in a particular "network" (protocol), the search fields will be passed along to the
+application service for filtering.
+
+{{protocols_as_http_api}}
 
 
 .. _create the user: `sect:asapi-permissions`_
@@ -197,6 +297,9 @@ Client-Server API Extensions
 Application services can use a more powerful version of the
 client-server API by identifying itself as an application service to the
 homeserver.
+
+Endpoints defined in this section MUST be supported by homeservers in the
+client-server API as accessible only by application services.
 
 Identity assertion
 ++++++++++++++++++
@@ -229,26 +332,37 @@ An example request would be::
  GET /_matrix/client/%CLIENT_MAJOR_VERSION%/account/whoami?user_id=@_irc_user:example.org
  Authorization: Bearer YourApplicationServiceTokenHere
 
+.. TODO-TravisR: Temporarily take out timestamp massaging while we're releasing r0.
+   See https://github.com/matrix-org/matrix-doc/issues/1585
+.. Timestamp massaging
+   +++++++++++++++++++
+   The application service may want to inject events at a certain time (reflecting
+   the time on the network they are tracking e.g. irc, xmpp). Application services
+   need to be able to adjust the ``origin_server_ts`` value to do this.
+
+   Inputs:
+   - Application service token (``as_token``)
+   - Desired timestamp (in milliseconds since the unix epoch)
+
+   Notes:
+   - This will only apply when sending events.
+
+   ::
+
+    PUT /_matrix/client/r0/rooms/!somewhere:domain.com/send/m.room.message/txnId?ts=1534535223283
+    Authorization: Bearer YourApplicationServiceTokenHere
+
+    Content: The event to send, as per the Client-Server API.
 
 Timestamp massaging
 +++++++++++++++++++
-The application service may want to inject events at a certain time (reflecting
-the time on the network they are tracking e.g. irc, xmpp). Application services
-need to be able to adjust the ``origin_server_ts`` value to do this.
 
-Inputs:
- - Application service token (``as_token``)
- - Desired timestamp (in milliseconds since the unix epoch)
-
-Notes:
- - This will only apply when sending events.
-
-::
-
- PUT /_matrix/client/r0/rooms/!somewhere:domain.com/send/m.room.message/txnId?ts=1534535223283
-  Authorization: Bearer YourApplicationServiceTokenHere
-
- Content: The event to send, as per the Client-Server API.
+Previous drafts of the Application Service API permitted application services
+to alter the timestamp of their sent events by providing a ``ts`` query parameter
+when sending an event. This API has been excluded from the first release due to
+design concerns, however some servers may still support the feature. Please visit
+`issue #1585 <https://github.com/matrix-org/matrix-doc/issues/1585>`_ for more
+information.
 
 Server admin style permissions
 ++++++++++++++++++++++++++++++
@@ -266,7 +380,7 @@ users needs API changes in order to:
 - Have a 'passwordless' user.
 
 This involves bypassing the registration flows entirely. This is achieved by
-including the AS token on a ``/register`` request, along with a login type of
+including the ``as_token`` on a ``/register`` request, along with a login type of
 ``m.login.application_service`` to set the desired user ID without a password.
 
 ::
@@ -294,13 +408,27 @@ API MUST do so with a virtual user (provide a ``user_id`` via the query string).
 is expected that the application service use the transactions pushed to it to
 handle events rather than syncing with the user implied by ``sender_localpart``.
 
-Event fields
-~~~~~~~~~~~~
+Application service room directories
+++++++++++++++++++++++++++++++++++++
 
-.. TODO-TravisR: Fix this section to be a general "3rd party networks" section
+Application services can maintain their own room directories for their defined
+third party protocols. These room directories may be accessed by clients through
+additional parameters on the ``/publicRooms`` client-server endpoint.
 
-We recommend that any events that originated from a remote network should
-include an ``external_url`` field in their content to provide a way for Matrix
-clients to link into the 'native' client from which the event originated.
-For instance, this could contain the message-ID for emails/nntp posts, or a link
-to a blog comment when bridging blog comment traffic in & out of Matrix.
+{{appservice_room_directory_cs_http_api}}
+
+Referencing messages from a third party network
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Application services should include an ``external_url`` in the ``content`` of
+events it emits to indicate where the message came from. This typically applies
+to application services that bridge other networks into Matrix, such as IRC,
+where an HTTP URL may be available to reference. 
+
+Clients should provide users with a way to access the ``external_url`` if it
+is present. Clients should additionally ensure the URL has a scheme of ``https``
+or ``http`` before making use of it.
+
+The presence of an ``external_url`` on an event does not necessarily mean the
+event was sent from an application service. Clients should be wary of the URL
+contained within, as it may not be a legitimate reference to the event's source.
