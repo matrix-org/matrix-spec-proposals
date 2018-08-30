@@ -24,6 +24,8 @@ consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/_matrix/app/unstable/thirdparty/protocol/{protocol}":
     get:
@@ -33,6 +35,8 @@ paths:
         with specific information about the various third party networks that
         an application service supports.
       operationId: getProtocolMetadata
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: path
           name: protocol
@@ -80,6 +84,8 @@ paths:
         User ID linked to a user on the third party network, given a set of
         user parameters.
       operationId: queryUserByProtocol
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: path
           name: protocol
@@ -131,6 +137,8 @@ paths:
       description: |-
         Retrieve a list of Matrix portal rooms that lead to the matched third party location.
       operationId: queryLocationByProtocol
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: path
           name: protocol
@@ -183,6 +191,8 @@ paths:
         Retrieve an array of third party network locations from a Matrix room
         alias.
       operationId: queryLocationByAlias
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: query
           name: alias
@@ -227,6 +237,8 @@ paths:
       description: |-
         Retrieve an array of third party users from a Matrix User ID.
       operationId: queryUserByID
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: query 
           name: userid

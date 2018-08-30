@@ -30,22 +30,37 @@ irrespective of the underlying homeserver implementation.
 .. contents:: Table of Contents
 .. sectnum::
 
-Specification version
----------------------
+Changelog
+---------
+
+
+.. topic:: Version: unstable
+{{application_service_changelog}}
 
 This version of the specification is generated from
 `matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
 `{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
 
+For the full historical changelog, see
+https://github.com/matrix-org/matrix-doc/blob/master/changelogs/application_service.rst
+
+Other versions of this specification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following other versions are also available, in reverse chronological order:
+
+- `HEAD <https://matrix.org/docs/spec/application_service/unstable.html>`_: Includes all changes since the latest versioned release.
+
+
 Application Services
 --------------------
-Application services are passive and can only observe events from a given
-homeserver (HS). They can inject events into rooms they are participating in.
+Application services are passive and can only observe events from homeserver.
+They can inject events into rooms they are participating in.
 They cannot prevent events from being sent, nor can they modify the content of
 the event being sent. In order to observe events from a homeserver, the
 homeserver needs to be configured to pass certain types of traffic to the
 application service.  This is achieved by manually configuring the homeserver
-with information about the application service (AS).
+with information about the application service.
 
 Registration
 ~~~~~~~~~~~~
@@ -179,24 +194,24 @@ events. Each list of events includes a transaction ID, which works as follows:
 
  Typical
  HS ---> AS : Homeserver sends events with transaction ID T.
-    <---    : AS sends back 200 OK.
+    <---    : Application Service sends back 200 OK.
 
  AS ACK Lost
  HS ---> AS : Homeserver sends events with transaction ID T.
     <-/-    : AS 200 OK is lost.
  HS ---> AS : Homeserver retries with the same transaction ID of T.
-    <---    : AS sends back 200 OK. If the AS had processed these events
-              already, it can NO-OP this request (and it knows if it is the same
-              events based on the transaction ID).
+    <---    : Application Service sends back 200 OK. If the AS had processed these
+              events already, it can NO-OP this request (and it knows if it is the
+              same events based on the transaction ID).
 
 The events sent to the application service should be linearised, as if they were
 from the event stream. The homeserver MUST maintain a queue of transactions to
-send to the AS. If the application service cannot be reached, the homeserver
-SHOULD backoff exponentially until the application service is reachable again.
+send to the application service. If the application service cannot be reached, the
+homeserver SHOULD backoff exponentially until the application service is reachable again.
 As application services cannot *modify* the events in any way, these requests can
 be made without blocking other aspects of the homeserver. Homeservers MUST NOT
 alter (e.g. add more) events they were going to send within that transaction ID
-on retries, as the AS may have already processed the events.
+on retries, as the application service may have already processed the events.
 
 {{transactions_as_http_api}}
 
@@ -337,7 +352,7 @@ users needs API changes in order to:
 - Have a 'passwordless' user.
 
 This involves bypassing the registration flows entirely. This is achieved by
-including the AS token on a ``/register`` request, along with a login type of
+including the ``as_token`` on a ``/register`` request, along with a login type of
 ``m.login.application_service`` to set the desired user ID without a password.
 
 ::
@@ -376,8 +391,6 @@ additional parameters on the ``/publicRooms`` client-server endpoint.
 
 Event fields
 ~~~~~~~~~~~~
-
-.. TODO-TravisR: Fix this section to be a general "3rd party networks" section
 
 We recommend that any events that originated from a remote network should
 include an ``external_url`` field in their content to provide a way for Matrix

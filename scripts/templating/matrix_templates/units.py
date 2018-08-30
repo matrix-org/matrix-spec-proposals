@@ -754,6 +754,7 @@ class MatrixUnits(Units):
     def load_apis(self, substitutions):
         cs_ver = substitutions.get("%CLIENT_RELEASE_LABEL%", "unstable")
         fed_ver = substitutions.get("%SERVER_RELEASE_LABEL%", "unstable")
+        as_ver = substitutions.get("%APPSERVICE_RELEASE_LABEL%", "unstable")
         push_gw_ver = substitutions.get("%PUSH_GATEWAY_RELEASE_LABEL%", "unstable")
 
         # we abuse the typetable to return this info to the templates
@@ -767,8 +768,8 @@ class MatrixUnits(Units):
                 fed_ver,
                 "Federation between servers",
             ), TypeTableRow(
-                "`Application Service API <application_service/unstable.html>`_",
-                "unstable",
+                "`Application Service API <application_service/"+as_ver+".html>`_",
+                as_ver,
                 "Privileged server plugins",
             ), TypeTableRow(
                 "`Identity Service API <identity_service/unstable.html>`_",

@@ -25,6 +25,8 @@ consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/users/{userId}":
     get:
@@ -36,6 +38,8 @@ paths:
         send this request when it receives an event for an unknown user ID in
         the application service's namespace, such as a room invite.
       operationId: queryUserById
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: path
           name: userId
