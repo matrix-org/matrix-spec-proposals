@@ -25,7 +25,7 @@ targets:
   push_gateway:
     files:
       - push_gateway.rst
-    version_label: unstable
+    version_label: "%PUSH_GATEWAY_RELEASE_LABEL%"
   appendices:
     files:
       - appendices.rst
