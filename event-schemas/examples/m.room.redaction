@@ -1,14 +1,8 @@
 {
-  "unsigned": {
-    "age": 242352
-  },
+  "$ref": "core/room_event.json",
+  "type": "m.room.redaction",
+  "redacts": "$fukweghifu23:localhost",
   "content": {
     "reason": "Spamming"
-  },
-  "origin_server_ts": 1431961217939,
-  "event_id": "$WLGTSEFSEF:localhost",
-  "type": "m.room.redaction",
-  "room_id": "!Cuyf34gef24t:localhost",
-  "redacts": "$fukweghifu23:localhost",
-  "sender": "@example:localhost"
+  }
 }
