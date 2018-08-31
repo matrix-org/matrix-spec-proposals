@@ -13,7 +13,10 @@
 {{":Rate-limited: Yes." if endpoint.rate_limited else "" }}
 {{":Requires auth: Yes." if endpoint.requires_auth else "" }}
 
-Request format:
+.. class:: httpheaders
+  
+  Request format:
+  
 {% if (endpoint.req_param_by_loc | length) %}
 {{ tables.split_paramtable(endpoint.req_param_by_loc) }}
 {% if (endpoint.req_body_tables) %}
@@ -28,13 +31,19 @@ Request format:
 {% endif %}
 
 {% if endpoint.res_headers is not none -%}
-Response headers:
+
+.. class:: httpheaders
+  
+  Response headers:
 
 {{ tables.paramtable(endpoint.res_headers.rows) }}
 {% endif -%}
 
 {% if endpoint.res_tables|length > 0 -%}
-Response format:
+
+.. class:: httpheaders
+  
+  Response format:
 
 {% for table in endpoint.res_tables -%}
 
@@ -44,14 +53,19 @@ Response format:
 {% endfor %}
 {% endif -%}
 
-Example request:
+.. class:: httpheaders
+  
+  Example request:
 
 .. code:: http
 
   {{endpoint.example.req | indent_block(2)}}
 
 {% if endpoint.responses|length > 0 -%}
-Response{{"s" if endpoint.responses|length > 1 else "" }}:
+
+.. class:: httpheaders
+  
+  Response{{"s" if endpoint.responses|length > 1 else "" }}:
 
 {% endif -%}
 
@@ -63,7 +77,9 @@ Response{{"s" if endpoint.responses|length > 1 else "" }}:
 
 {% if res["example"] -%}
 
-Example
+.. class:: httpheaders
+  
+  Example
 
 .. code:: json
 
