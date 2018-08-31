@@ -39,7 +39,7 @@ with an ``order`` of ``0.2`` would be displayed before a room with an ``order``
 of ``0.7``. If a room has a tag without an ``order`` key then it should appear 
 after the rooms with that tag that have an ``order`` key.
 
-The name of a tag MUST not exceed 255 bytes.
+The name of a tag MUST NOT exceed 255 bytes.
 
 The tag namespace is defined as follows:
 
