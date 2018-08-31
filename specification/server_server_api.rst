@@ -845,7 +845,7 @@ ID to invite, they can do so using a third-party identifier (e.g. an e-mail or a
 phone number).
 
 This identifier and its bindings to Matrix IDs are verified by an identity service
-implementing the `Identity Service API`_.
+implementing the `identity service API`_.
 
 Cases where an association exists for a third-party identifier
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -866,7 +866,7 @@ request.
 
 When a third-party identifier with pending invites gets bound to a Matrix ID,
 the identity service will send a POST request to the ID's homeserver as described
-in the `Invitation Storage`_ section of the Identity Service API.
+in the `Invitation Storage`_ section of the identity service API.
 
 The following process applies for each invite sent by the identity service:
 
@@ -1193,7 +1193,7 @@ Example code
 .. _/query/directory: #get-matrix-federation-v1-query-directory
 
 .. _`Invitation storage`: ../identity_service/%IDENTITY_RELEASE_LABEL%.html#invitation-storage
-.. _`Identity Service API`: ../identity_service/%IDENTITY_RELEASE_LABEL%.html
+.. _`identity service API`: ../identity_service/%IDENTITY_RELEASE_LABEL%.html
 .. _`Client-Server API`: ../client_server/%CLIENT_RELEASE_LABEL%.html
 .. _`Inviting to a room`: #inviting-to-a-room
 .. _`Canonical JSON`: ../appendices.html#canonical-json

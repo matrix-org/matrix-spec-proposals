@@ -87,7 +87,7 @@ paths:
             }
         404:
           description: The token was not found.
-          examples: 
+          examples:
             application/json: {
               "errcode": "M_UNRECOGNIZED",
               "error": "Didn't recognize token"

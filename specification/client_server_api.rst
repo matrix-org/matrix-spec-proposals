@@ -995,7 +995,7 @@ Adding Account Administrative Contact Information
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A homeserver may keep some contact information for administrative use.
-This is independent of any information kept by any Identity Services.
+This is independent of any information kept by any identity services.
 
 {{administrative_contact_cs_http_api}}
 

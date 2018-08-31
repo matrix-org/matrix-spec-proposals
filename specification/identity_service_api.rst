@@ -140,7 +140,7 @@ Some standard error codes are below:
   third party identifier.
 
 :``M_UNKNOWN``:
-  An unknown error has occurred. 
+  An unknown error has occurred.
 
 Privacy
 -------

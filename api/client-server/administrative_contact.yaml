@@ -35,7 +35,7 @@ paths:
         associated with the user's account.
 
         This is *not* the same as the list of third party identifiers bound to
-        the user's Matrix ID in Identity Services.
+        the user's Matrix ID in identity services.
 
         Identifiers in this list may be used by the homeserver as, for example,
         identifiers that it will accept to reset the user's account password.
@@ -106,13 +106,13 @@ paths:
                 properties:
                   client_secret:
                     type: string
-                    description: The client secret used in the session with the Identity Service.
+                    description: The client secret used in the session with the identity service.
                   id_server:
                     type: string
-                    description: The Identity Service to use.
+                    description: The identity service to use.
                   sid:
                     type: string
-                    description: The session identifier given by the Identity Service.
+                    description: The session identifier given by the identity service.
                 required: ["client_secret", "id_server", "sid"]
               bind:
                 type: boolean
