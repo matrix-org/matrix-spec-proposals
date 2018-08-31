@@ -218,7 +218,7 @@ attempts to perform these actions after the expiry will be rejected, and a new
 session should be created and used instead.
 
 To start a session, the client makes a request to the appropriate
-``/requestToken`` endpoint. The identity service then sends a validation token
+``/requestToken`` endpoint. The identity server then sends a validation token
 to the user, and the user provides the token to the client. The client then
 provides the token to the appropriate ``/submitToken`` endpoint, completing the
 session. At this point, the client should ``/bind`` the third party identifier
@@ -227,12 +227,12 @@ or leave it for another entity to bind.
 Format of a validation token
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The format of the validation token is left up to the identity service: it
+The format of the validation token is left up to the identity server: it
 should choose one appropriate to the 3PID type. (For example, it would be
 inappropriate to expect a user to copy a long passphrase including punctuation
 from an SMS message into a client.)
 
-Whatever format the identity service uses, the validation token must consist of
+Whatever format the identity server uses, the validation token must consist of
 at most 255 Unicode codepoints. Clients must pass the token through without
 modification.
 

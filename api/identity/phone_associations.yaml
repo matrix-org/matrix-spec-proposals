@@ -83,10 +83,10 @@ paths:
         associate the phone number address with any Matrix user
         ID. Specifically, calls to ``/lookup`` will not show a binding.
 
-        The identity service is free to match the token case-insensitively, or
+        The identity server is free to match the token case-insensitively, or
         carry out other mapping operations such as unicode
         normalisation. Whether to do so is an implementation detail for the
-        identity service. Clients must always pass on the token without
+        identity server. Clients must always pass on the token without
         modification.
 
         Note: for backwards compatibility with previous drafts of this
