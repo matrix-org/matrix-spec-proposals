@@ -396,27 +396,27 @@ The rules are as follows:
 
         i. If ``content`` has ``third_party_invite`` key:
 
-            #. Reject if *target user* is banned.
+            #. If *target user* is banned, reject.
 
-            #. Reject if ``content.third_party_invite`` does not have a
-               ``signed`` key.
+            #. If ``content.third_party_invite`` does not have a
+               ``signed`` key, reject.
 
-            #. Reject if ``signed`` does not have ``mxid`` and ``token`` keys.
+            #. If ``signed`` does not have ``mxid`` and ``token`` keys, reject.
 
-            #. Reject if ``mxid`` does not match ``state_key``
+            #. If ``mxid`` does not match ``state_key``, reject.
 
-            #. Reject if no ``m.room.third_party_invite`` event in
-               current state with ``state_key`` matching ``token``.
+            #. If no ``m.room.third_party_invite`` event in current state with
+               ``state_key`` matching ``token``, reject.
 
-            #. Reject if ``sender`` does not match ``sender`` of third party
-               invite.
+            #. If ``sender`` does not match ``sender`` of third party invite,
+               reject.
 
-            #. If any signature in ``signed`` matches any public key in third
-               party invite, allow. The public keys are in ``content`` of
-               third party invite under:
+            #. If any signature in ``signed`` matches any public key in the
+               ``m.room.third_party_invite``, allow. The public keys are in
+               ``content`` of ``m.room.third_party_invite`` as:
 
-                #. A single public key in ``public_key`` field
-                #. A list of public keys in ``public_keys`` field
+                #. A single public key in the ``public_key`` field.
+                #. A list of public keys in the ``public_keys`` field.
 
             #. Otherwise, reject.
 
