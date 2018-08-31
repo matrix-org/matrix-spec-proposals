@@ -43,14 +43,14 @@ paths:
           required: true
           description: |-
             The id of the user to get tags for. The access token must be
-            authorized to make requests for this user id.
+            authorized to make requests for this user ID.
           x-example: "@alice:example.com"
         - in: path
           type: string
           name: roomId
           required: true
           description: |-
-            The id of the room to get tags for.
+            The ID of the room to get tags for.
           x-example: "!726s6s6q:example.com"
       responses:
         200:
@@ -60,16 +60,26 @@ paths:
             type: object
             properties:
               tags:
-                title: Tags
                 type: object
+                additionalProperties:
+                  title: Tag
+                  type: object
+                  properties:
+                    order:
+                      type: number
+                      format: float
+                      description: |-
+                        A number in a range ``[0,1]`` describing a relative
+                        position of the room under the given tag.
+                  additionalProperties: true
           examples:
             application/json: {
-                "tags": {
-                  "m.favourite": {},
-                  "u.Work": {"order": "1"},
-                  "u.Customers": {}
-                }
+              "tags": {
+                "m.favourite": {"order": 0.1},
+                "u.Work": {"order": 0.7},
+                "u.Customers": {}
               }
+            }
       tags:
         - User data
   "/user/{userId}/rooms/{roomId}/tags/{tag}":
@@ -87,14 +97,14 @@ paths:
           required: true
           description: |-
             The id of the user to add a tag for. The access token must be
-            authorized to make requests for this user id.
+            authorized to make requests for this user ID.
           x-example: "@alice:example.com"
         - in: path
           type: string
           name: roomId
           required: true
           description: |-
-            The id of the room to add a tag to.
+            The ID of the room to add a tag to.
           x-example: "!726s6s6q:example.com"
         - in: path
           type: string
@@ -102,7 +112,7 @@ paths:
           required: true
           description: |-
             The tag to add.
-          x-example: "work"
+          x-example: "u.work"
         - in: body
           name: body
           required: true
@@ -110,8 +120,17 @@ paths:
             Extra data for the tag, e.g. ordering.
           schema:
             type: object
+            properties:
+              order:
+                type: number
+                format: float
+                description: |-
+                  A number in a range ``[0,1]`` describing a relative
+                  position of the room under the given tag.
+            additionalProperties: true
             example: {
-              "order": "1"}
+              "order": 0.25
+            }
       responses:
         200:
           description:
@@ -119,8 +138,7 @@ paths:
           schema:
             type: object
           examples:
-            application/json: {
-              }
+            application/json: {}
       tags:
         - User data
     delete:
@@ -137,14 +155,14 @@ paths:
           required: true
           description: |-
             The id of the user to remove a tag for. The access token must be
-            authorized to make requests for this user id.
+            authorized to make requests for this user ID.
           x-example: "@alice:example.com"
         - in: path
           type: string
           name: roomId
           required: true
           description: |-
-            The id of the room to remove a tag from.
+            The ID of the room to remove a tag from.
           x-example: "!726s6s6q:example.com"
         - in: path
           type: string
@@ -152,15 +170,14 @@ paths:
           required: true
           description: |-
             The tag to remove.
-          x-example: "work"
+          x-example: "u.work"
       responses:
         200:
           description:
-            The tag was successfully removed
+            The tag was successfully removed.
           schema:
             type: object
           examples:
-            application/json: {
-              }
+            application/json: {}
       tags:
         - User data

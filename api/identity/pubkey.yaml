@@ -69,7 +69,8 @@ paths:
     get:
       summary: Check whether a long-term public key is valid.
       description: |-
-        Check whether a long-term public key is valid.
+        Check whether a long-term public key is valid. The response should always
+        be the same, provided the key exists.
       operationId: isPubKeyValid
       parameters:
         - in: query

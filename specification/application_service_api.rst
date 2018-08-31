@@ -16,6 +16,8 @@
 Application Service API
 =======================
 
+{{unstable_warning_block_APPSERVICE_RELEASE_LABEL}}
+
 The Matrix client-server API and server-server APIs provide the means to
 implement a consistent self-contained federated messaging fabric. However, they
 provide limited means of implementing custom server-side behaviour in Matrix

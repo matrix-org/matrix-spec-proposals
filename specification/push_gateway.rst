@@ -16,6 +16,8 @@
 Push Gateway API
 ================
 
+{{unstable_warning_block_PUSH_GATEWAY_RELEASE_LABEL}}
+
 Clients may want to receive push notifications when events are received at
 the homeserver. This is managed by a distinct entity called the Push Gateway.
 

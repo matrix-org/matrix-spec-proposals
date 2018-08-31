@@ -308,6 +308,8 @@ creating a new event in this room should populate the new event's
   |
   E4
 
+.. _`auth events selection`:
+
 The ``auth_events`` field of a PDU identifies the set of events which give the
 sender permission to send the event. The ``auth_events`` for the
 ``m.room.create`` event in a room is empty; for other events, it should be the
@@ -315,8 +317,16 @@ following subset of the room state:
 
 - The ``m.room.create`` event.
 - The current ``m.room.power_levels`` event, if any.
-- The current ``m.room.join_rules`` event, if any.
 - The sender's current ``m.room.member`` event, if any.
+- If type is ``m.room.member``:
+
+    - The target's current ``m.room.member`` event, if any.
+    - If ``membership`` is ``join`` or ``invite``, the current
+      ``m.room.join_rules`` event, if any.
+    - If membership is ``invite`` and ``content`` contains a
+      ``third_party_invite`` property, the current
+      ``m.room.third_party_invite`` event with ``state_key`` matching
+      ``content.third_party_invite.signed.token``, if any.
 
 {{definition_ss_pdu}}
 
@@ -358,117 +368,170 @@ be inserted. The types of state events that affect authorization are:
 - ``m.room.member``
 - ``m.room.join_rules``
 - ``m.room.power_levels``
-
-Servers should not create new events that reference unauthorized events.
-However, any event that does reference an unauthorized event is not itself
-automatically considered unauthorized.
-
-Unauthorized events that appear in the event graph do *not* have any effect on
-the state of the room.
-
-.. Note:: This is in contrast to redacted events which can still affect the
-          state of the room. For example, a redacted ``join`` event will still
-          result in the user being considered joined.
+- ``m.room.third_party_invite``
 
 The rules are as follows:
 
-1. If type is ``m.room.create``, allow if and only if it has no
-   previous events - *i.e.* it is the first event in the room.
+1. If type is ``m.room.create``:
 
-2. If type is ``m.room.member``:
+   a. If it has any previous events, reject.
+   b. If the domain of the ``room_id`` does not match the domain of the
+      ``sender``, reject.
+   c. If ``content.room_version`` is present and is not a recognised version,
+      reject.
+   d. If ``content`` has no ``creator`` field, reject.
+   e. Otherwise, allow.
 
-  a. If ``membership`` is ``join``:
+#. Reject if event has ``auth_events`` that:
 
-    i. If the only previous event is an ``m.room.create``
-       and the ``state_key`` is the creator, allow.
+   a. have duplicate entries for a given ``type`` and ``state_key`` pair
+   #. have entries whose ``type`` and ``state_key`` don't match those
+      specified by the `auth events selection`_ algorithm described above.
 
-    #. If the ``sender`` does not match ``state_key``, reject.
+#. If event does not have a ``m.room.create`` in its ``auth_events``, reject.
 
-    #. If the user's current membership state is ``invite`` or ``join``,
-       allow.
+#. If type is ``m.room.aliases``:
 
-    #. If the ``join_rule`` is ``public``, allow.
+   a. If event has no ``state_key``, reject.
+   b. If sender's domain doesn't matches ``state_key``, reject.
+   c. Otherwise, allow.
 
-    #. Otherwise, reject.
+#. If type is ``m.room.member``:
 
-  b. If ``membership`` is ``invite``:
+   a. If no ``state_key`` key or ``membership`` key in ``content``, reject.
 
-    i. If the ``sender``'s current membership state is not ``join``, reject.
+   #. If ``membership`` is ``join``:
 
-    #. If *target user*'s current membership state is ``join`` or ``ban``,
-       reject.
+      i. If the only previous event is an ``m.room.create``
+         and the ``state_key`` is the creator, allow.
 
-    #. If the ``sender``'s power level is greater than or equal to the *invite
-       level*, allow.
+      #. If the ``sender`` does not match ``state_key``, reject.
 
-    #. Otherwise, reject.
+      #. If the ``sender`` is banned, reject.
 
-  c. If ``membership`` is ``leave``:
+      #. If the ``join_rule`` is ``invite`` then allow if membership state
+         is ``invite`` or ``join``.
 
-    i. If the ``sender`` matches ``state_key``, allow if and only if that user's
-       current membership state is ``invite`` or ``join``.
+      #. If the ``join_rule`` is ``public``, allow.
 
-    #. If the ``sender``'s current membership state is not ``join``, reject.
+      #. Otherwise, reject.
 
-    #. If the *target user*'s current membership state is ``ban``, and the
-       ``sender``'s power level is less than the *ban level*, reject.
+   #. If ``membership`` is ``invite``:
 
-    #. If the ``sender``'s power level is greater than or equal to the *kick
-       level*, and the *target user*'s power level is less than the
-       ``sender``'s power level, allow.
+      i. If ``content`` has ``third_party_invite`` key:
 
-    #. Otherwise, reject.
+         #. If *target user* is banned, reject.
 
-  d. If ``membership`` is ``ban``:
+         #. If ``content.third_party_invite`` does not have a
+            ``signed`` key, reject.
 
-    i. If the ``sender``'s current membership state is not ``join``, reject.
+         #. If ``signed`` does not have ``mxid`` and ``token`` keys, reject.
 
-    #. If the ``sender``'s power level is greater than or equal to the *ban
-       level*, and the *target user*'s power level is less than the
-       ``sender``'s power level, allow.
+         #. If ``mxid`` does not match ``state_key``, reject.
 
-    #. Otherwise, reject.
+         #. If there is no ``m.room.third_party_invite`` event in the
+            current room state with ``state_key`` matching ``token``, reject.
 
-  e. Otherwise, the membership is unknown. Reject.
+         #. If ``sender`` does not match ``sender`` of the
+            ``m.room.third_party_invite``, reject.
 
-3. If the ``sender``'s current membership state is not ``join``, reject.
+         #. If any signature in ``signed`` matches any public key in the
+            ``m.room.third_party_invite`` event, allow. The public keys are
+            in ``content`` of ``m.room.third_party_invite`` as:
 
-4. If the event type's *required power level* is greater than the ``sender``'s power
+            #. A single public key in the ``public_key`` field.
+            #. A list of public keys in the ``public_keys`` field.
+
+         #. Otherwise, reject.
+
+      #. If the ``sender``'s current membership state is not ``join``, reject.
+
+      #. If *target user*'s current membership state is ``join`` or ``ban``,
+         reject.
+
+      #. If the ``sender``'s power level is greater than or equal to the *invite
+         level*, allow.
+
+      #. Otherwise, reject.
+
+   #. If ``membership`` is ``leave``:
+
+      i. If the ``sender`` matches ``state_key``, allow if and only if that user's
+         current membership state is ``invite`` or ``join``.
+
+      #. If the ``sender``'s current membership state is not ``join``, reject.
+
+      #. If the *target user*'s current membership state is ``ban``, and the
+         ``sender``'s power level is less than the *ban level*, reject.
+
+      #. If the ``sender``'s power level is greater than or equal to the *kick
+         level*, and the *target user*'s power level is less than the
+         ``sender``'s power level, allow.
+
+      #. Otherwise, reject.
+
+   #. If ``membership`` is ``ban``:
+
+      i. If the ``sender``'s current membership state is not ``join``, reject.
+
+      #. If the ``sender``'s power level is greater than or equal to the *ban
+         level*, and the *target user*'s power level is less than the
+         ``sender``'s power level, allow.
+
+      #. Otherwise, reject.
+
+   #. Otherwise, the membership is unknown. Reject.
+
+#. If the ``sender``'s current membership state is not ``join``, reject.
+
+#. If type is ``m.room.third_party_invite``:
+
+   a. Allow if and only if ``sender``'s current power level is greater than
+      or equal to the *invite level*.
+
+#. If the event type's *required power level* is greater than the ``sender``'s power
    level, reject.
 
-5. If type is ``m.room.power_levels``:
+#. If the event has a ``state_key`` that starts with an ``@`` and does not match
+   the ``sender``, reject.
 
-  a. If there is no previous ``m.room.power_levels`` event in the room, allow.
+#. If type is ``m.room.power_levels``:
 
-  b. For each of the keys ``users_default``, ``events_default``,
-     ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
-     each entry being changed under the ``events`` or ``users`` keys:
+   a. If ``users`` key in ``content`` is not a dictionary with keys that are
+      valid user IDs with values that are integers (or a string that is an
+      integer), reject.
 
-    i. If the current value is higher than the ``sender``'s current power level,
-       reject.
+   #. If there is no previous ``m.room.power_levels`` event in the room, allow.
 
-    #. If the new value is higher than the ``sender``'s current power level,
-       reject.
+   #. For each of the keys ``users_default``, ``events_default``,
+      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
+      each entry being changed under the ``events`` or ``users`` keys:
 
-  c. For each entry being changed under the ``users`` key, other than the
-     ``sender``'s own entry:
+      i. If the current value is higher than the ``sender``'s current power level,
+         reject.
 
-    i. If the current value is equal to the ``sender``'s current power level,
-       reject.
+      #. If the new value is higher than the ``sender``'s current power level,
+         reject.
 
-  d. Otherwise, allow.
+   #. For each entry being changed under the ``users`` key, other than the
+      ``sender``'s own entry:
 
-6. If type is ``m.room.redaction``:
+      i. If the current value is equal to the ``sender``'s current power level,
+         reject.
 
-  a. If the ``sender``'s power level is greater than or equal to the *redact
-     level*, allow.
+   #. Otherwise, allow.
 
-  #. If the ``sender`` of the event being redacted is the same as the
-     ``sender`` of the ``m.room.redaction``, allow.
+#. If type is ``m.room.redaction``:
 
-  #. Otherwise, reject.
+   a. If the ``sender``'s power level is greater than or equal to the *redact
+      level*, allow.
 
-7. Otherwise, allow.
+   #. If the domain of the ``event_id`` of the event being redacted is the same
+      as the domain of the ``event_id`` of the ``m.room.redaction``, allow.
+
+   #. Otherwise, reject.
+
+#. Otherwise, allow.
 
 .. NOTE::
 
@@ -482,9 +545,30 @@ The rules are as follows:
     the kick *and* ban levels, *and* greater than the target user's power
     level.
 
-.. TODO-spec
 
-  I think there is some magic about 3pid invites too.
+Rejection
++++++++++
+
+If an event is rejected it should neither be relayed to clients nor be included
+as a prev event in any new events generated by the server. Subsequent events
+from other servers that reference rejected events should be allowed if they
+still pass the auth rules. The state used in the checks should be calculated as
+normal, except not updating with the rejected event where it is a state event.
+
+If an event in an incoming transaction is rejected, this should not cause the
+transaction request to be responded to with an error response.
+
+.. NOTE::
+
+    This means that events may be included in the room DAG even though they
+    should be rejected.
+
+.. NOTE::
+
+    This is in contrast to redacted events which can still affect the
+    state of the room. For example, a redacted ``join`` event will still
+    result in the user being considered joined.
+
 
 Retrieving event authorization information
 ++++++++++++++++++++++++++++++++++++++++++
@@ -751,6 +835,10 @@ event to other servers in the room.
 
 Third-party invites
 -------------------
+
+.. NOTE::
+   More information about third party invites is available in the `Client-Server API`_
+   under the Third Party Invites module.
 
 When an user wants to invite another user in a room but doesn't know the Matrix
 ID to invite, they can do so using a third-party identifier (e.g. an e-mail or a

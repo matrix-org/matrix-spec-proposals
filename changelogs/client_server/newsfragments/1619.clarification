@@ -1,0 +1,1 @@
+Add a note that clients may use the transaction ID to avoid flickering when doing local echo.
