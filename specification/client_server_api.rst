@@ -100,7 +100,14 @@ custom namespace ``com.mydomain.here``, and a
 ``COM.MYDOMAIN.HERE_FORBIDDEN``. There may be additional keys depending on the
 error, but the keys ``error`` and ``errcode`` MUST always be present.
 
-Some standard error codes are below:
+Errors are generally best expressed by their error code rather than the HTTP
+status code returned. When encountering the error code ``M_UNKNOWN``, clients
+should prefer the HTTP status code as a more reliable reference for what the
+issue was. For example, if the client receives an error code of ``M_NOT_FOUND``
+but the request gave a 400 Bad Request status code, the client should treat
+the error as if the resource was not found. However, if the client were to
+receive an error code of ``M_UNKNOWN`` with a 400 Bad Request, the client
+should assume that the request being made was invalid.
 
 The common error codes are:
 
