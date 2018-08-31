@@ -282,12 +282,12 @@ paths:
             }
         400:
           description: |-
-            The homeserver was unable to locate a user with the third party identifier
-            already bound, or the request was invalid.
+            The third party identifier is already in use on the homeserver, or
+            the request was invalid.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
             application/json: {
-              "errcode": "M_THREEPID_NOT_FOUND",
-              "error": "Third party identifier not found"
+              "errcode": "M_THREEPID_IN_USE",
+              "error": "Third party identifier already in use"
             }
