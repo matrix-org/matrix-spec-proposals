@@ -12,42 +12,39 @@
 .. See the License for the specific language governing permissions and
 .. limitations under the License.
 
-Read Markers
-============
+Fully read markers
+==================
 
 .. _module:read-markers:
 
-A "read marker" is a bookmark in the room's history where the user has last
-read a message. Read receipts cover the most recently read message, and have
-slightly different semantics where they are to be sent when the user has most
-likely seen the message, but not necessarily read it. A read marker tracks
-the user's last read message, therefore making the messages between the read
-marker and read receipt "potentially read" and messages before the read marker
-as "read". Messages after the read receipt should be considered as "unread",
-therefore the read marker should always be earlier or equal to the location of
-the read receipt.
+The history for a given room may be split into three sections: messages the
+user has read (or indicated they aren't interested in them), messages the user
+might have read some but not others, and messages the user hasn't seen yet.
+The "fully read marker" (also known as a "read marker") marks the last event
+of the first section, whereas the user's read receipt marks the last event of
+the second section.
 
 Events
 ------
-The user's read marker is kept as an event in the room's `account data`_. The
-event may be read to determine the user's current read marker location in the
-room, and just like other account data events the event will be pushed down
+The user's fully read marker is kept as an event in the room's `account data`_.
+The event may be read to determine the user's current fully read marker location
+in the room, and just like other account data events the event will be pushed down
 the event stream when updated.
 
-The read marker is kept under an ``m.fully_read`` event. If the event does
-not exist on the user's account data, the read marker should be considered
+The fully read marker is kept under an ``m.fully_read`` event. If the event does
+not exist on the user's account data, the fully read marker should be considered
 to be the user's read receipt location.
 
 {{m_fully_read_event}}
 
 Client behaviour
 ----------------
-The client cannot update read markers by directly modifying the ``m.fully_read``
+The client cannot update fully read markers by directly modifying the ``m.fully_read``
 account data event. Instead, the client must make use of the read markers API
 to change the values.
 
 The read markers API can additionally update the user's read receipt (``m.read``)
-location in the same operation as setting the read marker location. This is
+location in the same operation as setting the fully read marker location. This is
 because read receipts and read markers are commonly updated at the same time,
 and therefore the client might wish to save an extra HTTP call. Providing an
 ``m.read`` location performs the same task as a request to ``/receipts/m.read/$event:domain.com``.
