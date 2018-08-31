@@ -1,1 +1,0 @@
-Add ``token`` parameter to the ``/keys/query`` endpoint

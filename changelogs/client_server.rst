@@ -1,3 +1,106 @@
+r0.4.0
+======
+
+New Endpoints
+-------------
+
+- ``POST /user_directory/search`` (`#1096 <https://github.com/matrix-org/matrix-doc/issues/1096>`_)
+- ``GET /rooms/{roomId}/event/{eventId}`` (`#1110 <https://github.com/matrix-org/matrix-doc/issues/1110>`_)
+- ``POST /delete_devices`` (`#1239 <https://github.com/matrix-org/matrix-doc/issues/1239>`_)
+- ``GET /thirdparty/*`` Endpoints (`#1353 <https://github.com/matrix-org/matrix-doc/issues/1353>`_)
+- ``POST /account/3pid/msisdn/requestToken``, ``POST /register/msisdn/requestToken``, and ``POST /account/password/msisdn/requestToken`` (`#1507 <https://github.com/matrix-org/matrix-doc/issues/1507>`_)
+- ``POST /account/3pid/delete`` (`#1567 <https://github.com/matrix-org/matrix-doc/issues/1567>`_)
+- ``POST /rooms/{roomId}/read_markers`` (`#1635 <https://github.com/matrix-org/matrix-doc/issues/1635>`_)
+
+
+Backwards Compatible Changes
+----------------------------
+
+- Add more presence options to the ``set_presence`` parameter of ``/sync``. (Thanks @mujx!) (`#780 <https://github.com/matrix-org/matrix-doc/issues/780>`_)
+- Add ``token`` parameter to the ``/keys/query`` endpoint (`#1104 <https://github.com/matrix-org/matrix-doc/issues/1104>`_)
+- Add the room visibility options for the room directory (`#1141 <https://github.com/matrix-org/matrix-doc/issues/1141>`_)
+- Add spec for ignoring users (`#1142 <https://github.com/matrix-org/matrix-doc/issues/1142>`_)
+- Add the ``/register/available`` endpoint for username availability (`#1151 <https://github.com/matrix-org/matrix-doc/issues/1151>`_)
+- Add sticker messages (`#1158 <https://github.com/matrix-org/matrix-doc/issues/1158>`_)
+- Specify how to control the power level required for ``@room`` (`#1176 <https://github.com/matrix-org/matrix-doc/issues/1176>`_)
+- Document ``/logout/all`` endpoint (`#1263 <https://github.com/matrix-org/matrix-doc/issues/1263>`_)
+- Add report content API (`#1264 <https://github.com/matrix-org/matrix-doc/issues/1264>`_)
+- Add ``allow_remote`` to the content repo to avoid routing loops (`#1265 <https://github.com/matrix-org/matrix-doc/issues/1265>`_)
+- Document `highlights` field in /search response (`#1274 <https://github.com/matrix-org/matrix-doc/issues/1274>`_)
+- End-to-end encryption for group chats:
+
+  * Olm and Megolm messaging algorithms.
+  * ``m.room.encrypted``, ``m.room.encryption``, ``m.room_key`` events.
+  * Device verification process.
+  * ``device_one_time_keys_count`` sync parameter.
+  * ``device_lists:left`` sync parameter. (`#1284 <https://github.com/matrix-org/matrix-doc/issues/1284>`_)
+- Add ``.well-known`` server discovery method (`#1359 <https://github.com/matrix-org/matrix-doc/issues/1359>`_)
+- Document the GET version of ``/login`` (`#1361 <https://github.com/matrix-org/matrix-doc/issues/1361>`_)
+- Document the ``server_name`` parameter on ``/join/{roomIdOrAlias}`` (`#1364 <https://github.com/matrix-org/matrix-doc/issues/1364>`_)
+- Document the CORS/preflight headers (`#1365 <https://github.com/matrix-org/matrix-doc/issues/1365>`_)
+- Add new user identifier object for logging in (`#1390 <https://github.com/matrix-org/matrix-doc/issues/1390>`_)
+- Document message formats on ``m.text`` and ``m.emote`` messages (`#1397 <https://github.com/matrix-org/matrix-doc/issues/1397>`_)
+- Encrypt file attachments (`#1420 <https://github.com/matrix-org/matrix-doc/issues/1420>`_)
+- Share room decryption keys between devices (`#1465 <https://github.com/matrix-org/matrix-doc/issues/1465>`_)
+- Document and improve client interaction with pushers. (`#1506 <https://github.com/matrix-org/matrix-doc/issues/1506>`_)
+- Add support for Room Versions. (`#1516 <https://github.com/matrix-org/matrix-doc/issues/1516>`_)
+- Guests can now call /context and /event to fetch events (`#1542 <https://github.com/matrix-org/matrix-doc/issues/1542>`_)
+- Add a common standard for user, room, and group mentions in messages. (`#1547 <https://github.com/matrix-org/matrix-doc/issues/1547>`_)
+- Add server ACLs as an option for controlling federation in a room. (`#1550 <https://github.com/matrix-org/matrix-doc/issues/1550>`_)
+- Add new push rules for encrypted events and ``@room`` notifications. (`#1551 <https://github.com/matrix-org/matrix-doc/issues/1551>`_)
+- Add third party network room directories, as provided by application services. (`#1554 <https://github.com/matrix-org/matrix-doc/issues/1554>`_)
+- Document the ``validated_at`` and ``added_at`` fields on ``GET /acount/3pid``. (`#1567 <https://github.com/matrix-org/matrix-doc/issues/1567>`_)
+- Add an ``inhibit_login`` registration option. (`#1589 <https://github.com/matrix-org/matrix-doc/issues/1589>`_)
+- Recommend that servers set a Content Security Policy for the content repository. (`#1600 <https://github.com/matrix-org/matrix-doc/issues/1600>`_)
+- Add "rich replies" - a way for users to better represent the conversation thread they are referencing in their messages. (`#1617 <https://github.com/matrix-org/matrix-doc/issues/1617>`_)
+- Add support for read markers. (`#1635 <https://github.com/matrix-org/matrix-doc/issues/1635>`_)
+
+
+Spec Clarifications
+-------------------
+
+- Mark ``home_server`` return field for ``/login`` and ``/register`` endpoints as deprecated (`#1097 <https://github.com/matrix-org/matrix-doc/issues/1097>`_)
+- Fix response format of ``/keys/changes`` endpoint (`#1106 <https://github.com/matrix-org/matrix-doc/issues/1106>`_)
+- Clarify default values for some fields on the ``/search`` API (`#1109 <https://github.com/matrix-org/matrix-doc/issues/1109>`_)
+- Fix the representation of ``m.presence`` events (`#1137 <https://github.com/matrix-org/matrix-doc/issues/1137>`_)
+- Clarify that ``m.tag`` ordering is done with numbers, not strings (`#1139 <https://github.com/matrix-org/matrix-doc/issues/1139>`_)
+- Clarify that ``/account/whoami`` should consider application services (`#1152 <https://github.com/matrix-org/matrix-doc/issues/1152>`_)
+- Update ``ImageInfo`` and ``ThumbnailInfo`` dimension schema descriptions to clarify that they relate to intended display size, as opposed to the intrinsic size of the image file. (`#1158 <https://github.com/matrix-org/matrix-doc/issues/1158>`_)
+- Mark ``GET /rooms/{roomId}/members`` as requiring authentication (`#1245 <https://github.com/matrix-org/matrix-doc/issues/1245>`_)
+- Clarify ``changed`` field behaviour in device tracking process (`#1284 <https://github.com/matrix-org/matrix-doc/issues/1284>`_)
+- Describe ``StateEvent`` for ``/createRoom`` (`#1329 <https://github.com/matrix-org/matrix-doc/issues/1329>`_)
+- Describe how the ``reason`` is handled for kicks/bans (`#1362 <https://github.com/matrix-org/matrix-doc/issues/1362>`_)
+- Mark ``GET /presence/{userId}/status`` as requiring authentication (`#1371 <https://github.com/matrix-org/matrix-doc/issues/1371>`_)
+- Describe the rate limit error response schema (`#1373 <https://github.com/matrix-org/matrix-doc/issues/1373>`_)
+- Clarify that clients must leave rooms before forgetting them (`#1378 <https://github.com/matrix-org/matrix-doc/issues/1378>`_)
+- Document guest access in ``/createRoom`` presets (`#1379 <https://github.com/matrix-org/matrix-doc/issues/1379>`_)
+- Define what a ``RoomEvent`` is on ``/rooms/{roomId}/messages`` (`#1380 <https://github.com/matrix-org/matrix-doc/issues/1380>`_)
+- Clarify the request and result types on ``/search`` (`#1381 <https://github.com/matrix-org/matrix-doc/issues/1381>`_)
+- Clarify some of the properties on the search result (`#1400 <https://github.com/matrix-org/matrix-doc/issues/1400>`_)
+- Clarify how access tokens are meant to be supplied to the homeserver. (`#1517 <https://github.com/matrix-org/matrix-doc/issues/1517>`_)
+- Document additional parameters on the ``/createRoom`` API. (`#1518 <https://github.com/matrix-org/matrix-doc/issues/1518>`_)
+- Clarify that new push rules should be enabled by default, and that unrecognised conditions should not match. (`#1551 <https://github.com/matrix-org/matrix-doc/issues/1551>`_)
+- Update all event examples to be accurate representations of their associated events. (`#1558 <https://github.com/matrix-org/matrix-doc/issues/1558>`_)
+- Clarify the supported HTML features for room messages. (`#1562 <https://github.com/matrix-org/matrix-doc/issues/1562>`_)
+- Move the ``invite_room_state`` definition under ``unsigned`` where it actually resides. (`#1568 <https://github.com/matrix-org/matrix-doc/issues/1568>`_)
+- Clarify the homeserver's behaviour for searching users. (`#1569 <https://github.com/matrix-org/matrix-doc/issues/1569>`_)
+- Clarify the object structures and defaults for Filters. (`#1570 <https://github.com/matrix-org/matrix-doc/issues/1570>`_)
+- Clarify instances of ``type: number`` in the swagger/OpenAPI schema definitions. (`#1571 <https://github.com/matrix-org/matrix-doc/issues/1571>`_)
+- Clarify that left rooms also have account data in ``/sync``. (`#1572 <https://github.com/matrix-org/matrix-doc/issues/1572>`_)
+- Clarify the event fields used in the ``/sync`` response. (`#1573 <https://github.com/matrix-org/matrix-doc/issues/1573>`_)
+- Fix naming of the body field in ``PUT /directory/room``. (`#1574 <https://github.com/matrix-org/matrix-doc/issues/1574>`_)
+- Clarify the filter object schema used in room searching. (`#1577 <https://github.com/matrix-org/matrix-doc/issues/1577>`_)
+- Document the 403 error for sending state events. (`#1590 <https://github.com/matrix-org/matrix-doc/issues/1590>`_)
+- specify how to handle multiple olm sessions with the same device (`#1596 <https://github.com/matrix-org/matrix-doc/issues/1596>`_)
+- Add the other keys that redactions are expected to preserve. (`#1602 <https://github.com/matrix-org/matrix-doc/issues/1602>`_)
+- Clarify that clients should not be generating invalid HTML for formatted events. (`#1605 <https://github.com/matrix-org/matrix-doc/issues/1605>`_)
+- Clarify the room tag structure (thanks @KitsuneRal!) (`#1606 <https://github.com/matrix-org/matrix-doc/issues/1606>`_)
+- Add a note that clients may use the transaction ID to avoid flickering when doing local echo. (`#1619 <https://github.com/matrix-org/matrix-doc/issues/1619>`_)
+- Include the request and response structures for the various ``/requestToken`` endpoints. (`#1636 <https://github.com/matrix-org/matrix-doc/issues/1636>`_)
+- Clarify the available error codes, and when to prefer the HTTP status code over the ``errcode``. (`#1637 <https://github.com/matrix-org/matrix-doc/issues/1637>`_)
+- Clarify and generalise the language used for describing pagination. (`#1642 <https://github.com/matrix-org/matrix-doc/issues/1642>`_)
+
+
 r0.3.0
 ======
 

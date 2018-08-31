@@ -1,3 +1,0 @@
-Update ``ImageInfo`` and ``ThumbnailInfo`` dimension schema descriptions 
-to clarify that they relate to intended display size, as opposed to the 
-intrinsic size of the image file.

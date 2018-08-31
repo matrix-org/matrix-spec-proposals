@@ -1,1 +1,0 @@
-Mark ``GET /rooms/{roomId}/members`` as requiring authentication
