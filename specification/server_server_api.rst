@@ -434,7 +434,7 @@ The rules are as follows:
             #. A single public key in the ``public_key`` field.
             #. A list of public keys in the ``public_keys`` field.
 
-        #. Otherwise, reject.
+         #. Otherwise, reject.
 
       #. If the ``sender``'s current membership state is not ``join``, reject.
 
