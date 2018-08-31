@@ -570,6 +570,32 @@ transaction request to be responded to with an error response.
     result in the user being considered joined.
 
 
+Soft Failure
+++++++++++++
+
+When the homeserver receives a new event over federation it should also check
+whether the event passes auth checks based on the current state of the room
+(as well as based on the state at the event). If the event does not pass the
+auth checks it should be "soft failed".
+
+When an event is "soft failed" it should not be relayed to the client nor be
+referenced by new events created by the homeserver. If an event is received that
+references the soft failed event then the new event should be handled as usual.
+If this causes a change in state (e.g. due to the soft failed event being a
+state event) then the state updates should be propagated to clients as usual.
+
+.. NOTE::
+
+    This is different than rejections in that soft failed events are simply
+    ignored unless a new event references it.
+
+
+.. NOTE::
+
+    Soft failures are designed to stop malicious servers from avoiding actions
+    such as kicks or bans by careful selection of ``prev_events``.
+
+
 Retrieving event authorization information
 ++++++++++++++++++++++++++++++++++++++++++
 
