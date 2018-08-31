@@ -39,3 +39,10 @@ Client Behaviour
 ----------------
 
 {{account_data_cs_http_api}}
+
+
+Server Behaviour
+----------------
+
+Servers MUST reject clients from setting account data for event types that
+the server manages. Currently, this only includes `m.fully_read`_.

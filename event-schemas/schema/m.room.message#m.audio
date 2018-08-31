@@ -27,12 +27,17 @@ properties:
           - m.audio
         type: string
       url:
-        description: The URL to the audio clip.
+        description: Required if the file is not encrypted. The URL to the audio clip.
         type: string
+      file:
+        description: |-
+          Required if the file is encrypted. Information on the encrypted
+          file, as specified in |encrypted_files|_.
+        title: EncryptedFile
+        type: object
     required:
       - msgtype
       - body
-      - url
     type: object
   type:
     enum:

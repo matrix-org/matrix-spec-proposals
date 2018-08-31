@@ -224,6 +224,145 @@ process:
 .. |device_lists| replace:: ``device_lists``
 .. _`device_lists`: `device_lists_sync`_
 
+
+Sending encrypted attachments
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When encryption is enabled in a room, files should be uploaded encrypted on
+the homeserver.
+
+In order to achieve this, a client should generate a single-use 256-bit AES
+key, and encrypt the file using AES-CTR. The counter should be 64-bit long,
+starting at 0 and prefixed by a random 64-bit Initialization Vector (IV), which
+together form a 128-bit unique counter block.
+
+.. Warning::
+  An IV must never be used multiple times with the same key. This implies that
+  if there are multiple files to encrypt in the same message, typically an
+  image and its thumbnail, the files must not share both the same key and IV.
+
+Then, the encrypted file can be uploaded to the homeserver.
+The key and the IV must be included in the room event along with the resulting
+``mxc://`` in order to allow recipients to decrypt the file. As the event
+containing those will be Megolm encrypted, the server will never have access to
+the decrypted file.
+
+A hash of the ciphertext must also be included, in order to prevent the homeserver from
+changing the file content.
+
+A client should send the data as an encrypted ``m.room.message`` event, using
+either ``m.file`` as the msgtype, or the appropriate msgtype for the file
+type. The key is sent using the `JSON Web Key`_ format, with a `W3C
+extension`_.
+
+.. anchor for link from m.message api spec
+.. |encrypted_files| replace:: End-to-end encryption
+.. _encrypted_files:
+
+Extensions to ``m.message`` msgtypes
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+This module adds ``file`` and ``thumbnail_file`` properties, of type
+``EncryptedFile``, to ``m.message`` msgtypes that reference files, such as
+`m.file`_ and `m.image`_, replacing the ``url`` and ``thumbnail_url``
+properties.
+
+.. todo: generate this from a swagger definition?
+
+``EncryptedFile``
+
+========= ================ =====================================================
+Parameter Type             Description
+========= ================ =====================================================
+url       string           **Required.** The URL to the file.
+key       JWK              **Required.** A `JSON Web Key`_ object.
+iv        string           **Required.** The Initialisation Vector used by
+                           AES-CTR, encoded as unpadded base64.
+hashes    {string: string} **Required.** A map from an algorithm name to a hash
+                           of the ciphertext, encoded as unpadded base64. Clients
+                           should support the SHA-256 hash, which uses the key
+                           ``sha256``.
+v         string           **Required.** Version of the encrypted attachments
+                           protocol. Must be ``v2``.
+========= ================ =====================================================
+
+``JWK``
+
+========= ========= ============================================================
+Parameter Type      Description
+========= ========= ============================================================
+key       string    **Required.** Key type. Must be ``oct``.
+key_opts  [string]  **Required.** Key operations. Must at least contain
+                    ``encrypt`` and ``decrypt``.
+alg       string    **Required.** Algorithm. Must be ``A256CTR``.
+k         string    **Required.** The key, encoded as urlsafe unpadded base64.
+ext       boolean   **Required.** Extractable. Must be ``true``. This is a
+                    `W3C extension`_.
+========= ========= ============================================================
+
+Example:
+
+.. code :: json
+
+  {
+    "content": {
+      "body": "something-important.jpg",
+      "file": {
+        "url": "mxc://domain.com/FHyPlCeYUSFFxlgbQYZmoEoe",
+        "mimetype": "image/jpeg",
+        "v": "v2",
+        "key": {
+          "alg": "A256CTR",
+          "ext": true,
+          "k": "aWF6-32KGYaC3A_FEUCk1Bt0JA37zP0wrStgmdCaW-0",
+          "key_ops": ["encrypt","decrypt"],
+          "kty": "oct"
+        },
+        "iv": "w+sE15fzSc0AAAAAAAAAAA",
+        "hashes": {
+          "sha256": "fdSLu/YkRx3Wyh3KQabP3rd6+SFiKg5lsJZQHtkSAYA"
+        }
+      },
+      "info": {
+        "mimetype": "image/jpeg",
+        "h": 1536,
+        "size": 422018,
+        "thumbnail_file": {
+          "hashes": {
+            "sha256": "/NogKqW5bz/m8xHgFiH5haFGjCNVmUIPLzfvOhHdrxY"
+          },
+          "iv": "U+k7PfwLr6UAAAAAAAAAAA",
+          "key": {
+            "alg": "A256CTR",
+            "ext": true,
+            "k": "RMyd6zhlbifsACM1DXkCbioZ2u0SywGljTH8JmGcylg",
+            "key_ops": ["encrypt", "decrypt"],
+            "kty": "oct"
+          },
+          "mimetype": "image/jpeg",
+          "url": "mxc://domain.com/pmVJxyxGlmxHposwVSlOaEOv",
+          "v": "v2"
+        },
+        "thumbnail_info": {
+          "h": 768,
+          "mimetype": "image/jpeg",
+          "size": 211009,
+          "w": 432
+        },
+        "w": 864
+      },
+      "msgtype": "m.image"
+    },
+    "event_id": "$143273582443PhrSn:domain.com",
+    "origin_server_ts": 1432735824653,
+    "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
+    "sender": "@example:domain.com",
+    "type": "m.room.message",
+    "unsigned": {
+        "age": 1234
+    }
+  }
+
 Claiming one-time keys
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -583,6 +722,8 @@ Example response:
 .. _curve25519: https://cr.yp.to/ecdh.html
 .. _`Olm specification`: http://matrix.org/docs/spec/olm.html
 .. _`Megolm specification`: http://matrix.org/docs/spec/megolm.html
+.. _`JSON Web Key`: https://tools.ietf.org/html/rfc7517#appendix-A.3
+.. _`W3C extension`: https://w3c.github.io/webcrypto/#iana-section-jwk
 
 .. _`Signing JSON`: ../appendices.html#signing-json
 

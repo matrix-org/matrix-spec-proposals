@@ -17,12 +17,17 @@ properties:
           - m.image
         type: string
       url:
-        description: The URL to the image.
+        description: Required if the file is unencrypted. The URL to the image.
         type: string
+      file:
+        description: |-
+          Required if the file is encrypted. Information on the encrypted
+          file, as specified in |encrypted_files|_.
+        title: EncryptedFile
+        type: object
     required:
       - msgtype
       - body
-      - url
     type: object
   type:
     enum:

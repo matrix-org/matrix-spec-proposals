@@ -5,16 +5,15 @@
 
 {% if (event.typeof | length) %}
 *{{event.typeof}}*
-    {{event.typeof_info}}
+    {{event.typeof_info | indent_block(4)}}
 
 {% endif -%}
 
 {{event.desc}}
 
 {% for table in event.content_fields %}
-{{"``"+table.title+"``" if table.title else "" }}
 
-{{ tables.paramtable(table.rows, [(table.title or "Content") ~ " Key", "Type", "Description"]) }}
+{{ tables.paramtable(table.rows, [(table.title or "Content") ~ " Key", "Type", "Description"], (table.title or "")) }}
 
 {% endfor %}
 Example{% if examples | length > 1 %}s{% endif %}:
