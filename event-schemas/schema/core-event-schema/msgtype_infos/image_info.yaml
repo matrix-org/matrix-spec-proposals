@@ -20,6 +20,12 @@ properties:
   thumbnail_url:
     description: The URL to a thumbnail of the image.
     type: string
+  thumbnail_file:
+    description: |-
+      Information on the encrypted thumbnail file, as specified in
+      |encrypted_files|_.
+    title: EncryptedFile
+    type: object
   thumbnail_info:
     allOf:
       - $ref: thumbnail_info.yaml

@@ -250,14 +250,116 @@ the decrypted file.
 A hash of the ciphertext must also be included, in order to prevent the homeserver from
 changing the file content.
 
-A client should send the data as a ``m.room.message`` event, using either
-``m.file`` as the msgtype, or the appropriate msgtype for the file type. The
-structure is similar to an unencrypted file message, except for two differing
-keys: ``url`` and ``thumbnail_url`` are replaced respectively by ``file`` and
-``thumbnail_file``, containing an ``EncryptedFile`` object as specified below.
-The key is sent using the `JSON Web Key`_ format, with a `W3C extension`_.
+A client should send the data as an encrypted ``m.room.message`` event, using
+either ``m.file`` as the msgtype, or the appropriate msgtype for the file
+type. The key is sent using the `JSON Web Key`_ format, with a `W3C
+extension`_.
 
-{{m_room_message_encrypted_file_event}}
+.. anchor for link from m.message api spec
+.. |encrypted_files| replace:: End-to-end encryption
+.. _encrypted_files:
+
+Extensions to ``m.message`` msgtypes
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+This module adds ``file`` and ``thumbnail_file`` properties to ``m.message``
+msgtypes that reference files, such as ``m.file`` and ``m.image``, replacing
+the ``url`` and ``thumbnail_url`` properties.
+
+.. todo: generate this from a swagger definition?
+
+``EncryptedFile``
+
+========= ================ =====================================================
+Parameter Type             Description
+========= ================ =====================================================
+url       string           The URL to the file.
+key       JWK              A `JSON Web Key`_ object.
+iv        string           The Initialisation Vector used by AES-CTR, encoded as
+                           unpadded base64.
+hashes    {string: string} A map from an algorithm name to a hash of the
+                           ciphertext, encoded as unpadded base64. Clients
+                           should support the SHA-256 hash, which uses the key
+                           ``sha256``.
+v         string           Version of the encrypted attachments protocol. Must
+                           be ``v2``.
+========= ================ =====================================================
+
+``JWK``
+
+========= ========= ============================================================
+Parameter Type      Description
+========= ========= ============================================================
+key       string    Key type. Must be ``oct``.
+key_opts  [string]  Key operations. Must at least contain ``encrypt`` and
+                    ``decrypt``.
+alg       string    Algorithm. Must be ``A256CTR``.
+k         string    The key, encoded as urlsafe unpadded base64.
+ext       boolean   Extractable. Must be ``true``. This is a `W3C extension`_.
+========= ========= ============================================================
+
+Example:
+
+.. code :: json
+
+  {
+    "content": {
+      "body": "something-important.jpg",
+      "file": {
+        "url": "mxc://domain.com/FHyPlCeYUSFFxlgbQYZmoEoe",
+        "mimetype": "image/jpeg",
+        "v": "v2",
+        "key": {
+          "alg": "A256CTR",
+          "ext": true,
+          "k": "aWF6-32KGYaC3A_FEUCk1Bt0JA37zP0wrStgmdCaW-0",
+          "key_ops": ["encrypt","decrypt"],
+          "kty": "oct"
+        },
+        "iv": "w+sE15fzSc0AAAAAAAAAAA",
+        "hashes": {
+          "sha256": "fdSLu/YkRx3Wyh3KQabP3rd6+SFiKg5lsJZQHtkSAYA"
+        }
+      },
+      "info": {
+        "mimetype": "image/jpeg",
+        "h": 1536,
+        "size": 422018,
+        "thumbnail_file": {
+          "hashes": {
+            "sha256": "/NogKqW5bz/m8xHgFiH5haFGjCNVmUIPLzfvOhHdrxY"
+          },
+          "iv": "U+k7PfwLr6UAAAAAAAAAAA",
+          "key": {
+            "alg": "A256CTR",
+            "ext": true,
+            "k": "RMyd6zhlbifsACM1DXkCbioZ2u0SywGljTH8JmGcylg",
+            "key_ops": ["encrypt", "decrypt"],
+            "kty": "oct"
+          },
+          "mimetype": "image/jpeg",
+          "url": "mxc://domain.com/pmVJxyxGlmxHposwVSlOaEOv",
+          "v": "v2"
+        },
+        "thumbnail_info": {
+          "h": 768,
+          "mimetype": "image/jpeg",
+          "size": 211009,
+          "w": 432
+        },
+        "w": 864
+      },
+      "msgtype": "m.image"
+    },
+    "event_id": "$143273582443PhrSn:domain.com",
+    "origin_server_ts": 1432735824653,
+    "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
+    "sender": "@example:domain.com",
+    "type": "m.room.message",
+    "unsigned": {
+        "age": 1234
+    }
+  }
 
 Claiming one-time keys
 ~~~~~~~~~~~~~~~~~~~~~~

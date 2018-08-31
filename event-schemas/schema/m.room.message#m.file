@@ -23,6 +23,12 @@ properties:
           thumbnail_url:
             description: The URL to the thumbnail of the file.
             type: string
+          thumbnail_file:
+            description: |-
+              Information on the encrypted thumbnail file, as specified in
+              |encrypted_files|_.
+            title: EncryptedFile
+            type: object
           thumbnail_info:
             allOf:
               - $ref: core-event-schema/msgtype_infos/thumbnail_info.yaml
@@ -34,12 +40,17 @@ properties:
           - m.file
         type: string
       url:
-        description: The URL to the file.
+        description: Required if the file is unencrypted. The URL to the file.
         type: string
+      file:
+        description: |-
+          Required if the file is encrypted. Information on the encrypted
+          file, as specified in |encrypted_files|_.
+        title: EncryptedFile
+        type: object
     required:
       - msgtype
       - body
-      - url
       - filename
     type: object
   type:
