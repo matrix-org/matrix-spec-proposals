@@ -202,8 +202,29 @@ paths:
                             the room then the current state will be given as a
                             delta against the archived ``state`` not the
                             ``invite_state``.
-                          allOf:
-                            - $ref: "definitions/state_event_batch.yaml"
+                          properties:
+                            events:
+                              description: The StrippedState events that form the invite state.
+                              items:
+                                description: 'A stripped down state event, with only the ``type``, ``state_key`` and ``content`` keys.'
+                                properties:
+                                  content:
+                                    description: The ``content`` for the event.
+                                    title: EventContent
+                                    type: object
+                                  state_key:
+                                    description: The ``state_key`` for the event.
+                                    type: string
+                                  type:
+                                    description: The ``type`` for the event.
+                                    type: string
+                                required:
+                                  - type
+                                  - state_key
+                                  - content
+                                title: StrippedState
+                                type: object
+                              type: array
                   leave:
                     title: Left rooms
                     type: object
