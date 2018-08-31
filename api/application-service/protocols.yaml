@@ -19,13 +19,15 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: "/"
+basePath: /_matrix/app/v1
 consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
-  "/_matrix/app/unstable/thirdparty/protocol/{protocol}":
+  "/thirdparty/protocol/{protocol}":
     get:
       summary: Retrieve metadata about a specific protocol that the application service supports.
       description: |-
@@ -33,6 +35,8 @@ paths:
         with specific information about the various third party networks that
         an application service supports.
       operationId: getProtocolMetadata
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: path
           name: protocol
@@ -72,7 +76,7 @@ paths:
             }
           schema:
             $ref: ../client-server/definitions/errors/error.yaml
-  "/_matrix/app/unstable/thirdparty/user/{protocol}":
+  "/thirdparty/user/{protocol}":
     get:
       summary: Retrieve the Matrix User ID of a corresponding third party user.
       description: |-
@@ -80,6 +84,8 @@ paths:
         User ID linked to a user on the third party network, given a set of
         user parameters.
       operationId: queryUserByProtocol
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: path
           name: protocol
@@ -125,12 +131,14 @@ paths:
             }
           schema:
             $ref: ../client-server/definitions/errors/error.yaml
-  "/_matrix/app/unstable/thirdparty/location/{protocol}":
+  "/thirdparty/location/{protocol}":
     get:
       summary: Retrieve Matrix-side portal rooms leading to a third party location.
       description: |-
         Retrieve a list of Matrix portal rooms that lead to the matched third party location.
       operationId: queryLocationByProtocol
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: path
           name: protocol
@@ -176,13 +184,15 @@ paths:
             }
           schema:
             $ref: ../client-server/definitions/errors/error.yaml
-  "/_matrix/app/unstable/thirdparty/location":
+  "/thirdparty/location":
     get:
       summary: Reverse-lookup third party locations given a Matrix room alias.
       description: |-
         Retrieve an array of third party network locations from a Matrix room
         alias.
       operationId: queryLocationByAlias
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: query
           name: alias
@@ -221,12 +231,14 @@ paths:
             }
           schema:
             $ref: ../client-server/definitions/errors/error.yaml
-  "/_matrix/app/unstable/thirdparty/user":
+  "/thirdparty/user":
     get:
       summary: Reverse-lookup third party users given a Matrix User ID.
       description: |-
         Retrieve an array of third party users from a Matrix User ID.
       operationId: queryUserByID
+      security:
+        - homeserverAccessToken: []
       parameters:
         - in: query 
           name: userid

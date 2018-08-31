@@ -18,8 +18,9 @@ info:
 host: localhost:8090
 schemes:
   - https
-  - http
 basePath: /_matrix/identity/api/v1
+consumes:
+  - application/json
 produces:
   - application/json
 paths:
@@ -34,13 +35,13 @@ paths:
         that that user was able to read the email for that email address, and
         so we validate ownership of the email address.
 
-        Note that Home Servers offer APIs that proxy this API, adding
+        Note that homeservers offer APIs that proxy this API, adding
         additional behaviour on top, for example,
         ``/register/email/requestToken`` is designed specifically for use when
         registering an account and therefore will inform the user if the email
         address given is already registered on the server.
 
-        Note: for backwards compatibility with older versions of this
+        Note: for backwards compatibility with previous drafts of this
         specification, the parameters may also be specified as
         ``application/x-form-www-urlencoded`` data.  However, this usage is
         deprecated.
@@ -51,14 +52,14 @@ paths:
           schema:
             type: object
             example: {
-                "client_secret": "monkeys_are_GREAT",
-                "email": "foo@example.com",
-                "send_attempt": 1
-              }
+              "client_secret": "monkeys_are_GREAT",
+              "email": "foo@example.com",
+              "send_attempt": 1
+            }
             properties:
               client_secret:
                 type: string
-                description: A unique string used to identify the validation attempt
+                description: A unique string used to identify the validation attempt.
               email:
                 type: string
                 description: The email address to validate.
@@ -85,20 +86,28 @@ paths:
             Session created.
           examples:
             application/json: {
-                "sid": "1234"
-              }
+              "sid": "1234"
+            }
           schema:
             type: object
             properties:
               sid:
                 type: string
                 description: The session ID.
+            required: ['sid']
         400:
           description: |
             An error ocurred.  Some possible errors are:
 
             - ``M_INVALID_EMAIL``: The email address provided was invalid.
             - ``M_EMAIL_SEND_ERROR``: The validation email could not be sent.
+          examples:
+            application/json: {
+              "errcode": "M_INVALID_EMAIL",
+              "error": "The email address is not valid"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
   "/validate/email/submitToken":
     post:
       summary: Validate ownership of an email address.
@@ -111,7 +120,7 @@ paths:
         associate the email address with any Matrix user ID. Specifically,
         calls to ``/lookup`` will not show a binding.
 
-        Note: for backwards compatibility with older versions of this
+        Note: for backwards compatibility with previous drafts of this
         specification, the parameters may also be specified as
         ``application/x-form-www-urlencoded`` data.  However, this usage is
         deprecated.
@@ -122,10 +131,10 @@ paths:
           schema:
             type: object
             example: {
-                "sid": "1234",
-                "client_secret": "monkeys_are_GREAT",
-                "token": "atoken"
-              }
+              "sid": "1234",
+              "client_secret": "monkeys_are_GREAT",
+              "token": "atoken"
+            }
             properties:
               sid:
                 type: string
@@ -143,14 +152,15 @@ paths:
             The success of the validation.
           examples:
             application/json: {
-                "success": true
-              }
+              "success": true
+            }
           schema:
             type: object
             properties:
               success:
                 type: boolean
                 description: Whether the validation was successful or not.
+            required: ['success']
     get:
       summary: Validate ownership of an email address.
       description: |-
