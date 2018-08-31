@@ -54,7 +54,7 @@ paths:
                 description: Information about the homeserver to connect to.
                 "$ref": "definitions/wellknown/homeserver.yaml"
               m.identity_server:
-                description: Optional. Information about the identity server to connect to.
+                description: Optional. Information about the identity service to connect to.
                 "$ref": "definitions/wellknown/identity_server.yaml"
             additionalProperties:
               description: Application-dependent keys using Java package naming convention.

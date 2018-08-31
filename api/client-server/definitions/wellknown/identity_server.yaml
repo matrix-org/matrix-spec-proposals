@@ -11,14 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-title: Identity Server Information
+title: Identity Service Information
 description: |-
-  Used by clients to discover identity server information.
+  Used by clients to discover identity service information.
 type: object
 properties:
   base_url:
     type: string
-    description: The base URL for the identity server for client-server connections.
+    description: The base URL for the identity service for client-server connections.
     example: https://identity.example.com
 required:
   - base_url

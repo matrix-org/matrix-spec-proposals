@@ -41,7 +41,7 @@ paths:
         0. A default ``m.room.power_levels`` event, giving the room creator
            (and not other members) permission to send state events. Overridden
            by the ``power_level_content_override`` parameter.
-        
+
         1. Events set by the ``preset``. Currently these are the ``m.room.join_rules``,
            ``m.room.history_visibility``, and ``m.room.guest_access`` state events.
 
@@ -59,13 +59,13 @@ paths:
         ========================  ==============  ======================  ================  =========
                  Preset           ``join_rules``  ``history_visibility``  ``guest_access``  Other
         ========================  ==============  ======================  ================  =========
-        ``private_chat``          ``invite``      ``shared``              ``can_join``      
+        ``private_chat``          ``invite``      ``shared``              ``can_join``
         ``trusted_private_chat``  ``invite``      ``shared``              ``can_join``      All invitees are given the same power level as the room creator.
-        ``public_chat``           ``public``      ``shared``              ``forbidden``     
+        ``public_chat``           ``public``      ``shared``              ``forbidden``
         ========================  ==============  ======================  ================  =========
 
         The server will create a ``m.room.create`` event in the room with the
-        requesting user as the creator, alongside other keys provided in the 
+        requesting user as the creator, alongside other keys provided in the
         ``creation_content``.
       operationId: createRoom
       security:
@@ -138,7 +138,7 @@ paths:
                   properties:
                     id_server:
                       type: string
-                      description: The hostname+port of the identity server which should be used for third party identifier lookups.
+                      description: The hostname+port of the identity service which should be used for third party identifier lookups.
                     medium:
                       type: string
                       # TODO: Link to identity service spec when it eixsts
@@ -196,7 +196,7 @@ paths:
 
                   If unspecified, the server should use the ``visibility`` to determine
                   which preset to use. A visbility of ``public`` equates to a preset of
-                  ``public_chat`` and ``private`` visibility equates to a preset of 
+                  ``public_chat`` and ``private`` visibility equates to a preset of
                   ``private_chat``.
               is_direct:
                 type: boolean

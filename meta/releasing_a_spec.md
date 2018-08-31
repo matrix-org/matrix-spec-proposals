@@ -1,7 +1,7 @@
 # How to release a specification
 
 There are several specifications that belong to matrix, such as the client-server
-specification, server-server specification, and identity server specification. Each
+specification, server-server specification, and identity service specification. Each
 of these gets released independently of each other with their own version numbers.
 
 Once a specification is ready for release, a branch should be created to track the
@@ -34,7 +34,7 @@ The remainder of the process is as follows:
 ### Creating a release for a brand-new specification
 
 Some specifications may not have ever had a release, and therefore need a bit more work
-to become ready. 
+to become ready.
 
 1. Activate your Python 3 virtual environment.
 1. Having checked out the new release branch, navigate your way over to `./changelogs`.

@@ -92,7 +92,7 @@ paths:
                 type: boolean
                 description: |-
                   If true, the server binds the email used for authentication to
-                  the Matrix ID with the ID Server.
+                  the Matrix ID with the identity service.
                 example: false
               username:
                 type: string
@@ -251,7 +251,7 @@ paths:
               instead send an email to the user with instructions on how to reset their password.
               This prevents malicious parties from being able to determine if a given email address
               has an account on the homeserver in question.
-            * ``M_SERVER_NOT_TRUSTED`` : The ``id_server`` parameter refers to an ID server
+            * ``M_SERVER_NOT_TRUSTED`` : The ``id_server`` parameter refers to an identity service
               that is not trusted by this homeserver.
           examples:
             application/json: {
@@ -307,12 +307,12 @@ paths:
             Part of the request was invalid. This may include one of the following error codes:
 
             * ``M_THREEPID_IN_USE`` : The phone number is already registered to an account on this server.
-              However, if the home server has the ability to send SMS message, it is recommended that the server
+              However, if the homeserver has the ability to send SMS message, it is recommended that the server
               instead send an SMS message to the user with instructions on how to reset their password.
               This prevents malicious parties from being able to determine if a given phone number
-              has an account on the Home Server in question.
-            * ``M_SERVER_NOT_TRUSTED`` : The ``id_server`` parameter refers to an ID server
-              that is not trusted by this Home Server.
+              has an account on the homeserver in question.
+            * ``M_SERVER_NOT_TRUSTED`` : The ``id_server`` parameter refers to an identity service
+              that is not trusted by this homeserver.
           examples:
             application/json: {
               "errcode": "M_THREEPID_IN_USE",
@@ -375,7 +375,7 @@ paths:
       description: |-
         Proxies the identity service API ``validate/email/requestToken``, but
         first checks that the given email address **is** associated with an account
-        on this Home Server. This API should be used to request
+        on this homeserver. This API should be used to request
         validation tokens when authenticating for the
         `account/password` endpoint. This API's parameters and response are
         identical to that of the HS API |/register/email/requestToken|_ except that
@@ -437,7 +437,7 @@ paths:
       description: |-
         Proxies the identity service API ``validate/msisdn/requestToken``, but
         first checks that the given phone number **is** associated with an account
-        on this Home Server. This API should be used to request
+        on this homeserver. This API should be used to request
         validation tokens when authenticating for the
         `account/password` endpoint. This API's parameters and response are
         identical to that of the HS API |/register/msisdn/requestToken|_ except that

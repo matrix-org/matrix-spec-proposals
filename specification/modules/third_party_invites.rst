@@ -24,14 +24,14 @@ There are two flows here; one if a Matrix user ID is known for the third party
 identifier, and one if not. Either way, the client calls ``/invite`` with the
 details of the third party identifier.
 
-The homeserver asks the identity server whether a Matrix user ID is known for
+The homeserver asks the identity service whether a Matrix user ID is known for
 that identifier:
 
 - If it is, an invite is simply issued for that user.
 
-- If it is not, the homeserver asks the identity server to record the details of
+- If it is not, the homeserver asks the identity service to record the details of
   the invitation, and to notify the invitee's homeserver of this pending invitation if it gets
-  a binding for this identifier in the future. The identity server returns a token
+  a binding for this identifier in the future. The identity service returns a token
   and public key to the inviting homeserver.
 
 When the invitee's homeserver receives the notification of the binding, it
@@ -57,7 +57,7 @@ Server behaviour
 ----------------
 
 Upon receipt of an ``/invite``, the server is expected to look up the third party
-identifier with the provided identity server. If the lookup yields a result for
+identifier with the provided identity service. If the lookup yields a result for
 a Matrix User ID then the normal invite process can be initiated. This process
 ends up looking like this:
 
@@ -87,7 +87,7 @@ ends up looking like this:
 
 
 However, if the lookup does not yield a bound User ID, the homeserver must store
-the invite on the identity server and emit a valid ``m.room.third_party_invite``
+the invite on the identity service and emit a valid ``m.room.third_party_invite``
 event to the room. This process ends up looking like this:
 
 ::
@@ -125,7 +125,7 @@ All homeservers MUST verify the signature in the event's
 ``content.third_party_invite.signed`` object.
 
 The third party user will then need to verify their identity, which results in
-a call from the Identity Server to the homeserver that bound the third party
+a call from the Identity Service to the homeserver that bound the third party
 identifier to a user. The homeserver then exchanges the ``m.room.third_party_invite``
 event in the room for a complete ``m.room.member`` event for ``membership: invite``
 for the user that has bound the third party identifier.
@@ -142,7 +142,7 @@ the room. They may, however, indicate to their clients that a member's
 membership is questionable.
 
 For example, given H1, H2, and H3 as homeservers, UserA as a user of H1, and an
-identity server IS, the full sequence for a third party invite would look like
+identity service IS, the full sequence for a third party invite would look like
 the following. This diagram assumes H1 and H2 are residents of the room while
 H3 is attempting to join.
 
@@ -207,15 +207,15 @@ H3 is attempting to join.
 Note that when H1 sends the ``m.room.member`` event to H2 and H3 it does not
 have to block on either server's receipt of the event. Likewise, H1 may complete
 the ``/exchange_third_party_invite/:roomId`` request at the same time as sending
-the ``m.room.member`` event to H2 and H3. Additionally, H3 may complete the 
+the ``m.room.member`` event to H2 and H3. Additionally, H3 may complete the
 ``/3pid/onbind`` request it got from IS at any time - the completion is not shown
 in the diagram.
 
 H1 MUST verify the request from H3 to ensure the ``signed`` property is correct
 as well as the ``key_validity_url`` as still being valid. This is done by making
-a request to the `Identity Server /isvalid`_ endpoint, using the provided URL
+a request to the `Identity Service /isvalid`_ endpoint, using the provided URL
 rather than constructing a new one. The query string and response for the provided
-URL must match the Identity Server specification.
+URL must match the Identity Service specification.
 
 The reason that no other homeserver may reject the event based on checking
 ``key_validity_url`` is that we must ensure event acceptance is deterministic.
@@ -236,22 +236,22 @@ ID and a third party identifier is hard. In particular, being able to look up
 all third party identifiers from a matrix user ID (and accordingly, being able
 to link each third party identifier) should be avoided wherever possible.
 To this end, the third party identifier is not put in any event, rather an
-opaque display name provided by the identity server is put into the events.
+opaque display name provided by the identity service is put into the events.
 Clients should not remember or display third party identifiers from invites,
 other than for the use of the inviter themself.
 
-Homeservers are not required to trust any particular identity server(s). It is
-generally a client's responsibility to decide which identity servers it trusts,
-not a homeserver's. Accordingly, this API takes identity servers as input from
+Homeservers are not required to trust any particular identity service(s). It is
+generally a client's responsibility to decide which identity services it trusts,
+not a homeserver's. Accordingly, this API takes identity services as input from
 end users, and doesn't have any specific trusted set. It is possible some
-homeservers may want to supply defaults, or reject some identity servers for
-*its* users, but no homeserver is allowed to dictate which identity servers
+homeservers may want to supply defaults, or reject some identity services for
+*its* users, but no homeserver is allowed to dictate which identity services
 *other* homeservers' users trust.
 
 There is some risk of denial of service attacks by flooding homeservers or
-identity servers with many requests, or much state to store. Defending against
+identity services with many requests, or much state to store. Defending against
 these is left to the implementer's discretion.
 
 
 
-.. _`Identity Server /isvalid`: ../identity_service/unstable.html#get-matrix-identity-api-v1-pubkey-isvalid
+.. _`Identity Service /isvalid`: ../identity_service/unstable.html#get-matrix-identity-api-v1-pubkey-isvalid

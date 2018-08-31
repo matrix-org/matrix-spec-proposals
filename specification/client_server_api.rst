@@ -145,7 +145,7 @@ Some requests have unique error codes:
   Sent when a threepid given to an API cannot be used because no record matching the threepid was found.
 
 :``M_SERVER_NOT_TRUSTED``:
-  The client's request used a third party server, eg. ID server, that this server does not trust.
+  The client's request used a third party server, eg. identity service, that this server does not trust.
 
 :``M_UNSUPPORTED_ROOM_VERSION``:
   The client's request to create a room used a room version that the server does not support.
@@ -257,7 +257,7 @@ specify parameter values. The flow for this method is as follows:
           points to a valid homeserver.
 
    f. If the ``m.identity_server`` property is present, extract the
-      ``base_url`` value for use as the base URL of the identity server.
+      ``base_url`` value for use as the base URL of the identity service.
       Validation for this URL is done as in the step above, but using
       ``/_matrix/identity/api/v1`` as the endpoint to connect to. If the
       ``m.identity_server`` property is present, but does not have a
@@ -685,7 +685,7 @@ the auth code. Homeservers can choose any path for the ``redirect URI``. Once
 the OAuth flow has completed, the client retries the request with the session
 only, as above.
 
-Email-based (identity server)
+Email-based (identity service)
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 :Type:
   ``m.login.email.identity``
@@ -705,9 +705,9 @@ To use this authentication type, clients should submit an auth dict as follows:
     "type": "m.login.email.identity",
     "threepidCreds": [
       {
-        "sid": "<identity server session id>",
-        "client_secret": "<identity server client secret>",
-        "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>"
+        "sid": "<identity service session id>",
+        "client_secret": "<identity service client secret>",
+        "id_server": "<url of identity service authed with, e.g. 'matrix.org:8090'>"
       }
     ],
     "session": "<session ID>"
@@ -995,7 +995,7 @@ Adding Account Administrative Contact Information
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A homeserver may keep some contact information for administrative use.
-This is independent of any information kept by any Identity Servers.
+This is independent of any information kept by any Identity Services.
 
 {{administrative_contact_cs_http_api}}
 

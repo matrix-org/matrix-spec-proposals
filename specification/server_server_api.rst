@@ -844,35 +844,35 @@ When an user wants to invite another user in a room but doesn't know the Matrix
 ID to invite, they can do so using a third-party identifier (e.g. an e-mail or a
 phone number).
 
-This identifier and its bindings to Matrix IDs are verified by an identity server
+This identifier and its bindings to Matrix IDs are verified by an identity service
 implementing the `Identity Service API`_.
 
 Cases where an association exists for a third-party identifier
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If the third-party identifier is already bound to a Matrix ID, a lookup request
-on the identity server will return it. The invite is then processed by the inviting
+on the identity service will return it. The invite is then processed by the inviting
 homeserver as a standard ``m.room.member`` invite event. This is the simplest case.
 
 Cases where an association doesn't exist for a third-party identifier
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If the third-party identifier isn't bound to any Matrix ID, the inviting
-homeserver will request the identity server to store an invite for this identifier
+homeserver will request the identity service to store an invite for this identifier
 and to deliver it to whoever binds it to its Matrix ID. It will also send a
 ``m.room.third_party_invite`` event in the room to specify a display name, a token
-and public keys the identity server provided as a response to the invite storage
+and public keys the identity service provided as a response to the invite storage
 request.
 
 When a third-party identifier with pending invites gets bound to a Matrix ID,
-the identity server will send a POST request to the ID's homeserver as described
+the identity service will send a POST request to the ID's homeserver as described
 in the `Invitation Storage`_ section of the Identity Service API.
 
-The following process applies for each invite sent by the identity server:
+The following process applies for each invite sent by the identity service:
 
 The invited homeserver will create a ``m.room.member`` invite event containing
 a special ``third_party_invite`` section containing the token and a signed object,
-both provided by the identity server.
+both provided by the identity service.
 
 If the invited homeserver is in the room the invite came from, it can auth the
 event and send it.
@@ -894,14 +894,14 @@ server.
 To do so, it will fetch from the room's state events the ``m.room.third_party_invite``
 event for which the state key matches with the value for the ``token`` key in the
 ``third_party_invite`` object from the ``m.room.member`` event's content to fetch the
-public keys initially delivered by the identity server that stored the invite.
+public keys initially delivered by the identity service that stored the invite.
 
 It will then use these keys to verify that the ``signed`` object (in the
 ``third_party_invite`` object from the ``m.room.member`` event's content) was
-signed by the same identity server.
+signed by the same identity service.
 
 Since this ``signed`` object can only be delivered once in the POST request
-emitted by the identity server upon binding between the third-party identifier
+emitted by the identity service upon binding between the third-party identifier
 and the Matrix ID, and contains the invited user's Matrix ID and the token
 delivered when the invite was stored, this verification will prove that the
 ``m.room.member`` invite event comes from the user owning the invited third-party

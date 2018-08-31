@@ -35,7 +35,7 @@ paths:
         associated with the user's account.
 
         This is *not* the same as the list of third party identifiers bound to
-        the user's Matrix ID in Identity Servers.
+        the user's Matrix ID in Identity Services.
 
         Identifiers in this list may be used by the homeserver as, for example,
         identifiers that it will accept to reset the user's account password.
@@ -106,13 +106,13 @@ paths:
                 properties:
                   client_secret:
                     type: string
-                    description: The client secret used in the session with the Identity Server.
+                    description: The client secret used in the session with the Identity Service.
                   id_server:
                     type: string
-                    description: The Identity Server to use.
+                    description: The Identity Service to use.
                   sid:
                     type: string
-                    description: The session identifier given by the Identity Server.
+                    description: The session identifier given by the Identity Service.
                 required: ["client_secret", "id_server", "sid"]
               bind:
                 type: boolean
@@ -138,11 +138,11 @@ paths:
             schema:
               type: object
         403:
-          description: The credentials could not be verified with the identity server.
+          description: The credentials could not be verified with the identity service.
           examples:
             application/json: {
                 "errcode": "M_THREEPID_AUTH_FAILED",
-                "error": "The third party credentials could not be verified by the identity server."
+                "error": "The third party credentials could not be verified by the identity service."
               }
           schema:
             "$ref": "definitions/errors/error.yaml"
@@ -243,7 +243,7 @@ paths:
       description: |-
         Proxies the identity service API ``validate/msisdn/requestToken``, but
         first checks that the given phone number is **not** already associated
-        with an account on this Home Server. This API should be used to request
+        with an account on this homeserver. This API should be used to request
         validation tokens when adding a phone number to an account. This API's
         parameters and response are identical to that of the |/register/msisdn/requestToken|_
         endpoint.
