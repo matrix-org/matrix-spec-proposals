@@ -192,111 +192,106 @@ paths:
         - User data
   "/register/email/requestToken":
     post:
-      summary: Requests a validation token be sent to the given email address for the purpose of registering an account
+      summary: Begins the validation process for an email to be used during registration.
       description: |-
-        Proxies the identity server API ``validate/email/requestToken``, but
+        Proxies the identity service API ``validate/email/requestToken``, but
         first checks that the given email address is not already associated
-        with an account on this Home Server. See the Identity Server API for
+        with an account on this homeserver. See the Identity Service API for
         further information.
       operationId: requestTokenToRegisterEmail
       parameters:
         - in: body
           name: body
+          required: true
           schema:
-            type: object
-            properties:
-              id_server:
-                type: string
-                description: The ID server to send the onward request to as a hostname with an appended colon and port number if the port is not the default.
-                example: "id.matrix.org"
-              client_secret:
-                type: string
-                description: Client-generated secret string used to protect this session
-                example: "this_is_my_secret_string"
-              email:
-                type: string
-                description: The email address
-                example: "example@example.com"
-              send_attempt:
-                type: integer
-                description: Used to distinguish protocol level retries from requests to re-send the email.
-                example: 1
-            required: ["client_secret", "email", "send_attempt"]
+            allOf:
+              - $ref: "../identity/definitions/request_email_validation.yaml"
+              - type: object
+                properties:
+                  id_server:
+                    type: string
+                    description: |-
+                      The hostname of the identity service to communicate with. May
+                      optionally include a port.
+                    example: "id.example.com"
+                required: ['id_server']
       responses:
         200:
           description: |-
             An email has been sent to the specified address.
             Note that this may be an email containing the validation token or it may be informing
             the user of an error.
-          examples:
-            application/json: {}
           schema:
-            type: object
+            $ref: "../identity/definitions/sid.yaml"
+        403:
+          description: The homeserver does not permit the address to be bound.
+          schema:
+            $ref: "definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_THREEPID_DENIED",
+              "error": "Third party identifier is not allowed"
+            }
         400:
           description: |-
             Part of the request was invalid. This may include one of the following error codes:
 
             * ``M_THREEPID_IN_USE`` : The email address is already registered to an account on this server.
-              However, if the home server has the ability to send email, it is recommended that the server
+              However, if the homeserver has the ability to send email, it is recommended that the server
               instead send an email to the user with instructions on how to reset their password.
               This prevents malicious parties from being able to determine if a given email address
-              has an account on the Home Server in question.
+              has an account on the homeserver in question.
             * ``M_SERVER_NOT_TRUSTED`` : The ``id_server`` parameter refers to an ID server
-              that is not trusted by this Home Server.
+              that is not trusted by this homeserver.
           examples:
             application/json: {
-                "errcode": "M_THREEPID_IN_USE",
-                "error": "The specified address is already in use"
-              }
+              "errcode": "M_THREEPID_IN_USE",
+              "error": "The specified address is already in use"
+            }
           schema:
             "$ref": "definitions/errors/error.yaml"
   "/register/msisdn/requestToken":
     post:
       summary: Requests a validation token be sent to the given phone number for the purpose of registering an account
       description: |-
-        Proxies the identity server API ``validate/msisdn/requestToken``, but
+        Proxies the identity service API ``validate/msisdn/requestToken``, but
         first checks that the given phone number is not already associated
-        with an account on this Home Server. See the Identity Server API for
+        with an account on this homeserver. See the Identity Service API for
         further information.
       operationId: requestTokenToRegisterMSISDN
       parameters:
         - in: body
           name: body
+          required: true
           schema:
-            type: object
-            properties:
-              id_server:
-                type: string
-                description: The ID server to send the onward request to as a hostname with an appended colon and port number if the port is not the default.
-                example: "id.matrix.org"
-              client_secret:
-                type: string
-                description: Client-generated secret string used to protect this session.
-                example: "this_is_my_secret_string"
-              country:
-                type: string
-                description: |-
-                  The two-letter uppercase ISO country code that the number in
-                  ``phone_number`` should be parsed as if it were dialled from.
-              phone_number:
-                type: string
-                description: The phone number.
-                example: "example@example.com"
-              send_attempt:
-                type: integer
-                description: Used to distinguish protocol level retries from requests to re-send the SMS message.
-                example: 1
-            required: ["client_secret", "country", "phone_number", "send_attempt"]
+            allOf:
+              - $ref: "../identity/definitions/request_msisdn_validation.yaml"
+              - type: object
+                properties:
+                  id_server:
+                    type: string
+                    description: |-
+                      The hostname of the identity service to communicate with. May
+                      optionally include a port.
+                    example: "id.example.com"
+                required: ['id_server']
       responses:
         200:
           description: |-
             An SMS message has been sent to the specified phone number.
             Note that this may be an SMS message containing the validation token or it may be informing
             the user of an error.
-          examples:
-            application/json: {}
           schema:
-            type: object
+            $ref: "../identity/definitions/sid.yaml"
+        403:
+          description: The homeserver does not permit the address to be bound.
+          schema:
+            $ref: "definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_THREEPID_DENIED",
+              "error": "Third party identifier is not allowed"
+            }
         400:
           description: |-
             Part of the request was invalid. This may include one of the following error codes:
@@ -310,9 +305,9 @@ paths:
               that is not trusted by this Home Server.
           examples:
             application/json: {
-                "errcode": "M_THREEPID_IN_USE",
-                "error": "The specified address is already in use"
-              }
+              "errcode": "M_THREEPID_IN_USE",
+              "error": "The specified address is already in use"
+            }
           schema:
             "$ref": "definitions/errors/error.yaml"
   "/account/password":
@@ -368,7 +363,7 @@ paths:
     post:
       summary: Requests a validation token be sent to the given email address for the purpose of resetting a user's password
       description: |-
-        Proxies the identity server API ``validate/email/requestToken``, but
+        Proxies the identity service API ``validate/email/requestToken``, but
         first checks that the given email address **is** associated with an account
         on this Home Server. This API should be used to request
         validation tokens when authenticating for the
@@ -383,14 +378,32 @@ paths:
 
         .. _/register/email/requestToken: #post-matrix-client-%CLIENT_MAJOR_VERSION%-register-email-requesttoken
       operationId: requestTokenToResetPasswordEmail
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            allOf:
+              - $ref: "../identity/definitions/request_email_validation.yaml"
+              - type: object
+                properties:
+                  id_server:
+                    type: string
+                    description: |-
+                      The hostname of the identity service to communicate with. May
+                      optionally include a port.
+                    example: "id.example.com"
+                required: ['id_server']
       responses:
         200:
           description: An email was sent to the given address
+          schema:
+            $ref: "../identity/definitions/sid.yaml"
   "/account/password/msisdn/requestToken":
     post:
       summary: Requests a validation token be sent to the given phone number for the purpose of resetting a user's password.
       description: |-
-        Proxies the identity server API ``validate/msisdn/requestToken``, but
+        Proxies the identity service API ``validate/msisdn/requestToken``, but
         first checks that the given phone number **is** associated with an account
         on this Home Server. This API should be used to request
         validation tokens when authenticating for the
@@ -405,9 +418,27 @@ paths:
 
         .. _/register/msisdn/requestToken: #post-matrix-client-%CLIENT_MAJOR_VERSION%-register-email-requesttoken
       operationId: requestTokenToResetPasswordMSISDN
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            allOf:
+              - $ref: "../identity/definitions/request_msisdn_validation.yaml"
+              - type: object
+                properties:
+                  id_server:
+                    type: string
+                    description: |-
+                      The hostname of the identity service to communicate with. May
+                      optionally include a port.
+                    example: "id.example.com"
+                required: ['id_server']
       responses:
         200:
           description: An SMS message was sent to the given phone number.
+          schema:
+            $ref: "../identity/definitions/sid.yaml"
   "/account/deactivate":
     post:
       summary: "Deactivate a user's account."
@@ -495,7 +526,7 @@ paths:
                   be ``true`` when the server replies with 200 OK.
         400:
           description: |-
-            Part of the request was invalid or the username is not available. This may 
+            Part of the request was invalid or the username is not available. This may
             include one of the following error codes:
 
             * ``M_USER_IN_USE`` : The desired username is already taken.

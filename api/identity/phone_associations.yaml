@@ -50,57 +50,12 @@ paths:
         - in: body
           name: body
           schema:
-            type: object
-            example: {
-              "client_secret": "monkeys_are_GREAT",
-              "country": "GB",
-              "phone_number": "07700900001",
-              "send_attempt": 1
-            }
-            properties:
-              client_secret:
-                type: string
-                description: A unique string used to identify the validation attempt.
-              country:
-                type: string
-                description: |-
-                  The two-letter uppercase ISO country code that the number in
-                  ``phone_number`` should be parsed as if it were dialled from.
-              phone_number:
-                type: string
-                description: The phone number to validate.
-              send_attempt:
-                type: integer
-                description: |-
-                  Optional. If specified, the server will only send an SMS if
-                  the ``send_attempt`` is a number greater than the most recent
-                  one which it has seen (or if it has never seen one), scoped
-                  to that ``country`` + ``phone_number`` + ``client_secret``
-                  triple. This is to avoid repeatedly sending the same SMS in
-                  the case of request retries between the POSTing user and the
-                  identity service. The client should increment this value if
-                  they desire a new SMS (e.g. a reminder) to be sent.
-              next_link:
-                type: string
-                description: |-
-                  Optional. When the validation is completed, the identity
-                  service will redirect the user to this URL.
-            required: ["client_secret", "country", "phone_number"]
+            $ref: "definitions/request_msisdn_validation.yaml"
       responses:
         200:
-          description:
-            Session created.
-          examples:
-            application/json: {
-              "sid": "1234"
-            }
+          description: Session created.
           schema:
-            type: object
-            properties:
-              sid:
-                type: string
-                description: The session ID.
-            required: ['sid']
+            $ref: "definitions/sid.yaml"
         400:
           description: |
             An error ocurred. Some possible errors are:
