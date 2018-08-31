@@ -140,7 +140,7 @@ Some standard error codes are below:
   third party identifier.
 
 :``M_UNKNOWN``:
-  An unknown error has occurred. 
+  An unknown error has occurred.
 
 Privacy
 -------
@@ -217,11 +217,24 @@ session, within a 24 hour period since its most recent modification. Any
 attempts to perform these actions after the expiry will be rejected, and a new
 session should be created and used instead.
 
-To start a session, the client makes a request to the appropriate ``/requestToken``
-endpoint. The user then receives a validation token which should be provided
-to the client. The client then provides the token to the appropriate ``/submitToken``
-endpoint, completing the session. At this point, the client should ``/bind`` the
-third party identifier or leave it for another entity to bind.
+To start a session, the client makes a request to the appropriate
+``/requestToken`` endpoint. The identity service then sends a validation token
+to the user, and the user provides the token to the client. The client then
+provides the token to the appropriate ``/submitToken`` endpoint, completing the
+session. At this point, the client should ``/bind`` the third party identifier
+or leave it for another entity to bind.
+
+Format of a validation token
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The format of the validation token is left up to the identity service: it
+should choose one appropriate to the 3PID type. (For example, it would be
+inappropriate to expect a user to copy a long passphrase including punctuation
+from an SMS message into a client.)
+
+Whatever format the identity service uses, the validation token must consist of
+at most 255 Unicode codepoints. Clients must pass the token through without
+modification.
 
 Email associations
 ~~~~~~~~~~~~~~~~~~
