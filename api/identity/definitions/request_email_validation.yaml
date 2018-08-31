@@ -41,6 +41,6 @@ properties:
     type: string
     description: |-
       Optional. When the validation is completed, the identity
-      service will redirect the user to this URL.
+      server will redirect the user to this URL.
     example: "https://example.org/congratulations.html"
 required: ["client_secret", "email", "send_attempt"]
