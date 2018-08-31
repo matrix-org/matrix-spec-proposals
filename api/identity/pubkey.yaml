@@ -18,8 +18,9 @@ info:
 host: localhost:8090
 schemes:
   - https
-  - http
 basePath: /_matrix/identity/api/v1
+consumes:
+  - application/json
 produces:
   - application/json
 paths:
@@ -45,18 +46,31 @@ paths:
             The public key exists.
           examples:
             application/json: {
-                "public_key": "VXuGitF39UH5iRfvbIknlvlAVKgD1BsLDMvBf0pmp7c"
-              }
+              "public_key": "VXuGitF39UH5iRfvbIknlvlAVKgD1BsLDMvBf0pmp7c"
+            }
           schema:
             type: object
             properties:
               public_key:
                 type: string
+                description: Unpadded Base64 encoded public key.
+            required: ['public_key']
+        404:
+          description:
+            The public key was not found.
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "The public key was not found"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
   "/pubkey/isvalid":
     get:
       summary: Check whether a long-term public key is valid.
       description: |-
-        Check whether a long-term public key is valid.
+        Check whether a long-term public key is valid. The response should always
+        be the same, provided the key exists.
       operationId: isPubKeyValid
       parameters:
         - in: query
@@ -72,14 +86,15 @@ paths:
             The validity of the public key.
           examples:
             application/json: {
-                "valid": true
-              }
+              "valid": true
+            }
           schema:
             type: object
             properties:
               valid:
                 type: boolean
                 description: Whether the public key is recognised and is currently valid.
+            required: ['valid']
   "/pubkey/ephemeral/isvalid":
     get:
       summary: Check whether a short-term public key is valid.
@@ -100,11 +115,12 @@ paths:
             The validity of the public key.
           examples:
             application/json: {
-                "valid": true
-              }
+              "valid": true
+            }
           schema:
             type: object
             properties:
               valid:
                 type: boolean
                 description: Whether the public key is recognised and is currently valid.
+            required: ['valid']

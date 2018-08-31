@@ -18,8 +18,9 @@ info:
 host: localhost:8090
 schemes:
   - https
-  - http
 basePath: /_matrix/identity/api/v1
+consumes:
+  - application/json
 produces:
   - application/json
 paths:
@@ -29,7 +30,7 @@ paths:
       description: |-
         Sign invitation details.
 
-        The identity server will look up ``token`` which was stored in a call
+        The identity service will look up ``token`` which was stored in a call
         to ``store-invite``, and fetch the sender of the invite.
       operationId: blindlySignStuff
       parameters:
@@ -38,24 +39,24 @@ paths:
           schema:
             type: object
             example: {
-                "mxid": "@foo:bar.com",
-                "token": "sometoken",
-                "private_key": "base64encodedkey"
-              }
+              "mxid": "@foo:bar.com",
+              "token": "sometoken",
+              "private_key": "base64encodedkey"
+            }
             properties:
               mxid:
                 type: string
                 description: The Matrix user ID of the user accepting the invitation.
               token:
                 type: string
-                description: Token from the call to ``store-invite``
+                description: The token from the call to ``store-invite``.
               private_key:
                 type: string
                 description: The private key, encoded as `Unpadded base64`_.
             required: ["mxid", "token", "private_key"]
       responses:
         200:
-          description: The signedjson of the mxid, sender, and token.
+          description: The signed JSON of the mxid, sender, and token.
           schema:
             type: object
             properties:
@@ -68,9 +69,11 @@ paths:
               signatures:
                 type: object
                 description: The signature of the mxid, sender, and token.
+                $ref: "../../schemas/server-signatures.yaml"
               token:
                 type: string
                 description: The token for the invitation.
+            required: ['mxid', 'sender', 'signatures', 'token']
           examples:
             application/json: {
               "mxid": "@foo:bar.com",
@@ -83,8 +86,11 @@ paths:
               "token": "abc123"
             }
         404:
-          description: Token was not found.
-          example: {
+          description: The token was not found.
+          examples: 
+            application/json: {
               "errcode": "M_UNRECOGNIZED",
               "error": "Didn't recognize token"
             }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"

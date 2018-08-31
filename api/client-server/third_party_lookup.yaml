@@ -73,7 +73,7 @@ paths:
             $ref: definitions/errors/error.yaml
   "/thirdparty/location/{protocol}":
     get:
-      summary: Retreive Matrix-side portals rooms leading to a third party location.
+      summary: Retrieve Matrix-side portals rooms leading to a third party location.
       description: |-
         Requesting this endpoint with a valid protocol name results in a list
         of successful mapping results in a JSON array. Each result contains
@@ -151,7 +151,7 @@ paths:
     get:
       summary: Reverse-lookup third party locations given a Matrix room alias.
       description: |-
-        Retreive an array of third party network locations from a Matrix room
+        Retrieve an array of third party network locations from a Matrix room
         alias.
       operationId: queryLocationByAlias
       security:
@@ -181,7 +181,7 @@ paths:
     get:
       summary: Reverse-lookup third party users given a Matrix User ID.
       description: |-
-        Retreive an array of third party users from a Matrix User ID.
+        Retrieve an array of third party users from a Matrix User ID.
       operationId: queryUserByID
       security:
         - accessToken: []

@@ -41,7 +41,7 @@ paths:
           required: true
           x-example: "#monkeys:matrix.org"
         - in: body
-          name: roomInfo
+          name: body
           description: Information about this room alias.
           required: true
           schema:
@@ -50,24 +50,24 @@ paths:
               room_id:
                 type: string
                 description: The room ID to set.
+            required: ['room_id']
             example: {
-                "room_id": "!abnjk1jdasj98:capuchins.com"
-              }
+              "room_id": "!abnjk1jdasj98:capuchins.com"
+            }
       responses:
         200:
           description: The mapping was created.
           examples:
-            application/json: {
-              }
+            application/json: {}
           schema:
             type: object
         409:
           description: A room alias with that name already exists.
           examples:
             application/json: {
-                "errcode": "M_UNKNOWN",
-                "error": "Room alias #monkeys:matrix.org already exists."
-              }
+              "errcode": "M_UNKNOWN",
+              "error": "Room alias #monkeys:matrix.org already exists."
+            }
           schema:
             "$ref": "definitions/errors/error.yaml"
       tags:

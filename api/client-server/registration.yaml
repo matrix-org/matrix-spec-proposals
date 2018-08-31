@@ -117,6 +117,13 @@ paths:
                   A display name to assign to the newly-created device. Ignored
                   if ``device_id`` corresponds to a known device.
                 example: Jungle Phone
+              inhibit_login:
+                type: boolean
+                description: |-
+                  If true, an ``access_token`` and ``device_id`` should not be
+                  returned from this call, therefore preventing an automatic
+                  login. Defaults to false.
+                example: false
       responses:
         200:
           description: The account has been registered.
@@ -141,6 +148,7 @@ paths:
                 description: |-
                   An access token for the account.
                   This access token can then be used to authorize other requests.
+                  Required if the ``inhibit_login`` option is false.
               home_server:
                 type: string
                 description: |-
@@ -155,6 +163,8 @@ paths:
                 description: |-
                   ID of the registered device. Will be the same as the
                   corresponding parameter in the request, if one was specified.
+                  Required if the ``inhibit_login`` option is false.
+            required: ['user_id']
         400:
           description: |-
             Part of the request was invalid. This may include one of the following error codes:
@@ -218,7 +228,7 @@ paths:
                 description: The email address
                 example: "example@example.com"
               send_attempt:
-                type: number
+                type: integer
                 description: Used to distinguish protocol level retries from requests to re-send the email.
                 example: 1
             required: ["client_secret", "email", "send_attempt"]
@@ -283,7 +293,7 @@ paths:
                 description: The phone number.
                 example: "example@example.com"
               send_attempt:
-                type: number
+                type: integer
                 description: Used to distinguish protocol level retries from requests to re-send the SMS message.
                 example: 1
             required: ["client_secret", "country", "phone_number", "send_attempt"]

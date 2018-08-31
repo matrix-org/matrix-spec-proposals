@@ -26,9 +26,9 @@ to communicate with each other. Homeservers use these APIs to push messages to
 each other in real-time, to retrieve historic messages from each other, and to
 query profile and presence information about users on each other's servers.
 
-The APIs are implemented using HTTPS requests between each of the servers. 
-These HTTPS requests are strongly authenticated using public key signatures 
-at the TLS transport layer and using public key signatures in HTTP 
+The APIs are implemented using HTTPS requests between each of the servers.
+These HTTPS requests are strongly authenticated using public key signatures
+at the TLS transport layer and using public key signatures in HTTP
 Authorization headers at the HTTP layer.
 
 There are three main kinds of communication that occur between homeservers:
@@ -64,53 +64,69 @@ request.
 .. contents:: Table of Contents
 .. sectnum::
 
-Specification version
----------------------
+Changelog
+---------
+
+.. topic:: Version: %SERVER_RELEASE_LABEL%
+{{server_server_changelog}}
 
 This version of the specification is generated from
 `matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
 `{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
 
-Server Discovery
+For the full historical changelog, see
+https://github.com/matrix-org/matrix-doc/blob/master/changelogs/server_server.rst
+
+
+Other versions of this specification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following other versions are also available, in reverse chronological order:
+
+- `HEAD <https://matrix.org/docs/spec/server_server/unstable.html>`_: Includes all changes since the latest versioned release.
+
+Server discovery
 ----------------
 
-Resolving Server Names
+Resolving server names
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Each matrix homeserver is identified by a server name consisting of a hostname
-and an optional TLS port.
+and an optional port, as described by the `grammar
+<../appendices.html#server-name>`_.  Server names should be resolved to an IP
+address and port using the following process:
 
-.. code::
+* If the hostname is an IP literal, then that IP address should be used,
+  together with the given port number, or 8448 if no port is given.
 
-    server_name = hostname [ ":" tls_port]
-    tls_port = *DIGIT
+* Otherwise, if the port is present, then an IP address is discovered by
+  looking up an AAAA or A record for the hostname, and the specified port is
+  used.
 
-.. **
+* If the hostname is not an IP literal and no port is given, the server is
+  discovered by first looking up a ``_matrix._tcp`` SRV record for the
+  hostname, which may give a hostname (to be looked up using AAAA or A queries)
+  and port.  If the SRV record does not exist, then the server is discovered by
+  looking up an AAAA or A record on the hostname and taking the default
+  fallback port number of 8448.
 
-If the port is present then the server is discovered by looking up an AAAA or
-A record for the hostname and connecting to the specified TLS port. If the port
-is absent then the server is discovered by looking up a ``_matrix._tcp`` SRV
-record for the hostname. If this record does not exist then the server is
-discovered by looking up an AAAA or A record on the hostname and taking the
-default fallback port number of 8448.
-Homeservers may use SRV records to load balance requests between multiple TLS
-endpoints or to failover to another endpoint if an endpoint fails.
+  Homeservers may use SRV records to load balance requests between multiple TLS
+  endpoints or to failover to another endpoint if an endpoint fails.
 
-If the DNS name is a literal IP address, the port specified or the fallback
-port should be used.
-
-When making requests to servers, use the DNS name of the target server in the
-``Host`` header, regardless of the host given in the SRV record. For example,
-if making a request to ``example.org``, and the SRV record resolves to ``matrix.
-example.org``, the ``Host`` header in the request should be ``example.org``. The
-port number for target server should not appear in the ``Host`` header.
+When making requests to servers, use the hostname of the target server in the
+``Host`` header, regardless of any hostname given in the SRV record. For
+example, if the server name is ``example.org``, and the SRV record resolves to
+``matrix.example.org``, the ``Host`` header in the request should be
+``example.org``.  If an explicit port was given in the server name, it should be
+included in the ``Host`` header; otherwise, no port number should be given in
+the ``Host`` header.
 
 Server implementation
 ~~~~~~~~~~~~~~~~~~~~~~
 
 {{version_ss_http_api}}
 
-Retrieving Server Keys
+Retrieving server keys
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. NOTE::
@@ -121,7 +137,7 @@ Retrieving Server Keys
 Each homeserver publishes its public keys under ``/_matrix/key/v2/server/{keyId}``.
 Homeservers query for keys by either getting ``/_matrix/key/v2/server/{keyId}``
 directly or by querying an intermediate notary server using a
-``/_matrix/key/v2/query/{serverName}/{keyId}`` API. Intermediate notary servers 
+``/_matrix/key/v2/query/{serverName}/{keyId}`` API. Intermediate notary servers
 query the ``/_matrix/key/v2/server/{keyId}`` API on behalf of another server and
 sign the response with their own key. A server may query multiple notary servers to
 ensure that they all report the same public keys.
@@ -262,6 +278,8 @@ of Transaction messages, which are encoded as JSON objects, passed over an HTTP
 PUT request. A Transaction is meaningful only to the pair of homeservers that
 exchanged it; they are not globally-meaningful.
 
+Transactions are limited in size; they can have at most 50 PDUs and 100 EDUs.
+
 {{transactions_ss_http_api}}
 
 PDUs
@@ -290,6 +308,8 @@ creating a new event in this room should populate the new event's
   |
   E4
 
+.. _`auth events selection`:
+
 The ``auth_events`` field of a PDU identifies the set of events which give the
 sender permission to send the event. The ``auth_events`` for the
 ``m.room.create`` event in a room is empty; for other events, it should be the
@@ -297,8 +317,16 @@ following subset of the room state:
 
 - The ``m.room.create`` event.
 - The current ``m.room.power_levels`` event, if any.
-- The current ``m.room.join_rules`` event, if any.
 - The sender's current ``m.room.member`` event, if any.
+- If type is ``m.room.member``:
+
+    - The target's current ``m.room.member`` event, if any.
+    - If ``membership`` is ``join`` or ``invite``, the current
+      ``m.room.join_rules`` event, if any.
+    - If membership is ``invite`` and ``content`` contains a
+      ``third_party_invite`` property, the current
+      ``m.room.third_party_invite`` event with ``state_key`` matching
+      ``content.third_party_invite.signed.token``, if any.
 
 {{definition_ss_pdu}}
 
@@ -340,117 +368,170 @@ be inserted. The types of state events that affect authorization are:
 - ``m.room.member``
 - ``m.room.join_rules``
 - ``m.room.power_levels``
-
-Servers should not create new events that reference unauthorized events.
-However, any event that does reference an unauthorized event is not itself
-automatically considered unauthorized.
-
-Unauthorized events that appear in the event graph do *not* have any effect on
-the state of the room.
-
-.. Note:: This is in contrast to redacted events which can still affect the
-          state of the room. For example, a redacted ``join`` event will still
-          result in the user being considered joined.
+- ``m.room.third_party_invite``
 
 The rules are as follows:
 
-1. If type is ``m.room.create``, allow if and only if it has no
-   previous events - *i.e.* it is the first event in the room.
+1. If type is ``m.room.create``:
 
-2. If type is ``m.room.member``:
+   a. If it has any previous events, reject.
+   b. If the domain of the ``room_id`` does not match the domain of the
+      ``sender``, reject.
+   c. If ``content.room_version`` is present and is not a recognised version,
+      reject.
+   d. If ``content`` has no ``creator`` field, reject.
+   e. Otherwise, allow.
 
-  a. If ``membership`` is ``join``:
+#. Reject if event has ``auth_events`` that:
 
-    i. If the only previous event is an ``m.room.create``
-       and the ``state_key`` is the creator, allow.
+   a. have duplicate entries for a given ``type`` and ``state_key`` pair
+   #. have entries whose ``type`` and ``state_key`` don't match those
+      specified by the `auth events selection`_ algorithm described above.
 
-    #. If the ``sender`` does not match ``state_key``, reject.
+#. If event does not have a ``m.room.create`` in its ``auth_events``, reject.
 
-    #. If the user's current membership state is ``invite`` or ``join``,
-       allow.
+#. If type is ``m.room.aliases``:
 
-    #. If the ``join_rule`` is ``public``, allow.
+   a. If event has no ``state_key``, reject.
+   b. If sender's domain doesn't matches ``state_key``, reject.
+   c. Otherwise, allow.
 
-    #. Otherwise, reject.
+#. If type is ``m.room.member``:
 
-  b. If ``membership`` is ``invite``:
+   a. If no ``state_key`` key or ``membership`` key in ``content``, reject.
 
-    i. If the ``sender``'s current membership state is not ``join``, reject.
+   #. If ``membership`` is ``join``:
 
-    #. If *target user*'s current membership state is ``join`` or ``ban``,
-       reject.
+      i. If the only previous event is an ``m.room.create``
+         and the ``state_key`` is the creator, allow.
 
-    #. If the ``sender``'s power level is greater than or equal to the *invite
-       level*, allow.
+      #. If the ``sender`` does not match ``state_key``, reject.
 
-    #. Otherwise, reject.
+      #. If the ``sender`` is banned, reject.
 
-  c. If ``membership`` is ``leave``:
+      #. If the ``join_rule`` is ``invite`` then allow if membership state
+         is ``invite`` or ``join``.
 
-    i. If the ``sender`` matches ``state_key``, allow if and only if that user's
-       current membership state is ``invite`` or ``join``.
+      #. If the ``join_rule`` is ``public``, allow.
 
-    #. If the ``sender``'s current membership state is not ``join``, reject.
+      #. Otherwise, reject.
 
-    #. If the *target user*'s current membership state is ``ban``, and the
-       ``sender``'s power level is less than the *ban level*, reject.
+   #. If ``membership`` is ``invite``:
 
-    #. If the ``sender``'s power level is greater than or equal to the *kick
-       level*, and the *target user*'s power level is less than the
-       ``sender``'s power level, allow.
+      i. If ``content`` has ``third_party_invite`` key:
 
-    #. Otherwise, reject.
+         #. If *target user* is banned, reject.
 
-  d. If ``membership`` is ``ban``:
+         #. If ``content.third_party_invite`` does not have a
+            ``signed`` key, reject.
 
-    i. If the ``sender``'s current membership state is not ``join``, reject.
+         #. If ``signed`` does not have ``mxid`` and ``token`` keys, reject.
 
-    #. If the ``sender``'s power level is greater than or equal to the *ban
-       level*, and the *target user*'s power level is less than the
-       ``sender``'s power level, allow.
+         #. If ``mxid`` does not match ``state_key``, reject.
 
-    #. Otherwise, reject.
+         #. If there is no ``m.room.third_party_invite`` event in the
+            current room state with ``state_key`` matching ``token``, reject.
 
-  e. Otherwise, the membership is unknown. Reject.
+         #. If ``sender`` does not match ``sender`` of the
+            ``m.room.third_party_invite``, reject.
 
-3. If the ``sender``'s current membership state is not ``join``, reject.
+         #. If any signature in ``signed`` matches any public key in the
+            ``m.room.third_party_invite`` event, allow. The public keys are
+            in ``content`` of ``m.room.third_party_invite`` as:
 
-4. If the event type's *required power level* is greater than the ``sender``'s power
+            #. A single public key in the ``public_key`` field.
+            #. A list of public keys in the ``public_keys`` field.
+
+         #. Otherwise, reject.
+
+      #. If the ``sender``'s current membership state is not ``join``, reject.
+
+      #. If *target user*'s current membership state is ``join`` or ``ban``,
+         reject.
+
+      #. If the ``sender``'s power level is greater than or equal to the *invite
+         level*, allow.
+
+      #. Otherwise, reject.
+
+   #. If ``membership`` is ``leave``:
+
+      i. If the ``sender`` matches ``state_key``, allow if and only if that user's
+         current membership state is ``invite`` or ``join``.
+
+      #. If the ``sender``'s current membership state is not ``join``, reject.
+
+      #. If the *target user*'s current membership state is ``ban``, and the
+         ``sender``'s power level is less than the *ban level*, reject.
+
+      #. If the ``sender``'s power level is greater than or equal to the *kick
+         level*, and the *target user*'s power level is less than the
+         ``sender``'s power level, allow.
+
+      #. Otherwise, reject.
+
+   #. If ``membership`` is ``ban``:
+
+      i. If the ``sender``'s current membership state is not ``join``, reject.
+
+      #. If the ``sender``'s power level is greater than or equal to the *ban
+         level*, and the *target user*'s power level is less than the
+         ``sender``'s power level, allow.
+
+      #. Otherwise, reject.
+
+   #. Otherwise, the membership is unknown. Reject.
+
+#. If the ``sender``'s current membership state is not ``join``, reject.
+
+#. If type is ``m.room.third_party_invite``:
+
+   a. Allow if and only if ``sender``'s current power level is greater than
+      or equal to the *invite level*.
+
+#. If the event type's *required power level* is greater than the ``sender``'s power
    level, reject.
 
-5. If type is ``m.room.power_levels``:
+#. If the event has a ``state_key`` that starts with an ``@`` and does not match
+   the ``sender``, reject.
 
-  a. If there is no previous ``m.room.power_levels`` event in the room, allow.
+#. If type is ``m.room.power_levels``:
 
-  b. For each of the keys ``users_default``, ``events_default``,
-     ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
-     each entry being changed under the ``events`` or ``users`` keys:
+   a. If ``users`` key in ``content`` is not a dictionary with keys that are
+      valid user IDs with values that are integers (or a string that is an
+      integer), reject.
 
-    i. If the current value is higher than the ``sender``'s current power level,
-       reject.
+   #. If there is no previous ``m.room.power_levels`` event in the room, allow.
 
-    #. If the new value is higher than the ``sender``'s current power level,
-       reject.
+   #. For each of the keys ``users_default``, ``events_default``,
+      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
+      each entry being changed under the ``events`` or ``users`` keys:
 
-  c. For each entry being changed under the ``users`` key, other than the
-     ``sender``'s own entry:
+      i. If the current value is higher than the ``sender``'s current power level,
+         reject.
 
-    i. If the current value is equal to the ``sender``'s current power level,
-       reject.
+      #. If the new value is higher than the ``sender``'s current power level,
+         reject.
 
-  d. Otherwise, allow.
+   #. For each entry being changed under the ``users`` key, other than the
+      ``sender``'s own entry:
 
-6. If type is ``m.room.redaction``:
+      i. If the current value is equal to the ``sender``'s current power level,
+         reject.
 
-  a. If the ``sender``'s power level is greater than or equal to the *redact
-     level*, allow.
+   #. Otherwise, allow.
 
-  #. If the ``sender`` of the event being redacted is the same as the
-     ``sender`` of the ``m.room.redaction``, allow.
+#. If type is ``m.room.redaction``:
 
-  #. Otherwise, reject.
+   a. If the ``sender``'s power level is greater than or equal to the *redact
+      level*, allow.
 
-7. Otherwise, allow.
+   #. If the domain of the ``event_id`` of the event being redacted is the same
+      as the domain of the ``event_id`` of the ``m.room.redaction``, allow.
+
+   #. Otherwise, reject.
+
+#. Otherwise, allow.
 
 .. NOTE::
 
@@ -464,9 +545,30 @@ The rules are as follows:
     the kick *and* ban levels, *and* greater than the target user's power
     level.
 
-.. TODO-spec
 
-  I think there is some magic about 3pid invites too.
+Rejection
++++++++++
+
+If an event is rejected it should neither be relayed to clients nor be included
+as a prev event in any new events generated by the server. Subsequent events
+from other servers that reference rejected events should be allowed if they
+still pass the auth rules. The state used in the checks should be calculated as
+normal, except not updating with the rejected event where it is a state event.
+
+If an event in an incoming transaction is rejected, this should not cause the
+transaction request to be responded to with an error response.
+
+.. NOTE::
+
+    This means that events may be included in the room DAG even though they
+    should be rejected.
+
+.. NOTE::
+
+    This is in contrast to redacted events which can still affect the
+    state of the room. For example, a redacted ``join`` event will still
+    result in the user being considered joined.
+
 
 Retrieving event authorization information
 ++++++++++++++++++++++++++++++++++++++++++
@@ -590,9 +692,9 @@ To cover this case, the federation API provides a server-to-server analog of
 the ``/messages`` client API, allowing one homeserver to fetch history from
 another. This is the ``/backfill`` API.
 
-To request more history, the requesting homeserver picks another homeserver 
-that it thinks may have more (most likely this should be a homeserver for 
-some of the existing users in the room at the earliest point in history it 
+To request more history, the requesting homeserver picks another homeserver
+that it thinks may have more (most likely this should be a homeserver for
+some of the existing users in the room at the earliest point in history it
 has currently), and makes a ``/backfill`` request.
 
 Similar to backfilling a room's history, a server may not have all the events
@@ -669,10 +771,10 @@ homeservers, though most in practice will use just two.
 The first part of the handshake usually involves using the directory server to
 request the room ID and join candidates through the |/query/directory|_
 API endpoint. In the case of a new user joining a room as a result of a received
-invite, the joining user's homeserver could optimise this step away by picking 
-the origin server of that invite message as the join candidate. However, the 
+invite, the joining user's homeserver could optimise this step away by picking
+the origin server of that invite message as the join candidate. However, the
 joining server should be aware that the origin server of the invite might since
-have left the room, so should be prepared to fall back on the regular join flow 
+have left the room, so should be prepared to fall back on the regular join flow
 if this optimisation fails.
 
 Once the joining server has the room ID and the join candidates, it then needs
@@ -692,7 +794,7 @@ event to a resident homeserver, by using the ``PUT /send_join`` endpoint.
 The resident homeserver then accepts this event into the room's event graph,
 and responds to the joining server with the full set of state for the
 newly-joined room. The resident server must also send the event to other servers
-participating in the room. 
+participating in the room.
 
 {{joins_ss_http_api}}
 
@@ -716,8 +818,8 @@ Leaving Rooms (Rejecting Invites)
 
 Normally homeservers can send appropriate ``m.room.member`` events to have users
 leave the room, or to reject local invites. Remote invites from other homeservers
-do not involve the server in the graph and therefore need another approach to 
-reject the invite. Joining the room and promptly leaving is not recommended as 
+do not involve the server in the graph and therefore need another approach to
+reject the invite. Joining the room and promptly leaving is not recommended as
 clients and servers will interpret that as accepting the invite, then leaving the
 room rather than rejecting the invite.
 
@@ -733,6 +835,10 @@ event to other servers in the room.
 
 Third-party invites
 -------------------
+
+.. NOTE::
+   More information about third party invites is available in the `Client-Server API`_
+   under the Third Party Invites module.
 
 When an user wants to invite another user in a room but doesn't know the Matrix
 ID to invite, they can do so using a third-party identifier (e.g. an e-mail or a
@@ -804,7 +910,7 @@ identifier.
 Public Room Directory
 ---------------------
 
-To compliment the `Client-Server API`_'s room directory, homeservers need a
+To complement the `Client-Server API`_'s room directory, homeservers need a
 way to query the public rooms for another server. This can be done by making
 a request to the ``/publicRooms`` endpoint for the server the room directory
 should be retrieved for.
@@ -829,7 +935,7 @@ EDUs. There are no PDUs or Federation Queries involved.
 
 Servers should only send presence updates for users that the receiving server
 would be interested in. This can include the receiving server sharing a room
-with a given user, or a user on the receiving server has added one of the 
+with a given user, or a user on the receiving server has added one of the
 sending server's users to their presence list.
 
 Clients may define lists of users that they are interested in via "Presence
@@ -848,7 +954,7 @@ or ``m.presence_deny`` EDU back.
 
 {{definition_ss_event_schemas_m_presence_invite}}
 
-{{definition_ss_event_schemas_m_presence_accept}} 
+{{definition_ss_event_schemas_m_presence_accept}}
 
 {{definition_ss_event_schemas_m_presence_deny}}
 
@@ -881,14 +987,27 @@ that can be made.
 OpenID
 ------
 
-Third party services can exchange an access token previously generated by the 
+Third party services can exchange an access token previously generated by the
 `Client-Server API` for information about a user. This can help verify that a
 user is who they say they are without granting full access to the user's account.
 
-Access tokens generated by the OpenID API are only good for the OpenID API and 
+Access tokens generated by the OpenID API are only good for the OpenID API and
 nothing else.
 
 {{openid_ss_http_api}}
+
+
+End-to-End Encryption
+---------------------
+
+This section complements the `End-to-End Encryption module`_ of the Client-Server
+API. For detailed information about end-to-end encryption, please see that module.
+
+The APIs defined here are designed to be able to proxy much of the client's request
+through to federation, and have the response also be proxied through to the client.
+
+{{user_keys_ss_http_api}}
+
 
 Send-to-device messaging
 ------------------------
@@ -929,155 +1048,159 @@ described in the `Client-Server API`_, being sure to use the ``allow_remote``
 parameter (set to ``false``).
 
 
+Server Access Control Lists (ACLs)
+----------------------------------
+
+Server ACLs and their purpose are described in the `Server ACLs`_ section of the
+Client-Server API.
+
+When a remote server makes a request, it MUST be verified to be allowed by the
+server ACLs. If the server is denied access to a room, the receiving server
+MUST reply with a 403 HTTP status code and an ``errcode`` of ``M_FORBIDDEN``.
+
+The following endpoint prefixes MUST be protected:
+
+* ``/_matrix/federation/v1/send`` (on a per-PDU basis)
+* ``/_matrix/federation/v1/make_join``
+* ``/_matrix/federation/v1/make_leave``
+* ``/_matrix/federation/v1/send_join``
+* ``/_matrix/federation/v1/send_leave``
+* ``/_matrix/federation/v1/invite``
+* ``/_matrix/federation/v1/state``
+* ``/_matrix/federation/v1/state_ids``
+* ``/_matrix/federation/v1/backfill``
+* ``/_matrix/federation/v1/event_auth``
+* ``/_matrix/federation/v1/query_auth``
+* ``/_matrix/federation/v1/get_missing_events``
+
+
 Signing Events
 --------------
 
 Signing events is complicated by the fact that servers can choose to redact
 non-essential parts of an event.
 
-Before signing the event, the ``unsigned`` and ``signature`` members are
-removed, it is encoded as `Canonical JSON`_, and then hashed using SHA-256. The
-resulting hash is then stored in the event JSON in a ``hash`` object under a
-``sha256`` key.
+Adding hashes and signatures to outgoing events
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Before signing the event, the *content hash* of the event is calculated as
+described below. The hash is encoded using `Unpadded Base64`_ and stored in the
+event object, in a ``hashes`` object, under a ``sha256`` key.
+
+The event object is then *redacted*, following the `redaction
+algorithm`_. Finally it is signed as described in `Signing JSON`_, using the
+server's signing key (see also `Retrieving server keys`_).
+
+The signature is then copied back to the original event object.
+
+See `Persistent Data Unit schema`_ for an example of a signed event.
+
+
+Validating hashes and signatures on received events
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+When a server receives an event over federation from another server, the
+receiving server should check the hashes and signatures on that event.
+
+First the signature is checked. The event is redacted following the `redaction
+algorithm`_, and the resultant object is checked for a signature from the
+originating server, following the algorithm described in `Checking for a signature`_.
+Note that this step should succeed whether we have been sent the full event or
+a redacted copy.
+
+If the signature is found to be valid, the expected content hash is calculated
+as described below. The content hash in the ``hashes`` property of the received
+event is base64-decoded, and the two are compared for equality.
+
+If the hash check fails, then it is assumed that this is because we have only
+been given a redacted version of the event. To enforce this, the receiving
+server should use the redacted copy it calculated rather than the full copy it
+received.
+
+Calculating the content hash for an event
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The *content hash* of an event covers the complete event including the
+*unredacted* contents. It is calculated as follows.
+
+First, any existing ``unsigned``, ``signature``, and ``hashes`` members are
+removed. The resulting object is then encoded as `Canonical JSON`_, and the
+JSON is hashed using SHA-256.
+
+
+Example code
+~~~~~~~~~~~~
 
 .. code:: python
 
-    def hash_event(event_json_object):
-
-        # Keys under "unsigned" can be modified by other servers.
-        # They are useful for conveying information like the age of an
-        # event that will change in transit.
-        # Since they can be modifed we need to exclude them from the hash.
-        unsigned = event_json_object.pop("unsigned", None)
-
-        # Signatures will depend on the current value of the "hashes" key.
-        # We cannot add new hashes without invalidating existing signatures.
-        signatures = event_json_object.pop("signatures", None)
-
-        # The "hashes" key might contain multiple algorithms if we decide to
-        # migrate away from SHA-2. We don't want to include an existing hash
-        # output in our hash so we exclude the "hashes" dict from the hash.
-        hashes = event_json_object.pop("hashes", {})
-
-        # Encode the JSON using a canonical encoding so that we get the same
-        # bytes on every server for the same JSON object.
-        event_json_bytes = encode_canonical_json(event_json_bytes)
-
-        # Add the base64 encoded bytes of the hash to the "hashes" dict.
-        hashes["sha256"] = encode_base64(sha256(event_json_bytes).digest())
-
-        # Add the "hashes" dict back the event JSON under a "hashes" key.
-        event_json_object["hashes"] = hashes
-        if unsigned is not None:
-            event_json_object["unsigned"] = unsigned
-        return event_json_object
-
-The event is then stripped of all non-essential keys both at the top level and
-within the ``content`` object. Any top-level keys not in the following list
-MUST be removed:
-
-.. code::
-
-    auth_events
-    depth
-    event_id
-    hashes
-    membership
-    origin
-    origin_server_ts
-    prev_events
-    prev_state
-    room_id
-    sender
-    signatures
-    state_key
-    type
-
-A new ``content`` object is constructed for the resulting event that contains
-only the essential keys of the original ``content`` object. If the original
-event lacked a ``content`` object at all, a new empty JSON object is created
-for it.
-
-The keys that are considered essential for the ``content`` object depend on the
-the ``type`` of the event. These are:
-
-.. code::
-
-    type is "m.room.aliases":
-      aliases
-
-    type is "m.room.create":
-      creator
-
-    type is "m.room.history_visibility":
-      history_visibility
-
-    type is "m.room.join_rules":
-      join_rule
-
-    type is "m.room.member":
-      membership
-
-    type is "m.room.power_levels":
-      ban
-      events
-      events_default
-      kick
-      redact
-      state_default
-      users
-      users_default
-
-The resulting stripped object with the new ``content`` object and the original
-``hashes`` key is then signed using the JSON signing algorithm outlined below:
-
-.. code:: python
-
-    def sign_event(event_json_object, name, key):
-
-        # Make sure the event has a "hashes" key.
-        if "hashes" not in event_json_object:
-            event_json_object = hash_event(event_json_object)
+    def hash_and_sign_event(event_object, signing_key, signing_name):
+        # First we need to hash the event object.
+        content_hash = compute_content_hash(event_object)
+        event_object["hashes"] = {"sha256": encode_unpadded_base64(content_hash)}
 
         # Strip all the keys that would be removed if the event was redacted.
         # The hashes are not stripped and cover all the keys in the event.
         # This means that we can tell if any of the non-essential keys are
         # modified or removed.
-        stripped_json_object = strip_non_essential_keys(event_json_object)
+        stripped_object = strip_non_essential_keys(event_object)
 
         # Sign the stripped JSON object. The signature only covers the
         # essential keys and the hashes. This means that we can check the
         # signature even if the event is redacted.
-        signed_json_object = sign_json(stripped_json_object)
+        signed_object = sign_json(stripped_object, signing_key, signing_name)
 
         # Copy the signatures from the stripped event to the original event.
-        event_json_object["signatures"] = signed_json_oject["signatures"]
-        return event_json_object
+        event_object["signatures"] = signed_object["signatures"]
 
-Servers can then transmit the entire event or the event with the non-essential
-keys removed. If the entire event is present, receiving servers can then check
-the event by computing the SHA-256 of the event, excluding the ``hash`` object.
-If the keys have been redacted, then the ``hash`` object is included when
-calculating the SHA-256 hash instead.
+    def compute_content_hash(event_object):
+        # take a copy of the event before we remove any keys.
+        event_object = dict(event_object)
 
-New hash functions can be introduced by adding additional keys to the ``hash``
-object. Since the ``hash`` object cannot be redacted a server shouldn't allow
-too many hashes to be listed, otherwise a server might embed illict data within
-the ``hash`` object. For similar reasons a server shouldn't allow hash values
-that are too long.
+        # Keys under "unsigned" can be modified by other servers.
+        # They are useful for conveying information like the age of an
+        # event that will change in transit.
+        # Since they can be modifed we need to exclude them from the hash.
+        event_object.pop("unsigned", None)
+
+        # Signatures will depend on the current value of the "hashes" key.
+        # We cannot add new hashes without invalidating existing signatures.
+        event_object.pop("signatures", None)
+
+        # The "hashes" key might contain multiple algorithms if we decide to
+        # migrate away from SHA-2. We don't want to include an existing hash
+        # output in our hash so we exclude the "hashes" dict from the hash.
+        event_object.pop("hashes", None)
+
+        # Encode the JSON using a canonical encoding so that we get the same
+        # bytes on every server for the same JSON object.
+        event_json_bytes = encode_canonical_json(event_object)
+
+        return hashlib.sha256(event_json_bytes)
 
 .. TODO
-  [[TODO(markjh): We might want to specify a maximum number of keys for the
-  ``hash`` and we might want to specify the maximum output size of a hash]]
-  [[TODO(markjh) We might want to allow the server to omit the output of well
-  known hash functions like SHA-256 when none of the keys have been redacted]]
+
+   [[TODO(markjh): Since the ``hash`` object cannot be redacted a server
+   shouldn't allow too many hashes to be listed, otherwise a server might embed
+   illict data within the ``hash`` object.
+
+   We might want to specify a maximum number of keys for the
+   ``hash`` and we might want to specify the maximum output size of a hash]]
+
+   [[TODO(markjh) We might want to allow the server to omit the output of well
+   known hash functions like SHA-256 when none of the keys have been redacted]]
+
 
 .. |/query/directory| replace:: ``/query/directory``
 .. _/query/directory: #get-matrix-federation-v1-query-directory
 
-.. _`Invitation storage`: ../identity_service/unstable.html#invitation-storage
-.. _`Identity Service API`: ../identity_service/unstable.html
-.. _`Client-Server API`: ../client_server/unstable.html
+.. _`Invitation storage`: ../identity_service/%IDENTITY_RELEASE_LABEL%.html#invitation-storage
+.. _`Identity Service API`: ../identity_service/%IDENTITY_RELEASE_LABEL%.html
+.. _`Client-Server API`: ../client_server/%CLIENT_RELEASE_LABEL%.html
 .. _`Inviting to a room`: #inviting-to-a-room
 .. _`Canonical JSON`: ../appendices.html#canonical-json
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
+.. _`Server ACLs`:  ../client_server/%CLIENT_RELEASE_LABEL%.html#module-server-acls
+.. _`redaction algorithm`: ../client_server/%CLIENT_RELEASE_LABEL%.html#redactions
+.. _`Signing JSON`: ../appendices.html#signing-json
+.. _`Checking for a signature`: ../appendices.html#checking-for-a-signature
+.. _`Device Management module`: ../client_server/%CLIENT_RELEASE_LABEL%.html#device-management
+.. _`End-to-End Encryption module`: ../client_server/%CLIENT_RELEASE_LABEL%.html#end-to-end-encryption

@@ -1,13 +1,10 @@
 {
+  "$ref": "core/state_event.json",
+  "type": "m.room.encryption",
+  "state_key": "",
   "content": {
     "algorithm": "m.megolm.v1.aes-sha2",
     "rotation_period_ms": 604800000,
     "rotation_period_msgs": 100
-  },
-  "event_id": "$WLGTSEFJJKJ:localhost",
-  "origin_server_ts": 1476648761524,
-  "sender": "@example:localhost",
-  "room_id": "!Cuyf34gef24t:localhost",
-  "state_key": "",
-  "type": "m.room.encryption"
+  }
 }
