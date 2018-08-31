@@ -358,22 +358,23 @@ The rules are as follows:
 
 1. If type is ``m.room.create``:
 
-    a. Reject if it has any previous events.
-    b. Reject if the domain of the ``room_id`` does not match the domain of the
-       ``sender``.
-    c. Reject if ``content.room_version`` key is an unrecognized version.
+    a. If it has any previous events, reject.
+    b. If the domain of the ``room_id`` does not match the domain of the
+       ``sender``, reject.
+    c. If ``content.room_version`` key is an unrecognised version, reject.
     d. Otherwise, allow.
 
-#. Reject if event does not have a ``m.room.create`` in its ``auth_events``.
+#. If event does not have a ``m.room.create`` in its ``auth_events``, reject.
 
 #. If type is ``m.room.aliases``:
 
-    a. Reject if event has no ``state_key``.
-    b. Allow if and only if sender's domain matches ``state_key``.
+    a. If event has no ``state_key``, reject
+    b. If sender's domain doesn't matches ``state_key``, reject.
+    c. Otherwise, allow.
 
 #. If type is ``m.room.member``:
 
-    a. Reject if no ``state_key`` key or ``membership`` key in ``content``.
+    a. If no ``state_key`` key or ``membership`` key in ``content``, reject.
 
     #. If ``membership`` is ``join``:
 
