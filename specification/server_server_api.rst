@@ -362,7 +362,8 @@ The rules are as follows:
     b. If the domain of the ``room_id`` does not match the domain of the
        ``sender``, reject.
     c. If ``content.room_version`` key is an unrecognised version, reject.
-    d. Otherwise, allow.
+    d. If ``content`` has no ``creator`` field, reject.
+    e. Otherwise, allow.
 
 #. If event does not have a ``m.room.create`` in its ``auth_events``, reject.
 
