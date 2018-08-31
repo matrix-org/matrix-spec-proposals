@@ -185,29 +185,109 @@ paths:
         - User data
   "/account/3pid/email/requestToken":
     post:
-      summary: Requests a validation token be sent to the given email address for the purpose of adding an email address to an account
+      summary: Begins the validation process for an email address for association with the user's account.
       description: |-
-        Proxies the identity server API ``validate/email/requestToken``, but
+        Proxies the identity service API ``validate/email/requestToken``, but
         first checks that the given email address is **not** already associated
-        with an account on this Home Server. This API should be used to request
+        with an account on this homeserver. This API should be used to request
         validation tokens when adding an email address to an account. This API's
-        parameters and response is identical to that of the HS API
-        |/register/email/requestToken|_ endpoint.
+        parameters and response are identical to that of the |/register/email/requestToken|_
+        endpoint.
       operationId: requestTokenTo3PIDEmail
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            allOf:
+              - $ref: "../identity/definitions/request_email_validation.yaml"
+              - type: object
+                properties:
+                  id_server:
+                    type: string
+                    description: |-
+                      The hostname of the identity service to communicate with. May
+                      optionally include a port.
+                    example: "id.example.com"
+                required: ['id_server']
       responses:
         200:
           description: An email was sent to the given address.
+          schema:
+            $ref: "../identity/definitions/sid.yaml"
+        403:
+          description: |-
+            The homeserver does not allow the third party identifier as a
+            contact option.
+          schema:
+            $ref: "definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_THREEPID_DENIED",
+              "error": "Third party identifier is not allowed"
+            }
+        400:
+          description: |-
+            The third party identifier is already in use on the homeserver, or
+            the request was invalid.
+          schema:
+            $ref: "definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_THREEPID_IN_USE",
+              "error": "Third party identifier already in use"
+            }
   "/account/3pid/msisdn/requestToken":
     post:
-      summary: Requests a validation token be sent to the given email address for the purpose of adding a phone number to an account.
+      summary: Begins the validation process for a phone number for association with the user's account.
       description: |-
-        Proxies the identity server API ``validate/msisdn/requestToken``, but
+        Proxies the identity service API ``validate/msisdn/requestToken``, but
         first checks that the given phone number is **not** already associated
         with an account on this Home Server. This API should be used to request
         validation tokens when adding a phone number to an account. This API's
-        parameters and response is identical to that of the HS API
-        |/register/msisdn/requestToken|_ endpoint.
+        parameters and response are identical to that of the |/register/msisdn/requestToken|_
+        endpoint.
       operationId: requestTokenTo3PIDMSISDN
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            allOf:
+              - $ref: "../identity/definitions/request_msisdn_validation.yaml"
+              - type: object
+                properties:
+                  id_server:
+                    type: string
+                    description: |-
+                      The hostname of the identity service to communicate with. May
+                      optionally include a port.
+                    example: "id.example.com"
+                required: ['id_server']
       responses:
         200:
           description: An SMS message was sent to the given phone number.
+          schema:
+            $ref: "../identity/definitions/sid.yaml"
+        403:
+          description: |-
+            The homeserver does not allow the third party identifier as a
+            contact option.
+          schema:
+            $ref: "definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_THREEPID_DENIED",
+              "error": "Third party identifier is not allowed"
+            }
+        400:
+          description: |-
+            The third party identifier is already in use on the homeserver, or
+            the request was invalid.
+          schema:
+            $ref: "definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_THREEPID_IN_USE",
+              "error": "Third party identifier already in use"
+            }
