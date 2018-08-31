@@ -45,6 +45,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/voip_events.rst
     - modules/typing_notifications.rst
     - modules/receipts.rst
+    - modules/read_markers.rst
     - modules/presence.rst
     - modules/content_repo.rst
     - modules/send_to_device.rst
