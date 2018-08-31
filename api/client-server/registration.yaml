@@ -406,9 +406,31 @@ paths:
                 required: ['id_server']
       responses:
         200:
-          description: An email was sent to the given address
+          description: An email was sent to the given address.
           schema:
             $ref: "../identity/definitions/sid.yaml"
+        403:
+          description: |-
+            The homeserver does not allow the third party identifier as a
+            contact option.
+          schema:
+            $ref: "definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_THREEPID_DENIED",
+              "error": "Third party identifier is not allowed"
+            }
+        400:
+          description: |-
+            The referenced third party identifier is not recognised by the
+            homeserver, or the request was invalid
+          schema:
+            $ref: "definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_THREEPID_NOT_FOUND",
+              "error": "Email not found"
+            }
   "/account/password/msisdn/requestToken":
     post:
       summary: Requests a validation token be sent to the given phone number for the purpose of resetting a user's password.
@@ -420,7 +442,7 @@ paths:
         `account/password` endpoint. This API's parameters and response are
         identical to that of the HS API |/register/msisdn/requestToken|_ except that
         `M_THREEPID_NOT_FOUND` may be returned if no account matching the
-        given email address could be found. The server may instead send an
+        given phone number could be found. The server may instead send an
         SMS message to the given address prompting the user to create an account.
         `M_THREEPID_IN_USE` may not be returned.
 
@@ -449,6 +471,28 @@ paths:
           description: An SMS message was sent to the given phone number.
           schema:
             $ref: "../identity/definitions/sid.yaml"
+        403:
+          description: |-
+            The homeserver does not allow the third party identifier as a
+            contact option.
+          schema:
+            $ref: "definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_THREEPID_DENIED",
+              "error": "Third party identifier is not allowed"
+            }
+        400:
+          description: |-
+            The referenced third party identifier is not recognised by the
+            homeserver, or the request was invalid
+          schema:
+            $ref: "definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_THREEPID_NOT_FOUND",
+              "error": "Phone number not found"
+            }
   "/account/deactivate":
     post:
       summary: "Deactivate a user's account."
