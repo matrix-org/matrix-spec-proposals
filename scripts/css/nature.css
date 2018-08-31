@@ -273,6 +273,7 @@ table {
 
 td[colspan]:not([colspan="1"]) {
     background: #eeeeee;
+    text-transform: capitalize;
 }
 
 thead {
