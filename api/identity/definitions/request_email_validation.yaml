@@ -33,7 +33,7 @@ properties:
       is a number greater than the most recent one which it has seen,
       scoped to that ``email`` + ``client_secret`` pair. This is to
       avoid repeatedly sending the same email in the case of request
-      retries between the POSTing user and the identity service.
+      retries between the POSTing user and the identity server.
       The client should increment this value if they desire a new
       email (e.g. a reminder) to be sent.
     example: 1

@@ -13,7 +13,7 @@
 # limitations under the License.
 swagger: '2.0'
 info:
-  title: "Matrix Identity Service Establishing Associations API"
+  title: "Matrix Identity Server Establishing Associations API"
   version: "1.0.0"
 host: localhost:8090
 schemes:
@@ -166,7 +166,7 @@ paths:
               signatures:
                 type: object
                 description: |-
-                  The signatures of the verifying identity services which show that the
+                  The signatures of the verifying identity servers which show that the
                   association should be trusted, if you trust the verifying identity
                   services.
                 $ref: "../../schemas/server-signatures.yaml"

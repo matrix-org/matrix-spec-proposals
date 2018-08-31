@@ -18,10 +18,10 @@ targets:
     files:
       - server_server_api.rst
     version_label: "%SERVER_RELEASE_LABEL%"
-  identity_service:
+  identity_server:
     files:
-      - identity_service_api.rst
-    version_label: unstable
+      - identity_server_api.rst
+    version_label: "%IDENTITY_RELEASE_LABEL%"
   push_gateway:
     files:
       - push_gateway.rst

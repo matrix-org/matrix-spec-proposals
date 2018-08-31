@@ -527,7 +527,7 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--identity_release", "-i", action="store", default="unstable",
-        help="The identity service release tag to generate, e.g. r1.2"
+        help="The identity server release tag to generate, e.g. r1.2"
     )
     parser.add_argument(
         "--list_targets", action="store_true",
@@ -547,7 +547,7 @@ if __name__ == '__main__':
 
     substitutions = {
         "%CLIENT_RELEASE_LABEL%": args.client_release,
-        # we hardcode the major versions. This ends up in the example 
+        # we hardcode the major versions. This ends up in the example
         # API URLs. When we have released a new major version, we'll
         # have to bump them.
         "%CLIENT_MAJOR_VERSION%": "r0",

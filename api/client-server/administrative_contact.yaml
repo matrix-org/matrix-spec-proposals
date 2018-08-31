@@ -35,7 +35,7 @@ paths:
         associated with the user's account.
 
         This is *not* the same as the list of third party identifiers bound to
-        the user's Matrix ID in identity services.
+        the user's Matrix ID in identity servers.
 
         Identifiers in this list may be used by the homeserver as, for example,
         identifiers that it will accept to reset the user's account password.
@@ -77,7 +77,7 @@ paths:
                       format: int64
                       description: |-
                         The timestamp, in milliseconds, when the identifier was
-                        validated by the identity service.
+                        validated by the identity server.
                     added_at:
                       type: integer
                       format: int64
@@ -106,13 +106,13 @@ paths:
                 properties:
                   client_secret:
                     type: string
-                    description: The client secret used in the session with the identity service.
+                    description: The client secret used in the session with the identity server.
                   id_server:
                     type: string
-                    description: The identity service to use.
+                    description: The identity server to use.
                   sid:
                     type: string
-                    description: The session identifier given by the identity service.
+                    description: The session identifier given by the identity server.
                 required: ["client_secret", "id_server", "sid"]
               bind:
                 type: boolean
@@ -138,11 +138,11 @@ paths:
             schema:
               type: object
         403:
-          description: The credentials could not be verified with the identity service.
+          description: The credentials could not be verified with the identity server.
           examples:
             application/json: {
                 "errcode": "M_THREEPID_AUTH_FAILED",
-                "error": "The third party credentials could not be verified by the identity service."
+                "error": "The third party credentials could not be verified by the identity server."
               }
           schema:
             "$ref": "definitions/errors/error.yaml"
@@ -153,7 +153,7 @@ paths:
       summary: Deletes a third party identifier from the user's account
       description: |-
         Removes a third party identifier from the user's account. This might not
-        cause an unbind of the identifier from the identity service.
+        cause an unbind of the identifier from the identity server.
       operationId: delete3pidFromAccount
       security:
         - accessToken: []
@@ -187,7 +187,7 @@ paths:
     post:
       summary: Begins the validation process for an email address for association with the user's account.
       description: |-
-        Proxies the identity service API ``validate/email/requestToken``, but
+        Proxies the identity server API ``validate/email/requestToken``, but
         first checks that the given email address is **not** already associated
         with an account on this homeserver. This API should be used to request
         validation tokens when adding an email address to an account. This API's
@@ -206,7 +206,7 @@ paths:
                   id_server:
                     type: string
                     description: |-
-                      The hostname of the identity service to communicate with. May
+                      The hostname of the identity server to communicate with. May
                       optionally include a port.
                     example: "id.example.com"
                 required: ['id_server']
@@ -241,7 +241,7 @@ paths:
     post:
       summary: Begins the validation process for a phone number for association with the user's account.
       description: |-
-        Proxies the identity service API ``validate/msisdn/requestToken``, but
+        Proxies the identity server API ``validate/msisdn/requestToken``, but
         first checks that the given phone number is **not** already associated
         with an account on this homeserver. This API should be used to request
         validation tokens when adding a phone number to an account. This API's
@@ -260,7 +260,7 @@ paths:
                   id_server:
                     type: string
                     description: |-
-                      The hostname of the identity service to communicate with. May
+                      The hostname of the identity server to communicate with. May
                       optionally include a port.
                     example: "id.example.com"
                 required: ['id_server']

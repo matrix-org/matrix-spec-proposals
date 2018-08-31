@@ -13,7 +13,7 @@
 # limitations under the License.
 swagger: '2.0'
 info:
-  title: "Matrix Identity Service Store Invitations API"
+  title: "Matrix Identity Server Store Invitations API"
   version: "1.0.0"
 host: localhost:8090
 schemes:

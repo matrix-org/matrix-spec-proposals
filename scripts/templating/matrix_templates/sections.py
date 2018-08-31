@@ -31,15 +31,15 @@ class MatrixSections(Sections):
     def render_client_server_changelog(self):
         changelogs = self.units.get("changelogs")
         return changelogs["client_server"]
-    
+
     # TODO: We should make this a generic variable instead of having to add functions all the time.
     def render_push_gateway_changelog(self):
         changelogs = self.units.get("changelogs")
         return changelogs["push_gateway"]
 
-    def render_identity_service_changelog(self):
+    def render_identity_server_changelog(self):
         changelogs = self.units.get("changelogs")
-        return changelogs["identity_service"]
+        return changelogs["identity_server"]
 
     def render_server_server_changelog(self):
         changelogs = self.units.get("changelogs")

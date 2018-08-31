@@ -13,7 +13,7 @@
 # limitations under the License.
 swagger: '2.0'
 info:
-  title: "Matrix Identity Service Email Associations API"
+  title: "Matrix Identity Server Email Associations API"
   version: "1.0.0"
 host: localhost:8090
 schemes:
@@ -30,8 +30,8 @@ paths:
       description: |-
         Create a session for validating an email address.
 
-        The identity service will send an email containing a token. If that
-        token is presented to the identity service in the future, it indicates
+        The identity server will send an email containing a token. If that
+        token is presented to the identity server in the future, it indicates
         that that user was able to read the email for that email address, and
         so we validate ownership of the email address.
 

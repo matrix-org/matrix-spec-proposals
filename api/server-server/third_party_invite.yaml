@@ -200,9 +200,9 @@ paths:
         Notifies the server that a third party identifier has been bound to one
         of its users.
       description: |-
-        Used by identity services to notify the homeserver that one of its users
+        Used by identity servers to notify the homeserver that one of its users
         has bound a third party identifier successfully, including any pending
-        room invites the identity service has been made aware of.
+        room invites the identity server has been made aware of.
       operationId: onBindThirdPartyIdentifier
       parameters:
         - in: body
@@ -262,9 +262,9 @@ paths:
                     #   also make sure it isn't lying about anything, like the key version
                     signed:
                       type: object
-                      title: Identity Service Signatures
+                      title: Identity Server Signatures
                       description: |-
-                        Signature from the identity service using a long-term private
+                        Signature from the identity server using a long-term private
                         key.
                       properties:
                         mxid:
@@ -280,14 +280,14 @@ paths:
                           example: "Hello World"
                         signatures:
                           type: object
-                          title: Identity Service Signature
+                          title: Identity Server Signature
                           description: |-
-                            The signature from the identity service. The ``string`` key
-                            is the identity service's domain name, such as vector.im
+                            The signature from the identity server. The ``string`` key
+                            is the identity server's domain name, such as vector.im
                           additionalProperties:
                             type: object
-                            title: Identity Service Domain Signature
-                            description: The signature for the identity service.
+                            title: Identity Server Domain Signature
+                            description: The signature for the identity server.
                             properties:
                               "ed25519:0":
                                 type: string

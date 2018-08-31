@@ -15,7 +15,7 @@
 .. See the License for the specific language governing permissions and
 .. limitations under the License.
 
-Identity Service API
+Identity Server API
 ====================
 
 {{unstable_warning_block_IDENTITY_RELEASE_LABEL}}
@@ -23,7 +23,7 @@ Identity Service API
 The Matrix client-server and server-server APIs are largely expressed in Matrix
 user identifiers. From time to time, it is useful to refer to users by other
 ("third-party") identifiers, or "3pid"s, e.g. their email address or phone
-number. This identity service specification describes how mappings between
+number. This identity server specification describes how mappings between
 third-party identifiers and Matrix user identifiers can be established,
 validated, and used. This description technically may apply to any 3pid, but in
 practice has only been applied specifically to email addresses and phone numbers.
@@ -35,14 +35,14 @@ Changelog
 ---------
 
 .. topic:: Version: %IDENTITY_RELEASE_LABEL%
-{{identity_service_changelog}}
+{{identity_server_changelog}}
 
 This version of the specification is generated from
 `matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
 `{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
 
 For the full historical changelog, see
-https://github.com/matrix-org/matrix-doc/blob/master/changelogs/identity_service.rst
+https://github.com/matrix-org/matrix-doc/blob/master/changelogs/identity_server.rst
 
 
 Other versions of this specification
@@ -50,25 +50,25 @@ Other versions of this specification
 
 The following other versions are also available, in reverse chronological order:
 
-- `HEAD <https://matrix.org/docs/spec/identity_service/unstable.html>`_: Includes all changes since the latest versioned release.
+- `HEAD <https://matrix.org/docs/spec/identity_server/unstable.html>`_: Includes all changes since the latest versioned release.
 
 General principles
 ------------------
 
-The purpose of an identity service is to validate, store, and answer questions
+The purpose of an identity server is to validate, store, and answer questions
 about the identities of users. In particular, it stores associations of the form
 "identifier X represents the same user as identifier Y", where identities may
 exist on different systems (such as email addresses, phone numbers,
 Matrix user IDs, etc).
 
-The identity service has some private-public keypairs. When asked about an
+The identity server has some private-public keypairs. When asked about an
 association, it will sign details of the association with its private key.
 Clients may validate the assertions about associations by verifying the signature
-with the public key of the identity service.
+with the public key of the identity server.
 
-In general, identity services are treated as reliable oracles. They do not
+In general, identity servers are treated as reliable oracles. They do not
 necessarily provide evidence that they have validated associations, but claim to
-have done so. Establishing the trustworthiness of an individual identity service
+have done so. Establishing the trustworthiness of an individual identity server
 is left as an exercise for the client.
 
 3PID types are described in `3PID Types`_ Appendix.
@@ -76,7 +76,7 @@ is left as an exercise for the client.
 API standards
 -------------
 
-The mandatory baseline for identity service communication in Matrix is exchanging
+The mandatory baseline for identity server communication in Matrix is exchanging
 JSON objects over HTTP APIs. HTTPS is required for communication, and all API calls
 use a Content-Type of ``application/json``. In addition, strings MUST be encoded as
 UTF-8.
@@ -145,7 +145,7 @@ Some standard error codes are below:
 Privacy
 -------
 
-Identity is a privacy-sensitive issue. While the identity service exists to
+Identity is a privacy-sensitive issue. While the identity server exists to
 provide identity information, access should be restricted to avoid leaking
 potentially sensitive data. In particular, being able to construct large-scale
 connections between identities should be avoided. To this end, in general APIs
@@ -157,7 +157,7 @@ Web browser clients
 -------------------
 
 It is realistic to expect that some clients will be written to be run within a web
-browser or similar environment. In these cases, the identity service should respond to
+browser or similar environment. In these cases, the identity server should respond to
 pre-flight requests and supply Cross-Origin Resource Sharing (CORS) headers on all
 requests.
 
@@ -177,17 +177,17 @@ Status check
 Key management
 --------------
 
-An identity service has some long-term public-private keypairs. These are named
+An identity server has some long-term public-private keypairs. These are named
 in a scheme ``algorithm:identifier``, e.g. ``ed25519:0``. When signing an
 association, the standard `Signing JSON`_ algorithm applies.
 
-.. TODO: Actually allow identity services to revoke all keys
+.. TODO: Actually allow identity servers to revoke all keys
          See: https://github.com/matrix-org/matrix-doc/issues/1633
-.. In the event of key compromise, the identity service may revoke any of its keys.
+.. In the event of key compromise, the identity server may revoke any of its keys.
    An HTTP API is offered to get public keys, and check whether a particular key is
    valid.
 
-The identity service may also keep track of some short-term public-private
+The identity server may also keep track of some short-term public-private
 keypairs, which may have different usage and lifetime characteristics than the
 service's long-term keys.
 
@@ -241,14 +241,14 @@ General
 Invitation storage
 ------------------
 
-An identity service can store pending invitations to a user's 3pid, which will
+An identity server can store pending invitations to a user's 3pid, which will
 be retrieved and can be either notified on or look up when the 3pid is
 associated with a Matrix user ID.
 
 At a later point, if the owner of that particular 3pid binds it with a Matrix user
-ID, the identity service will attempt to make an HTTP POST to the Matrix user's
+ID, the identity server will attempt to make an HTTP POST to the Matrix user's
 homeserver via the `/3pid/onbind`_ endpoint. The request MUST be signed with a
-long-term private key for the identity service.
+long-term private key for the identity server.
 
 {{store_invite_is_http_api}}
 

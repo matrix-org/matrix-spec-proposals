@@ -15,7 +15,7 @@
 
 swagger: "2.0"
 info:
-  title: "Matrix Identity Service Ping API"
+  title: "Matrix Identity Server Ping API"
   version: "1.0.0"
 host: localhost:8090
 schemes:
@@ -26,19 +26,19 @@ produces:
 paths:
   "/api/v1":
     get:
-      summary: Checks that an identity service is available at this API endpoint.
+      summary: Checks that an identity server is available at this API endpoint.
       description: |-
-        Checks that an identity service is available at this API endpoint.
+        Checks that an identity server is available at this API endpoint.
 
-        To discover that an identity service is available at a specific URL,
+        To discover that an identity server is available at a specific URL,
         this endpoint can be queried and will return an empty object.
 
         This is primarly used for auto-discovery and health check purposes
-        by entities acting as a client for the identity service.
+        by entities acting as a client for the identity server.
       operationId: ping
       responses:
         200:
-          description: An identity service is ready to serve requests.
+          description: An identity server is ready to serve requests.
           examples:
             application/json: {}
           schema:

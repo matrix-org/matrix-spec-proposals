@@ -69,10 +69,10 @@ have English as their first language.
 Prefer British English (colour, -ise) to American English.
 
 The word "homeserver" is spelt thus (rather than "home server", "Homeserver",
-or (argh) "Home Server"). However, an identity service is two words.
+or (argh) "Home Server"). However, an identity server is two words.
 
 .. Rationale: "homeserver" distinguishes from a "home server" which is a server
-   you have at home. "identity service" is clear, whereas "identityservice" is
+   you have at home. "identity server" is clear, whereas "identityservice" is
    horrible.
 
 Lists should:
