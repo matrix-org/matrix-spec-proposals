@@ -570,7 +570,7 @@ transaction request to be responded to with an error response.
     result in the user being considered joined.
 
 
-Soft Failure
+Soft failure
 ++++++++++++
 
 When the homeserver receives a new event over federation it should also check
