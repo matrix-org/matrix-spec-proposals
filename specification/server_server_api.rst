@@ -308,6 +308,8 @@ creating a new event in this room should populate the new event's
   |
   E4
 
+.. _`auth events selection`:
+
 The ``auth_events`` field of a PDU identifies the set of events which give the
 sender permission to send the event. The ``auth_events`` for the
 ``m.room.create`` event in a room is empty; for other events, it should be the
@@ -384,7 +386,7 @@ The rules are as follows:
 
    a. have duplicate entries for a given ``type`` and ``state_key`` pair
    #. have entries whose ``type`` and ``state_key`` don't match those
-      specified by the algorithm described previously.
+      specified by the `auth events selection`_ algorithm described above.
 
 #. If event does not have a ``m.room.create`` in its ``auth_events``, reject.
 
