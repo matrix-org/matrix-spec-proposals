@@ -72,7 +72,7 @@ The word "homeserver" is spelt thus (rather than "home server", "Homeserver",
 or (argh) "Home Server"). However, an identity server is two words.
 
 .. Rationale: "homeserver" distinguishes from a "home server" which is a server
-   you have at home. "identity server" is clear, whereas "identityservice" is
+   you have at home. "identity server" is clear, whereas "identityserver" is
    horrible.
 
 Lists should:
