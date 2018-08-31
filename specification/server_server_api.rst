@@ -361,7 +361,8 @@ The rules are as follows:
    a. If it has any previous events, reject.
    b. If the domain of the ``room_id`` does not match the domain of the
       ``sender``, reject.
-   c. If ``content.room_version`` key is an unrecognised version, reject.
+   c. If ``content.room_version`` is present and is not a recognised version,
+      reject.
    d. If ``content`` has no ``creator`` field, reject.
    e. Otherwise, allow.
 
@@ -369,7 +370,7 @@ The rules are as follows:
 
 #. If type is ``m.room.aliases``:
 
-   a. If event has no ``state_key``, reject
+   a. If event has no ``state_key``, reject.
    b. If sender's domain doesn't matches ``state_key``, reject.
    c. Otherwise, allow.
 
