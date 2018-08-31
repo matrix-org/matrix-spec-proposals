@@ -1,1 +1,0 @@
-Add the room visibility options for the room directory

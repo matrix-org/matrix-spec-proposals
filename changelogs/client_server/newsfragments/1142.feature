@@ -1,1 +1,0 @@
-Add spec for ignoring users

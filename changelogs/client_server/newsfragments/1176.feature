@@ -1,1 +1,0 @@
-Specify how to control the power level required for ``@room``

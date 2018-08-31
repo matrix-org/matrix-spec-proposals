@@ -1,1 +1,0 @@
-Document ``/logout/all`` endpoint
