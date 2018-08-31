@@ -1,6 +1,6 @@
 {
+  "$ref": "core/room_event.json",
   "type": "m.room.encrypted",
-  "sender": "@example:localhost",
   "content": {
     "algorithm": "m.olm.v1.curve25519-aes-sha2",
     "sender_key": "Szl29ksW/L8yZGWAX+8dY1XyFi+i5wm+DRhTGkbMiwU",

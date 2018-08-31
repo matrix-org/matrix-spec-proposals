@@ -18,15 +18,17 @@ info:
 host: localhost:8090
 schemes:
   - https
-  - http
 basePath: /_matrix/identity/api/v1
+consumes:
+  - application/json
 produces:
   - application/json
 paths:
   "/3pid/getValidated3pid":
     get:
       summary: Check whether ownership of a 3pid was validated.
-      description: A client can check whether ownership of a 3pid was validated
+      description: |-
+        Determines if a given 3pid has been validated by a user.
       operationId: getValidated3pid
       parameters:
         - in: query
@@ -46,10 +48,10 @@ paths:
           description: Validation information for the session.
           examples:
             application/json: {
-                "medium": "email",
-                "validated_at": 1457622739026,
-                "address": "louise@bobs.burgers"
-              }
+              "medium": "email",
+              "validated_at": 1457622739026,
+              "address": "louise@bobs.burgers"
+            }
           schema:
             type: object
             properties:
@@ -61,7 +63,10 @@ paths:
                 description: The address of the 3pid being looked up.
               validated_at:
                 type: integer
-                description: Timestamp indicating the time that the 3pid was validated.
+                description: |-
+                  Timestamp, in milliseconds, indicating the time that the 3pid
+                  was validated.
+            required: ['medium', 'address', 'validated_at']
         400:
           description: |-
             The session has not been validated.
@@ -71,16 +76,20 @@ paths:
             ``errcode`` will be ``M_SESSION_EXPIRED``.
           examples:
             application/json: {
-                "errcode": "M_SESSION_NOT_VALIDATED",
-                "error": "This validation session has not yet been completed"
-              }
+              "errcode": "M_SESSION_NOT_VALIDATED",
+              "error": "This validation session has not yet been completed"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
         404:
-          description: The Session ID or client secret were not found
+          description: The Session ID or client secret were not found.
           examples:
             application/json: {
-                "errcode": "M_NO_VALID_SESSION",
-                "error": "No valid session was found matching that sid and client secret"
-              }
+              "errcode": "M_NO_VALID_SESSION",
+              "error": "No valid session was found matching that sid and client secret"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
   "/bind":
     post:
       summary: Publish an association between a session and a Matrix user ID.
@@ -90,7 +99,7 @@ paths:
         Future calls to ``/lookup`` for any of the session\'s 3pids will return
         this association.
 
-        Note: for backwards compatibility with older versions of this
+        Note: for backwards compatibility with previous drafts of this
         specification, the parameters may also be specified as
         ``application/x-form-www-urlencoded`` data.  However, this usage is
         deprecated.
@@ -101,10 +110,10 @@ paths:
           schema:
             type: object
             example: {
-                "sid": "1234",
-                "client_secret": "monkeys_are_GREAT",
-                "mxid": "@ears:matrix.org"
-              }
+              "sid": "1234",
+              "client_secret": "monkeys_are_GREAT",
+              "mxid": "@ears:matrix.org"
+            }
             properties:
               sid:
                 type: string
@@ -121,19 +130,18 @@ paths:
           description: The association was published.
           examples:
             application/json: {
-                "address": "louise@bobs.burgers",
-                "medium": "email",
-                "mxid": "@ears:matrix.org",
-                "not_before": 1428825849161,
-                "not_after": 4582425849161,
-                "ts": 1428825849161,
-
-                "signatures": {
-                  "matrix.org": {
-                    "ed25519:0": "ENiU2YORYUJgE6WBMitU0mppbQjidDLanAusj8XS2nVRHPu+0t42OKA/r6zV6i2MzUbNQ3c3MiLScJuSsOiVDQ"
-                  }
+              "address": "louise@bobs.burgers",
+              "medium": "email",
+              "mxid": "@ears:matrix.org",
+              "not_before": 1428825849161,
+              "not_after": 4582425849161,
+              "ts": 1428825849161,
+              "signatures": {
+                "matrix.org": {
+                  "ed25519:0": "ENiU2YORYUJgE6WBMitU0mppbQjidDLanAusj8XS2nVRHPu+0t42OKA/r6zV6i2MzUbNQ3c3MiLScJuSsOiVDQ"
                 }
               }
+            }
           schema:
             type: object
             properties:
@@ -157,7 +165,19 @@ paths:
                 description: The unix timestamp at which the association was verified.
               signatures:
                 type: object
-                description: The signatures of the verifying identity services which show that the association should be trusted, if you trust the verifying identity services.
+                description: |-
+                  The signatures of the verifying identity services which show that the
+                  association should be trusted, if you trust the verifying identity
+                  services.
+                $ref: "../../schemas/server-signatures.yaml"
+            required:
+              - address
+              - medium
+              - mxid
+              - not_before
+              - not_after
+              - ts
+              - signatures
         400:
           description: |-
             The association was not published.
@@ -167,13 +187,17 @@ paths:
             ``errcode`` will be ``M_SESSION_EXPIRED``.
           examples:
             application/json: {
-                "errcode": "M_SESSION_NOT_VALIDATED",
-                "error": "This validation session has not yet been completed"
-              }
+              "errcode": "M_SESSION_NOT_VALIDATED",
+              "error": "This validation session has not yet been completed"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
         404:
           description: The Session ID or client secret were not found
           examples:
             application/json: {
-                "errcode": "M_NO_VALID_SESSION",
-                "error": "No valid session was found matching that sid and client secret"
-              }
+              "errcode": "M_NO_VALID_SESSION",
+              "error": "No valid session was found matching that sid and client secret"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"

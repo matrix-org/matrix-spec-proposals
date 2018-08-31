@@ -18,16 +18,17 @@ info:
 host: localhost:8090
 schemes:
   - https
-  - http
 basePath: /_matrix/identity/api/v1
+consumes:
+  - application/json
 produces:
   - application/json
 paths:
   "/store-invite":
     post:
-      summary: Store pending invitations to a user\'s 3pid.
+      summary: Store pending invitations to a user's 3pid.
       description: |-
-        Store pending invitations to a user\'s 3pid.
+        Store pending invitations to a user's 3pid.
 
         In addition to the request parameters specified below, an arbitrary
         number of other parameters may also be specified. These may be used in
@@ -47,6 +48,8 @@ paths:
 
         Also, the generated ephemeral public key will be listed as valid on
         requests to ``/_matrix/identity/api/v1/pubkey/ephemeral/isvalid``.
+
+        Currently, invites may only be issued for 3pids of the ``email`` medium.
       operationId: storeInvite
       parameters:
         - in: body
@@ -54,11 +57,11 @@ paths:
           schema:
             type: object
             example: {
-                "medium": "email",
-                "address": "foo@bar.baz",
-                "room_id": "!something:example.tld",
-                "sender": "@bob:example.com"
-              }
+              "medium": "email",
+              "address": "foo@bar.baz",
+              "room_id": "!something:example.tld",
+              "sender": "@bob:example.com"
+            }
             properties:
               medium:
                 type: string
@@ -84,21 +87,22 @@ paths:
                 description: The generated token.
               public_keys:
                 type: array
-                description: A list of [server\'s long-term public key, generated ephemeral public key].
+                description: A list of [server's long-term public key, generated ephemeral public key].
                 items:
                   type: string
               display_name:
                 type: string
                 description: The generated (redacted) display_name.
+            required: ['token', 'public_keys', 'display_name']
             example:
               application/json: {
-                  "token": "sometoken",
-                  "public_keys": [
-                    "serverpublickey",
-                    "ephemeralpublickey"
-                  ],
-                  "display_name": "f...@b..."
-                }
+                "token": "sometoken",
+                "public_keys": [
+                  "serverpublickey",
+                  "ephemeralpublickey"
+                ],
+                "display_name": "f...@b..."
+              }
         400:
           description: |
             An error has occured.
@@ -108,7 +112,9 @@ paths:
             error code will be ``M_UNRECOGNIZED``.
           examples:
             application/json: {
-                "errcode": "M_THREEPID_IN_USE",
-                "error": "Binding already known",
-                "mxid": mxid
-              }
+              "errcode": "M_THREEPID_IN_USE",
+              "error": "Binding already known",
+              "mxid": "@alice:example.com"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"

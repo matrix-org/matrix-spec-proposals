@@ -87,6 +87,16 @@ paths:
                 type: string
                 description: |-
                   A unique identifier for the event.
+        403:
+          description: |-
+            The sender doesn't have permission to send the event into the room.
+          schema:
+            $ref: "definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_FORBIDDEN",
+              "error": "You do not have permission to send the event."
+            }
       tags:
         - Room participation
   "/rooms/{roomId}/state/{eventType}":
@@ -142,5 +152,15 @@ paths:
                 type: string
                 description: |-
                   A unique identifier for the event.
+        403:
+          description: |-
+            The sender doesn't have permission to send the event into the room.
+          schema:
+            $ref: "definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_FORBIDDEN",
+              "error": "You do not have permission to send the event."
+            }
       tags:
         - Room participation
