@@ -31,7 +31,8 @@ properties:
   origin_server_ts:
     description: Timestamp in milliseconds on originating homeserver
       when this event was sent.
-    type: number
+    type: integer
+    format: int64
   unsigned:
     description: Contains optional extra information about the event.
     properties:
