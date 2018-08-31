@@ -23,7 +23,7 @@ Identity Service API
 The Matrix client-server and server-server APIs are largely expressed in Matrix
 user identifiers. From time to time, it is useful to refer to users by other
 ("third-party") identifiers, or "3pid"s, e.g. their email address or phone
-number. This identity server specification describes how mappings between
+number. This Identity Service Specification describes how mappings between
 third-party identifiers and Matrix user identifiers can be established,
 validated, and used. This description technically may apply to any 3pid, but in
 practice has only been applied specifically to email addresses and phone numbers.
@@ -256,7 +256,7 @@ Ephemeral invitation signing
 ----------------------------
 
 To aid clients who may not be able to perform crypto themselves, the identity
-service offers some crypto functionality to help in accepting invitations.
+server offers some crypto functionality to help in accepting invitations.
 This is less secure than the client doing it itself, but may be useful where
 this isn't possible.
 
