@@ -1,1 +1,1 @@
-POST ``/rooms/{roomId}/read_markers``
+``POST /rooms/{roomId}/read_markers``
