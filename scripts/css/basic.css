@@ -327,7 +327,7 @@ table.colwidths-auto caption {
     margin-bottom: 2px;
 }
 
-ol, li {
+.section ol, .section li {
     margin: 0px 0px 0px 30px !important;
 }
 
