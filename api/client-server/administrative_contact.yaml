@@ -189,10 +189,10 @@ paths:
       description: |-
         Proxies the identity service API ``validate/email/requestToken``, but
         first checks that the given email address is **not** already associated
-        with an account on this Home Server. This API should be used to request
+        with an account on this homeserver. This API should be used to request
         validation tokens when adding an email address to an account. This API's
-        parameters and response is identical to that of the client-server API
-        |/register/email/requestToken|_ endpoint.
+        parameters and response is identical to that of the |/register/email/requestToken|_
+        endpoint.
       operationId: requestTokenTo3PIDEmail
       parameters:
         - in: body
@@ -216,7 +216,10 @@ paths:
           schema:
             $ref: "../identity/definitions/sid.yaml"
         403:
-          description: The homeserver does not permit the address to be bound.
+          description: |-
+            The homeserver does not permit the user from having the third party
+            identifier as a contact option. This does not prevent the identity
+            service from binding the third party identifier, however.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
@@ -226,8 +229,8 @@ paths:
             }
         400:
           description: |-
-            The homeserver was unable to location a user with the third party identifier
-            alrady bound, or the request was invalid.
+            The homeserver was unable to locate a user with the third party identifier
+            already bound, or the request was invalid.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
@@ -243,8 +246,8 @@ paths:
         first checks that the given phone number is **not** already associated
         with an account on this Home Server. This API should be used to request
         validation tokens when adding a phone number to an account. This API's
-        parameters and response is identical to that of the client-server API
-        |/register/msisdn/requestToken|_ endpoint.
+        parameters and response is identical to that of the |/register/msisdn/requestToken|_
+        endpoint.
       operationId: requestTokenTo3PIDMSISDN
       parameters:
         - in: body
@@ -268,7 +271,10 @@ paths:
           schema:
             $ref: "../identity/definitions/sid.yaml"
         403:
-          description: The homeserver does not permit the address to be bound.
+          description: |-
+            The homeserver does not permit the user from having the third party
+            identifier as a contact option. This does not prevent the identity
+            service from binding the third party identifier, however.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
