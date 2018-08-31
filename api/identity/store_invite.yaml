@@ -84,10 +84,15 @@ paths:
             properties:
               token:
                 type: string
-                description: The generated token.
+                description: |
+                  The generated token. Must be a string consisting of the
+                  characters ``[0-9a-zA-Z.=_-]``. Its length must not exceed
+                  255 characters and it must not be empty.
               public_keys:
                 type: array
-                description: A list of [server's long-term public key, generated ephemeral public key].
+                description: |
+                  A list of [server's long-term public key, generated ephemeral
+                  public key].
                 items:
                   type: string
               display_name:
