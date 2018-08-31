@@ -138,9 +138,6 @@ Some requests have unique error codes:
 :``M_INVALID_ROOM_STATE``:
   Sent when the intial state given to the ``createRoom`` API is invalid.
 
-:``M_BAD_PAGINATION``:
-  Encountered when specifying bad pagination query parameters.
-
 :``M_THREEPID_IN_USE``:
   Sent when a threepid given to an API cannot be used because the same threepid is already in use.
 
@@ -1018,39 +1015,21 @@ Pagination is the process of dividing a dataset into multiple discrete pages.
 Matrix makes use of pagination to allow clients to view extremely large datasets.
 These datasets are not limited to events in a room (for example clients may want
 to paginate a list of rooms in addition to events within those rooms). Regardless
-of *what* is being paginated, there is a common underlying API which is used to
-to give clients a consistent way of selecting subsets of a potentially changing
-dataset. Requests pass in ``from``, ``to``, ``dir`` and ``limit`` parameters
-which describe where to read from the stream. ``from`` and ``to`` are opaque
-textual 'stream tokens' which describe the current position in the dataset.
-The ``dir`` parameter is an enum representing the direction of events to return:
-either ``f`` orwards or ``b`` ackwards. The response returns new ``start`` and
-``end`` stream token values which can then be passed to subsequent requests to
-continue pagination. Not all endpoints will make use of all the parameters
-outlined here: see the specific endpoint in question for more information.
+of what is being paginated, there is a common approach which is used to give
+clients an easy way of selecting subsets of a potentially changing dataset. Each
+endpoint that uses pagination may use different parameters, however the theme
+amoung them is that they take a ``from`` and ``to`` token, and occasionally
+a ``limit`` and ``dir`` to describe the direction to look in. Together, these
+parameters describe the position in a data set, where ``from`` and ``to`` are
+known as "stream tokens" matching the regular expression ``[a-zA-Z0-9.=_-]+``.
+If supported, the ``dir`` defines the direction of events to return: either
+forwards (``f``) or backwards (``b``). The response contains a ``start`` or
+``prev_batch`` token which references the result set immediately prior to the
+returned set. The response might additionally have an ``end`` or ``next_batch``
+token to indicate the results after the returned set.
 
-Pagination Request Query Parameters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Query parameters:
-  from:
-    $streamtoken - The opaque token to start streaming from.
-  to:
-    $streamtoken - The opaque token to end streaming at. Typically,
-    clients will not know the item of data to end at, so this will usually be
-    omitted.
-  limit:
-    integer - An integer representing the maximum number of items to
-    return.
-  dir:
-    f|b - The direction to return events in. Typically this is ``b`` to paginate
-    backwards in time.
-
-'START' and 'END' are placeholder values used in these examples to describe the
-start and end of the dataset respectively.
-
-Unless specified, the default pagination parameters are ``from=START``,
-``to=END``, without a limit set.
+In the following examples, 'START' and 'END' are placeholders to signify the
+start and end of the data sets respectively.
 
 For example, if an endpoint had events E1 -> E15. The client wants the last 5
 events and doesn't know any previous events::
@@ -1067,8 +1046,8 @@ events and doesn't know any previous events::
 
 
 Another example: a public room list has rooms R1 -> R17. The client is showing 5
-rooms at a time on screen, and is on page 2. They want to
-now show page 3 (rooms R11 -> 15)::
+rooms at a time on screen, and is on page 2. They want to now show page 3 (rooms
+R11 -> 15)::
 
     S                                                           E
     |  0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16 | stream token
@@ -1086,20 +1065,17 @@ token from the initial request was '9' which corresponded to R10. When the 2nd
 request was made, R10 did not appear again, even though from=9 was specified. If
 you know the token, you already have the data.
 
-Pagination Response
-~~~~~~~~~~~~~~~~~~~
+Responses for pagination-capable endpoints SHOULD have a ``chunk`` array alongside
+the applicable stream tokens to represent the result set.
 
-Responses to pagination requests MUST follow the format::
-
-  {
-    "chunk": [ ... , Responses , ... ],
-    "start" : $streamtoken,
-    "end" : $streamtoken
-  }
-
-Where $streamtoken is an opaque token which can be used in another query to
-get the next set of results. The "start" and "end" keys can only be omitted if
-the complete dataset is provided in "chunk".
+In general, when the end of a result set is reached the applicable stream token
+will be excluded from the response. For example, if a user was backwards-paginating
+events in a room they'd eventually reach the first event in the room. In this scenario,
+the ``prev_batch`` token would be excluded from the response. Some paginated
+endpoints are open-ended in one direction, such as endpoints which expose an event
+stream for an active room. In this case, it is not possible for the client to reach
+the true "end" of the data set and therefore should always be presented with a token
+to keep moving forwards.
 
 .. _`filter`:
 
