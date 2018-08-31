@@ -1017,16 +1017,16 @@ These datasets are not limited to events in a room (for example clients may want
 to paginate a list of rooms in addition to events within those rooms). Regardless
 of what is being paginated, there is a common approach which is used to give
 clients an easy way of selecting subsets of a potentially changing dataset. Each
-endpoint that uses pagination may use different parameters, however the theme
-amoung them is that they take a ``from`` and ``to`` token, and occasionally
-a ``limit`` and ``dir`` to describe the direction to look in. Together, these
-parameters describe the position in a data set, where ``from`` and ``to`` are
-known as "stream tokens" matching the regular expression ``[a-zA-Z0-9.=_-]+``.
-If supported, the ``dir`` defines the direction of events to return: either
-forwards (``f``) or backwards (``b``). The response contains a ``start`` or
-``prev_batch`` token which references the result set immediately prior to the
-returned set. The response might additionally have an ``end`` or ``next_batch``
-token to indicate the results after the returned set.
+endpoint that uses pagination may use different parameters. However the theme
+among them is that they take a ``from`` and ``to`` token, and occasionally
+a ``limit`` and ``dir``. Together, these parameters describe the position in a
+data set, where ``from`` and ``to`` are known as "stream tokens" matching the
+regular expression ``[a-zA-Z0-9.=_-]+``. If supported, the ``dir`` defines the
+direction of events to return: either forwards (``f``) or backwards (``b``).
+The response contains a ``start`` or ``prev_batch`` token which references the
+result set immediately prior to the returned set. The response might additionally
+have an ``end`` or ``next_batch`` token to indicate the results after the returned
+set.
 
 In the following examples, 'START' and 'END' are placeholders to signify the
 start and end of the data sets respectively.
