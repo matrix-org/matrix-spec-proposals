@@ -1,5 +1,6 @@
 {
-  "age": 242352,
+  "$ref": "core/room_event.json",
+  "type": "m.call.candidates",
   "content": {
     "version" : 0,
     "call_id": "12345",
@@ -10,10 +11,5 @@
         "candidate": "candidate:863018703 1 udp 2122260223 10.9.64.156 43670 typ host generation 0"
       }
     ]
-  },
-  "origin_server_ts": 1431961217939,
-  "event_id": "$WLGTSEFSEF:localhost",
-  "type": "m.call.candidates",
-  "room_id": "!Cuyf34gef24t:localhost",
-  "sender": "@example:localhost"
+  }
 }

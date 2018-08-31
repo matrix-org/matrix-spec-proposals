@@ -1,5 +1,6 @@
 {
-  "age": 242352,
+  "$ref": "core/room_event.json",
+  "type": "m.call.answer",
   "content": {
     "version" : 0,
     "call_id": "12345",
@@ -8,10 +9,5 @@
       "type" : "answer",
       "sdp" : "v=0\r\no=- 6584580628695956864 2 IN IP4 127.0.0.1[...]"
     }
-  },
-  "origin_server_ts": 1431961217939,
-  "event_id": "$WLGTSEFSEF:localhost",
-  "type": "m.call.answer",
-  "room_id": "!Cuyf34gef24t:localhost",
-  "sender": "@example:localhost"
+  }
 }

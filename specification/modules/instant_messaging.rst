@@ -106,6 +106,12 @@ of tags they can render, falling back to other representations of the tags where
 For example, a client may not be able to render tables correctly and instead could fall
 back to rendering tab-delimited text.
 
+In addition to not rendering unsafe HTML, clients should not emit unsafe HTML in events.
+Likewise, clients should not generate HTML that is not needed, such as extra paragraph tags
+surrounding text due to Rich Text Editors. HTML included in events should otherwise be valid,
+such as having appropriate closing tags, appropriate attributes (considering the custom ones
+defined in this specification), and generally valid structure.
+
 A special tag, ``mx-reply``, may appear on rich replies (described below) and should be
 allowed if, and only if, the tag appears as the very first tag in the ``formatted_body``.
 The tag cannot be nested and cannot be located after another tag in the tree. Because the
@@ -174,9 +180,14 @@ message which they receive from the event stream. The echo of the same message
 from the event stream is referred to as "remote echo". Both echoes need to be
 identified as the same message in order to prevent duplicate messages being
 displayed. Ideally this pairing would occur transparently to the user: the UI
-would not flicker as it transitions from local to remote. Flickering cannot be
-fully avoided in the current client-server API. Two scenarios need to be
-considered:
+would not flicker as it transitions from local to remote. Flickering can be
+reduced through clients making use of the transaction ID they used to send
+a particular event. The transaction ID used will be included in the event's
+``unsigned`` data as ``transaction_id`` when it arrives through the event stream.
+
+Clients unable to make use of the transaction ID are more likely to experience
+flickering due to the following two scenarios, however the effect can be mitigated
+to a degree:
 
 - The client sends a message and the remote echo arrives on the event stream
   *after* the request to send the message completes.

@@ -18,8 +18,9 @@ info:
 host: localhost:8090
 schemes:
   - https
-  - http
 basePath: /_matrix/identity/api/v1
+consumes:
+  - application/json
 produces:
   - application/json
 paths:
@@ -68,7 +69,8 @@ paths:
     get:
       summary: Check whether a long-term public key is valid.
       description: |-
-        Check whether a long-term public key is valid.
+        Check whether a long-term public key is valid. The response should always
+        be the same, provided the key exists.
       operationId: isPubKeyValid
       parameters:
         - in: query
@@ -113,8 +115,8 @@ paths:
             The validity of the public key.
           examples:
             application/json: {
-                "valid": true
-              }
+              "valid": true
+            }
           schema:
             type: object
             properties:

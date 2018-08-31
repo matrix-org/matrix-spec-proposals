@@ -18,16 +18,17 @@ info:
 host: localhost:8090
 schemes:
   - https
-  - http
 basePath: /_matrix/identity/api/v1
+consumes:
+  - application/json
 produces:
   - application/json
 paths:
   "/store-invite":
     post:
-      summary: Store pending invitations to a user\'s 3pid.
+      summary: Store pending invitations to a user's 3pid.
       description: |-
-        Store pending invitations to a user\'s 3pid.
+        Store pending invitations to a user's 3pid.
 
         In addition to the request parameters specified below, an arbitrary
         number of other parameters may also be specified. These may be used in
@@ -47,6 +48,8 @@ paths:
 
         Also, the generated ephemeral public key will be listed as valid on
         requests to ``/_matrix/identity/api/v1/pubkey/ephemeral/isvalid``.
+
+        Currently, invites may only be issued for 3pids of the ``email`` medium.
       operationId: storeInvite
       parameters:
         - in: body
@@ -84,7 +87,7 @@ paths:
                 description: The generated token.
               public_keys:
                 type: array
-                description: A list of [server\'s long-term public key, generated ephemeral public key].
+                description: A list of [server's long-term public key, generated ephemeral public key].
                 items:
                   type: string
               display_name:
@@ -111,7 +114,7 @@ paths:
             application/json: {
               "errcode": "M_THREEPID_IN_USE",
               "error": "Binding already known",
-              "mxid": mxid
+              "mxid": "@alice:example.com"
             }
           schema:
             $ref: "../client-server/definitions/errors/error.yaml"

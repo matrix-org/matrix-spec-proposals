@@ -1,5 +1,6 @@
 {
-  "age": 242352,
+  "$ref": "core/room_event.json",
+  "type": "m.sticker",
   "content": {
     "body": "Landing",
     "info": {
@@ -16,10 +17,5 @@
       "size": 73602
     },
     "url": "mxc://matrix.org/sHhqkFCvSkFwtmvtETOtKnLP"
-  },
-  "origin_server_ts": 1431961217939,
-  "event_id": "$WLGTSEFSEF:localhost",
-  "type": "m.sticker",
-  "room_id": "!Cuyf34gef24t:localhost",
-  "sender": "@example:localhost"
+  }
 }

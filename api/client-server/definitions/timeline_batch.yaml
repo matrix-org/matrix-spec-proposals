@@ -1,4 +1,5 @@
 # Copyright 2016 OpenMarket Ltd
+# Copyright 2018 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 allOf:
-- $ref: event_batch.yaml
+- $ref: room_event_batch.yaml
 properties:
   limited:
     description: True if the number of events returned was limited by the ``limit``
-      on the filter
+      on the filter.
     type: boolean
   prev_batch:
     description: A token that can be supplied to the ``from`` parameter of the
-      rooms/{roomId}/messages endpoint
+      rooms/{roomId}/messages endpoint.
     type: string
 type: object

@@ -15,6 +15,8 @@
 Client-Server API
 =================
 
+{{unstable_warning_block_CLIENT_RELEASE_LABEL}}
+
 The client-server API provides a simple lightweight API to let clients send
 messages, control rooms and synchronise conversation history. It is designed to
 support both lightweight clients which store no state and lazy-load data from
@@ -1328,16 +1330,30 @@ the following list:
 - ``state_key``
 - ``prev_content``
 - ``content``
+- ``hashes``
+- ``signatures``
+- ``depth``
+- ``prev_events``
+- ``prev_state``
+- ``auth_events``
+- ``origin``
+- ``origin_server_ts``
+- ``membership``
+
+.. Note:
+   Some of the keys, such as ``hashes``, will appear on the federation-formatted
+   event and therefore the client may not be aware of them.
 
 The content object should also be stripped of all keys, unless it is one of
 one of the following event types:
 
-- ``m.room.member`` allows key ``membership``
-- ``m.room.create`` allows key ``creator``
-- ``m.room.join_rules`` allows key ``join_rule``
+- ``m.room.member`` allows key ``membership``.
+- ``m.room.create`` allows key ``creator``.
+- ``m.room.join_rules`` allows key ``join_rule``.
 - ``m.room.power_levels`` allows keys ``ban``, ``events``, ``events_default``,
   ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
-- ``m.room.aliases`` allows key ``aliases``
+- ``m.room.aliases`` allows key ``aliases``.
+- ``m.room.history_visibility`` allows key ``history_visibility``.
 
 The server should add the event causing the redaction to the ``unsigned``
 property of the redacted event, under the ``redacted_because`` key. When a
