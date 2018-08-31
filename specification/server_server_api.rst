@@ -478,6 +478,12 @@ transaction request to be responded to with an error response.
     This means that events may be included in the room DAG even though they
     should be rejected.
 
+.. NOTE::
+
+    This is in contrast to redacted events which can still affect the
+    state of the room. For example, a redacted ``join`` event will still
+    result in the user being considered joined.
+
 
 Retrieving event authorization information
 ++++++++++++++++++++++++++++++++++++++++++
