@@ -207,6 +207,13 @@ class MatrixSections(Sections):
         apis = self.units.get("apis")
         return template.render(apis=apis)
 
+    def render_unstable_warnings(self):
+        rendered = {}
+        blocks = self.units.get("unstable_warnings")
+        for var, text in blocks.items():
+            rendered["unstable_warning_block_" + var] = text
+        return rendered
+
     def render_swagger_definition(self):
         rendered = {}
         template = self.env.get_template("schema-definition.tmpl")
