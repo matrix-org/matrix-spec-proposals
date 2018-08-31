@@ -145,7 +145,7 @@ Some requests have unique error codes:
   Sent when a threepid given to an API cannot be used because no record matching the threepid was found.
 
 :``M_SERVER_NOT_TRUSTED``:
-  The client's request used a third party server, eg. ID server, that this server does not trust.
+  The client's request used a third party server, eg. identity server, that this server does not trust.
 
 :``M_UNSUPPORTED_ROOM_VERSION``:
   The client's request to create a room used a room version that the server does not support.
@@ -995,7 +995,7 @@ Adding Account Administrative Contact Information
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A homeserver may keep some contact information for administrative use.
-This is independent of any information kept by any Identity Servers.
+This is independent of any information kept by any identity servers.
 
 {{administrative_contact_cs_http_api}}
 

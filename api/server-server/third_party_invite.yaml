@@ -200,9 +200,9 @@ paths:
         Notifies the server that a third party identifier has been bound to one
         of its users.
       description: |-
-        Used by Identity Servers to notify the homeserver that one of its users
+        Used by identity servers to notify the homeserver that one of its users
         has bound a third party identifier successfully, including any pending
-        room invites the Identity Server has been made aware of.
+        room invites the identity server has been made aware of.
       operationId: onBindThirdPartyIdentifier
       parameters:
         - in: body
@@ -264,7 +264,7 @@ paths:
                       type: object
                       title: Identity Server Signatures
                       description: |-
-                        Signature from the Identity Server using a long-term private
+                        Signature from the identity server using a long-term private
                         key.
                       properties:
                         mxid:

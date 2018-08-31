@@ -166,7 +166,7 @@ paths:
               signatures:
                 type: object
                 description: |-
-                  The signatures of the verifying identity services which show that the
+                  The signatures of the verifying identity servers which show that the
                   association should be trusted, if you trust the verifying identity
                   services.
                 $ref: "../../schemas/server-signatures.yaml"

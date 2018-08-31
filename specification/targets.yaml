@@ -21,7 +21,7 @@ targets:
   identity_service:
     files:
       - identity_service_api.rst
-    version_label: unstable
+    version_label: "%IDENTITY_RELEASE_LABEL%"
   push_gateway:
     files:
       - push_gateway.rst

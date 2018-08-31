@@ -125,7 +125,7 @@ All homeservers MUST verify the signature in the event's
 ``content.third_party_invite.signed`` object.
 
 The third party user will then need to verify their identity, which results in
-a call from the Identity Server to the homeserver that bound the third party
+a call from the identity server to the homeserver that bound the third party
 identifier to a user. The homeserver then exchanges the ``m.room.third_party_invite``
 event in the room for a complete ``m.room.member`` event for ``membership: invite``
 for the user that has bound the third party identifier.
@@ -207,15 +207,15 @@ H3 is attempting to join.
 Note that when H1 sends the ``m.room.member`` event to H2 and H3 it does not
 have to block on either server's receipt of the event. Likewise, H1 may complete
 the ``/exchange_third_party_invite/:roomId`` request at the same time as sending
-the ``m.room.member`` event to H2 and H3. Additionally, H3 may complete the 
+the ``m.room.member`` event to H2 and H3. Additionally, H3 may complete the
 ``/3pid/onbind`` request it got from IS at any time - the completion is not shown
 in the diagram.
 
 H1 MUST verify the request from H3 to ensure the ``signed`` property is correct
 as well as the ``key_validity_url`` as still being valid. This is done by making
-a request to the `Identity Server /isvalid`_ endpoint, using the provided URL
+a request to the `identity server /isvalid`_ endpoint, using the provided URL
 rather than constructing a new one. The query string and response for the provided
-URL must match the Identity Server specification.
+URL must match the Identity Service Specification.
 
 The reason that no other homeserver may reject the event based on checking
 ``key_validity_url`` is that we must ensure event acceptance is deterministic.
@@ -254,4 +254,4 @@ these is left to the implementer's discretion.
 
 
 
-.. _`Identity Server /isvalid`: ../identity_service/unstable.html#get-matrix-identity-api-v1-pubkey-isvalid
+.. _`identity server /isvalid`: ../identity_service/unstable.html#get-matrix-identity-api-v1-pubkey-isvalid

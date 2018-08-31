@@ -86,7 +86,7 @@ paths:
                 description: The unix timestamp at which the association was verified.
               signatures:
                 type: object
-                description: The signatures of the verifying identity services which show that the association should be trusted, if you trust the verifying identity services.
+                description: The signatures of the verifying identity servers which show that the association should be trusted, if you trust the verifying identity servers.
                 $ref: "../../schemas/server-signatures.yaml"
             required:
               - address

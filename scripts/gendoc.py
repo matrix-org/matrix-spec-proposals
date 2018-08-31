@@ -547,7 +547,7 @@ if __name__ == '__main__':
 
     substitutions = {
         "%CLIENT_RELEASE_LABEL%": args.client_release,
-        # we hardcode the major versions. This ends up in the example 
+        # we hardcode the major versions. This ends up in the example
         # API URLs. When we have released a new major version, we'll
         # have to bump them.
         "%CLIENT_MAJOR_VERSION%": "r0",

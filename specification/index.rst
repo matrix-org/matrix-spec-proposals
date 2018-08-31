@@ -107,7 +107,7 @@ The functionality that Matrix provides includes:
 - Managing user accounts (registration, login, logout)
 - Use of 3rd Party IDs (3PIDs) such as email addresses, phone numbers,
   Facebook accounts to authenticate, identify and discover users on Matrix.
-- Trusted federation of Identity servers for:
+- Trusted federation of identity servers for:
 
   + Publishing user public keys for PKI
   + Mapping of 3PIDs to Matrix IDs
@@ -386,7 +386,7 @@ network accounts and phone numbers to their user ID. Linking 3PIDs creates a
 mapping from a 3PID to a user ID. This mapping can then be used by Matrix
 users in order to discover the user IDs of their contacts.
 In order to ensure that the mapping from 3PID to user ID is genuine, a globally
-federated cluster of trusted "Identity Servers" (IS) are used to verify the 3PID
+federated cluster of trusted "identity servers" (IS) are used to verify the 3PID
 and persist and replicate the mappings.
 
 Usage of an IS is not required in order for a client application to be part of
