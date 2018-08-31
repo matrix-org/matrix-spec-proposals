@@ -366,19 +366,7 @@ thread-like conversation.
 Relationships are defined under an ``m.relates_to`` key in the event's ``content``.
 If the event is of the type ``m.room.encrypted``, the ``m.relates_to`` key MUST NOT
 be covered by the encryption and instead be put alongside the encryption information
-held in the ``content``, like in the following example::
-
-  {
-    ...
-    "content": {
-      ...
-      "m.relates_to": {
-        "m.in_reply_to": {
-          ...
-        }
-      }
-    }
-  }
+held in the ``content``.
 
 
 Rich replies
