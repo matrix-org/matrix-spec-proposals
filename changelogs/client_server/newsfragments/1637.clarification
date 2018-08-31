@@ -1,0 +1,1 @@
+Clarify the available error codes, and when to prefer the HTTP status code over the ``errcode``.
