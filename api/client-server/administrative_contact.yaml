@@ -218,8 +218,7 @@ paths:
         403:
           description: |-
             The homeserver does not permit the user from having the third party
-            identifier as a contact option. This does not prevent the identity
-            service from binding the third party identifier, however.
+            identifier as a contact option.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
@@ -273,8 +272,7 @@ paths:
         403:
           description: |-
             The homeserver does not permit the user from having the third party
-            identifier as a contact option. This does not prevent the identity
-            service from binding the third party identifier, however.
+            identifier as a contact option.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
