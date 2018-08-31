@@ -1,5 +1,5 @@
 [tool.towncrier]
-    filename = "../identity_server.rst"
+    filename = "../identity_service.rst"
     directory = "newsfragments"
     issue_format = "`#{issue} <https://github.com/matrix-org/matrix-doc/issues/{issue}>`_"
     title_format = "{version}"

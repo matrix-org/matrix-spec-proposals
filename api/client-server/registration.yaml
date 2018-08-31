@@ -204,9 +204,9 @@ paths:
     post:
       summary: Begins the validation process for an email to be used during registration.
       description: |-
-        Proxies the identity server API ``validate/email/requestToken``, but
+        Proxies the Identity Service API ``validate/email/requestToken``, but
         first checks that the given email address is not already associated
-        with an account on this homeserver. See the identity server API for
+        with an account on this homeserver. See the Identity Service API for
         further information.
       operationId: requestTokenToRegisterEmail
       parameters:
@@ -264,9 +264,9 @@ paths:
     post:
       summary: Requests a validation token be sent to the given phone number for the purpose of registering an account
       description: |-
-        Proxies the identity server API ``validate/msisdn/requestToken``, but
+        Proxies the Identity Service API ``validate/msisdn/requestToken``, but
         first checks that the given phone number is not already associated
-        with an account on this homeserver. See the identity server API for
+        with an account on this homeserver. See the Identity Service API for
         further information.
       operationId: requestTokenToRegisterMSISDN
       parameters:
@@ -373,7 +373,7 @@ paths:
     post:
       summary: Requests a validation token be sent to the given email address for the purpose of resetting a user's password
       description: |-
-        Proxies the identity server API ``validate/email/requestToken``, but
+        Proxies the Identity Service API ``validate/email/requestToken``, but
         first checks that the given email address **is** associated with an account
         on this homeserver. This API should be used to request
         validation tokens when authenticating for the
@@ -435,7 +435,7 @@ paths:
     post:
       summary: Requests a validation token be sent to the given phone number for the purpose of resetting a user's password.
       description: |-
-        Proxies the identity server API ``validate/msisdn/requestToken``, but
+        Proxies the Identity Service API ``validate/msisdn/requestToken``, but
         first checks that the given phone number **is** associated with an account
         on this homeserver. This API should be used to request
         validation tokens when authenticating for the

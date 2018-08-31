@@ -141,7 +141,7 @@ paths:
                       description: The hostname+port of the identity server which should be used for third party identifier lookups.
                     medium:
                       type: string
-                      # TODO: Link to identity server spec when it eixsts
+                      # TODO: Link to Identity Service spec when it eixsts
                       description: The kind of address being passed in the address field, for example ``email``.
                     address:
                       type: string

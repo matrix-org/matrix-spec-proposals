@@ -18,9 +18,9 @@ targets:
     files:
       - server_server_api.rst
     version_label: "%SERVER_RELEASE_LABEL%"
-  identity_server:
+  identity_service:
     files:
-      - identity_server_api.rst
+      - identity_service_api.rst
     version_label: "%IDENTITY_RELEASE_LABEL%"
   push_gateway:
     files:

@@ -13,7 +13,7 @@
 # limitations under the License.
 swagger: '2.0'
 info:
-  title: "Matrix Identity Server Phone Number Associations API"
+  title: "Matrix Identity Service Phone Number Associations API"
   version: "1.0.0"
 host: localhost:8090
 schemes:

@@ -773,7 +773,7 @@ class MatrixUnits(Units):
                 as_ver,
                 "Privileged server plugins",
             ), TypeTableRow(
-                "`Identity Server API <identity_server/"+is_ver+".html>`_",
+                "`Identity Service API <identity_service/"+is_ver+".html>`_",
                 "unstable",
                 "Mapping of third party IDs to Matrix IDs",
             ), TypeTableRow(

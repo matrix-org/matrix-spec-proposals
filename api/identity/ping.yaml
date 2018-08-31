@@ -15,7 +15,7 @@
 
 swagger: "2.0"
 info:
-  title: "Matrix Identity Server Ping API"
+  title: "Matrix Identity Service Ping API"
   version: "1.0.0"
 host: localhost:8090
 schemes:

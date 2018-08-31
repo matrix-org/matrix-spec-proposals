@@ -1,7 +1,7 @@
 # How to release a specification
 
 There are several specifications that belong to matrix, such as the client-server
-specification, server-server specification, and identity server specification. Each
+specification, server-server specification, and identity service specification. Each
 of these gets released independently of each other with their own version numbers.
 
 Once a specification is ready for release, a branch should be created to track the

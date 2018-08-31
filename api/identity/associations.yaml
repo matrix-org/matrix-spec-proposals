@@ -13,7 +13,7 @@
 # limitations under the License.
 swagger: '2.0'
 info:
-  title: "Matrix Identity Server Establishing Associations API"
+  title: "Matrix Identity Service Establishing Associations API"
   version: "1.0.0"
 host: localhost:8090
 schemes:

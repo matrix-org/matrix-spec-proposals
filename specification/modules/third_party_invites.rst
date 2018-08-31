@@ -215,7 +215,7 @@ H1 MUST verify the request from H3 to ensure the ``signed`` property is correct
 as well as the ``key_validity_url`` as still being valid. This is done by making
 a request to the `identity server /isvalid`_ endpoint, using the provided URL
 rather than constructing a new one. The query string and response for the provided
-URL must match the identity server specification.
+URL must match the identity service specification.
 
 The reason that no other homeserver may reject the event based on checking
 ``key_validity_url`` is that we must ensure event acceptance is deterministic.
@@ -254,4 +254,4 @@ these is left to the implementer's discretion.
 
 
 
-.. _`identity server /isvalid`: ../identity_server/unstable.html#get-matrix-identity-api-v1-pubkey-isvalid
+.. _`identity server /isvalid`: ../identity_service/unstable.html#get-matrix-identity-api-v1-pubkey-isvalid

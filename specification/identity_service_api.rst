@@ -15,7 +15,7 @@
 .. See the License for the specific language governing permissions and
 .. limitations under the License.
 
-Identity Server API
+Identity Service API
 ====================
 
 {{unstable_warning_block_IDENTITY_RELEASE_LABEL}}
@@ -35,14 +35,14 @@ Changelog
 ---------
 
 .. topic:: Version: %IDENTITY_RELEASE_LABEL%
-{{identity_server_changelog}}
+{{identity_service_changelog}}
 
 This version of the specification is generated from
 `matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
 `{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
 
 For the full historical changelog, see
-https://github.com/matrix-org/matrix-doc/blob/master/changelogs/identity_server.rst
+https://github.com/matrix-org/matrix-doc/blob/master/changelogs/identity_service.rst
 
 
 Other versions of this specification
@@ -50,7 +50,7 @@ Other versions of this specification
 
 The following other versions are also available, in reverse chronological order:
 
-- `HEAD <https://matrix.org/docs/spec/identity_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `HEAD <https://matrix.org/docs/spec/identity_service/unstable.html>`_: Includes all changes since the latest versioned release.
 
 General principles
 ------------------

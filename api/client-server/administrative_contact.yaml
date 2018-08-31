@@ -187,7 +187,7 @@ paths:
     post:
       summary: Begins the validation process for an email address for association with the user's account.
       description: |-
-        Proxies the identity server API ``validate/email/requestToken``, but
+        Proxies the Identity Service API ``validate/email/requestToken``, but
         first checks that the given email address is **not** already associated
         with an account on this homeserver. This API should be used to request
         validation tokens when adding an email address to an account. This API's
@@ -241,7 +241,7 @@ paths:
     post:
       summary: Begins the validation process for a phone number for association with the user's account.
       description: |-
-        Proxies the identity server API ``validate/msisdn/requestToken``, but
+        Proxies the Identity Service API ``validate/msisdn/requestToken``, but
         first checks that the given phone number is **not** already associated
         with an account on this homeserver. This API should be used to request
         validation tokens when adding a phone number to an account. This API's

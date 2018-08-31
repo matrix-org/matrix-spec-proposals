@@ -71,6 +71,10 @@ Prefer British English (colour, -ise) to American English.
 The word "homeserver" is spelt thus (rather than "home server", "Homeserver",
 or (argh) "Home Server"). However, an identity server is two words.
 
+An "identity server" (spelt thus) implements the Identity Service API (also spelt
+thus). However, "Application Services" (spelt thus) implement the Application Service
+API. Application Services should not be called "appservices" in documentation.
+
 .. Rationale: "homeserver" distinguishes from a "home server" which is a server
    you have at home. "identity server" is clear, whereas "identityserver" is
    horrible.

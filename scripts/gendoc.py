@@ -527,7 +527,7 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--identity_release", "-i", action="store", default="unstable",
-        help="The identity server release tag to generate, e.g. r1.2"
+        help="The identity service release tag to generate, e.g. r1.2"
     )
     parser.add_argument(
         "--list_targets", action="store_true",
