@@ -262,9 +262,10 @@ extension`_.
 Extensions to ``m.message`` msgtypes
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-This module adds ``file`` and ``thumbnail_file`` properties to ``m.message``
-msgtypes that reference files, such as ``m.file`` and ``m.image``, replacing
-the ``url`` and ``thumbnail_url`` properties.
+This module adds ``file`` and ``thumbnail_file`` properties, of type
+``EncryptedFile``, to ``m.message`` msgtypes that reference files, such as
+`m.file`_ and `m.image`_, replacing the ``url`` and ``thumbnail_url``
+properties.
 
 .. todo: generate this from a swagger definition?
 
@@ -273,16 +274,16 @@ the ``url`` and ``thumbnail_url`` properties.
 ========= ================ =====================================================
 Parameter Type             Description
 ========= ================ =====================================================
-url       string           The URL to the file.
-key       JWK              A `JSON Web Key`_ object.
-iv        string           The Initialisation Vector used by AES-CTR, encoded as
-                           unpadded base64.
-hashes    {string: string} A map from an algorithm name to a hash of the
-                           ciphertext, encoded as unpadded base64. Clients
+url       string           **Required.** The URL to the file.
+key       JWK              **Required.** A `JSON Web Key`_ object.
+iv        string           **Required.** The Initialisation Vector used by
+                           AES-CTR, encoded as unpadded base64.
+hashes    {string: string} **Required.** A map from an algorithm name to a hash
+                           of the ciphertext, encoded as unpadded base64. Clients
                            should support the SHA-256 hash, which uses the key
                            ``sha256``.
-v         string           Version of the encrypted attachments protocol. Must
-                           be ``v2``.
+v         string           **Required.** Version of the encrypted attachments
+                           protocol. Must be ``v2``.
 ========= ================ =====================================================
 
 ``JWK``
@@ -290,12 +291,13 @@ v         string           Version of the encrypted attachments protocol. Must
 ========= ========= ============================================================
 Parameter Type      Description
 ========= ========= ============================================================
-key       string    Key type. Must be ``oct``.
-key_opts  [string]  Key operations. Must at least contain ``encrypt`` and
-                    ``decrypt``.
-alg       string    Algorithm. Must be ``A256CTR``.
-k         string    The key, encoded as urlsafe unpadded base64.
-ext       boolean   Extractable. Must be ``true``. This is a `W3C extension`_.
+key       string    **Required.** Key type. Must be ``oct``.
+key_opts  [string]  **Required.** Key operations. Must at least contain
+                    ``encrypt`` and ``decrypt``.
+alg       string    **Required.** Algorithm. Must be ``A256CTR``.
+k         string    **Required.** The key, encoded as urlsafe unpadded base64.
+ext       boolean   **Required.** Extractable. Must be ``true``. This is a
+                    `W3C extension`_.
 ========= ========= ============================================================
 
 Example:
