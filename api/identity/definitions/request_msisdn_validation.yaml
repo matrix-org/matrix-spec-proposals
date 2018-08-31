@@ -36,10 +36,9 @@ properties:
   send_attempt:
     type: integer
     description: |-
-      Optional. If specified, the server will only send an SMS if
-      the ``send_attempt`` is a number greater than the most recent
-      one which it has seen (or if it has never seen one), scoped
-      to that ``country`` + ``phone_number`` + ``client_secret``
+      The server will only send an SMS if the ``send_attempt`` is a
+      number greater than the most recent one which it has seen,
+      scoped to that ``country`` + ``phone_number`` + ``client_secret``
       triple. This is to avoid repeatedly sending the same SMS in
       the case of request retries between the POSTing user and the
       identity service. The client should increment this value if

@@ -29,14 +29,13 @@ properties:
   send_attempt:
     type: integer
     description: |-
-      Optional. If specified, the server will only send an email if
-      the ``send_attempt`` is a number greater than the most recent
-      one which it has seen (or if it has never seen one), scoped
-      to that ``email`` + ``client_secret`` pair. This is to avoid
-      repeatedly sending the same email in the case of request
-      retries between the POSTing user and the identity
-      service. The client should increment this value if they
-      desire a new email (e.g. a reminder) to be sent.
+      The server will only send an email if the ``send_attempt``
+      is a number greater than the most recent one which it has seen,
+      scoped to that ``email`` + ``client_secret`` pair. This is to
+      avoid repeatedly sending the same email in the case of request
+      retries between the POSTing user and the identity service.
+      The client should increment this value if they desire a new
+      email (e.g. a reminder) to be sent.
     example: 1
   next_link:
     type: string
