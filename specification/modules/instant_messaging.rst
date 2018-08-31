@@ -106,6 +106,12 @@ of tags they can render, falling back to other representations of the tags where
 For example, a client may not be able to render tables correctly and instead could fall
 back to rendering tab-delimited text.
 
+In addition to not rendering unsafe HTML, clients should not emit unsafe HTML in events.
+Likewise, clients should not generate HTML that is not needed, such as extra paragraph tags
+surrounding text due to Rich Text Editors. HTML included in events should otherwise be valid,
+such as having appropriate closing tags, appropriate attributes (considering the custom ones
+defined in this specification), and generally valid structure.
+
 .. Note::
    A future iteration of the specification will support more powerful and extensible
    message formatting options, such as the proposal `MSC1225 <https://github.com/matrix-org/matrix-doc/issues/1225>`_.
