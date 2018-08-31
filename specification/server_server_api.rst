@@ -345,17 +345,6 @@ be inserted. The types of state events that affect authorization are:
 - ``m.room.join_rules``
 - ``m.room.power_levels``
 
-Servers should not create new events that reference unauthorized events.
-However, any event that does reference an unauthorized event is not itself
-automatically considered unauthorized.
-
-Unauthorized events that appear in the event graph do *not* have any effect on
-the state of the room.
-
-.. Note:: This is in contrast to redacted events which can still affect the
-          state of the room. For example, a redacted ``join`` event will still
-          result in the user being considered joined.
-
 The rules are as follows:
 
 1. If type is ``m.room.create``, allow if and only if it has no
