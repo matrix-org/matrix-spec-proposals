@@ -67,17 +67,6 @@ paths:
         200:
           description:
             The account_data was successfully added.
-        405:
-          description:
-            The account data event type cannot be set here. This generally indicates
-            that another API is available for managing the data contained in the event.
-          schema:
-            $ref: "definitions/errors/error.yaml"
-          examples: 
-            application/json: {
-              "errcode": "M_UNKNOWN",
-              "error": "Cannot set m.fully_read through this API. Use /rooms/{roomId}/read_markers"
-            }
       tags:
         - User data
   "/user/{userId}/rooms/{roomId}/account_data/{type}":
@@ -127,16 +116,5 @@ paths:
         200:
           description:
             The account_data was successfully added.
-        405:
-          description:
-            The account data event type cannot be set here. This generally indicates
-            that another API is available for managing the data contained in the event.
-          schema:
-            $ref: "definitions/errors/error.yaml"
-          examples: 
-            application/json: {
-              "errcode": "M_UNKNOWN",
-              "error": "Cannot set m.fully_read through this API. Use /rooms/{roomId}/read_markers"
-            }
       tags:
         - User data
