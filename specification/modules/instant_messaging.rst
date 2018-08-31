@@ -62,9 +62,9 @@ support an additional ``format`` parameter of ``org.matrix.custom.html``. When
 this field is present, a ``formatted_body`` with the HTML must be provided. The
 plain text version of the HTML should be provided in the ``body``.
 
-Clients should limit the HTML they render to avoid Cross-Site Scripting, HTML 
+Clients should limit the HTML they render to avoid Cross-Site Scripting, HTML
 injection, and similar attacks. The strongly suggested set of HTML tags to permit,
-denying the use and rendering of anything else, is: ``font``, ``del``, ``h1``, 
+denying the use and rendering of anything else, is: ``font``, ``del``, ``h1``,
 ``h2``, ``h3``, ``h4``, ``h5``, ``h6``, ``blockquote``, ``p``, ``a``, ``ul``,
 ``ol``, ``sup``, ``sub``, ``li``, ``b``, ``i``, ``u``, ``strong``, ``em``,
 ``strike``, ``code``, ``hr``, ``br``, ``div``, ``table``, ``thead``, ``tbody``,
@@ -73,7 +73,7 @@ denying the use and rendering of anything else, is: ``font``, ``del``, ``h1``,
 Not all attributes on those tags should be permitted as they may be avenues for
 other disruption attempts, such as adding ``onclick`` handlers or excessively
 large text. Clients should only permit the attributes listed for the tags below.
-Where ``data-mx-bg-color`` and ``data-mx-color`` are listed, clients should 
+Where ``data-mx-bg-color`` and ``data-mx-color`` are listed, clients should
 translate the value (a 6-character hex color code) to the appropriate CSS/attributes
 for the tag.
 
@@ -366,7 +366,20 @@ thread-like conversation.
 Relationships are defined under an ``m.relates_to`` key in the event's ``content``.
 If the event is of the type ``m.room.encrypted``, the ``m.relates_to`` key MUST NOT
 be covered by the encryption and instead be put alongside the encryption information
-held in the ``content``.
+held in the ``content``, like in the following example::
+
+  {
+    ...
+    "content": {
+      ...
+      "m.relates_to": {
+        "m.in_reply_to": {
+          ...
+        }
+      }
+    }
+  }
+
 
 Rich replies
 ++++++++++++
@@ -376,14 +389,34 @@ clients may wish to better embed the referenced message for the user to have a
 better context for the conversation being had. This sort of embedding another
 message in a message is known as a "rich reply", or occasionally just a "reply".
 
-Rich replies may reference another event which also has a rich reply, infinitely.
 A rich reply is formed through use of an ``m.relates_to`` relation for ``m.in_reply_to``
 where a single key, ``event_id``, is used to reference the event being replied to.
-The referenced event ID MUST belong to the same room where the reply is being sent.
-Rich replies can only be constructed in the form of ``m.room.message`` events with
-a ``msgtype`` of ``m.text`` or ``m.notice``. Due to the fallback requirements, rich
+The referenced event ID SHOULD belong to the same room where the reply is being sent.
+Clients should be cautious of the event ID belonging to another room, or being invalid
+entirely. Rich replies can only be constructed in the form of ``m.room.message`` events
+with a ``msgtype`` of ``m.text`` or ``m.notice``. Due to the fallback requirements, rich
 replies cannot be constructed for types of ``m.emote``, ``m.file``, etc. Rich replies
-may reference any other ``m.room.message`` event, however.
+may reference any other ``m.room.message`` event, however. Rich replies may reference
+another event which also has a rich reply, infinitely.
+
+An ``m.in_reply_to`` relationship looks like the following::
+
+  {
+    ...
+    "type": "m.room.message",
+    "content": {
+      "msgtype": "m.text",
+      "body": "<body including fallback>",
+      "format": "org.matrix.custom.html",
+      "formatted_body": "<HTML including fallback>",
+      "m.relates_to": {
+        "m.in_reply_to": {
+          "event_id": "$another:event.com"
+        }
+      }
+    }
+  }
+
 
 Fallbacks and event representation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -393,9 +426,9 @@ to use instead. Clients that do not support rich replies should render the event
 as if rich replies were not special.
 
 Clients that do support rich replies MUST provide the fallback format on replies,
-and MUST strip the fallback before rendering the reply. Rich replies MUST supply
+and MUST strip the fallback before rendering the reply. Rich replies MUST have
 a ``format`` of ``org.matrix.custom.html`` and therefore a ``formatted_body``
-alongside the ``body`` and appropriate ``msgtype``. The specific fall back text
+alongside the ``body`` and appropriate ``msgtype``. The specific fallback text
 is different for each ``msgtype``, however the general format for the ``body`` is:
 
 .. code-block:: text
@@ -405,7 +438,7 @@ is different for each ``msgtype``, however the general format for the ``body`` i
   This is where the reply goes
 
 
-The ``formatted_body`` ends up using the following template:
+The ``formatted_body`` should use the following template:
 
 .. code-block:: html
 
@@ -491,9 +524,10 @@ Fallback for ``m.image``, ``m.video``, ``m.audio``, and ``m.file``
 
 The related event's ``body`` would be a file name, which may not be very descriptive.
 The related event should additionally not have a ``format`` or ``formatted_body``
-in the ``content`` - if the event does, it should be ignored. Because the filename
-alone may not be descriptive, the related event's ``body`` should be considered 
-to be ``"sent a file."`` such that the output looks similar to the following::
+in the ``content`` - if the event does have a ``format`` and/or ``formatted_body``,
+those fields should be ignored. Because the filename alone may not be descriptive,
+the related event's ``body`` should be considered to be ``"sent a file."`` such that
+the output looks similar to the following::
 
   > <@alice:example.org> sent a file.
 
