@@ -318,6 +318,46 @@ table.citation td {
     border-bottom: none;
 }
 
+table.colwidths-auto caption {
+    font-family: 'Inconsolata', monospace;
+    font-weight: 800;
+    font-size: 120%;
+    padding: 5px;
+    text-align: left;
+    margin-bottom: 2px;
+}
+
+ol, li {
+    margin: 0px 0px 0px 30px !important;
+}
+
+p.httpheaders {
+    font-weight: 800;
+    font-size: 120%;
+    padding: 5px;
+    text-align: left;
+    margin-bottom: 2px;
+}
+
+table.colwidths-auto {
+    width:100%;
+    margin-top: 20px;
+}
+
+table.colwidths-auto tr td:nth-child(1) {
+    width: 15%;
+}
+
+table.colwidths-auto tr td:nth-child(2) {
+    width: 15%;
+    font-family: 'Inconsolata', monospace;
+}
+
+table.colwidths-auto tr td:nth-child(3) {
+    width: 70%;
+}
+
+
 /* -- other body styles ----------------------------------------------------- */
 
 ol.arabic {

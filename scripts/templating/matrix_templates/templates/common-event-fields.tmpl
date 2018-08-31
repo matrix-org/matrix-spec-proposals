@@ -6,8 +6,7 @@
 {{common_event.desc}}
 
 {% for table in common_event.tables %}
-{{"``"+table.title+"``" if table.title else "" }}
 
-{{ tables.paramtable(table.rows, ["Key", "Type", "Description"]) }}
+{{ tables.paramtable(table.rows, ["Key", "Type", "Description"], (table.title or "")) }}
 
 {% endfor %}
