@@ -52,6 +52,7 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/application_service/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.1.0 <https://matrix.org/docs/spec/application_service/r0.1.0.html>`_
 
 
 Application Services
@@ -174,7 +175,7 @@ An example registration file for an IRC-bridging application service is below:
         - exclusive: true
           regex: "@_irc_bridge_.*"
       aliases:
-        - exclusive: false 
+        - exclusive: false
           regex: "#_irc_bridge_.*"
       rooms: []
 
@@ -318,7 +319,7 @@ Inputs:
 Notes:
  - This applies to all aspects of the Client-Server API, except for Account Management.
  - The ``as_token`` is inserted into ``access_token`` which is usually where the
-   client token is, such as via the query string or ``Authorization`` header. This 
+   client token is, such as via the query string or ``Authorization`` header. This
    is done on purpose to allow application services to reuse client SDKs.
  - The ``access_token`` should be supplied through the ``Authorization`` header where
    possible to prevent the token appearing in HTTP request logs by accident.
@@ -425,7 +426,7 @@ Referencing messages from a third party network
 Application services should include an ``external_url`` in the ``content`` of
 events it emits to indicate where the message came from. This typically applies
 to application services that bridge other networks into Matrix, such as IRC,
-where an HTTP URL may be available to reference. 
+where an HTTP URL may be available to reference.
 
 Clients should provide users with a way to access the ``external_url`` if it
 is present. Clients should additionally ensure the URL has a scheme of ``https``
