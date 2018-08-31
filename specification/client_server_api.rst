@@ -1023,10 +1023,10 @@ a ``limit`` and ``dir``. Together, these parameters describe the position in a
 data set, where ``from`` and ``to`` are known as "stream tokens" matching the
 regular expression ``[a-zA-Z0-9.=_-]+``. If supported, the ``dir`` defines the
 direction of events to return: either forwards (``f``) or backwards (``b``).
-The response contains a ``start`` or ``prev_batch`` token which references the
-result set immediately prior to the returned set. The response might additionally
-have an ``end`` or ``next_batch`` token to indicate the results after the returned
-set.
+The response may contain tokens that can be used for retrieving results before
+or after the returned set. These tokens may be called `start` or `prev_batch`
+for retrieving the previous result set, or `end`, `next_batch` or `next_token`
+for retrieving the next result set.
 
 In the following examples, 'START' and 'END' are placeholders to signify the
 start and end of the data sets respectively.
