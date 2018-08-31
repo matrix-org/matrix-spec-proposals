@@ -405,15 +405,15 @@ The rules are as follows:
 
             #. If ``mxid`` does not match ``state_key``, reject.
 
-            #. If no ``m.room.third_party_invite`` event in current state with
-               ``state_key`` matching ``token``, reject.
+            #. If there is no ``m.room.third_party_invite`` event in the
+               current room state with ``state_key`` matching ``token``, reject.
 
-            #. If ``sender`` does not match ``sender`` of third party invite,
-               reject.
+            #. If ``sender`` does not match ``sender`` of the
+               ``m.room.third_party_invite``, reject.
 
             #. If any signature in ``signed`` matches any public key in the
-               ``m.room.third_party_invite``, allow. The public keys are in
-               ``content`` of ``m.room.third_party_invite`` as:
+               ``m.room.third_party_invite`` event, allow. The public keys are
+               in ``content`` of ``m.room.third_party_invite`` as:
 
                 #. A single public key in the ``public_key`` field.
                 #. A list of public keys in the ``public_keys`` field.
