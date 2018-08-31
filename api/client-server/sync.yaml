@@ -206,7 +206,9 @@ paths:
                             events:
                               description: The StrippedState events that form the invite state.
                               items:
-                                description: 'A stripped down state event, with only the ``type``, ``state_key`` and ``content`` keys.'
+                                description: |-
+                                  A stripped down state event, with only the ``type``, ``state_key``,
+                                  ``sender``, and ``content`` keys.
                                 properties:
                                   content:
                                     description: The ``content`` for the event.
@@ -218,10 +220,14 @@ paths:
                                   type:
                                     description: The ``type`` for the event.
                                     type: string
+                                  sender:
+                                    description: The ``sender`` for the event.
+                                    type: string
                                 required:
                                   - type
                                   - state_key
                                   - content
+                                  - sender
                                 title: StrippedState
                                 type: object
                               type: array
