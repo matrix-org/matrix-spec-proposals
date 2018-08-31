@@ -17,8 +17,6 @@
 Federation API
 ==============
 
-{{unstable_warning_block_SERVER_RELEASE_LABEL}}
-
 .. WARNING::
   This API is unstable and will change without warning or discussion while
   we work towards a r0 release (scheduled for August 2018).
