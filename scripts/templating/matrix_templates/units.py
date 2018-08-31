@@ -971,6 +971,22 @@ class MatrixUnits(Units):
 
         return changelogs
 
+    def load_unstable_warnings(self, substitutions):
+        warning = """
+.. WARNING::
+    You are viewing an unstable version of this specification. Unstable
+    specifications may change at any time without notice. To view the
+    current specification, please `click here <latest.html>`_.
+"""
+        warnings = {}
+        for var in substitutions.keys():
+            key = var[1:-1] # take off the surrounding %-signs
+            if substitutions.get(var, "unstable") == "unstable":
+                warnings[key] = warning
+            else:
+                warnings[key] = ""
+        return warnings
+
 
     def load_spec_targets(self):
         with open(TARGETS, "r") as f:

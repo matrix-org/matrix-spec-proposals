@@ -135,7 +135,7 @@ paths:
                             ``timeline``, if ``since`` is not given, or
                             ``full_state`` is true).
                           allOf:
-                            - $ref: "definitions/event_batch.yaml"
+                            - $ref: "definitions/state_event_batch.yaml"
                         timeline:
                           title: Timeline
                           type: object
@@ -202,8 +202,35 @@ paths:
                             the room then the current state will be given as a
                             delta against the archived ``state`` not the
                             ``invite_state``.
-                          allOf:
-                            - $ref: "definitions/event_batch.yaml"
+                          properties:
+                            events:
+                              description: The StrippedState events that form the invite state.
+                              items:
+                                description: |-
+                                  A stripped down state event, with only the ``type``, ``state_key``,
+                                  ``sender``, and ``content`` keys.
+                                properties:
+                                  content:
+                                    description: The ``content`` for the event.
+                                    title: EventContent
+                                    type: object
+                                  state_key:
+                                    description: The ``state_key`` for the event.
+                                    type: string
+                                  type:
+                                    description: The ``type`` for the event.
+                                    type: string
+                                  sender:
+                                    description: The ``sender`` for the event.
+                                    type: string
+                                required:
+                                  - type
+                                  - state_key
+                                  - content
+                                  - sender
+                                title: StrippedState
+                                type: object
+                              type: array
                   leave:
                     title: Left rooms
                     type: object
@@ -219,7 +246,7 @@ paths:
                           description: |-
                             The state updates for the room up to the start of the timeline.
                           allOf:
-                            - $ref: "definitions/event_batch.yaml"
+                            - $ref: "definitions/state_event_batch.yaml"
                         timeline:
                           title: Timeline
                           type: object
@@ -270,6 +297,8 @@ paths:
                 description: |-
                   Information on end-to-end encryption keys, as specified
                   in |device_lists_sync|_.
+            required:
+              - next_batch
           examples:
             application/json: {
                 "next_batch": "s72595_4483_1934",
@@ -321,7 +350,6 @@ paths:
                           {
                             "sender": "@alice:example.com",
                             "type": "m.room.message",
-                            "age": 124524,
                             "txn_id": "1234",
                             "content": {
                               "body": "I am a fish",
