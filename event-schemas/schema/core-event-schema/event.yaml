@@ -10,5 +10,6 @@ properties:
     type: string
 required:
   - type
+  - content
 title: Event
 type: object

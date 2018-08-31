@@ -18,6 +18,8 @@
 Identity Service API
 ====================
 
+{{unstable_warning_block_IDENTITY_RELEASE_LABEL}}
+
 The Matrix client-server and server-server APIs are largely expressed in Matrix
 user identifiers. From time to time, it is useful to refer to users by other
 ("third-party") identifiers, or "3pid"s, e.g. their email address or phone
@@ -179,9 +181,11 @@ An identity service has some long-term public-private keypairs. These are named
 in a scheme ``algorithm:identifier``, e.g. ``ed25519:0``. When signing an
 association, the standard `Signing JSON`_ algorithm applies.
 
-In the event of key compromise, the identity service may revoke any of its keys.
-An HTTP API is offered to get public keys, and check whether a particular key is
-valid.
+.. TODO: Actually allow identity services to revoke all keys
+         See: https://github.com/matrix-org/matrix-doc/issues/1633
+.. In the event of key compromise, the identity service may revoke any of its keys.
+   An HTTP API is offered to get public keys, and check whether a particular key is
+   valid.
 
 The identity service may also keep track of some short-term public-private
 keypairs, which may have different usage and lifetime characteristics than the
