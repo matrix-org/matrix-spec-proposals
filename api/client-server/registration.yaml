@@ -411,8 +411,8 @@ paths:
             $ref: "../identity/definitions/sid.yaml"
         403:
           description: |-
-            The homeserver does not permit the user from having the third party
-            identifier as a contact option.
+            The homeserver does not allow the third party identifier as a
+            contact option.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
@@ -473,8 +473,8 @@ paths:
             $ref: "../identity/definitions/sid.yaml"
         403:
           description: |-
-            The homeserver does not permit the user from having the third party
-            identifier as a contact option.
+            The homeserver does not allow the third party identifier as a
+            contact option.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
