@@ -422,8 +422,8 @@ paths:
             }
         400:
           description: |-
-            The third party identifier is already in use on the homeserver, or
-            the request was invalid.
+            The referenced third party identifier is not recognised by the
+            homeserver, or the request was invalid
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
@@ -484,8 +484,8 @@ paths:
             }
         400:
           description: |-
-            The third party identifier is already in use on the homeserver, or
-            the request was invalid.
+            The referenced third party identifier is not recognised by the
+            homeserver, or the request was invalid
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
