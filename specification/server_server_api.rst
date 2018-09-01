@@ -1025,12 +1025,10 @@ This forms a simple directed acyclic graph of ``m.device_list_update`` EDUs, sho
 which EDUs a server needs to have received in order to apply an update to its local
 copy of the remote user's device list.  If a server receives an EDU which refers to
 a ``prev_id`` it does not recognise, it must resynchronise its list by calling the
-/user/keys/query API and resume the process.
+/user/keys/query API and resume the process.  The response contains a ``stream_id``
+which should be used to correlate with subsequent ``m.device_list_update`` EDUs.
 
-..TODO: how do you synchronise the result of the /query API with the stream_id
-  in the EDUs?
-
-..TODO: this whole thing desperately feels like it should just be state in a room,
+.. TODO: this whole thing desperately feels like it should just be state in a room,
   rather than inventing a whole different DAG.  The same room could be used for
   profiles, presence lists, etc.
 
