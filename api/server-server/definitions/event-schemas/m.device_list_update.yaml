@@ -82,7 +82,7 @@ allOf:
               The updated identity keys (if any) for this device.  May be absent if the
               device has no E2E keys defined.
             allOf:
-              - $ref: definitions/device_keys.yaml
+              - $ref: ../../../client-server/definitions/device_keys.yaml
         required:
           - user_id
           - device_id
