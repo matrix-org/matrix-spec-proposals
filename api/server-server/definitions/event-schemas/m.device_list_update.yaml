@@ -77,6 +77,7 @@ allOf:
             type: boolean
             description: |-
               True if the server is announcing that this device has been deleted.
+            example: false
           keys:
             description: |-
               The updated identity keys (if any) for this device.  May be absent if the
