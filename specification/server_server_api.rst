@@ -1014,8 +1014,8 @@ Send-to-device messaging
 
 .. TODO: add modules to the federation spec and make this a module
 
-The server API for send-to-device messaging is based on the following
-EDU. There are no PDUs or Federation Queries involved.
+The server API for send-to-device messaging is based on the
+``m.direct_to_device`` EDU. There are no PDUs or Federation Queries involved.
 
 Each send-to-device message should be sent to the destination server using
 the following EDU:
