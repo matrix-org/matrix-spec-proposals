@@ -996,6 +996,48 @@ nothing else.
 
 {{openid_ss_http_api}}
 
+Device Management
+-----------------
+
+Details of a user's devices must be efficiently published to other users and kept
+up-to-date.  This is critical for reliable end-to-end encryption, in order for users
+to know which devices are participating in a room.  It's also required for to-device
+messaging to work. This section is intended to complement the `Device Management module`_
+of the Client-Server API.
+
+Matrix currently uses a custom pubsub system for synchronising information
+about the list of devices for a given user over federation.  When a server
+wishes to determine a remote user's device list for the first time,
+it should populate its local cache by calling the /user/keys/query API
+on the remote server.  However, subsequent updates to the cache should be applied
+by consuming ``m.device_list_update`` EDUs, which must be sent by the remote server
+whenever a user's device list changes.
+
+Servers send ``m.device_list_update`` EDUs in a sequence per source user, each with
+a unique ``stream_id``.  They also include a pointer to the most recent previous EDU(s)
+that this update is relative to in the `pprev_id`` field.  To simplify implementation
+for clustered servers which could send multiple EDUs at the same time, the ``prev_id``
+field should include all ``m.device_list_update`` EDUs which have not been yet been
+referenced in a EDU. If EDUs are emitted in series by a server, there should only ever
+be one ``prev_id`` in the EDU.
+
+This forms a simple directed acyclic graph of ``m.device_list_update`` EDUs, showing
+which EDUs a server needs to have received in order to apply an update to its local
+copy of the remote user's device list.  If a server receives an EDU which refers to
+a ``prev_id`` it does not recognise, it must resynchronise its list by calling the
+/user/keys/query API and resume the process.
+
+..TODO: how do you synchronise the result of the /query API with the stream_id
+  in the EDUs?
+
+..TODO: this whole thing desperately feels like it should just be state in a room,
+  rather than inventing a whole different DAG.  The same room could be used for
+  profiles, presence lists, etc.
+
+{{user_devices_ss_http_api}}
+
+{{definition_ss_event_schemas_m_device_list_update}}
+
 
 End-to-End Encryption
 ---------------------
