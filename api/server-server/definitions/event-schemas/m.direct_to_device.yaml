@@ -52,9 +52,12 @@ allOf:
               a map of user IDs to a map of device IDs to message bodies.
               The device ID may also be ``*``, meaning all known devices for the user.
             additionalProperties:
-              type: string
+              type: object
+              title: User Devices
               additionalProperties:
-                  type: string
+                type: object
+                title: Device Message Contents
+                properties: {}
             example: {
               "alice@example.org": {
                 "IWHQUZUIAH": {
