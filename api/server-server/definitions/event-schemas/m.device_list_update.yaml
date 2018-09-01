@@ -34,22 +34,22 @@ allOf:
         example: "m.device_list_update"
       content:
         type: object
-        description: The description of the device whose details has changed
+        description: The description of the device whose details has changed.
         title: Device List Update
         properties:
           user_id:
             type: string
-            description: The user ID who owns this device
+            description: The user ID who owns this device.
             example: "@john:example.com"
           device_id:
             type: string
-            description: The ID of the device whose details are changing
+            description: The ID of the device whose details are changing.
             example: "QBUAZIFURK"
           device_display_name:
             type: string
             description: |-
               The public human-readable name of this device. Will be absent
-              if the device has no name
+              if the device has no name.
             example: "Mobile"
           stream_id:
             type: integer
