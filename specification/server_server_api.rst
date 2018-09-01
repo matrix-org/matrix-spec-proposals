@@ -1020,19 +1020,7 @@ EDU. There are no PDUs or Federation Queries involved.
 Each send-to-device message should be sent to the destination server using
 the following EDU::
 
-  EDU type: m.direct_to_device
-
-  Content keys:
-    sender: user ID of the sender
-
-    type: event type for the message
-
-    message_id: unique id for the message: used for idempotence
-
-    messages: The messages to send. A map from user ID, to a map from device ID
-        to message body. The device ID may also be *, meaning all known devices
-        for the user
-
+{{definition_ss_event_schemas_m_direct_to_device}}
 
 Content Repository
 ------------------
