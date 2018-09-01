@@ -51,6 +51,11 @@ allOf:
               The contents of the messages to be sent.  These are arranged in
               a map of user IDs to a map of device IDs to message bodies.
               The device ID may also be \*, meaning all known devices for the user.
+            additionalProperties:
+              type:
+                - string
+                - string
+                - object
             example: {
               "alice@example.org": {
                 "IWHQUZUIAH": {
