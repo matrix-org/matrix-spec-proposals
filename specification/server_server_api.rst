@@ -1018,7 +1018,7 @@ The server API for send-to-device messaging is based on the following
 EDU. There are no PDUs or Federation Queries involved.
 
 Each send-to-device message should be sent to the destination server using
-the following EDU::
+the following EDU:
 
 {{definition_ss_event_schemas_m_direct_to_device}}
 
