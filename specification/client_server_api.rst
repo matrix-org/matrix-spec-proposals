@@ -1333,7 +1333,7 @@ Care should be taken to avoid setting the wrong ``state key``::
 The ``state_key`` is often used to store state about individual users, by using
 the user ID as the ``state_key`` value. For example::
 
-  PUT /rooms/!roomid:domain/state/m.favorite.animal.event/%40my_user%3Adomain.com
+  PUT /rooms/!roomid:domain/state/m.favorite.animal.event/%40my_user%3Aexample.org
   { "animal" : "cat", "reason": "fluffy" }
 
 In some cases, there may be no need for a ``state_key``, so it can be omitted::

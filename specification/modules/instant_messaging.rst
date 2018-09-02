@@ -432,7 +432,7 @@ The ``formatted_body`` should use the following template:
 
   <mx-reply>
     <blockquote>
-      <a href="https://matrix.to/#/!somewhere:domain.com/$event:domain.com">In reply to</a>
+      <a href="https://matrix.to/#/!somewhere:example.org/$event:example.org">In reply to</a>
       <a href="https://matrix.to/#/@alice:example.org">@alice:example.org</a>
       <br />
       <!-- This is where the related event's HTML would be. -->
@@ -498,7 +498,7 @@ is also inserted ahead of the user's ID:
 
   <mx-reply>
     <blockquote>
-      <a href="https://matrix.to/#/!somewhere:domain.com/$event:domain.com">In reply to</a>
+      <a href="https://matrix.to/#/!somewhere:example.org/$event:example.org">In reply to</a>
       * <a href="https://matrix.to/#/@alice:example.org">@alice:example.org</a>
       <br />
       <!-- This is where the related event's HTML would be. -->
@@ -526,7 +526,7 @@ the output looks similar to the following::
 
   <mx-reply>
     <blockquote>
-      <a href="https://matrix.to/#/!somewhere:domain.com/$event:domain.com">In reply to</a>
+      <a href="https://matrix.to/#/!somewhere:example.org/$event:example.org">In reply to</a>
       <a href="https://matrix.to/#/@alice:example.org">@alice:example.org</a>
       <br />
       sent a file.

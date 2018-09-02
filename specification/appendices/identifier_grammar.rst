@@ -352,12 +352,12 @@ a view for the user to participate in the room.
 
 Examples of matrix.to URIs are:
 
-* Room alias: ``https://matrix.to/#/#somewhere:domain.com``
-* Room: ``https://matrix.to/#/!somewhere:domain.com``
-* Permalink by room: ``https://matrix.to/#/!somewhere:domain.com/$event:example.org``
-* Permalink by room alias: ``https://matrix.to/#/#somewhere:domain.com/$event:example.org``
+* Room alias: ``https://matrix.to/#/#somewhere:example.org``
+* Room: ``https://matrix.to/#/!somewhere:example.org``
+* Permalink by room: ``https://matrix.to/#/!somewhere:example.org/$event:example.org``
+* Permalink by room alias: ``https://matrix.to/#/#somewhere:example.org/$event:example.org``
 * User: ``https://matrix.to/#/@alice:example.org``
-* Group: ``https://matrix.to/#/+example:domain.com``
+* Group: ``https://matrix.to/#/+example:example.org``
 
 .. Note::
    Room ID permalinks are unroutable as there is no reliable domain to send requests

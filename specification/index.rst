@@ -277,7 +277,7 @@ the structure of a room ID.
 The following conceptual diagram shows an
 ``m.room.message`` event being sent to the room ``!qporfwt:matrix.org``::
 
-       { @alice:matrix.org }                             { @bob:domain.com }
+       { @alice:matrix.org }                             { @bob:example.org }
                |                                                 ^
                |                                                 |
       [HTTP POST]                                  [HTTP GET]
@@ -288,7 +288,7 @@ The following conceptual diagram shows an
                V                                                 |
        +------------------+                          +------------------+
        |   homeserver     |                          |   homeserver     |
-       |   matrix.org     |                          |   domain.com     |
+       |   matrix.org     |                          |   example.org    |
        +------------------+                          +------------------+
                |                                                 ^
                |         [HTTP PUT]                              |
@@ -300,18 +300,18 @@ The following conceptual diagram shows an
                          Transaction-layer metadata
                          PKI Authorization header
 
-                     ...................................
-                    |           Shared Data             |
-                    | State:                            |
-                    |   Room ID: !qporfwt:matrix.org    |
-                    |   Servers: matrix.org, domain.com |
-                    |   Members:                        |
-                    |    - @alice:matrix.org            |
-                    |    - @bob:domain.com              |
-                    | Messages:                         |
-                    |   - @alice:matrix.org             |
-                    |     Content: { JSON object }      |
-                    |...................................|
+                     ....................................
+                    |           Shared Data              |
+                    | State:                             |
+                    |   Room ID: !qporfwt:matrix.org     |
+                    |   Servers: matrix.org, example.org |
+                    |   Members:                         |
+                    |    - @alice:matrix.org             |
+                    |    - @bob:example.org              |
+                    | Messages:                          |
+                    |   - @alice:matrix.org              |
+                    |     Content: { JSON object }       |
+                    |....................................|
 
 Federation maintains *shared data structures* per-room between multiple home
 servers. The data is split into ``message events`` and ``state events``.
@@ -363,11 +363,11 @@ that are in the room that can be used to join via.
 ::
 
         HTTP GET
-   #matrix:domain.com      !aaabaa:matrix.org
+   #matrix:example.org      !aaabaa:matrix.org
            |                    ^
            |                    |
     _______V____________________|____
-   |          domain.com            |
+   |          example.org           |
    | Mappings:                      |
    | #matrix >> !aaabaa:matrix.org  |
    | #golf   >> !wfeiofh:sport.com  |

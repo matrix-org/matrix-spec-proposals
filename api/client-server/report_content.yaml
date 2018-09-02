@@ -46,7 +46,7 @@ paths:
           name: eventId
           description: The event to report.
           required: true
-          x-example: "$something:domain.com"
+          x-example: "$something:example.org"
         - in: body
           name: body
           schema:

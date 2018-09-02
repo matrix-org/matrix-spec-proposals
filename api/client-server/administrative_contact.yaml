@@ -171,7 +171,7 @@ paths:
               address:
                 type: string
                 description: The third party address being removed.
-                example: "example@domain.com"
+                example: "example@example.org"
             required: ['medium', 'address']
       responses:
         200:

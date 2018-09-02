@@ -69,7 +69,7 @@ allOf:
               required: ['event_ids', 'data']
           required: ['m.read']
         example: {
-          "!some_room:domain.com": {
+          "!some_room:example.org": {
             "m.read": {
               "@john:matrix.org": {
                 "event_ids": ["$read_this_event:matrix.org"],

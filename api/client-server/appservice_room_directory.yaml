@@ -59,7 +59,7 @@ paths:
           name: roomId
           description: The room ID to add to the directory.
           required: true
-          x-example: "!somewhere:domain.com"
+          x-example: "!somewhere:example.org"
         - in: body
           name: body
           required: true

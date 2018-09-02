@@ -308,7 +308,7 @@ Example:
     "content": {
       "body": "something-important.jpg",
       "file": {
-        "url": "mxc://domain.com/FHyPlCeYUSFFxlgbQYZmoEoe",
+        "url": "mxc://example.org/FHyPlCeYUSFFxlgbQYZmoEoe",
         "mimetype": "image/jpeg",
         "v": "v2",
         "key": {
@@ -340,7 +340,7 @@ Example:
             "kty": "oct"
           },
           "mimetype": "image/jpeg",
-          "url": "mxc://domain.com/pmVJxyxGlmxHposwVSlOaEOv",
+          "url": "mxc://example.org/pmVJxyxGlmxHposwVSlOaEOv",
           "v": "v2"
         },
         "thumbnail_info": {
@@ -353,10 +353,10 @@ Example:
       },
       "msgtype": "m.image"
     },
-    "event_id": "$143273582443PhrSn:domain.com",
+    "event_id": "$143273582443PhrSn:example.org",
     "origin_server_ts": 1432735824653,
-    "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
-    "sender": "@example:domain.com",
+    "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
+    "sender": "@example:example.org",
     "type": "m.room.message",
     "unsigned": {
         "age": 1234

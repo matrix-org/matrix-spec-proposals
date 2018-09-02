@@ -47,7 +47,7 @@ paths:
           type: string
           description: The event ID to get the auth chain of.
           required: true
-          x-example: "$helloworld:domain.com"
+          x-example: "$helloworld:example.org"
       responses:
         200:
           description: The auth chain for the event.
@@ -90,7 +90,7 @@ paths:
           type: string
           description: The event ID to compare the auth chain of.
           required: true
-          x-example: "$helloworld:domain.com"
+          x-example: "$helloworld:example.org"
         - in: body
           name: body
           schema:
@@ -127,7 +127,7 @@ paths:
                         The reason for the event being rejected.
                   required: ['reason']
                 example: {
-                  "$some_event:domain.com": {
+                  "$some_event:example.org": {
                     "reason": "auth_error"
                   }
                 }
@@ -153,7 +153,7 @@ paths:
                   after comparing the "remote auth" and "local auth" chains.
                 items:
                   type: string
-                example: ["$a_missing_event:domain.com"]
+                example: ["$a_missing_event:example.org"]
               rejects:
                 type: object
                 description: |-
@@ -173,7 +173,7 @@ paths:
                         The reason for the event being rejected.
                   required: ['reason']
                 example: {
-                  "$some_event:domain.com": {
+                  "$some_event:example.org": {
                     "reason": "auth_error"
                   }
                 }

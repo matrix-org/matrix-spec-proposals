@@ -110,14 +110,14 @@ paths:
                   of the room, and their authorization events, recursively.
                 items:
                   type: string
-                example: ["$an_event:domain.com"]
+                example: ["$an_event:example.org"]
               pdu_ids:
                 type: array
                 description: |-
                   The fully resolved state of the room at the given event.
                 items:
                   type: string
-                example: ["$an_event:domain.com"]
+                example: ["$an_event:example.org"]
             required: ['auth_chain_ids', 'pdu_ids']
   "/event/{eventId}":
     get:

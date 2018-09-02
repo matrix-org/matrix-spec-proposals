@@ -3,7 +3,7 @@
   "type": "m.room.create",
   "state_key": "",
   "content": {
-    "creator": "@example:domain.com",
+    "creator": "@example:example.org",
     "room_version": "1",
     "m.federate": true
   }

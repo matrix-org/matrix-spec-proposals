@@ -20,7 +20,7 @@ host: localhost:8448
 schemes:
   - https
 basePath: /_matrix/federation/v1
-consumes: 
+consumes:
   - application/json
 produces:
   - application/json
@@ -49,7 +49,7 @@ paths:
           type: array
           items:
             type: string
-          description: The event IDs to backfill from. 
+          description: The event IDs to backfill from.
           required: true
           x-example: ["$abc123:matrix.org"]
         - in: query
@@ -118,18 +118,18 @@ paths:
                   the previous events of ``latest_events``.
                 items:
                   type: string
-                example: ["$missing_event:domain.com"]
+                example: ["$missing_event:example.org"]
               latest_events:
                 type: array
                 description: The events to retrieve the previous events for.
                 items:
                   type: string
-                example: ["$event_that_has_the_missing_event_as_a_previous_event:domain.com"]
+                example: ["$event_that_has_the_missing_event_as_a_previous_event:example.org"]
             required: ['earliest_events', 'latest_events']
       responses:
         200:
           description: |-
-            The previous events for ``latest_events``, excluding any ``earliest_events``, up to the 
+            The previous events for ``latest_events``, excluding any ``earliest_events``, up to the
             provided ``limit``.
           schema:
             type: object

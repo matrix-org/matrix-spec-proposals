@@ -5,7 +5,7 @@
     "body": "Big Ben, London, UK",
     "geo_uri": "geo:51.5008,0.1247",
     "info": {
-      "thumbnail_url": "mxc://domain.com/FHyPlCeYUSFFxlgbQYZmoEoe",
+      "thumbnail_url": "mxc://example.org/FHyPlCeYUSFFxlgbQYZmoEoe",
       "thumbnail_info": {
         "mimetype": "image/jpeg",
         "size": 46144,

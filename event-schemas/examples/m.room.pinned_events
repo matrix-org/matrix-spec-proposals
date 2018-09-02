@@ -3,6 +3,6 @@
   "type": "m.room.pinned_events",
   "state_key": "",
   "content": {
-    "pinned": ["$someevent:domain.com"]
+    "pinned": ["$someevent:example.org"]
   }
 }

@@ -222,7 +222,7 @@ paths:
                 type: string
                 description: |-
                   The third party identifier itself. For example, an email address.
-                example: "alice@domain.com"
+                example: "alice@example.com"
               mxid:
                 type: string
                 description: The user that is now bound to the third party identifier.
@@ -245,7 +245,7 @@ paths:
                       type: string
                       description: |-
                         The third party identifier that received the invite.
-                      example: "alice@domain.com"
+                      example: "alice@example.com"
                     mxid:
                       type: string
                       description: The now-bound user ID that received the invite.
