@@ -1,8 +1,8 @@
 {
   "$ref": "core/state_event.json",
-  "state_key": "domain.com",
+  "state_key": "example.org",
   "type": "m.room.aliases",
   "content": {
-    "aliases": ["#somewhere:domain.com", "#another:domain.com"]
+    "aliases": ["#somewhere:example.org", "#another:example.org"]
   }
 }

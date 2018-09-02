@@ -169,7 +169,7 @@ An example registration file for an IRC-bridging application service is below:
     url: "http://127.0.0.1:1234"
     as_token: "30c05ae90a248a4188e620216fa72e349803310ec83e2a77b34fe90be6081f46"
     hs_token: "312df522183efd404ec1cd22d2ffa4bbc76a8c1ccf541dd692eef281356bb74e"
-    sender_localpart: "_irc_bot" # Will result in @_irc_bot:domain.com
+    sender_localpart: "_irc_bot" # Will result in @_irc_bot:example.org
     namespaces:
       users:
         - exclusive: true
@@ -352,7 +352,7 @@ An example request would be::
 
    ::
 
-    PUT /_matrix/client/r0/rooms/!somewhere:domain.com/send/m.room.message/txnId?ts=1534535223283
+    PUT /_matrix/client/r0/rooms/!somewhere:example.org/send/m.room.message/txnId?ts=1534535223283
     Authorization: Bearer YourApplicationServiceTokenHere
 
     Content: The event to send, as per the Client-Server API.

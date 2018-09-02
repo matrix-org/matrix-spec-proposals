@@ -3,9 +3,9 @@
   "type": "m.room.message",
   "content": {
     "body": "Gangnam Style",
-    "url": "mxc://domain.com/a526eYUSFFxlgbQYZmo442",
+    "url": "mxc://example.org/a526eYUSFFxlgbQYZmo442",
     "info": {
-      "thumbnail_url": "mxc://domain.com/FHyPlCeYUSFFxlgbQYZmoEoe",
+      "thumbnail_url": "mxc://example.org/FHyPlCeYUSFFxlgbQYZmoEoe",
       "thumbnail_info": {
         "mimetype": "image/jpeg",
         "size": 46144,

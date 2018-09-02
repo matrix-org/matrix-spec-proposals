@@ -107,7 +107,7 @@ paths:
               200,
               {
                 "pdus": {
-                  "$successful_event:domain.com": {},
+                  "$successful_event:example.org": {},
                   "$failed_event:example.org": {
                     "error": "You are not allowed to send a message to this room."
                   }

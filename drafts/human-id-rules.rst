@@ -66,8 +66,8 @@ In the event of a failed room alias check, well behaved homeservers MUST:
 
 Examples::
 
-  @ebаy:domain.com (Cyrillic 'a', everything else English)
-  @@xn--eby-7cd:domain.com (Punycode with additional '@')
+  @ebаy:example.org (Cyrillic 'a', everything else English)
+  @@xn--eby-7cd:example.org (Punycode with additional '@')
 
 Homeservers SHOULD NOT allow two user IDs that differ only by case. This
 SHOULD be applied based on the capitalisation rules in the CLDR dataset:
@@ -95,7 +95,7 @@ entirely Latin.
 
 User ID localparts cannot start with ``@`` so that a namespace of localparts
 beginning with ``@`` can be created. This namespace is used for user IDs which
-fail the ID checks. A failed ID could look like ``@@xn--c1yn36f:domain.com``.
+fail the ID checks. A failed ID could look like ``@@xn--c1yn36f:example.org``.
 
 If a user ID fails the check, the user ID on the event is renamed. This doesn't
 require extra work for clients, and users will see an odd user ID rather than a
@@ -128,6 +128,6 @@ Capitalisation
 --------------
 
 The capitalisation rules outlined above are nice but do not fully resolve issues
-where ``@alice:example.com`` tries to speak with ``@bob:domain.com`` using
-``@Bob:domain.com``. It is up to ``domain.com`` to map ``Bob`` to ``bob`` in
+where ``@alice:example.com`` tries to speak with ``@bob:example.org`` using
+``@Bob:example.org``. It is up to ``example.org`` to map ``Bob`` to ``bob`` in
 a sensible way.

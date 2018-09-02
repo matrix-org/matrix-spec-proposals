@@ -3,7 +3,7 @@
   "type": "m.room.message",
   "content": {
     "body": "Bee Gees - Stayin' Alive",
-    "url": "mxc://domain.com/ffed755USFFxlgbQYZGtryd",
+    "url": "mxc://example.org/ffed755USFFxlgbQYZGtryd",
     "info": {
       "duration": 2140786,
       "size": 1563685,

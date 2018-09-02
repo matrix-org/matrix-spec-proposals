@@ -18,12 +18,12 @@ description: |-
   An EDU representing a declination or revocation for the observing user
   to subscribe to the presence of the observed user.
 example: {
-  "origin": "domain.com",
+  "origin": "example.org",
   "destination": "elsewhere.org",
   "edu_type": "m.presence_deny",
   "content": {
     "observed_user": "@alice:elsewhere.org",
-    "observer_user": "@john:domain.com"
+    "observer_user": "@john:example.org"
   }
 }
 allOf:

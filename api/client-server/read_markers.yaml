@@ -42,7 +42,7 @@ paths:
           name: roomId
           description: The room ID to set the read marker in for the user.
           required: true
-          x-example: "!somewhere:domain.com"
+          x-example: "!somewhere:example.org"
         - in: body
           name: body
           description: The read marker and optional read receipt locations.
@@ -55,14 +55,14 @@ paths:
                 description: |-
                   The event ID the read marker should be located at. The
                   event MUST belong to the room.
-                example: "$somewhere:domain.com"
+                example: "$somewhere:example.org"
               "m.read":
                 type: string
                 description: |-
                   The event ID to set the read receipt location at. This is
-                  equivalent to calling ``/receipt/m.read/$elsewhere:domain.com``
+                  equivalent to calling ``/receipt/m.read/$elsewhere:example.org``
                   and is provided here to save that extra call.
-                example: "$elsewhere:domain.com"
+                example: "$elsewhere:example.org"
             required: ['m.fully_read']
       responses:
         200:

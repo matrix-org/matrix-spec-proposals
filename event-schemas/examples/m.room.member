@@ -1,10 +1,10 @@
 {
   "$ref": "core/state_event.json",
-  "state_key": "@alice:domain.com",
+  "state_key": "@alice:example.org",
   "type": "m.room.member",
   "content": {
     "membership": "join",
-    "avatar_url": "mxc://domain.com/SEsfnsuifSDFSSEF#auto",
+    "avatar_url": "mxc://example.org/SEsfnsuifSDFSSEF#auto",
     "displayname": "Alice Margatroid"
   }
 }

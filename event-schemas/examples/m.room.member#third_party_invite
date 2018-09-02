@@ -2,12 +2,12 @@
   "$ref": "m.room.member",
   "content": {
     "membership": "invite",
-    "avatar_url": "mxc://domain.com/SEsfnsuifSDFSSEF#auto",
+    "avatar_url": "mxc://example.org/SEsfnsuifSDFSSEF#auto",
     "displayname": "Alice Margatroid",
     "third_party_invite": {
       "display_name": "alice",
       "signed": {
-        "mxid": "@alice:domain.com",
+        "mxid": "@alice:example.org",
         "signatures": {
           "magic.forest": {
             "ed25519:3": "fQpGIW1Snz+pwLZu6sTy2aHy/DYWWTspTJRPyNp0PKkymfIsNffysMl6ObMMFdIJhk6g6pwlIqZ54rxo8SLmAg"

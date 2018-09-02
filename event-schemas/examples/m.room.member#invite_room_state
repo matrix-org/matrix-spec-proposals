@@ -2,7 +2,7 @@
   "$ref": "m.room.member",
   "content": {
     "membership": "invite",
-    "avatar_url": "mxc://domain.com/SEsfnsuifSDFSSEF#auto",
+    "avatar_url": "mxc://example.org/SEsfnsuifSDFSSEF#auto",
     "displayname": "Alice Margatroid"
   },
   "unsigned": {
