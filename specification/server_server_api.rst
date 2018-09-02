@@ -1008,12 +1008,16 @@ of the Client-Server API.
 Matrix currently uses a custom pubsub system for synchronising information
 about the list of devices for a given user over federation.  When a server
 wishes to determine a remote user's device list for the first time,
-it should populate its local cache by calling the ``/user/keys/query`` API
+it should populate a local cache from the result of a ``/user/keys/query`` API
 on the remote server.  However, subsequent updates to the cache should be applied
-by consuming ``m.device_list_update`` EDUs, which must be sent by the remote server
-whenever a user's device list changes.
+by consuming ``m.device_list_update`` EDUs.  Each new ``m.device_list_update`` EDU
+describes an incremental change to one device for a given user which should replace
+any existing entry in the local server's cache of that device list. Servers must send
+``m.device_list_update`` EDUs to all the servers whose users participate in their rooms,
+and must be sent whenever a local user's device list changes (i.e. new or deleted devices,
+or changes of identity keys).
 
-Servers send ``m.device_list_update`` EDUs in a sequence per source user, each with
+Servers send ``m.device_list_update`` EDUs in a sequence per origin user, each with
 a unique ``stream_id``.  They also include a pointer to the most recent previous EDU(s)
 that this update is relative to in the ``prev_id`` field.  To simplify implementation
 for clustered servers which could send multiple EDUs at the same time, the ``prev_id``
