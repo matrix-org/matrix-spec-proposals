@@ -1015,8 +1015,9 @@ describes an incremental change to one device for a given user which should repl
 any existing entry in the local server's cache of that device list. Servers must send
 ``m.device_list_update`` EDUs to all the servers who share a room with a given
 local user, and must be sent whenever that user's device list changes (i.e. for new or
-deleted devices, when that user joins a new room, or changes of device information such as
-human-readable name).
+deleted devices, when that user joins a room which contains servers which are not
+already receiving updates for that user's device list, or changes in device information
+such as the device's human-readable name).
 
 Servers send ``m.device_list_update`` EDUs in a sequence per origin user, each with
 a unique ``stream_id``.  They also include a pointer to the most recent previous EDU(s)
