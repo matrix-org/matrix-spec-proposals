@@ -1013,9 +1013,10 @@ on the remote server.  However, subsequent updates to the cache should be applie
 by consuming ``m.device_list_update`` EDUs.  Each new ``m.device_list_update`` EDU
 describes an incremental change to one device for a given user which should replace
 any existing entry in the local server's cache of that device list. Servers must send
-``m.device_list_update`` EDUs to all the servers whose users participate in their rooms,
-and must be sent whenever a local user's device list changes (i.e. new or deleted devices,
-or changes of identity keys).
+``m.device_list_update`` EDUs to all the servers who share a room with a given
+local user, and must be sent whenever that user's device list changes (i.e. for new or
+deleted devices, when that user joins a new room, or changes of device information such as
+human-readable name).
 
 Servers send ``m.device_list_update`` EDUs in a sequence per origin user, each with
 a unique ``stream_id``.  They also include a pointer to the most recent previous EDU(s)
