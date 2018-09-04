@@ -70,8 +70,7 @@ properties:
       state_default:
         description: |-
             The default level required to send state events. Can be overridden
-            by the ``events`` key. Defaults to 50 if unspecified, but 0 if
-            there is no ``m.room.power_levels`` event at all.
+            by the ``events`` key. Defaults to 50 if unspecified.
         type: integer
       users:
         additionalProperties:
