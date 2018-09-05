@@ -253,5 +253,281 @@ identity servers with many requests, or much state to store. Defending against
 these is left to the implementer's discretion.
 
 
-
 .. _`identity server /isvalid`: ../identity_service/unstable.html#get-matrix-identity-api-v1-pubkey-isvalid
+
+
+Sample Scenarios
+----------------
+
+Third party invites are complicated to get right, and have security considerations
+that must be taken to ensure data is not accidentally leaked. These sample
+scenarios are not exhaustive, however they may be of use to assist in understanding
+the requirements for this particular module.
+
+These scenarios all describe what happens in the context of a single room.
+Additionally, each scenario uses the following shorthand for readability:
+
+    * HS = Homeserver (sometimes suffixed with a number to represent unique/different
+      homeservers in the same example)
+
+    * IS = Identity Server (sometimes also suffixed with a number)
+
+    * User = A Matrix user
+
+    * 3PUser = A third party user (email address, etc)
+
+
+All of these scenarios assume that the invited third party identifier is not
+bound to a matrix user.
+
+
+Simple scenario: 1 homeserver, 1 identity server
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is most likely to happen when a user invites a third party user to a private
+chat, where the receiving user signs up on the same homeserver as the sender.
+
+::
+
+    +-------+ +---------+          +-----+                                                          +-----+
+    | User  | | 3PUser  |          | HS  |                                                          | IS  |
+    +-------+ +---------+          +-----+                                                          +-----+
+        |          |                  |                                                                |
+        | POST /invite                |                                                                |
+        |---------------------------->|                                                                |
+        |          |                  |                                                                |
+        |          |                  | GET /lookup                                                    |
+        |          |                  |--------------------------------------------------------------->|
+        |          |                  |                                                                |
+        |          |                  |                                              "no users" result |
+        |          |                  |<---------------------------------------------------------------|
+        |          |                  |                                                                |
+        |          |                  | POST /store-invite                                             |
+        |          |                  |--------------------------------------------------------------->|
+        |          |                  |                                                                |
+        |          |                  |                    Information for a m.room.third_party_invite |
+        |          |                  |<---------------------------------------------------------------|
+        |          |                  |                                                                |
+        |          |                  | Send m.room.third_party_invite to room                         |
+        |          |                  |---------------------------------------                         |
+        |          |                  |                                      |                         |
+        |          |                  |<--------------------------------------                         |
+        |          |                  |                                                                |
+        |    Complete /invite request |                                                                |
+        |<----------------------------|                                                                |
+        |          |                  |                                                                |
+        |          | Verify identity  |                                                                |
+        |          |---------------------------------------------------------------------------------->|
+        |          |                  |                                                                |
+        |          |                  |                                              POST /3pid/onbind |
+        |          |                  |<---------------------------------------------------------------|
+        |          |                  |                                                                |
+        |          |                  | Exchange m.room.third_party_invite for m.room.member invite    |
+        |          |                  |------------------------------------------------------------    |
+        |          |                  |                                                           |    |
+        |          |                  |<-----------------------------------------------------------    |
+        |          |                  |                                                                |
+        |          |                  | Send m.room.member to room                                     |
+        |          |                  |---------------------------                                     |
+        |          |                  |                          |                                     |
+        |          |                  |<--------------------------                                     |
+        |          |                  |                                                                |
+        |          |                  | Complete /3pid/onbind request                                  |
+        |          |                  |--------------------------------------------------------------->|
+        |          |                  |                                                                |
+        |          |                  |                         Complete identity verification request |
+        |          |<----------------------------------------------------------------------------------|
+        |          |                  |                                                                |
+
+
+Simple scenario: 2 homeservers (both residents of the room), 1 identity server
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This happens when a user invites a third party user to a room where two homeservers
+reside. The process is similar for 3, 4, and more homeservers residing in the room.
+
+Note: Homeserver 2 is able to exchange the third party invite for an ``m.room.member``
+invite event for itself because it is a resident of the room.
+
+::
+
+    +-------+ +---------+          +-----+                                     +-----+                                                          +-----+
+    | User1 | | 3PUser  |          | HS1 |                                     | HS2 |                                                          | IS  |
+    +-------+ +---------+          +-----+                                     +-----+                                                          +-----+
+        |          |                  |                                           |                                                                |
+        | POST /invite                |                                           |                                                                |
+        |---------------------------->|                                           |                                                                |
+        |          |                  |                                           |                                                                |
+        |          |                  | GET /lookup                               |                                                                |
+        |          |                  |----------------------------------------------------------------------------------------------------------->|
+        |          |                  |                                           |                                                                |
+        |          |                  |                                           |                                              "no users" result |
+        |          |                  |<-----------------------------------------------------------------------------------------------------------|
+        |          |                  |                                           |                                                                |
+        |          |                  | POST /store-invite                        |                                                                |
+        |          |                  |----------------------------------------------------------------------------------------------------------->|
+        |          |                  |                                           |                                                                |
+        |          |                  |                                           |                    Information for a m.room.third_party_invite |
+        |          |                  |<-----------------------------------------------------------------------------------------------------------|
+        |          |                  |                                           |                                                                |
+        |          |                  | Send m.room.third_party_invite to room    |                                                                |
+        |          |                  |------------------------------------------>|                                                                |
+        |          |                  |                                           |                                                                |
+        |    Complete /invite request |                                           |                                                                |
+        |<----------------------------|                                           |                                                                |
+        |          |                  |                                           |                                                                |
+        |          | Verify identity  |                                           |                                                                |
+        |          |------------------------------------------------------------------------------------------------------------------------------>|
+        |          |                  |                                           |                                                                |
+        |          |                  |                                           |                                              POST /3pid/onbind |
+        |          |                  |                                           |<---------------------------------------------------------------|
+        |          |                  |                                           |                                                                |
+        |          |                  |                                           | Exchange m.room.third_party_invite for m.room.member invite    |
+        |          |                  |                                           |------------------------------------------------------------    |
+        |          |                  |                                           |                                                           |    |
+        |          |                  |                                           |<-----------------------------------------------------------    |
+        |          |                  |                                           |                                                                |
+        |          |                  |                Send m.room.member to room |                                                                |
+        |          |                  |<------------------------------------------|                                                                |
+        |          |                  |                                           |                                                                |
+        |          |                  |                                           | Complete /3pid/onbind request                                  |
+        |          |                  |                                           |--------------------------------------------------------------->|
+        |          |                  |                                           |                                                                |
+        |          |                  |                                           |                         Complete identity verification request |
+        |          |<------------------------------------------------------------------------------------------------------------------------------|
+        |          |                  |                                           |                                                                |
+
+
+Scenario: 2 homeservers (1 not in the room), 1 identity server
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is similar to the previous scenario however HS2 is not a resident of the room
+and must contact HS1 to get into the room.
+
+::
+
+    +-------+ +---------+          +-----+                                           +-----+                            +-----+
+    | User1 | | 3PUser  |          | HS1 |                                           | HS2 |                            | IS  |
+    +-------+ +---------+          +-----+                                           +-----+                            +-----+
+        |          |                  |                                                 |                                  |
+        | POST /invite                |                                                 |                                  |
+        |---------------------------->|                                                 |                                  |
+        |          |                  |                                                 |                                  |
+        |          |                  | GET /lookup                                     |                                  |
+        |          |                  |----------------------------------------------------------------------------------->|
+        |          |                  |                                                 |                                  |
+        |          |                  |                                                 |                "no users" result |
+        |          |                  |<-----------------------------------------------------------------------------------|
+        |          |                  |                                                 |                                  |
+        |          |                  | POST /store-invite                              |                                  |
+        |          |                  |----------------------------------------------------------------------------------->|
+        |          |                  |                                                 |                                  |
+        |          |                  |                                        Information for a m.room.third_party_invite |
+        |          |                  |<-----------------------------------------------------------------------------------|
+        |          |                  |                                                 |                                  |
+        |          |                  | Send m.room.third_party_invite to room          |                                  |
+        |          |                  |------------------------------------------------>|                                  |
+        |          |                  |                                                 |                                  |
+        |    Complete /invite request |                                                 |                                  |
+        |<----------------------------|                                                 |                                  |
+        |          |                  |                                                 |                                  |
+        |          | Verify identity  |                                                 |                                  |
+        |          |------------------------------------------------------------------------------------------------------>|
+        |          |                  |                                                 |                                  |
+        |          |                  |                                                 |                POST /3pid/onbind |
+        |          |                  |                                                 |<---------------------------------|
+        |          |                  |                                                 |                                  |
+        |          |                  |       POST /exchange_third_party_invite/:roomId |                                  |
+        |          |                  |<------------------------------------------------|                                  |
+        |          |                  |                                                 |                                  |
+        |          |                  | Verify the request                              |                                  |
+        |          |                  |-------------------                              |                                  |
+        |          |                  |                  |                              |                                  |
+        |          |                  |<------------------                              |                                  |
+        |          |                  |                                                 |                                  |
+        |          |                  | Send m.room.member to room                      |                                  |
+        |          |                  |------------------------------------------------>|                                  |
+        |          |                  |                                                 |                                  |
+        |          |                  | Complete /exchange_third_party_invite request   |                                  |
+        |          |                  |------------------------------------------------>|                                  |
+        |          |                  |                                                 |                                  |
+        |          |                  |                                                 | Complete /3pid/onbind request    |
+        |          |                  |                                                 |--------------------------------->|
+        |          |                  |                                                 |                                  |
+        |          |                  |                                             Complete identity verification request |
+        |          |<------------------------------------------------------------------------------------------------------|
+        |          |                  |                                                 |                                  |
+
+
+Theoretical identity server replication: 2 homeservers (1 residing in the room), 2 identity servers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The identity server specification does not currently define a way for an invite to
+replicate to another identity server, however this may occur in the wider world. This
+scenario defines a case where a user invites a third party user using one identity
+server, however the third party user verifies their identity with a different identity
+server. The identity servers are assumed to be compatible with each other.
+
+::
+
+    +-------+ +---------+          +-----+                                           +-----+ +-----+                     +-----+
+    | User1 | | 3PUser  |          | HS1 |                                           | HS2 | | IS1 |                     | IS2 |
+    +-------+ +---------+          +-----+                                           +-----+ +-----+                     +-----+
+        |          |                  |                                                 |       |                           |
+        | POST /invite                |                                                 |       |                           |
+        |---------------------------->|                                                 |       |                           |
+        |          |                  |                                                 |       |                           |
+        |          |                  | GET /lookup                                     |       |                           |
+        |          |                  |-------------------------------------------------------->|                           |
+        |          |                  |                                                 |       |                           |
+        |          |                  |                                       "no users" result |                           |
+        |          |                  |<--------------------------------------------------------|                           |
+        |          |                  |                                                 |       |                           |
+        |          |                  | POST /store-invite                              |       |                           |
+        |          |                  |-------------------------------------------------------->|                           |
+        |          |                  |                                                 |       |                           |
+        |          |                  |                                                 |       | Replicate invite          |
+        |          |                  |                                                 |       |-------------------------->|
+        |          |                  |                                                 |       |                           |
+        |          |                  |             Information for a m.room.third_party_invite |                           |
+        |          |                  |<--------------------------------------------------------|                           |
+        |          |                  |                                                 |       |                           |
+        |          |                  | Send m.room.third_party_invite to room          |       |                           |
+        |          |                  |------------------------------------------------>|       |                           |
+        |          |                  |                                                 |       |                           |
+        |    Complete /invite request |                                                 |       |                           |
+        |<----------------------------|                                                 |       |                           |
+        |          |                  |                                                 |       |                           |
+        |          | Verify identity  |                                                 |       |                           |
+        |          |------------------------------------------------------------------------------------------------------->|
+        |          |                  |                                                 |       |                           |
+        |          |                  |                                                 |       |         POST /3pid/onbind |
+        |          |                  |                                                 |<----------------------------------|
+        |          |                  |                                                 |       |                           |
+        |          |                  |       POST /exchange_third_party_invite/:roomId |       |                           |
+        |          |                  |<------------------------------------------------|       |                           |
+        |          |                  |                                                 |       |                           |
+        |          |                  | Verify the request                              |       |                           |
+        |          |                  |-------------------                              |       |                           |
+        |          |                  |                  |                              |       |                           |
+        |          |                  |<------------------                              |       |                           |
+        |          |                  |                                                 |       |                           |
+        |          |                  | Send m.room.member to room                      |       |                           |
+        |          |                  |------------------------------------------------>|       |                           |
+        |          |                  |                                                 |       |                           |
+        |          |                  | Complete /exchange_third_party_invite request   |       |                           |
+        |          |                  |------------------------------------------------>|       |                           |
+        |          |                  |                                                 |       |                           |
+        |          |                  |                                                 | Complete /3pid/onbind request     |
+        |          |                  |                                                 |---------------------------------->|
+        |          |                  |                                                 |       |                           |
+        |          |                  |                                                 |       |    Replicate verification |
+        |          |                  |                                                 |       |<--------------------------|
+        |          |                  |                                                 |       |                           |
+        |          |                  |                                              Complete identity verification request |
+        |          |<-------------------------------------------------------------------------------------------------------|
+        |          |                  |                                                 |       |                           |
+
+
+
+.. _`Identity Server /isvalid`: ../identity_service/unstable.html#get-matrix-identity-api-v1-pubkey-isvalid
