@@ -45,7 +45,8 @@ On receipt of encryption keys (1st time):
       1. if yes:
          1. generate new key pair
          2. create new backup version: `POST /room_keys/version`
-         3. display private key to user to save
+         3. display private key to user to save TODO: specify how the key is
+            displayed
       2. if no, exit and remember decision (user can change their mind later)
       3. while prompting, continue to poll `GET /room_keys/versions`, as
          another device may have created a backup.  If so, go to 1.2.
@@ -76,7 +77,7 @@ On receipt of undecryptable message:
    the user wants to request keys from other devices.)
 2. if yes, prompt for private key, and get keys: `GET /room_keys/keys`
 
-Users can also set up or disable backups, or restore from backup via user
+Users can also set up, disable, or rotate backups, or restore from backup via user
 settings.
 
 ### API
@@ -201,7 +202,7 @@ Returns the same as `PUT
 
 #### Key format
 
-Session keys are encoded as a JSON object with the properties:
+Each session key is encoded as a JSON object with the properties:
 
 - `algorithm` (string): `m.megolm.v1.aes-sha2`
 - `sender_key` (string): base64-encoded device curve25519 key
@@ -210,6 +211,8 @@ Session keys are encoded as a JSON object with the properties:
 - `forwardingCurve25519KeyChain` (array): zero or more curve25519 keys for
   devices who forwarded the session key
 - `session_key` (string): base64-encoded session key
+
+...
 
 Tradeoffs
 ---------
@@ -227,8 +230,11 @@ with users before sending keys to a new backup version.
 Other Issues
 ------------
 
-Since many clients will receive encryption keys at around the same time,
-clients should randomly offset their requests ...
+Since many clients will receive encryption keys at around the same time, they
+will all want to back up their copies of the keys at around the same time,
+which may increase load on the server if this happens in a big room.  (TODO:
+how much of an issue is this?)  For this reason, clients should offset their
+backup requests randomly.
 
 Conclusion
 ----------
