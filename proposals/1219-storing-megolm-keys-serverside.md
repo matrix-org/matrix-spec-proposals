@@ -43,7 +43,7 @@ On receipt of encryption keys (1st time):
 1. client checks if there is an existing backup: `GET /room_keys/version`
    1. if not, ask if the user wants to back up keys
       1. if yes:
-         1. generate new key pair
+         1. generate new curve25519 key pair
          2. create new backup version: `POST /room_keys/version`
          3. display private key to user to save TODO: specify how the key is
             displayed
@@ -91,18 +91,18 @@ Create a new backup version.
 Body parameters:
 
 - `algorithm` (string): Required. The algorithm used for storing backups.
-  Currently, only `m.megolm_backup.v1` is defined. (FIXME: change the algorithm
-  name to include the encryption method)
+  Currently, only `m.megolm_backup.v1.curve25519-aes-sha2` is defined.
 - `auth_data` (string or object): Required. algorithm-dependent data.  For
-  `m.megolm_backup.v1`, this is a signedjson object with the following keys:
-  - `public_key` (string): the public key used to encrypt the backups
+  `m.megolm_backup.v1.curve25519-aes-sha2`, this is a signedjson object with
+  the following keys:
+  - `public_key` (string): the curve25519 public key used to encrypt the backups
   - `signatures` (object): signatures of the public key
 
 Example:
 
 ```javascript
 {
-  "algorithm": "m.megolm_backup.v1",
+  "algorithm": "m.megolm_backup.v1.curve25519-aes-sha2",
   "auth_data": {
     "public_key": "abcdefg",
     "signatures": {
@@ -143,7 +143,10 @@ Store the key for the given session in the given room, using the given backup
 version.
 
 If the server already has a backup in the backup version for the given session
-and room, then it will keep the "better" one ...
+and room, then it will keep the "better" one.  To determine which one is
+"better", key backups are compared first by the `is_verified` flag (`true` is
+better than `false`), then by the `first_message_index` (a lower number is better),
+and finally by `forwarded_count` (a lower number is better).
 
 Body parameters:
 
@@ -154,15 +157,16 @@ Body parameters:
 - `is_verified` (boolean): Whether the device backing up the key has verified
   the device that the key is from.
 - `session_data` (string or object): Algorithm-dependent data.  For
-  `m.megolm_backup.v1`, this is an object with the following keys:
-  - `ciphertext` (string): the encrypted version of the session key.  See below
-    for how the session key is encoded.
-  - `ephemeral` (string): the public ephemeral key that was used to encrypt the
-    session key.
+  `m.megolm_backup.v1.curve25519-aes-sha2`, this is an object with the
+  following keys (TODO: this stuff should be moved):
+  - `ciphertext` (string): the encrypted version of the session key, as an
+    unpadded base64 string.  See below for how the session key is encoded.
+  - `ephemeral` (string): the public ephemeral curve25519 key that was used to
+    encrypt the session key, as an unpadded base64 string.
   - `mac` (string): the message authentication code for the ciphertext. FIXME:
     more details
 
-On success, returns ... ?
+On success, returns the empty JSON object.
 
 Error codes:
 
@@ -176,7 +180,7 @@ Store several keys for the given room, using the given backup version.
 Behaves the same way as if the keys were added individually using `PUT
 /room_keys/keys/${roomId}/${sessionId}?version=$v`.
 
-Body paremeters:
+Body parameters:
 - `sessions` (object): an object where the keys are the session IDs, and the
   values are objects of the same form as the body in `PUT
   /room_keys/keys/${roomId}/${sessionId}?version=$v`.
@@ -184,15 +188,43 @@ Body paremeters:
 Returns the same as `PUT
 /room_keys/keys/${roomId}/${sessionId}?version=$v`
 
-##### `PUT /room_keys/keys/?version=$v`
+##### `PUT /room_keys/keys?version=$v`
 
-...
+Store several keys, using the given backup version.
+
+Behaves the same way as if the keys were added individually using `PUT
+/room_keys/keys/${roomId}/${sessionId}?version=$v`.
+
+Body parameters:
+- `rooms` (object): an object where the keys are the room IDs, and the values
+  are objects of the same form as the body in `PUT
+  /room_keys/keys/${roomId}/?version=$v`.
+
+Returns the same as `PUT
+/room_keys/keys/${roomId}/${sessionId}?version=$v`
 
 #### Retrieving keys
 
 ##### `GET /room_keys/keys/${roomId}/${sessionId}?version=$v`
+
+Retrieve the key for the given session in the given room from the backup.
+
+On success, returns a JSON object in the same form as the request body of `PUT
+/room_keys/keys/${roomId}/${sessionId}?version=$v`.
+
 ##### `GET /room_keys/keys/${roomId}?version=$v`
-##### `GET /room_keys/keys/?version=$v`
+
+Retrieve the all the keys for the given room from the backup.
+
+On success, returns a JSON object in the same form as the request body of `PUT
+/room_keys/keys/${roomId}?version=$v`.
+
+##### `GET /room_keys/keys?version=$v`
+
+Retrieve all the keys from the backup.
+
+On success, returns a JSON object in the same form as the request body of `PUT
+/room_keys/keys?version=$v`.
 
 #### Deleting keys
 
@@ -200,7 +232,11 @@ Returns the same as `PUT
 ##### `DELETE /room_keys/keys/${roomId}?version=$v`
 ##### `DELETE /room_keys/keys/?version=$v`
 
-#### Key format
+Deletes keys from the backup.
+
+On success, returns the empty JSON object.
+
+#### `m.megolm_backup.v1.curve25519-aes-sha2` Key format
 
 Each session key is encoded as a JSON object with the properties:
 
@@ -210,9 +246,11 @@ Each session key is encoded as a JSON object with the properties:
   sending device
 - `forwardingCurve25519KeyChain` (array): zero or more curve25519 keys for
   devices who forwarded the session key
-- `session_key` (string): base64-encoded session key
+- `session_key` (string): base64-encoded (unpadded) session key
 
-...
+The JSON object is then encrypted by generating an ephemeral curve25519 key,
+performing an ECDH with the ephemeral key and the backup's public key to
+generate an AES key, and encrypting the stringified object using AES.
 
 Tradeoffs
 ---------
