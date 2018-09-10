@@ -457,7 +457,7 @@ def main(targets, dest_dir, keep_intermediates, substitutions):
 
         rst_file = os.path.join(tmp_dir, "spec_%s.rst" % (target_name,))
         if version_label:
-            d = os.path.join(dest_dir, target_name)
+            d = os.path.join(dest_dir, target_name.split('@')[0])
             if not os.path.exists(d):
                 os.mkdir(d)
             html_file = os.path.join(d, "%s.html" % version_label)
@@ -530,6 +530,10 @@ if __name__ == '__main__':
         help="The identity service release tag to generate, e.g. r1.2"
     )
     parser.add_argument(
+        "--room_version", "-r", action="store", default="unstable",
+        help="The current room version to advertise, e.g. v2"
+    )
+    parser.add_argument(
         "--list_targets", action="store_true",
         help="Do not update the specification. Instead print a list of targets.",
     )
@@ -555,6 +559,7 @@ if __name__ == '__main__':
         "%APPSERVICE_RELEASE_LABEL%": args.appservice_release,
         "%IDENTITY_RELEASE_LABEL%": args.identity_release,
         "%PUSH_GATEWAY_RELEASE_LABEL%": args.push_gateway_release,
+        "%CURRENT_ROOM_VERSION%": args.room_version,
     }
 
     exit (main(args.target or ["all"], args.dest, args.nodelete, substitutions))

@@ -1,0 +1,112 @@
+.. Copyright 2018 New Vector Ltd
+..
+.. Licensed under the Apache License, Version 2.0 (the "License");
+.. you may not use this file except in compliance with the License.
+.. You may obtain a copy of the License at
+..
+..     http://www.apache.org/licenses/LICENSE-2.0
+..
+.. Unless required by applicable law or agreed to in writing, software
+.. distributed under the License is distributed on an "AS IS" BASIS,
+.. WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+.. See the License for the specific language governing permissions and
+.. limitations under the License.
+
+
+.. Note: This document appended to the end of the intro, so this next line
+.. appears under "Other Room Versions".
+
+This is the specification for **room version 1** (``"1"``).
+
+Changelog
+---------
+
+.. topic:: Room version 1
+{{rooms_changelog_v1}}
+
+This version of the specification is generated from
+`matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
+`{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
+
+For the full historical changelog, see
+https://github.com/matrix-org/matrix-doc/blob/master/changelogs/rooms.rst
+
+
+Server implementation components
+--------------------------------
+
+.. WARNING::
+   The information contained in this section is strictly for server implementors.
+   Applications which use the Client-Server API are generally unaffected by the
+   details contained here, and can safely ignore their presence.
+
+
+The algorithms defined here should only apply to version 1 rooms. Other algorithms
+may be used by other room versions, and as such servers should be aware of which
+version room they are dealing with prior to executing a given algorithm.
+
+.. WARNING::
+   Although room version 1 is the most popular room version, it is known to have
+   undesirable effects. Servers implementing support for room version 1 should be
+   aware that restrictions should be generally relaxed and be aware that inconsistencies
+   may occur until room version 2 is ready and adopted.
+
+State resolution
+~~~~~~~~~~~~~~~~
+
+.. WARNING::
+  This section documents the state resolution algorithm as implemented by
+  Synapse as of December 2017 (and therefore the de-facto Matrix protocol).
+  However, this algorithm is known to have some problems.
+
+The room state :math:`S'(E)` after an event :math:`E` is defined in terms of
+the room state :math:`S(E)` before :math:`E`, and depends on whether
+:math:`E` is a state event or a message event:
+
+* If :math:`E` is a message event, then :math:`S'(E) = S(E)`.
+
+* If :math:`E` is a state event, then :math:`S'(E)` is :math:`S(E)`, except
+  that its entry corresponding to :math:`E`'s ``event_type`` and ``state_key``
+  is replaced by :math:`E`'s ``event_id``.
+
+The room state :math:`S(E)` before :math:`E` is the *resolution* of the set of
+states :math:`\{ S'(E'), S'(E''), … \}` consisting of the states after each of
+:math:`E`'s ``prev_event``\s :math:`\{ E', E'', … \}`.
+
+The *resolution* of a set of states is defined as follows.  The resolved state
+is built up in a number of passes; here we use :math:`R` to refer to the
+results of the resolution so far.
+
+* Start by setting :math:`R` to the union of the states to be resolved,
+  excluding any *conflicting* events.
+
+* First we resolve conflicts between ``m.room.power_levels`` events. If there
+  is no conflict, this step is skipped, otherwise:
+
+  * Assemble all the ``m.room.power_levels`` events from the states to
+    be resolved into a list.
+
+  * Sort the list by ascending ``depth`` then descending ``sha1(event_id)``.
+
+  * Add the first event in the list to :math:`R`.
+
+  * For each subsequent event in the list, check that the event would be
+    allowed by the `authorization rules`_ for a room in state :math:`R`. If the
+    event would be allowed, then update :math:`R` with the event and continue
+    with the next event in the list. If it would not be allowed, stop and
+    continue below with ``m.room.join_rules`` events.
+
+* Repeat the above process for conflicts between ``m.room.join_rules`` events.
+
+* Repeat the above process for conflicts between ``m.room.member`` events.
+
+* No other events affect the authorization rules, so for all other conflicts,
+  just pick the event with the highest depth and lowest ``sha1(event_id)`` that
+  passes authentication in :math:`R` and add it to :math:`R`.
+
+A *conflict* occurs between states where those states have different
+``event_ids`` for the same ``(state_type, state_key)``. The events thus
+affected are said to be *conflicting* events.
+
+
+.. _`authorization rules`: ../server_server/unstable.html#authorization-rules
