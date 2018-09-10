@@ -26,6 +26,35 @@ targets:
     files:
       - push_gateway.rst
     version_label: "%PUSH_GATEWAY_RELEASE_LABEL%"
+  rooms:
+    files:
+      - rooms/intro.rst
+
+      # TODO: Switch this back to unstable.rst after releasing rooms v2
+      # We temporarily do this so that "unstable" points to the in-dev
+      # version, however we may also want to hardlink to v2 in places and
+      # thus we maintain a v2 version of the same doc.
+      #
+      # See meta/releasing-rooms-v2.md
+
+      #- rooms/unstable.rst
+      - rooms/v2.rst
+    version_label: unstable
+  rooms@v1: # this is translated to be rooms/v1.html
+    files:
+      - rooms/intro.rst
+      - rooms/v1.rst
+    version_label: v1
+  rooms@v2: # this is translated to be rooms/v2.html
+    files:
+      - rooms/intro.rst
+      - rooms/v2.rst
+    version_label: v2
+  rooms@latest: # this is translated to be rooms/latest.html
+    files:
+      - rooms/intro.rst
+      - rooms/v1.rst # TODO: Find a better way to link to the v2 spec
+    version_label: latest
   appendices:
     files:
       - appendices.rst
