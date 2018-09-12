@@ -32,248 +32,8 @@ For the full historical changelog, see
 https://github.com/matrix-org/matrix-doc/blob/master/changelogs/rooms.rst
 
 
-Identifier Grammar
-------------------
-
-Server Name
-~~~~~~~~~~~
-
-A homeserver is uniquely identified by its server name. This value is used in a
-number of identifiers, as described below.
-
-The server name represents the address at which the homeserver in question can
-be reached by other homeservers. All valid server names are included by the
-following grammar::
-
-    server_name = hostname [ ":" port ]
-
-    port        = *DIGIT
-
-    hostname    = IPv4address / "[" IPv6address "]" / dns-name
-
-    IPv4address = 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT
-
-    IPv6address = 2*45IPv6char
-
-    IPv6char    = DIGIT / %x41-46 / %x61-66 / ":" / "."
-                      ; 0-9, A-F, a-f, :, .
-
-    dns-name    = *255dns-char
-
-    dns-char    = DIGIT / ALPHA / "-" / "."
-
-— in other words, the server name is the hostname, followed by an optional
-numeric port specifier. The hostname may be a dotted-quad IPv4 address literal,
-an IPv6 address literal surrounded with square brackets, or a DNS name.
-
-IPv4 literals must be a sequence of four decimal numbers in the
-range 0 to 255, separated by ``.``. IPv6 literals must be as specified by
-`RFC3513, section 2.2 <https://tools.ietf.org/html/rfc3513#section-2.2>`_.
-
-DNS names for use with Matrix should follow the conventional restrictions for
-internet hostnames: they should consist of a series of labels separated by
-``.``, where each label consists of the alphanumeric characters or hyphens.
-
-Examples of valid server names are:
-
-* ``matrix.org``
-* ``matrix.org:8888``
-* ``1.2.3.4`` (IPv4 literal)
-* ``1.2.3.4:1234`` (IPv4 literal with explicit port)
-* ``[1234:5678::abcd]`` (IPv6 literal)
-* ``[1234:5678::abcd]:5678`` (IPv6 literal with explicit port)
-
-.. Note::
-
-   This grammar is based on the standard for internet host names, as specified
-   by `RFC1123, section 2.1 <https://tools.ietf.org/html/rfc1123#page-13>`_,
-   with an extension for IPv6 literals.
-
-Server names must be treated case-sensitively: in other words,
-``@user:matrix.org`` is a different person from ``@user:MATRIX.ORG``.
-
-Some recommendations for a choice of server name follow:
-
-* The length of the complete server name should not exceed 230 characters.
-* Server names should not use upper-case characters.
-
-
-Room Versions
-~~~~~~~~~~~~~
-
-Room versions are used to change properties of rooms that may not be compatible
-with other servers. For example, changing the rules for event authorization would
-cause older servers to potentially end up in a split-brain situation due to them
-not understanding the new rules.
-
-A room version is defined as a string of characters which MUST NOT exceed 32
-codepoints in length. Room versions MUST NOT be empty and SHOULD contain only
-the characters ``a-z``, ``0-9``, ``.``, and ``-``.
-
-Room versions are not intended to be parsed and should be treated as opaque
-identifiers. Room versions consisting only of the characters ``0-9`` and ``.``
-are reserved for future versions of the Matrix protocol.
-
-The complete grammar for a legal room version is::
-
-  room_version = 1*room_version_char
-  room_version_char = DIGIT
-                    / %x61-7A         ; a-z
-                    / "-" / "."
-
-Examples of valid room versions are:
-
-* ``1`` (would be reserved by the Matrix protocol)
-* ``1.2`` (would be reserved by the Matrix protocol)
-* ``1.2-beta``
-* ``com.example.version``
-
-
-Common Identifier Format
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-The Matrix protocol uses a common format to assign unique identifiers to a
-number of entities, including users, events and rooms. Each identifier takes
-the form::
-
-  &localpart:domain
-
-where ``&`` represents a 'sigil' character; ``domain`` is the `server name`_ of
-the homeserver which allocated the identifier, and ``localpart`` is an
-identifier allocated by that homeserver.
-
-The sigil characters are as follows:
-
-* ``@``: User ID
-* ``!``: Room ID
-* ``$``: Event ID
-* ``+``: Group ID
-* ``#``: Room alias
-
-The precise grammar defining the allowable format of an identifier depends on
-the type of identifier.
-
-User Identifiers
-++++++++++++++++
-
-Users within Matrix are uniquely identified by their Matrix user ID. The user
-ID is namespaced to the homeserver which allocated the account and has the
-form::
-
-  @localpart:domain
-
-The ``localpart`` of a user ID is an opaque identifier for that user. It MUST
-NOT be empty, and MUST contain only the characters ``a-z``, ``0-9``, ``.``,
-``_``, ``=``, ``-``, and ``/``.
-
-The ``domain`` of a user ID is the `server name`_ of the homeserver which
-allocated the account.
-
-The length of a user ID, including the ``@`` sigil and the domain, MUST NOT
-exceed 255 characters.
-
-The complete grammar for a legal user ID is::
-
-  user_id = "@" user_id_localpart ":" server_name
-  user_id_localpart = 1*user_id_char
-  user_id_char = DIGIT
-               / %x61-7A                   ; a-z
-               / "-" / "." / "=" / "_" / "/"
-
-.. admonition:: Rationale
-
-  A number of factors were considered when defining the allowable characters
-  for a user ID.
-
-  Firstly, we chose to exclude characters outside the basic US-ASCII character
-  set. User IDs are primarily intended for use as an identifier at the protocol
-  level, and their use as a human-readable handle is of secondary
-  benefit. Furthermore, they are useful as a last-resort differentiator between
-  users with similar display names. Allowing the full unicode character set
-  would make very difficult for a human to distinguish two similar user IDs. The
-  limited character set used has the advantage that even a user unfamiliar with
-  the Latin alphabet should be able to distinguish similar user IDs manually, if
-  somewhat laboriously.
-
-  We chose to disallow upper-case characters because we do not consider it
-  valid to have two user IDs which differ only in case: indeed it should be
-  possible to reach ``@user:matrix.org`` as ``@USER:matrix.org``. However,
-  user IDs are necessarily used in a number of situations which are inherently
-  case-sensitive (notably in the ``state_key`` of ``m.room.member``
-  events). Forbidding upper-case characters (and requiring homeservers to
-  downcase usernames when creating user IDs for new users) is a relatively simple
-  way to ensure that ``@USER:matrix.org`` cannot refer to a different user to
-  ``@user:matrix.org``.
-
-  Finally, we decided to restrict the allowable punctuation to a very basic set
-  to reduce the possibility of conflicts with special characters in various
-  situations. For example, "*" is used as a wildcard in some APIs (notably the
-  filter API), so it cannot be a legal user ID character.
-
-  The length restriction is derived from the limit on the length of the
-  ``sender`` key on events; since the user ID appears in every event sent by the
-  user, it is limited to ensure that the user ID does not dominate over the actual
-  content of the events.
-
-Matrix user IDs are sometimes informally referred to as MXIDs.
-
-Historical User IDs
-<<<<<<<<<<<<<<<<<<<
-
-Older versions of this specification were more tolerant of the characters
-permitted in user ID localparts. There are currently active users whose user
-IDs do not conform to the permitted character set, and a number of rooms whose
-history includes events with a ``sender`` which does not conform. In order to
-handle these rooms successfully, clients and servers MUST accept user IDs with
-localparts from the expanded character set::
-
-  extended_user_id_char = %x21-39 / %x3B-7F  ; all ascii printing chars except :
-
-Mapping from other character sets
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-In certain circumstances it will be desirable to map from a wider character set
-onto the limited character set allowed in a user ID localpart. Examples include
-a homeserver creating a user ID for a new user based on the username passed to
-``/register``, or a bridge mapping user ids from another protocol.
-
-.. TODO-spec
-
-   We need to better define the mechanism by which homeservers can allow users
-   to have non-Latin login credentials. The general idea is for clients to pass
-   the non-Latin in the ``username`` field to ``/register`` and ``/login``, and
-   the HS then maps it onto the MXID space when turning it into the
-   fully-qualified ``user_id`` which is returned to the client and used in
-   events.
-
-Implementations are free to do this mapping however they choose. Since the user
-ID is opaque except to the implementation which created it, the only
-requirement is that the implemention can perform the mapping
-consistently. However, we suggest the following algorithm:
-
-1. Encode character strings as UTF-8.
-
-2. Convert the bytes ``A-Z`` to lower-case.
-
-   * In the case where a bridge must be able to distinguish two different users
-     with ids which differ only by case, escape upper-case characters by
-     prefixing with ``_`` before downcasing. For example, ``A`` becomes
-     ``_a``. Escape a real ``_`` with a second ``_``.
-
-3. Encode any remaining bytes outside the allowed character set, as well as
-   ``=``, as their hexadecimal value, prefixed with ``=``. For example, ``#``
-   becomes ``=23``; ``á`` becomes ``=c3=a1``.
-
-.. admonition:: Rationale
-
-  The suggested mapping is an attempt to preserve human-readability of simple
-  ASCII identifiers (unlike, for example, base-32), whilst still allowing
-  representation of *any* character (unlike punycode, which provides no way to
-  encode ASCII punctuation).
-
-
 Room IDs and Event IDs
-++++++++++++++++++++++
+----------------------
 
 A room has exactly one room ID. A room ID has the format::
 
@@ -296,89 +56,306 @@ readable.
   What is the grammar for the opaque part? https://matrix.org/jira/browse/SPEC-389
 
 
-Group Identifiers
-+++++++++++++++++
+.. _`server name`: ../appendices.html#server-name
 
-Groups within Matrix are uniquely identified by their group ID. The group
-ID is namespaced to the group server which hosts this group and has the
-form::
+Event schema
+------------
 
-  +localpart:domain
+All communication in Matrix is expressed in the form of data objects called
+Events. These are the fundamental building blocks common to the client-server,
+server-server and application-service APIs, and are described below.
 
-The ``localpart`` of a group ID is an opaque identifier for that group. It MUST
-NOT be empty, and MUST contain only the characters ``a-z``, ``0-9``, ``.``,
-``_``, ``=``, ``-``, and ``/``.
+Note that the structure of these events may be different than those in the
+server-server API.
 
-The ``domain`` of a group ID is the `server name`_ of the group server which
-hosts this group.
+{{common_event_fields}}
 
-The length of a group ID, including the ``+`` sigil and the domain, MUST NOT
-exceed 255 characters.
+{{common_room_event_fields}}
 
-The complete grammar for a legal group ID is::
-
-  group_id = "+" group_id_localpart ":" server_name
-  group_id_localpart = 1*group_id_char
-  group_id_char = DIGIT
-               / %x61-7A                   ; a-z
-               / "-" / "." / "=" / "_" / "/"
+{{common_state_event_fields}}
 
 
-Room Aliases
-++++++++++++
+Size limits
+-----------
 
-A room may have zero or more aliases. A room alias has the format::
+The complete event MUST NOT be larger than 65535 bytes, when formatted as a
+`PDU for the Server-Server protocol <../server_server/%SERVER_RELEASE_LABEL%#pdus>`_,
+including any signatures, and encoded as `Canonical JSON`_.
 
-      #room_alias:domain
+There are additional restrictions on sizes per key:
 
-The ``domain`` of a room alias is the `server name`_ of the homeserver which
-created the alias. Other servers may contact this homeserver to look up the
-alias.
+- ``sender`` MUST NOT exceed 255 bytes (including domain).
+- ``room_id`` MUST NOT exceed 255 bytes.
+- ``state_key`` MUST NOT exceed 255 bytes.
+- ``type`` MUST NOT exceed 255 bytes.
+- ``event_id`` MUST NOT exceed 255 bytes.
 
-Room aliases MUST NOT exceed 255 bytes (including the ``#`` sigil and the
-domain).
+Some event types have additional size restrictions which are specified in
+the description of the event. Additional keys have no limit other than that
+implied by the total 65 KB limit on events.
 
-.. TODO-spec
-  - Need to specify precise grammar for Room Aliases. https://matrix.org/jira/browse/SPEC-391
 
-matrix.to navigation
-++++++++++++++++++++
+Server implementation components
+--------------------------------
+
+.. WARNING::
+   The information contained in this section is strictly for server implementors.
+   Applications which use the Client-Server API are generally unaffected by the
+   details contained here, and can safely ignore their presence.
+
+
+The algorithms defined here should only apply to version 1 rooms. Other algorithms
+may be used by other room versions, and as such servers should be aware of which
+version room they are dealing with prior to executing a given algorithm.
+
+.. WARNING::
+   Although room version 1 is the most popular room version, it is known to have
+   undesirable effects. Servers implementing support for room version 1 should be
+   aware that restrictions should be generally relaxed and be aware that inconsistencies
+   may occur until room version 2 is ready and adopted.
+
+State resolution
+~~~~~~~~~~~~~~~~
+
+.. WARNING::
+  This section documents the state resolution algorithm as implemented by
+  Synapse as of December 2017 (and therefore the de-facto Matrix protocol).
+  However, this algorithm is known to have some problems.
+
+The room state :math:`S'(E)` after an event :math:`E` is defined in terms of
+the room state :math:`S(E)` before :math:`E`, and depends on whether
+:math:`E` is a state event or a message event:
+
+* If :math:`E` is a message event, then :math:`S'(E) = S(E)`.
+
+* If :math:`E` is a state event, then :math:`S'(E)` is :math:`S(E)`, except
+  that its entry corresponding to :math:`E`'s ``event_type`` and ``state_key``
+  is replaced by :math:`E`'s ``event_id``.
+
+The room state :math:`S(E)` before :math:`E` is the *resolution* of the set of
+states :math:`\{ S'(E'), S'(E''), … \}` consisting of the states after each of
+:math:`E`'s ``prev_event``\s :math:`\{ E', E'', … \}`.
+
+The *resolution* of a set of states is defined as follows.  The resolved state
+is built up in a number of passes; here we use :math:`R` to refer to the
+results of the resolution so far.
+
+* Start by setting :math:`R` to the union of the states to be resolved,
+  excluding any *conflicting* events.
+
+* First we resolve conflicts between ``m.room.power_levels`` events. If there
+  is no conflict, this step is skipped, otherwise:
+
+  * Assemble all the ``m.room.power_levels`` events from the states to
+    be resolved into a list.
+
+  * Sort the list by ascending ``depth`` then descending ``sha1(event_id)``.
+
+  * Add the first event in the list to :math:`R`.
+
+  * For each subsequent event in the list, check that the event would be
+    allowed by the `authorization rules`_ for a room in state :math:`R`. If the
+    event would be allowed, then update :math:`R` with the event and continue
+    with the next event in the list. If it would not be allowed, stop and
+    continue below with ``m.room.join_rules`` events.
+
+* Repeat the above process for conflicts between ``m.room.join_rules`` events.
+
+* Repeat the above process for conflicts between ``m.room.member`` events.
+
+* No other events affect the authorization rules, so for all other conflicts,
+  just pick the event with the highest depth and lowest ``sha1(event_id)`` that
+  passes authentication in :math:`R` and add it to :math:`R`.
+
+A *conflict* occurs between states where those states have different
+``event_ids`` for the same ``(state_type, state_key)``. The events thus
+affected are said to be *conflicting* events.
+
+
+Authorisation rules
+~~~~~~~~~~~~~~~~~~~
+
+The rules governing whether an event is authorized depend solely on the
+state of the room at the point in the room graph at which the new event is to
+be inserted. The types of state events that affect authorization are:
+
+- ``m.room.create``
+- ``m.room.member``
+- ``m.room.join_rules``
+- ``m.room.power_levels``
+- ``m.room.third_party_invite``
+
+The rules are as follows:
+
+1. If type is ``m.room.create``:
+
+   a. If it has any previous events, reject.
+   b. If the domain of the ``room_id`` does not match the domain of the
+      ``sender``, reject.
+   c. If ``content.room_version`` is present and is not a recognised version,
+      reject.
+   d. If ``content`` has no ``creator`` field, reject.
+   e. Otherwise, allow.
+
+#. Reject if event has ``auth_events`` that:
+
+   a. have duplicate entries for a given ``type`` and ``state_key`` pair
+   #. have entries whose ``type`` and ``state_key`` don't match those
+      specified by the `auth events selection`_ algorithm described above.
+
+#. If event does not have a ``m.room.create`` in its ``auth_events``, reject.
+
+#. If type is ``m.room.aliases``:
+
+   a. If event has no ``state_key``, reject.
+   b. If sender's domain doesn't matches ``state_key``, reject.
+   c. Otherwise, allow.
+
+#. If type is ``m.room.member``:
+
+   a. If no ``state_key`` key or ``membership`` key in ``content``, reject.
+
+   #. If ``membership`` is ``join``:
+
+      i. If the only previous event is an ``m.room.create``
+         and the ``state_key`` is the creator, allow.
+
+      #. If the ``sender`` does not match ``state_key``, reject.
+
+      #. If the ``sender`` is banned, reject.
+
+      #. If the ``join_rule`` is ``invite`` then allow if membership state
+         is ``invite`` or ``join``.
+
+      #. If the ``join_rule`` is ``public``, allow.
+
+      #. Otherwise, reject.
+
+   #. If ``membership`` is ``invite``:
+
+      i. If ``content`` has ``third_party_invite`` key:
+
+         #. If *target user* is banned, reject.
+
+         #. If ``content.third_party_invite`` does not have a
+            ``signed`` key, reject.
+
+         #. If ``signed`` does not have ``mxid`` and ``token`` keys, reject.
+
+         #. If ``mxid`` does not match ``state_key``, reject.
+
+         #. If there is no ``m.room.third_party_invite`` event in the
+            current room state with ``state_key`` matching ``token``, reject.
+
+         #. If ``sender`` does not match ``sender`` of the
+            ``m.room.third_party_invite``, reject.
+
+         #. If any signature in ``signed`` matches any public key in the
+            ``m.room.third_party_invite`` event, allow. The public keys are
+            in ``content`` of ``m.room.third_party_invite`` as:
+
+            #. A single public key in the ``public_key`` field.
+            #. A list of public keys in the ``public_keys`` field.
+
+         #. Otherwise, reject.
+
+      #. If the ``sender``'s current membership state is not ``join``, reject.
+
+      #. If *target user*'s current membership state is ``join`` or ``ban``,
+         reject.
+
+      #. If the ``sender``'s power level is greater than or equal to the *invite
+         level*, allow.
+
+      #. Otherwise, reject.
+
+   #. If ``membership`` is ``leave``:
+
+      i. If the ``sender`` matches ``state_key``, allow if and only if that user's
+         current membership state is ``invite`` or ``join``.
+
+      #. If the ``sender``'s current membership state is not ``join``, reject.
+
+      #. If the *target user*'s current membership state is ``ban``, and the
+         ``sender``'s power level is less than the *ban level*, reject.
+
+      #. If the ``sender``'s power level is greater than or equal to the *kick
+         level*, and the *target user*'s power level is less than the
+         ``sender``'s power level, allow.
+
+      #. Otherwise, reject.
+
+   #. If ``membership`` is ``ban``:
+
+      i. If the ``sender``'s current membership state is not ``join``, reject.
+
+      #. If the ``sender``'s power level is greater than or equal to the *ban
+         level*, and the *target user*'s power level is less than the
+         ``sender``'s power level, allow.
+
+      #. Otherwise, reject.
+
+   #. Otherwise, the membership is unknown. Reject.
+
+#. If the ``sender``'s current membership state is not ``join``, reject.
+
+#. If type is ``m.room.third_party_invite``:
+
+   a. Allow if and only if ``sender``'s current power level is greater than
+      or equal to the *invite level*.
+
+#. If the event type's *required power level* is greater than the ``sender``'s power
+   level, reject.
+
+#. If the event has a ``state_key`` that starts with an ``@`` and does not match
+   the ``sender``, reject.
+
+#. If type is ``m.room.power_levels``:
+
+   a. If ``users`` key in ``content`` is not a dictionary with keys that are
+      valid user IDs with values that are integers (or a string that is an
+      integer), reject.
+
+   #. If there is no previous ``m.room.power_levels`` event in the room, allow.
+
+   #. For each of the keys ``users_default``, ``events_default``,
+      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
+      each entry being changed under the ``events`` or ``users`` keys:
+
+      i. If the current value is higher than the ``sender``'s current power level,
+         reject.
+
+      #. If the new value is higher than the ``sender``'s current power level,
+         reject.
+
+   #. For each entry being changed under the ``users`` key, other than the
+      ``sender``'s own entry:
+
+      i. If the current value is equal to the ``sender``'s current power level,
+         reject.
+
+   #. Otherwise, allow.
+
+#. If type is ``m.room.redaction``:
+
+   a. If the ``sender``'s power level is greater than or equal to the *redact
+      level*, allow.
+
+   #. If the domain of the ``event_id`` of the event being redacted is the same
+      as the domain of the ``event_id`` of the ``m.room.redaction``, allow.
+
+   #. Otherwise, reject.
+
+#. Otherwise, allow.
 
 .. NOTE::
-   This namespacing is in place pending a ``matrix://`` (or similar) URI scheme.
-   This is **not** meant to be interpreted as an available web service - see
-   below for more details.
 
-Rooms, users, aliases, and groups may be represented as a "matrix.to" URI.
-This URI can be used to reference particular objects in a given context, such
-as mentioning a user in a message or linking someone to a particular point
-in the room's history (a permalink).
+  Some consequences of these rules:
 
-A matrix.to URI has the following format, based upon the specification defined
-in RFC 3986:
+  * Unless you are a member of the room, the only permitted operations (apart
+    from the intial create/join) are: joining a public room; accepting or
+    rejecting an invitation to a room.
 
-  https://matrix.to/#/<identifier>/<extra parameter>
-
-The identifier may be a room ID, room alias, user ID, or group ID. The extra
-parameter is only used in the case of permalinks where an event ID is referenced.
-The matrix.to URI, when referenced, must always start with ``https://matrix.to/#/``
-followed by the identifier.
-
-Clients should not rely on matrix.to URIs falling back to a web server if accessed
-and instead should perform some sort of action within the client. For example, if
-the user were to click on a matrix.to URI for a room alias, the client may open
-a view for the user to participate in the room.
-
-Examples of matrix.to URIs are:
-
-* Room alias: ``https://matrix.to/#/#somewhere:example.org``
-* Room: ``https://matrix.to/#/!somewhere:example.org``
-* Permalink by room: ``https://matrix.to/#/!somewhere:example.org/$event:example.org``
-* Permalink by room alias: ``https://matrix.to/#/#somewhere:example.org/$event:example.org``
-* User: ``https://matrix.to/#/@alice:example.org``
-* Group: ``https://matrix.to/#/+example:example.org``
-
-.. Note::
-   Room ID permalinks are unroutable as there is no reliable domain to send requests
-   to upon receipt of the permalink. Clients should do their best route Room IDs to
-   where they need to go, however they should also be aware of `issue #1579 <https://github.com/matrix-org/matrix-doc/issues/1579>`_.
+  * To unban somebody, you must have power level greater than or equal to both
+    the kick *and* ban levels, *and* greater than the target user's power
+    level.

@@ -1,4 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
+.. Copyright 2018 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -17,36 +18,12 @@ Event Structure
 
 All communication in Matrix is expressed in the form of data objects called
 Events. These are the fundamental building blocks common to the client-server,
-server-server and application-service APIs, and are described below.
+server-server and application-service APIs, and their structure is dependent
+upon the version of the room they appear within. For a full description of
+what makes up an event, please see the `room version specification`_.
 
-Note that the structure of these events may be different than those in the
-server-server API.
+.. _`room version specification`: ../rooms/latest.html
 
-{{common_event_fields}}
-
-{{common_room_event_fields}}
-
-{{common_state_event_fields}}
-
-
-Size limits
------------
-
-The complete event MUST NOT be larger than 65535 bytes, when formatted as a
-`PDU for the Server-Server protocol <../server_server/%SERVER_RELEASE_LABEL%#pdus>`_,
-including any signatures, and encoded as `Canonical JSON`_.
-
-There are additional restrictions on sizes per key:
-
-- ``sender`` MUST NOT exceed 255 bytes (including domain).
-- ``room_id`` MUST NOT exceed 255 bytes.
-- ``state_key`` MUST NOT exceed 255 bytes.
-- ``type`` MUST NOT exceed 255 bytes.
-- ``event_id`` MUST NOT exceed 255 bytes.
-
-Some event types have additional size restrictions which are specified in
-the description of the event. Additional keys have no limit other than that
-implied by the total 65 KB limit on events.
 
 Room Events
 -----------
