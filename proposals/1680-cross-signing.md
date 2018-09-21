@@ -42,17 +42,23 @@ Attestations and revocations are published by using the `POST
 /_matrix/client/r0/keys/query` endpoint.  When new attestations or revocations
 are published, then the user who owns the device that the attestation is about
 will be included in the `changed` array in the `device_lists` property of the
-`/sync` response for all users that share a room with that user.
+`/sync` response for all users that share a room with that user.  Users will
+only be able to see attestations made by their own devices, or attestations
+made between devices belonging to the same user.  That is, Alice can see
+attestations made by her own devices, or attestations made by Bob's devices
+about Bob's devices, but she cannot see attestations made by Carol's devices
+about Bob's devices, attestations made by Bob's devices about Carol's devices,
+nor attestations made by Bob nor Carol about Alice's devices.
 
-Attestations form a directed graph from the device making the attestation to
-the device that the attestation is about, as long as the signature is valid,
-the data in the data in the attestation matches the device key, and there is no
-corresponding revocation. If Device A can construct a directed path in this
-graph starting from a device it has verified and ending at Device B, consisting
-only of devices owned by either Device A's owner or Device B's owner, then it
-may treat Device B as trusted. Device A may do so automatically, or after
-prompting the user, or may allow the user to disable this functionality
-completely.
+Attestations form a directed graph (not necessarily acyclic) in which edges go
+from the device making the attestation to the device that the attestation is
+about, as long as the signature is valid, the data in the data in the
+attestation matches the device key, and there is no corresponding
+revocation. If Device A can construct a directed path in this graph starting
+from a device it has verified and ending at Device B, consisting only of
+devices owned by either Device A's owner or Device B's owner, then it may treat
+Device B as trusted. Device A may do so automatically, or after prompting the
+user, or may allow the user to disable this functionality completely.
 
 TODO: should Device A then publish an attestation for Device B?
 
@@ -77,8 +83,11 @@ endpoint:
 
 - `attestations` (`[Attestation]` (see below)): The published attestations or
   revocations for the device.  This array MUST only include the attestations or
-  revocations that come from devices belonging to the user calling the
-  endpoint, or belonging to the user that the attestation is about.
+  revocations made by devices belonging to the user calling the endpoint, or
+  made by devices the user that the attestation is about.  For example, when
+  Alice calls this endpoint to fetch information about Bob's devices, this
+  array will only include attestations made by Alice's devices or by Bob's
+  other devices.
 
 TODO: `keys/query` may need to include devices that have been logged out, in
 order to avoid unexpectedly breaking trust chains, so we may want to recommend
