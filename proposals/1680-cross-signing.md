@@ -35,20 +35,20 @@ form of a [signed JSON
 object](https://matrix.org/docs/spec/appendices.html#signing-json)) indicating
 this. Attestations can also be revoked by publishing another signed JSON
 object. Other devices can use these attestations to trust other devices that
-have not been directly verified.
+have not been directly verified.  Users will only be able to see attestations
+and revocations made by their own devices, or attestations and revocations made
+between devices belonging to the same user.  That is, Alice can see
+attestations made by her own devices, or attestations made by Bob's devices
+about Bob's devices, but she cannot see attestations made by Carol's devices
+about Bob's devices, attestations made by Bob's devices about Carol's devices,
+nor attestations made by Bob nor Carol about Alice's devices.
 
 Attestations and revocations are published by using the `POST
 /_matrix/client/r0/keys/upload` endpoint and are retrieved by using the `POST
 /_matrix/client/r0/keys/query` endpoint.  When new attestations or revocations
 are published, then the user who owns the device that the attestation is about
 will be included in the `changed` array in the `device_lists` property of the
-`/sync` response for all users that share a room with that user.  Users will
-only be able to see attestations made by their own devices, or attestations
-made between devices belonging to the same user.  That is, Alice can see
-attestations made by her own devices, or attestations made by Bob's devices
-about Bob's devices, but she cannot see attestations made by Carol's devices
-about Bob's devices, attestations made by Bob's devices about Carol's devices,
-nor attestations made by Bob nor Carol about Alice's devices.
+`/sync` response for all users that share a room with that user.
 
 Attestations form a directed graph (not necessarily acyclic) in which edges go
 from the device making the attestation to the device that the attestation is
