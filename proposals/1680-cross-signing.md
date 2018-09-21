@@ -84,10 +84,10 @@ endpoint:
 - `attestations` (`[Attestation]` (see below)): The published attestations or
   revocations for the device.  This array MUST only include the attestations or
   revocations made by devices belonging to the user calling the endpoint, or
-  made by devices the user that the attestation is about.  For example, when
-  Alice calls this endpoint to fetch information about Bob's devices, this
-  array will only include attestations made by Alice's devices or by Bob's
-  other devices.
+  made by devices belonging to the owner of the device being queried.  For
+  example, when Alice calls this endpoint to fetch information about Bob's
+  devices, this array will only include attestations or revocations made by
+  Alice's devices or by Bob's other devices.
 
 TODO: `keys/query` may need to include devices that have been logged out, in
 order to avoid unexpectedly breaking trust chains, so we may want to recommend
