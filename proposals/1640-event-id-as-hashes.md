@@ -25,6 +25,9 @@ which hash function was actually used, and it would need to be inferred
 from the room version. To aid debuggability it may be worth encoding the
 hash function into the ID format.
 
+**Conclusion:** Don't encode the hash function, since the hash will depend on
+the version specific redaction algorithm anyway.
+
 ## Protocol Changes
 
 The `auth_events` and `prev_events` fields on an event need to be
@@ -40,11 +43,6 @@ The auth rules also need to change:
     event ID matches the domain of the event ID its redacting. This
     allows self redaction for servers, but would no longer be possible
     and there isn’t an obvious way round it.
-
-## Open Questions
-
-1.  Format of new ID, specifically whether it should encode the hash
-    function used to aid debuggability.
-
-2.  How to change the auth rules to keep allowing self redactions.
-
+    The only practical suggestion to this is to accept the redactions and only
+    check if we should redact the target event once we received the target
+    event.
