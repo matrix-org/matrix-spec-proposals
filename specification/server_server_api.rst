@@ -584,6 +584,11 @@ references the soft failed event then the new event should be handled as usual.
 If this causes a change in state (e.g. due to the soft failed event being a
 state event) then the state updates should be propagated to clients as usual.
 
+A soft failed event should be returned in response to federation requests
+where appropriate (e.g. in ``/event/<event_id>``). Note that soft failed events
+are returned in ``/backfill`` and ``/get_missing_events`` responses only if the
+requests include events referencing the soft failed events.
+
 .. NOTE::
 
     This is different than rejections in that soft failed events are simply
