@@ -60,7 +60,7 @@ paths:
           x-example: ["1", "2"]
       responses:
         200:
-          description:
+          description: |-
             A template to be used for the rest of the `Joining Rooms`_ handshake.
           schema:
             type: object
