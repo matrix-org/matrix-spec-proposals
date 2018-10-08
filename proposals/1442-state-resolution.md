@@ -244,7 +244,8 @@ First we define:
     with an absent event to be unconflicted rather than conflicted)
 *   The "**auth difference"** is calculated by first calculating the full auth
     chain for each state set and taking every event that doesn't appear in every
-    auth chain.
+    auth chain. (This includes any events in the auth chain that have been
+    rejected.)
 *   The **"full conflicted set"** is the union of the conflicted state map and
     auth difference.
 *   The **"reverse topological power ordering"**[^4] of a set of events is an
@@ -269,18 +270,21 @@ First we define:
         ordered such that P is last.
     1.  We say the "closest mainline event" of an event is the first power level
         event encountered in mainline when iteratively descending through the
-        power level events in the auth events.
+        power level events in the auth events (including any power level events
+        that were rejected).
     1.  Order the set of events such that x < y if:
         1.  The closest mainline event of x appears strictly before the closest
             of y in the mainline list, or if
         1.  x's origin_server_ts is less than y's, or if
         1.  x's event_id lexicographically sorts before y's
 *   The **"iterative auth checks"** algorithm is where given a sorted list of
-    events, the auth check algorithm is applied to each event in turn. The state
-    events used to auth are built up from previous events that passed the auth
-    checks, starting from a base set of state. If a required auth key doesn't
-    exist in the state, then the one in the event's auth_events is used. (See
-    _Variations_ and _Attack Vectors_ below).
+    events, the auth check algorithm is applied to each event in turn (ignoring
+    any events have been rejected). The state events used to auth are built up
+    from previous events that passed the auth checks, starting from a base set
+    of state. If a required auth key doesn't exist in the state, then the one in
+    the event's auth_events is used (unless the auth event has been rejected).
+    (See _Variations_ and _Attack Vectors_ below).
+
 
 The algorithm proceeds as follows:
 
@@ -434,6 +438,16 @@ This would help, e.g., ensure the latest topic was always picked rather than
 rely on origin_server_ts and mainline. As well as obviate the need to maintain
 a separate auth chain, and the difficulties that entails (like having to
 reapply the unconflicted state at the end).
+
+
+### Rejected Events
+
+We include rejected events in the "auth chain difference" as they can still be
+used to effect the ordering of events. This in turn means care must be taken to
+filter rejected events out when applying the iterative auth checks.
+
+Note that no events rejected due to failure to auth against their auth chain
+should appear in the process, as they should not appear in state.
 
 
 ### Attack Vectors
