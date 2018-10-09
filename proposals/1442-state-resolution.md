@@ -446,8 +446,25 @@ We include rejected events in the "auth chain difference" as they can still be
 used to effect the ordering of events. This in turn means care must be taken to
 filter rejected events out when applying the iterative auth checks.
 
+An alternative would be to include rejected events during the iterative auth
+checks, accepting that previously rejected events may be un-rejected. This has
+the advantage that if different servers have different views of which events are
+rejected they will be more likely to converge (rather than diverge). The
+downside is the added complexity of un-rejecting events (on top of double
+checking that this doesn't add any security vulnerabilities).
+
+We do, however, use rejected events when looking at the power level the sender
+of an event has, in that we don't check if the event's power levels auth event
+has been rejected or not. This is for ease of implementation and to help the
+algorithm be more "convergent" in the face of different views of rejections.
+Using rejected auth events here should be safe, as any revocation of power will
+appear before the event in the iterative auth checks (due to the reverse power
+topological ordering, and the fact that the revocation must be sent by a user
+with a higher power level).
+
 Note that no events rejected due to failure to auth against their auth chain
-should appear in the process, as they should not appear in state.
+should appear in the process, as they should not appear in state (an the
+algorithm only uses events in one of the state sets or their auth events).
 
 
 ### Attack Vectors
