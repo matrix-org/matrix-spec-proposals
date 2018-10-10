@@ -45,8 +45,7 @@ On receipt of encryption keys (1st time):
       1. if yes:
          1. generate new curve25519 key pair
          2. create new backup version: `POST /room_keys/version`
-         3. display private key to user to save TODO: specify how the key is
-            displayed
+         3. display private key to user to save (see below for the format)
       2. if no, exit and remember decision (user can change their mind later)
       3. while prompting, continue to poll `GET /room_keys/versions`, as
          another device may have created a backup.  If so, go to 1.2.
@@ -79,6 +78,30 @@ On receipt of undecryptable message:
 
 Users can also set up, disable, or rotate backups, or restore from backup via user
 settings.
+
+### Recovery key
+
+The recovery key is can either be saved by the user directly, or stored
+encrypted on the server (as proposed in
+[MSC1687](https://github.com/matrix-org/matrix-doc/issues/1687)).  If the key
+is saved directly by the user, then it the code is constructed as follows:
+
+1. The 256-bit curve25519 private key is prepended by the bytes `0x8B` and
+   `0x01`
+2. All the bytes in the string are above are XORed together to form a parity
+   byte. This parity byte is appended to the byte string.
+3. The byte string is encoded using base58, using the same mapping as is used
+   for Bitcoin addresses.
+
+This 58-character string is presented to the user to save.  Implementations may
+add whitespace to the recovery key.
+
+When reading in a recovery key, clients must disregard whitespace.  Clients
+must base58-decode the code, ensure that the first two bytes of the decoded
+string are `0x8B` and `0x01`, ensure that XOR-ing all the bytes together
+results in 0, and ensure that the total length of the decoded string
+is 35 bytes.  Clients must then remove the first two bytes and the last byte,
+and use the resulting string as the private key to decrypt backups.
 
 ### API
 
@@ -118,9 +141,10 @@ On success, returns a JSON object with keys:
 
 - `version` (integer): the backup version
 
-##### `GET /room_keys/version`
+##### `GET /room_keys/version/{version}`
 
-Get information about the current version.
+Get information about the given version, or the current version if `{version}`
+is omitted.
 
 On success, returns a JSON object with keys:
 
@@ -128,12 +152,11 @@ On success, returns a JSON object with keys:
   /room_keys/version`.
 - `auth_data` (string or object): Required. Same as in the body parameters for
   `POST /room_keys/version`.
-- `version` (integer): the backup version
+- `version` (integer): Required. The backup version.
 
 Error codes:
 
-- `M_UNKNOWN`: No backup version has been created. FIXME: why not
-  `M_NOT_FOUND`?
+- `M_NOT_FOUND`: No backup version has been created.
 
 #### Storing keys
 
