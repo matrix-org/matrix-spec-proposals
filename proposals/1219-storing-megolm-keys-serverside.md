@@ -115,7 +115,7 @@ Body parameters:
 
 - `algorithm` (string): Required. The algorithm used for storing backups.
   Currently, only `m.megolm_backup.v1.curve25519-aes-sha2` is defined.
-- `auth_data` (string or object): Required. algorithm-dependent data.  For
+- `auth_data` (object): Required. algorithm-dependent data.  For
   `m.megolm_backup.v1.curve25519-aes-sha2`, this is a signedjson object with
   the following keys:
   - `public_key` (string): the curve25519 public key used to encrypt the backups
@@ -150,7 +150,7 @@ On success, returns a JSON object with keys:
 
 - `algorithm` (string): Required. Same as in the body parameters for `POST
   /room_keys/version`.
-- `auth_data` (string or object): Required. Same as in the body parameters for
+- `auth_data` (object): Required. Same as in the body parameters for
   `POST /room_keys/version`.
 - `version` (integer): Required. The backup version.
 
@@ -179,7 +179,7 @@ Body parameters:
   forwarded.
 - `is_verified` (boolean): Whether the device backing up the key has verified
   the device that the key is from.
-- `session_data` (string or object): Algorithm-dependent data.  For
+- `session_data` (object): Algorithm-dependent data.  For
   `m.megolm_backup.v1.curve25519-aes-sha2`, this is an object with the
   following keys (TODO: this stuff should be moved):
   - `ciphertext` (string): the encrypted version of the session key, as an
