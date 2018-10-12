@@ -19,6 +19,9 @@ It should be noted that this allows any event to be replaced by an entirely diff
 The client should make a best effort attempt to describe the relationship between the two events for
 both the fallback and representation.
 
+``reason`` describes why the event was replaced, which is currently a placeholder
+and should always be "m.edited" to describe an event that was edited by the user. 
+
 If the edit event's content is invalid, it is acceptable to display/keep the old event in place with a warning.
 
 User should be warned that editing a sensitive event will NOT erase it's contents, and they should use a redact instead.
@@ -48,13 +51,14 @@ New edited message:
     "body": "Edited: ~~This is an example message I want to edit~~ This is the edited message",
     "format": "org.matrix.custom.html",
     "formatted_body": "Edited: <del>This is an example message I want to edit</del> This is the edited message",
-    "new_content": {
+    "m.new_content": {
         "body": "This is the edited message.",
         "msgtype": "m.text"
     }
     "m.relates_to": {
       "m.replaces": {
         "event_id": "$1539340060524DGxMc:half-shot.uk",
+        "reason": "m.edited"
       }
     },
     "msgtype": "m.text"
