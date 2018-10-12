@@ -2,12 +2,12 @@ Proposal
 ========
 
 I propose for message edits to follow a similar format to replies, using  `m.relates_to`.
-The content of the edited message should be inside `m.supersedes.new_content` which can
+The content of the edited message should be inside `m.replaces.new_content` which can
 be accessed if the client is edit-aware. If the client is not aware, it can use `content.body`
 and `content.formatted_body` to render an approximation of the edit. The fallback should be
 in the format given below.
 
-Clients should always favour fetching the source from `m.supersedes.event_id` where possible,
+Clients should always favour fetching the source from `m.replaces.event_id` where possible,
 rather than using the fallback as the fallback can be faked. Furthermore, clients should refuse
 to display with an appropriate message when the sender of the source event and the edit event differ.
 
@@ -16,6 +16,8 @@ The client should make a best effort attempt to describe the relationship betwee
 both the fallback and representation.
 
 If the edit event's content is invalid, it is acceptable to display/keep the old event in place with a warning.
+
+User should be warned that editing an an
 
 Example
 -------
@@ -61,10 +63,6 @@ New edited message:
 
 Problems
 --------
-
-One of the glaring problems with this approach is it doesn't modify the original event.
-In this proposal, I'd recommend that users redact events rather than try to edit sensitive
-information out of them.
 
 Clients will also render the original event without the edit if the client isn't aware of
 the edited event since event aggregations aren't a thing yet. This is considered an
