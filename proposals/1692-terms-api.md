@@ -81,16 +81,33 @@ link to said policy, or otherwise rely on the homeserver's fallback.
 
 ## Login
 
-Similar to registration, the homeserver may provide a required `m.login.terms` stage with the
-same information. Because the homeserver is not aware of who is trying to authenticate until
-after UI auth is started, the homeserver should present the latest version of each policy in
-the login terms stage, and have the login terms stage be one of the last stages in the flow.
-Once the homeserver is reasonably certain about who is authorizing themselves, the homeserver
-should determine if the user has already accepted the policies they need to. If they have,
-the homeserver should append the stage to the `completed` array, or by skipping to the end of
-the UI auth process if possible. Under the current specified API, this is already possible
-for a homeserver to do and therefore should not require changes to clients.
+Given the Client-Server specification doesn't use UI auth on the login routes, mimicking the
+process used for registration is more difficult. The homeserver would not be aware of who is
+logging in prior to the user submitting their details (eg: token, password, etc) and therefore
+cannot provide exact details on which policies the user must accept as part of the initial login
+process. Instead, the login endpoints should be brought closer to how UI auth works using the
+following process:
 
+1. The client requests the login flows (unchanged behaviour) - policies are not referenced yet.
+2. The client submits the user's details (eg: password) to the homeserver (unchanged behaviour).
+3. If the credentials are valid, the homeserver checks if the user has any required policies to
+   accept. If the user does not have any pending policies, skip to step 6.
+4. The homeserver responds with a 401 as per the UI auth requirements (an `errcode` of `M_FORBIDDEN`
+   and `error` saying something like `"Please accept the terms and conditions"`). The `completed`
+   stages would have the user's already-accepted step listed (eg: `m.login.password`). The
+   `m.login.terms` authentication type shares the same data structure as the one used during
+   registration.
+5. The client submits the request again as if it were following the UI auth requirements (ie: for
+   the purpose of `m.login.terms`, submitting an empty auth dict).
+6. The homeserver logs the user in by generating a token and returning it to the client as per
+   the specification.
+
+This process is chosen to begin introducing the UI auth mechanism to login without breaking clients.
+In the future, the login endpoints should be migrated fully to use UI auth instead of a different
+approach. By nature of having the homeserver return a 401 when the user must accept terms before
+continuing, older clients will not be able to work around the limitation. Modern clients would be
+expected to support the UI auth flow (after the initial password submission), therefore allowing
+the user to actually log in.
 
 # Asking for acceptance after login/registration
 
