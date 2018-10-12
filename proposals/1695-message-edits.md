@@ -5,7 +5,7 @@ This proposal extends the m.room.message schema to add support for edits. It doe
 provide a way to aggregate those edits. The edit event is comprised of some metadata
 to describe the edited event and some fallback text.
 
-I propose for message edits to follow a similar format to replies, using  `m.relates_to`.
+Message edits should follow a similar format to replies, using  `m.relates_to`.
 The content of the edited message should be inside `m.replaces.new_content` which can
 be accessed if the client is edit-aware. If the client is not aware, it can use `content.body`
 and `content.formatted_body` to render an approximation of the edit. The fallback should be
@@ -22,6 +22,7 @@ both the fallback and representation.
 If the edit event's content is invalid, it is acceptable to display/keep the old event in place with a warning.
 
 User should be warned that editing a sensitive event will NOT erase it's contents, and they should use a redact instead.
+NOTE: Redacts are not assurances of removal either, but they carry a clear intent to remove the message.
 
 Example
 -------
