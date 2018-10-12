@@ -1,6 +1,10 @@
 Proposal
 ========
 
+This proposal extends the m.room.message schema to add support for edits. It does NOT
+provide a way to aggregate those edits. The edit event is comprised of some metadata
+to describe the edited event and some fallback text.
+
 I propose for message edits to follow a similar format to replies, using  `m.relates_to`.
 The content of the edited message should be inside `m.replaces.new_content` which can
 be accessed if the client is edit-aware. If the client is not aware, it can use `content.body`
@@ -17,7 +21,7 @@ both the fallback and representation.
 
 If the edit event's content is invalid, it is acceptable to display/keep the old event in place with a warning.
 
-User should be warned that editing an an
+User should be warned that editing a sensitive event will NOT erase it's contents, and they should use a redact instead.
 
 Example
 -------
@@ -43,13 +47,13 @@ New edited message:
     "body": "Edited: ~~This is an example message I want to edit~~ This is the edited message",
     "format": "org.matrix.custom.html",
     "formatted_body": "Edited: <del>This is an example message I want to edit</del> This is the edited message",
+    "new_content": {
+        "body": "This is the edited message.",
+        "msgtype": "m.text"
+    }
     "m.relates_to": {
       "m.replaces": {
         "event_id": "$1539340060524DGxMc:half-shot.uk",
-        "new_content": {
-            "body": "This is the edited message.",
-            "msgtype": "m.text"
-        }
       }
     },
     "msgtype": "m.text"
@@ -63,11 +67,6 @@ New edited message:
 
 Problems
 --------
-
-Clients will also render the original event without the edit if the client isn't aware of
-the edited event since event aggregations aren't a thing yet. This is considered an
-acceptable risk for this proposal and aggregations are considered an extension to
-message edits for Matrix.
 
 It should be noted that many bridges and bots already show edits in the form of a
 fallback already, so this event only strives to add some specced metadata to allow
