@@ -34,29 +34,42 @@ auth at a later stage in this proposal.
 ## Registration
 
 During registration it may be important to the homeserver that the user accepts a given policy.
-This is described as a `m.login.terms` authentication type. The parameters for this login type
-are:
+This is described as a `m.login.terms` authentication type. The parameters for this authentication
+type are:
 
 ```json
 {
-    "policies": [
-        {
-            "name": "Terms of Service",
-            "url": "https://example.org/somewhere/terms.html",
-            "version": "1.2"
+    "policies": {
+        "terms_of_service": {
+            "version": "1.2",
+            "en": {
+                "name": "Terms of Service",
+                "url": "https://example.org/somewhere/terms-1.2-en.html"
+            },
+            "fr": {
+                "name": "Conditions d'utilisation",
+                "url": "https://example.org/somewhere/terms-1.2-fr.html"
+            }
         },
-        {
-            "name": "Privacy Policy",
-            "url": "https://example.org/somewhere/privacy.html",
-            "version": "1.2"
+        "privacy_policy": {
+            "version": "1.2",
+            "en": {
+                "name": "Privacy Policy",
+                "url": "https://example.org/somewhere/privacy-1.2-en.html"
+            },
+            "fr": {
+                "name": "Politique de confidentialité",
+                "url": "https://example.org/somewhere/privacy-1.2-fr.html"
+            }
         }
-    ]
+    }
 }
 ```
 
-The `name` of a policy is human-readable name for the document. The `url` may point to any
-location. The `version` is provided for convenience to the client. The `name` must also be
-unique amongst the policies.
+Policies have a unique identifer represented by the key under `policies`. The `version` is
+provided as a convience to the client, and is alongside the different language options for
+each of the policies. The `name` of a policy is human-readable name for the document. The
+`url` may point to any location. The implicit ID may only contain characters in `[a-zA-Z0-9_]`.
 
 Policies supplied via this method are implied to be required and therefore blocking for the
 registration to continue.
@@ -86,32 +99,56 @@ to:
 
 ```json
 {
-    "accepted": [
-        {
-            "name": "Terms of Service",
-            "url": "https://example.org/somewhere/terms.html",
-            "version": "1.2"
+    "accepted": {
+        "terms_of_service": {
+            "version": "1.2",
+            "en": {
+                "name": "Terms of Service",
+                "url": "https://example.org/somewhere/terms-1.2-en.html"
+            },
+            "fr": {
+                "name": "Conditions d'utilisation",
+                "url": "https://example.org/somewhere/terms-1.2-fr.html"
+            }
         },
-        {
-            "name": "Privacy Policy",
-            "url": "https://example.org/somewhere/privacy.html",
-            "version": "1.2"
+        "privacy_policy": {
+            "version": "1.2",
+            "en": {
+                "name": "Privacy Policy",
+                "url": "https://example.org/somewhere/privacy-1.2-en.html"
+            },
+            "fr": {
+                "name": "Politique de confidentialité",
+                "url": "https://example.org/somewhere/privacy-1.2-fr.html"
+            }
         }
-    ],
-    "pending": [
-        {
-            "name": "Terms of Service",
-            "url": "https://example.org/somewhere/terms-2.html",
+    },
+    "pending": {
+        "terms_of_service": {
             "version": "2.0",
-            "required": true
+            "required": true,
+            "en": {
+                "name": "Terms of Service",
+                "url": "https://example.org/somewhere/terms-2.0-en.html"
+            },
+            "fr": {
+                "name": "Conditions d'utilisation",
+                "url": "https://example.org/somewhere/terms-2.0-fr.html"
+            }
         },
-        {
-            "name": "Code of Conduct",
-            "url": "https://example.org/somewhere/code-of-conduct.html",
+        "code_of_conduct": {
             "version": "1.0",
-            "required": false
+            "required": false,
+            "en": {
+                "name": "Code of Conduct",
+                "url": "https://example.org/somewhere/code-of-conduct-1.0-en.html"
+            },
+            "fr": {
+                "name": "Code de conduite",
+                "url": "https://example.org/somewhere/code-of-conduct-1.0-fr.html"
+            }
         }
-    ]
+    }
 }
 ```
 
@@ -124,16 +161,24 @@ event.
 
 The `required` boolean indicates whether the homeserver is going to prevent use of the account (without
 logging the user out) by responding with a 403 `M_TERMS_NOT_SIGNED` error. The error will include an
-additional `policy` property like in the following example:
+additional `policies` property like in the following example:
 
 ```json
 {
     "errcode": "M_TERMS_NOT_SIGNED",
     "error": "Please sign the terms of service",
-    "policy": {
-        "name": "Terms of Service",
-        "url": "https://example.org/somewhere/terms-2.html",
-        "version": "2.0"
+    "policies": {
+        "terms_of_service": {
+            "version": "2.0",
+            "en": {
+                "name": "Terms of Service",
+                "url": "https://example.org/somewhere/terms-2.0-en.html"
+            },
+            "fr": {
+                "name": "Conditions d'utilisation",
+                "url": "https://example.org/somewhere/terms-2.0-fr.html"
+            }
+        }
     }
 }
 ```
@@ -153,11 +198,11 @@ One way to accept the terms of service is to force the user to log in again, how
 likely to be less than desireable for most users. Instead, the client may make a request to
 `/_matrix/client/r0/terms` using the user-interactive authentication approach with a valid
 access token. The homeserver may decide which additional stages it wants the user to complete
-but must at least include the `m.login.terms` stage in every flow. The behaviour of the stage
-is exactly the same as how it works for registering an account: the policies the homeserver
-wants the user to accept are provided as the parameters for the stage, which should include
-policies that are `"required": false` in the user's account data. This is because the same
-API is used by the client to acknowledge a non-blocking policy (such as the Code of Conduct
+but must at least include the `m.login.terms` stage in every flow. The authentication type's
+behaviour is exactly the same as how it works for registering an account: the policies the
+homeserver wants the user to accept are provided as the parameters for the stage, which should
+include policies that are `"required": false` in the user's account data. This is because the
+same API is used by the client to acknowledge a non-blocking policy (such as the Code of Conduct
 in the prior example).
 
 
