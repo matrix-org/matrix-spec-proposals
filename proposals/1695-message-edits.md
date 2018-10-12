@@ -42,7 +42,7 @@ New edited message:
     "format": "org.matrix.custom.html",
     "formatted_body": "Edited: <del>This is an example message I want to edit</del> This is the edited message",
     "m.relates_to": {
-      "m.supersedes": {
+      "m.replaces": {
         "event_id": "$1539340060524DGxMc:half-shot.uk",
         "new_content": {
             "body": "This is the edited message.",
@@ -73,5 +73,5 @@ message edits for Matrix.
 
 It should be noted that many bridges and bots already show edits in the form of a
 fallback already, so this event only strives to add some specced metadata to allow
-clients to render them clearly. In the future, this proposal could be extended to
-use aggregations to apply to older events.
+clients to render them clearly.In the future, this proposal could be extended to
+use aggregations to show a list of edits made to a message.
