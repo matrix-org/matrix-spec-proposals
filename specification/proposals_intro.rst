@@ -89,7 +89,8 @@ follows:
 - Once your proposal has been accepted and merged, it is time to submit the
   actual change to the Specification that your proposal reasoned about. This is
   known as a spec PR. However in order for your spec PR to be accepted, you
-  **must** show an implementation to prove that it works well in practice. In
+  **must** show an implementation to prove that it works well in practice. A
+  link to the implementation should be included in the PR description. In
   addition, any significant unforeseen changes to the original idea found
   during this process will warrant another MSC.
 
