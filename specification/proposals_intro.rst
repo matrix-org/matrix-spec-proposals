@@ -80,7 +80,6 @@ follows:
     the community. Having a shepherd is not a requirement for proposal
     acceptance.
 
-  
 - Members of the Core Team and community will review and discuss the PR in the
   comments and in relevant rooms on Matrix. Discussion outside of GitHub should
   be summarised in a comment on the PR.
@@ -105,9 +104,9 @@ follows:
   addition, any significant unforeseen changes to the original idea found
   during this process will warrant another MSC.
 
-  - Please sign off the spec PR as per the `CONTRIBUTING.rst 
-  <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_
-  guidelines.
+  - Please sign off the spec PR as per the `CONTRIBUTING.rst
+    <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_
+    guidelines.
 
 - Your PR will then be reviewed and hopefully merged on the grounds it is
   implemented sufficiently. If so, then give yourself a pat on the back knowing
