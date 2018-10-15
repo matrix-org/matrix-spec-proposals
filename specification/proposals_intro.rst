@@ -36,14 +36,14 @@ follows:
 - Fork and make a PR to the `matrix-doc
   <https://github.com/matrix-org/matrix-doc>`_ repository.
 
-  - Your proposal must live in the ``proposals/`` directory with a filename
+  - The proposal must live in the ``proposals/`` directory with a filename
     that follows the format ``1234-my-new-proposal.md`` where 1234 is the MSC
     ID.
   - Your PR description must include a link to the rendered markdown document
     and a summary of the proposal. 
   - It is often very helpful to link any related MSCs or `matrix-doc issues
     <https://github.com/matrix-org/matrix-doc/issues>`_ to give context
-    for your proposal.
+    for the proposal.
 
 - Gather feedback as widely as possible from the community and core team.
 
@@ -87,10 +87,10 @@ follows:
   will be carried out. If sufficient reasoning against the disposition is is
   raised, the FCP can be cancelled and the MSC will continue to evolve
   accordingly.
-- Once your proposal has been accepted and merged, it is time to submit the
+- Once the proposal has been accepted and merged, it is time to submit the
   actual change to the Specification that your proposal reasoned about. This is
-  known as a spec PR. However in order for your spec PR to be accepted, you
-  **must** show an implementation to prove that it works well in practice. A
+  known as a spec PR. However in order for the spec PR to be accepted, an
+  implementation **must** be shown to prove that it works well in practice. A
   link to the implementation should be included in the PR description. In
   addition, any significant unforeseen changes to the original idea found
   during this process will warrant another MSC.
