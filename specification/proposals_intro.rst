@@ -18,7 +18,7 @@ committed changes to the `Specification repository
 The process for submitting a Matrix Spec Change (MSC) Proposal in detail is as
 follows:
 
-- Create a first-draft of your proposal using `GitHub-flavored markdown
+- Create a first draft of your proposal using `GitHub-flavored markdown
   <https://help.github.com/articles/basic-writing-and-formatting-syntax/>`_
 
   - In the document, clearly state the problem being solved, and the possible
