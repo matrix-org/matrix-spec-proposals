@@ -15,10 +15,10 @@ the proposal being accepted, then actually having your ideas implemented as
 committed changes to the `Specification repository
 <https://github.com/matrix-org/matrix-doc>`_.
 
-Meet the `members of the core team
+Meet the `members of the Core Team
 <https://github.com/orgs/matrix-org/teams/spec-core-team/members>`_, a group of
 individuals tasked with ensuring the spec process is as smooth and painless as
-possible. Members of the core team will do their best to participate in
+possible. Members of the Core Team will do their best to participate in
 discussion, summarise when things become long-winded, and generally try to act
 towards the benefit of everyone. As a majority, team members have the ability
 to change the state of a proposal, and individually have the final say in
@@ -75,19 +75,19 @@ follows:
     viewpoints and get consensus, but this can sometimes be time-consuming (or
     the author may be biased), in which case an impartial 'shepherd' can be
     assigned to help guide the proposal through this process. A shepherd is
-    typically a neutral party from the core team or an experienced member of
+    typically a neutral party from the Core Team or an experienced member of
     the community. Having a shepherd is not a requirement for proposal
     acceptance.
 
   
-- Members of the core team and community will review and discuss the PR in the
+- Members of the Core Team and community will review and discuss the PR in the
   comments and in relevant rooms on Matrix. Discussion outside of GitHub should
   be summarised in a comment on the PR.
-- At some point a member of the core team will propose a motion for a final
+- At some point a member of the Core Team will propose a motion for a final
   comment period (FCP) with a *disposition* of merge, close or postpone. This
   is usually preceded with a comment summarising the current state of the
   discussion, along with reasoning for the motion.
-- A concern can be raised by a core team member at any time, which will block
+- A concern can be raised by a Core Team member at any time, which will block
   the FCP from beginning. An FCP will only be begin when a **majority** of core
   team members agree on its outcome, and all existing concerns have been
   resolved.
@@ -169,7 +169,7 @@ Lifetime States
 Name                             GitHub Label                   Description
 ===============================  =============================  ====================================
 Proposal Drafting and Feedback   N/A                            A proposal document which is still work-in-progress but is being shared to incorporate feedback
-Proposal In Review               proposal-in-review             A proposal document which is now ready and waiting for review by the core team and community
+Proposal In Review               proposal-in-review             A proposal document which is now ready and waiting for review by the Core Team and community
 Proposal Final Comment Period    proposal-final-comment-period  A proposal document which has reached final comment period either for merge, closure or postponement
 Proposal Merged/Spec PR Missing  proposal-passed-review         A proposal document which has passed review. Waiting for a PR against the Spec
 Spec PR In Review                spec-pr                        A proposal that has been PR'd against the spec and is currently under review
@@ -188,7 +188,7 @@ This is a living document generated from the list of proposals at
 GitHub.
 
 We use labels and some metadata in MSC PR descriptions to generate this page.
-Labels are assigned by the core team whilst triaging the issues based on those
+Labels are assigned by the Core Team whilst triaging the issues based on those
 which exist in the `matrix-doc <https://github.com/matrix-org/matrix-doc>`_
 repo already.
 
