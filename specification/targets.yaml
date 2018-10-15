@@ -39,6 +39,9 @@ targets:
     files:
         - proposals_intro.rst
         - proposals.rst
+  proposal_etiquette:
+    files:
+        - proposal_etiquette.rst
 groups:  # reusable blobs of files when prefixed with 'group:'
   modules:
     - modules/instant_messaging.rst

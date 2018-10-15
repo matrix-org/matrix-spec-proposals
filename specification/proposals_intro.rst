@@ -104,60 +104,18 @@ follows:
   you've contributed to the Matrix protocol for the benefit of users and
   developers alike :)
 
-Proposals **must** act to the greater benefit of the entire Matrix ecosystem,
-rather than benefiting or privileging any single player or subset of players
-- and must not contain any patent encumbered IP.  The Matrix core team pledges
-to act as a neutral custodian for Matrix on behalf of the whole ecosystem,
-just as it has since Matrix's inception in May 2014.
+Please also read the separate document on `proposal etiquette <proposal_etiquette.html>`_.
 
-For clarity: the Matrix ecosystem is anyone who uses the Matrix protocol. That
-includes client users, server admins, client developers, bot developers,
-bridge and AS developers, users and admins who are indirectly using Matrix via
-3rd party networks which happen to be bridged, server developers, room
-moderators and admins, companies/projects building products or services on
-Matrix, spec contributors, translators, and the core team who created it in
-the first place.
-
-"Greater benefit" could include maximising:
-
-* the number of end-users reachable on the open Matrix network.
-* the number of regular users on the Matrix network (e.g. 30-day retained
-  federated users)
-* the number of online servers in the open federation.
-* the number of developers building on Matrix.
-* the number of independent implementations which use Matrix
-* the quality and utility of the Matrix spec.
-
-The guiding principles of the overall project are being worked on as part of
-the upcoming governance proposal, but could be something like:
-
-* Supporting the whole long-term ecosystem rather than individual stakeholder gain
-* Openness rather than proprietariness
-* Collaboration rather than competition
-* Accessibility rather than elitism
-* Transparency rather than stealth
-* Empathy rather than contrariness
-* Pragmatism rather than perfection
-* Proof rather than conjecture
-
-The above directions are intended to be simple and pragmatic rather than
-exhaustive, and aim to provide guidelines until we have a formal spec
-governance process in place that covers the whole Matrix community.  In order
-to get Matrix out of beta as quickly as possible, as of May 2018 we are
-prioritising spec and reference implementation development over writing formal
-governance, but a formal governance document will follow as rapidly as
-possible.
-
-The process for handling proposals is described in the following diagram. Note
-that the lifetime of a proposal is tracked through the corresponding labels for
-each stage in the `matrix-doc issue tracker
+The process for handling proposals is shown visually in the following diagram.
+Note that the lifetime of a proposal is tracked through the corresponding
+labels for each stage in the `matrix-doc issue tracker
 <https://github.com/matrix-org/matrix-doc/issues>`_.
 
 ::
 
                            +                          +
-       Proposals           |          Spec PRs        |  Additional States
-       +-------+           |          +------+        |  +---------------+
+         Proposals         |          Spec PRs        |  Additional States
+         +-------+         |          +------+        |  +---------------+
                            |                          |
  +----------------------+  |         +---------+      |    +-----------+
  |                      |  |         |         |      |    |           |
