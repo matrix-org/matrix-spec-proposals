@@ -94,7 +94,7 @@ follows:
   addition, any significant unforeseen changes to the original idea found
   during this process will warrant another MSC.
 
-  - Please sign off the spec PR as per the `CONTRIBUTING.rst
+  - Please sign off the spec PR as per the `CONTRIBUTING.rst 
   <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_
   guidelines.
 
