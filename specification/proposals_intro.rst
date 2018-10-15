@@ -6,70 +6,98 @@
 Proposals for Spec Changes to Matrix
 ------------------------------------
 
-The process for submitting a Matrix Spec Change (MSC) Proposal is as follows:
+If you are interested in submitting a change to the matrix specification,
+please take note of the following guidelines.
 
-- Produce a publicly-accessible proposal describing your change:
+Community changes to the specification require a formal proposal process. This
+involves writing a proposal, having it reviewed by the matrix community, having
+the proposal being accepted, then actually having your ideas implemented as
+committed changes to the `specification repository
+<https://github.com/matrix-org/matrix-doc>`_.
 
-  - Please use Google Docs, or an equivalent system capable of collaborative
-    editing, with versioned history, suggestions ('track changes'), threaded
-    comments, and good mobile support.  Please ensure the document is
-    world-commentable or -editable.
-  - We do not use Github issues (or Etherpad) for the design process of the
-    proposal, as the document review/commenting capabilities aren't good
-    enough.
-  - We also don't jump straight to PRing against the spec itself, as it's much
-    faster to iterate on a proposal in freeform document form than in the
-    terse and formal structure of the spec.
-  - In the proposal, please clearly state the problem being solved, and the
-    possible solutions being proposed for solving it and their respective
-    trade-offs.
+The process for submitting a Matrix Spec Change (MSC) Proposal in detail is as
+follows:
+
+- Create a first-draft of your proposal using `github-flavored markdown
+  <https://help.github.com/articles/basic-writing-and-formatting-syntax/>`_
+
+  - In the document, clearly state the problem being solved, and the possible
+    solutions being proposed for solving it and their respective trade-offs.
   - Proposal documents are intended to be as lightweight and flexible as the 
     author desires; there is no formal template; the intention is to iterate
     as quickly as possible to get to a good design.
-  - A `template with suggested headers
+  - However, a `template with suggested headers
     <https://docs.google.com/document/d/1CoLCPTcRFvD4PqjvbUl3ZIWgGLpmRNbqxsT2Tu7lCzI/>`_
-    is available.
+    is available to get you started if necessary.
+  - Take care in creating your proposal. Specify your intended changes, and
+    give reasoning to back them up. Changes without justification will likely
+    be poorly received by the community.
 
-- Make a new issue at https://github.com/matrix-org/matrix-doc/issues, whose
-  description should list the metadata as per below. Use the github search
-  function to attempt to locate any related github issues, and link any that
-  are found in the body of the new issue.
-- Gather feedback as widely as possible from the community and core team on
-  the proposal.
+- Fork and make a PR to the `matrix-doc
+  <https://github.com/matrix-org/matrix-doc>`_ repository.
 
-  - The aim is to get maximum consensus on the trade-offs chosen to get an
-    optimal solution.
+  - Your PR description must include a link to the rendered markdown document
+    and a summary of the proposal. 
+  - It is often very helpful to link any related MSCs or `matrix-doc issues
+    <https://github.com/matrix-org/matrix-doc/issues>`_ to give context
+    for your proposal.
+
+- Gather feedback as widely as possible from the community and core team.
+
+  - The aim is to get maximum consensus towards an optimal solution. Sometimes
+    trade-offs are required to meet this goal. Decisions should be made to the
+    benefit of all major use cases.
   - A good place to ask for feedback on a specific proposal is
     `#matrix-spec:matrix.org <https://matrix.to/#/#matrix-spec:matrix.org>`_.
-    However, authors/shepherds are welcome to use an alternative room if they
-    prefer - please advertise it in #matrix-spec:matrix.org though and link
-    to it on the github issue.  N.B. that #matrix-dev:matrix.org is for
-    developers using existing Matrix APIs, #matrix:matrix.org is for users
-    trying to run matrix apps (clients & servers);
-    #matrix-architecture:matrix.org is for cross-cutting discussion of
-    Matrix's architectural design.
+    However, it is welcome to use an alternative room if preferred please
+    advertise it in #matrix-spec:matrix.org and link to it on the PR for
+    visibility.
+  - For additional discussion areas, know that that #matrix-dev:matrix.org is
+    for developers using existing Matrix APIs, #matrix:matrix.org is for users
+    trying to run matrix apps (clients & servers) and
+    #matrix-architecture:matrix.org is for cross-cutting discussion of Matrix's
+    architectural design.
   - The point of the spec proposal process is to be collaborative rather than
     competitive, and to try to solve the problem in question with the optimal
-    set of trade-offs.  Ideally the author would neutrally gather the various
+    set of trade-offs. The author should neutrally gather the various
     viewpoints and get consensus, but this can sometimes be time-consuming (or
     the author may be biased), in which case an impartial 'shepherd' can be
-    assigned to help guide the proposal through this process.  A shepherd is
+    assigned to help guide the proposal through this process. A shepherd is
     typically a neutral party from the core team or an experienced member of
-    the community.
+    the community. Having a shepherd is not a requirement for proposal
+    acceptance.
   
-- Once the proposal has sufficient consensus and passed review, you **must**
-  show an implementation to prove that it works well in practice, before a
-  spec PR will be accepted.  Iterate on the proposal if needed.
-- Finally, please make a new spec PR which includes the changes as
-  implemented against
-  https://github.com/matrix-org/matrix-doc/tree/master/specification.  This
-  will then be reviewed and hopefully merged!  Please sign off the spec PR as
-  per the `CONTRIBUTING.rst
+- Members of the core team will review and discuss the PR in the comments and
+  in relevant rooms on matrix. Discussion outside of Github should be
+  summarised in a comment on the PR.
+- At some point a member of the core team will propose a motion for a final
+  comment period (FCP) with a *disposition* of merge, close or postpone. This
+  is usually preceded with a comment summarising the current state of the
+  discussion, along with reasoning for the motion.
+- A concern can be raised by a core team member at any time, which will block
+  the FCP from beginning. An FCP will only be begin when a **majority** of core
+  team members agree on its outcome, and all existing concerns have been
+  resolved.
+- The FCP will then begin and last for 5 days, giving anyone else some time to
+  speak up before it concludes. On its conclusion, the disposition of the FCP
+  will be carried out. If, however, sufficient reasoning for the FCP not to
+  conclude is raised, the FCP can be cancelled and the MSC will continue to
+  evolve accordingly.
+- Once your proposal has been accepted and merged, it is time to submit the
+  actual change to the specification that your proposal reasoned about. This is
+  known as a spec PR. However in order for your spec PR to be accepted, you
+  **must** show an implementation to prove that it works well in practice. In
+  addition, any significant unforeseen changes to the original idea found
+  during this process will warrant another MSC.
+
+  - Please sign off the spec PR as per the `CONTRIBUTING.rst
   <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_
   guidelines.
 
-Final decisions on review are made by the Matrix core team
-(+matrix:matrix.org), acting on behalf of the whole Matrix community.
+- Your PR will then be reviewed and hopefully merged on the grounds it is
+  implemented sufficiently. If so, then give yourself a pat on the back knowing
+  you've contributed to the matrix protocol for the benefit of users and
+  developers alike :)
 
 Proposals **must** act to the greater benefit of the entire Matrix ecosystem,
 rather than benefiting or privileging any single player or subset of players
@@ -122,64 +150,67 @@ each stage in the `matrix-doc issue tracker
 
 ::
 
-                         +                            +
-       Proposals         |          Spec PRs          |   Other States
-       +-------+         |          +------+          |   +----------+
-                         |                            |
-                         |                            |
-      +----------+       |         +---------+        |    +---------+
-      |          |       |         |         |        |    |         |
-      | Proposal |       |  +------> Spec PR |        |    | Blocked |
-      |   WIP    |       |  |      | Missing |        |    |         |
-      |          |       |  |      |         |        |    +---------+
-      +----+-----+       |  |      +----+----+        |
-           |             |  |           |             |
-           |             |  |           |             |  +-----------+
-  +--------v----------+  |  |           |             |  |           |
-  |                   |  |  | +---------v--------+    |  | Abandoned |
-  |      Proposal     |  |  | |                  |    |  |           |
-  |  Ready for Review |  |  | |     Spec PR      |    |  +-----------+
-  |                   |  |  | | Ready for Review |    |
-  +----------+--------+  |  | |                  |    |  +-----------+
-             |           |  | +---------+--------+    |  |           |
-             |           |  |           |             |  | Obsolete  |
-      +------v----+      |  |           |             |  |           |
-      |           |      |  |     +-----v-----+       |  +-----------+
-      | Proposal  |      |  |     |           |       |
-      | In Review |      |  |     |  Spec PR  |       |
-      |           |      |  |     | In Review |       |   +----------+
-      +----+------+      |  |     |           |       |   |          |
-           |             |  |     +-----+-----+       |   | Rejected |
-           |             |  |           |             |   |          |
-    +------v--------+    |  |           |             |   +----------+
-    |               |    |  |           |             |
-    |   Proposal    |    |  |      +----v----+        |
-    | Passed Review |    |  |      |         |        |
-    |               |    |  |      | Merged! |        |
-    +-------+-------+    |  |      |         |        |
-            |            |  |      +---------+        |
-            |            |  |                         |
-            +---------------+                         |
-                         |                            |
-                         +                            +
+                           +                          +
+       Proposals           |          Spec PRs        |  Additional States
+       +-------+           |          +------+        |  +---------------+
+                           |                          |
+ +----------------------+  |         +---------+      |    +-----------+
+ |                      |  |         |         |      |    |           |
+ |      Proposal        |  |  +------> Spec PR |      |    | Postponed |
+ | Drafting and Initial |  |  |      | Missing |      |    |           |
+ |  Feedback Gathering  |  |  |      |         |      |    +-----------+
+ |                      |  |  |      +----+----+      |   
+ +----------+-----------+  |  |           |           |    +----------+
+            |              |  |           v           |    |          |
+            v              |  |  +-----------------+  |    |  Closed  |
+  +-------------------+    |  |  |                 |  |    |          |
+  |                   |    |  |  | Spec PR Created |  |    +----------+
+  |    Proposal PR    |    |  |  |  and In Review  |  |
+  |      Created      |    |  |  |                 |  |  
+  |                   |    |  |  +--------+--------+  |   
+  +---------+---------+    |  |           |           |   
+            |              |  |           v           |   
+            v              |  |     +-----------+     |
+      +-----------+        |  |     |           |     |
+      |           |        |  |     |  Spec PR  |     |
+      | Proposal  |        |  |     |  Merged!  |     |
+      | In Review |        |  |     |           |     |
+      |           |        |  |     +-----------+     |                
+      +-----+-----+        |  |                       |
+            |              |  |                       |
+            v              |  |                       |   
+ +----------------------+  |  |                       |   
+ |                      |  |  |                       |   
+ | Final Comment Period |  |  |                       |
+ |                      |  |  |                       |
+ +----------+-----------+  |  |                       |
+            |              |  |                       |
+            v              |  |                       |
+     +-------------+       |  |                       |
+     |             |       |  |                       |
+     | Proposal PR |       |  |                       |
+     |   Merged!   |       |  |                       |
+     |             |       |  |                       |
+     +------+------+       |  |                       |
+            |              |  |                       |
+            +-----------------+                       |
+                           |                          |
+                           +                          +
 
 Lifetime States
 ---------------
 
-=========================== =======================================================
-Proposal WIP                A proposal document which is still work-in-progress but is being shared to incorporate feedback
-Proposal Ready for Review   A proposal document which is now ready and waiting for review by the core team and community
-Proposal In Review          A proposal document which is currently in review
-Proposal Passed Review      A proposal document which has passed review as worth implementing and then being added to the spec
-Spec PR Missing             A proposal which has been implemented and has been used in the wild for a few months but hasn't yet been added to the spec
-Spec PR Ready for Review    A proposal which has been PR'd against the spec and is awaiting review
-Spec PR In Review           A proposal which has been PR'd against the spec and is in review
-Merged                      A proposal whose PR has merged into the spec!
-Blocked                     A proposal which is temporarily blocked on some external factor (e.g. being blocked on another proposal first being approved)
-Abandoned                   A proposal where the author/shepherd has not been responsive for a few months
-Obsolete                    A proposal which has been overtaken by other proposals
-Rejected                    A proposal which is not going to be incorporated into Matrix
-=========================== =======================================================
+============================= =======================================================
+Proposal WIP                  A proposal document which is still work-in-progress but is being shared to incorporate feedback
+Proposal In Review            A proposal document which is now ready and waiting for review by the core team and community
+Proposal Final Comment Period A proposal document which has reached final comment period either for merge, closure or postponement
+Proposal Merged               A proposal document which has passed review 
+Spec PR Missing               A proposal that has been accepted but has not currently been implemented in the spec
+Spec PR In Review             A proposal that has been PR'd against the spec and is currently under review
+Spec PR Merged                A proposal with a sufficient working implementation and whose Spec PR has been merged!
+Postponed                     A proposal that is temporarily blocked or a feature that may not be useful currently but perhaps sometime in the future
+Closed                        A proposal which has been reviewed and deemed unsuitable for acceptance
+============================= =======================================================
 
 
 Proposal Tracking
@@ -189,24 +220,22 @@ This is a living document generated from the list of proposals at
 `matrix-doc/issues <https://github.com/matrix-org/matrix-doc/issues>`_ on
 GitHub.
 
-We use labels and some metadata in the issues' descriptions to generate this
-page.  Labels are assigned by the core team whilst triaging the issues based
-on those which exist in the matrix-doc repo already.
+We use labels and some metadata in MSC PR descriptions to generate this page.
+Labels are assigned by the core team whilst triaging the issues based on those
+which exist in the matrix-doc repo already.
 
 Other metadata:
 
-- the MSC (Matrix Spec Change) number is taken from the github issue ID. This
-  is carried for the lifetime of the proposal, including the PR creation
-  phase. N.B. They are not in chronological order!
-- Please use the github issue title to set the title.
-- Please link to the proposal document by adding a "Documentation: <url>" line
-  in the issue description.
+- the MSC (Matrix Spec Change) number is taken from the github Pull Request ID.
+  This is carried for the lifetime of the proposal. These IDs do not necessary
+  represent a chronological order.
+- The github PR title will act as the MSC's title.
 - Please link to the spec PR (if any) by adding a "PRs: #1234" line in the
   issue description.
-- The creation date is taken from the github issue, but can be overriden by
-  adding a "Date: yyyy-mm-dd" line in the issue description.
+- The creation date is taken from the github PR, but can be overridden by
+  adding a "Date: yyyy-mm-dd" line in the PR description.
 - Updated Date is taken from github.
-- Author is the creator of the github issue, but can be overriden by adding a
+- Author is the creator of the MSC PR, but can be overridden by adding a
   "Author: @username" line in the body of the issue description. Please make
   sure @username is a github user (include the @!)
 - A shepherd can be assigned by adding a "Shepherd: @username" line in the
