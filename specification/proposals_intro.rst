@@ -6,19 +6,19 @@
 Proposals for Spec Changes to Matrix
 ------------------------------------
 
-If you are interested in submitting a change to the matrix specification,
+If you are interested in submitting a change to the Matrix Specification,
 please take note of the following guidelines.
 
-Community changes to the specification require a formal proposal process. This
-involves writing a proposal, having it reviewed by the matrix community, having
+Community changes to the Specification require a formal proposal process. This
+involves writing a proposal, having it reviewed by the Matrix community, having
 the proposal being accepted, then actually having your ideas implemented as
-committed changes to the `specification repository
-<https://github.com/matrix-org/matrix-doc>`_.
+committed changes to the `Specification repository
+<https://github.com/Matrix-org/Matrix-doc>`_.
 
 The process for submitting a Matrix Spec Change (MSC) Proposal in detail is as
 follows:
 
-- Create a first-draft of your proposal using `github-flavored markdown
+- Create a first-draft of your proposal using `GitHub-flavored markdown
   <https://help.github.com/articles/basic-writing-and-formatting-syntax/>`_
 
   - In the document, clearly state the problem being solved, and the possible
@@ -27,19 +27,19 @@ follows:
     author desires; there is no formal template; the intention is to iterate
     as quickly as possible to get to a good design.
   - However, a `template with suggested headers
-    <https://github.com/matrix-org/matrix-doc/blob/master/proposals/proposals_template.md>`_
+    <https://github.com/Matrix-org/Matrix-doc/blob/master/proposals/proposals_template.md>`_
     is available to get you started if necessary.
   - Take care in creating your proposal. Specify your intended changes, and
     give reasoning to back them up. Changes without justification will likely
     be poorly received by the community.
 
-- Fork and make a PR to the `matrix-doc
-  <https://github.com/matrix-org/matrix-doc>`_ repository.
+- Fork and make a PR to the `Matrix-doc
+  <https://github.com/Matrix-org/Matrix-doc>`_ repository.
 
   - Your PR description must include a link to the rendered markdown document
     and a summary of the proposal. 
-  - It is often very helpful to link any related MSCs or `matrix-doc issues
-    <https://github.com/matrix-org/matrix-doc/issues>`_ to give context
+  - It is often very helpful to link any related MSCs or `Matrix-doc issues
+    <https://github.com/Matrix-org/Matrix-doc/issues>`_ to give context
     for your proposal.
 
 - Gather feedback as widely as possible from the community and core team.
@@ -48,14 +48,14 @@ follows:
     trade-offs are required to meet this goal. Decisions should be made to the
     benefit of all major use cases.
   - A good place to ask for feedback on a specific proposal is
-    `#matrix-spec:matrix.org <https://matrix.to/#/#matrix-spec:matrix.org>`_.
+    `#Matrix-spec:Matrix.org <https://Matrix.to/#/#Matrix-spec:Matrix.org>`_.
     However, it is welcome to use an alternative room if preferred please
-    advertise it in #matrix-spec:matrix.org and link to it on the PR for
+    advertise it in #Matrix-spec:Matrix.org and link to it on the PR for
     visibility.
-  - For additional discussion areas, know that that #matrix-dev:matrix.org is
-    for developers using existing Matrix APIs, #matrix:matrix.org is for users
-    trying to run matrix apps (clients & servers) and
-    #matrix-architecture:matrix.org is for cross-cutting discussion of Matrix's
+  - For additional discussion areas, know that that #Matrix-dev:Matrix.org is
+    for developers using existing Matrix APIs, #Matrix:Matrix.org is for users
+    trying to run Matrix apps (clients & servers) and
+    #Matrix-architecture:Matrix.org is for cross-cutting discussion of Matrix's
     architectural design.
   - The point of the spec proposal process is to be collaborative rather than
     competitive, and to try to solve the problem in question with the optimal
@@ -68,7 +68,7 @@ follows:
     acceptance.
   
 - Members of the core team and community will review and discuss the PR in the
-  comments and in relevant rooms on matrix. Discussion outside of Github should
+  comments and in relevant rooms on Matrix. Discussion outside of GitHub should
   be summarised in a comment on the PR.
 - At some point a member of the core team will propose a motion for a final
   comment period (FCP) with a *disposition* of merge, close or postpone. This
@@ -84,19 +84,19 @@ follows:
   conclude is raised, the FCP can be cancelled and the MSC will continue to
   evolve accordingly.
 - Once your proposal has been accepted and merged, it is time to submit the
-  actual change to the specification that your proposal reasoned about. This is
+  actual change to the Specification that your proposal reasoned about. This is
   known as a spec PR. However in order for your spec PR to be accepted, you
   **must** show an implementation to prove that it works well in practice. In
   addition, any significant unforeseen changes to the original idea found
   during this process will warrant another MSC.
 
   - Please sign off the spec PR as per the `CONTRIBUTING.rst
-  <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_
+  <https://github.com/Matrix-org/Matrix-doc/blob/master/CONTRIBUTING.rst>`_
   guidelines.
 
 - Your PR will then be reviewed and hopefully merged on the grounds it is
   implemented sufficiently. If so, then give yourself a pat on the back knowing
-  you've contributed to the matrix protocol for the benefit of users and
+  you've contributed to the Matrix protocol for the benefit of users and
   developers alike :)
 
 Proposals **must** act to the greater benefit of the entire Matrix ecosystem,
@@ -145,8 +145,8 @@ possible.
 
 The process for handling proposals is described in the following diagram. Note
 that the lifetime of a proposal is tracked through the corresponding labels for
-each stage in the `matrix-doc issue tracker
-<https://github.com/matrix-org/matrix-doc/issues>`_.
+each stage in the `Matrix-doc issue tracker
+<https://github.com/Matrix-org/Matrix-doc/issues>`_.
 
 ::
 
@@ -217,33 +217,33 @@ Proposal Tracking
 -----------------
 
 This is a living document generated from the list of proposals at
-`matrix-doc/issues <https://github.com/matrix-org/matrix-doc/issues>`_ on
+`Matrix-doc/issues <https://github.com/Matrix-org/Matrix-doc/issues>`_ on
 GitHub.
 
 We use labels and some metadata in MSC PR descriptions to generate this page.
 Labels are assigned by the core team whilst triaging the issues based on those
-which exist in the matrix-doc repo already.
+which exist in the Matrix-doc repo already.
 
 It is worth mentioning that a previous version of the MSC process used a
 mixture of GitHub issues and PRs, leading to some MSC numbers deriving from
 GitHub issue IDs instead. A useful feature of GitHub is that it does
 automatically resolve to an issue, if an issue ID is placed in a pull URL. This
-means that https://github.com/matrix-org/matrix-doc/pull/$MSCID will correctly
+means that https://github.com/Matrix-org/Matrix-doc/pull/$MSCID will correctly
 resolve to the desired MSC, whether it started as an issue or a PR.
 
 Other metadata:
 
-- The MSC (Matrix Spec Change) number is taken from the github Pull Request ID.
+- The MSC (Matrix Spec Change) number is taken from the GitHub Pull Request ID.
   This is carried for the lifetime of the proposal. These IDs do not necessary
   represent a chronological order.
-- The github PR title will act as the MSC's title.
+- The GitHub PR title will act as the MSC's title.
 - Please link to the spec PR (if any) by adding a "PRs: #1234" line in the
   issue description.
-- The creation date is taken from the github PR, but can be overridden by
+- The creation date is taken from the GitHub PR, but can be overridden by
   adding a "Date: yyyy-mm-dd" line in the PR description.
-- Updated Date is taken from github.
+- Updated Date is taken from GitHub.
 - Author is the creator of the MSC PR, but can be overridden by adding a
   "Author: @username" line in the body of the issue description. Please make
-  sure @username is a github user (include the @!)
+  sure @username is a GitHub user (include the @!)
 - A shepherd can be assigned by adding a "Shepherd: @username" line in the
-  issue description. Again, make sure this is a real Github user.
+  issue description. Again, make sure this is a real GitHub user.
