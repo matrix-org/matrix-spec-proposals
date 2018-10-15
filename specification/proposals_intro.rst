@@ -36,6 +36,9 @@ follows:
 - Fork and make a PR to the `Matrix-doc
   <https://github.com/Matrix-org/Matrix-doc>`_ repository.
 
+  - Your proposal must live in the ``proposals/`` directory with a filename
+    that follows the format ``1234-my-new-proposal.md`` where 1234 is the MSC
+    ID.
   - Your PR description must include a link to the rendered markdown document
     and a summary of the proposal. 
   - It is often very helpful to link any related MSCs or `Matrix-doc issues
