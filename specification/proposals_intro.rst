@@ -69,6 +69,7 @@ follows:
     typically a neutral party from the core team or an experienced member of
     the community. Having a shepherd is not a requirement for proposal
     acceptance.
+
   
 - Members of the core team and community will review and discuss the PR in the
   comments and in relevant rooms on Matrix. Discussion outside of GitHub should
@@ -230,9 +231,9 @@ resolve to the desired MSC, whether it started as an issue or a PR.
 
 Other metadata:
 
-- The MSC (Matrix Spec Change) number is taken from the GitHub Pull Request ID.
-  This is carried for the lifetime of the proposal. These IDs do not necessary
-  represent a chronological order.
+- The MSC number is taken from the GitHub Pull Request ID. This is carried for
+  the lifetime of the proposal. These IDs do not necessary represent a
+  chronological order.
 - The GitHub PR title will act as the MSC's title.
 - Please link to the spec PR (if any) by adding a "PRs: #1234" line in the
   issue description.
