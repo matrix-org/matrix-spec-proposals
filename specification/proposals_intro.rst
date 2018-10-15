@@ -67,9 +67,9 @@ follows:
     the community. Having a shepherd is not a requirement for proposal
     acceptance.
   
-- Members of the core team will review and discuss the PR in the comments and
-  in relevant rooms on matrix. Discussion outside of Github should be
-  summarised in a comment on the PR.
+- Members of the core team and community will review and discuss the PR in the
+  comments and in relevant rooms on matrix. Discussion outside of Github should
+  be summarised in a comment on the PR.
 - At some point a member of the core team will propose a motion for a final
   comment period (FCP) with a *disposition* of merge, close or postpone. This
   is usually preceded with a comment summarising the current state of the
@@ -224,9 +224,16 @@ We use labels and some metadata in MSC PR descriptions to generate this page.
 Labels are assigned by the core team whilst triaging the issues based on those
 which exist in the matrix-doc repo already.
 
+It is worth mentioning that a previous version of the MSC process used a
+mixture of GitHub issues and PRs, leading to some MSC numbers deriving from
+GitHub issue IDs instead. A useful feature of GitHub is that it does
+automatically resolve to an issue, if an issue ID is placed in a pull URL. This
+means that https://github.com/matrix-org/matrix-doc/pull/$MSCID will correctly
+resolve to the desired MSC, whether it started as an issue or a PR.
+
 Other metadata:
 
-- the MSC (Matrix Spec Change) number is taken from the github Pull Request ID.
+- The MSC (Matrix Spec Change) number is taken from the github Pull Request ID.
   This is carried for the lifetime of the proposal. These IDs do not necessary
   represent a chronological order.
 - The github PR title will act as the MSC's title.
