@@ -205,7 +205,7 @@ Lifetime States
 ---------------
 
 ============================= =======================================================
-Proposal WIP                  A proposal document which is still work-in-progress but is being shared to incorporate feedback
+Proposal Drafting/Feedback    A proposal document which is still work-in-progress but is being shared to incorporate feedback
 Proposal In Review            A proposal document which is now ready and waiting for review by the core team and community
 Proposal Final Comment Period A proposal document which has reached final comment period either for merge, closure or postponement
 Proposal Merged               A proposal document which has passed review 
