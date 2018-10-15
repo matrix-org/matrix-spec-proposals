@@ -27,7 +27,7 @@ follows:
     author desires; there is no formal template; the intention is to iterate
     as quickly as possible to get to a good design.
   - However, a `template with suggested headers
-    <https://docs.google.com/document/d/1CoLCPTcRFvD4PqjvbUl3ZIWgGLpmRNbqxsT2Tu7lCzI/>`_
+    <https://github.com/matrix-org/matrix-doc/blob/master/proposals/proposals_template.md>`_
     is available to get you started if necessary.
   - Take care in creating your proposal. Specify your intended changes, and
     give reasoning to back them up. Changes without justification will likely
