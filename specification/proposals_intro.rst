@@ -9,7 +9,7 @@ Proposals for Spec Changes to Matrix
 If you are interested in submitting a change to the Matrix Specification,
 please take note of the following guidelines.
 
-Community changes to the Specification require a formal proposal process. This
+All changes to Specification content require a formal proposal process.  This
 involves writing a proposal, having it reviewed by the Matrix community, having
 the proposal being accepted, then actually having your ideas implemented as
 committed changes to the `Specification repository
