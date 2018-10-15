@@ -43,7 +43,8 @@ follows:
     be poorly received by the community.
 
 - Fork and make a PR to the `matrix-doc
-  <https://github.com/matrix-org/matrix-doc>`_ repository.
+  <https://github.com/matrix-org/matrix-doc>`_ repository. The ID of your PR
+  will become the MSC ID for the lifetime of your proposal.
 
   - The proposal must live in the ``proposals/`` directory with a filename that
     follows the format ``1234-my-new-proposal.md`` where ``1234`` is the MSC
