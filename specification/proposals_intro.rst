@@ -160,7 +160,7 @@ each stage in the `matrix-doc issue tracker
                            |                          |
  +----------------------+  |         +---------+      |    +-----------+
  |                      |  |         |         |      |    |           |
- |      Proposal        |  |  +------> Spec PR |      |    | Postponed |
+ |      Proposal        |  |  +------= Spec PR |      |    | Postponed |
  | Drafting and Initial |  |  |      | Missing |      |    |           |
  |  Feedback Gathering  |  |  |      |         |      |    +-----------+
  |                      |  |  |      +----+----+      |   
@@ -188,7 +188,7 @@ each stage in the `matrix-doc issue tracker
      | Proposal PR |       |  |                       |
      |   Merged!   |       |  |                       |
      |             |       |  |                       |
-     +------+------+       |  |                       |
+     +------|------+       |  |                       |
             |              |  |                       |
             +-----------------+                       |
                            |                          |
@@ -197,17 +197,16 @@ each stage in the `matrix-doc issue tracker
 Lifetime States
 ---------------
 
-============================= =======================================================
-Proposal Drafting/Feedback    A proposal document which is still work-in-progress but is being shared to incorporate feedback
-Proposal In Review            A proposal document which is now ready and waiting for review by the core team and community
-Proposal Final Comment Period A proposal document which has reached final comment period either for merge, closure or postponement
-Proposal Merged               A proposal document which has passed review 
-Spec PR Missing               A proposal that has been accepted but has not currently been implemented in the spec
-Spec PR In Review             A proposal that has been PR'd against the spec and is currently under review
-Spec PR Merged                A proposal with a sufficient working implementation and whose Spec PR has been merged!
-Postponed                     A proposal that is temporarily blocked or a feature that may not be useful currently but perhaps sometime in the future
-Closed                        A proposal which has been reviewed and deemed unsuitable for acceptance
-============================= =======================================================
+=============================    =======================================================
+Proposal Drafting and Feedback   A proposal document which is still work-in-progress but is being shared to incorporate feedback
+Proposal In Review               A proposal document which is now ready and waiting for review by the core team and community
+Proposal Final Comment Period    A proposal document which has reached final comment period either for merge, closure or postponement
+Proposal Merged/Spec PR Missing  A proposal document which has passed review. Waiting for a PR against the Spec
+Spec PR In Review                A proposal that has been PR'd against the spec and is currently under review
+Spec PR Merged                   A proposal with a sufficient working implementation and whose Spec PR has been merged!
+Postponed                        A proposal that is temporarily blocked or a feature that may not be useful currently but perhaps sometime in the future
+Closed                           A proposal which has been reviewed and deemed unsuitable for acceptance
+=============================    =======================================================
 
 
 Proposal Tracking
