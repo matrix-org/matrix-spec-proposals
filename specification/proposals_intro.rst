@@ -15,6 +15,15 @@ the proposal being accepted, then actually having your ideas implemented as
 committed changes to the `Specification repository
 <https://github.com/matrix-org/matrix-doc>`_.
 
+Meet the `members of the core team
+<https://github.com/orgs/matrix-org/teams/spec-core-team/members>`_, a group of
+individuals tasked with ensuring the spec process is as smooth and painless as
+possible. Members of the core team will do their best to participate in
+discussion, summarise when things become long-winded, and generally try to act
+towards the benefit of everyone. As a majority, team members have the ability
+to change the state of a proposal, and individually have the final say in
+proposal discussion.
+
 The process for submitting a Matrix Spec Change (MSC) Proposal in detail is as
 follows:
 
@@ -36,8 +45,8 @@ follows:
 - Fork and make a PR to the `matrix-doc
   <https://github.com/matrix-org/matrix-doc>`_ repository.
 
-  - The proposal must live in the ``proposals/`` directory with a filename
-    that follows the format ``1234-my-new-proposal.md`` where 1234 is the MSC
+  - The proposal must live in the ``proposals/`` directory with a filename that
+    follows the format ``1234-my-new-proposal.md`` where ``1234`` is the MSC
     ID.
   - Your PR description must include a link to the rendered markdown document
     and a summary of the proposal. 
@@ -45,7 +54,7 @@ follows:
     <https://github.com/matrix-org/matrix-doc/issues>`_ to give context
     for the proposal.
 
-- Gather feedback as widely as possible from the community and core team.
+- Gather feedback as widely as possible from everyone.
 
   - The aim is to get maximum consensus towards an optimal solution. Sometimes
     trade-offs are required to meet this goal. Decisions should be made to the
