@@ -55,7 +55,7 @@ follows:
     <https://github.com/matrix-org/matrix-doc/issues>`_ to give context
     for the proposal.
 
-- Gather feedback as widely as possible from everyone.
+- Gather feedback as widely as possible.
 
   - The aim is to get maximum consensus towards an optimal solution. Sometimes
     trade-offs are required to meet this goal. Decisions should be made to the
