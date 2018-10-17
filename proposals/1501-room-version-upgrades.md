@@ -77,8 +77,9 @@ When this is called, the server:
    ```
 
  * Assuming Alice has the powers to do so, sets the power levels in the old
-   room to stop people speaking. [TODO: what does this actually mean?]
-
+   room to stop people speaking. In practice, this means setting
+   `events_default` and `invite` to the greater of `50` and `users_default+1`.
+   
 Bob's client understands the `m.room.tombstone` event, and:
 
  * Hides the old room in the room list (the room continues to be accessible
@@ -91,8 +92,8 @@ Bob's client understands the `m.room.tombstone` event, and:
 
    [Note that if Bob is on a version of synapse which doesn't understand room
    versions, following the permalink will take him to a room view which churns
-   for a while and eventually fails. Synapse 0.33.3 / 0.34.0 should at least
-   give a sensible error code.]
+   for a while and eventually fails. Synapse 0.33.3 should at least give a
+   sensible error code.]
 
  * Optional extension: if the user is in both rooms, then the "N unread
    messages" banner when scrolled up in the old room could be made to track
@@ -109,14 +110,14 @@ Bob's client also understands the `predecessor` field in the `m.room.create`, an
  * Optional extensions might include things like extending room search to
    work across two rooms.
 
-### Summary: client changes needed
+### Client changes needed
 
  * Ability for an op to view the current room version and upgrade it (by
    hitting `/upgrade`).
 
-   * Also the ability for an op to see what versions the servers in the current
-     room supports (nb via a cap API) and so how many users will get locked out
-     [XXX: really? this sounds like a pita]
+   * ~~Also the ability for an op to see what versions the servers in the
+     current room supports (nb via a cap API) and so how many users will get
+     locked out~~ (This is descoped for now.)
 
  * Display `m.room.tombstone`s as a sticky message at the bottom of the old
    room (perhaps replacing the message composer input) as “This room has been
@@ -124,6 +125,9 @@ Bob's client also understands the `predecessor` field in the `m.room.create`, an
 
    * When the user clicks the link, the client attempts to join the new room if
      we are not already a member, and then switches to a view on the new room.
+
+     The client should supply the name of the server which sent the tombstone
+     event as the `server_name` for the `/join` request.
 
  * If the client sees a pair of rooms with a tombstone correctly joined to the
    new room, it should hide the old one from the RoomList.
@@ -144,22 +148,24 @@ Future eye-candy:
 
    * We should probably also show the membership list of the current room. (Perhaps?)
 
-### Problems
+## Future extensions
 
- * If Bob is on a remote server, how does it know where to send the
-   `/make_join` for the new room?
+### Invite-only rooms
 
-   * We could send it to the server which sent the `tombstone` evnent? (This
-     would require the client to set the `server_name` param on the `/join`
-     request, but that seems fine)
+Invite-only rooms are not dealt with explicitly here; they are made tricky by
+the fact that users in the old room won't be able to join the new room without
+an invite.
 
- * What about invite-only rooms? Users in the old room won't be able to join
-   the new room without an invite.
+For now, we are assuming that the main reasons for carrying out a room-version
+upgrade (ie, security problems due to state resets and the like) do not apply
+as strongly to invite-only rooms, and we have descoped them for now.
 
-   * For local users, we need to first create an invite for each user in the
-     room. This is easy, if a bit high-overhead.
+In future, we will most likely deal with them as follows:
 
-   * For remote users:
+ * For local users, we need to first create an invite for each user in the
+   room. This is easy, if a bit high-overhead.
+
+ * For remote users:
 
      * Alice's server could send invites; however this is likely to give an
        unsatisfactory UX due to servers being offline, maybe not supporting the
@@ -174,6 +180,17 @@ Future eye-candy:
        the purposes of allowing users into invite-only rooms, but doesn't need
        to be sent to remote servers.
 
+### Parting users from the old room
+
+It's not obvious if users should stay members of the old room indefinitely
+(until they manually leave). Perhaps they should automatically leave after a
+respectful period? What if the user leaves the *new* room?
+
+For now, we'll assume that they stay members until they manually leave. We can
+see how that feels in practice.
+
+## Potential issues
+
  * What about clients that don't understand tombstones?
 
    * I think they'll just show you two separate rooms (both with the same
@@ -182,9 +199,6 @@ Future eye-candy:
 
  * It's a shame that scrollback in the new room will show a load of joins
    before you get to the link to the old room.
-
- * Do users stay members of the old room forever? Do they leave after a
-   respectful period? Do they leave if the user leaves the new room?
 
 ## Dismissed solutions
 
