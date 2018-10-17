@@ -77,7 +77,9 @@ follows:
     the author may be biased), in which case an impartial 'shepherd' can be
     assigned to help guide the proposal through this process. A shepherd is
     typically a neutral party from the Core Team or an experienced member of
-    the community. Having a shepherd is not a requirement for proposal
+    the community. There is no formal process for assignment. Simply ask for a
+    shepherd to help get your proposal through and one will be assigned based
+    on availability. Having a shepherd is not a requirement for proposal
     acceptance.
 
 - Members of the Core Team and community will review and discuss the PR in the
