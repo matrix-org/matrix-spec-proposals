@@ -20,6 +20,8 @@ and the edit event differ. Edits made to messages can only be performed by the o
 Clients MUST show that an event has been edited if they do an in-place replace of an event in the UI.
 For example, they could show "edited at 10:15" or a symbol of some kind.
 
+If the event could not be found OR the sender is invalid, the edit SHOULD not be shown in the UI.
+
 Clients COULD provide an option to see edit history. The history does not need
 to be complete (e.g. if one event in the edit chain cannot be fetched). The representation of this
 history is up to the client.
