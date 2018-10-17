@@ -36,7 +36,7 @@ follows:
     author desires; there is no formal template; the intention is to iterate
     as quickly as possible to get to a good design.
   - However, a `template with suggested headers
-    <https://github.com/matrix-org/matrix-doc/blob/master/proposals/proposals_template.md>`_
+    <https://github.com/matrix-org/matrix-doc/blob/master/proposals/0000-proposal-template.md>`_
     is available to get you started if necessary.
   - Take care in creating your proposal. Specify your intended changes, and
     give reasoning to back them up. Changes without justification will likely
@@ -120,8 +120,8 @@ Please also read the separate document on `proposal etiquette <proposal_etiquett
 
 The process for handling proposals is shown visually in the following diagram.
 Note that the lifetime of a proposal is tracked through the corresponding
-labels for each stage in the `matrix-doc issue tracker
-<https://github.com/matrix-org/matrix-doc/issues>`_.
+labels for each stage on the `matrix-doc
+<https://github.com/matrix-org/matrix-doc>`_ issue and pull request trackers.
 
 ::
 
@@ -186,12 +186,12 @@ Closed                           proposal-closed                A proposal which
 Proposal Tracking
 -----------------
 
-This is a living document generated from the list of proposals at
-`matrix-doc/issues <https://github.com/matrix-org/matrix-doc/issues>`_ on
-GitHub.
+This is a living document generated from the list of proposals on the issue and
+pull request trackers of the `matrix-doc
+<https://github.com/matrix-org/matrix-doc>`_ repo.
 
 We use labels and some metadata in MSC PR descriptions to generate this page.
-Labels are assigned by the Core Team whilst triaging the issues based on those
+Labels are assigned by the Core Team whilst triaging the proposals based on those
 which exist in the `matrix-doc <https://github.com/matrix-org/matrix-doc>`_
 repo already.
 
