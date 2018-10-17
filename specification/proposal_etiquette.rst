@@ -5,7 +5,7 @@ Proposal Etiquette
 
 Proposals **must** act to the greater benefit of the entire Matrix ecosystem,
 rather than benefiting or privileging any single player or subset of players -
-and must not contain any patent encumbered IP. Members of the Core Team pledge to act as
+and must not contain any patent encumbered intellectual property. Members of the Core Team pledge to act as
 a neutral custodian for Matrix on behalf of the whole ecosystem.
 
 For clarity: the Matrix ecosystem is anyone who uses the Matrix protocol. That
