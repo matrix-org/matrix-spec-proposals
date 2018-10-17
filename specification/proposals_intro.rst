@@ -102,7 +102,10 @@ follows:
   implementation **must** be shown to prove that it works well in practice. A
   link to the implementation should be included in the PR description. In
   addition, any significant unforeseen changes to the original idea found
-  during this process will warrant another MSC.
+  during this process will warrant another MSC. Any minor, non-fundamental
+  changes are allowed but **must** be documented in the original proposal
+  document. This ensures that someone reading a proposal in the future doesn't
+  assume old information wasn't merged into the spec.
 
   - Please sign off the spec PR as per the `CONTRIBUTING.rst
     <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_
