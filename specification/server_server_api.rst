@@ -579,10 +579,13 @@ whether the event passes auth checks based on the current state of the room
 auth checks it should be "soft failed".
 
 When an event is "soft failed" it should not be relayed to the client nor be
-referenced by new events created by the homeserver. If an event is received that
-references the soft failed event then the new event should be handled as usual.
-If this causes a change in state (e.g. due to the soft failed event being a
-state event) then the state updates should be propagated to clients as usual.
+referenced by new events created by the homeserver.
+
+If an event is received that references the soft failed event then the new event
+should be handled as usual. Soft failed state events participate in state
+resolution, and so can appear in the state of events that reference the soft
+failed state event. (When this happens the soft failed event should be sent to
+clients).
 
 A soft failed event should be returned in response to federation requests
 where appropriate (e.g. in ``/event/<event_id>``). Note that soft failed events
