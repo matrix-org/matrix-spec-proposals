@@ -14,6 +14,12 @@ in the format given below.
 Clients SHOULD always favour fetching the source from `m.replaces.event_id` where possible,
 rather than using the fallback as the fallback can be faked.
 
+Clients MUST refuse to display with an appropriate message when the sender of the source event
+and the edit event differ. Edits made to messages can only be performed by the original sender.
+
+Clients MUST show that an event has been edited if they do an in-place replace of an event in the UI.
+For example, they could show "edited at 10:15" or a symbol of some kind.
+
 Clients COULD provide an option to see edit history. The history does not need
 to be complete (e.g. if one event in the edit chain cannot be fetched). The representation of this
 history is up to the client.
