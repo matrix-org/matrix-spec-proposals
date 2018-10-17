@@ -77,10 +77,13 @@ When this is called, the server:
    }
    ```
 
+   The `body` of the tombstone event is defined by the server (for now, at
+   least).
+
  * Assuming Alice has the powers to do so, sets the power levels in the old
    room to stop people speaking. In practice, this means setting
    `events_default` and `invite` to the greater of `50` and `users_default+1`.
-   
+
 Bob's client understands the `m.room.tombstone` event, and:
 
  * Hides the old room in the room list (the room continues to be accessible
@@ -95,6 +98,10 @@ Bob's client understands the `m.room.tombstone` event, and:
    versions, following the permalink will take him to a room view which churns
    for a while and eventually fails. Synapse 0.33.3 should at least give a
    sensible error code.]
+
+   If it turns out that the replacement room also has a tombstone event, the
+   client may automatically keep following the chain until it reaches a room
+   that isn't dead.
 
  * Optional extension: if the user is in both rooms, then the "N unread
    messages" banner when scrolled up in the old room could be made to track
