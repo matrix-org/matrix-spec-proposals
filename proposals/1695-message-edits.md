@@ -11,11 +11,10 @@ be accessed if the client is edit-aware. If the client is not aware, it can use 
 and `content.formatted_body` to render an approximation of the edit. The fallback should be
 in the format given below.
 
-Clients should always favour fetching the source from `m.replaces.event_id` where possible,
-rather than using the fallback as the fallback can be faked. Furthermore, clients should refuse
-to display with an appropriate message when the sender of the source event and the edit event differ.
+Clients SHOULD always favour fetching the source from `m.replaces.event_id` where possible,
+rather than using the fallback as the fallback can be faked.
 
-Clients should provide an option to see edit history. The history does not need
+Clients COULD provide an option to see edit history. The history does not need
 to be complete (e.g. if one event in the edit chain cannot be fetched). The representation of this
 history is up to the client.
 
