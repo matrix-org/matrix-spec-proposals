@@ -584,8 +584,10 @@ referenced by new events created by the homeserver.
 If an event is received that references the soft failed event then the new event
 should be handled as usual. Soft failed state events participate in state
 resolution, and so can appear in the state of events that reference the soft
-failed state event. (When this happens the soft failed event should be sent to
-clients).
+failed state event. This can result in soft-failed events appearing in the state
+of allowed events, in which case the client should be told about the soft failed
+event in the usual way (e.g. by sending it down in the ``state`` section of a
+sync response).
 
 A soft failed event should be returned in response to federation requests
 where appropriate (e.g. in ``/event/<event_id>``). Note that soft failed events
