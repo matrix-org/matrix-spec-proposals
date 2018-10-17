@@ -15,12 +15,16 @@ Clients should always favour fetching the source from `m.replaces.event_id` wher
 rather than using the fallback as the fallback can be faked. Furthermore, clients should refuse
 to display with an appropriate message when the sender of the source event and the edit event differ.
 
+Clients should provide an option to see edit history. The history does not need
+to be complete (e.g. if one event in the edit chain cannot be fetched). The representation of this
+history is up to the client.
+
 It should be noted that this allows any event to be replaced by an entirely different set of content.
 The client should make a best effort attempt to describe the relationship between the two events for
 both the fallback and representation.
 
 ``reason`` describes why the event was replaced, which is currently a placeholder
-and should always be "m.edited" to describe an event that was edited by the user. 
+and should always be "m.edited" to describe an event that was edited by the user.
 
 If the edit event's content is invalid, it is acceptable to display/keep the old event in place with a warning.
 
