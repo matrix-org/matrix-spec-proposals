@@ -573,6 +573,25 @@ transaction request to be responded to with an error response.
 Soft failure
 ++++++++++++
 
+Motivation
+""""""""""
+
+If a user is banned from a room a server can still send events from them by only
+referencing events from before the ban. This allows fairly simple ban evasion.
+(This can also be abused when a user loses other privileges, like power levels,
+etc).
+
+When this happens it is often fairly obvious to servers, as they can see that
+the new event doesn't actually pass auth based on the "current state" (i.e. the
+resolved state across all forward extremities). While the event is technically
+valid, the server can choose to not notify clients about the new event.
+
+This discourages servers from sending events that evade bans etc. in this way,
+as end users won't actually see the events.
+
+Implementation
+""""""""""""""
+
 When the homeserver receives a new event over federation it should also check
 whether the event passes auth checks based on the current state of the room (as
 well as based on the state at the event). If the event does not pass the auth
@@ -582,32 +601,43 @@ based on the state at that event) it should be "soft failed".
 When an event is "soft failed" it should not be relayed to the client nor be
 referenced by new events created by the homeserver.
 
-If an event is received that references the soft failed event then the new event
-should be handled as usual. Soft failed state events participate in state
-resolution, and so can appear in the state of events that reference the soft
-failed state event. This can result in soft-failed events appearing in the state
-of allowed events, in which case the client should be told about the soft failed
-event in the usual way (e.g. by sending it down in the ``state`` section of a
-sync response).
-
-A soft failed event should be returned in response to federation requests
-where appropriate (e.g. in ``/event/<event_id>``). Note that soft failed events
-are returned in ``/backfill`` and ``/get_missing_events`` responses only if the
-requests include events referencing the soft failed events.
-
 .. NOTE::
 
-    This is different than rejections in that soft failed events are simply
-    ignored unless a new event references it.
+    If an event is received that references the soft failed event then the new event
+    should be handled as usual. Soft failed state events participate in state
+    resolution, and so can appear in the state of events that reference the soft
+    failed state event. This can result in soft-failed events appearing in the state
+    of allowed events, in which case the client should be told about the soft failed
+    event in the usual way (e.g. by sending it down in the ``state`` section of a
+    sync response).
+
+    A soft failed event should be returned in response to federation requests
+    where appropriate (e.g. in ``/event/<event_id>``). Note that soft failed events
+    are returned in ``/backfill`` and ``/get_missing_events`` responses only if the
+    requests include events referencing the soft failed events.
 
 
-.. NOTE::
+Worked Examples
+"""""""""""""""
 
-    Soft failures are designed to stop malicious servers from avoiding actions
-    such as kicks or bans by careful selection of ``prev_events``.
+As an example consider the event graph::
 
+      A
+     /
+    B
 
-As an example consider the following graph::
+Where ``B`` is a ban of a user ``X``. If the user ``X`` tries to set the topic
+by sending an event ``C`` while evading the ban::
+
+      A
+     / \
+    B   C
+
+Servers that receive ``C`` after ``B`` will soft fail event ``C``, and so will
+neither relay ``C`` to its clients nor send any events referencing ``C``.
+
+If later another server sends an event ``D`` that references both ``B`` and
+``C`` (this can happen if it received ``C`` before ``B``)::
 
       A
      / \
@@ -615,18 +645,28 @@ As an example consider the following graph::
      \ /
       D
 
-Where ``A`` is the oldest event, ``B`` bans the sender of ``C`` and ``C`` is a
-topic change. If a server S1 receives ``B`` and then ``C`` then it will soft
-fail ``C``. This means that S1 won't relay ``C`` to its clients, and won't send
-any events referencing ``C``. If later another server S2 sends an event ``D``
-that references both ``B`` and ``C`` (this can happen if S2 received ``C``
-before ``B``) then S1 will handle ``D`` as normal. ``D`` is sent to the clients
-of S1 (assuming ``D`` passes auth checks). The state at ``D`` may resolve to a
-state that includes ``C``, in which case clients should also to be told that the
+Then servers will handle ``D`` as normal. ``D`` is sent to the servers' clients
+(assuming ``D`` passes auth checks). The state at ``D`` may resolve to a state
+that includes ``C``, in which case clients should also to be told that the state
 has changed to include ``C``.
 
 Note that this is essentially equivalent to the situation where S1 doesn't
 receive ``C`` at all, and so asks S2 for the state of the ``C`` branch.
+
+Let's go back to the graph before ``D`` was sent::
+
+      A
+     / \
+    B   C
+
+If all the servers in the room saw ``B`` before ``C`` and so soft fail ``C``,
+then any new event ``D'`` will not reference ``C``::
+
+      A
+     / \
+    B   C
+    |
+    D
 
 
 Retrieving event authorization information
