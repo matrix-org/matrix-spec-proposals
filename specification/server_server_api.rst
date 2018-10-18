@@ -607,6 +607,28 @@ requests include events referencing the soft failed events.
     such as kicks or bans by careful selection of ``prev_events``.
 
 
+As an example consider the following graph::
+
+      A
+     / \
+    B   C
+     \ /
+      D
+
+Where ``A`` is the oldest event, ``B`` bans the sender of ``C`` and ``C`` is a
+topic change. If a server S1 receives ``B`` and then ``C`` then it will soft
+fail ``C``. This means that S1 won't relay ``C`` to its clients, and won't send
+any events referencing ``C``. If later another server S2 sends an event ``D``
+that references both ``B`` and ``C`` (this can happen if S2 received ``C``
+before ``B``) then S1 will handle ``D`` as normal. ``D`` is sent to the clients
+of S1 (assuming ``D`` passes auth checks). The state at ``D`` may resolve to a
+state that includes ``C``, in which case clients should also to be told that the
+has changed to include ``C``.
+
+Note that this is essentially equivalent to the situation where S1 doesn't
+receive ``C`` at all, and so asks S2 for the state of the ``C`` branch.
+
+
 Retrieving event authorization information
 ++++++++++++++++++++++++++++++++++++++++++
 
