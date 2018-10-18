@@ -90,7 +90,7 @@ follows:
   is usually preceded with a comment summarising the current state of the
   discussion, along with reasoning for the motion.
 - A concern can be raised by a Core Team member at any time, which will block
-  the FCP from beginning. An FCP will only be begin when a **majority** of core
+  the FCP from beginning. An FCP will only begin when a **majority** of core
   team members agree on its outcome, and all existing concerns have been
   resolved.
 - The FCP will then begin and last for 5 days, giving anyone else some time to
