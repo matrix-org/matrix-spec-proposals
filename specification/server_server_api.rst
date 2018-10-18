@@ -574,9 +574,10 @@ Soft failure
 ++++++++++++
 
 When the homeserver receives a new event over federation it should also check
-whether the event passes auth checks based on the current state of the room
-(as well as based on the state at the event). If the event does not pass the
-auth checks it should be "soft failed".
+whether the event passes auth checks based on the current state of the room (as
+well as based on the state at the event). If the event does not pass the auth
+checks based on the current state of the room (but does pass the auth checks
+based on the state at that event) it should be "soft failed".
 
 When an event is "soft failed" it should not be relayed to the client nor be
 referenced by new events created by the homeserver.
