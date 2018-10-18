@@ -107,7 +107,7 @@ regular expressions and look like:
 
    users:
      - exclusive: true
-       regex: "@_irc\.freenode\.net_.*"
+       regex: "@_irc_bridge_.*"
 
 Application services may define the following namespaces (with none being explicitly required):
 
