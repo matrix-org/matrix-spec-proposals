@@ -574,7 +574,7 @@ Soft failure
 ++++++++++++
 
 Motivation
-""""""""""
+^^^^^^^^^^
 
 If a user is banned from a room a server can still send events from them by only
 referencing events from before the ban. This allows fairly simple ban evasion.
@@ -590,7 +590,7 @@ This discourages servers from sending events that evade bans etc. in this way,
 as end users won't actually see the events.
 
 Implementation
-""""""""""""""
+^^^^^^^^^^^^^^
 
 When the homeserver receives a new event over federation it should also check
 whether the event passes auth checks based on the current state of the room (as
@@ -618,7 +618,7 @@ referenced by new events created by the homeserver.
 
 
 Worked Examples
-"""""""""""""""
+^^^^^^^^^^^^^^^
 
 As an example consider the event graph::
 
