@@ -16,8 +16,9 @@ For reference, here are the current steps:
 > 2. Extract the hostname from the server name.
 
 This doesn't seem to account for the fact that the user's ID may have an IP address (v4 or v6), making
-"extract the hostname" difficult. Instead, we should remove step 2 and use that as the hostname for the
-other steps.
+"extract the hostname" potentially difficult. Although the spec requires IPv6 addresses to be contained
+within clear markings, using ports in IDs is generally discouraged anyways. Instead of parsing the server
+hostname out, .well-known discovery should only require the use of step 1 from the reference material.
 
 Using the result from step 1 means that we'd potentially be using the federation port to do discovery,
 however this is closer to a misconfiguration of a homeserver to begin with. Although the feature is
@@ -71,7 +72,7 @@ Also for reference, here is the last step of the discovery process (the validati
 >      as the endpoint to connect to. If the `m.identity_server` property is present, but does not have a `base_url`
 >      value, then `FAIL_ERROR`.
 
-A lot of the validation here doesn't need to be done for various reasons. In general, the validation steps make
+A lot of the validation here doesn't need to be done for the following reasons. In general, the validation steps make
 it difficult for libraries to provide the functionality to support their UI counterparts. By reducing the amount
 of validation required, an expressive UI is still possible while also making it easier for automated clients and
 libraries to use the functionality.
