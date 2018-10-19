@@ -30,20 +30,20 @@ Note: the react-sdk PR linked above implements this approach to avoid having eve
 
 For reference, here are the current UX states:
 
-> PROMPT
+> `PROMPT`
 >   Retrieve the specific piece of information from the user in a way which fits within the existing client
 >   user experience, if the client is inclined to do so. Failure can take place instead if no good user
 >   experience for this is possible at this point.
 >
-> IGNORE
+> `IGNORE`
 >   Stop the current auto-discovery mechanism. If no more auto-discovery mechanisms are available, then the
 >   client may use other methods of determining the required parameters, such as prompting the user, or using
 >   default values.
 >
-> FAIL_PROMPT
+> `FAIL_PROMPT`
 >   Inform the user that auto-discovery failed due to invalid/empty data and PROMPT for the parameter.
 >
-> FAIL_ERROR
+> `FAIL_ERROR`
 >   Inform the user that auto-discovery did not return any usable URLs. Do not continue further with the
 >   current login process. At this point, valid data was obtained, but no homeserver is available to serve
 >   the client. No further guess should be attempted and the user should make a conscientious decision what
@@ -51,25 +51,25 @@ For reference, here are the current UX states:
 
 Also for reference, here is the last step of the discovery process (the validation):
 
-> 3. Make a GET request to https://hostname/.well-known/matrix/client.
->   a. If the returned status code is 404, then IGNORE.
->   b. If the returned status code is not 200, or the response body is empty, then FAIL_PROMPT.
+> 3. Make a `GET` request to `https://hostname/.well-known/matrix/client`.
+>   a. If the returned status code is 404, then `IGNORE`.
+>   b. If the returned status code is not 200, or the response body is empty, then `FAIL_PROMPT`.
 >   c. Parse the response body as a JSON object
->       i. If the content cannot be parsed, then FAIL_PROMPT.
->   d. Extract the base_url value from the m.homeserver property. This value is to be used as the base URL of
+>       i. If the content cannot be parsed, then `FAIL_PROMPT`.
+>   d. Extract the `base_url` value from the `m.homeserver` property. This value is to be used as the base URL of
 >      the homeserver.
->       i. If this value is not provided, then FAIL_PROMPT.
+>       i. If this value is not provided, then `FAIL_PROMPT`.
 >   e. Validate the homeserver base URL:
->       i. Parse it as a URL. If it is not a URL, then FAIL_ERROR.
+>       i. Parse it as a URL. If it is not a URL, then `FAIL_ERROR`.
 >       ii. Clients SHOULD validate that the URL points to a valid homeserver before accepting it by connecting
->           to the /_matrix/client/versions endpoint, ensuring that it does not return an error, and parsing and
+>           to the `/_matrix/client/versions` endpoint, ensuring that it does not return an error, and parsing and
 >           validating that the data conforms with the expected response format. If any step in the validation
->           fails, then FAIL_ERROR. Validation is done as a simple check against configuration errors, in order
+>           fails, then `FAIL_ERROR`. Validation is done as a simple check against configuration errors, in order
 >           to ensure that the discovered address points to a valid homeserver.
->   f. If the m.identity_server property is present, extract the base_url value for use as the base URL of the
->      identity server. Validation for this URL is done as in the step above, but using /_matrix/identity/api/v1
->      as the endpoint to connect to. If the m.identity_server property is present, but does not have a base_url
->      value, then FAIL_ERROR.
+>   f. If the `m.identity_server` property is present, extract the base_url value for use as the base URL of the
+>      identity server. Validation for this URL is done as in the step above, but using `/_matrix/identity/api/v1`
+>      as the endpoint to connect to. If the `m.identity_server` property is present, but does not have a `base_url`
+>      value, then `FAIL_ERROR`.
 
 A lot of the validation here doesn't need to be done for various reasons. In general, the validation steps make
 it difficult for libraries to provide the functionality to support their UI counterparts. By reducing the amount
