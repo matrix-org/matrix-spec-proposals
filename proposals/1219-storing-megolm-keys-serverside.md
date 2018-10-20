@@ -139,7 +139,7 @@ Example:
 
 On success, returns a JSON object with keys:
 
-- `version` (integer): the backup version
+- `version` (string): the backup version
 
 ##### `GET /room_keys/version/{version}`
 
@@ -152,7 +152,7 @@ On success, returns a JSON object with keys:
   /room_keys/version`.
 - `auth_data` (object): Required. Same as in the body parameters for
   `POST /room_keys/version`.
-- `version` (integer): Required. The backup version.
+- `version` (string): Required. The backup version.
 
 Error codes:
 
@@ -275,9 +275,6 @@ The JSON object is then encrypted by generating an ephemeral curve25519 key,
 performing an ECDH with the ephemeral key and the backup's public key to
 generate an AES key, and encrypting the stringified object using AES.
 
-Tradeoffs
----------
-
 Security Considerations
 -----------------------
 
@@ -286,7 +283,8 @@ key backup.  This proposal does not attempt to protect against that.
 
 An attacker who gains access to a user's account can create a new backup
 version using a key that they control.  For this reason, clients SHOULD confirm
-with users before sending keys to a new backup version.
+with users before sending keys to a new backup version or verify that it was
+created by a trusted device by checking the signature.
 
 Other Issues
 ------------
@@ -299,3 +297,7 @@ backup requests randomly.
 
 Conclusion
 ----------
+
+This proposal allows users to securely and conveniently back up and restore
+their decryption keys so that users logging into a new device can decrypt old
+messages.
