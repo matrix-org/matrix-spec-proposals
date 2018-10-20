@@ -4,10 +4,28 @@ Storing megolm keys serverside
 Background
 ----------
 
-We *optionally* let clients store a copy of their megolm inbound session keys
-on the HS so that they can recover history if all devices are lost without an
-explicit key export; fix UISIs; support clients with limited local storage for
-keys.
+A user who uses end-to-end encyrption will usually have many inbound session
+keys.  Users who log into new devices and want to read old messages will need a
+convenient way to transfer the session keys from one device to another.  While
+users can currently export their keys from one device and import them to
+another, this is involves several steps and may be cumbersome for many users.
+Users can also share keys from one device to another, but this has several
+limitations, such as the fact that key shares only share one key at a time, and
+require another logged-in device to be active.
+
+To help resolve this, we *optionally* let clients store an encrypted copy of
+their megolm inbound session keys on the homeserver.  Clients can keep the
+backup up to date, so that users will always have the keys needed to decrypt
+their conversations.  The backup could be used not just for new logins, but
+also to try to fix UISIs that occur after a device has logged in (as an
+alternative to key sharing), or to support clients with limited local storage
+for keys (clients can store old keys to the backup, and remove their local
+copy, retrieving the key from the backup when needed).
+
+To recover keys from the backup, a user will need to enter a recovery key to
+decrypt the backup.  The backup will be encrypted using public key
+cryptography, so that any of a user's devices can back up keys without needing
+the user to enter the recovery key until they need to read from the backup.
 
 See also:
 
