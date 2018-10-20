@@ -126,17 +126,20 @@ follows:
 - Members of the Core Team and community will review and discuss the PR in the
   comments and in relevant rooms on Matrix. Discussion outside of GitHub should
   be summarised in a comment on the PR.
-- At some point a member of the Core Team will propose a motion for a final
-  comment period (FCP) with a *disposition* of merge, close or postpone. This
-  is usually preceded with a comment summarising the current state of the
-  discussion, along with reasoning for the motion.
+- When a member of the Core Team believes that no new discussion points are
+  being made, they will propose a motion for a final comment period (FCP),
+  along with a *disposition* of either merge, close or postpone. This FCP is
+  provided to allow a short period of time for any invested party to provide a
+  final objection before a major decision is made. If sufficient reasoning is
+  given, an FCP can be cancelled. It is often preceded by a comment summarising
+  the current state of the discussion, along with reasoning for its occurrence.
 - A concern can be raised by a Core Team member at any time, which will block
-  the FCP from beginning. An FCP will only begin when a **majority** of core
+  an FCP from beginning. An FCP will only begin when a **majority** of core
   team members agree on its outcome, and all existing concerns have been
   resolved.
 - The FCP will then begin and last for 5 days, giving anyone else some time to
   speak up before it concludes. On its conclusion, the disposition of the FCP
-  will be carried out. If sufficient reasoning against the disposition is is
+  will be carried out. If sufficient reasoning against the disposition is
   raised, the FCP can be cancelled and the MSC will continue to evolve
   accordingly.
 - Once the proposal has been accepted and merged, it is time to submit the
