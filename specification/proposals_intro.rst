@@ -95,6 +95,9 @@ follows:
   - It is often very helpful to link any related MSCs or `matrix-doc issues
     <https://github.com/matrix-org/matrix-doc/issues>`_ to give context
     for the proposal.
+  - Additionally, please be sure to sign off your proposal PR as per the
+    guidelines at `CONTRIBUTING.rst
+    <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_.
 
 - Gather feedback as widely as possible.
 
@@ -153,9 +156,9 @@ follows:
   document. This ensures that someone reading a proposal in the future doesn't
   assume old information wasn't merged into the spec.
 
-  - Please sign off the spec PR as per the `CONTRIBUTING.rst
-    <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_
-    guidelines.
+  - Similar to the proposal PR, please sign off the spec PR as per the
+    guidelines at `CONTRIBUTING.rst
+    <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_.
 
 - Your PR will then be reviewed and hopefully merged on the grounds it is
   implemented sufficiently. If so, then give yourself a pat on the back knowing
