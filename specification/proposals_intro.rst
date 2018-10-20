@@ -24,6 +24,47 @@ towards the benefit of everyone. As a majority, team members have the ability
 to change the state of a proposal, and individually have the final say in
 proposal discussion.
 
+Guiding Principles
+------------------
+
+Proposals **must** act to the greater benefit of the entire Matrix ecosystem,
+rather than benefiting or privileging any single player or subset of players -
+and must not contain any patent encumbered intellectual property. Members of the Core Team pledge to act as
+a neutral custodian for Matrix on behalf of the whole ecosystem.
+
+For clarity: the Matrix ecosystem is anyone who uses the Matrix protocol. That
+includes client users, server admins, client developers, bot developers,
+bridge and application service developers, users and admins who are indirectly using Matrix via
+3rd party networks which happen to be bridged, server developers, room
+moderators and admins, companies/projects building products or services on
+Matrix, spec contributors, translators, and those who created it in
+the first place.
+
+"Greater benefit" could include maximising:
+
+* the number of end-users reachable on the open Matrix network
+* the number of regular users on the Matrix network (e.g. 30-day retained
+  federated users)
+* the number of online servers in the open federation
+* the number of developers building on Matrix
+* the number of independent implementations which use Matrix
+* the quality and utility of the Matrix spec
+
+In addition, proposal authors are expected to uphold the following values in
+their proposed changes to the Matrix protocol:
+
+* Supporting the whole long-term ecosystem rather than individual stakeholder gain
+* Openness rather than proprietariness
+* Collaboration rather than competition
+* Accessibility rather than elitism
+* Transparency rather than stealth
+* Empathy rather than contrariness
+* Pragmatism rather than perfection
+* Proof rather than conjecture
+
+Process
+-------
+
 The process for submitting a Matrix Spec Change (MSC) Proposal in detail is as
 follows:
 
@@ -117,8 +158,6 @@ follows:
   implemented sufficiently. If so, then give yourself a pat on the back knowing
   you've contributed to the Matrix protocol for the benefit of users and
   developers alike :)
-
-Please also read the separate document on `proposal etiquette <proposal_etiquette.html>`_.
 
 The process for handling proposals is shown visually in the following diagram.
 Note that the lifetime of a proposal is tracked through the corresponding
