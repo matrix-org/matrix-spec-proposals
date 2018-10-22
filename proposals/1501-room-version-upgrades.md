@@ -135,7 +135,9 @@ Bob's client also understands the `predecessor` field in the `m.room.create`, an
      we are not already a member, and then switches to a view on the new room.
 
      The client should supply the name of the server which sent the tombstone
-     event as the `server_name` for the `/join` request.
+     event as the `server_name` for the `/join` request. (That being the most
+     likely server to have an up-to-date copy of the room - this is essentially
+     a workaround for [vector-im/riot-web#2925](https://github.com/vector-im/riot-web/issues/2925).)
 
  * If the client sees a pair of rooms with a tombstone correctly joined to the
    new room, it should hide the old one from the RoomList.
