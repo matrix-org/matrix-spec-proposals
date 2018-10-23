@@ -575,10 +575,16 @@ Soft failure
 
 .. admonition:: Rationale
 
-  If a user is banned from a room a server can still send events from them by
-  only referencing events from before the ban. This allows fairly simple ban
-  evasion. (This can also be abused when a user loses other privileges, like
-  power levels, etc).
+  It is important that we prevent users from evading bans (or other power
+  restrictions) by creating events which reference old parts of the DAG. For
+  example, a banned user could continue to send messages to a room by having
+  their server send events which reference the event before they were banned.
+  Note that such events are entirely valid, and we cannot simply reject them, as
+  it is impossible to distinguish such an event from a legitimate one which has
+  been delayed. We must therefore accept such events and let them participate in
+  state resolution and the federation protocol as normal. However, servers may
+  choose not to send such events on to their clients, so that end users won't
+  actually see the events.
 
   When this happens it is often fairly obvious to servers, as they can see that
   the new event doesn't actually pass auth based on the "current state" (i.e.
@@ -589,24 +595,36 @@ Soft failure
   This discourages servers from sending events that evade bans etc. in this way,
   as end users won't actually see the events.
 
+
 When the homeserver receives a new event over federation it should also check
 whether the event passes auth checks based on the current state of the room (as
 well as based on the state at the event). If the event does not pass the auth
-checks based on the current state of the room (but does pass the auth checks
+checks based on the *current state* of the room (but does pass the auth checks
 based on the state at that event) it should be "soft failed".
 
 When an event is "soft failed" it should not be relayed to the client nor be
-referenced by new events created by the homeserver.
+referenced by new events created by the homeserver (i.e. they should not be
+added to the server's list of forward extremities of the room). Soft failed
+events are otherwise handled as usual.
+
 
 .. NOTE::
 
-  If an event is received that references the soft failed event then the new
-  event should be handled as usual. Soft failed state events participate in
-  state resolution, and so can appear in the state of events that reference the
-  soft failed state event. This can result in soft-failed events appearing in
-  the state of allowed events, in which case the client should be told about the
-  soft failed event in the usual way (e.g. by sending it down in the ``state``
-  section of a sync response).
+  Soft failed events participate in state resolution as normal if further events
+  are received which reference it. It is the job of the state resolution
+  algorithm to ensure that malicious events cannot be injected into the room
+  state via this mechanism.
+
+
+.. NOTE::
+
+  Because soft failed state events participate in state resolution as normal, it
+  is possible for such events to appear in the current state of the room. In
+  that case the client should be told about the soft failed event in the usual
+  way (e.g. by sending it down in the ``state`` section of a sync response).
+
+
+.. NOTE::
 
   A soft failed event should be returned in response to federation requests
   where appropriate (e.g. in ``/event/<event_id>``). Note that soft failed
