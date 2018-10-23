@@ -622,15 +622,15 @@ referenced by new events created by the homeserver.
      /
     B
 
-  Where ``B`` is a ban of a user ``X``. If the user ``X`` tries to set the topic
+  where ``B`` is a ban of a user ``X``. If the user ``X`` tries to set the topic
   by sending an event ``C`` while evading the ban::
 
       A
      / \
     B   C
 
-  Servers that receive ``C`` after ``B`` will soft fail event ``C``, and so will
-  neither relay ``C`` to its clients nor send any events referencing ``C``.
+  servers that receive ``C`` after ``B`` should soft fail event ``C``, and so
+  will neither relay ``C`` to its clients nor send any events referencing ``C``.
 
   If later another server sends an event ``D`` that references both ``B`` and
   ``C`` (this can happen if it received ``C`` before ``B``)::
@@ -641,13 +641,17 @@ referenced by new events created by the homeserver.
      \ /
       D
 
-  Then servers will handle ``D`` as normal. ``D`` is sent to the servers'
+  then servers will handle ``D`` as normal. ``D`` is sent to the servers'
   clients (assuming ``D`` passes auth checks). The state at ``D`` may resolve to
   a state that includes ``C``, in which case clients should also to be told that
-  the state has changed to include ``C``.
+  the state has changed to include ``C``. (*Note*: This depends on the exact
+  state resolution algorithm used. In the original version of the algorithm
+  ``C`` would be in the resolved state, whereas in latter versions this may not
+  be the case.)
 
-  Note that this is essentially equivalent to the situation where S1 doesn't
-  receive ``C`` at all, and so asks S2 for the state of the ``C`` branch.
+  Note that this is essentially equivalent to the situation where one server
+  doesn't receive ``C`` at all, and so asks another server for the state of the
+  ``C`` branch.
 
   Let's go back to the graph before ``D`` was sent::
 
