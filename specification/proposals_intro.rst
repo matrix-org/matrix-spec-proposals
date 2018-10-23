@@ -96,7 +96,7 @@ follows:
     <https://github.com/matrix-org/matrix-doc/issues>`_ to give context
     for the proposal.
   - Additionally, please be sure to sign off your proposal PR as per the
-    guidelines at `CONTRIBUTING.rst
+    guidelines listed on `CONTRIBUTING.rst
     <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_.
 
 - Gather feedback as widely as possible.
@@ -157,7 +157,7 @@ follows:
   assume old information wasn't merged into the spec.
 
   - Similar to the proposal PR, please sign off the spec PR as per the
-    guidelines at `CONTRIBUTING.rst
+    guidelines on `CONTRIBUTING.rst
     <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_.
 
 - Your PR will then be reviewed and hopefully merged on the grounds it is
@@ -215,15 +215,17 @@ labels for each stage on the `matrix-doc
 Lifetime States
 ---------------
 
+**Note:** All labels are to be placed on the proposal PR.
+
 ===============================  =============================  ====================================
 Name                             GitHub Label                   Description
 ===============================  =============================  ====================================
 Proposal Drafting and Feedback   N/A                            A proposal document which is still work-in-progress but is being shared to incorporate feedback
 Proposal In Review               proposal-in-review             A proposal document which is now ready and waiting for review by the Core Team and community
 Proposal Final Comment Period    proposal-final-comment-period  A proposal document which has reached final comment period either for merge, closure or postponement
-Proposal Merged/Spec PR Missing  proposal-passed-review         A proposal document which has passed review. Waiting for a PR against the Spec
-Spec PR In Review                spec-pr                        A proposal that has been PR'd against the spec and is currently under review
-Spec PR Merged                   merged (on proposal pr)        A proposal with a sufficient working implementation and whose Spec PR has been merged!
+Proposal Merged/Spec PR Missing  spec-pr-missing                A proposal document which has passed review. Waiting for a PR against the Spec
+Spec PR In Review                spec-pr-in-review              A proposal that has been PR'd against the spec and is currently under review
+Spec PR Merged                   merged                         A proposal with a sufficient working implementation and whose Spec PR has been merged!
 Postponed                        proposal-postponed             A proposal that is temporarily blocked or a feature that may not be useful currently but perhaps 
                                                                 sometime in the future
 Closed                           proposal-closed                A proposal which has been reviewed and deemed unsuitable for acceptance
