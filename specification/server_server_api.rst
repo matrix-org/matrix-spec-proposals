@@ -573,24 +573,21 @@ transaction request to be responded to with an error response.
 Soft failure
 ++++++++++++
 
-Motivation
-^^^^^^^^^^
+.. admonition:: Rationale
 
-If a user is banned from a room a server can still send events from them by only
-referencing events from before the ban. This allows fairly simple ban evasion.
-(This can also be abused when a user loses other privileges, like power levels,
-etc).
+  If a user is banned from a room a server can still send events from them by
+  only referencing events from before the ban. This allows fairly simple ban
+  evasion. (This can also be abused when a user loses other privileges, like
+  power levels, etc).
 
-When this happens it is often fairly obvious to servers, as they can see that
-the new event doesn't actually pass auth based on the "current state" (i.e. the
-resolved state across all forward extremities). While the event is technically
-valid, the server can choose to not notify clients about the new event.
+  When this happens it is often fairly obvious to servers, as they can see that
+  the new event doesn't actually pass auth based on the "current state" (i.e.
+  the resolved state across all forward extremities). While the event is
+  technically valid, the server can choose to not notify clients about the new
+  event.
 
-This discourages servers from sending events that evade bans etc. in this way,
-as end users won't actually see the events.
-
-Implementation
-^^^^^^^^^^^^^^
+  This discourages servers from sending events that evade bans etc. in this way,
+  as end users won't actually see the events.
 
 When the homeserver receives a new event over federation it should also check
 whether the event passes auth checks based on the current state of the room (as
@@ -603,41 +600,40 @@ referenced by new events created by the homeserver.
 
 .. NOTE::
 
-    If an event is received that references the soft failed event then the new event
-    should be handled as usual. Soft failed state events participate in state
-    resolution, and so can appear in the state of events that reference the soft
-    failed state event. This can result in soft-failed events appearing in the state
-    of allowed events, in which case the client should be told about the soft failed
-    event in the usual way (e.g. by sending it down in the ``state`` section of a
-    sync response).
+  If an event is received that references the soft failed event then the new
+  event should be handled as usual. Soft failed state events participate in
+  state resolution, and so can appear in the state of events that reference the
+  soft failed state event. This can result in soft-failed events appearing in
+  the state of allowed events, in which case the client should be told about the
+  soft failed event in the usual way (e.g. by sending it down in the ``state``
+  section of a sync response).
 
-    A soft failed event should be returned in response to federation requests
-    where appropriate (e.g. in ``/event/<event_id>``). Note that soft failed events
-    are returned in ``/backfill`` and ``/get_missing_events`` responses only if the
-    requests include events referencing the soft failed events.
+  A soft failed event should be returned in response to federation requests
+  where appropriate (e.g. in ``/event/<event_id>``). Note that soft failed
+  events are returned in ``/backfill`` and ``/get_missing_events`` responses
+  only if the requests include events referencing the soft failed events.
 
 
-Worked Examples
-^^^^^^^^^^^^^^^
+.. admonition:: Example
 
-As an example consider the event graph::
+  As an example consider the event graph::
 
       A
      /
     B
 
-Where ``B`` is a ban of a user ``X``. If the user ``X`` tries to set the topic
-by sending an event ``C`` while evading the ban::
+  Where ``B`` is a ban of a user ``X``. If the user ``X`` tries to set the topic
+  by sending an event ``C`` while evading the ban::
 
       A
      / \
     B   C
 
-Servers that receive ``C`` after ``B`` will soft fail event ``C``, and so will
-neither relay ``C`` to its clients nor send any events referencing ``C``.
+  Servers that receive ``C`` after ``B`` will soft fail event ``C``, and so will
+  neither relay ``C`` to its clients nor send any events referencing ``C``.
 
-If later another server sends an event ``D`` that references both ``B`` and
-``C`` (this can happen if it received ``C`` before ``B``)::
+  If later another server sends an event ``D`` that references both ``B`` and
+  ``C`` (this can happen if it received ``C`` before ``B``)::
 
       A
      / \
@@ -645,22 +641,22 @@ If later another server sends an event ``D`` that references both ``B`` and
      \ /
       D
 
-Then servers will handle ``D`` as normal. ``D`` is sent to the servers' clients
-(assuming ``D`` passes auth checks). The state at ``D`` may resolve to a state
-that includes ``C``, in which case clients should also to be told that the state
-has changed to include ``C``.
+  Then servers will handle ``D`` as normal. ``D`` is sent to the servers'
+  clients (assuming ``D`` passes auth checks). The state at ``D`` may resolve to
+  a state that includes ``C``, in which case clients should also to be told that
+  the state has changed to include ``C``.
 
-Note that this is essentially equivalent to the situation where S1 doesn't
-receive ``C`` at all, and so asks S2 for the state of the ``C`` branch.
+  Note that this is essentially equivalent to the situation where S1 doesn't
+  receive ``C`` at all, and so asks S2 for the state of the ``C`` branch.
 
-Let's go back to the graph before ``D`` was sent::
+  Let's go back to the graph before ``D`` was sent::
 
       A
      / \
     B   C
 
-If all the servers in the room saw ``B`` before ``C`` and so soft fail ``C``,
-then any new event ``D'`` will not reference ``C``::
+  If all the servers in the room saw ``B`` before ``C`` and so soft fail ``C``,
+  then any new event ``D'`` will not reference ``C``::
 
       A
      / \
