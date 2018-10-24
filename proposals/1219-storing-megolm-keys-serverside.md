@@ -134,10 +134,8 @@ Body parameters:
 - `algorithm` (string): Required. The algorithm used for storing backups.
   Currently, only `m.megolm_backup.v1.curve25519-aes-sha2` is defined.
 - `auth_data` (object): Required. algorithm-dependent data.  For
-  `m.megolm_backup.v1.curve25519-aes-sha2`, this is a signedjson object with
-  the following keys:
-  - `public_key` (string): the curve25519 public key used to encrypt the backups
-  - `signatures` (object): signatures of the public key
+  `m.megolm_backup.v1.curve25519-aes-sha2`, see below for the definition of
+  this property.
 
 Example:
 
@@ -198,14 +196,8 @@ Body parameters:
 - `is_verified` (boolean): Whether the device backing up the key has verified
   the device that the key is from.
 - `session_data` (object): Algorithm-dependent data.  For
-  `m.megolm_backup.v1.curve25519-aes-sha2`, this is an object with the
-  following keys (TODO: this stuff should be moved):
-  - `ciphertext` (string): the encrypted version of the session key, as an
-    unpadded base64 string.  See below for how the session key is encoded.
-  - `ephemeral` (string): the public ephemeral curve25519 key that was used to
-    encrypt the session key, as an unpadded base64 string.
-  - `mac` (string): the message authentication code for the ciphertext. FIXME:
-    more details
+  `m.megolm_backup.v1.curve25519-aes-sha2`, see below for the definition of
+  this property.
 
 On success, returns the empty JSON object.
 
@@ -277,21 +269,47 @@ Deletes keys from the backup.
 
 On success, returns the empty JSON object.
 
-#### `m.megolm_backup.v1.curve25519-aes-sha2` Key format
+#### `m.megolm_backup.v1.curve25519-aes-sha2` definitions
 
-Each session key is encoded as a JSON object with the properties:
+##### `auth_data` for backup versions
 
-- `algorithm` (string): `m.megolm.v1.aes-sha2`
-- `sender_key` (string): base64-encoded device curve25519 key
-- `sender_claimed_keys` (object): object containing the identity keys for the
-  sending device
-- `forwardingCurve25519KeyChain` (array): zero or more curve25519 keys for
-  devices who forwarded the session key
-- `session_key` (string): base64-encoded (unpadded) session key
+The `auth_data` property for the backup versions endpoints for
+`m.megolm_backup.v1.curve25519-aes-sha2` is a signedjson object with the
+followin keys:
 
-The JSON object is then encrypted by generating an ephemeral curve25519 key,
-performing an ECDH with the ephemeral key and the backup's public key to
-generate an AES key, and encrypting the stringified object using AES.
+- `public_key` (string): the curve25519 public key used to encrypt the backups
+- `signatures` (object): signatures of the public key
+
+##### `session_data` for key backups
+
+The `session_data` field in the backups is constructed as follows:
+
+1. Encode the session key to be backed up as a JSON object with the properties:
+   - `algorithm` (string): `m.megolm.v1.aes-sha2`
+   - `sender_key` (string): base64-encoded device curve25519 key
+   - `sender_claimed_keys` (object): object containing the identity keys for the
+     sending device
+   - `forwardingCurve25519KeyChain` (array): zero or more curve25519 keys for
+     devices who forwarded the session key
+   - `session_key` (string): base64-encoded (unpadded) session key
+2. Generate an ephemeral curve25519 key, and perform an ECDH with the ephemeral
+   key and the backup's public key to generate a shared secret.  The public
+   half of the ephemeral key, encoded using base64, becomes the `ephemeral`
+   property of the `session_data`.
+3. Using the shared secret, generate 80 bytes by performing an HKDF using
+   SHA-256 as the hash, with a salt of 32 bytes of 0, and with the empty string
+   as the info.  The first 32 bytes are used as the AES key, the next 32 bytes
+   are used as the MAC key, and the last 16 bytes are used as the AES
+   initialization vector.
+4. Stringify the JSON object, and encrypt it using AES-CBC-256 with PKCS#7
+   padding.  This encrypted data, encoded using base64, becomes the
+   `ciphertext` property of the `session_data`.
+5. Pass the raw encrypted data (prior to base64 encoding) through HMAC-SHA-256
+   using the MAC key generated above.  The first 8 bytes of the resulting MAC
+   are base64-encoded, and become the `mac` property of the `session_data`.
+
+(The key HKDF, AES, and HMAC steps are the same as what are used for encryption
+in olm and megolm.)
 
 Security Considerations
 -----------------------
