@@ -238,12 +238,19 @@ Returns the same as `PUT
 
 #### Retrieving keys
 
+When retrieving keys, the `version` parameter is optional, and defaults to
+retrieving the latest backup version.
+
 ##### `GET /room_keys/keys/${roomId}/${sessionId}?version=$v`
 
 Retrieve the key for the given session in the given room from the backup.
 
 On success, returns a JSON object in the same form as the request body of `PUT
 /room_keys/keys/${roomId}/${sessionId}?version=$v`.
+
+Error codes:
+
+- M_NOT_FOUND: The session is not present in the backup.
 
 ##### `GET /room_keys/keys/${roomId}?version=$v`
 
@@ -252,12 +259,31 @@ Retrieve the all the keys for the given room from the backup.
 On success, returns a JSON object in the same form as the request body of `PUT
 /room_keys/keys/${roomId}?version=$v`.
 
+If no keys are found, then this endpoint returns a successful response with
+body:
+
+```
+{
+  "sessions": {}
+}
+```
+
 ##### `GET /room_keys/keys?version=$v`
 
 Retrieve all the keys from the backup.
 
 On success, returns a JSON object in the same form as the request body of `PUT
 /room_keys/keys?version=$v`.
+
+
+If no keys are found, then this endpoint returns a successful response with
+body:
+
+```
+{
+  "rooms": {}
+}
+```
 
 #### Deleting keys
 
