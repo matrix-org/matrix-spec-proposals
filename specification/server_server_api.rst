@@ -664,8 +664,8 @@ events are otherwise handled as usual.
   a state that includes ``C``, in which case clients should also to be told that
   the state has changed to include ``C``. (*Note*: This depends on the exact
   state resolution algorithm used. In the original version of the algorithm
-  ``C`` would be in the resolved state, whereas in latter versions this may not
-  be the case.)
+  ``C`` would be in the resolved state, whereas in latter versions the algorithm
+  tries to prioritise the ban over the topic change.)
 
   Note that this is essentially equivalent to the situation where one server
   doesn't receive ``C`` at all, and so asks another server for the state of the
