@@ -570,6 +570,123 @@ transaction request to be responded to with an error response.
     result in the user being considered joined.
 
 
+Soft failure
+++++++++++++
+
+.. admonition:: Rationale
+
+  It is important that we prevent users from evading bans (or other power
+  restrictions) by creating events which reference old parts of the DAG. For
+  example, a banned user could continue to send messages to a room by having
+  their server send events which reference the event before they were banned.
+  Note that such events are entirely valid, and we cannot simply reject them, as
+  it is impossible to distinguish such an event from a legitimate one which has
+  been delayed. We must therefore accept such events and let them participate in
+  state resolution and the federation protocol as normal. However, servers may
+  choose not to send such events on to their clients, so that end users won't
+  actually see the events.
+
+  When this happens it is often fairly obvious to servers, as they can see that
+  the new event doesn't actually pass auth based on the "current state" (i.e.
+  the resolved state across all forward extremities). While the event is
+  technically valid, the server can choose to not notify clients about the new
+  event.
+
+  This discourages servers from sending events that evade bans etc. in this way,
+  as end users won't actually see the events.
+
+
+When the homeserver receives a new event over federation it should also check
+whether the event passes auth checks based on the current state of the room (as
+well as based on the state at the event). If the event does not pass the auth
+checks based on the *current state* of the room (but does pass the auth checks
+based on the state at that event) it should be "soft failed".
+
+When an event is "soft failed" it should not be relayed to the client nor be
+referenced by new events created by the homeserver (i.e. they should not be
+added to the server's list of forward extremities of the room). Soft failed
+events are otherwise handled as usual.
+
+
+.. NOTE::
+
+  Soft failed events participate in state resolution as normal if further events
+  are received which reference it. It is the job of the state resolution
+  algorithm to ensure that malicious events cannot be injected into the room
+  state via this mechanism.
+
+
+.. NOTE::
+
+  Because soft failed state events participate in state resolution as normal, it
+  is possible for such events to appear in the current state of the room. In
+  that case the client should be told about the soft failed event in the usual
+  way (e.g. by sending it down in the ``state`` section of a sync response).
+
+
+.. NOTE::
+
+  A soft failed event should be returned in response to federation requests
+  where appropriate (e.g. in ``/event/<event_id>``). Note that soft failed
+  events are returned in ``/backfill`` and ``/get_missing_events`` responses
+  only if the requests include events referencing the soft failed events.
+
+
+.. admonition:: Example
+
+  As an example consider the event graph::
+
+      A
+     /
+    B
+
+  where ``B`` is a ban of a user ``X``. If the user ``X`` tries to set the topic
+  by sending an event ``C`` while evading the ban::
+
+      A
+     / \
+    B   C
+
+  servers that receive ``C`` after ``B`` should soft fail event ``C``, and so
+  will neither relay ``C`` to its clients nor send any events referencing ``C``.
+
+  If later another server sends an event ``D`` that references both ``B`` and
+  ``C`` (this can happen if it received ``C`` before ``B``)::
+
+      A
+     / \
+    B   C
+     \ /
+      D
+
+  then servers will handle ``D`` as normal. ``D`` is sent to the servers'
+  clients (assuming ``D`` passes auth checks). The state at ``D`` may resolve to
+  a state that includes ``C``, in which case clients should also to be told that
+  the state has changed to include ``C``. (*Note*: This depends on the exact
+  state resolution algorithm used. In the original version of the algorithm
+  ``C`` would be in the resolved state, whereas in latter versions the algorithm
+  tries to prioritise the ban over the topic change.)
+
+  Note that this is essentially equivalent to the situation where one server
+  doesn't receive ``C`` at all, and so asks another server for the state of the
+  ``C`` branch.
+
+  Let's go back to the graph before ``D`` was sent::
+
+      A
+     / \
+    B   C
+
+  If all the servers in the room saw ``B`` before ``C`` and so soft fail ``C``,
+  then any new event ``D'`` will not reference ``C``::
+
+      A
+     / \
+    B   C
+    |
+    D
+
+
 Retrieving event authorization information
 ++++++++++++++++++++++++++++++++++++++++++
 
