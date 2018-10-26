@@ -8,25 +8,6 @@ In general, the process should be shortened to two steps: get the JSON and use i
 process employs a lot of verification methods that don't seem to prevent anything.
 
 
-### Reduce the user ID parsing to a single step
-
-For reference, here are the current steps:
-
-> 1. Extract the server name from the user's Matrix ID by splitting the Matrix ID at the first colon.
-> 2. Extract the hostname from the server name.
-
-This doesn't seem to account for the fact that the user's ID may have an IP address (v4 or v6), making
-"extract the hostname" potentially difficult. Although the spec requires IPv6 addresses to be contained
-within clear markings, using ports in IDs is generally discouraged anyways. Instead of parsing the server
-hostname out, .well-known discovery should only require the use of step 1 from the reference material.
-
-Using the result from step 1 means that we'd potentially be using the federation port to do discovery,
-however this is closer to a misconfiguration of a homeserver to begin with. Although the feature is
-supported in Matrix and has valid use cases, it is exceedingly rare to see the port number used in user
-IDs and we have alternative, nicer, ways to use different ports in Matrix.
-
-Note: the react-sdk PR linked above implements this approach to avoid having even more checks in place.
-
 ### Refining the validation process
 
 For reference, here are the current UX states:
