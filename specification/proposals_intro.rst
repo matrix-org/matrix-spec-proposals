@@ -119,7 +119,7 @@ follows:
     set of trade-offs. The author should neutrally gather the various
     viewpoints and get consensus, but this can sometimes be time-consuming (or
     the author may be biased), in which case an impartial 'shepherd' can be
-    assigned to help guide the proposal through this process. A shepherd is
+    assigned to help guide the proposal through this process instead. A shepherd is
     typically a neutral party from the Core Team or an experienced member of
     the community. There is no formal process for assignment. Simply ask for a
     shepherd to help get your proposal through and one will be assigned based
