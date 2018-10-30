@@ -1,12 +1,11 @@
-Author: Erik Johnston
-Created: 2018-07-20
+- **Author**: Erik Johnston
+- **Created**: 2018-07-20
+- **Updated**:
+    - #1693: Clarify how to handle rejected events ─ Erik Johnston, 2018-10-30
 
-Updated:
-- #1693: Clarify how to handle rejected events ─ Erik Johnston, 2018-10-30
 
 
 # State Resolution: Reloaded
-
 
 Thoughts on the next iteration of the state resolution algorithm that aims to
 mitigate currently known attacks
