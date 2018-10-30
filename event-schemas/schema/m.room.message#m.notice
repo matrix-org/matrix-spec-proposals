@@ -15,6 +15,7 @@ properties:
           - warning
           - error
           - critical
+          - success
         type: string
       msgtype:
         enum:
