@@ -398,8 +398,8 @@ The `session_data` field in the backups is constructed as follows:
    - `sender_key` (string): base64-encoded device curve25519 key
    - `sender_claimed_keys` (object): object containing the identity keys for the
      sending device
-   - `forwardingCurve25519KeyChain` (array): zero or more curve25519 keys for
-     devices who forwarded the session key
+   - `forwarding_curve25519_key_chain` (array): zero or more curve25519 keys
+     for devices who forwarded the session key
    - `session_key` (string): base64-encoded (unpadded) session key
 2. Generate an ephemeral curve25519 key, and perform an ECDH with the ephemeral
    key and the backup's public key to generate a shared secret.  The public
