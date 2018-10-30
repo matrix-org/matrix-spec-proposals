@@ -251,8 +251,7 @@ First we define:
     with an absent event to be unconflicted rather than conflicted)
 *   The "**auth difference"** is calculated by first calculating the full auth
     chain for each state set and taking every event that doesn't appear in every
-    auth chain. (This includes any events in the auth chain that have been
-    rejected.)
+    auth chain (including events that have been rejected).
 *   The **"full conflicted set"** is the union of the conflicted state map and
     auth difference.
 *   The **"reverse topological power ordering"**[^4] of a set of events is an
