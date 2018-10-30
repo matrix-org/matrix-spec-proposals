@@ -210,6 +210,28 @@ Error codes:
 - `M_WRONG_ROOM_KEYS_VERSION`: the version specified does not match the current
   backup version
 
+Example:
+
+`PUT /room_keys/keys/!room_id:example.com/sessionid?version=1`
+
+```javascript
+{
+  "first_message_index": 1,
+  "forwarded_count": 0,
+  "is_verified": true,
+  "session_data": {
+    "ephemeral": "base64+ephemeral+key",
+    "ciphertext": "base64+ciphertext+of+JSON+data",
+    "mac": "base64+mac+of+ciphertext"
+  }
+}
+```
+
+Result:
+
+```javascript
+{}
+```
 ##### `PUT /room_keys/keys/${roomId}?version=$v`
 
 Store several keys for the given room, using the given backup version.
@@ -223,8 +245,34 @@ Body parameters:
   /room_keys/keys/${roomId}/${sessionId}?version=$v`.
 
 Returns the same as `PUT
-/room_keys/keys/${roomId}/${sessionId}?version=$v`
+/room_keys/keys/${roomId}/${sessionId}?version=$v`.
 
+Example:
+
+`PUT /room_keys/keys/!room_id:example.com?version=1`
+
+```javascript
+{
+  "sessions": {
+    "sessionid": {
+      "first_message_index": 1,
+      "forwarded_count": 0,
+      "is_verified": true,
+      "session_data": {
+        "ephemeral": "base64+ephemeral+key",
+        "ciphertext": "base64+ciphertext+of+JSON+data",
+        "mac": "base64+mac+of+ciphertext"
+      }
+    }
+  }
+}
+```
+
+Result:
+
+```javascript
+{}
+```
 ##### `PUT /room_keys/keys?version=$v`
 
 Store several keys, using the given backup version.
@@ -239,6 +287,37 @@ Body parameters:
 
 Returns the same as `PUT
 /room_keys/keys/${roomId}/${sessionId}?version=$v`
+
+Example:
+
+`PUT /room_keys/keys/!room_id:example.com?version=1`
+
+```javascript
+{
+  "rooms": {
+    "!room_id:example.com": {
+      "sessions": {
+        "sessionid": {
+          "first_message_index": 1,
+          "forwarded_count": 0,
+          "is_verified": true,
+          "session_data": {
+            "ephemeral": "base64+ephemeral+key",
+            "ciphertext": "base64+ciphertext+of+JSON+data",
+            "mac": "base64+mac+of+ciphertext"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Result:
+
+```javascript
+{}
+```
 
 #### Retrieving keys
 
