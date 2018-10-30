@@ -1,3 +1,10 @@
+Author: Erik Johnston
+Created: 2018-07-20
+
+Updated:
+- #1693: Clarify how to handle rejected events ─ Erik Johnston, 2018-10-30
+
+
 # State Resolution: Reloaded
 
 
@@ -47,7 +54,7 @@ which can be summarized into two separate cases:
 
 1.  Moderation evasion ─ where an attacker can avoid e.g. bans by forking and
     joining the room DAG in particular ways.
-1.  State resets ─ where a server (often innocently) sends an event that points
+2.  State resets ─ where a server (often innocently) sends an event that points
     to disparate parts of the graph, causing state resolution to pick old state
     rather than later versions.
 
