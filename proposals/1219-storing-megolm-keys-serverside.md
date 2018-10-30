@@ -56,6 +56,9 @@ trust that the backup was not created by a malicious device.
 
 ### Possible UX for interactive clients
 
+This section gives an example of how a client might handle key backups.  Clients
+may behave differently.
+
 On receipt of encryption keys (1st time):
 
 1. client checks if there is an existing backup: `GET /room_keys/version`
@@ -63,7 +66,7 @@ On receipt of encryption keys (1st time):
       1. if yes:
          1. generate new curve25519 key pair
          2. create new backup version: `POST /room_keys/version`
-         3. display private key to user to save (see below for the format)
+         3. display private key for user to save (see below for the format)
       2. if no, exit and remember decision (user can change their mind later)
       3. while prompting, continue to poll `GET /room_keys/versions`, as
          another device may have created a backup.  If so, go to 1.2.
@@ -99,10 +102,10 @@ settings.
 
 ### Recovery key
 
-The recovery key is can either be saved by the user directly, or stored
-encrypted on the server (as proposed in
+The recovery key can either be saved by the user directly, or stored encrypted
+on the server (as proposed in
 [MSC1687](https://github.com/matrix-org/matrix-doc/issues/1687)).  If the key
-is saved directly by the user, then it the code is constructed as follows:
+is saved directly by the user, then the code is constructed as follows:
 
 1. The 256-bit curve25519 private key is prepended by the bytes `0x8B` and
    `0x01`
@@ -112,7 +115,8 @@ is saved directly by the user, then it the code is constructed as follows:
    for Bitcoin addresses.
 
 This 58-character string is presented to the user to save.  Implementations may
-add whitespace to the recovery key.
+add whitespace to the recovery key; adding a space every 4th character is
+recommended.
 
 When reading in a recovery key, clients must disregard whitespace.  Clients
 must base58-decode the code, ensure that the first two bytes of the decoded
@@ -193,9 +197,9 @@ Body parameters:
   in the session that the key can decrypt.
 - `forwarded_count` (integer): Required. The number of times this key has been
   forwarded.
-- `is_verified` (boolean): Whether the device backing up the key has verified
-  the device that the key is from.
-- `session_data` (object): Algorithm-dependent data.  For
+- `is_verified` (boolean): Required. Whether the device backing up the key has
+  verified the device that the key is from.
+- `session_data` (object): Required. Algorithm-dependent data.  For
   `m.megolm_backup.v1.curve25519-aes-sha2`, see below for the definition of
   this property.
 
