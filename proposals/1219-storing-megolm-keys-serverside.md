@@ -333,7 +333,8 @@ On success, returns a JSON object in the same form as the request body of `PUT
 
 Error codes:
 
-- M_NOT_FOUND: The session is not present in the backup.
+- M_NOT_FOUND: The session is not present in the backup, or the requested
+  backup version does not exist.
 
 ##### `GET /room_keys/keys/${roomId}?version=$v`
 
@@ -342,14 +343,18 @@ Retrieve the all the keys for the given room from the backup.
 On success, returns a JSON object in the same form as the request body of `PUT
 /room_keys/keys/${roomId}?version=$v`.
 
-If no keys are found, then this endpoint returns a successful response with
-body:
+If the backup version exists but no keys are found, then this endpoint returns
+a successful response with body:
 
 ```
 {
   "sessions": {}
 }
 ```
+
+Error codes:
+
+- `M_NOT_FOUND`: The requested backup version does not exist.
 
 ##### `GET /room_keys/keys?version=$v`
 
@@ -358,15 +363,18 @@ Retrieve all the keys from the backup.
 On success, returns a JSON object in the same form as the request body of `PUT
 /room_keys/keys?version=$v`.
 
-
-If no keys are found, then this endpoint returns a successful response with
-body:
+If the backup version exists but no keys are found, then this endpoint returns
+a successful response with body:
 
 ```
 {
   "rooms": {}
 }
 ```
+
+Error codes:
+
+- `M_NOT_FOUND`: The requested backup version does not exist.
 
 #### Deleting keys
 
