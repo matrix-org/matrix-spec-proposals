@@ -250,7 +250,7 @@ First we define:
     with an absent event to be unconflicted rather than conflicted)
 *   The "**auth difference"** is calculated by first calculating the full auth
     chain for each state set and taking every event that doesn't appear in every
-    auth chain (including events that have been rejected).
+    auth chain.
 *   The **"full conflicted set"** is the union of the conflicted state map and
     auth difference.
 *   The **"reverse topological power ordering"**[^4] of a set of events is an
@@ -275,21 +275,18 @@ First we define:
         ordered such that P is last.
     1.  We say the "closest mainline event" of an event is the first power level
         event encountered in mainline when iteratively descending through the
-        power level events in the auth events (including any power level events
-        that were rejected).
+        power level events in the auth events.
     1.  Order the set of events such that x < y if:
         1.  The closest mainline event of x appears strictly before the closest
             of y in the mainline list, or if
         1.  x's origin_server_ts is less than y's, or if
         1.  x's event_id lexicographically sorts before y's
 *   The **"iterative auth checks"** algorithm is where given a sorted list of
-    events, the auth check algorithm is applied to each event in turn (ignoring
-    any events have been rejected). The state events used to auth are built up
-    from previous events that passed the auth checks, starting from a base set
-    of state. If a required auth key doesn't exist in the state, then the one in
-    the event's auth_events is used (unless the auth event has been rejected).
-    (See _Variations_ and _Attack Vectors_ below).
-
+    events, the auth check algorithm is applied to each event in turn. The state
+    events used to auth are built up from previous events that passed the auth
+    checks, starting from a base set of state. If a required auth key doesn't
+    exist in the state, then the one in the event's auth_events is used. (See
+    _Variations_ and _Attack Vectors_ below).
 
 The algorithm proceeds as follows:
 
@@ -447,29 +444,30 @@ reapply the unconflicted state at the end).
 
 ### Rejected Events
 
-We include rejected events in the "auth chain difference" as they can still be
-used to effect the ordering of events. This in turn means care must be taken to
-filter rejected events out when applying the iterative auth checks.
-
-An alternative would be to include rejected events during the iterative auth
-checks, accepting that previously rejected events may be un-rejected. This has
-the advantage that if different servers have different views of which events are
-rejected they will be more likely to converge (rather than diverge). The
-downside is the added complexity of un-rejecting events (on top of double
-checking that this doesn't add any security vulnerabilities).
-
-We do, however, use rejected events when looking at the power level the sender
-of an event has, in that we don't check if the event's power levels auth event
-has been rejected or not. This is for ease of implementation and to help the
-algorithm be more "convergent" in the face of different views of rejections.
-Using rejected auth events here should be safe, as any revocation of power will
-appear before the event in the iterative auth checks (due to the reverse power
-topological ordering, and the fact that the revocation must be sent by a user
-with a higher power level).
+Events that have been rejected due to failing auth based on the state at the
+event (rather than based on their auth chain) are handled as usual by the
+algorithm.
 
 Note that no events rejected due to failure to auth against their auth chain
 should appear in the process, as they should not appear in state (an the
 algorithm only uses events in one of the state sets or their auth events).
+
+This helps ensure that different servers' view of state is more likely to
+converge, since rejection state of an event is may be different. This can happen
+if a third server gives an incorrect version of the state when a server joins a
+room via it (either due to being faulty or malicious).
+
+Intuitively using rejected events feels dangerous, however:
+
+1. Servers cannot arbitrarily make up state, since they still need to pass the
+   auth checks based on the events auth chain (e.g. they can't grant themselves
+   power levels if they didn't have them before).
+2. For a previously rejected event to pass auth there must be a set of state
+   that allows said event. At which point, a malicious server could produce a
+   fork where it claims the state is that particular set of state, duplicate the
+   rejected event to point to that fork, and send the event. At which point the
+   duplicated event will pass auth. Therefore ignoring rejected events wouldn't
+   reduce any potential attack vectors
 
 
 ### Attack Vectors
