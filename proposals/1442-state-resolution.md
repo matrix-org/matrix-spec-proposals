@@ -449,7 +449,7 @@ event (rather than based on their auth chain) are handled as usual by the
 algorithm.
 
 Note that no events rejected due to failure to auth against their auth chain
-should appear in the process, as they should not appear in state (an the
+should appear in the process, as they should not appear in state (and the
 algorithm only uses events in one of the state sets or their auth events).
 
 This helps ensure that different servers' view of state is more likely to
