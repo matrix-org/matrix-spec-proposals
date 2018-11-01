@@ -453,9 +453,13 @@ should appear in the process, as they should not appear in state (and the
 algorithm only uses events in one of the state sets or their auth events).
 
 This helps ensure that different servers' view of state is more likely to
-converge, since rejection state of an event is may be different. This can happen
-if a third server gives an incorrect version of the state when a server joins a
-room via it (either due to being faulty or malicious).
+converge, since rejection state of an event may be different. This can happen if
+a third server gives an incorrect version of the state when a server joins a
+room via it (either due to being faulty or malicious). Convergence of state is a
+desirable property as it ensures that all users in the room have a (mostly)
+consistent view of the state of the room. If the view of the state on different
+servers diverges it can lead to bifurcation of the room due to e.g. servers
+disagreeing on who is in the room.
 
 Intuitively using rejected events feels dangerous, however:
 
