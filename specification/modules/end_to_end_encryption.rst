@@ -463,16 +463,17 @@ passphrase, and is created as follows:
 1. Encode the sessions a JSON object, formatted as described in `Key export
    format`_.
 2. Generate a 512-bit key from the user-entered passphrase by computing
-   PBKDF2(HMAC-SHA-512, passphrase, S, N, 512), where S is a 128-bit
+   `PBKDF2`_\(HMAC-SHA-512, passphrase, S, N, 512), where S is a 128-bit
    cryptographically-random salt and N is the number of rounds.  N should be at
    least 100,000.  The keys K and K' are set to the first and last 256 bits of
    this generated key, respectively.  K is used as an AES-256 key, and K' is
    used as an HMAC-SHA-256 key.
 3. Serialize the JSON object as a UTF-8 string, and encrypt it using
-   AES-CTR-256 with a 128-bit cryptographically-random initialization vector,
-   IV, that has bit 63 set to zero. (Setting bit 63 to zero in IV is needed to
-   work around differences in implementations.)
-4. Concatenate the following strings:
+   AES-CTR-256 with the key K generated above, and with a 128-bit
+   cryptographically-random initialization vector, IV, that has bit 63 set to
+   zero. (Setting bit 63 to zero in IV is needed to work around differences in
+   implementations of AES-CTR.)
+4. Concatenate the following data:
 
    ============ ===============================================================
    Size (bytes) Description
@@ -480,7 +481,7 @@ passphrase, and is created as follows:
    1            Export format version, which must be ``0x01``.
    16           The salt S.
    16           The initialization vector IV.
-   4            The number of rounds N, as a big-endian 32-bit integer
+   4            The number of rounds N, as a big-endian unsigned 32-bit integer.
    variable     The encrypted JSON object.
    32           The HMAC-SHA-256 of all the above string concatenated together,
                 using K' as the key.
@@ -490,7 +491,7 @@ passphrase, and is created as follows:
    lines.
 6. Prepend the resulting string with ``-----BEGIN MEGOLM SESSION DATA-----``,
    with a trailing newline, and append ``-----END MEGOLM SESSION DATA-----``,
-   with a leading newline.
+   with a leading and trailing newline.
 
 Key export format
 <<<<<<<<<<<<<<<<<
@@ -509,40 +510,30 @@ sessions        ``[SessionData]`` Required. The sessions that are being
 
 ``SessionData``
 
-=============================== =========== ====================================
-Parameter                       Type        Description
-=============================== =========== ====================================
-algorithm                       string      Required. The encryption algorithm
-                                            that the session uses. Must be
-                                            'm.megolm.v1.aes-sha2'.
-forwarding_curve25519_key_chain [string]    Required. Chain of Curve25519 keys.
-                                            It starts out empty, but each time
-                                            the key is forwarded to another
-                                            device, such as via a
-                                            `m.forwarded_room_key`_ event, the
-                                            previous sender in the chain is
-                                            added to the end of the list.
-                                            Key exports do not affect this
-                                            list.
-room_id                         string      Required. The room where the
-                                            session is used.
-sender_key                      string      Required. The Curve25519 key of the
-                                            device which initiated the session
-                                            originally.
-sender_claimed_keys             {string:    Required. The Ed25519 key of the
-                                integer}    device which initiated the session
-                                            originally. It is 'claimed' because
-                                            the receiving device has no way to
-                                            tell that the original room_key
-                                            actually came from a device which
-                                            owns the private part of this key
-                                            unless they have done device
-                                            verification. This will be an
-                                            object with an ``ed25519`` property
-                                            whose value is the Ed25519 key.
-session_id                      string      Required. The ID of the session.
-session_key                     string      Required. The key for the session.
-=============================== =========== ====================================
+.. table::
+   :widths: auto
+
+   =============================== =========== ====================================
+   Parameter                       Type        Description
+   =============================== =========== ====================================
+   algorithm                       string      Required. The encryption algorithm
+                                               that the session uses. Must be
+                                               ``m.megolm.v1.aes-sha2``.
+   forwarding_curve25519_key_chain [string]    Required. Chain of Curve25519 keys
+                                               through which this session was
+                                               forwarded, via
+                                               `m.forwarded_room_key`_ events.
+   room_id                         string      Required. The room where the
+                                               session is used.
+   sender_key                      string      Required. The Curve25519 key of the
+                                               device which initiated the session
+                                               originally.
+   sender_claimed_keys             {string:    Required. The Ed25519 key of the
+                                   integer}    device which initiated the session
+                                               originally.
+   session_id                      string      Required. The ID of the session.
+   session_key                     string      Required. The key for the session.
+   =============================== =========== ====================================
 
 Example:
 
@@ -844,6 +835,7 @@ Example response:
 .. _`Megolm specification`: http://matrix.org/docs/spec/megolm.html
 .. _`JSON Web Key`: https://tools.ietf.org/html/rfc7517#appendix-A.3
 .. _`W3C extension`: https://w3c.github.io/webcrypto/#iana-section-jwk
+.. _`PBKDF2`: https://tools.ietf.org/html/rfc2898#section-5.2
 
 .. _`Signing JSON`: ../appendices.html#signing-json
 
