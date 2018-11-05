@@ -285,8 +285,8 @@ First we define:
     events, the auth check algorithm is applied to each event in turn. The state
     events used to auth are built up from previous events that passed the auth
     checks, starting from a base set of state. If a required auth key doesn't
-    exist in the state, then the one in the event's auth_events is used. (See
-    _Variations_ and _Attack Vectors_ below).
+    exist in the state, then the one in the event's auth_events is used if the
+    auth event is not rejected. (See _Variations_ and _Attack Vectors_ below).
 
 The algorithm proceeds as follows:
 
@@ -446,7 +446,7 @@ reapply the unconflicted state at the end).
 
 Events that have been rejected due to failing auth based on the state at the
 event (rather than based on their auth chain) are handled as usual by the
-algorithm.
+algorithm, unless otherwise specified.
 
 Note that no events rejected due to failure to auth against their auth chain
 should appear in the process, as they should not appear in state (and the
@@ -472,6 +472,10 @@ Intuitively using rejected events feels dangerous, however:
    rejected event to point to that fork, and send the event. At which point the
    duplicated event will pass auth. Therefore ignoring rejected events wouldn't
    reduce any potential attack vectors
+
+We specifically don't use rejected auth events in the iterative auth checks, as
+in that case the auth events aren't re-authed like the rest of the events in the
+list.
 
 
 ### Attack Vectors
