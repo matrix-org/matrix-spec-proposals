@@ -1,4 +1,4 @@
-# .well-known support for server name resolution
+# MSC1708: .well-known support for server name resolution
 
 Currently, mapping from a server name to a hostname for federation is done via
 `SRV` records. This presents two principal difficulties:
