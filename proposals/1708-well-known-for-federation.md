@@ -112,6 +112,21 @@ interact with caches?). On the other hand, we'll presumably be using an HTTP
 client library to handle some of the caching stuff, and they might be useful
 for something?
 
+## Problems
+
+It will take a while for `.well-known` to be supported across the ecosystem;
+until it is, it will be difficult to deploy homeservers which rely on it for
+their routing: if Alice is using a current homeserver implementation, and Bob
+deploys a new implementation which relies on `.well-known` for routing, then
+Alice will be unable to send messages to Bob. (This is the same problem we have with
+[SNI](https://github.com/matrix-org/synapse/issues/1491#issuecomment-415153428).)
+
+The main defence against this seems to be to release support for `.well-known`
+as soom as possible, to maximise uptake in the ecosystem. It is likely that, as
+we approach Matrix 1.0, there will be sufficient other new features (such as
+new Room versions) that upgading will be necessary anyway.
+
+
 ## Security considerations
 
 The `.well-known` file potentially broadens the attack surface for an attacker
