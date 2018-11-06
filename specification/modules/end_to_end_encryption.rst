@@ -422,13 +422,19 @@ Device verification may reach one of several conclusions. For example:
    decrypted by such a device. For the Olm protocol, this is documented at
    https://matrix.org/git/olm/about/docs/signing.rst.
 
-Key sharing
------------
+.. section name changed, so make sure that old links keep working
+.. _key-sharing:
+
+Sharing keys between devices
+----------------------------
 
 If Bob has an encrypted conversation with Alice on his computer, and then logs in
 through his phone for the first time, he may want to have access to the previously
-exchanged messages. To address this issue, events exist for requesting and sending
-keys from device to device.
+exchanged messages. To address this issue, several methods are provided to
+allow users to transfer keys from one device to another.
+
+Key requests
+~~~~~~~~~~~~
 
 When a device is missing keys to decrypt messages, it can request the keys by
 sending `m.room_key_request`_ to-device messages to other devices with
@@ -446,6 +452,111 @@ previously-received ``request`` message with the same ``request_id`` and
   Key sharing can be a big attack vector, thus it must be done very carefully.
   A reasonable stategy is for a user's client to only send keys requested by the
   verified devices of the same user.
+
+Key exports
+~~~~~~~~~~~
+
+Keys can be manually exported from one device to an encrypted file, copied to
+another device, and imported. The file is encrypted using a user-supplied
+passphrase, and is created as follows:
+
+1. Encode the sessions a JSON object, formatted as described in `Key export
+   format`_.
+2. Generate a 512-bit key from the user-entered passphrase by computing
+   `PBKDF2`_\(HMAC-SHA-512, passphrase, S, N, 512), where S is a 128-bit
+   cryptographically-random salt and N is the number of rounds.  N should be at
+   least 100,000.  The keys K and K' are set to the first and last 256 bits of
+   this generated key, respectively.  K is used as an AES-256 key, and K' is
+   used as an HMAC-SHA-256 key.
+3. Serialize the JSON object as a UTF-8 string, and encrypt it using
+   AES-CTR-256 with the key K generated above, and with a 128-bit
+   cryptographically-random initialization vector, IV, that has bit 63 set to
+   zero. (Setting bit 63 to zero in IV is needed to work around differences in
+   implementations of AES-CTR.)
+4. Concatenate the following data:
+
+   ============ ===============================================================
+   Size (bytes) Description
+   ============ ===============================================================
+   1            Export format version, which must be ``0x01``.
+   16           The salt S.
+   16           The initialization vector IV.
+   4            The number of rounds N, as a big-endian unsigned 32-bit integer.
+   variable     The encrypted JSON object.
+   32           The HMAC-SHA-256 of all the above string concatenated together,
+                using K' as the key.
+   ============ ===============================================================
+
+5. Base64-encode the string above. Newlines may be added to avoid overly long
+   lines.
+6. Prepend the resulting string with ``-----BEGIN MEGOLM SESSION DATA-----``,
+   with a trailing newline, and append ``-----END MEGOLM SESSION DATA-----``,
+   with a leading and trailing newline.
+
+Key export format
+<<<<<<<<<<<<<<<<<
+
+The exported sessions are formatted as a JSON object of type ``ExportData``
+described as follows:
+
+``ExportData``
+
+=============== ================= ==============================================
+Parameter       Type              Description
+=============== ================= ==============================================
+sessions        ``[SessionData]`` Required. The sessions that are being
+                                  exported.
+=============== ================= ==============================================
+
+``SessionData``
+
+.. table::
+   :widths: auto
+
+   =============================== =========== ====================================
+   Parameter                       Type        Description
+   =============================== =========== ====================================
+   algorithm                       string      Required. The encryption algorithm
+                                               that the session uses. Must be
+                                               ``m.megolm.v1.aes-sha2``.
+   forwarding_curve25519_key_chain [string]    Required. Chain of Curve25519 keys
+                                               through which this session was
+                                               forwarded, via
+                                               `m.forwarded_room_key`_ events.
+   room_id                         string      Required. The room where the
+                                               session is used.
+   sender_key                      string      Required. The Curve25519 key of the
+                                               device which initiated the session
+                                               originally.
+   sender_claimed_keys             {string:    Required. The Ed25519 key of the
+                                   integer}    device which initiated the session
+                                               originally.
+   session_id                      string      Required. The ID of the session.
+   session_key                     string      Required. The key for the session.
+   =============================== =========== ====================================
+
+Example:
+
+.. code:: json
+
+    {
+        "sessions": [
+            {
+                "algorithm": "m.megolm.v1.aes-sha2",
+                "forwarding_curve25519_key_chain": [
+                    "hPQNcabIABgGnx3/ACv/jmMmiQHoeFfuLB17tzWp6Hw"
+                ],
+                "room_id": "!Cuyf34gef24t:localhost",
+                "sender_key": "RF3s+E7RkTQTGF2d8Deol0FkQvgII2aJDf3/Jp5mxVU",
+                "sender_claimed_keys": {
+                    "ed25519": "<device ed25519 identity key>",
+                },
+                "session_id": "X3lUlvLELLYxeTx4yOVu6UDpasGEVO0Jbu+QFnm0cKQ",
+                "session_key": "AgAAAADxKHa9uFxcXzwYoNueL5Xqi69IkD4sni8Llf..."
+            },
+            ...
+        ]
+    }
 
 Messaging Algorithms
 --------------------
@@ -724,6 +835,7 @@ Example response:
 .. _`Megolm specification`: http://matrix.org/docs/spec/megolm.html
 .. _`JSON Web Key`: https://tools.ietf.org/html/rfc7517#appendix-A.3
 .. _`W3C extension`: https://w3c.github.io/webcrypto/#iana-section-jwk
+.. _`PBKDF2`: https://tools.ietf.org/html/rfc2898#section-5.2
 
 .. _`Signing JSON`: ../appendices.html#signing-json
 
