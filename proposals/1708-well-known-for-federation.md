@@ -47,8 +47,8 @@ If the hostname is neither an IP literal, nor does it have an explicit port,
 then the requesting server should continue to make an SRV lookup as before, and
 use the result if one is found.
 
-If *no* result is found, the requesting server should make a `GET` request to
-`https://\<server_name>/.well-known/matrix/server`, with normal X.509
+If *no* SRV result is found, the requesting server should make a `GET` request
+to `https://\<server_name>/.well-known/matrix/server`, with normal X.509
 certificate validation. If the request fails in any way, then we fall back as
 before to using using port 8448 on the hostname.
 
@@ -65,17 +65,19 @@ structured as shown:
 }
 ```
 
-The `server` property has the same format as a [server
-name](https://matrix.org/docs/spec/appendices.html#server-name): a hostname
-followed by an optional port.
+The `server` property should be a hostname or IP address, followed by an
+optional port.
 
 If the response cannot be parsed as JSON, or lacks a valid `server` property,
 the request is considered to have failed, and no fallback to port 8448 takes
 place.
 
-Otherwise, the requesting server performs an `AAAA/A` lookup on the hostname,
-and connects to the resultant address and the specifed port. The port defaults
-to 8448, if unspecified.
+Otherwise, the requesting server performs an `AAAA/A` lookup on the hostname
+(if necessary), and connects to the resultant address and the specifed
+port. The port defaults to 8448, if unspecified.
+
+(The formal grammar for the `server` property is identical to that of a [server
+name](https://matrix.org/docs/spec/appendices.html#server-name).)
 
 ### Caching
 
