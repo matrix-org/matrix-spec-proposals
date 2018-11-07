@@ -114,13 +114,13 @@ TLS keys for the whole domain.
 ### Extensions
 
 HTTP-Based Public Key Pinning (HPKP) and
-[https://www.certificate-transparency.org](Certificate transparency) are
+[Certificate transparency](https://www.certificate-transparency.org) are
 both HTTP extensions which attempt to work around some of the deficiencies in
 the CA model, by making it more obvious if a CA has issued a certificate
 incorrectly.
 
 HPKP has not been particularly successful, and is
-[deprecated]((https://developers.google.com/web/updates/2018/04/chrome-67-deps-rems#deprecate_http-based_public_key_pinning)
+[deprecated](https://developers.google.com/web/updates/2018/04/chrome-67-deps-rems#deprecate_http-based_public_key_pinning)
 in Google Chrome as of April 2018. Certificate transparency, however, is seeing
 widespread adoption from Certificate Authories and HTTP clients.
 
