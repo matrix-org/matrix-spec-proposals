@@ -219,7 +219,7 @@ reasonable to relax the requirement for a signed certificate for such traffic.
 
 ## Conclusion
 
-We believe that requiring homservers to present an X.509 certificate signed by
+We believe that requiring homeservers to present an X.509 certificate signed by
 a recognised Certificate Authority will improve security, reduce
 centralisation, and eliminate some common deployment pitfalls.
 
