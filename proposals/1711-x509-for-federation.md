@@ -10,7 +10,7 @@ instead revert to the CA model.
 
 ## Background: the failure of the Perspectives approach
 
-The Perspectives approach replaces the conventional heirarchy of trust provided
+The Perspectives approach replaces the conventional hierarchy of trust provided
 by the Certificate Authority model with a large number of "notary" servers
 distributed around the world. The intention is that the notary servers
 regularly monitor remote servers and observe the certificates they present;
