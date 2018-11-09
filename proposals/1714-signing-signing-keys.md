@@ -5,10 +5,10 @@ room and federation requests. This is intended to prevent malicious servers
 from masquerading as other servers, which might allow them to forge content and
 access data they should not otherwise be able to.
 
-Remote servers must be able to obtain the public part of the keypair
-securely. One way to do this is simply to ask the target server over a secure
-HTTPS connection; however, we also need to verify events sent in the past by
-servers which are no longer online.
+Remote servers must be able to confirm that a given signing key actually
+belongs to a given server. One way to do this is simply to ask the target
+server over a secure HTTPS connection; however, we also need to verify keys
+used in the past by servers which are no longer online.
 
 In theory, this is currently done using an approach borrowed from the
 [Perspectives
@@ -25,13 +25,15 @@ an alternative approach to the management of signing keys.
 
 ## Proposal
 
-The proposed solution is to have signing keys be cross-signed by the key used
-for HTTPS connections on the federation port.
+In brief, the proposed solution is to have the origin server (server A)
+cross-sign its signing keys with the private key it uses for HTTPS connections
+on the federation port. Intermediate servers (server B) keep a copy of this
+signature, so that when a new server (server C) needs to validate the signing
+key, it can use the certificate chain to confirm that it belonged to server A.
 
-Each server maintains a list of the signing keys it has seen for each remote
-server, and the time it believes they are valid for. (It must also retain
-copies of the certificate chain that it used to reach that conclusion, so that
-it can present them for a future `/_matrix/key/v2/query` request.)
+Each server therefore maintains a list of the signing keys it has seen for each
+remote server, and the time it believes they are valid for. (It must also
+retain copies of the certificate chain that it used to reach that conclusion.)
 
 ### Extending the signature algorithm to cover RSA keys
 
@@ -283,7 +285,6 @@ re-signs their key using a new certificate chain.
 
 It may therefore be necessary to proactively re-check validity from time to
 time.
-
 
 ## Acknowlegements
 
