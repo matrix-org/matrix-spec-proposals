@@ -7,7 +7,8 @@ Currently, mapping from a server name to a hostname for federation is done via
    them, and there may be other practical difficulties in their deployment such
    as poor support from hosting providers. [^1]
 
- * It is likely that we will soon require valid X.509 certificates on the
+ * [MSC1711](https://github.com/matrix-org/matrix-doc/pull/1711) proposes
+   requiring valid X.509 certificates on the
    federation endpoint. It will then be necessary for the homeserver to present
    a certificate which is valid for the server name. This presents difficulties
    for hosted server offerings: BigCorp may be reluctant to hand over the
@@ -140,4 +141,3 @@ will allow greater flexibility in deploying homeservers.
 
 
 [^1] For example, Cloudflare automatically "flattens" SRV record responses.
-
