@@ -18,20 +18,53 @@ token (either direct entry or via login) and preferred device.
 When the user clicks on a link, the app should send a request using the 
 [Send-to-Device messaging API](https://matrix.org/docs/spec/client_server/r0.4.0.html#put-matrix-client-r0-sendtodevice-eventtype-txnid). 
 
+### Schema
+
 The event type should be `m.openondevice` and the `EventContent` should be:
+
+#### `room`
 
 ```json
 {
   "type": "room",
-  "room_id": "",
-  "id":   "",
+  "via": "half-shot.uk"
+  "id": "!someneatlookingroom:matrix.org",
+}
+```
+
+#### `event`
+
+```json
+{
+  "type": "event",
+  "room_id": "!someneatlookingroom:matrix.org",
+  "via": "half-shot.uk"
+  "id":   "$andthiseventtoo:half-shot.uk",
+}
+```
+
+#### `user`
+
+```json
+{
+  "type": "user",
+  "id":   "@purpledog:half-shot.uk",
+}
+```
+
+#### `group`
+
+```json
+{
+  "type": "group",
+  "id":   "+silly.bot.committee:t2bot.io",
 }
 ```
 
 | key     | type     | value                                          | Default      |
 |---------|----------|------------------------------------------------|--------------|
-| type    | string   | One of "room", "event", "user"                 | Non-optional |
-| room_id | string   | A room ID when the type is "event"             | ""           |
+| type    | string   | One of "room", "event", "user" or "group"      | Non-optional |
+| room_id | string   | A room ID when the type is "event"             |              |
 | via [1] | string[] | A set of servers needed for "room" and "event" | []           |
 | id      | string   | A room ID, event ID, user ID                   | Non-optional |
 
