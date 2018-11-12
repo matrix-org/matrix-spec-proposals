@@ -27,7 +27,7 @@ The event type should be `m.openondevice` and the `EventContent` should be:
 ```json
 {
   "type": "room",
-  "via": "half-shot.uk"
+  "via": "half-shot.uk",
   "id": "!someneatlookingroom:matrix.org",
 }
 ```
@@ -38,7 +38,7 @@ The event type should be `m.openondevice` and the `EventContent` should be:
 {
   "type": "event",
   "room_id": "!someneatlookingroom:matrix.org",
-  "via": "half-shot.uk"
+  "via": "half-shot.uk",
   "id":   "$andthiseventtoo:half-shot.uk",
 }
 ```
