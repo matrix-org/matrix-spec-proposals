@@ -28,11 +28,16 @@ The event type should be `m.openondevice` and the `EventContent` should be:
 }
 ```
 
-| key | type | value | Default |
-|---------|--------|------------------------------------|----------------|
-| type    | string | "room", "event", "user"            | Non-optional   |
-| room_id | string | A room ID when the type is "event" | ""             |
-| id      | string | A room ID, event ID, user ID       | Non-optional   |
+| key     | type     | value                                          | Default      |
+|---------|----------|------------------------------------------------|--------------|
+| type    | string   | One of "room", "event", "user"                 | Non-optional |
+| room_id | string   | A room ID when the type is "event"             | ""           |
+| via [1] | string[] | A set of servers needed for "room" and "event" | []           |
+| id      | string   | A room ID, event ID, user ID                   | Non-optional |
+
+* [1] This is explained further in [MSC1704](https://github.com/matrix-org/matrix-doc/pull/1704). 
+  We will not address the usage of `via` in this proposal but make the assumption that it will be
+  part of the spec by the point MSC1716 is considered.
 
 The recipient user ID for `/sendToDevice` should always be the authenticated user. *Clients* who receive this event from another sender MUST ignore it.
 
