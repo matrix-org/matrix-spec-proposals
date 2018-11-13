@@ -84,7 +84,7 @@ is beneficial and not considered a significant problem because it will lead to a
 can follow.
 
 
-# Security considerations
+## Security considerations
 
 *Some proposals may have some security aspect to them that was addressed in the proposed solution. This
 section is a great place to outline some of the security-sensitive components of your proposal, such as
