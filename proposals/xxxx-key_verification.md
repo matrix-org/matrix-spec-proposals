@@ -1,0 +1,126 @@
+# Key verification mechanisms
+
+Key verification is an essential part of ensuring that end-to-end encrypted
+messages are secure.  Matrix may support multiple verification methods that
+require sending events; in fact, two such methods have already been proposed.
+
+This proposal tries to present a common framework for verification methods to
+use, and presents a way to request key verification.
+
+## Proposal
+
+Each key verification method is identified by a name.  Verification method
+names defined in the Matrix spec will begin with `m.`, and verification method
+names that are not defined in the Matrix spec must be namespaced following the
+Java package naming convention.
+
+If Alice wants to verify keys with Bob, Alice's device may send `to_device`
+events to Bob's devices with the `type` set to `m.key.verification.request`, as
+described below.  The event lists the verification methods that Alice's device
+supports. Upon receipt of this message, Bob's client should prompt him to
+verify keys with Alice using one of the applicable methods.  In order to avoid
+displaying stale key verification prompts, if Bob does not interact with the
+prompt, it should be automatically hidden 10 minutes after the message is sent
+(according to the `timestamp` field), or 2 minutes after the client receives
+the message, whichever comes first.  The prompt should also be hidden if an
+appropriate `m.key.verification.cancel` message is received.  If Bob chooses to
+reject the key verification request, Bob's client should send a
+`m.key.verification.cancel` message to Alice's device.  If Bob's client does
+not understand any of the methods offered, it should display a message to Bob
+saying so.
+
+To initiate a key verification process, Bob's device sends a `to_device` event
+to one of Alice's devices with the `type` set to `m.key.verification.start`.
+This may either be done in response to an `m.key.verification.request` message,
+or can be done independently.  If Alice's device receives an
+`m.key.verification.start` message in response to an
+`m.key.verification.request` message, it should send an
+`m.key.verification.cancel` message to Bob's other devices that it had
+originally sent an `m.key.verification.request` to, in order to cancel the key
+verification request.
+
+Verification methods can define other events required to complete the
+verification.  Event types for verification methods defined in the Matrix spec
+should be in the `m.key.verification` namespace.  Event types that are not
+defined in the Matrix spec must be namespaced following the Java package naming
+convention.
+
+Alice's or Bob's devices can cancel a key verification process or a key
+verification request by sending a `to_device` event with `type` set to
+`m.key.verification.cancel`.
+
+### Event Definitions
+
+#### `m.key.verification.request`
+
+Requests a key verification.
+
+Properties:
+
+- `from_device` (string): the device ID of the device requesting verification.
+- `transaction_id` (string): an identifier for the verification request.  Must
+  be unique with respect to the pair of devices.
+- `methods` ([string]): the verification methods supported by the sender.
+- `timestamp` (integer): the time when the request was made.  If the timestamp
+  is in the future (by more than 5 minutes, to allow for clock skew), or more
+  than 10 minutes in the past, then the message must be ignored.
+
+#### `m.key.verification.start`
+
+Begins a key verification process.
+
+Properties:
+
+- `method` (string): the verification method to use.
+- `from_device` (string): The device ID of the device starting the verification
+  process.
+- `transaction_id` (string): an identifier for the verification process.  If
+  this message is sent in reponse to an `m.key.verification.request` event, then
+  it must use the same `transaction_id` as the one given in the
+  `m.key.verification.request`.
+
+Key verification methods can define additional properties to be included.
+
+#### `m.key.verification.cancel`
+
+Cancels a key verification process or a key verification request.  Upon
+receiving an `m.key.verification.cancel` message, the receiving device must
+cancel the verification or the request.  If it is a verification process that
+is cancelled, or a verification request initiated by the recipient of the
+cancellation message, the device should inform the user of the reason.
+
+Properties:
+
+- `transaction_id` (string): the identifier for the request or key verification
+  to cancel.
+- `code` (string): machine-readable reason for cancelling.  Possible reasons
+  are:
+  - `m.user`: the user cancelled the verification.
+  - `m.timeout`: the verification process has timed out.  Different verification
+    methods may define their own timeouts.
+  - `m.unknown_transaction`: the device does not know about the given transaction
+    ID.
+  - `m.unknown_method`: the device does not know how to handle the given method.
+    This can be sent in response to an `m.key.verification.start` message, or
+    can be sent in response to other verification method-specific messages.
+  - `m.unexpected_message`: the device received an unexpected message.  For
+    example, a message for a verification method may have been received when it
+    was not expected.
+- `reason` (string): human-readable reason for cancelling.  This should only be
+  used if the recieving client does not understand the code given.
+
+Verification methods may define their own additional cancellation codes.
+Cancellation codes defined in the Matrix spec will begin with `m.`; other
+cancellation codes must be namespaced following the Java package naming
+convention.
+
+## Tradeoffs
+
+## Potential issues
+
+## Security considerations
+
+## Conclusion
+
+This proposal presents common event definitions for use by key verification
+methods and defines a way for users to request key verification.
