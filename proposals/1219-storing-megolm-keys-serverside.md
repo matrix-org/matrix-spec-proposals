@@ -4,7 +4,7 @@ Storing megolm keys serverside
 Background
 ----------
 
-A user who uses end-to-end encyrption will usually have many inbound session
+A user who uses end-to-end encyrption will usually have many inbound group session
 keys.  Users who log into new devices and want to read old messages will need a
 convenient way to transfer the session keys from one device to another.  While
 users can currently export their keys from one device and import them to
@@ -102,10 +102,10 @@ settings.
 
 ### Recovery key
 
-The recovery key can either be saved by the user directly, or stored encrypted
-on the server (as proposed in
-[MSC1687](https://github.com/matrix-org/matrix-doc/issues/1687)).  If the key
-is saved directly by the user, then the code is constructed as follows:
+The recovery key can be saved by the user directly, stored encrypted on the
+server (as proposed in
+[MSC1687](https://github.com/matrix-org/matrix-doc/issues/1687)), or both.  If
+the key is saved directly by the user, then the code is constructed as follows:
 
 1. The 256-bit curve25519 private key is prepended by the bytes `0x8B` and
    `0x01`
