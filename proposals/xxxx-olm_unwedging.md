@@ -1,0 +1,45 @@
+# Olm unwedging
+
+Olm sessions sometimes get out of sync, resulting in undecryptable messages.
+This proposal documents a method for devices to create a new session to replace
+the broken session.
+
+## Proposal
+
+When a device receives an olm-encrypted message that it cannot decrypt, it
+should assume that the olm session has become corrupted and create a new olm
+session to replace it.  It should then send a dummy message, using that
+session, to the other party in order to inform them of the new session.  To
+send a dummy message, clients may send an event with type `m.dummy`, and with
+empty contents.
+
+If the corrupted session has already been replaced, the receiving device should
+do nothing, under the assumption that the message from the corrupted session
+was sent before the sender was informed of the replacement session, in order to
+avoid creating too many extra sessions.
+
+The spec currently says, "If a client has multiple sessions established with
+another device, it should use the session from which it last received a
+message." (the last paragraph of the [`m.olm.v1.curve25519-aes-sha2`
+section](https://matrix.org/docs/spec/client_server/r0.4.0.html#m-olm-v1-curve25519-aes-sha2)).
+When comparing the time of the last received message for each session, the
+client should consider only consider messages that were successfully decrypted,
+and for sessions that have never received a message, it should use the creation
+time of the session.  The spec will be changed to read:
+
+> If a client has multiple sessions established with another device, it should
+> use the session from which it last received and successfully decrypted a
+> message.  For these purposes, a session that has not received any messages
+> should consider its creation time to be the time that it last received a
+> message.
+
+## Tradeoffs
+
+## Potential issues
+
+## Security considerations
+
+## Conclusion
+
+This proposal outlines how wedged olm sessions can be replaced by a new
+session.
