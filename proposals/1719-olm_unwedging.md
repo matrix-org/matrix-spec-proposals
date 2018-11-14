@@ -13,10 +13,11 @@ session, to the other party in order to inform them of the new session.  To
 send a dummy message, clients may send an event with type `m.dummy`, and with
 empty contents.
 
-If the corrupted session has already been replaced, the receiving device should
-do nothing, under the assumption that the message from the corrupted session
-was sent before the sender was informed of the replacement session, in order to
-avoid creating too many extra sessions.
+In order to avoid creating too many extra sessions, a client should rate-limit
+the number of new sessions it creates per device that it receives a message
+from; the client should not create a new session with another device if it has
+already created one for that given device in the past 1 hour. (TODO: is 1 hour
+the right amount of time?)
 
 The spec currently says, "If a client has multiple sessions established with
 another device, it should use the session from which it last received a
