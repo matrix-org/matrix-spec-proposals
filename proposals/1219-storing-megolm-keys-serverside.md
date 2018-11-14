@@ -17,10 +17,9 @@ To help resolve this, we *optionally* let clients store an encrypted copy of
 their megolm inbound session keys on the homeserver.  Clients can keep the
 backup up to date, so that users will always have the keys needed to decrypt
 their conversations.  The backup could be used not just for new logins, but
-also to try to fix UISIs that occur after a device has logged in (as an
-alternative to key sharing), or to support clients with limited local storage
-for keys (clients can store old keys to the backup, and remove their local
-copy, retrieving the key from the backup when needed).
+also to support clients with limited local storage for keys (clients can store
+old keys to the backup, and remove their local copy, retrieving the key from
+the backup when needed).
 
 To recover keys from the backup, a user will need to enter a recovery key to
 decrypt the backup.  The backup will be encrypted using public key
