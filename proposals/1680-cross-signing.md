@@ -103,11 +103,7 @@ Properties:
 - `user_id` (string): Required. The ID of the user whose device has been verified
 - `device_id` (string): Required. The ID of the device that has been verified.
 - `keys` ({string: string}): Required. The public identity keys that have been
-  verified. Note that this does not have to be the full set of device keys.
-  For example, this might only contain the `ed25519` key, whereas the device
-  information contains both an `ed25519` and a `curve25519` key.  However, in
-  this case, the `curve25519` key will be signed by the `ed25519` key, so this
-  attestation would still allow the `curve25519` key to be trusted.
+  verified. This will normally just be the signing key (e.g. the ed25519 key).
 - `state` (string): Required. The verification state. One of "verified" or
   "revoked".
 - `signatures` (object): signatures of the above properties.
