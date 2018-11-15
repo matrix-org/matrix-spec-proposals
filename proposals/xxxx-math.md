@@ -47,8 +47,8 @@ Example (with line breaks and indentation added to `formatted_body` for clarity)
       <math>
         <semantics>
           <mi>sin</mi><mo>&#x2061;</mo><mfenced><mi>x</mi></mfenced><mo>=</mo><mfrac><mi>a</mi><mi>b</mi></mfrac>
-          <annotation encoding="application/x-latex">\\sin(x)=\\frac{a}{b}</annotation>
-          <annotation encoding="text/html">
+          <annotation encoding=\"application/x-latex\">\\sin(x)=\\frac{a}{b}</annotation>
+          <annotation encoding=\"text/html\">
             sin(<i>x</i>)=<sup><i>a</i></sup>⁄<sub><i>b</i></sub>
           </annotation>
         </semantics>
