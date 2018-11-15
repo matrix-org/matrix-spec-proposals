@@ -89,6 +89,9 @@ endpoint:
   devices, this array will only include attestations or revocations made by
   Alice's devices or by Bob's other devices.
 
+  Attestations that have the same contents (other than the `signatures`
+  property) may be combined by the server by changing the `signatures` property
+  to include multiple signatures for the given object contents.
 TODO: `keys/query` may need to include devices that have been logged out, in
 order to avoid unexpectedly breaking trust chains, so we may want to recommend
 that devices remain in the result for *n* days after they log out?  However, we
