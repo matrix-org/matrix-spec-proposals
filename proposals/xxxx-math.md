@@ -1,0 +1,207 @@
+# Support for displaying math(s) in messages
+
+Some users need to communicate using mathematical notation.  Matrix should
+provide a common format for sending mathematical notation so that users using
+different clients can communicate with each other.
+
+This proposal defines a format for sending messages with mathematical
+notation.  Note that it does not define how to input mathematical notation;
+clients are free to use different input methods, as long as they can generate
+the required message format.
+
+See also:
+
+- https://github.com/vector-im/riot-web/issues/1945
+
+## Proposal
+
+The HTML subset supported by Matrix in the `formatted_body` property of
+messages with `"format": "org.matrix.custom.html"` will be extended to support
+[Presentation MathML](https://www.w3.org/TR/MathML3/chapter3.html).
+Presentation MathML is used rather than Content MathML because Presentation
+MathML seems to be better supported.  Other markup formats can be transmitted
+along with the MathML using the [Annotation
+framework](https://www.w3.org/TR/MathML3/chapter5.html).
+
+In other words, let <i>H</i><sub>M</sub> be the HTML subset currently supported
+by Matrix in the `formatted_body` property of messages with `"format":
+"org.matrix.custom.html"`, and let <i>M</i><sub><i>P</i></sub> be Presentation
+MathML.  We propose to extend the HTML subset supported by Matrix by allowing
+clients to support
+<i>H</i>′<sub>M</sub>=<i>H</i><sub>M</sub>∪<i>M</i><sub><i>P</i></sub>.  (Note
+that <i>A</i>⊂<i>M</i><sub><i>P</i></sub>, where <i>A</i> is the Annotation
+framework.)
+
+Clients should replace the mathematical notation with something more
+human-readable in the `body` property of the message.  However, this proposal
+does not specify what form this should take.
+
+Example (with line breaks and indentation added to `formatted_body` for clarity):
+
+```javascript
+{
+  "content": {
+    "body": "This is an equation: sin(x)=a/b",
+    "format": "org.matrix.custom.html",
+    "formatted_body": "This is an equation:
+      <math>
+        <semantics>
+          <mi>sin</mi><mo>&#x2061;</mo><mfenced><mi>x</mi></mfenced><mo>=</mo><mfrac><mi>a</mi><mi>b</mi></mfrac>
+          <annotation encoding="application/x-latex">\\sin(x)=\\frac{a}{b}</annotation>
+          <annotation encoding="text/html">
+            sin(<i>x</i>)=<sup><i>a</i></sup>⁄<sub><i>b</i></sub>
+          </annotation>
+        </semantics>
+      </math>",
+    "msgtype": "m.text"
+  },
+  "event_id": "$eventid:example.com",
+  "origin_server_ts": 1234567890
+  "sender": "@alice:example.com",
+  "type": "m.room.message",
+  "room_id": "!soomeroom:example.com"
+}
+```
+
+## Other solutions
+
+* LaTeX (or L<sup>A</sup>T<sub>E</sub>X): LaTeX is a popular method for writing
+  mathematical texts, and is fairly readable.  However, "LaTeX" is not a single
+  format; there are several popular extensions such as AMS-LaTeX that different
+  implementations may or may not support.  There are also certain (La)TeX
+  commands that should probably not be supported, such as `\newcommand`, as it
+  could be used create an infinite loop, which may crash an implementation that
+  is not sufficiently careful.  (La)TeX is Turing complete, which is, from a
+  security standpoint, not a good property for transmitting documents.
+  Therefore using LaTeX as the format for sending mathematical notation in
+  Matrix events would require specifying which (sub|super)set of LaTeX should
+  be supported.
+
+  An alternative to specifying the set of supportend commands may be to allow
+  clients to send arbitrary LaTeX, and if it contains a command that the
+  receiving client does not support, then the receiving client should fall back
+  to displaying the raw LaTeX, relying on the readability of LaTeX and/or the
+  fact that people who are communicating about more complicated mathematics are
+  likely to be able to understand the requisite LaTeX.  This may give an
+  inconsistent user experience, but would also provide clients that are unable
+  to support proper display of mathematics with an easy fallback.  This also
+  does not address security concerns, and it would be up to client authors to
+  ensure that their code for displaying mathematics, or the library that they
+  use, is not vulnerable to any potential attacks.
+
+  If LaTeX is used, then it must be delimited in some way, most likely by
+  wrapping it in some element.  One option would be to use a custom
+  Matrix-specific element such as `<mx-math>` (this is similar to how replies
+  use the `<mx-reply>` element).  Other options include using a `<span>` with a
+  custom class (such as `<span class="math">`), or a `<script>` element
+  (e.g. `<script type="math/tex">`, as MathJax uses).  The containing element
+  may also provide a facility for providing fallbacks for clients that do not
+  support mathematical notation.  There is much bikeshedding opportunity here.
+
+  For comparison, the same example above, sent using a LaTeX method, might look
+  like (again, with line breaks and indentation added to the `formatted_body`
+  for clarity):
+
+  ```javascript
+  {
+    "content": {
+      "body": "This is an equation: sin(x)=a/b",
+      "format": "org.matrix.custom.html",
+      "formatted_body": "This is an equation:
+        <mx-math latex=\"\\sin(x)=\\frac{a}{b}\">
+          sin(<i>x</i>)=<sup><i>a</i></sup>⁄<sub><i>b</i></sub>
+        </mx-math>",
+      "msgtype": "m.text"
+    },
+    "event_id": "$eventid:example.com",
+    "origin_server_ts": 1234567890
+    "sender": "@alice:example.com",
+    "type": "m.room.message",
+    "room_id": "!soomeroom:example.com"
+  }
+  ```
+
+  In this example, the `<mx-math>` element uses a `latex` attribute to convey
+  the LaTeX markup, and the contents of the element (in this case, a rendering
+  of the equation in HTML) can be used as a fallback.
+
+* Images: Mathematics can be sent as an image, rendered by the sender.  This
+  was a common method for displaying mathematical notation in web pages prior
+  to the development of more modern methods.  This has the advantages of
+  ensuring that the recipient sees the math exactly as intended, and not
+  requiring the recipient to have any special support for mathematical
+  notation.  However, it has several disadvantages, such as poor accessibility,
+  the mathematical notation may not be properly aligned with the text, and
+  retrieving images would require extra HTTP requests.
+
+* Unicode: Some simple mathematics can be written purely with unicode
+  characters and formatting, such as ∑<sub>*n*∊ℕ</sub>*x*<sup>-2</sup>=2.  This
+  method has the advantage of not requiring any changes to the protocol.
+  However, this only works for certain notation when using only the subset of
+  HTML allowed by Matrix, and requires that users have a font installed that
+  supports the necessary characters.  Most importantly, one cannot write
+  matrices using this method, and failing to support matrices in a protocol
+  called "Matrix" would be a disaster.
+
+## Potential issues
+
+### Lack of libraries for displaying mathematics
+
+In general, there are not many libraries for displaying mathematics:
+
+* On the web-based platforms, the most commonly-used methods are MathJax (which
+  can support LaTeX, asciimath, and MathML inputs) and KaTeX (which can support LaTeX
+  inputs).
+* Firefox and WebKit support MathML natively (though not perfectly, especially
+  with Content MathML), but Chrome and IE/Edge do not.
+* There does not seem to be a good mobile library for displaying mathematical
+  notation that does not involve a web view; the most common suggestion for
+  displaying mathematics on Android is to use MathJax in a web view, and on iOS
+  most suggestions are to use MathJax or MathML in a web view.
+* Two other libraries that could be used for MathML are
+  [pMML2SVG](http://pmml2svg.sourceforge.net/) and
+  [lasem](https://wiki.gnome.org/Projects/Lasem).  However, both of these seem to
+  be largely unmaintained.
+
+### Fallbacks
+
+MathML does not, by itself, lend itself well to providing an easy fallback.
+The usual approach in HTML of ignoring unknown elements may cause the contents
+to be interpreted incorrectly.  For example, a client that does not support the
+`<msup>` element would render `<msup><mi>x</mi><mn>2</mn></msup>` as "*x*2"
+rather than as "*x*<sup>2</sup>", which will be read as "*x* times 2" rather
+than "*x* squared".  This is one major disadvantage that MathML has compared
+with LaTeX, as falling back to displaying the raw LaTeX when faced input that
+cannot be handled usually leads to a rendering that can still be understood
+correctly.  (This is not always true, however.  For example `x^22` is
+"*x*<sup>2</sup>2", rather than "*x*<sup>22</sup>" as might normally be
+expected.)
+
+One solution would be to use the annotation framework to provide fallbacks.
+For example, clients could:
+
+* display the MathML if it understands all elements and attributes; otherwise
+* display the `application/x-latex` annotation as LaTeX if it exists and the
+  client understands all the LaTeX commands; otherwise
+* display the `text/html` annotation as HTML if it exists and the client
+  understands all elements and attributes; otherwise
+* display an `image/*` annotation if it exists and refers to an `mxc:` URL, and
+  the client understands the format; otherwise
+* display the `application/x-latex` annotation as plain text if it exists;
+  otherwise
+* display an error.
+
+This method of providing fallbacks may increase the chance that the receiving
+client will be able to display something that looks nice to the user, but does
+so by bloating the message.
+
+## Security considerations
+
+Displaying mathematical notation is hard; client authors will need to ensure
+that the mathematical display code does not introduce vulnerabilities when
+presented with malicious input.
+
+## Conclusion
+
+Matrix should support sending messages with mathematical notation.  We propose
+to do this by extending the existing message format using Presentation MathML.
