@@ -106,7 +106,30 @@ Properties:
   verified. This will normally just be the signing key (e.g. the ed25519 key).
 - `state` (string): Required. The verification state. One of "verified" or
   "revoked".
-- `signatures` (object): signatures of the above properties.
+- `signatures` ({string: {string: string}}): A map from user ID, to a map
+  from <algorithm>:<device_id> to the signature.  The signature is calculated
+  as described in [Signing
+  JSON](https://matrix.org/docs/spec/appendices.html#signing-json)
+
+Example:
+
+Alice's Osborne 2 verifies Bob's Dynabook
+
+```json
+{
+  "user_id": "@bob:example.com",
+  "device_id": "ABCDEFG",
+  "keys": {
+    "ed25519": "base64+encoded+key"
+  },
+  "state": "verified",
+  "signatures": {
+    "@alice:example.org": {
+      "ed25519:ZYXWVUT": "base64+encoded+signature"
+    }
+  }
+}
+```
 
 #### Additions to extensions to /sync
 
@@ -117,7 +140,8 @@ This proposal will change the description of the `changed` parameter in the
 
 > List of users who have updated their device identity keys, or who now share
 > an encrypted room with the client, or who have received additional
-> attestations or revocations since the previous sync response.
+> attestations or revocations that are visible to the user since the previous
+> sync response.
 
 TODO: S2S stuff
 
