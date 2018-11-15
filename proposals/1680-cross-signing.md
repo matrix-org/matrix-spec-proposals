@@ -159,6 +159,16 @@ treated with caution, and may require manual intervention to sort out.
 TODO: we probably need to spell out in more detail how revocations should be
 handled.
 
+Publishing attestations leaks metadata to server operators about what users
+know each other.  In order to address this, clients may give users the option
+of whether to publish attestations or not.
+
+A malicious hommeserver is able to prevent distribution of revocations.  For
+example, a malicious user who takes control of a user's device *and* who
+controls the user's homeserver could prevent revocations on that device from
+being published, so that other users would not be aware that the device has
+been compromised.
+
 Other Issues
 ------------
 
