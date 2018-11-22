@@ -17,7 +17,7 @@ Accordingly, we should rename `cas` to `sso`.
 
 1. `m.login.sso` should be defined as a valid login type for return from `GET
    /login`. (We should probably mention `m.login.cas` in the spec while we are
-   there).
+   there.)
 
 2. When a client wishes to use the SSO login type, it should redirect to
    `/_matrix/client/r0/login/sso/redirect` (instead of
@@ -27,11 +27,6 @@ Accordingly, we should rename `cas` to `sso`.
    `/_matrix/client/r0/login/cas/redirect`: they should issue a redirect to
    their configured single-sign-on system.
 
-4. Servers should probably rename the post-authentication callback endpoint
-   `/_matrix/client/r0/login/sso/ticket` instead of
-   `/_matrix/client/r0/login/cas/ticket`. Note, however, that this name is only
-   a suggestion: the full name of this endpoint is implementation-specific.
-
-5. Servers which support `m.login.sso` should make sure they update their [login
+4. Servers which support `m.login.sso` should make sure they update their [login
    fallback page](https://matrix.org/docs/spec/client_server/r0.4.0.html#login-fallback)
    to understand the new login type.
