@@ -104,7 +104,7 @@ paths:
             properties:
               room_id:
                 type: string
-                description: The joined room id
+                description: The joined room ID.
             required: ["room_id"]
         403:
           description: |-
@@ -216,7 +216,7 @@ paths:
             properties:
               room_id:
                 type: string
-                description: The joined room id
+                description: The joined room ID.
             required: ["room_id"]
         403:
           description: |-
