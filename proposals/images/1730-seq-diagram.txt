@@ -1,0 +1,17 @@
+participantspacing equal
+
+Client->Portal:""POST /_matrix/client/r0/login
+activate Portal
+Portal->Target HS:""POST /_matrix/client/r0/login
+activate Target HS
+Target HS-->Portal:""{"access_token": "...", ...}
+deactivate Target HS
+Portal->Client:""{"base_cs_url": "https://targeths",\n"access_token": "...", ...}
+deactivate Portal
+
+Client->Target HS: ""/_matrix/client/versions
+activate Target HS
+Target HS-->Client: ""{"versions": [...]}
+deactivate Target HS
+
+Client<->Target HS: Further C-S APIs
