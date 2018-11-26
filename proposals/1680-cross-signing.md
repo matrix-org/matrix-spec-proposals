@@ -62,7 +62,7 @@ user, or may allow the user to disable this functionality completely.
 
 TODO: should Device A then publish an attestation for Device B?
 
-### API
+### Client-Server API
 
 #### Additions to `POST /_matrix/client/r0/keys/upload`
 
@@ -194,7 +194,53 @@ This proposal will change the description of the `changed` parameter in the
 > attestations or revocations that are visible to the user since the previous
 > sync response.
 
-TODO: S2S stuff
+#### Additions to `GET /_matrix/client/r0/keys/changes`
+
+This proposal will change the [`GET /_matrix/client/r0/keys/changes`](GET
+/_matrix/client/r0/keys/changes) endpoint to include in the `changed` parameter
+of the result users who have new attestations that are visible to the calling
+user.
+
+### Federation API
+
+#### Additions to `POST /_matrix/federation/v1/user/keys/query`
+
+This proposal will add an additional property to the `UnsignedDeviceInfo` type
+in the [`POST
+/_matrix/federation/v1/user/keys/query`](https://matrix.org/docs/spec/server_server/unstable.html#post-matrix-federation-v1-user-keys-query)
+endpoint:
+
+- `attestations` (`[Attestation]` (see above)): The published attestations or
+  revocations for the device.  This array MUST only include the attestations or
+  revocations made by devices belonging to the owner of the device being queried.
+
+  Attestations that have the same contents (other than the `signatures`
+  property) may be combined by the server by changing the `signatures` property
+  to include multiple signatures for the given object contents.
+
+#### Additions to `GET /_matrix/federation/v1/user/devices/{userId}`
+
+This proposal will add an additional property to the `User Device` type, for
+the `devices` return parameter in the [`GET
+/_matrix/federation/v1/user/devices/{userId}`](https://matrix.org/docs/spec/server_server/unstable.html#post-matrix-federation-v1-user-keys-query)
+endpoint:
+
+- `attestations` (`[Attestation]` (see above)): The published attestations or
+  revocations for the device.  This array MUST only include the attestations or
+  revocations made by devices belonging to the owner of the device being queried.
+
+  Attestations that have the same contents (other than the `signatures`
+  property) may be combined by the server by changing the `signatures` property
+  to include multiple signatures for the given object contents.
+
+#### Additions to `m.device_list_update` schema
+
+A new field will be added to the `m.device_list_update` EDU schema:
+
+- `attestations` (`[Attestation]` (see above)): The published attestations or
+  revocations for the device.  This array MUST only include the attestations or
+  revocations made by devices belonging to the owner of the device being
+  queried.
 
 Tradeoffs
 ---------
