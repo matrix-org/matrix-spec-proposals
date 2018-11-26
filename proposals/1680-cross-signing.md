@@ -123,7 +123,7 @@ Example return value:
               "user_id": "@alice:example.com",
               "device_id": "JLAFKJWSCS",
               "keys": {
-                "ed25519": "base64+encoded+key"
+                "ed25519:JLAFKJWSCS": "base64+encoded+key"
               },
               "state": "verified",
               "signatures": {
@@ -171,7 +171,7 @@ Alice's Osborne 2 verifies Bob's Dynabook
   "user_id": "@bob:example.com",
   "device_id": "ABCDEFG",
   "keys": {
-    "ed25519": "base64+encoded+key"
+    "ed25519:ABCDEFG": "base64+encoded+key"
   },
   "state": "verified",
   "signatures": {
