@@ -1,10 +1,13 @@
 # MSC1730: Mechanism for redirecting to an alternative server during login
 
 Complex homeserver deployments may consist of several homeserver instances,
-where the HS to be used depends on the individual user, and is determined at
-login time.
+where the HS to be used for a user session is determined at login time. The HS
+might be chosen based on any of a number of factors, such as the individual
+user, or a simple round-robin to load-balance.
 
-It may therefore be useful to provide a mechanism to tell clients which
+One solution to this is for users to log in via a "portal server", which
+accepts the login request, and picks the server accordingly. This proposal
+suggests adding a field to the `/login` response which tells clients which
 endpoint they should use for the client-server (C-S) API after login.
 
 ## Proposal
@@ -12,27 +15,32 @@ endpoint they should use for the client-server (C-S) API after login.
 The response to `POST /_matrix/client/r0/login` currently includes the fields
 `user_id`, `access_token`, `device_id`, and the deprecated `home_server`.
 
-We should add to this an optional field `base_cs_url`, which gives a base URL
-for the client-server API.
+We should add to this a `base_cs_url` field, which SHOULD be returned by
+compliant homeservers, which gives a base URL for the client-server API.
 
 As with
 [.well-known](https://matrix.org/docs/spec/client_server/r0.4.0.html#well-known-uri),
 clients would then add `/_matrix/client/...` to this URL to form valid C-S
 endpoints.
 
+One way that this could be used is that the portal server proxies the `/login`
+request, and passes it on to the target HS, as shown in the sequence diagram below:
+
+![Sequence diagram](images/1730-seq-diagram.svg)
+
+Alternatively, the portal server could redirect the original `login` request to
+the target HS with a `307 Temporary Redirect` response:
+
+![Sequence diagram](images/1730-seq-diagram-2.svg)
+
 (Note that the deprecated `home_server` field gives the `server_name` of the
 relevant homeserver, which may be quite different to the location of the C-S
 API, so is not of use here. Further we cannot repurpose it, because (a) this
 might break existing clients; (b) it spells homeserver wrong.)
 
-A representative sequence diagram is shown below.
+### Notes on proxying vs redirecting
 
-![Sequence diagram](images/1730-seq-diagram.svg)
-
-### Potential issues
-
-A significant problem with the proposed architecture is that the portal server
-has to proxy the `/login` request, so that it can update the response. This
+Proxying the `/login` request as shown in the first sequence diagram above
 leads to the following concerns:
 
 * The target homeserver sees the request coming from the portal server rather
@@ -53,10 +61,18 @@ leads to the following concerns:
   to some extent in this architecture, it is unclear how much of a concern this
   really is.)
 
-An alternative implementation of the portal server would be for the portal
-server to redirect the `/login` request with a 307 response. This solves the
-above problems, but may reduce flexibility, or require more state to be managed
-on the portal server [1].
+On the other hand, redirecting it with a `307` response may reduce flexibility,
+or require more state to be managed on the portal server [1]. Furthermore
+support for `307` redirects among user-agents may vary
+([RFC2616](https://tools.ietf.org/html/rfc2616#section-10.3.8) said "If the 307
+status code is received in response to a request other than GET or HEAD, the
+user agent MUST NOT automatically redirect the request unless it can be
+confirmed by the user", though this appears to have been dropped by
+[RFC7231](https://tools.ietf.org/html/rfc7231#section-6.4.7) and I am unaware
+of any current browsers which do not follow `307` redirects.)
+
+In any case, this is an implementation decision; portal servers can use
+whichever method best suits their needs.
 
 ## Tradeoffs
 
@@ -88,11 +104,8 @@ problems:
   This adds latency and overhead, and complicates client implementations.
 
 * It complicates deployment, since each target server has to support a
-  `.well-known` lookup.
-
-* Since the portal already has knowledge of the location of the C-S API for the
-  target homeserver, and has mapped the login request onto the correct HS, it
-  feels redundant to have a separate mechanism which repeats that mapping.
+  `.well-known` lookup. (This is somewhat weak: target servers should
+  support `.well-known` lookups anyway.)
 
 ### Add an alternative redirection mechanism in the login flow
 

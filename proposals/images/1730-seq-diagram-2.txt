@@ -2,12 +2,13 @@ participantspacing equal
 
 Client->Portal:""POST /_matrix/client/r0/login
 activate Portal
-Portal->Target HS:""POST /_matrix/client/r0/login
-activate Target HS
-Target HS-->Portal:""{"base_cs_url": "http://targeths",\n"access_token": "...", ...}
-deactivate Target HS
-Portal->Client:""{"base_cs_url": "http://targeths",\n"access_token": "...", ...}
+Portal-->Client:""307"" redirect
 deactivate Portal
+
+Client->Target HS:""POST /_matrix/client/r0/login
+activate Target HS
+Target HS->Client:""{"base_cs_url": "http://targeths",\n"access_token": "...", ...}
+deactivate Target HS
 
 Client->Target HS: ""/_matrix/client/versions
 activate Target HS
