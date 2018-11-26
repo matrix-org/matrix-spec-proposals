@@ -74,7 +74,7 @@ of any current browsers which do not follow `307` redirects.)
 In any case, this is an implementation decision; portal servers can use
 whichever method best suits their needs.
 
-## Tradeoffs
+## Rejected solutions
 
 Alternative solutions might include:
 
