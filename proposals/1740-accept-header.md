@@ -18,16 +18,16 @@ Servers can support multiple encodings for both reading requests and sending res
 should read the `Accept` header [RFC7231](https://tools.ietf.org/html/rfc7231#section-5.3.2) from client
 and decide based on the rules provided in the RFC what is the best encoding they can support.
 
-If the rules of Accept fail (a satisfactory encoding could not be picked), the server should send a 
+If the rules of `Accept` fail (a satisfactory encoding could not be picked), the server SHOULD send a 
 `HTTP 406 Not Acceptable`.
 
-The implementation SHOULD also specify this error:
+If 406 is given, the server MUST also specify the set of acceptable formats described as:
 ```json
 {
-  "errcode": "M_CONTENT_TYPE_NOT_SUPPORTED",
-  "error": "..error message left to the discretion of the implementation.."
+  "accepts": "text/html;q=0.2 application/json"
 }
 ```
+where accepts is the set of acceptable encodings in `Accept` format.
 
 If the clients request contains a `Content-Type` header that the server does not support, 
 the server should respond with `HTTP 415 Unsupported Media Type` and an error of:
