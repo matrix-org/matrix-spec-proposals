@@ -49,13 +49,19 @@ An appropriate error may be displayed to the user.
 It is suggested (but not required), that clients first request `/_matrix/client/versions`  from the
 sever to ensure that `Accept` is acceptable and by doing so negotiate an appropriate encoding.
 
-## Tradeoffs
+## Alternative solutions
 
-I cannot think of another way to do this that brings in a benefit over this.
+### Negotiate transport(+encoding)
+
+It's clear that this proposal still limits Matrix to serving HTTP and are limited to doing
+HTTP+$encoding. We could expand the proposal to negoitating transport either from within a 
+HTTP header (which would `Upgrade` you to a different transport), .well-known or a SRV record rather 
+than limiting ourselves to `Accept`. The proposal does not currently look at negotiating transport as
+I believe the encoding should be negotiated within the transport and is a seperate proposal. 
 
 ## Potential issues
 
-This proposal does NOT specify any additional encoding formats for the time being, and could be dealt
+- This proposal does NOT specify any additional encoding formats for the time being, and could be dealt
 with in future by another proposal.
 
 # Security considerations
