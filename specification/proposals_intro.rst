@@ -1,3 +1,7 @@
+.. raw:: html
+
+ %proposalscssinjection%
+
 .. title:: Proposals for Spec Changes to Matrix
 
 .. contents:: Table of Contents
