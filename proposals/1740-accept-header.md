@@ -1,12 +1,12 @@
 # MSC 1740: Using the Accept header to select an encoding
 
-Matrix has always aimed to support many types of encoding However, in practice the only supported option
-is JSON. The assumption that all clients and servers make is that requests will be carried out in JSON.
+Matrix has always aimed to support many types of encoding. However, in practice the only supported option
+is `application/json`. The assumption that all clients and servers make is that requests will be carried out in `application/json`.
 This proposal aims to change that by using the `Accept` HTTP header to select the best encoding for the
 client and the server. This proposal doesn't attempt to use the same header for federation (S2S) endpoints,
 just for C2S endpoints.
 
-The reason for supporing multiple encodings other than JSON would be to open the door to more efficent
+The reason for supporing multiple encodings other than `application/json` would be to open the door to more efficent
 encoding methods in the future for the HTTP transport, for example CBOR which was found to have a 20%
 reduction in size. However, this proposal is not here to evaluate the merits of any one particular encoding.
 
@@ -45,7 +45,7 @@ message.
 ### Clients
 
 Clients SHOULD supply `Accept` to all requests they make, and set `Content-Type` to the encoding
-they intend to use. If a client doesn't supply an `Accept` header, then JSON must be presumed acceptable
+they intend to use. If a client doesn't supply an `Accept` header, then `application/json` must be presumed acceptable
 to that client.
 
 The client should not attempt to communicate with this homeserver if the response was 406, 
