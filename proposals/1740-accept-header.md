@@ -54,9 +54,6 @@ The client should not attempt to communicate with this homeserver if the respons
 because it will mean that neither party have a supported encoding type. 
 An appropriate error may be displayed to the user.
 
-It is suggested (but not required), that clients first request `/_matrix/client/versions`  from the
-sever to ensure that `Accept` is acceptable and by doing so negotiate an appropriate encoding.
-
 ## Alternative solutions
 
 ### Negotiate transport(+encoding)
