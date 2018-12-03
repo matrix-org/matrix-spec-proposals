@@ -53,11 +53,11 @@ sever to ensure that `Accept` is acceptable and by doing so negotiate an appropr
 
 ### Negotiate transport(+encoding)
 
-It's clear that this proposal still limits Matrix to serving HTTP and are limited to doing
-HTTP+$encoding. We could expand the proposal to negoitating transport either from within a 
-HTTP header (which would `Upgrade` you to a different transport), .well-known or a SRV record rather 
-than limiting ourselves to `Accept`. The proposal does not currently look at negotiating transport as
-I believe the encoding should be negotiated within the transport and is a seperate proposal. 
+It's clear that this proposal still limits Matrix to serving HTTP. We could expand the proposal 
+to negoitating transport either from within a HTTP header (which would `Upgrade` you to a different
+transport), .well-known or a SRV record rather than limiting ourselves to `Accept`. The proposal 
+does not currently look at negotiating transport as I believe the encoding should be negotiated 
+within the transport and is a seperate proposal. 
 
 ## Potential issues
 
