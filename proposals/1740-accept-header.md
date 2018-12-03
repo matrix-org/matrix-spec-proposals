@@ -18,20 +18,20 @@ Servers can support multiple encodings for both reading requests and sending res
 should read the `Accept` header [RFC7231](https://tools.ietf.org/html/rfc7231#section-5.3.2) from client
 and decide based on the rules provided in the RFC what is the best encoding they can support.
 
-If a encoding could not be found that satifies both parties, the server should default to JSON. This is
-due to historical reasons as Matrix has presumed JSON support in all implementations. Another benefit to this
-is that JSON is human-readable, which means that even basic clients such as `telnet` or `curl `will be
-able to read a response from a server.
+If the rules of Accept fail (a satisfactory encoding could not be picked), the server should send a 
+`HTTP 406 Not Acceptable`.
 
-To that end, we do NOT use `HTTP 406 Not Acceptable` which would imply that no content type was determined.
-
-Servers should send the correct `Content-Type` for the encoding they picked, even if the encoding
-is the fallback of JSON.
-
-If the client sends a request in an encoding the server does not support, the server should respond with
-`HTTP 415 Unsupported Media Type` and an error of:
-
+The implementation SHOULD also specify this error:
+```json
+{
+  "errcode": "M_CONTENT_TYPE_NOT_SUPPORTED",
+  "error": "..error message left to the discretion of the implementation.."
+}
 ```
+
+If the clients request contains a `Content-Type` header that the server does not support, 
+the server should respond with `HTTP 415 Unsupported Media Type` and an error of:
+```json
 {
   "errcode": "M_CONTENT_TYPE_NOT_SUPPORTED",
   "error": "..error message left to the discretion of the implementation.."
@@ -39,15 +39,16 @@ If the client sends a request in an encoding the server does not support, the se
 ```
 
 It is not important that the client can decode the response, because 415 should be clear that the server
-can not parse the request.
+can not parse the request. The error is still useful for developers who need a human readable
+message.
 
 ### Clients
 
 Clients should supply `Accept` to all requests they make, and set `Content-Type` to the encoding
 they intend to use.
 
-The client should not attempt to communicate with this homeserver if the response `Content-Type` was
-not acceptable to the client, because it will mean that neither party have a supported encoding type.
+The client should not attempt to communicate with this homeserver if the response was 406, 
+because it will mean that neither party have a supported encoding type. 
 An appropriate error may be displayed to the user.
 
 It is suggested (but not required), that clients first request `/_matrix/client/versions`  from the
