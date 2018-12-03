@@ -44,8 +44,9 @@ message.
 
 ### Clients
 
-Clients should supply `Accept` to all requests they make, and set `Content-Type` to the encoding
-they intend to use.
+Clients SHOULD supply `Accept` to all requests they make, and set `Content-Type` to the encoding
+they intend to use. If a client doesn't supply an `Accept` header, then JSON must be presumed acceptable
+to that client.
 
 The client should not attempt to communicate with this homeserver if the response was 406, 
 because it will mean that neither party have a supported encoding type. 
