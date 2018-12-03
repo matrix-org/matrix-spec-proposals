@@ -24,7 +24,9 @@ If the rules of `Accept` fail (a satisfactory encoding could not be picked), the
 If 406 is given, the server MUST also specify the set of acceptable formats described as:
 ```json
 {
+  "errcode": "M_NOT_ACCEPTABLE",
   "accepts": "text/html;q=0.2 application/json"
+  "error": "..error message left to the discretion of the implementation.."
 }
 ```
 where accepts is the set of acceptable encodings in `Accept` format.
