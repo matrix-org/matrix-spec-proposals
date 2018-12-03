@@ -6,6 +6,10 @@ This proposal aims to change that by using the `Accept` HTTP header to select th
 client and the server. This proposal doesn't attempt to use the same header for federation (S2S) endpoints,
 just for C2S endpoints.
 
+The reason for supporing multiple encodings other than JSON would be to open the door to more efficent
+encoding methods in the future for the HTTP transport, for example CBOR which was found to have a 20%
+reduction in size. However, this proposal is not here to evaluate the merits of any one particular encoding.
+
 ## Proposal
 
 ### Servers
