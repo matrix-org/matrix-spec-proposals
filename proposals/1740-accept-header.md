@@ -25,18 +25,23 @@ If 406 is given, the server MUST also specify the set of acceptable formats desc
 ```json
 {
   "errcode": "M_NOT_ACCEPTABLE",
-  "accepts": "text/html;q=0.2 application/json"
-  "error": "..error message left to the discretion of the implementation.."
+  "accepts": ["application/cbor" ,"application/json"],
+  "error": "..error message left to the discretion of the implementation..",
 }
 ```
-where accepts is the set of acceptable encodings in `Accept` format.
+where accepts is the set of acceptable encodings. This is NOT in `Accept` format because:
+
+1) Servers should specify a quality or ordering, as the negotiations are client led.
+2) The client should not need to write logic to parse the `Accept` response, merely pick the most appropriate encoding
+3) Servers know exactly what formats they support and do not need to wildcard the types.
 
 If the clients request contains a `Content-Type` header that the server does not support, 
 the server should respond with `HTTP 415 Unsupported Media Type` and an error of:
 ```json
 {
   "errcode": "M_CONTENT_TYPE_NOT_SUPPORTED",
-  "error": "..error message left to the discretion of the implementation.."
+  "accepts": ["application/cbor" ,"application/json"],
+  "error": "..error message left to the discretion of the implementation..",
 }
 ```
 
