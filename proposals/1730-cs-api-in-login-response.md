@@ -68,6 +68,12 @@ so users' MXids would look like `@user:ac.cdl` instead of
 
 However, there are circumstances where separate homeservers are required:
 
+* the departments may be only very loosely related
+* the departments may have privacy concerns
+* the dpeartments may be geographically distributed with slow or unreliable
+  links to the central system
+* load-balancing may be essential.
+
 ### Tell users the C-S API for their home homeserver
 
 We could tell Engineering users to configure their clients with
