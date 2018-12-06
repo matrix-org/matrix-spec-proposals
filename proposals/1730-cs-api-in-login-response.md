@@ -50,7 +50,7 @@ homeserver after login.
 
 A complete login flow is as shown in the following sequence diagram:
 
-![Sequence diagram](images/1730-seq-diagram.svg)
+![Sequence diagram](images/1730-seq-diagram.1.svg)
 
 Note that this flow is complicated by the out-of-band SAML2 authentication. We
 envisage that a similar technique could also be used for a standard
