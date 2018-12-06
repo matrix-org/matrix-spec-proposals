@@ -119,3 +119,34 @@ HS. The client would then repeat its `/login` request, and use the specified
 endpoint for all future C-S interaction.
 
 This approach would complicate client implementations.
+
+### Modify the single-sign-on flow
+
+It would be possible to modify the single-sign-on flow to allow an alternative
+homeserver to be specified for the final `m.login.token`-based call to
+`/login` (and subsequent C-S API calls).
+
+This is discussed in more detail in
+[MSC1731](https://github.com/matrix-org/matrix-doc/blob/rav/proposals/homeserver_in_sso_login/proposals/1731-redirect-in-sso-login.md).
+
+It has the disadvantage of limiting the solution to SSO logins. The solution
+presented in this proposal also extends to password-based logins.
+
+### Use a 3pid login flow
+
+It has been suggested that we could use a login flow based on third-party
+identifiers.
+
+In the current ecosystem, to do a 3pid login, clients must still be configured
+to send their `/login` request to a particular homeserver, which will then take
+them through an authentication process. We are therefore still left with the
+problem that we need to switch homeservers between login and initial sync.
+
+An alternative would be for clients to somehow know that they should go through
+the single-sign-on process *before* choosing a homeserver, and for the
+output of the single-sign-on process to indicate the homeserver to use. This
+would require either substantially customised Matrix clients, or substantial
+modifications to the login flow in Matrix, possibly involving authenticating
+against an identity server. The latter is something which could be considered,
+but the scope of the changes required make it impractical in the short/medium
+term.
