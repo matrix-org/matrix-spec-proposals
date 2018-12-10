@@ -488,6 +488,8 @@ event.
 
 # Appendix
 
+## Example 1
+
 The following is an example room DAG, where time flows down the page. We shall
 work through resolving the state at both _Message 2_ and _Message 3_.
 
@@ -541,6 +543,20 @@ Step 4: Iteratively applying the auth rules results in both topics passing the
 auth checks, and so the last topic, _Topic 4_, is chosen.
 
 This gives the resolved state at _Message 3_ to be _Topic 4_.
+
+
+## Example 2
+
+The following is an example room DAG, where time flows down the page. We assume
+event `B` is initially rejected by the server (due to not passing auth against
+the state, but does pass auth against its auth chain).
+
+![state-res-rejected.png](images/state-res-rejected.png)
+
+At `C` we first resolve the power levels, which results in `A`. When we then go
+to resolve the topics against the partially resolved state Bob has ops, and so
+the resolved state include the topic change `B`, even though it was initially
+rejected.
 
 
 ## Notes
