@@ -464,7 +464,7 @@ disagreeing on who is in the room.
 Intuitively using rejected events feels dangerous, however:
 
 1. Servers cannot arbitrarily make up state, since they still need to pass the
-   auth checks based on the events auth chain (e.g. they can't grant themselves
+   auth checks based on the event's auth chain (e.g. they can't grant themselves
    power levels if they didn't have them before).
 2. For a previously rejected event to pass auth there must be a set of state
    that allows said event. A malicious server could therefore produce a
