@@ -1,0 +1,43 @@
+# https://sequencediagram.org/
+
+participantspacing equal
+participant Client
+participant matrix.ac.cdl
+participant SAML2 SSO system
+participant matrix.eng.ac.cdl
+
+activate Client
+
+Client->matrix.ac.cdl:""GET /_matrix/client/r0/login""
+activate matrix.ac.cdl
+Client<--matrix.ac.cdl:"""type": "m.login.sso"""
+deactivate matrix.ac.cdl
+# Start SSO flow: displayed in browser for web clients, or via fallback auth in embeddedbrowser for others
+Client->matrix.ac.cdl:""GET /_matrix/client/r0/login/sso/redirect\n--?redirectUrl=<clienturl>--""
+activate matrix.ac.cdl
+matrix.ac.cdl->matrix.ac.cdl:Generate SAML request
+Client<--matrix.ac.cdl:302 to SSO system
+deactivate matrix.ac.cdl
+Client->SAML2 SSO system:""GET /single-sign-on\n--?SAMLRequest=<request>&RelayState=<clienturl>--""
+activate SAML2 SSO system
+Client<-->SAML2 SSO system: auth credentials
+SAML2 SSO system-->Client:auto-submitting HTML form including SAML Response
+deactivate SAML2 SSO system
+Client->matrix.ac.cdl:""POST /SAML2\n--SAMLResponse=<response>\nRelayState=<params>
+activate matrix.ac.cdl
+matrix.ac.cdl->matrix.ac.cdl:map user to HS
+Client<--matrix.ac.cdl:auto-submitting HTML form for target HS
+deactivate matrix.ac.cdl
+Client->matrix.eng.ac.cdl:""POST /SAML2\n--SAMLResponse=<response>\nRelayState=<clienturl>
+activate matrix.eng.ac.cdl
+Client<--matrix.eng.ac.cdl:302 to clienturl with\n""--?loginToken=<token>
+deactivate matrix.eng.ac.cdl
+Client->matrix.ac.cdl:""POST /_matrix/client/r0/login\n--{"type": "m.login.token","token": "<token>"}
+activate matrix.ac.cdl
+matrix.ac.cdl->matrix.eng.ac.cdl:""POST /_matrix/client/r0/login\n--{"type": "m.login.token", "token": "<token>"}
+activate matrix.eng.ac.cdl
+matrix.ac.cdl<--matrix.eng.ac.cdl:""--{"user_id": "@user:eng.ac.cdl", "access_token": "abc123",\n "well_known": {"m.homeserver": "..."}}
+deactivate matrix.eng.ac.cdl
+Client<--matrix.ac.cdl:""--{"user_id": "@user:eng.ac.cdl",\n "access_token": "abc123",\n "well-known": {"m.homeserver": "..."}}
+deactivate matrix.ac.cdl
+Client<-#0000FF>matrix.eng.ac.cdl: Matrix
