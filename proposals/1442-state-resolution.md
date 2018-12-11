@@ -471,7 +471,7 @@ Intuitively using rejected events feels dangerous, however:
    fork where it claims the state is that particular set of state, duplicate the
    rejected event to point to that fork, and send the event. The
    duplicated event would then pass the auth checks. Ignoring rejected events would therefore not
-   reduce any potential attack vectors
+   eliminate any potential attack vectors.
 
 We specifically don't use rejected auth events in the iterative auth checks, as
 in that case the auth events aren't re-authed like the rest of the events in the
