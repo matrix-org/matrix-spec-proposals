@@ -101,6 +101,11 @@ paths:
               "room_id": "!d41d8cd:matrix.org"}
           schema:
             type: object
+            properties:
+              room_id:
+                type: string
+                description: The joined room ID.
+            required: ["room_id"]
         403:
           description: |-
             You do not have permission to join the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejection are:
@@ -208,6 +213,11 @@ paths:
               "room_id": "!d41d8cd:matrix.org"}
           schema:
             type: object
+            properties:
+              room_id:
+                type: string
+                description: The joined room ID.
+            required: ["room_id"]
         403:
           description: |-
             You do not have permission to join the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejection are:
