@@ -467,7 +467,7 @@ Intuitively using rejected events feels dangerous, however:
    auth checks based on the events auth chain (e.g. they can't grant themselves
    power levels if they didn't have them before).
 2. For a previously rejected event to pass auth there must be a set of state
-   that allows said event. At which point, a malicious server could produce a
+   that allows said event. A malicious server could therefore produce a
    fork where it claims the state is that particular set of state, duplicate the
    rejected event to point to that fork, and send the event. At which point the
    duplicated event will pass auth. Therefore ignoring rejected events wouldn't
