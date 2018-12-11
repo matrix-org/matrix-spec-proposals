@@ -485,6 +485,11 @@ Definition:
             {
                 "kind": "room_member_count",
                 "is": "2"
+            },
+            {
+                "kind": "event_match",
+                "key": "type",
+                "pattern": "m.room.encrypted"
             }
         ],
         "actions": [
@@ -496,11 +501,6 @@ Definition:
             {
                 "set_tweak": "highlight",
                 "value": false
-            },
-            {
-                "kind": "event_match",
-                "key": "type",
-                "pattern": "m.room.encrypted"
             }
         ]
     }
@@ -569,7 +569,7 @@ Definition:
 Matches all encrypted events. Unlike other push rules, this rule cannot
 be matched against the content of the event by nature of it being encrypted.
 This causes the rule to be an "all or nothing" match where it either
-matches *all* events that are encrypted (in 1:1 rooms) or none.
+matches *all* events that are encrypted (in group rooms) or none.
 
 Definition:
 
