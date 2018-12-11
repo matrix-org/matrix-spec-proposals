@@ -18,36 +18,14 @@ Servers can support multiple encodings for both reading requests and sending res
 should read the `Accept` header [RFC7231](https://tools.ietf.org/html/rfc7231#section-5.3.2) from client
 and decide based on the rules provided in the RFC what is the best encoding they can support.
 
-If the rules of `Accept` fail (a satisfactory encoding could not be picked), the server SHOULD send a 
-`HTTP 406 Not Acceptable`.
-
-If 406 is given, the server MUST also specify the set of acceptable formats described as:
-```json
-{
-  "errcode": "M_NOT_ACCEPTABLE",
-  "accepts": ["application/cbor", "application/json"],
-  "error": "..error message left to the discretion of the implementation..",
-}
-```
-where accepts is the set of acceptable encodings. This is NOT in `Accept` format because:
-
-1) Servers should not specify a quality or preference, as the negotiations are client led.
-2) The client should not need to write logic to parse the `Accept` response, merely pick the most appropriate encoding
-3) Servers know exactly what formats they support and do not need to wildcard the types.
+If the rules of `Accept` fail (a satisfactory encoding could not be picked), the server SHOULD 
+respond with `HTTP 406 Not Acceptable`.
 
 If the clients request contains a `Content-Type` header that the server does not support, 
-the server should respond with `HTTP 415 Unsupported Media Type` and an error of:
-```json
-{
-  "errcode": "M_CONTENT_TYPE_NOT_SUPPORTED",
-  "accepts": ["application/cbor", "application/json"],
-  "error": "..error message left to the discretion of the implementation..",
-}
-```
+the server SHOULD respond with `HTTP 415 Unsupported Media Type`.
 
-It is not important that the client can decode the response, because 415 should be clear that the server
-can not parse the request. The error is still useful for developers who need a human readable
-message.
+The body of the response is left to the server, although worth bearing in mind that confused developers
+may be looking at the response looking for the fault in their code.
 
 ### Clients
 
