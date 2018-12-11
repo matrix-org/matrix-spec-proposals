@@ -547,15 +547,15 @@ This gives the resolved state at _Message 3_ to be _Topic 4_.
 
 ## Example 2
 
-The following is an example room DAG, where time flows down the page. We assume
-event `B` is initially rejected by the server (due to not passing auth against
-the state), but does pass auth against its auth chain.
+The following is an example room DAG, where time flows down the page. The event
+`D` is initially rejected by the server (due to not passing auth against the
+state), but does pass auth against its auth chain.
 
 ![state-res-rejected.png](images/state-res-rejected.png)
 
-At `C` we first resolve the power levels, which results in `A`. When we then go
+At `F` we first resolve the power levels, which results in `E`. When we then go
 to resolve the topics against the partially resolved state Bob has ops, and so
-the resolved state include the topic change `B`, even though it was initially
+the resolved state include the topic change `D`, even though it was initially
 rejected.
 
 
