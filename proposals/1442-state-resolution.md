@@ -474,7 +474,7 @@ Intuitively using rejected events feels dangerous, however:
    eliminate any potential attack vectors.
 
 Rejected auth events are deliberately excluded from use in the iterative auth checks, as
-in that case the auth events aren't re-authed like the rest of the events in the
+auth events aren't re-authed during the iterative auth checks (although non-auth events are.)
 list.
 
 
@@ -549,7 +549,7 @@ This gives the resolved state at _Message 3_ to be _Topic 4_.
 
 The following is an example room DAG, where time flows down the page. We assume
 event `B` is initially rejected by the server (due to not passing auth against
-the state, but does pass auth against its auth chain).
+the state), but does pass auth against its auth chain.
 
 ![state-res-rejected.png](images/state-res-rejected.png)
 
