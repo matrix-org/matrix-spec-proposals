@@ -473,7 +473,7 @@ Intuitively using rejected events feels dangerous, however:
    duplicated event would then pass the auth checks. Ignoring rejected events would therefore not
    eliminate any potential attack vectors.
 
-We specifically don't use rejected auth events in the iterative auth checks, as
+Rejected auth events are deliberately excluded from use in the iterative auth checks, as
 in that case the auth events aren't re-authed like the rest of the events in the
 list.
 
