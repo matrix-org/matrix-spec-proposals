@@ -32,4 +32,4 @@ allOf:
     contains_url:
       type: boolean
       description: If ``true``, includes only events with a ``url`` key in their content. If
-        ``false``, excludes those events. Defaults to ``false``.
+        ``false``, excludes those events. If omitted, ``url`` key is not considered for filtering.
