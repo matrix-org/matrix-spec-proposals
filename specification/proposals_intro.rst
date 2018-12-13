@@ -77,7 +77,7 @@ follows:
 
   - In the document, clearly state the problem being solved, and the possible
     solutions being proposed for solving it and their respective trade-offs.
-  - Proposal documents are intended to be as lightweight and flexible as the 
+  - Proposal documents are intended to be as lightweight and flexible as the
     author desires; there is no formal template; the intention is to iterate
     as quickly as possible to get to a good design.
   - However, a `template with suggested headers
@@ -95,7 +95,7 @@ follows:
     follows the format ``1234-my-new-proposal.md`` where ``1234`` is the MSC
     ID.
   - Your PR description must include a link to the rendered markdown document
-    and a summary of the proposal. 
+    and a summary of the proposal.
   - It is often very helpful to link any related MSCs or `matrix-doc issues
     <https://github.com/matrix-org/matrix-doc/issues>`_ to give context
     for the proposal.
@@ -185,32 +185,39 @@ labels for each stage on the `matrix-doc
  |      Proposal        |  |  +------= Spec PR |      |    | Postponed |
  | Drafting and Initial |  |  |      | Missing |      |    |           |
  |  Feedback Gathering  |  |  |      |         |      |    +-----------+
- |                      |  |  |      +----+----+      |   
+ |                      |  |  |      +----+----+      |
  +----------+-----------+  |  |           |           |    +----------+
             |              |  |           v           |    |          |
             v              |  |  +-----------------+  |    |  Closed  |
   +-------------------+    |  |  |                 |  |    |          |
   |                   |    |  |  | Spec PR Created |  |    +----------+
   |    Proposal PR    |    |  |  |  and In Review  |  |
-  |    Created and    |    |  |  |                 |  |  
-  |     In Review     |    |  |  +--------+--------+  |   
-  |                   |    |  |           |           |
-  +---------+---------+    |  |           v           |   
-            |              |  |     +-----------+     |   
-            v              |  |     |           |     |   
- +----------------------+  |  |     |  Spec PR  |     |   
- |                      |  |  |     |  Merged!  |     |   
- | Final Comment Period |  |  |     |           |     |
+  |     In Review     |    |  |  |                 |  |
+  |                   |    |  |  +--------+--------+  |
+  +---------+---------+    |  |           |           |
+            |              |  |           v           |
+            v              |  |     +-----------+     |
+ +----------------------+  |  |     |           |     |
+ |                      |  |  |     |  Spec PR  |     |
+ |    Proposed Final    |  |  |     |  Merged!  |     |
+ |    Comment Period    |  |  |     |           |     |
  |                      |  |  |     +-----------+     |
  +----------+-----------+  |  |                       |
             |              |  |                       |
             v              |  |                       |
-     +-------------+       |  |                       |
-     |             |       |  |                       |
-     | Proposal PR |       |  |                       |
-     |   Merged!   |       |  |                       |
-     |             |       |  |                       |
-     +------|------+       |  |                       |
+ +----------------------+  |  |                       |
+ |                      |  |  |                       |
+ | Final Comment Period |  |  |                       |
+ |                      |  |  |                       |
+ +----------+-----------+  |  |                       |
+            |              |  |                       |
+            v              |  |                       |
+ +----------------------+  |  |                       |
+ |                      |  |  |                       |
+ | Final Comment Period |  |  |                       |
+ |       Complete       |  |  |                       |
+ |                      |  |  |                       |
+ +----------+-----------+  |  |                       |
             |              |  |                       |
             +-----------------+                       |
                            |                          |
@@ -226,11 +233,13 @@ Name                             GitHub Label                   Description
 ===============================  =============================  ====================================
 Proposal Drafting and Feedback   N/A                            A proposal document which is still work-in-progress but is being shared to incorporate feedback
 Proposal In Review               proposal-in-review             A proposal document which is now ready and waiting for review by the Core Team and community
-Proposal Final Comment Period    proposal-final-comment-period  A proposal document which has reached final comment period either for merge, closure or postponement
-Proposal Merged/Spec PR Missing  spec-pr-missing                A proposal document which has passed review. Waiting for a PR against the Spec
-Spec PR In Review                spec-pr-in-review              A proposal that has been PR'd against the spec and is currently under review
+Proposed Final Comment Period    proposed-final-comment-period  Currently awaiting signoff of a majority of team members in order to enter the final comment period
+Final Comment Period             final-comment-period           A proposal document which has reached final comment period either for merge, closure or postponement
+Final Commment Period Complete   finished-final-comment-period  The final comment period has been completed. Waiting for a demonstration implementation
+Spec PR Missing                  spec-pr-missing                The proposal has been agreed, and proven with a demonstration implementation. Waiting for a PR against the Spec
+Spec PR In Review                spec-pr-in-review              The spec PR has been written, and is currently under review
 Spec PR Merged                   merged                         A proposal with a sufficient working implementation and whose Spec PR has been merged!
-Postponed                        proposal-postponed             A proposal that is temporarily blocked or a feature that may not be useful currently but perhaps 
+Postponed                        proposal-postponed             A proposal that is temporarily blocked or a feature that may not be useful currently but perhaps
                                                                 sometime in the future
 Closed                           proposal-closed                A proposal which has been reviewed and deemed unsuitable for acceptance
 ===============================  =============================  ====================================

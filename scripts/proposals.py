@@ -9,8 +9,9 @@ from datetime import datetime
 # a list of the labels we care about
 LABELS_LIST=[
     'proposal-in-review',
+    'proposed-final-comment-period',
     'proposal-final-comment-period',
-    'proposal-merged',
+    'finished-final-comment-period',
     'spec-pr-missing',
     'spec-pr-in-review',
     'merged',
