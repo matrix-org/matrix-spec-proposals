@@ -488,6 +488,10 @@ event.
 
 # Appendix
 
+The following are some worked examples to illustrate some of the mechanisms in
+the algorithm. In each we're interested in what happens to the topic.
+
+
 ## Example 1 - Mainline
 
 The following is an example room DAG, where time flows down the page. We shall
