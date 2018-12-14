@@ -336,7 +336,7 @@ Authorization of PDUs
 Whenever a server receives an event from a remote server, the receiving server
 must ensure that the event:
 
-1. Is a valid event, otherwise it is dropped
+1. Is a valid event, otherwise it is dropped.
 2. Passes signature checks, otherwise it is dropped.
 3. Passes hash checks, otherwise it is redacted before being processed
    further.
@@ -344,7 +344,7 @@ must ensure that the event:
    is rejected.
 5. Passes authorization rules based on the state at the event, otherwise it
    is rejected.
-6. Passes auth rules based on the current state of the room, otherwise it
+6. Passes authorization rules based on the current state of the room, otherwise it
    is "soft failed".
 
 Further details of these checks, and how to handle failures, are described
