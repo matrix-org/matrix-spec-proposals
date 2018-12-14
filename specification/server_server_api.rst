@@ -374,9 +374,9 @@ Target User
 Authorization rules
 +++++++++++++++++++
 
-The rules governing whether an event is authorized depend solely on the
-state of the room at the point in the room graph at which the new event is to
-be inserted. The types of state events that affect authorization are:
+The rules governing whether an event is authorized depends on a set of state. A
+given event is checked multiple times against different sets of state, as
+specified above. The types of state events that affect authorization are:
 
 - ``m.room.create``
 - ``m.room.member``
