@@ -350,6 +350,10 @@ must ensure that the event:
 Further details of these checks, and how to handle failures, are described
 below.
 
+.. TODO:
+  Flesh this out a bit more, and probably change the doc to group the various
+  checks in one place, rather than have them spread out.
+
 
 Definitions
 +++++++++++
