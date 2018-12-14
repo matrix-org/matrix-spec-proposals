@@ -449,8 +449,9 @@ event (rather than based on their auth chain) are handled as usual by the
 algorithm, unless otherwise specified.
 
 Note that no events rejected due to failure to auth against their auth chain
-should appear in the process, as they should not appear in state (and the
-algorithm only uses events in one of the state sets or their auth events).
+should appear in the process, as they should not appear in state (the algorithm
+only uses events that appear in either the state sets or in the auth chain of
+the events in the state sets).
 
 This helps ensure that different servers' view of state is more likely to
 converge, since rejection state of an event may be different. This can happen if
@@ -461,7 +462,7 @@ consistent view of the state of the room. If the view of the state on different
 servers diverges it can lead to bifurcation of the room due to e.g. servers
 disagreeing on who is in the room.
 
-Intuitively using rejected events feels dangerous, however:
+Intuitively, using rejected events feels dangerous, however:
 
 1. Servers cannot arbitrarily make up state, since they still need to pass the
    auth checks based on the event's auth chain (e.g. they can't grant themselves
