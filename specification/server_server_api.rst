@@ -330,8 +330,8 @@ following subset of the room state:
 
 {{definition_ss_pdu}}
 
-Authorization of PDUs
-~~~~~~~~~~~~~~~~~~~~~
+Checks performed on receipt of a PDU
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Whenever a server receives an event from a remote server, the receiving server
 must ensure that the event:
@@ -371,8 +371,8 @@ Target User
 
 .. _`authorization rules`:
 
-Rules
-+++++
+Authorization rules
++++++++++++++++++++
 
 The rules governing whether an event is authorized depend solely on the
 state of the room at the point in the room graph at which the new event is to
