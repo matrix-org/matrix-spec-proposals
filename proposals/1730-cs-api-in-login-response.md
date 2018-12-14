@@ -26,6 +26,12 @@ clients to an alternative homeserver after login. Clients SHOULD use the
 provided `well_known` object to reconfigure themselves, optionally validating the
 URLs within.
 
+Note: a server that redirects all clients to different servers must nonetheless
+consider clients making requests other than `/login`: for example, some clients
+may fail to support redirection. It is acceptable in such a case to return a
+401 response to all non-`/login` requests if the service does not wish to
+support such clients.
+
 ## Application
 
 Let's imagine for this description that our organisation is the University of
