@@ -1,0 +1,13 @@
+graph {
+A1 [label="A's PDP-11"]
+AM [label="A's master key"]
+A2 [label="A's Osborne 2"]
+B1 [label="B's Dynabook"]
+BM [label="B's master key"]
+B2 [label="B's VAX"]
+A1 -- AM
+AM -- A2
+AM -- BM
+B1 -- BM
+BM -- B2
+}

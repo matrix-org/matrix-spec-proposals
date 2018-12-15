@@ -1,3 +1,9 @@
+# Background
+
+FIXME: something something
+
+# Proposal
+
 Each user has a "master identity key" that is used to sign their devices, and
 is signed by all of their devices.  When one user (Alice) verifies another
 user's (Bob's) identity, Alice will sign Bob's master identity key with her
@@ -114,14 +120,18 @@ One way to solve this is by registering a "virtual device", which is used to
 sign other devices.  This solution would be similar to this proposal.  However,
 real devices would still form an integral part of the attestation graph.  For
 example, if Alice's phone verifies Bob's tablet, the attestation graph might
-look like Alice's laptop <-> Alice's virtual device <-> Alice's phone <-> Bob's
-tablet <-> Bob's virtual device <-> Bob's desktop.  So if Bob replaces his
-tablet without re-verifying with Alice, this will split the graph and Alice
-will not be able to verify Bob's other devices.  In contrast, in this proposal,
-Alice and Bob's master keys directly sign each other, and the attestation graph
-would look like Alice's phone <-> Alice's master device <-> Bob's master device
-<-> Bob's tablet.  In this case, Bob's tablet can be replaced without breaking
-the graph.  FIXME: graphviz-ify the attestation graphs
+look like:
+
+![](images/1756-graph1.dot.png)
+
+If Bob replaces his tablet without re-verifying with Alice, this will split the
+graph and Alice will not be able to verify Bob's other devices.  In contrast,
+in this proposal, Alice and Bob's master keys directly sign each other, and the
+attestation graph would look like:
+
+![](images/1756-graph2.dot.png)
+
+In this case, Bob's tablet can be replaced without breaking the graph.
 
 With normal cross-signing, it is not clear how to recover from a stolen device.
 For example, if Mallory steals one of Alice's devices and revokes Alice's other
@@ -133,3 +143,7 @@ whether it should be a statement that the device should not be trusted at all.)
 In contrast, with this proposal, there is a clear way to rebuild the
 attestation graph: create a new master identity key, and re-verify all devices
 with it.
+
+# Conclusion
+
+This proposal presents an alternative cross-signing mechanism to MSC1680.
