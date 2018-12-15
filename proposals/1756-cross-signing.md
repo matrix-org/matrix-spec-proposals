@@ -119,19 +119,19 @@ needed to reattach the parts of the graph.
 One way to solve this is by registering a "virtual device", which is used to
 sign other devices.  This solution would be similar to this proposal.  However,
 real devices would still form an integral part of the attestation graph.  For
-example, if Alice's phone verifies Bob's tablet, the attestation graph might
+example, if Alice's Osborne 2 verifies Bob's Dynabook, the attestation graph might
 look like:
 
 ![](images/1756-graph1.dot.png)
 
-If Bob replaces his tablet without re-verifying with Alice, this will split the
-graph and Alice will not be able to verify Bob's other devices.  In contrast,
-in this proposal, Alice and Bob's master keys directly sign each other, and the
-attestation graph would look like:
+If Bob replaces his Dynabook without re-verifying with Alice, this will split
+the graph and Alice will not be able to verify Bob's other devices.  In
+contrast, in this proposal, Alice and Bob's master keys directly sign each
+other, and the attestation graph would look like:
 
 ![](images/1756-graph2.dot.png)
 
-In this case, Bob's tablet can be replaced without breaking the graph.
+In this case, Bob's Dynabook can be replaced without breaking the graph.
 
 With normal cross-signing, it is not clear how to recover from a stolen device.
 For example, if Mallory steals one of Alice's devices and revokes Alice's other
