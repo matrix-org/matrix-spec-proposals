@@ -34,8 +34,9 @@ origin homeserver using the same API (unless the origin and destination
 homeservers are the same).
 
 When serving content, the server SHOULD provide a ``Content-Security-Policy``
-header. The recommended policy is ``default-src 'none'; script-src 'none';
-plugin-types application/pdf; style-src 'unsafe-inline'; object-src 'self';``.
+header. The recommended policy is ``sandbox; default-src 'none'; script-src
+'none'; plugin-types application/pdf; style-src 'unsafe-inline'; object-src
+'self';``.
 
 Client behaviour
 ----------------
