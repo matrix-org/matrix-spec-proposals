@@ -1,8 +1,22 @@
-# Background
+# Cross-signing devices with master keys
 
-FIXME: something something
+## Background
 
-# Proposal
+A user with multiple devices will have a different key for end-to-end
+encryption for each device.  Other users who want to communicate securely with
+this user must then verify each key on each of their devices.  If Alice has *n*
+devices, and Bob has *m* devices, then for Alice to be able to communicate with
+Bob on any of their devices, this involves *n×m* key verifications.
+
+One way to addresss this is for each user to use a "master key" for their
+identity which signs all of their devices.  Thus another user who wishes to
+verify their identity only needs to verify their master, key and can use the
+master key to verify their devices.
+
+[MSC1680](https://github.com/matrix-org/matrix-doc/issues/1680) presents a
+different solution to the problem.
+
+## Proposal
 
 Each user has a "master identity key" that is used to sign their devices, and
 is signed by all of their devices.  When one user (Alice) verifies another
@@ -38,9 +52,9 @@ Users will only be allowed to see signatures made by their own master identity
 key, or signatures made by other users' master identity keys on their own
 devices.
 
-# API description
+### API description
 
-## Possible API 1
+#### Possible API 1
 
 Use the same API as MSC1680, but with additions.
 
@@ -93,7 +107,7 @@ require creating a new backup version, which may be what users need to do
 anyways).  Or the private master key could be stored in account data,
 e.g. `/user/{userId}/account_data/m.master.{deviceId}`.
 
-## Possible API 2
+#### Possible API 2
 
 Treat master key separately from normal devices and adding special handling for
 them.  This might result in a nicer API, but make the implementation more
@@ -103,7 +117,7 @@ attestations separately.
 
 TODO: write this option out
 
-# Comparison with MSC1680
+## Comparison with MSC1680
 
 MSC1680 suffers from the fact that the attestation graph may be arbitrarily
 complex and may become ambiguous how the graph should be interpreted.  In
@@ -144,6 +158,8 @@ In contrast, with this proposal, there is a clear way to rebuild the
 attestation graph: create a new master identity key, and re-verify all devices
 with it.
 
-# Conclusion
+## Security considerations
+
+## Conclusion
 
 This proposal presents an alternative cross-signing mechanism to MSC1680.
