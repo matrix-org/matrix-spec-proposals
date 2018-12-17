@@ -10,7 +10,7 @@ from datetime import datetime
 LABELS_LIST=[
     'proposal-in-review',
     'proposed-final-comment-period',
-    'proposal-final-comment-period',
+    'final-comment-period',
     'finished-final-comment-period',
     'spec-pr-missing',
     'spec-pr-in-review',
