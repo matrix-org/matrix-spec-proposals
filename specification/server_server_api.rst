@@ -330,12 +330,30 @@ following subset of the room state:
 
 {{definition_ss_pdu}}
 
-Authorization of PDUs
-~~~~~~~~~~~~~~~~~~~~~
+Checks performed on receipt of a PDU
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Whenever a server receives an event from a remote server, the receiving server
-must check that the event is allowed by the authorization rules. These rules
-depend on the state of the room at that event.
+must ensure that the event:
+
+1. Is a valid event, otherwise it is dropped.
+2. Passes signature checks, otherwise it is dropped.
+3. Passes hash checks, otherwise it is redacted before being processed
+   further.
+4. Passes authorization rules based on the event's auth events, otherwise it
+   is rejected.
+5. Passes authorization rules based on the state at the event, otherwise it
+   is rejected.
+6. Passes authorization rules based on the current state of the room, otherwise it
+   is "soft failed".
+
+Further details of these checks, and how to handle failures, are described
+below.
+
+.. TODO:
+  Flesh this out a bit more, and probably change the doc to group the various
+  checks in one place, rather than have them spread out.
+
 
 Definitions
 +++++++++++
@@ -357,12 +375,12 @@ Target User
 
 .. _`authorization rules`:
 
-Rules
-+++++
+Authorization rules
++++++++++++++++++++
 
-The rules governing whether an event is authorized depend solely on the
-state of the room at the point in the room graph at which the new event is to
-be inserted. The types of state events that affect authorization are:
+The rules governing whether an event is authorized depends on a set of state. A
+given event is checked multiple times against different sets of state, as
+specified above. The types of state events that affect authorization are:
 
 - ``m.room.create``
 - ``m.room.member``
