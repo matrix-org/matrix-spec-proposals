@@ -471,12 +471,12 @@ Intuitively, using rejected events feels dangerous, however:
    that allows said event. A malicious server could therefore produce a
    fork where it claims the state is that particular set of state, duplicate the
    rejected event to point to that fork, and send the event. The
-   duplicated event would then pass the auth checks. Ignoring rejected events would therefore not
-   eliminate any potential attack vectors.
+   duplicated event would then pass the auth checks. Ignoring rejected events
+   would therefore not eliminate any potential attack vectors.
 
-Rejected auth events are deliberately excluded from use in the iterative auth checks, as
-auth events aren't re-authed during the iterative auth checks (although non-auth events are.)
-list.
+Rejected auth events are deliberately excluded from use in the iterative auth
+checks, as auth events aren't re-authed (although non-auth events are) during
+the iterative auth checks.
 
 
 ### Attack Vectors
