@@ -25,8 +25,8 @@ master identity key.  (This will mean that verification methods will need to be
 modified to pass along the master identity key.)  Alice's device will trust
 Bob's device if:
 
-- Alice's device has signed her master identity key,
-- her master identity key has signed Bob's master identity key,
+- Alice's device is using a master identity key that has signed Bob's master
+  identity key,
 - Bob's master identity key has signed Bob's device, and
 - none of those signatures have been revoked.
 
@@ -69,6 +69,10 @@ returns
   "device_id": "ABCDEFG"
 }
 ```
+
+The server should not allow any client to use this device ID when logging in or
+registering; if a client tries to log in using this device ID, then the server
+must respond with an error. (FIXME: what error?)
 
 Send public key using `/keys/upload` as a normal device, but with a special
 "algorithms" list:
@@ -115,7 +119,186 @@ complicated.  For example, the server could automatically add master key
 signatures into a device's `signatures` field, rather than shipping the
 attestations separately.
 
-TODO: write this option out
+Send public key using `/keys/upload`, under the `master_key` property.
+(Alternatively, could use a special endpoint, like `/keys/master/upload`.)
+
+`POST /keys/upload`
+
+``` json
+{
+  "master_key": {
+    "user_id": "@alice:example.com",
+    "key_id": "ABCDEFG",
+    "algorithm": "ed25519",
+    "key": "base64+public+key",
+    "signatures": {
+      "@alice:example.com": {
+        "ed25519:ABCDEFG": "base64+self+signature"
+      }
+    }
+  }
+}
+```
+
+The key ID must be unique within the scope of a given user, and must not match
+any device ID.  This is required so that there will be no collisions in the
+`signatures` property.
+
+(FIXME: how do we make sure that the key ID doesn't collide with an existing
+device ID?  Just send an error and let the client retry?)
+
+The server should not allow any client to use the key ID as their device ID
+when logging in or registering; if a client tries to log in using this device
+ID, then the server must respond with an error. (FIXME: what error?)
+
+Uploading a new master key should invalidate any previous master key.
+
+After uploading a master key, it will be included under the `/keys/query`
+endpoint under the `master_key` property.
+
+`GET /keys/query`
+
+``` json
+{
+  "failures": {},
+  "master_key": {
+    "@alice:example.com": {
+      "user_id": "@alice:example.com",
+      "key_id": "ABCDEFG",
+      "algorithm": "ed25519",
+      "key": "base64+public+key",
+      "signatures": {
+        "@alice:example.com": {
+          "ed25519:ABCDEFG": "base64+self+signature"
+        }
+      }
+    }
+  }
+}
+```
+
+Signatures can be uploaded using `/keys/upload`, under the `signatures`
+property.  (Alternatively, could use a special endpoint, like
+`/keys/signatures/upload`.)
+
+For example, Alice signs one of her devices (HIJKLMN), and Bob's master key.
+
+`POST /keys/upload`
+
+``` json
+{
+  "signatures": {
+    "@alice:example.com": {
+      "HIJKLMN": {
+        "user_id": "@alice:example.com",
+        "device_id": "HIJKLMN",
+        "algorithms": [
+          "m.olm.curve25519-aes-sha256",
+          "m.megolm.v1.aes-sha"
+        ],
+        "keys": {
+          "curve25519:HIJKLMN": "base64+curve25519+key",
+          "ed25519:HIJKLMN": "base64+ed25519+key"
+        },
+        "signatures": {
+          "@alice:example.com": {
+            "ed25519:ABCDEFG": "base64+signature+of+HIJKLMN"
+          }
+        }
+      }
+    },
+    "@bob:example.com": {
+      "OPQRSTU": {
+        "user_id": "@bob:example.com",
+        "key_id": "OPQRSTU",
+        "algorithm": "ed25519",
+        "key": "base64+ed25519+key",
+        "signatures": {
+          "@alice:example.com": {
+            "ed25519:ABCDEFG": "base64+signature+of+OPQRSTU"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+After Alice uploads a signature for her own devices, her signature will be
+included in the results of the `/keys/query` request when *anyone* requests her
+keys:
+
+`GET /keys/query`
+
+``` json
+{
+  "failures": {},
+  "device_keys": {
+    "@alice:example.com": {
+      "HIJKLMN": {
+        "user_id": "@alice:example.com",
+        "device_id": "HIJKLMN",
+        "algorithms": [
+          "m.olm.v1.curve25519-aes-sha256",
+          "m.megolm.v1.aes-sha"
+        ],
+        "keys": {
+          "curve25519:HIJKLMN": "base64+curve25519+key",
+          "ed25519:HIJKLMN": "base64+ed25519+key"
+        },
+        "signatures": {
+          "@alice:example.com": {
+            "ed25519:HIJKLMN": "base64+self+signature",
+            "ed25519:ABCDEFG": "base64+signature+of+HIJKLMN"
+          }
+        },
+        "unsigned": {
+          "device_display_name": "Alice's Osborne 2"
+        }
+      }
+    }
+  },
+  "master_keys": {
+    "@alice:example.com": {
+      "user_id": "@alice:example.com",
+      "key_id": "ABCDEFG",
+      "algorithm": "ed25519",
+      "key": "base64+public+key",
+      "signatures": {
+        "@alice:example.com": {
+          "ed25519:ABCDEFG": "base64+self+signature"
+        }
+      }
+    }
+  }
+}
+```
+
+After Alice uploads a signature for Bob's master key, her signature will be
+included in the results of the `/keys/query` request when Alice requests Bob's
+key:
+
+`GET /keys/query`
+
+``` json
+{
+  "failures": {},
+  "master_key": {
+    "@bob:example.com": {
+      "user_id": "@bob:example.com",
+      "key_id": "OPQRSTU",
+      "algorithm": "ed25519",
+      "key": "base64+ed25519+key",
+      "signatures": {
+        "@alice:example.com": {
+          "ed25519:OPQRSTU": "base64+self+signature+OPQRSTU",
+          "ed25519:ABCDEFG": "base64+signature+of+OPQRSTU"
+        }
+      }
+    }
+  }
+}
+```
 
 ## Comparison with MSC1680
 
