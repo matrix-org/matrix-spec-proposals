@@ -64,7 +64,7 @@ API to create new virtual device:
 
 returns
 
-``` javascript
+``` json
 {
   "device_id": "ABCDEFG"
 }
@@ -75,7 +75,7 @@ Send public key using `/keys/upload` as a normal device, but with a special
 
 `POST /keys/upload`
 
-``` javascript
+``` json
 {
   "device_keys": {
     "user_id": "@alice:example.com",
