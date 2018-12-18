@@ -29,6 +29,10 @@
                 "currently_active": {
                     "type": boolean,
                     "description": "Whether the user is currently active"
+                },
+                "status_msg": {
+                    "type": "string",
+                    "description": "An optional description to accompany the presence."
                 }
             },
             "required": ["presence"]
