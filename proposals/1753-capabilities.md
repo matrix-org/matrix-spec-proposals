@@ -69,6 +69,49 @@ query and the response.
 Clients will need to be aware of servers which do not support the new endpoint,
 and fall back to their current behaviour if they receive a 404 response.
 
+### Suitable applications
+
+In general, capabilities advertised via this endpoiunt should depend in some
+way on the state of the user or server - in other words, they will inherently
+"optional" features in the API.
+
+This endpoint should *not* be used to advertise support for experimental or
+unstable features, which is better done via `/client/r0/versions` (see
+[MSC1497](https://github.com/matrix-org/matrix-doc/issues/1497)).
+
+Examples of features which might reasonably be advertised here include:
+
+ * Whether the server supports user presence.
+
+ * Whether the server supports other optional features. The following could be
+   made optional via this mechanism:
+   * Room directory
+   * URL previews
+
+ * Policy restricitions, such as:
+   * Whether certain types of content are permitted on this server.
+   * The number of rooms you are allowed in.
+   * Configured ratelimits.
+
+
+Features which might be better advertised elsewhere include:
+
+ * Support for e2e key backups
+   ([MSC1219](https://github.com/matrix-org/matrix-doc/issues/1219)) - list in
+   `/client/r0/versions`.
+
+ * Support for lazy-loading of room members - list in `/client/r0/versions`.
+
+ * Media size limits - list in `/media/r0/config`, because the media server may
+   be a separate process.
+
+ * Optional transports/encodings for the CS API - probably better handled via
+   HTTP headers etc.
+
+ * Variations in room state resolution - this is implied via the room version
+   (which is in the `m.room.create` event).
+
+
 ## Tradeoffs
 
 One alternative would be to provide specific ways of establishing support for
