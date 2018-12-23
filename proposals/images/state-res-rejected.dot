@@ -1,0 +1,23 @@
+digraph Rejected {
+        rankdir=BT;
+
+        // Events
+        A[label="A: Alice ops Bob"];
+        B[label="B: Alice deops Bob"];
+        D[label="D: Bob sets topic"];
+        E[label="E: Alice reops Bob"];
+
+        // Prev events        
+        B -> A;
+        C -> B;
+        D -> C;
+        E -> C;
+        F -> D;
+        F -> E;
+
+        // Auth Events
+
+        B -> A [color=blue,style=bold];
+        D -> A [color=blue,style=bold];
+        E -> B [color=blue,style=bold];
+}
