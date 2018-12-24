@@ -134,6 +134,12 @@ paths:
                             ``timeline`` (or all state up to the start of the
                             ``timeline``, if ``since`` is not given, or
                             ``full_state`` is true).
+
+                            N.B. state updates for ``m.room.member`` events will
+                            be incomplete if ``lazy_load_members`` is enabled in
+                            the ``/sync`` filter, and only return the member events
+                            required to display the senders of the timeline events
+                            in this response.
                           allOf:
                             - $ref: "definitions/state_event_batch.yaml"
                         timeline:

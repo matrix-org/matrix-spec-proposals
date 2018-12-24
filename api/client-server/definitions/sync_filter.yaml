@@ -68,9 +68,38 @@ properties:
         description: Include rooms that the user has left in the sync, default false
         type: boolean
       state:
+        type: object
+        title: StateFilter
         allOf:
         - $ref: room_event_filter.yaml
         description: The state events to include for rooms.
+        properties:
+          lazy_load_members:
+            type: boolean
+            description: |-
+              If ``true``, the only ``m.room.member`` events returned in
+              the ``state`` section of the ``/sync`` response are those
+              which are definitely necessary for a client to display
+              the ``sender`` of the timeline events in that response.
+              If ``false``, ``m.room.member`` events are not filtered.
+              By default, servers should suppress duplicate redundant
+              lazy-loaded ``m.room.member`` events from being sent to a given
+              client across multiple calls to ``/sync``, given that most clients
+              cache membership events (see ``include_redundant_members``
+              to change this behaviour).
+          include_redundant_members:
+            type: boolean
+            description: |-
+              If ``true``, the ``state`` section of the ``/sync`` response will
+              always contain the ``m.room.member`` events required to display
+              the ``sender`` of the timeline events in that response, assuming
+              ``lazy_load_members`` is enabled. This means that redundant
+              duplicate member events may be returned across multiple calls to
+              ``/sync``. This is useful for naive clients who never track
+              membership data. If ``false``, duplicate ``m.room.member`` events
+              may be suppressed by the server across multiple calls to ``/sync``.
+              If ``lazy_load_members`` is ``false`` this field is ignored.
+
       timeline:
         allOf:
         - $ref: room_event_filter.yaml
