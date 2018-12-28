@@ -1,10 +1,15 @@
 # Proposal to support user-owned identifiers as 3rd party identifiers (3PID)
 
-Email and phone numbers are well-established third party identifiers (3PID). The verification that a user owns such an identifiers is usually done by sending an email or SMS. This requires interaction from the user and is not immediate. With the advances in blockchain technologies, so-called user-owned or "distributed identifiers" (DID) have been established that are created, owned and controlled by the person herself. The ownership of DIDs are verifiable by third-parties immediately, usually using cryptographic calculations and public/private key pairs. Shared secrets (passwords) are not required. Therefore, DIDs are good candidates to authenticate a user when logging in to a matrix home server.
+Email and phone numbers are well-established third party identifiers (3PID). The verification that a user owns such an identifiers is usually done by sending an email or SMS. The finalization of the verification requires interaction from the user. With the advances in blockchain technologies, so-called user-owned or "distributed identifiers" (DID) have been established that are created, owned and controlled by the person herself. Third-parties can verify the ownership of DIDs by verifying cryptographic signatures. 
 
-For the matrix protocol, this means that DIDs can be associated to a user account immediately, and that autentication can be done with the username and 3PID only, without using the user's password. 
+For the matrix protocol, this means 
 
-While DIDs are not human-friendly identifiers by definition there are some DID methods that associate a human-friendly id to DIDs. These ids/names can be used to find matrix users through the identity servers. The details for such a search by DID names should be defined in a new MSC.
+* that DIDs can be associated and verified with a user account without user-interaction, and 
+* that autentication can be done with the username, 3PID and a signature only, without using the user's password similar to [email based authentication via identity server](https://matrix.org/docs/spec/client_server/r0.4.0.html#email-based-identity-server). 
+
+Both aspects should be defined in separate MSCs and are mentioned as motivation why DIDs are a good candidate for a new 3PID type.
+
+While DIDs are not human-friendly identifiers by definition there are some DID methods that associate a human-friendly id to DIDs. These ids/names can be used to lookup matrix users through the identity servers as well (in addition to using DIDs for lookup). The details for such a lookup by DID names should be defined in a new MSC.
 
 ## Proposal
 
@@ -12,83 +17,34 @@ During the last year decentralized identifiers have been standardized by the [W3
 
 Supporting DIDs as a new 3PID type opens the matrix network to users that are using DIDs, enables applications with control over DIDs to communicate across the borders of DID methods, e.g. connect users with a blockstack.org account (did:stacks:..) to users with sovrin.org accounts (did:sov:..) and to users that do not have any DID but a matrix account. 
 
-DIDs should be defined as a new 3PID type. The medium should be defined as ``did``. The address should contains the DID in normalized form as [defined by the W3C CCG](https://w3c-ccg.github.io/did-spec/#normalization).
+DIDs should be defined as a new 3PID type. The medium should be defined as ``m.did``. The address should contains the DID in normalized form as [defined by the W3C CCG](https://w3c-ccg.github.io/did-spec/#normalization).
 
 Example:
 
 ```
 { 
-    medium: "did",
+    medium: "m.did",
     address: "did:stack:v0:15gxXgJyT5tM5A4Cbx99nwccynHYsBouzr-0"
 }
 ```
 The user should be able to add this 3PID to her account.
 
-Furthermore, the new type of login ``m.login.signature`` should be defined for login calls and user-interactive authentication API calls as follows:
-
-Authentication is supported by a challenge-response requests where the
-session id is signed with the private key associated to the identifier. The home server
-should only accept this stage as completed if all of the following holds:
-* the identifier is valid for an active user account
-* a public key could be deduced from the identifer
-* the signature could be verified with the public key
-
-To use this authentication type in login calls, clients should submit the following:
-.. code:: json
-
-  {
-    "type": "m.login.signature",
-    "identifier": {
-      ...
-    },
-    "signature": "<signature>",
-  }
-where the signature is the signed challenge that the user has received before from challenge/response endpoint of the home server.
-
-To use this authentication type in user-interactive authentication API calls, clients should submit an auth dict as follows:
-
-.. code:: json
-
-  {
-    "type": "m.login.signature",
-    "identifier": {
-      ...
-    },
-    "signature": "<signature>",
-    "session": "<session ID>"
-  }
-
-If no public key could be deduced from the identifier the error ``M_UNRECOGNIZED`` should
-be returned. If the signature could not be verified the error ``M_UNAUTHORIZED`` should be returned and the session should be invalidated.
-
-Currently, identifiers of type ``m.id.thirdparty`` and medium ``did`` could be accepted by using a universal DID resolver to get the public key of the DID. Home servers can choose between a hosted version like [Universal Resolver](https://uniresolver.io) or implement their own resolver e.g. based on the [universal-resolver on github](https://github.com/decentralized-identity/universal-resolver/). If the cryptographic method of the public key is not supported then the error ``M_UNRECOGNIZED`` should be returned.
-
-
-
 ## Tradeoffs
 
-Instead of adding a new type of 3PID DID could be defined as a new identifier type like 
-``m.id.did`` as the user has created the DID herself and is in control of it. However, DIDs define their own namespace that matches the concept of 3PID very well.
+Instead of adding a new type of 3PID, DID could be defined as a new identifier type (e.g. 
+``m.id.did``) as the user has created the DID herself, is in control of it and can be used for authentication. However, DIDs in general and DID methods in particular define their own namespaces that matches the concept of 3PID very well. Users make use of their DIDs in other context, e.g. decentralized apps and might have an interested to make use of them in the context of matrix as well as other users (or apps) know already the user's DID.
 
-Instead of adding a new login type, the type ``m.login.password`` could be used. The password could contain the signature of the challenge and during password verification the home server could verify the signature. However, it is not the password of matrix user and therefore, the password login type should not be used.
-
-The verification of the signature and the creation of the challenge for the login call could be handled by the identity server. The user would then just submit the 3PID verificaion credentials of the identity server session for login calls similar to ``m.login.email.identity``. However, this would transfer the responsibility of authentication to the identity server.
+Furthermore, a new 3PID could be defined for each DID methods like ``m.did.stacks`` or ``m.did.btcr``. However, it is not clear which methods will be defined in the future and the DID method can also be derived from the address if needed. Therefore, it is not necessary to distinguish mediums for all different methods.
 
 ## Potential issues
 
-The universal resolution of DIDs could add extra code that is not at the core of the matrix project. Here, delegating to a hosted version could help.
-
-The verification of signatures could add more cryptographic code that is not at the core of the matrix project. Here, the existing code for signature verification could be used.
-
+DIDs are not human-friendly identifiers. Therefore, matrix clients need to provide a good UX to make DIDs usable.
 
 ## Security considerations
 
-* Universal resolution of DIDs depends on public nodes of the associated distributed ledger/blockchain network. If the chosen node turns into a bad node there should be a possibility for the user to switch nodes.
-
-* The challenge could be guessed by someone else or reused for a login. It needs to be ensured that the session id of the authentication flow is random enough and that it is not reused in the future.
-
+Associating DIDs with email or phone number could have unwanted privacy implications for the user. However, the user is free to choose which DID she wants to publish or whether to publish one at all.
 
 ## Conclusion
 
-Adding support for decentralized identifiers is inline with the vision of matrix.org to build an open, decentralized communication network. The proposed new 3PID type helps users to include their DID as they are used to it with email and phone numbers. The cryptographic properties of DIDs require a new login type that defines a challenge/response request and signature validation.
+Adding support for decentralized identifiers is inline with the vision of matrix.org to build an open, decentralized communication network. The proposed new 3PID type helps users to include their DID as they are used to in other decentralized apps and as they are used to with email and phone numbers. With their cryptographic properties DIDs have the potential to provide a new, password-less, decentralized authentication flow.
 
