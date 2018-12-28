@@ -27,7 +27,6 @@ Example:
     address: "did:stack:v0:15gxXgJyT5tM5A4Cbx99nwccynHYsBouzr-0"
 }
 ```
-The user should be able to add this 3PID to her account.
 
 ## Tradeoffs
 
