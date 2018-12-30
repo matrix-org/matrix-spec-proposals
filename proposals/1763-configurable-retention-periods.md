@@ -68,7 +68,7 @@ This proposal does not try to solve the problems of:
 ### User-specified per-message retention
 
 Users can specify per-message retention by adding the following fields to the
-event alongside its content:
+event within its content.  Retention is only considered for non-state events.
 
 `max_lifetime`:
 	the maximum duration in seconds for which a well-behaved server should store
@@ -91,24 +91,22 @@ For instance:
 
 ```json
 {
-	"type": "m.room.message",
 	"max_lifetime": 86400,
-	"content": ...
 }
 ```
 
 The above example means that servers receiving this message should store the
 event for a only 86400 seconds (1 day), as measured from that event's
-origin_server_ts, after which they MUST prune the event from their
-DBs.  We consciously do not redact the event, as we are trying to eliminate
+origin_server_ts, after which they MUST prune all references to that event ID
+from their database.
+
+We consciously do not redact the event, as we are trying to eliminate
 metadata here at the cost of deliberately fracturing the DAG (which will
 fragment into disparate chunks).
 
 ```json
 {
-	"type": "m.room.message",
 	"min_lifetime": 2419200,
-	"content": ...
 }
 ```
 
@@ -118,16 +116,17 @@ order to reclaim diskspace.
 
 ```json
 {
-	"type": "m.room.message",
 	"self_destruct": true,
 	"expire_on_clients": true,
-	"content": ...
 }
 ```
 
 The above example describes 'self-destructing message' semantics where both server
 and clients MUST prune/delete the event and associated data as soon as a read
 receipt is received from the recipient.
+
+TODO: do we want to pass these in as querystring params when sending, instead of
+putting them inside event.content?
 
 ### User-advertised per-message retention
 
@@ -219,6 +218,10 @@ How do we handle scenarios where users try to re-backfill in history which has
 already been purged?  This should presumably be a server admin option on whether
 to allow it or not, and if allowed, configure how long the backfill should persist
 for before being purged again?
+
+How do we handle retention of media uploads (especially for E2E rooms)?  It feels
+the upload itself might warrant retention values applied to it.
+
 
 ## Security considerations
 
