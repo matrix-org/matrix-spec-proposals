@@ -194,6 +194,12 @@ A possible configuration here could be something like:
 3 months (assuming their individual min_lifetime is not higher), but leave
 others alone.
 
+These config values would interact with the min_lifetime and max_lifetime values
+of a message (either per-message or per-room) in the different classes of room
+by decreasing the effective max_lifetime to the proposed value (whilst
+preserving the `max_lifetime >= min_lifetime` invariant).  However, the precise
+behaviour would be up to the server implementer.
+
 XXX: should this configuration be specced or left as an implementation-specific
 config option?
 
