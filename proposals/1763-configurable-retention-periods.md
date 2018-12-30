@@ -100,12 +100,13 @@ For instance:
 
 The above example means that servers receiving this message should store the
 event for a only 86400 seconds (1 day), as measured from that event's
-origin_server_ts, after which they MUST prune all references to that event ID
-from their database.
+origin_server_ts, after which they MUST purge all references to that event ID
+(e.g. from their db and any in-memory queues).
 
 We consciously do not redact the event, as we are trying to eliminate
-metadata here at the cost of deliberately fracturing the DAG (which will
-fragment into disparate chunks).
+metadata here at the cost of deliberately fracturing the DAG, which will
+fragment into disparate chunks.  (See "Issues" below in terms of whether this
+is actually valid)
 
 ```json
 {
@@ -114,7 +115,7 @@ fragment into disparate chunks).
 ```
 
 The above example means that servers receiving this message SHOULD store the
-event forever, but MAY choose to prune their copy after 28 days (or longer) in
+event forever, but MAY choose to purge their copy after 28 days (or longer) in
 order to reclaim diskspace.
 
 ```json
@@ -125,7 +126,7 @@ order to reclaim diskspace.
 ```
 
 The above example describes 'self-destructing message' semantics where both server
-and clients MUST prune/delete the event and associated data as soon as a read
+and clients MUST purge/delete the event and associated data as soon as a read
 receipt for that message is received from the recipient.
 
 Clients and servers MUST send explicit read receipts per-message for
@@ -147,7 +148,7 @@ We introduce a `m.room.retention` state event, which room admins can set to
 override the retention behaviour for a given room.  This takes the same fields
 described above.
 
-If set, these fields directly override any per-message retention behaviour
+If set, these fields replace any per-message retention behaviour
 specified by the user - even if it means forcing laxer privacy requirements on
 that user.  This is a conscious privacy tradeoff to allow admins to specify
 explicit privacy requirements for a room.  For instance, a room may explicitly
@@ -158,9 +159,10 @@ In the instance of `min_lifetime` or `max_lifetime` being overridden, the
 invariant that `max_lifetime >= min_lifetime` must be maintained by clamping
 max_lifetime to be equal to `min_lifetime`.
 
-If the user's retention settings conflicts with those in the room, then the user's
-clients should warn the user.  A conflict exists if any field in `m.room.retention`
-is present which the user would otherwise be setting on their messages.
+If the user's retention settings conflicts with those in the room, then the
+user's clients should warn the user when participating in the room.  A conflict
+exists if the user sets retention fields on their messages which are specified
+with differing values on the `m.room.retention` state event.
 
 ### Server Admin-specified per-room retention
 
@@ -218,6 +220,51 @@ lifespan can be shown on demand, however).
 If `expire_on_clients` is true, then clients should also calculate expiration for
 said events and delete them from their local stores as required.
 
+## Pruning algorithm
+
+To summarise, servers and clients must implement the pruning algorithm as
+follows:
+
+If we're a client, apply the algorithm if:
+  * if specified, the `expire_on_clients` field in the `m.room.retention` event for the room is true.
+  * otherwise, if specified, the message's `expire_on_clients` field is true.
+  * otherwise, don't apply the algorithm.
+
+The maximum lifetime of an event is calculated as:
+  * if specified, the `max_lifetime` field in the `m.room.retention` event for the room.
+  * otherwise, if specified, the message's `max_lifetime` field.
+  * otherwise, the message's maximum lifetime is considered 'forever'.
+
+The minimum lifetime of an event is calculated as:
+  * if specified, the `min_lifetime` field in the `m.room.retention` event for the room.
+  * otherwise, if specified, the message's `min_lifetime` field.
+  * otherwise, the message's minimum lifetime is considered 'forever'.
+  * for clients, `min_lifetime` should be considered to be 0 (as there is no
+    requirement for clients to persist events).
+
+If the calculated max_lifetime is less than the min_lifetime then the max_lifetime
+is set to be equal to the min_lifetime.
+
+The server/client then selects a lifetime of the event to lie between the
+calculated values of minimum and maximum lifetime, based on their implementation
+and configuration requirements.  The selected lifetime MUST not exceed the
+calculated maximum lifetime. The selected lifetime SHOULD not be less than the
+calculated minimum lifetime, but may be less in case of constrained resources,
+in which case the server should prioritise retaining locally generated events
+over remote generated events.
+
+Server/clients then set a maintenance task to remove ("purge") the event and
+references to its event ID from their DB and in-memory queues after the lifetime
+has expired (starting timing from the absolute origin_server_ts on the event).
+
+As a special case, servers and clients should immediately purge the event, on observing
+a read receipt for that specific event ID, if:
+  * if specified, the `self_destruct` field in the `m.room.retention` event for the room is true.
+  * otherwise, if specified, the message's `self_destruct` field is true.
+
+If possible, servers/clients should remove downstream notifications of a message
+once it has expired (e.g. by cancelling push notifications).
+
 ## Tradeoffs
 
 This proposal deliberately doesn't address GDPR erasure or mega-redaction scenarios,
@@ -226,7 +273,13 @@ privacy requirements *at the point they send messages*.  Meanwhile GDPR erasure 
 handled elsewhere (and involves hiding rather than purging messages, in order to
 avoid annhilating conversation history), and mega-redaction is yet to be defined.
 
-## Potential issues
+## Issues
+
+It's debatable as to whether we're better off applying the redaction algorithm
+to expired events (and thus keep the integrity of the DAG intact, at the expense
+of leaking metadata), or whether to purge instead (as per the current proposal),
+which will punch holes in the DAG and potentially break the ability to backpaginate
+the room.
 
 How do we handle scenarios where users try to re-backfill in history which has
 already been purged?  This should presumably be a server admin option on whether
