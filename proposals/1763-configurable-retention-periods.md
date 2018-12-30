@@ -62,7 +62,6 @@ This proposal does not try to solve the problems of:
    as again this is retrospectively changing message lifetime)
  * Limiting the number (rather than age) of messages stored per room (as this is
    more a question of quotaing rather than empowering privacy)
- * Ephemeral messaging?
 
 ## Proposal
 
