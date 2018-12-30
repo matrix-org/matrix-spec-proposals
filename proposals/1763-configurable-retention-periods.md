@@ -133,6 +133,13 @@ Clients and servers MUST send explicit read receipts per-message for
 self-destructing messages (rather than for the most recently read message,
 as is the normal operation), so that messages can be destructed as requested.
 
+These retention fields are preserved during redaction, so that even if the event
+is redacted, the original copy can be subsequently purged appropriately from the
+DB.
+
+XXX: This may change if we end up redacting rather than purging events (see
+Issues below)
+
 TODO: do we want to pass these in as querystring params when sending, instead of
 putting them inside event.content?
 
@@ -146,7 +153,8 @@ social cue.  However, this would be purely informational.
 
 We introduce a `m.room.retention` state event, which room admins can set to
 override the retention behaviour for a given room.  This takes the same fields
-described above.
+described above.  It follows the default PL semantics for a state event (requiring
+PL of 50 by default to be set)
 
 If set, these fields replace any per-message retention behaviour
 specified by the user - even if it means forcing laxer privacy requirements on
