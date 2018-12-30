@@ -168,8 +168,8 @@ month), but not specify a max_lifetime, in the hope that other servers will
 retain the data for longer.
 
 XXX: is this the correct approach to take? It's how we force E2E encryption on,
-but it feels very fragmentory and magical presets to do different things depending
-on which server you're on.
+but it feels very fragmentory to have magical presets which do different things
+depending on which server you're on.
 
 2) By adjusting how aggressively their server enforces the the `min_lifetime`
 value for message retention.  For instance, a server admin could configure their
@@ -177,7 +177,7 @@ server to attempt to automatically remote purge messages in public rooms which
 are older than three months (unless min_lifetime for those messages was set
 higher).
 
-The expected configuration here could be something like:
+A possible configuration here could be something like:
  * target_lifetime_public_remote_events: 3 months
  * target_lifetime_public_local_events: null # forever
  * target_lifetime_private_remote_events: null # forever
