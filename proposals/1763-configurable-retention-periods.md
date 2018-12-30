@@ -297,6 +297,12 @@ for before being purged again?
 How do we handle retention of media uploads (especially for E2E rooms)?  It feels
 the upload itself might warrant retention values applied to it.
 
+Should room retention be announced in a room per-server?  The advantage is full
+flexibility in terms of servers announcing their different policies for a room
+(and possibly letting users know how likely history is to be retained, or conversely
+letting servers know if they need to step up to retain history).  The disadvantage
+is that it could make for very complex UX for end-users: "Warning, some servers in
+this room have overridden history retention to conflict with your preferences" etc.
 
 ## Security considerations
 
