@@ -123,7 +123,11 @@ order to reclaim diskspace.
 
 The above example describes 'self-destructing message' semantics where both server
 and clients MUST prune/delete the event and associated data as soon as a read
-receipt is received from the recipient.
+receipt for that message is received from the recipient.
+
+Clients and servers MUST send explicit read receipts per-message for
+self-destructing messages (rather than for the most recently read message,
+as is the normal operation), so that messages can be destructed as requested.
 
 TODO: do we want to pass these in as querystring params when sending, instead of
 putting them inside event.content?
