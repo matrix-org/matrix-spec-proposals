@@ -152,7 +152,8 @@ invariant that `max_lifetime > min_lifetime` must be maintained by clamping
 max_lifetime to be greater than `min_lifetime`.
 
 If the user's retention settings conflicts with those in the room, then the user's
-clients should warn the user.
+clients should warn the user.  A conflict exists if any field in `m.room.retention`
+is present which the user would otherwise be setting on their messages.
 
 ### Server Admin-specified per-room retention
 
