@@ -72,20 +72,23 @@ event within its content.  Retention is only considered for non-state events.
 
 `max_lifetime`:
 	the maximum duration in seconds for which a well-behaved server should store
-	this event. If absent, or null, it should be interpreted as 'forever'.
-
+	this event.  Must be null or in range [0, 2<sup>31</sup>-1]. If absent, or null,
+  should be interpreted as 'forever'.
 
 `min_lifetime`:
 	the minimum duration for which a well-behaved server should store this event.
-	If absent, or null, should be interpreted as 'forever'
+	Must be null or in range [0, 2<sup>31</sup>-1]. If absent, or null, should be
+  interpreted as 'forever'.
 
 `self_destruct`:
 	a boolean for whether wellbehaved servers should remove this event after
-	seeing an explicit read receipt delivered for it.
+	seeing an explicit read receipt delivered for it.  If absent, or null, should
+  be interpreted as false.
 
 `expire_on_clients`:
 	a boolean for whether well-behaved clients should expire messages clientside
-	to match the min/max lifetime and/or self_destruct semantics fields.
+	to match the min/max lifetime and/or self_destruct semantics fields. If absent,
+  or null, should be interpreted as false.
 
 For instance:
 
