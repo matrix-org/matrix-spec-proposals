@@ -148,8 +148,8 @@ disable self-destructing messages by setting `self_destruct: false`, or may
 require all messages in the room be stored forever with `min_lifetime: null`.
 
 In the instance of `min_lifetime` or `max_lifetime` being overridden, the
-invariant that `max_lifetime > min_lifetime` must be maintained by clamping
-max_lifetime to be greater than `min_lifetime`.
+invariant that `max_lifetime >= min_lifetime` must be maintained by clamping
+max_lifetime to be equal to `min_lifetime`.
 
 If the user's retention settings conflicts with those in the room, then the user's
 clients should warn the user.  A conflict exists if any field in `m.room.retention`
