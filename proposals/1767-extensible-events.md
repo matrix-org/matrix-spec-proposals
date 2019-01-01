@@ -38,6 +38,10 @@ of an event requiring a plain-text or HTML-formatted representation.
 For convenience and compatibility, we keep "body" and "formatted_body" as
 shorthand for plain-text and html-formatted fallback for events.
 
+The various types in an event's contents MUST refer to the same event.  Multiple
+events should be linked using a `m.relates_to` reference rather than multiplexing
+into a single event.
+
 Here are proposals for different types of events:
 
 ### m.text and m.html
@@ -128,6 +132,9 @@ m.message describes a simple textual instant message.
     }
 }
 ```
+
+XXX: do we need to worry about the schema overlap between m.file/m.image and m.thumbnail?
+do we need to specify how specific thumbnails can have specific captions (or is that effectively displayhints?)
 
 ### m.message containing original source text, to allow future edits:
 
@@ -299,9 +306,17 @@ It's a bit ugly to not know whether a given key will take a string, hash or arra
 
 It's a bit arbitrary as to which fields are allowed lists of fallbacks.
 
+It's a bit ugly that you have to look over the keys of contents to see what types
+are present, but better than duplicating this into an explicit `types` list (on balance).
+
 We're skipping over defining rules for which fallback combinations to display
 (i.e. "display hints") for now; these can be added in a future MSC if needed.
 MSC1225 contains a proposal for this.
+
+## Issues
+
+I think Erik had some concerns about mixing together types at the top level of `contents`
+but I've forgotten the details.  Hopefully these are mitigated by the revised approach.
 
 ## Security considerations
 
@@ -322,3 +337,11 @@ between `m.text`, `m.image`, `m.file`, etc.
 
 ...?
 
+## Changes from MSC1225
+
+ * converted from googledoc to MD, and to be a single PR rather than split PR/Issue.
+ * simplifies it by removing displayhints (for now)
+ * removes all references to mixins, as the term was scaring people and making it feel far too type-theoretic
+ * replaces the clunky m.text.1 idea with lists for types which support fallbacks
+ * removes the concept of optional compact form for m.text by instead having m.text always in compact form
+ * tries to accomodate most of the feedback on GH and Google Docs from MSC1225.
