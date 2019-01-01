@@ -47,11 +47,11 @@ equivalent to the longer form `m.message` example below:
 
 ```json
 {
-	"type": "m.message",
-	"content": {
-		"m.text": "i am a *fish*",
-		"m.html": "i am a <b>fish</b>"
-	}
+    "type": "m.message",
+    "content": {
+        "m.text": "i am a *fish*",
+        "m.html": "i am a <b>fish</b>"
+    }
 }
 ```
 
@@ -61,19 +61,19 @@ m.message describes a simple textual instant message.
 
 ```json
 {
-	"type": "m.message",
-	"content": {
-		"m.message": [
-			{
-				"mimetype": "text/html",
-				"body": "i am a <b>fish</b>"
-			},
-			{
-				"mimetype": "text/plain",
-				"body": "i am a *fish*"
-			}
-		],
-	}
+    "type": "m.message",
+    "content": {
+        "m.message": [
+            {
+                "mimetype": "text/html",
+                "body": "i am a <b>fish</b>"
+            },
+            {
+                "mimetype": "text/plain",
+                "body": "i am a *fish*"
+            }
+        ],
+    }
 }
 ```
 
@@ -81,16 +81,16 @@ m.message describes a simple textual instant message.
 
 ```json
 {
-	"type": "m.file",
-	"content": {
-		"m.text": "foo.dat (12KB)",
-		"m.file": {
-			"url": "mxc://matrix.org/asdjkhcsd",
-			"name": "foo.dat",
-			"mimetype": "application/octet-stream",
-			"size": 12345
-		}
-	}
+    "type": "m.file",
+    "content": {
+        "m.text": "foo.dat (12KB)",
+        "m.file": {
+            "url": "mxc://matrix.org/asdjkhcsd",
+            "name": "foo.dat",
+            "mimetype": "application/octet-stream",
+            "size": 12345
+        }
+    }
 }
 ```
 
@@ -98,34 +98,34 @@ m.message describes a simple textual instant message.
 
 ```json
 {
-	"type": "m.image",
-	"content": {
-		"m.text": "matrix logo (640x480, 12KB)",
-		"m.image": {
-			"width": 640,
-			"height": 480,
-		},
-		"m.file": {
-			"url": "mxc://matrix.org/asdjkhcsd",
-			"mimetype": "image/jpeg",
-			"name": "logo.jpg",
-			"size": 12345
-		},
-		"m.caption": [
-			{
-				"body": "matrix logo"
-			}
-		],
-		"m.thumbnail": [
-			{
-				"url": "mxc://matrix.org/thumb",
-				"mimetype": "image/jpeg",
-				"width": 160,
-				"height": 120,
-				"size": 123
-			}
-		],
-	}
+    "type": "m.image",
+    "content": {
+        "m.text": "matrix logo (640x480, 12KB)",
+        "m.image": {
+            "width": 640,
+            "height": 480,
+        },
+        "m.file": {
+            "url": "mxc://matrix.org/asdjkhcsd",
+            "mimetype": "image/jpeg",
+            "name": "logo.jpg",
+            "size": 12345
+        },
+        "m.caption": [
+            {
+                "body": "matrix logo"
+            }
+        ],
+        "m.thumbnail": [
+            {
+                "url": "mxc://matrix.org/thumb",
+                "mimetype": "image/jpeg",
+                "width": 160,
+                "height": 120,
+                "size": 123
+            }
+        ],
+    }
 }
 ```
 
@@ -136,19 +136,19 @@ m.message describes a simple textual instant message.
     "type": "m.message",
     "content": {
         "m.message": [
-        	{
-        		"mimetype": "text/html",
-        		"body": "I am a <a href=\"http://www.reddwarf.co.uk\">fish</a>",
-        	},
-        	{
-        		"mimetype": "text/markdown",
-        		"original": true,
-        		"body": "I am a [fish](http://www.reddwarf.co.uk)",
-        	},
-        	{
-        		"mimetype": "text/plain",
-        		"body": "I am a fish < http://www.reddwarf.co.uk/ >",
-        	},
+            {
+                "mimetype": "text/html",
+                "body": "I am a <a href=\"http://www.reddwarf.co.uk\">fish</a>",
+            },
+            {
+                "mimetype": "text/markdown",
+                "original": true,
+                "body": "I am a [fish](http://www.reddwarf.co.uk)",
+            },
+            {
+                "mimetype": "text/plain",
+                "body": "I am a fish < http://www.reddwarf.co.uk/ >",
+            },
         ]
     }
 }
@@ -161,14 +161,14 @@ m.message describes a simple textual instant message.
     "type": "m.message",
     "content": {
         "m.message": [
-        	{
-        		"body": "Je suis un poisson",
-        		"lang": "fr",
-        	},
-        	{
-        		"body": "I am a fish",
-        		"lang": "en_EN",
-        	}
+            {
+                "body": "Je suis un poisson",
+                "lang": "fr",
+            },
+            {
+                "body": "I am a fish",
+                "lang": "en_EN",
+            }
         ]
     }
 }
@@ -182,43 +182,43 @@ and fall through to the next one.
 
 ```json
 {
-	"type": "m.video",
-	"content": {
-		"m.text": "animated matrix logo (logo.mp4, 1280x720, 1m30s, 23.6MB)",
-		"m.video": {
-			"width": 1280,
-			"height": 720,
-			"duration": 90000,
-		},
-		"m.file": {
-			"url": "mxc://matrix.org/v1d30",
-			"mimetype": "video/mp4",
-			"name": "logo.mp4",
-			"size": 23654321
-		},
-		"m.caption": [
-			{
-				"body": "animated matrix logo"
-			}
-		],
-		"m.thumbnail": [
-			{
-				"url": "mxc://matrix.org/videothumb",
-				"mimetype": "video/mp4",
-				"animated": true,
-				"width": 128,
-				"height": 72,
-				"size": 12300
-			},
-			{
-				"url": "mxc://matrix.org/thumb",
-				"mimetype": "image/jpeg",
-				"width": 128,
-				"height": 72,
-				"size": 123
-			}
-		],
-	}
+    "type": "m.video",
+    "content": {
+        "m.text": "animated matrix logo (logo.mp4, 1280x720, 1m30s, 23.6MB)",
+        "m.video": {
+            "width": 1280,
+            "height": 720,
+            "duration": 90000,
+        },
+        "m.file": {
+            "url": "mxc://matrix.org/v1d30",
+            "mimetype": "video/mp4",
+            "name": "logo.mp4",
+            "size": 23654321
+        },
+        "m.caption": [
+            {
+                "body": "animated matrix logo"
+            }
+        ],
+        "m.thumbnail": [
+            {
+                "url": "mxc://matrix.org/videothumb",
+                "mimetype": "video/mp4",
+                "animated": true,
+                "width": 128,
+                "height": 72,
+                "size": 12300
+            },
+            {
+                "url": "mxc://matrix.org/thumb",
+                "mimetype": "image/jpeg",
+                "width": 128,
+                "height": 72,
+                "size": 123
+            }
+        ],
+    }
 }
 ```
 
@@ -251,7 +251,7 @@ https://tools.ietf.org/html/draft-ietf-calext-jscalendar-11)
 {
     "type": "m.calendar.request",
     "content": {
-		"m.text": "Invite to Party at Bob's House on Feb 7th, 3pm",
+        "m.text": "Invite to Party at Bob's House on Feb 7th, 3pm",
         "m.html": "Invite to Party at <i>Bob's house</i> on Feb 7th, 3pm",
         "m.calendar.request": {
             "version": "2.0",
@@ -278,13 +278,13 @@ https://tools.ietf.org/html/draft-ietf-calext-jscalendar-11)
             "description": "123 Fake Street"
         },
         "m.thumbnail": [
-        	{
-	           "uri": "mxc://localhost/JWEIFJgwEIhweiWJE",
-	           "width": 256,
-	           "height": 256,
-	           "mimetype": "image/jpeg",
-	           "size": 1024000
-        	}
+            {
+               "uri": "mxc://localhost/JWEIFJgwEIhweiWJE",
+               "width": 256,
+               "height": 256,
+               "mimetype": "image/jpeg",
+               "size": 1024000
+            }
         ],
     }
 }
