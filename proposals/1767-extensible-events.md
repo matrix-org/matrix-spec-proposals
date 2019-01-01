@@ -1,5 +1,6 @@
-# Extensible events in Matrix
-## Problem
+# MSC1767: Extensible events in Matrix
+
+##  Problem
 
  1. There is no formal mechanism of extending events with additional structured metadata.
  2. New events tend to reinvent the wheel rather than being able to reuse existing types.
