@@ -50,8 +50,8 @@ and fall back to their current behaviour if they receive a 404 response.
 
 ### Suitable applications
 
-In general, capabilities advertised via this endpoiunt should depend in some
-way on the state of the user or server - in other words, they will inherently
+In general, capabilities advertised via this endpoint should depend in some way
+on the state of the user or server - in other words, they will be inherently
 "optional" features in the API.
 
 This endpoint should *not* be used to advertise support for experimental or
