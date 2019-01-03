@@ -18,17 +18,25 @@ To use this authentication type in login calls, clients should submit the follow
 ````
   {
     "type": "m.login.proof.<crypto_suite_id>",
+    "identifier": {
+      ...
+    },
     "challenge": "<challenge>",
     "proof": "<proof>"
   }
 ````
 
-where the ``proof`` contains the user identifier and a signature containing a challenge that the user has received before from the challenge endpoint of the home server. The (json) type of ``proof`` is defined in [the specification for Linked Data Proofs](https://w3c-dvcg.github.io/ld-proofs) and contains ``type`` (of proof; equals to crypto_suite_id), ``creator`` (reference to the user's public key), ``created`` (when the proof/signature was created), ``domain`` (the matrix user name), ``nonce`` (provided by the client), ``proofValue`` (the signature).
+where the ``proof`` contains the matrix id and a signature containing a challenge that the user has received before from the challenge endpoint of the home server. The (json) type of ``proof`` is defined in [the specification for Linked Data Proofs](https://w3c-dvcg.github.io/ld-proofs) and contains ``type`` (of proof; equals to crypto_suite_id), ``creator`` (reference to the user's public key), ``created`` (when the proof/signature was created), ``domain`` (the matrix user name), ``nonce`` (provided by the client), ``proofValue`` (the signature).
 
 Example:
 ````
   {
     "type": "m.login.proof.RSASignature2018",
+    "identifier": {
+      "type": "m.id.thirdparty",
+      "medium": "did",
+      "address": "did:stacks:SM24...d4A"
+    },
     "challenge": "achallengefromtheserver",
     "proof": {
         "type": "RSASignature2018",
@@ -60,7 +68,7 @@ The challenge endpoint should be defined as ``/account/proof/requestChallenge`` 
 
 Instead of adding a new login type, the type ``m.login.password`` could be used. The password could contain the signature of the challenge and during password verification the home server could verify the signature. However, it is not the password of matrix user and therefore, the password login type should not be used.
 
-The verification of the signature and the creation of the challenge for the login call could be handled by the identity server. The user would then just submit the 3PID verificaion credentials of the identity server session for login calls similar to ``m.login.email.identity``. However, this would transfer the responsibility of authentication to the identity server.
+The verification of the signature and the creation of the challenge for the login call could be handled by the identity server. The user would then just submit the 3PID verification credentials of the identity server session for login calls similar to ``m.login.email.identity``. However, this would transfer the responsibility of authentication to the identity server.
 
 Instead of providing a cryptographic proof/signature the user could publish the challenge at a storage location that is only accessible by the user if she is in control of the public key. The home server could then verify the challenge by accessing this (user-owned) storage location. This simplifies the verification process for home server a lot but restricts the user to private/public keys that are associated to decentralized identifiers with user-owned storage hubs (see for example blockstack's gaia and DID documents specification).
 
@@ -68,18 +76,16 @@ The new login type is similar to the token login type. However, the verification
 
 ## Potential issues
 
-* There is no way specified to associate a public key as an administrative account. In MSC1762 a 3PID is defined that describes decentralized identifiers (DIDs) which come with a public keys. This can be used for the reference endpoint of public keys.
+* There is no way specified to associate a public key as an administrative account. In MSC1762 a 3PID is defined that describes decentralized identifiers (DIDs) which come with a public keys. These could be used in ``account/3pid`` calls. Then the did could be resolved and the keys could be used for the reference endpoint of public keys as well.
 
-* This login flow is verbose as it used vocabulary and object types from the W3C CCG.
+* This login flow is verbose as it uses vocabulary and object types from the W3C CCG, e.g. the user identifier is specified in property ``identifier`` as well as in the proof as property ``domain`` as it is specified by the Linked Data Proof document.
 
-* The reference endpoint of public keys does not return a URl/linked document to the owner of the public key as suggested by the W3C CCG. Currently, the matrix protocol has no endpoint to reference the user (i.e. the owner). A reference to an identity server could be returned for public keys that are associated with decentralized identifiers (DIDs). The link would be something like 
+* The reference endpoint of public keys does not return a URL/linked document to the owner of the public key as suggested by the W3C CCG (it returns just the matrix id). Currently, the matrix protocol has no endpoint to reference the user (i.e. the owner). A reference to an identity server could be returned for public keys that are associated with decentralized identifiers (DIDs). The link would be something like 
 
 ````
 http://localhost:8090/_matrix/identity/api/v1/lookup?medium=did&address=did:stacks:SM34..4A
 ````
 The returned matrix id should be the same as the domain in the proof.
-
-* The user identifier is usually specified in property ``identifier``. Here, it is contained in the proof as property ``domain`` as it is specified by the Linked Data Proof document.
 
 ## Security considerations
 
