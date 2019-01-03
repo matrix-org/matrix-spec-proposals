@@ -78,7 +78,7 @@ Features which might be better advertised elsewhere include:
    ([MSC1219](https://github.com/matrix-org/matrix-doc/issues/1219)) - list in
    `/client/versions`.
 
- * Support for lazy-loading of room members - list in `/client/r0/versions`.
+ * Support for lazy-loading of room members - list in `/client/versions`.
 
  * Media size limits - list in `/media/r0/config`, because the media server may
    be a separate process.
