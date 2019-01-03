@@ -23,7 +23,7 @@ To use this authentication type in login calls, clients should submit the follow
   }
 ````
 
-where the ``proof`` contains the user identifier and a signature containing a challenge that the user has received before from the challenge endpoint of the home server. The (json) type of ``proof`` is defined in [the specification for Linked Data Proofs](https://w3c-dvcg.github.io/ld-proofs) and contains ``type`` (of proof; equals to crypto_suite_id), ``creator`` (reference to the user's public key), ``created`` (when the proof/signature was created), ``domain`` (the matrix user name), ``nonce`` (received from the endpoint), ``proofValue`` (the signature).
+where the ``proof`` contains the user identifier and a signature containing a challenge that the user has received before from the challenge endpoint of the home server. The (json) type of ``proof`` is defined in [the specification for Linked Data Proofs](https://w3c-dvcg.github.io/ld-proofs) and contains ``type`` (of proof; equals to crypto_suite_id), ``creator`` (reference to the user's public key), ``created`` (when the proof/signature was created), ``domain`` (the matrix user name), ``nonce`` (provided by the client), ``proofValue`` (the signature).
 
 Example:
 ````
