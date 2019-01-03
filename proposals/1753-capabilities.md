@@ -55,7 +55,7 @@ on the state of the user or server - in other words, they will be inherently
 "optional" features in the API.
 
 This endpoint should *not* be used to advertise support for experimental or
-unstable features, which is better done via `/client/r0/versions` (see
+unstable features, which is better done via `/client/versions` (see
 [MSC1497](https://github.com/matrix-org/matrix-doc/issues/1497)).
 
 Examples of features which might reasonably be advertised here include:
