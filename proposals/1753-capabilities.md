@@ -76,7 +76,7 @@ Features which might be better advertised elsewhere include:
 
  * Support for e2e key backups
    ([MSC1219](https://github.com/matrix-org/matrix-doc/issues/1219)) - list in
-   `/client/r0/versions`.
+   `/client/versions`.
 
  * Support for lazy-loading of room members - list in `/client/r0/versions`.
 
