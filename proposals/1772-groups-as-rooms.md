@@ -105,11 +105,12 @@ it may be overengineered.
 Instead, the common case is wanting to define a group where some users are
 publicly visible as members, and others are not.  This is what the current use
 cases require today.  A simple way of achieving would be to create a subgroup
-for the private members - e.g. have +sensitive:matrix.org and +sensitive-
-private:matrix.org.  The membership of `+sensitive-private:matrix.org` is set up
-with `m.room.join_rules` to not to allow peeking; you have to be joined to see
-the members, and users who don't want to be seen by the public to be member of
-the group are added to the subgroup.
+for the private members - e.g. have `+sensitive:matrix.org` and
+`+sensitive-private:matrix.org`.  The membership of
+`+sensitive-private:matrix.org` is set up with `m.room.join_rules` to not to
+allow peeking; you have to be joined to see the members, and users who don't
+want to be seen by the public to be member of the group are added to the
+subgroup.
 
 XXX: is there a use case today for having a group where users are unaware of the
 other users' membership?  e.g. if I am a member of `+scandalous:matrix.org`
