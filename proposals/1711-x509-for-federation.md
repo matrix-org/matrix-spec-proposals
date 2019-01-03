@@ -224,7 +224,7 @@ a recognised Certificate Authority will improve security, reduce
 centralisation, and eliminate some common deployment pitfalls.
 
 <a id="f1"/>[1] It's *possible* to set up homeservers to use servers other than
-`matrix.org` as notaries, but we are not aware of any that are set up this
+`matrix.org` as notaries, but only a minority are actually set up this
 way. [↩](#a1)
 
 <a id="f2"/>[2] I've not been able to find an authoritative source on this, but
