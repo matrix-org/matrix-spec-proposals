@@ -26,6 +26,8 @@ the same underlying profile room).
 This does not replace the current `displayname` and `avatar_url` field behaviour
 on `m.room.membership` events which we have today.
 
+This is an alternative to [MSC489](https://github.com/matrix-org/matrix-doc/issues/489).
+
 ## Client behaviour
 
 When a client loads a membership info page for a given user, it peeks into that
