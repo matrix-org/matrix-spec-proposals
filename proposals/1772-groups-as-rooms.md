@@ -1,6 +1,6 @@
 # Proposal for groups as rooms (take 2)
 
-This obsoletes MSC1215.
+This obsoletes [MSC1215](https://github.com/matrix-org/matrix-doc/issues/1215).
 
 ## Problem
 
@@ -121,9 +121,10 @@ useful for normal rooms.
 ## Flair
 
 TODO: We need to establish how users should safely advertise their flair.
-Perhaps they can claim whatever flair they like on their profile (MSC1769) and
-clients need to then doublecheck whether the assertion is true by peeking in the
-room in question to check it's true?
+Perhaps they can claim whatever flair they like on their profile
+([MSC1769](https://github.com/matrix-org/matrix-doc/issues/1769)) and clients
+need to then doublecheck whether the assertion is true by peeking in the room in
+question to check it's true?
 
 ## Dependencies
 
@@ -133,7 +134,8 @@ This needs peeking to work effectively over federation (e.g. by having servers
 join remote rooms as @null:example.com in order to participate in them for
 peeking purposes).
 
-These dependencies are shared with profiles-as-rooms (MSC1769).
+These dependencies are shared with profiles-as-rooms
+([MSC1769](https://github.com/matrix-org/matrix-doc/issues/1769)).
 
 ## Security considerations
 
@@ -158,7 +160,8 @@ group memnbership as room membership (nesting if required).
 
 ## Issues
 
-How does this work with MSC1229 (removing MXIDs)?
+How does this work with [MSC1229](https://github.com/matrix-org/matrix-
+doc/issues/1229) (removing MXIDs)?
 
 ## History
 
