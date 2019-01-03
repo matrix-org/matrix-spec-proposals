@@ -14,19 +14,19 @@ The following authentication flow should be defined assuming that the user has a
 A new class of login types should be defined starting with ``m.login.proof.`` followed by the identifier for the relevant cryptographic methods. These identifiers are publishd in the registry of the [W3C Credentials Communicy Group](https://w3c-ccg.github.io) for [linked data cryptographic suites](https://w3c-ccg.github.io/ld-cryptosuite-registry). Examples are ``EdDasSASignatureSecp256k1`` or ``RsaSignature2018``.
 
 To use this authentication type in login calls, clients should submit the following:
-.. code:: json
 
+````
   {
     "type": "m.login.proof.<crypto_suite_id>",
     "challenge": "<challenge>",
     "proof": "<proof>"
   }
+````
 
 where the ``proof`` contains the user identifier and a signature containing a challenge that the user has received before from the challenge endpoint of the home server. The (json) type of ``proof`` is defined in [the specification for Linked Data Proofs](https://w3c-dvcg.github.io/ld-proofs) and contains ``type`` (of proof; equals to crypto_suite_id), ``creator`` (reference to the user's public key), ``created`` (when the proof/signature was created), ``domain`` (the matrix user name), ``nonce`` (received from the endpoint), ``proofValue`` (the signature).
 
 Example:
-.. code:: json
-
+````
   {
     "type": "m.login.proof.RSASignature2018",
     "challenge": "achallengefromtheserver",
@@ -39,18 +39,20 @@ Example:
         "proofValue":"eyJ.....fFWFOEjxk"
     },
   }
+````
 
 The home server responds with the access token as usual if the proof could be verified using the algorithm specified in the Linked Data Proof document.
 
 If the signature could not be verified the error ``M_UNAUTHORIZED`` should be returned.
 
 The reference endpoint for public keys should be defined as ``/account/<username>/keys/<number>``. It returns a json containing a description of the public key of ``username`` with id ``number`` in the format
-.. code:: json
 
+````
   {
     "owner": "@friedger:matrix.org",
     "publicKeyBase58": "H3C....PV",
   }
+````
 
 The challenge endpoint should be defined as ``/account/proof/requestChallenge`` and return a random text that is unique for each call (within a time window that is sufficient to complete the login flow).
 
@@ -66,10 +68,18 @@ The new login type is similar to the token login type. However, the verification
 
 ## Potential issues
 
-* There is no way specified to associate a public key as an administrative account. In MSC1762 a 3PID is defined that describes decentralized identifiers (DIDs) which come with a public key. This can be used for the reference endpoint of public keys.
+* There is no way specified to associate a public key as an administrative account. In MSC1762 a 3PID is defined that describes decentralized identifiers (DIDs) which come with a public keys. This can be used for the reference endpoint of public keys.
 
 * This login flow is verbose as it used vocabulary and object types from the W3C CCG.
 
+* The reference endpoint of public keys does not return a URl/linked document to the owner of the public key as suggested by the W3C CCG. Currently, the matrix protocol has no endpoint to reference the user (i.e. the owner). A reference to an identity server could be returned for public keys that are associated with decentralized identifiers (DIDs). The link would be something like 
+
+````
+http://localhost:8090/_matrix/identity/api/v1/lookup?medium=did&address=did:stacks:SM34..4A
+````
+The returned matrix id should be the same as the domain in the proof.
+
+* The user identifier is usually specified in property ``identifier``. Here, it is contained in the proof as property ``domain`` as it is specified by the Linked Data Proof document.
 
 ## Security considerations
 
