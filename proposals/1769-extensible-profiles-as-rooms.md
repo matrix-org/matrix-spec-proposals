@@ -58,66 +58,66 @@ it could be something like this:
 
 ```json
 {
-	"type": "m.profile",
-	"content": {
-		"m.profile": {
-			"name": {
-				"family": "Gump",
-				"given": "Forrest",
-				"additional": "",
-				"prefixes": "Mr.",
-				"suffixes": ""
-			},
-			"fn": "Forrest Gump",
-			"org": "Bubba Gump Shrimp Co.",
-			"title": "Shrimp Man",
-			"tel": [
-				{
-					"type": [
-						"work", "voice"
-					],
-					"uri": "tel:+1-111-555-1212"
-				},
-				{
-					"type": [
-						"home", "voice"
-					],
-					"uri": "tel:+1-404-555-1212"
-				}
-			],
-			"address": [
-				{
-					"type": [
-						"work"
-					],
-					"pref": 1,
-					"label": "100 Waters Edge\nBaytown, LA 30314\nUnited States of America",
-					"pobox": "",
-					"extended": "",
-					"street": "100 Waters Edge",
-					"locality": "Baytown",
-					"region": "LA",
-					"postcode": "30314",
-					"country": "United States of America"
-				},
-				{
-					"type": [
-						"home"
-					],
-					"label": "42 Plantation St.\nBaytown, LA 30314\nUnited States of America",
-					"pobox": "",
-					"extended": "",
-					"street": "42 Plantation St.",
-					"locality": "Baytown",
-					"region": "LA",
-					"postcode": "30314",
-					"country": "United States of America"
-				}
-			],
-			"email": "forrestgump@example.com",
-			"rev": "20080424T195243Z"
-		}
-	}
+    "type": "m.profile",
+    "content": {
+        "m.profile": {
+            "name": {
+                "family": "Gump",
+                "given": "Forrest",
+                "additional": "",
+                "prefixes": "Mr.",
+                "suffixes": ""
+            },
+            "fn": "Forrest Gump",
+            "org": "Bubba Gump Shrimp Co.",
+            "title": "Shrimp Man",
+            "tel": [
+                {
+                    "type": [
+                        "work", "voice"
+                    ],
+                    "uri": "tel:+1-111-555-1212"
+                },
+                {
+                    "type": [
+                        "home", "voice"
+                    ],
+                    "uri": "tel:+1-404-555-1212"
+                }
+            ],
+            "address": [
+                {
+                    "type": [
+                        "work"
+                    ],
+                    "pref": 1,
+                    "label": "100 Waters Edge\nBaytown, LA 30314\nUnited States of America",
+                    "pobox": "",
+                    "extended": "",
+                    "street": "100 Waters Edge",
+                    "locality": "Baytown",
+                    "region": "LA",
+                    "postcode": "30314",
+                    "country": "United States of America"
+                },
+                {
+                    "type": [
+                        "home"
+                    ],
+                    "label": "42 Plantation St.\nBaytown, LA 30314\nUnited States of America",
+                    "pobox": "",
+                    "extended": "",
+                    "street": "42 Plantation St.",
+                    "locality": "Baytown",
+                    "region": "LA",
+                    "postcode": "30314",
+                    "country": "United States of America"
+                }
+            ],
+            "email": "forrestgump@example.com",
+            "rev": "20080424T195243Z"
+        }
+    }
 }
 ```
 
