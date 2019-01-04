@@ -73,17 +73,19 @@ event within its content.  Retention is only considered for non-state events.
 `max_lifetime`:
 	the maximum duration in seconds for which a server must store
 	this event.  Must be null or in range [0, 2<sup>31</sup>-1]. If absent, or null,
-  should be interpreted as 'forever'.
+        should be interpreted as 'forever'.
 
 `min_lifetime`:
 	the minimum duration for which a server should store this event.
 	Must be null or in range [0, 2<sup>31</sup>-1]. If absent, or null, should be
-  interpreted as 'forever'.
+        interpreted as 'forever'.
 
 `self_destruct`:
-	a boolean for whether servers must remove this event after
-	seeing an explicit read receipt delivered for it.  If absent, or null, should
-  be interpreted as false.
+	the duration in seconds after which servers (and optionally clients) must
+	remove this event after seeing an explicit read receipt delivered for it.
+	Must be null or in range [0, 2<sup>31</sup>-1]. If absent, or null, this
+	behaviour does not take effect.
+	
 
 `expire_on_clients`:
 	a boolean for whether clients must expire messages clientside
@@ -120,18 +122,23 @@ order to reclaim diskspace.
 
 ```json
 {
-	"self_destruct": true,
+	"self_destruct": 5,
 	"expire_on_clients": true,
 }
 ```
 
 The above example describes 'self-destructing message' semantics where both server
-and clients MUST purge/delete the event and associated data as soon as a read
-receipt for that message is received from the recipient.
+and clients MUST purge/delete the event and associated data, 5 seconds after a read
+receipt for that message is received from the recipient.  In other words, the
+recipient(s) have 5 seconds to view the message after receiving it.
 
 Clients and servers MUST send explicit read receipts per-message for
 self-destructing messages (rather than for the most recently read message,
 as is the normal operation), so that messages can be destructed as requested.
+
+XXX: this means that self-destruct only really makes sense for 1:1 rooms. is this
+adequate? should self-destruct messages be removed from this MSC entirety to
+simplify landing it?
 
 These retention fields are preserved during redaction, so that even if the event
 is redacted, the original copy can be subsequently purged appropriately from the
@@ -160,7 +167,7 @@ If set, these fields replace any per-message retention behaviour
 specified by the user - even if it means forcing laxer privacy requirements on
 that user.  This is a conscious privacy tradeoff to allow admins to specify
 explicit privacy requirements for a room.  For instance, a room may explicitly
-disable self-destructing messages by setting `self_destruct: false`, or may
+disable self-destructing messages by setting `self_destruct: null`, or may
 require all messages in the room be stored forever with `min_lifetime: null`.
 
 In the instance of `min_lifetime` or `max_lifetime` being overridden, the
@@ -265,10 +272,14 @@ Server/clients then set a maintenance task to remove ("purge") the event and
 references to its event ID from their DB and in-memory queues after the lifetime
 has expired (starting timing from the absolute origin_server_ts on the event).
 
-As a special case, servers and clients should immediately purge the event, on observing
+As a special case, servers and clients should purge the event N seconds after observing
 a read receipt for that specific event ID, if:
-  * if specified, the `self_destruct` field in the `m.room.retention` event for the room is true.
+  * if specified, the `self_destruct` field in the `m.room.retention` event for
+    the room is set to N where N is not null.
   * otherwise, if specified, the message's `self_destruct` field is true.
+  
+The device emitting the read receipt for a self-destructing message must give the
+user sufficient time to view the message after op
 
 If possible, servers/clients should remove downstream notifications of a message
 once it has expired (e.g. by cancelling push notifications).
