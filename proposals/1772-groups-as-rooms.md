@@ -67,6 +67,10 @@ nested within it.
 }
 ```
 
+XXX: alternatively, perhaps all the rooms and subgroups should be their own
+state event with a unique state key, ensuring that this can scale to large
+groups and doesn't have to be edited atomically.
+
 Name, Topic, Membership etc share the same events as a normal room.
 
 The flair for a group is given by the room avatar.
