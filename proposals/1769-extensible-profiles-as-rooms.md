@@ -14,7 +14,8 @@ leverage all the existing infrastructure we have for sending and receiving state
 events.
 
 Clients should construct the default alias of the profile room is constructed as
-`#_profile_userid:<server>`.
+`#@userid:<server>` (assuming aliases allow @; if not, `#_profile_userid:<server>`.
+The server in the alias is that of the user whose profile is being considered.
 
 This may be overridden per-room by setting a `profile` field in the
 `m.room.member` for the user.  (Once we remove MXIDs from rooms in
@@ -26,7 +27,7 @@ the same underlying profile room).
 This does not replace the current `displayname` and `avatar_url` field behaviour
 on `m.room.membership` events which we have today.
 
-This is an alternative to [MSC489](https://github.com/matrix-org/matrix-doc/issues/489).
+This proposal is an alternative to [MSC489](https://github.com/matrix-org/matrix-doc/issues/489).
 
 ## Client behaviour
 
