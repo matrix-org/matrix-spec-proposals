@@ -219,10 +219,10 @@ irrevocably lost against the senders' wishes.
 
 ## Client-side behaviour
 
-Clients should independently calculate the retention of a message based on the
-event fields and the room state, and show the message lifespan in the UI.  If a
-message has a finite lifespan that fact MUST be indicated clearly in the timeline
-to allow users to correctly interact with the message.  (The details of the
+Clients which persist conversation history must calculate the retention of a message
+based on the event fields and the room state.  If a message has a finite lifespan
+that fact MUST be indicated clearly in the timeline
+to allow users to interact with the message in an informed manner.  (The details of the
 lifespan can be shown on demand, however).
 
 If `expire_on_clients` is true, then clients should also calculate expiration for
