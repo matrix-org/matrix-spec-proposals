@@ -53,6 +53,10 @@ if servers which have aliases pointing to a room also join their pseudouser to
 the room in order to keep the room 'alive' (and thus the alias working) even
 if everyone leaves.
 
+Pseudousers could potentially also act on behalf of ASes within a room without
+the AS having to unpleasantly join/part a bot to interact with it
+(https://github.com/matrix-org/matrix-doc/issues/544)
+
 ## Security considerations
 
 This has potential to allow users to unilaterally invite servers into their rooms,
