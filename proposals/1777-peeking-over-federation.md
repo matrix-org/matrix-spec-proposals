@@ -2,7 +2,9 @@
 
 ## Problem
 
-Currently you can't peek over federation.
+Currently you can't peek over federation, as it was never designed or
+implemented due to time constraints when peeking was originally added to Matrix
+in 2016.
 
 As well as stopping users from previewing rooms before joining, the fact that
 servers can't participate in remote rooms without joining them first is
