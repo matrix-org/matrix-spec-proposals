@@ -1,4 +1,4 @@
-# Proposal for replacing peeking in the CS API
+# Proposal for implementing peeking via /sync in the CS API
 
 ## Problem
 
@@ -33,13 +33,13 @@ POST /sync
 {
     "filters": [
         "normal sync filter (limit results to 10 rooms at a time)",
-        "peek just m.flair on this set of rooms", // to discover flair for users
+        "peek just m.flair on this set of rooms (to discover flair for users)"
         "peek full room that we're previewing",
         "peek full room a profile-room we're looking at",
-        "peek just m.room.name, m.room.avatar, m.subgroup on this set of group-rooms", // to display groups-as-rooms
+        "peek just m.room.{name,avatar}, m.subgroup on this set of rooms (to display groups-as-rooms)",
     ],
     "pagination": {
-        "room_limit": 10  // return a maximum of 10 rooms at a time
+        "room_limit": 10
     }
 }
 ```
@@ -129,8 +129,11 @@ Need to worry about clients DoSing by requesting overly unpleasant filters?
 
 How do we represent peek failures?
 
+## Dependencies
+
+This unblocks MSC1769 (profiles as rooms) and MSC1772 (groups as rooms)
+
 ## History
 
 This takes some inspiration from Erik's original 'paginated sync' PR to Synapse
 from 2016: https://github.com/matrix-org/synapse/pull/893/files
-
