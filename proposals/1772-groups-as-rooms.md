@@ -73,7 +73,7 @@ groups and doesn't have to be edited atomically.
 
 Name, Topic, Membership etc share the same events as a normal room.
 
-The flair for a group is given by the room avatar.
+The flair image for a group is given by the room avatar.
 
 Long description requires a new event: `m.room.description`.  This can also be
 used for rooms as well as groups.
@@ -125,11 +125,34 @@ useful for normal rooms.
 
 ## Flair
 
-TODO: We need to establish how users should safely advertise their flair.
-Perhaps they can claim whatever flair they like on their profile
-([MSC1769](https://github.com/matrix-org/matrix-doc/issues/1769)) and clients
-need to then doublecheck whether the assertion is true by peeking in the room in
-question to check it's true?
+A proposal for how to safely determine user flair is:
+
+ * User publishes the groups they wish to announce on their profile
+   ([MSC1769](https://github.com/matrix-org/matrix-doc/issues/1769)
+   as a m.flair state event: it lists the groups which they are advertising.
+   
+ * When a client wants to know the current flair for a set of users (i.e.
+   those which it is currently displaying in the timeline), it peeks the
+   profile rooms of those users.  However, we can't trust the flair which the
+   users advertise on the profile - it has to be cross-referenced from the
+   memberships of the groups in question.
+   
+To do this cross-referencing, options are:
+
+ 1. The client checks the group membership (very inefficient, given the server
+    could/should do it for them), or...
+ 2. The server checks the group membership by peeking the group and somehow
+    decorates the `m.flair` event as validated before sending it to the client.
+    This is also inefficient, as it forces the server to peek a potentially large
+    group (unless we extend federation to allow peeking specific state events)
+ 3. The origin `m.flair` event includes the event_id of the user's
+    `m.room.membership` event in the group.  The server performing the check can
+    then query this specific event from one of the servers hosting the group-room,
+    and we perhaps extend the S2S API to say whether a given state event is current
+    considered current_state or not.  If the `m.room.membership` event is confirmed
+    as current, then the `m.flair` is decorated as being confirmed.
+
+Of these, option 3 feels best?
 
 ## Dependencies
 
