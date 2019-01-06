@@ -38,13 +38,14 @@ N.B. This requires the peeking API to be improved from the legacy stopgap of usi
 /events.  One solution could be to pass /sync a list of additional rooms to attempt
 to sync data for (somewhat as per the paginated /sync API did in
 https://github.com/matrix-org/synapse/pull/893).  Defining this is left as a
-separate MSC.
+separate MSC ([MSC1776](https://github.com/matrix-org/matrix-doc/issues/1776))
 
 N.B. This also requires peeking to work over federation.  One simple solution to
 this could be to require servers to join remote rooms they need to peek into
 usinga null user - e.g. @:server or @null:server.  This would avoid having to
 create a new membership event type for servers and complicate state auth/res
 rules. Again, defining this is left as a separate MSC.
+([MSC1777](https://github.com/matrix-org/matrix-doc/issues/1777))
 
 The same peeking could also be used to display message events in the user's
 profile room - the equivalent of their social network profile wall.
