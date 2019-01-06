@@ -192,10 +192,11 @@ Of these, option 3 feels best?
 ## Dependencies
 
 This needs peeking to work effectively on CS API.
+([MSC1776](https://github.com/matrix-org/matrix-doc/issues/1776))
 
 This needs peeking to work effectively over federation (e.g. by having servers
 join remote rooms as @null:example.com in order to participate in them for
-peeking purposes).
+peeking purposes) - ([MSC1777](https://github.com/matrix-org/matrix-doc/issues/1777))
 
 These dependencies are shared with profiles-as-rooms
 ([MSC1769](https://github.com/matrix-org/matrix-doc/issues/1769)).
