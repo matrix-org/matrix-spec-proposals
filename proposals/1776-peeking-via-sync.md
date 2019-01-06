@@ -137,6 +137,7 @@ How do we represent peek failures?
 ## Dependencies
 
 This unblocks MSC1769 (profiles as rooms) and MSC1772 (groups as rooms)
+This depends on MSC1777 (peeking over federation) to work well in practice.
 
 ## History
 
