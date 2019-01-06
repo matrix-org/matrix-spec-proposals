@@ -69,7 +69,42 @@ nested within it.
 
 XXX: alternatively, perhaps all the rooms and subgroups should be their own
 state event with a unique state key, ensuring that this can scale to large
-groups and doesn't have to be edited atomically.
+groups and doesn't have to be edited atomically. A key like `present: true`
+would be needed to distinguish from a deleted state event. Something like:
+
+```json
+{
+    "type": "m.room.group",
+    "state_key": "#room1:example.com",
+    "contents": {
+        "present": true
+    }
+}
+
+{
+    "type": "m.room.group",
+    "state_key": "#room1:example.com",
+    "contents": {
+        "present": true,
+        "autojoin": true
+    }
+}
+
+{
+    "type": "m.room.subgroup",
+    "state_key": "+something:example.com",
+    "contents": {
+        "present": true
+    }
+}
+{
+    "type": "m.room.subgroup",
+    "state_key": "+otherthing:example.com",
+    "contents": {
+        "present": true
+    }
+}
+```
 
 Name, Topic, Membership etc share the same events as a normal room.
 
