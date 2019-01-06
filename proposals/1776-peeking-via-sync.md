@@ -1,4 +1,4 @@
-# Proposal for implementing peeking via /sync in the CS API
+# MSC1776: Proposal for implementing peeking via /sync in the CS API
 
 ## Problem
 
@@ -120,6 +120,11 @@ brainstorm with Manu/Erik/Matthew and others when considering how to speed up
 initial sync), in that a slow large granular incremental sync could be
 interrupted and later resumed in order to prioritise loading specific rooms as
 the user navigates the app.
+
+## Tradeoffs
+
+The API shape here is picked quite naively as it seems to do the job.  There are
+probably many other ways to skin the cat.
 
 ## Security considerations
 
