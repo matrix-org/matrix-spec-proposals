@@ -224,7 +224,7 @@ group memnbership as room membership (nesting if required).
 ## Issues
 
 How does this work with
-[MSC1229](https://github.com/matrix-org/matrix-doc/issues/1229) (removing MXIDs)?
+[MSC1228](https://github.com/matrix-org/matrix-doc/issues/1228) (removing MXIDs)?
 
 ## History
 
