@@ -25,7 +25,7 @@ The current groups API has some serious issues:
  * It doesn't support third party invites.
  * Groups could benefit from other features which already exist today for rooms
    * e.g. Room Directories
- * Groups are centralised, rather than being existing across multiple
+ * Groups are centralised, rather than being replicated across all
    participating servers.
 
 ## Solution
