@@ -83,7 +83,7 @@ would be needed to distinguish from a deleted state event. Something like:
 
 {
     "type": "m.room.group",
-    "state_key": "#room1:example.com",
+    "state_key": "#room2:example.com",
     "contents": {
         "present": true,
         "autojoin": true
