@@ -97,11 +97,11 @@ password could contain the signature of the challenge and during password verifi
 home server could verify the signature. However, it is not the password of matrix user and
 therefore, the password login type should not be used.
 
-The verification of the signature and the creation of the challenge for the login call
-could be handled by the identity server. The user would then just submit the 3PID
-verification credentials of the identity server session for login calls similar to
-``m.login.email.identity``. However, this would transfer the responsibility of
-authentication to the identity server.
+The creation of the challenge for the login call could be handled by the
+identity server. The user would then just submit the 3PID verification
+credentials of the identity server session for login calls similar to
+``m.login.email.identity``. THowever, the identity server has no means to
+announce which crypto methods it supports.
 
 Instead of providing a cryptographic proof/signature the user could publish the challenge
 at a storage location that is only accessible by the user if she is in control of the
