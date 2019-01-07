@@ -121,6 +121,10 @@ rather than closed deployments. For example, if WhatsApp adopted Matrix it
 wouldn’t be a complete win unless they openly federated with the rest of the
 Matrix network.
 
+TODO: spell out when features should land in the spec, versus via
+integration/widget or other non-core extension. e.g. should video conferencing
+be in the spec itself, or done via Jitsi?
+
 ### Values
 
 As Matrix evolves, it's critical that the Spec Core Team and Guardians are
