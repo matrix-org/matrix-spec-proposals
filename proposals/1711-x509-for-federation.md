@@ -58,23 +58,30 @@ We propose that Matrix homeservers should be required to present valid TLS
 certificates, signed by a known Certificate Authority, on their federation
 port.
 
-In order to ease transition, we could continue to follow the current,
-perspectives-based approach for servers whose TLS certificates fail
-validation. However, this should be strictly time-limited (for three months,
-say), to give administrators time to switch to a signed certificate. The
-`matrix.org` team would proactively attempt to reach out to homeserver
-administrators who do not update their certificate.
+In order to ease transition and give administrators time to switch to a signed
+certificate, we will continue to follow the current, perspectives-based
+approach for servers whose TLS certificates fail validation.
 
-Once the transition to CA-signed certificates is complete, the
+However, this fallback will be strictly time-limited, and Matrix S2S spec r0
+will not accept self-signed certificates, nor will it include the
 `tls_fingerprints` property of the
 [`/_matrix/key/v2`](https://matrix.org/docs/spec/server_server/unstable.html#retrieving-server-keys)
-endpoints would be redundant and we should consider removing it.
+endpoints. Synapse 1.0 will not accept self-signed certificates by default.
+
+The `matrix.org` team will proactively attempt to reach out to homeserver
+administrators who do not update their certificates in the coming weeks.
 
 The process of determining which CAs are trusted to sign certificates would be
 implementation-specific, though it should almost certainly make use of existing
 operating-system support for maintaining such lists. It might also be useful if
 administrators could override this list, for the purpose of setting up a
 private federation using their own CA.
+
+It would also be useful for administrators to be able to disable the
+certificate checks for a whitelist of domains/netmasks. This would be useful
+for `.onion` domains (where a certificate is hard to obtain, and where server
+verification is provided at the network level), as well as for testing with IP
+literals.
 
 ### Interaction with SRV records
 
@@ -93,7 +100,10 @@ intercepted by a MitM who can control the DNS response for the `SRV` record
 This will be in line with the current
 [requirements](https://matrix.org/docs/spec/server_server/unstable.html#resolving-server-names)
 in the Federation API specification for the `Host`, and by implication, the TLS
-Server Name Indication <sup id="a2">[2](#f2)</sup>.
+Server Name Indication <sup id="a2">[2](#f2)</sup>. It is also consistent with
+the recommendations of
+[RFC6125](https://tools.ietf.org/html/rfc6125#section-6.2.1) and the
+conventions established by the XMPP protocol (per [RFC6120](https://tools.ietf.org/html/rfc6120#section-13.7.2.1).
 
 ### Interaction with `.well-known` files
 
@@ -133,9 +143,9 @@ of Certificate Transparency.
 The Perspectives approach is also currently used for exchanging the keys that
 are used by homeservers to sign Matrix events and federation requests (the
 "signing keys"). Problems similar to those covered here also apply to that
-mechanism. A future MSC will propose improvements in that area.
+mechanism. This is discussed at [#1685](thttps://github.com/matrix-org/matrix-doc/issues/1685).
 
-## Tradeoffs
+## Alternatives
 
 There are well-known problems with the CA model, including a number of
 widely-published incidents in which CAs have issued certificates
@@ -192,6 +202,12 @@ possibility of putting the federation port behind a reverse-proxy without the
 need for additional configuration. Hopefully making the certificate usage more
 conventional will offset the overhead of setting up a certificate.
 
+Furthermore, homeserver implementations could provide an implementation of the
+ACME protocol and integration with Let's Encrypt, to make it easier for
+administrators to get started. (This would of course be
+implementation-specific, and administrators who wanted to keep control of the
+certificate creation process would be free to do so).
+
 ### Inferior support for IP literals
 
 Whilst it is possible to obtain an SSL cert which is valid for a literal IP
@@ -214,8 +230,8 @@ it can be difficult to get a certificate for a `.onion` domain (again, Let's
 Encrypt do not support them).
 
 The reasons for requiring a signed certificate (or indeed, for using TLS at
-all) are weakened when traffic is routed via the Tor network. It may be
-reasonable to relax the requirement for a signed certificate for such traffic.
+all) are weakened when traffic is routed via the Tor network. Administrators
+using the Tor network could disable certificate checks for `.onion` addresses.
 
 ## Conclusion
 
