@@ -344,6 +344,7 @@ collaborate constructively with the existing core team.
  * It's responsible for finding someone to run the Matrix.org homeserver (currently New Vector)
  * Publishing the spec
  * Responsible for sytest
+ * Publishing the website (including ensuring This Week In Matrix and similar exist to promote independent projects)
  * Manages IANA-style allocations for Matrix
    * mx:// URI scheme?
    * TCP port 8448
@@ -352,7 +353,7 @@ collaborate constructively with the existing core team.
 In future:
 
  * contract entities to work on Matrix? (e.g. redistributing donations back to fund development)
- * manage a Matrix certification process?
+ * manage a "Made for Matrix" certification process? (to confirm that products are actually compatible with Matrix)
  * promote Matrix (e.g. organise meetups & events & fund community activity)?
 
 ## Timings
