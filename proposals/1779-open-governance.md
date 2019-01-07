@@ -10,7 +10,7 @@ communication standard on behalf of the whole Matrix community.
 See https://matrix.org/blog/2018/10/29/introducing-the-matrix-org-foundation-part-1-of-2/
 for more context.
 
-This obsoletes [MSC1318](https://github.com/matrix-org/matrix-doc/issues/1318)
+This obsoletes [MSC1318](https://github.com/matrix-org/matrix-doc/issues/1318).
 
 ## Introduction
 
