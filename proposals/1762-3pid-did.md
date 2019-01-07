@@ -83,8 +83,8 @@ type (e.g. ``m.id.did``) as the user has created the DID herself, is in control
 of it and can be used for authentication. However, DIDs in general and DID
 methods in particular define their own namespaces that matches the concept of
 3PID very well. Users make use of their DIDs in other context, e.g.
-decentralized apps and might have an interested to make use of them in the
-context of matrix as well as other users (or apps) know already the user's DID.
+decentralized apps and might have an interest to make use of them in the
+context of matrix as well as other users (or apps) know already the user's DID or the user's human-friendly name associated with the DID.
 
 Furthermore, a new 3PID could be defined for each DID methods like
 ``m.did.stack`` or ``m.did.btcr``. However, it is not clear which methods will
