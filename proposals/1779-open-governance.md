@@ -375,8 +375,8 @@ a high-level mission lock aligned with the above:
 
 The foundation was then converted into a Community Interest Company, formalising
 its non-profit status under the approval of the independent [Community Interest
-Companies Regulator](https://www.gov.uk/government/organisations/office-of-the-
-regulator- of-community-interest-companies), which took effect Jan 2019.
+Companies Regulator](https://www.gov.uk/government/organisations/office-of-the-regulator-of-community-interest-companies), 
+which took effect Jan 2019.
 
 We are currently planning to release r0 of the Matrix Spec at the end of Jan 2019, and
 finalise the Foundation's articles of association shortly afterwards based on the
