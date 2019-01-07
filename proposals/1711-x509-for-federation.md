@@ -105,22 +105,6 @@ the recommendations of
 [RFC6125](https://tools.ietf.org/html/rfc6125#section-6.2.1) and the
 conventions established by the XMPP protocol (per [RFC6120](https://tools.ietf.org/html/rfc6120#section-13.7.2.1).
 
-### Interaction with `.well-known` files
-
-[MSC1708](https://github.com/matrix-org/matrix-doc/blob/rav/proposal/well-known-for-federation/proposals/1708-well-known-for-federation.md)
-proposes an alternative to SRV records, in the form of `.well-known` files. In
-this instance, a file at `https://matrix.org/.well-known/matrix/server` might
-direct requests to `server.example.com`.
-
-In this case, `server.example.com` would be required to present a valid
-certificate for `server.example.com`.
-
-Because the request for the `.well-known` file takes place over a validated TLS
-connection, this is not subject to the same DNS-based attacks as the SRV
-record, and this mechanism allows the owners of a domain to delegate
-responsibility for running their Matrix homeserver without having to hand over
-TLS keys for the whole domain.
-
 ### Extensions
 
 HTTP-Based Public Key Pinning (HPKP) and
