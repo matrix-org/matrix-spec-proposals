@@ -94,8 +94,7 @@ different methods.
 
 ## Potential issues
 
-DIDs are not human-friendly identifiers. Therefore, matrix clients need to
-provide a good UX to make DIDs usable.
+More DID methods might provide human friendly names.
 
 ## Security considerations
 
