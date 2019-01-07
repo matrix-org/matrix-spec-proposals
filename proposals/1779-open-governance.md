@@ -29,8 +29,8 @@ such that once the specification has finally been ‘born’ and reached an init
 Vector and better support contributions from the whole ecosystem.
 
 The concepts here are somewhat inspired by [Rust’s Governance
-Model](https://github.com/rust-lang/rfcs/blob/master/text/1068-rust-
-governance.md); a highly regarded solution to a similar problem: an ambitious
+Model](https://github.com/rust-lang/rfcs/blob/master/text/1068-rust-governance.md);
+a highly regarded solution to a similar problem: an ambitious
 open-source project which has been too many years in the making, incubated at
 first by a single company (Mozilla Corporation), which also enjoys a very
 enthusiastic community!
@@ -224,8 +224,8 @@ Guardians act as a backstop, and can appoint or remove Spec Core Team members
 Team is unable to reach consensus or is failing to align with the Foundation's
 mission.
 
-It's suggested that one of the Spec Core Team members is also be a Guardian, to
-facilitate information between the Guardians and the Spec Core Team and
+It's suggested that one of the Spec Core Team members should also be a Guardian,
+to facilitate information between the Guardians and the Spec Core Team and
 represent the technical angle of the project to the other Guardians.
 
 The project lead role acts to coordinate the team and to help tie-break in the
