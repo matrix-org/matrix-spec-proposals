@@ -231,7 +231,7 @@ Lifetime States
 ===============================  =============================  ====================================
 Name                             GitHub Label                   Description
 ===============================  =============================  ====================================
-Proposal Drafting and Feedback   N/A                            A proposal document which is still work-in-progress but is being shared to incorporate feedback. Please prefix your proposal's title with ``[WIP]`` to highlight this state.
+Proposal Drafting and Feedback   N/A                            A proposal document which is still work-in-progress but is being shared to incorporate feedback. Please prefix your proposal's title with ``[WIP]`` to make it easier for reviewers to skim their notifications list.
 Proposal In Review               proposal-in-review             A proposal document which is now ready and waiting for review by the Core Team and community
 Proposed Final Comment Period    proposed-final-comment-period  Currently awaiting signoff of a majority of team members in order to enter the final comment period
 Final Comment Period             final-comment-period           A proposal document which has reached final comment period either for merge, closure or postponement
