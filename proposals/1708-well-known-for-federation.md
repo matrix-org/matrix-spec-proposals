@@ -49,31 +49,30 @@ request is aborted.
 If the response is valid, the `m.server` property is parsed as
 `<delegated_server_name>[:<delegated_port>]`, and processed as follows:
 
-a. If `<delegated_server_name>` is an IP literal, then that IP address should
-   be used, together with `<delegated_port>`, or 8448 if no port is
-   given. The server should present a valid TLS certificate for
-   `<delegated_server_name>`.
+* If `<delegated_server_name>` is an IP literal, then that IP address should be
+  used, together with `<delegated_port>`, or 8448 if no port is given. The
+  server should present a valid TLS certificate for `<delegated_server_name>`.
 
-b. Otherwise, if the port is present, then an IP address is discovered by
-   looking up an AAAA or A record for `<delegated_server_name>`, and the
-   specified port is used. The server should present a valid TLS certificate
-   for `<delegated_server_name>`.
+* Otherwise, if the port is present, then an IP address is discovered by
+  looking up an AAAA or A record for `<delegated_server_name>`, and the
+  specified port is used. The server should present a valid TLS certificate
+  for `<delegated_server_name>`.
 
-   (In other words, the federation connection is made to
-   `https://<delegated_server_name>:<delegated_port>`).
+  (In other words, the federation connection is made to
+  `https://<delegated_server_name>:<delegated_port>`).
 
-c. If the hostname is not an IP literal and no port is given, a second SRV
-   record is looked up; this time for `_matrix._tcp.<delegated_server_name>`,
-   which may give yet another hostname (to be looked up using A/AAAA queries)
-   and port. The server must present a TLS cert for the
-   `<delegated_server_name>` from the .well-known.
+* If the hostname is not an IP literal and no port is given, a second SRV
+  record is looked up; this time for `_matrix._tcp.<delegated_server_name>`,
+  which may give yet another hostname (to be looked up using A/AAAA queries)
+  and port. The server must present a TLS cert for the
+  `<delegated_server_name>` from the .well-known.
 
-d. If no SRV record is found, the server is discovered by looking up an AAAA
-   or A record on `<delegated_server_name>`, and taking the default fallback
-   port number of 8448.
+* If no SRV record is found, the server is discovered by looking up an AAAA
+  or A record on `<delegated_server_name>`, and taking the default fallback
+  port number of 8448.
 
-   (In other words, the federation connection is made to
-   `https://<delegated_server_name>:8448`).
+  (In other words, the federation connection is made to
+  `https://<delegated_server_name>:8448`).
 
 ### Structure of the `.well-known` response
 
