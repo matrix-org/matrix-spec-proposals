@@ -243,7 +243,7 @@ team where nobody has strong experience in cryptography)
 
 The initial Spec Core Team (and their domain areas) is:
 
- * Matthew Hodgson (Lead)
+ * Matthew Hodgson (Lead, Guardian)
  * Erik Johnston (Servers)
  * Richard van der Hoff (Servers, Cryptography)
  * David Baker (Clients, IS API, Push API, Media)
