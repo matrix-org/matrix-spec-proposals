@@ -23,21 +23,19 @@ However, Bob's device can now send to Alice's device what it thinks is her key
 from his device), and Alice's device can do the verification on behalf of Bob
 and display the result.
 
-Example flow:
+Example flow 1:
 
 1. Alice and Bob meet in person, and want to verify each other's keys.
 2. Bob tells his device to display a QR code.  Bob's device displays a
-   QR code that encodes the URL
-   `https://matrix.to/#/<user-id>?device=<device-id>action=verify&key_<keyid>=<key-in-base64>...`
-   (when `matrix:` URLs are specced, this will be used instead).
+   QR code as specified below.
 3. Alice scans the QR code.
 4. Alice's device ensures that the user ID in the QR code is the same as the
    expected user ID.  This can be done by prompting Alice with the user ID, or
    can be done automatically if the device already knows what user ID to
    expect.  At this point, Alice's device has now verified Bob's key.
-5. Alice's device sends a `m.key.verification.start` message (see below)
-   as a to-device message to Bob's device (using the user ID and device ID from
-   the QR code.)
+5. Alice's device sends a `m.key.verification.start` message with `method` set
+   to `m.reciprocate.v1` as a to-device message to Bob's device (using the user
+   ID and device ID from the QR code.)
 6. Bob's device fetches Alice's public key, signs it, and sends it to Alice's
    device in a `m.key.verification.check_own_key` to-device message (see
    below).  Bob's device displays a message saying that Alice wants him to
@@ -51,20 +49,60 @@ Example flow:
 8. Bob sees Alice's device confirm that the key matches, and presses the button
    on his device to indicate that Alice's key is verified.
 
+Example flow 2:
+
+1. Alice and Bob meet in person, and want to verify each other's keys.
+2. Alice requests a key verification through her device by sending an
+   `m.key.verification.request` message (see MSC1717).
+3. Bob responds by sending an `m.key.verification.start` message with `method`
+   set to `m.qr_code.scan.v1` and `next_method` set to `m.reciprocate.v1`.
+4. Bob's device displays a QR code as specified below.
+5. Alice scans the QR code.
+6. Alice's device ensures that the user ID in the QR code is the same as the
+   expected user ID (which it knows because it is the recipient of her
+   `m.key.verification.request` message).  At this point, Alice's device has
+   now verified Bob's key.
+7. Alice's device sends a `m.key.verification.start` message with `method` set
+   to `m.reciprocate.v1` to Bob's device.
+8. Bob's device fetches Alice's public key, signs it, and sends it to Alice's
+   device in a `m.key.verification.check_own_key` to-device message (see
+   below).  Bob's device displays a message saying that Alice wants him to
+   verify her key, and presents a button for him to press /after/ Alice's
+   device says that things match.
+9. Alice's device receives the `m.key.verification.check_own_key` message,
+   checks Bob's signature, and checks that the key is the same as her device
+   key, as well as checking that the rest of the contents match the expected
+   values.  Alice's device displays whether the verification was successful or
+   not.
+10. Bob sees Alice's device confirm that the key matches, and presses the button
+   on his device to indicate that Alice's key is verified.
+
+### QR code format
+
+The QR codes to be displayed and scanned using this format will encode URLs of
+the form:
+`https://matrix.to/#/<user-id>?device=<device-id>&action=verify&key_<keyid>=<key-in-base64>...`
+(when `matrix:` URLs are specced, this will be used instead).
+
 ### Message types
 
 #### `m.key.verification.start`
 
-Tells Bob's device that Alice has verified his key, and requests that he verify
-Alice's key in turn.
+Begins a key verification process.
 
 message contents:
 
-- `method`: the verification method to use.  Must be `m.reciprocate.v1`.
+- `method`: the verification method to use.  For this method, this must be one of:
+  - `m.qr_code.show.v1` to request that the other device show a QR code that
+    can be scanned
+  - `m.qr_code.scan.v1` to request that the other device scan a QR code
+  - `m.reciprocate.v1` to tell the other device that its key has been verified,
+    and to request that it verify this device's key in turn
 - `from_device`: the ID of the device that Alice is using
 - `transaction_id`: an identifier for the transaction.  Must be unique on
   Alice's device.
-- `keys_ids`: array of key IDs to verify.
+- `next_method` (only if `method` is `m.qr_code.show.v1` or `m.qr_code.scan.v1`)
+- `keys_ids`: (only if `method` is `m.reciprocate.v1`) array of key IDs to verify.
 
 #### `m.key.verification.check_own_key`
 
@@ -75,7 +113,18 @@ message contents:
 - `keys`: A map of key IDs to the key that Bob's device has
 - `transaction_id`: the transaction ID from the `m.key.verification.start`
   message
-- `signatures`: signature of the keys and transaction ID, signed using Bob's key
+- `signatures`: signature of the keys and transaction ID, signed using Bob's
+  key
+
+### Cancellation
+
+In addition to the cancellation codes specified in MSC1717, the following
+cancellation codes may be used:
+
+- `m.qr_code.invalid`: The QR code is invalid (e.g. it is not a URL of the
+  required form)
+- `m.invalid_signature`: The signature of the
+  `m.key.verification.check_own_key` message was incorrect.
 
 Tradeoffs/Alternatives
 ----------------------
