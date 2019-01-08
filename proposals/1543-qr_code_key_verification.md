@@ -35,7 +35,7 @@ Example flow:
    expected user ID.  This can be done by prompting Alice with the user ID, or
    can be done automatically if the device already knows what user ID to
    expect.  At this point, Alice's device has now verified Bob's key.
-5. Alice's device sends a `m.key.verification.reciprocate` message (see below)
+5. Alice's device sends a `m.key.verification.start` message (see below)
    as a to-device message to Bob's device (using the user ID and device ID from
    the QR code.)
 6. Bob's device fetches Alice's public key, signs it, and sends it to Alice's
@@ -53,18 +53,17 @@ Example flow:
 
 ### Message types
 
-#### `m.key.verification.reciprocate`
+#### `m.key.verification.start`
 
 Tells Bob's device that Alice has verified his key, and requests that he verify
 Alice's key in turn.
 
 message contents:
 
-- `device_id`: the ID of the device that Alice is using
+- `method`: the verification method to use.  Must be `m.reciprocate.v1`.
+- `from_device`: the ID of the device that Alice is using
 - `transaction_id`: an identifier for the transaction.  Must be unique on
   Alice's device.
-
-FIXME: Alice's device should be allowed to expire verification requests.
 
 #### `m.key.verification.check_own_key`
 
