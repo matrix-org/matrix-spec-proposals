@@ -79,9 +79,8 @@ private federation using their own CA.
 
 It would also be useful for administrators to be able to disable the
 certificate checks for a whitelist of domains/netmasks. This would be useful
-for `.onion` domains (where a certificate is hard to obtain, and where server
-verification is provided at the network level), as well as for testing with IP
-literals.
+for testing, or for networks that provide server verification themselves,
+such as like `.onion` domains on Tor or `fc00::/8` IPs on cjdns.
 
 ### Interaction with SRV records
 
