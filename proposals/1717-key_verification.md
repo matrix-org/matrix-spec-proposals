@@ -57,13 +57,15 @@ Requests a key verification.
 
 Properties:
 
-- `from_device` (string): the device ID of the device requesting verification.
-- `transaction_id` (string): an identifier for the verification request.  Must
-  be unique with respect to the pair of devices.
-- `methods` ([string]): the verification methods supported by the sender.
-- `timestamp` (integer): the time when the request was made.  If the timestamp
-  is in the future (by more than 5 minutes, to allow for clock skew), or more
-  than 10 minutes in the past, then the message must be ignored.
+- `from_device` (string): Required. The device ID of the device requesting
+  verification.
+- `transaction_id` (string): Required. An identifier for the verification
+  request. Must be unique with respect to the pair of devices.
+- `methods` ([string]): Required. The verification methods supported by the
+  sender.
+- `timestamp` (integer): Required. The time when the request was made.  If the
+  timestamp is in the future (by more than 5 minutes, to allow for clock skew),
+  or more than 10 minutes in the past, then the message must be ignored.
 
 #### `m.key.verification.start`
 
@@ -71,13 +73,13 @@ Begins a key verification process.
 
 Properties:
 
-- `method` (string): the verification method to use.
-- `from_device` (string): The device ID of the device starting the verification
-  process.
-- `transaction_id` (string): an identifier for the verification process.  If
-  this message is sent in reponse to an `m.key.verification.request` event, then
-  it must use the same `transaction_id` as the one given in the
-  `m.key.verification.request`.
+- `method` (string): Required. The verification method to use.
+- `from_device` (string): Required. The device ID of the device starting the
+  verification process.
+- `transaction_id` (string): Required. An identifier for the verification
+  process.  If this message is sent in reponse to an
+  `m.key.verification.request` event, then it must use the same
+  `transaction_id` as the one given in the `m.key.verification.request`.
 
 Key verification methods can define additional properties to be included.
 
