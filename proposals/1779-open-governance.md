@@ -221,8 +221,7 @@ longer following the goals and guiding principles of the project.
 
 Guardians act as a backstop, and can appoint or remove Spec Core Team members
 (requiring a 75% consensus threshold between the Guardians) if the Spec Core
-Team is unable to reach consensus or is failing to align with the Foundation's
-mission.
+Team is unable to function or is failing to align with the Foundation's mission.
 
 It's suggested that one of the Spec Core Team members should also be a Guardian,
 to facilitate information between the Guardians and the Spec Core Team and
