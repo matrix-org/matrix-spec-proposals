@@ -344,7 +344,8 @@ collaborate constructively with the existing core team.
    * Owns the Matrix.org marketing swag (t-shirts, stickers, exhibition stands etc)
  * It's responsible for finding someone to run the Matrix.org homeserver (currently New Vector)
  * Publishing the spec
- * Responsible for sytest
+ * Responsible for tools and documentation that supports the spec
+ * Responsible for ensuring reference implementations and test suite exists for the spec
  * Publishing the website (including ensuring This Week In Matrix and similar exist to promote independent projects)
  * Manages IANA-style allocations for Matrix
    * mx:// URI scheme?
