@@ -234,7 +234,9 @@ reviewed every 12 months and requires the confidence of 75% of the team to be
 renewed. There is no maximum term for the project lead.  The lead may be removed
 by the core team at any point (with 75% majority), and may resign the role at
 any point (notifying the team and the Guardians).  The lead automatically resigns
-the role if they resign from the Spec Core Team.
+the role if they resign from the Spec Core Team.  Resignation automatically
+triggers selection of a new lead, who must be selected from the existing core
+spec team.
 
 The initial Spec Core Team (and their domain areas) is:
 
@@ -276,6 +278,8 @@ In practice, this means that:
  * Guardians may appoint/dismiss members of the Spec Core Team who are in serious
    breach of the guiding principles. This overrides the unanimous consent
    requirement for the Spec Core Team when appointing new members.
+ * Guardians may also override deadlocks when appointing a Spec Core Team leader
+   (with a >= 75% majority)
  * Guardians must approve changes to the Guiding Principles (above)
  * Guardians are responsible for approving use of the Foundation's assets
    (e.g. redistributing donations)
