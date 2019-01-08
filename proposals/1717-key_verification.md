@@ -80,6 +80,10 @@ Properties:
   process.  If this message is sent in reponse to an
   `m.key.verification.request` event, then it must use the same
   `transaction_id` as the one given in the `m.key.verification.request`.
+- `next_method` (string): Optional. If the selected verification method only
+  verifies one user's key, then this property can be used to indicate the
+  method to use to verify the other user's key, which will be started
+  immediately after after the current key verification is complete.
 
 Key verification methods can define additional properties to be included.
 
