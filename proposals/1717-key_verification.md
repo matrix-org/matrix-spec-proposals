@@ -2,7 +2,8 @@
 
 Key verification is an essential part of ensuring that end-to-end encrypted
 messages are secure.  Matrix may support multiple verification methods that
-require sending events; in fact, two such methods have already been proposed.
+require sending events; in fact, two such methods (such as MSC1267 and MSC1543)
+have already been proposed.
 
 This proposal tries to present a common framework for verification methods to
 use, and presents a way to request key verification.
@@ -112,6 +113,12 @@ Properties:
   - `m.unexpected_message`: the device received an unexpected message.  For
     example, a message for a verification method may have been received when it
     was not expected.
+  - `m.key_mismatch`: the key was not verified.
+  - `m.user_mismatch`: the expected user did not match the user verified.
+  - `m.invalid_message`: an invalid message was received.
+  - `m.accepted`: when an `m.key.verification.request` is accepted by one
+    device, an `m.key.verification.cancel` message with `code` set to
+    `m.accepted` is sent to the other devices
 - `reason` (string): human-readable reason for cancelling.  This should only be
   used if the recieving client does not understand the code given.
 
