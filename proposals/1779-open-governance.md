@@ -238,6 +238,10 @@ automatically resigns the role if they resign from the Spec Core Team.
 Resignation automatically triggers selection of a new lead, who must be selected
 from the existing core spec team.
 
+It is vital that the core spec team has strong domain expertise covering all
+different domains of the spec (e.g. we don't want to end up with a core spec
+team where nobody has strong experience in cryptography)
+
 The initial Spec Core Team (and their domain areas) is:
 
  * Matthew Hodgson (Lead)
