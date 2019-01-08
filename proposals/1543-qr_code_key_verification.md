@@ -111,3 +111,6 @@ Other Issues
 
 Conclusion
 ----------
+
+This proposal presents a method for bi-directional key verification by scanning
+a QR code and a very simplified out-of-band verification.
