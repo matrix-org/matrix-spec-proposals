@@ -141,6 +141,73 @@ new Room versions) that upgrading will be necessary anyway.
 The `.well-known` file potentially broadens the attack surface for an attacker
 wishing to intercept federation traffic to a particular server.
 
+## Dismissed alternatives
+
+For future reference, here are the alternative solutions which have been
+considered and dismissed.
+
+### Look up the `.well-known` file before the SRV record
+
+We could make the request for `.well-known` before looking up the `SRV`
+record. On the one hand this is maybe marginally simpler (and avoids the
+overhead of having to make *two* `SRV` lookups in the case that a `.well-known`
+is found. It might also open a future path for using `.well-known` for
+information other than delegation.
+
+Ultimately we decided to include the initial `SRV` lookup so that deployments
+have a mechanism to avoid the `.well-known` overhead in the common case that it
+is not required.
+
+### Subdomain hack
+
+As well as accepting TLS certs for `example.com`, we could also accept them for
+`delegated--matrix.example.com`. This would allow `example.com` to delegate its
+matrix hosting by (a) setting up the SRV record at `_matrix._tcp.example.com`
+and (b) setting up a CNAME at `delegated--matrix.example.com`. The latter would
+enable the delegatee to obtain an acceptable TLS certificate.
+
+This was certainly an interesting idea, but we dismissed it for the following
+reasons:
+
+* There's a security trap for anybody who lets people sign up for subdomains
+  (which is certainly not an uncommon business model): if you can register for
+  delegated--matrix.example.com, you get to intercept all the matrix traffic
+  for example.com.
+
+* Generally it feels quite unintuitive and violates the principle of least
+  surprise.
+
+* The fact that we can't find any prior art for this sets off alarm bells too.
+
+### Rely on DNS/DNSSEC
+
+If we could trust SRV records, we would be able to accept TLS certs for the
+*target* of the SRV record, which avoids this whole problem.
+
+Such trust could come from assuming that plain DNS is "good enough". However,
+DNS cache poisoning attacks are a real thing, and the fact that the designers
+of TLS chose to implement a server-name check specifically to deal with this
+case suggests we would be foolish to make this assumption.
+
+The alternative is to rely on DNSSEC to provide security for SRV records. The
+problem here is simply that DNSSEC is not that widely deployed currently. A
+number of large organisations are actively avoiding enabling it on their
+domains, so requiring DNSSEC would be a direct impediment to the uptake of
+Matrix. Furthermore, if we required DNSSEC-authenticated SRV records for
+domains doing delegation, we would end up with a significant number of
+homeservers unable to talk to such domains, because their local DNS
+infrastructure may not implement DNSSEC.
+
+Finally, if we're expecting servers to present the cert for the *target* of the
+SRV record, then we'll have to change the Host and SNI fields, and that will
+break backwards compat everywhere (and it's hard to see how to mitigate that).
+
+### Stick with perspectives
+
+The final option is to double-down on the Perspectives approach, ie to skip
+[MSC1711](https://github.com/matrix-org/matrix-doc/pull/1711). MSC1711
+discusses the reasons we do not believe this to be a viable option.
+
 ## Conclusion
 
 This proposal adds a new mechanism, alongside the existing `SRV` record lookup
