@@ -28,8 +28,8 @@ Example flow:
 1. Alice and Bob meet in person, and want to verify each other's keys.
 2. Bob tells his device to display a QR code.  Bob's device displays a
    QR code that encodes the URL
-   `https://matrix.to/#/<user-id>?device=<device-id>&action=verify&pubkey=<device-signing-public-key-in-base64>`
-   (when `mx:` URLs are specced, this will be used instead).
+   `https://matrix.to/#/<user-id>?device=<device-id>action=verify&key_<keyid>=<key-in-base64>...`
+   (when `matrix:` URLs are specced, this will be used instead).
 3. Alice scans the QR code.
 4. Alice's device ensures that the user ID in the QR code is the same as the
    expected user ID.  This can be done by prompting Alice with the user ID, or
@@ -64,6 +64,7 @@ message contents:
 - `from_device`: the ID of the device that Alice is using
 - `transaction_id`: an identifier for the transaction.  Must be unique on
   Alice's device.
+- `keys_ids`: array of key IDs to verify.
 
 #### `m.key.verification.check_own_key`
 
@@ -71,10 +72,10 @@ Tells Alice's device what Bob's device thinks her key is.
 
 message contents:
 
-- `key`: The key that Bob's device has for Alice's device
-- `transaction_id`: the transaction ID from the
-  `m.key.verification.reciprocate` message
-- `signatures`: signature of the key and transaction ID, signed using Bob's key
+- `keys`: A map of key IDs to the key that Bob's device has
+- `transaction_id`: the transaction ID from the `m.key.verification.start`
+  message
+- `signatures`: signature of the keys and transaction ID, signed using Bob's key
 
 Tradeoffs/Alternatives
 ----------------------
