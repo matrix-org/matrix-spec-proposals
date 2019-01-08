@@ -328,16 +328,27 @@ Foundation relative to Matthew & Amandine’s day jobs at New Vector.
 
 Guardians volunteer their time for free to work on the project.
 
-## The Core Team
+## The Code Core Team (aka The Core Team)
 
-"The Core Team" is a loose term that describes the set of people with access to
-commit code to the public https://github.com/matrix-org repositories, who are
-either working on matrix.org's reference implementations or the spec itself.
-Commit access is decided by those responsible for the projects in question, much
-like any other open source project.  Anyone is eligible for commit access if
-they have proved themselves a valuable long-term contributor, upholds the
-guiding principles and mission of the project and have proved themselves able to
-collaborate constructively with the existing core team.
+The "Core Team" (or the "Code Core Team", to disambiguate from the Spec Core
+Team) is a loose term that describes the set of people with access to commit
+code to the public https://github.com/matrix-org repositories, who are either
+working on matrix.org's reference implementations or the spec itself. Commit
+access is decided by those responsible for the projects in question, much like
+any other open source project.  Anyone is eligible for commit access if they
+have proved themselves a valuable long-term contributor, upholds the guiding
+principles and mission of the project and have proved themselves able to
+collaborate constructively with the existing core team. Active participation in
+the core team is also signified by membership of the +matrix:matrix.org Matrix
+community.
+
+TODO: spell out some responsibilities.  Erik suggests something like:
+ * Helping to ensure the quality of the projects' repositories
+ * That all projects follow the Matrix spec
+ * Engaging with the people in a way that fosters a healthy and happy community
+ * Following the Guiding Principles and promoting them within the community
+
+Code Core Team members volunteer their time for free to work on the project.
 
 ## Responsibilities for the Foundation
 
