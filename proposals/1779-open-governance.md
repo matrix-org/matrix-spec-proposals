@@ -228,15 +228,15 @@ It's suggested that one of the Spec Core Team members should also be a Guardian,
 to facilitate information between the Guardians and the Spec Core Team and
 represent the technical angle of the project to the other Guardians.
 
-The project lead role acts to coordinate the team and to help tie-break in the
-event of failing to get acceptance on a Matrix Spec Change. The project lead is
-reviewed every 12 months and requires the confidence of 75% of the team to be
-renewed. There is no maximum term for the project lead.  The lead may be removed
-by the core team at any point (with 75% majority), and may resign the role at
-any point (notifying the team and the Guardians).  The lead automatically resigns
-the role if they resign from the Spec Core Team.  Resignation automatically
-triggers selection of a new lead, who must be selected from the existing core
-spec team.
+The project lead role acts to coordinate the team and to help steer the team to
+consensus in the event of failing to get agreement on a Matrix Spec Change. The
+project lead is reviewed every 12 months and requires the confidence of 75% of
+the team to be renewed. There is no maximum term for the project lead.  The lead
+may be removed by the core team at any point (with 75% majority), and may resign
+the role at any point (notifying the team and the Guardians).  The lead
+automatically resigns the role if they resign from the Spec Core Team.
+Resignation automatically triggers selection of a new lead, who must be selected
+from the existing core spec team.
 
 The initial Spec Core Team (and their domain areas) is:
 
