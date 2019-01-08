@@ -35,14 +35,12 @@ is as follows:
 4. Finally, the server is discovered by looking up an AAAA or A record on the
    hostname, and taking the default fallback port number of 8448.
 
-We insert the following between Steps 3 and 4:
+We insert the following between Steps 3 and 4.
 
 If the SRV record does not exist, the requesting server should make a `GET`
-request to `https://<server_name>/.well-known/matrix/server`, with normal
-X.509 certificate validation. If the request does not return a 200, continue
-to step 4, otherwise:
-
-XXX: should we follow redirects?
+request to `https://<server_name>/.well-known/matrix/server`, with normal X.509
+certificate validation, and following 30x redirects. If the request does not
+return a 200, continue to step 4, otherwise:
 
 The response must have a `Content-Type` of `application/json`, and must be
 valid JSON which follows the structure documented below. Otherwise, the
@@ -113,14 +111,6 @@ A failure to retrieve the `.well-known` file should also be cached, though care
 must be taken that a single 500 error or connection failure should not break
 federation for an extended period. A short cache time of about an hour might be
 appropriate; alternatively, servers might use an exponential backoff.
-
-### Outstanding questions
-
-Should we follow 30x redirects for the .well-known file? On the one hand, there
-is no obvious usecase and they add complexity (for example: how do they
-interact with caches?). On the other hand, we'll presumably be using an HTTP
-client library to handle some of the caching stuff, and they might be useful
-for something?
 
 ## Problems
 
