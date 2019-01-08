@@ -274,7 +274,8 @@ In practice, this means that:
    mechanism between each other to ensure that all Guardians and the Spec Core
    Team act in the best interests of the protocol and ecosystem.
  * Guardians may appoint/dismiss members of the Spec Core Team who are in serious
-   breach of the guiding principles.
+   breach of the guiding principles. This overrides the unanimous consent
+   requirement for the Spec Core Team when appointing new members.
  * Guardians must approve changes to the Guiding Principles (above)
  * Guardians are responsible for approving use of the Foundation's assets
    (e.g. redistributing donations)
