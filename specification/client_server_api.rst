@@ -1016,8 +1016,18 @@ follows:
   }
 
 As with `token-based`_ interactive login, the ``token`` must encode the
-user id. In the case that the token is not valid, the homeserver must respond
+user ID. In the case that the token is not valid, the homeserver must respond
 with ``403 Forbidden`` and an error code of ``M_FORBIDDEN``.
+
+To log in with through a Central Authentication Service (CAS) or via Single
+Sign-On (SSO), clients should first make a request to ``GET /login`` to ensure
+the homeserver supports the appropriate login type. Clients should use the
+`CAS endpoints`_ to complete logins for ``m.login.cas`` and the `SSO endpoints`_
+for ``m.login.sso``. In either case, the client is expected to redirect the user
+to the appropriate ``/redirect`` endpoint.
+
+.. _`CAS endpoints`: #cas-based-client-login
+.. _`SSO endpoints`: #sso-based-client-login
 
 {{login_cs_http_api}}
 
