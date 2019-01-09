@@ -39,8 +39,9 @@ We insert the following between Steps 3 and 4.
 
 If the SRV record does not exist, the requesting server should make a `GET`
 request to `https://<server_name>/.well-known/matrix/server`, with normal X.509
-certificate validation, and following 30x redirects. If the request does not
-return a 200, continue to step 4, otherwise:
+certificate validation, and following 30x redirects (being careful to avoid
+redirect loops). If the request does not return a 200, continue to step 4,
+otherwise:
 
 The response must have a `Content-Type` of `application/json`, and must be
 valid JSON which follows the structure documented below. Otherwise, the
@@ -53,10 +54,10 @@ If the response is valid, the `m.server` property is parsed as
   used, together with `<delegated_port>`, or 8448 if no port is given. The
   server should present a valid TLS certificate for `<delegated_server_name>`.
 
-* Otherwise, if the port is present, then an IP address is discovered by
-  looking up an AAAA or A record for `<delegated_server_name>`, and the
-  specified port is used. The server should present a valid TLS certificate
-  for `<delegated_server_name>`.
+* If `<delegated_server_name>` is not an IP literal, and `<delegated_port>` is
+  present, then an IP address is discovered by looking up an AAAA or A record
+  for `<delegated_server_name>`, and the specified port is used. The server
+  should present a valid TLS certificate for `<delegated_server_name>`.
 
   (In other words, the federation connection is made to
   `https://<delegated_server_name>:<delegated_port>`).
@@ -84,15 +85,13 @@ The contents of the `.well-known` response should be structured as shown:
 }
 ```
 
-The `m.server` property should be a hostname or IP address, followed by an
-optional port.
-
-If the response cannot be parsed as JSON, or lacks a valid `server` property,
+If the response cannot be parsed as JSON, or lacks a valid `m.server` property,
 the request is considered to have failed, and no fallback to port 8448 takes
 place.
 
-(The formal grammar for the `server` property is identical to that of a [server
-name](https://matrix.org/docs/spec/appendices.html#server-name).)
+The formal grammar for the `m.server` property is the same as that of a [server
+name](https://matrix.org/docs/spec/appendices.html#server-name): it is a
+hostname or IP address, followed by an optional port.
 
 ### Caching
 
