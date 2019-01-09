@@ -287,7 +287,8 @@ In practice, this means that:
  * Guardians are responsible for approving use of the Foundation's assets
    (e.g. redistributing donations)
  * In future, Guardians may also be responsible for ensuring staff are hired by
-   the Foundation to support administrative functions
+   the Foundation to support administrative functions and other roles required
+   to facilitate the Foundation's mission.
  * As well as the Spec Core Team committee, they may also oversee committees for
    other areas such as marketing Matrix.org, registering custom event types,
    or "Made for Matrix" certification.
