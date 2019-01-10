@@ -175,8 +175,7 @@ certificates comes with a number of downsides.
 Configuring a working, federating homeserver is a process fraught with
 pitfalls. This proposal adds the requirement to obtain a signed certificate to
 that process. Even with modern intiatives such as Let's Encrypt, this is
-another procedure requiring manual intervention across several moving parts<sup
-id="a3">[3](#f3)</sup>.
+another procedure requiring manual intervention across several moving parts.
 
 On the other hand: obtaining an SSL certificate should be a familiar process to
 anybody capable of hosting a production homeserver (indeed, they should
@@ -229,9 +228,3 @@ way. [↩](#a1)
 <a id="f2"/>[2] I've not been able to find an authoritative source on this, but
 most reverse-proxies will reject requests where the SNI and Host headers do not
 match. [↩](#a2)
-
-<a id="f3"/>[3] Let's Encrypt will issue ACME challenges via port 80 or DNS
-(for the `http-01` or `dns-01` challenge types respectively). It is unlikely
-that a homeserver implementation would be able to control either port 80 or DNS
-responses, so we will be unable to automate a Let's Encrypt certificate
-request. [↩](#a3)
