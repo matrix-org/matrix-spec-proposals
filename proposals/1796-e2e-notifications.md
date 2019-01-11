@@ -2,7 +2,7 @@
 
 ## Problem
 
-Currently we have no way of sending accurate notification counts to E2E
+Currently we have no way of receiving accurate notification counts for E2E
 encrypted rooms.  This is because the server can't calculate the notification
 counts serverside because it can't read the contents ofthe messages to spot
 the notification keywords.
