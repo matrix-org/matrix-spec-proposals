@@ -178,7 +178,7 @@ paths:
                 type: object
                 description: |-
                   Optional client configuration provided by the server. If present,
-                  clients SHOULD ise the provided object to reconfigure themselves,
+                  clients SHOULD use the provided object to reconfigure themselves,
                   optionally validating the URLs within. This object takes the same
                   form as the one returned from .well-known autodiscovery.
                 "$ref": "definitions/wellknown/full.yaml"
