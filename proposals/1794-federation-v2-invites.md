@@ -6,9 +6,9 @@ room versions.
 ## Motivation
 
 It is planned for future room versions to be able to change the format of events
-in various ways, and so to support this all servers must know the room version
+in various ways. To support this, all servers must know the room version
 whenever they need to parse an event.  Currently the `/invite` API does not
-include the room version, and so the event included in the payload would not be
+include the room version, so the target server would be unable to parse the event included in the payload.
 able to be parsed.
 
 ## Proposal
@@ -41,7 +41,7 @@ The differences between this and `v1` are:
 The response is identical to `v1`, except that:
 
 1. If the receiving server does not support the given room version the
-   appropriate incompatible-room-version exception is returned, in the same way
+   appropriate incompatible-room-version error is returned, in the same way
    as e.g. for `/make_join` APIs.
 2. The response payload is no longer in the format of `[200, { ... }]`, and is
    instead simply the `{ ... }` portion. This fixes a historical accident to
