@@ -81,9 +81,9 @@ and potentially consume significant bandwidth/CPU/time as it caught up in the
 background on what it had missed.
 
 The good news is that custom keywords are fairly rare, and we can make this a
-user choice - i.e. warn them in room settings that this custom keyword notifs
-will not currently work unless they consciously burn bandwidth to maintain an
-ongoing full clientside copy of the room.
+user choice - i.e. warn them in room settings that their custom keyword notifs
+(if they have any) will not currently work unless they consciously burn
+bandwidth to maintain an ongoing full clientside copy of the room.
 
 The better news is that clients will also need to be doing this if they want to
 provide clientside search of E2E rooms, so this isn't that unreasonable thing to
