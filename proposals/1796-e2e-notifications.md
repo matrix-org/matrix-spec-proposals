@@ -72,10 +72,13 @@ indicating when the message is attempting to notify the whole room.
 
 ### Better handling of custom keyword notifications
 
-The only way to safely notify for per-user specified custom keywords is for the
-recipient to decrypt messages and scan them for keywords clientside.  This means
-downloading all the history for rooms where we care about custom keywords to
-scan for missed ones.
+The only way to safely notify for per-user specified custom keywords is for
+the recipient to decrypt messages and scan them for keywords clientside.  This
+means downloading **all** the history for rooms where we care about custom
+keywords to scan for missed ones.  Specifically, the client would have to
+backpaginate any gappy syncs it saw (e.g. after returning from being offline)
+and potentially consume significant bandwidth/CPU/time as it caught up in the
+background on what it had missed.
 
 The good news is that custom keywords are fairly rare, and we can make this a
 user choice - i.e. warn them in room settings that this custom keyword notifs
