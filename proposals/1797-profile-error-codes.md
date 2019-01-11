@@ -19,7 +19,7 @@ the specific use cases outlined above:
 * 404 / `M_USER_NOT_FOUND` - The server acknowledges that the user was not found/does not exist.
 * 404 / `M_PROFILE_NOT_FOUND` - The server acknowledges that the user does exist, but has an
   otherwise empty profile.
-* 404 / `M_PROFILE_UNKNOWN` - The server is refusing to disclose details about this user. Clients
+* 404 / `M_PROFILE_UNDISCLOSED` - The server is refusing to disclose details about this user. Clients
   cannot assume that the user does or does not exist.
 
 The rationale for keeping all 3 error codes as `404 Not Found` is to maintain backwards compatibility
@@ -29,7 +29,7 @@ Currently, `M_NOT_FOUND` is returned for when a profile is empty or when the req
 found. This proposal is splitting that out into `M_USER_NOT_FOUND` and `M_PROFILE_NOT_FOUND` for added
 clarity to clients.
 
-To reiterate, `M_PROFILE_UNKNOWN` is not to be assumed as an admission that the requested user does
+To reiterate, `M_PROFILE_UNDISCLOSED` is not to be assumed as an admission that the requested user does
 or does not exist. The server could be refusing to disclose the user/profile for a variety of reasons
 including prevention of user ID harvesting or to maintain a highly private environment.
 
@@ -53,7 +53,7 @@ different endpoints to get highly related information.
 
 ## Potential issues
 
-If accepted, it is possible that a private federation of servers results in only ever `M_PROFILE_UNKNOWN`
+If accepted, it is possible that a private federation of servers results in only ever `M_PROFILE_UNDISCLOSED`
 errors, regardless of who is requesting the information. In these cases, clients may wish to consider
 supporting a configuration option for not checking whether a user exists or not to avoid bombarding the
 user with warnings constantly.
