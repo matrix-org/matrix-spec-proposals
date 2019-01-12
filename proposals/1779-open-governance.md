@@ -255,6 +255,9 @@ MSCs require >= 75% approval from the Spec Core Team to proceed to Final Comment
 Period (see https://matrix.org/docs/spec/proposals for the rest of the MSC
 process).
 
+Even though a threshold of only 75% is required for approval, the Spec Core Team
+is expected to seek consensus on MSCs.
+
 The above governance process for the Spec Core Team is considered as part of the
 spec and is updated using the Matrix Spec Change process.  However, changes to
 the governance process also require a 75% positive approval from the Guardians
