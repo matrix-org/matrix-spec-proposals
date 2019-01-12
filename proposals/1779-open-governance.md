@@ -129,6 +129,7 @@ subjective areas.  The values we follow are:
 
  * Supporting the whole long-term ecosystem rather than individual stakeholder gain
  * Openness rather than proprietariness
+ * Interoperability rather than fragmentation
  * Collaboration rather than competition
  * Accessibility rather than elitism
  * Transparency rather than stealth

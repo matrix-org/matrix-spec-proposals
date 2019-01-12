@@ -62,6 +62,7 @@ their proposed changes to the Matrix protocol:
 
 * Supporting the whole long-term ecosystem rather than individual stakeholder gain
 * Openness rather than proprietariness
+* Interoperability rather than fragmentation
 * Collaboration rather than competition
 * Accessibility rather than elitism
 * Transparency rather than stealth
@@ -110,7 +111,7 @@ applied:
    For instance, video conferencing is clearly a feature which would benefit
    the whole ecosystem, and so the spec should find a way to make it happen.
  * If the spec already makes the feature possible without changing any of the
-   spec *or implementations*, then it may not need to be added to the spec.
+   implementations and spec, then it may not need to be added to the spec.
    For instance, video conferencing done by widgets requires no compulsory
    changes to clients nor servers to work, and so could be omitted.
  * However, if the best user experience for a feature does require custom
@@ -126,6 +127,19 @@ applied:
    either to spec SFU conferencing semantics on WebRTC (or refer to an existing spec
    for doing so), or to keep it as a widget-based approach (optionally with widget
    extensions specific for more deeply integrating video conferencing use cases).
+
+As an alternative example: it's very unlikely that "how to visualise Magnetic
+Resonsance Imaging data over Matrix" would ever be added to the Matrix spec
+(other than perhaps a custom event type in a wider standardised Matrix event
+registry) given that the spec's existing primitives of file transfer and
+extensible events (MSC1767) give excellent tools for transferring and
+visualising arbitrary rich data.
+
+Conversely, features such as reactions, threaded messages, editable messages,
+spam/abuse/content filtering, are all features which would clearly benefit the
+whole Matrix ecosystem and require both client & server implementation
+changes across the board to be implemented in an interoperable way, and so
+necessitate a spec change.
 
 Process
 -------
