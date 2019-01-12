@@ -177,7 +177,8 @@ interoperating correctly with the rest of the ecosystem.
 
 The Spec Core Team itself will be made up of roughly 8 members + 1 project lead.
 Roughly half the members are expected to be from the historical core team
-(similar to Rust).
+(similar to Rust).  The team must have 5 members to be quorate, with the aim of
+generally having between 7 and 9 members.
 
 In future we may also have sub-teams (like Rust - e.g. CS/AS/Push API; SS API;
 IS API; Crypto), but as a starting point we are beginning with a single core
