@@ -99,10 +99,8 @@ new version of the room algorithm.
 
 There is sometimes a dilemma over where to include higher level features: for
 instance, should video conferencing be formalised in the spec, or should it be
-implemented via widgets (if one assumes that widgets have landed in the spec and
-[MSC1236](https://github.com/matrix-org/matrix-doc/issues/1236) is merged)?
-Should reputation systems be specified? Should search engine behaviour be
-specified?
+implemented via widgets? Should reputation systems be specified? Should search
+engine behaviour be specified?
 
 There is no universal answer to this, but the following guidelines should be
 applied:
@@ -135,11 +133,17 @@ registry) given that the spec's existing primitives of file transfer and
 extensible events (MSC1767) give excellent tools for transferring and
 visualising arbitrary rich data.
 
+Supporting public search engines are likely to not require custom spec features
+(other than possibly better bulk access APIs), given they can be implemented as
+clients using the existing CS API.  An exception could be API features required
+by decentralised search infrastructure (avoiding centralisation of power by
+a centralised search engine).
+
 Conversely, features such as reactions, threaded messages, editable messages,
-spam/abuse/content filtering, are all features which would clearly benefit the
-whole Matrix ecosystem and require both client & server implementation
-changes across the board to be implemented in an interoperable way, and so
-necessitate a spec change.
+spam/abuse/content filtering (and reputation systems), are all features which
+would clearly benefit the whole Matrix ecosystem and require both client &
+server implementation changes across the board to be implemented in an
+interoperable way, and so necessitate a spec change.
 
 Process
 -------
