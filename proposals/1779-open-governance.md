@@ -344,10 +344,14 @@ collaborate constructively with the existing core team. Active participation in
 the core team is also signified by membership of the +matrix:matrix.org Matrix
 community.
 
-TODO: spell out some responsibilities.  Erik suggests something like:
- * Helping to ensure the quality of the projects' repositories
- * That all projects follow the Matrix spec
- * Engaging with the people in a way that fosters a healthy and happy community
+Responsibilities include:
+ * Helping ensure the quality of the projects' code repositories
+ * Ensuring all commits are reviewed
+ * Ensuring that all projects follow the Matrix spec
+ * Helping architect the implementations
+ * Contributing code to the implementations
+ * Fostering contributions and engaging with contributors constructively in a
+   way that fosters a healthy and happy community
  * Following the Guiding Principles and promoting them within the community
 
 Code Core Team members volunteer their time for free to work on the project.
