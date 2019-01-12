@@ -44,15 +44,18 @@ moderators and admins, companies/projects building products or services on
 Matrix, spec contributors, translators, and those who created it in
 the first place.
 
-"Greater benefit" could include maximising:
+"Greater benefit" includes maximising:
 
 * the number of end-users reachable on the open Matrix network
-* the number of regular users on the Matrix network (e.g. 30-day retained
-  federated users)
+* the number of regular users on the Matrix network (e.g. 30-day retained federated users)
+* the number of end-users reachable by Matrix (natively or via bridges)
 * the number of online servers in the open federation
 * the number of developers building on Matrix
 * the number of independent implementations which use Matrix
-* the quality and utility of the Matrix spec
+* the quality and utility of the Matrix spec (as defined by ease and ability
+  with which a developer can implement spec-compliant clients, servers, bots,
+  bridges, and other integrations without needing to refer to any other
+  external material)
 
 In addition, proposal authors are expected to uphold the following values in
 their proposed changes to the Matrix protocol:
@@ -65,6 +68,64 @@ their proposed changes to the Matrix protocol:
 * Empathy rather than contrariness
 * Pragmatism rather than perfection
 * Proof rather than conjecture
+
+Technical notes
+---------------
+
+Proposals **must** develop Matrix as a layered protocol: with new features
+building on layers of shared abstractions rather than introducing tight vertical
+coupling within the stack.  This ensures that new features can evolve rapidly by
+building on existing layers and swapping out old features without impacting the
+rest of the stack or requiring substantial upgrades to the whole ecosystem.
+This is critical for Matrix to rapidly evolve and compete effectively with
+centralised systems, despite being a federated protocol.
+
+For instance, new features should be implemented using the highest layer
+abstractions possible (e.g. new event types, which layer on top of the existing
+room semantics, and so don't even require any API changes). Failing that, the
+next recourse would be backwards-compatible changes to the next layer down (e.g.
+room APIs); failing that, considering changes to the format of events or the
+DAG; etc.  It would be a very unusual feature which doesn't build on the
+existing infrastructure provided by the spec and instead created new primitives
+or low level APIs.
+
+Backwards compatibility is very important for Matrix, but not at the expense of
+hindering the protocol's evolution.  Backwards incompatible changes to endpoints
+are allowed when no other alternative exists, and must be versioned under a new
+major release of the API.  Backwards incompatible changes to the room algorithm
+are also allowed when no other alternative exists, and must be versioned under a
+new version of the room algorithm.
+
+There is sometimes a dilemma over where to include higher level features: for
+instance, should video conferencing be formalised in the spec, or should it be
+implemented via widgets (if one assumes that widgets have landed in the spec and
+[MSC1236](https://github.com/matrix-org/matrix-doc/issues/1236) is merged)?
+Should reputation systems be specified? Should search engine behaviour be
+specified?
+
+There is no universal answer to this, but the following guidelines should be
+applied:
+ * If the feature would benefit the whole Matrix ecosystem and is aligned with
+   the guiding principles above, then it should be supported by the spec.
+   For instance, video conferencing is clearly a feature which would benefit
+   the whole ecosystem, and so the spec should find a way to make it happen.
+ * If the spec already makes the feature possible without changing any of the
+   spec *or implementations*, then it may not need to be added to the spec.
+   For instance, video conferencing done by widgets requires no compulsory
+   changes to clients nor servers to work, and so could be omitted.
+ * However, if the best user experience for a feature does require custom
+   implementation behaviour - e.g. embedding Jitsi into your client rather than
+   using a widget, then the behaviour should be defined in the spec to allow
+   implementations to do so.
+ * However, the spec must never add dependencies on unspecified/nonstandardised
+   3rd party behaviour. For instance, defining how to embed Jitsi is unlikely to
+   ever make it into the spec, given Jitsi does not implement a standardised
+   interface (although a URL-based calling standard may emerge in future, which
+   could be used as an extension to the current widget-based approach).
+ * Therefore, our two options in the specific case of video conferencing are
+   either to spec SFU conferencing semantics on WebRTC (or refer to an existing spec
+   for doing so), or to keep it as a widget-based approach (optionally with widget
+   extensions specific for more deeply integrating video conferencing use cases).
 
 Process
 -------
