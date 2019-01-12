@@ -168,7 +168,7 @@ agendas at the expense of the overall project.
 We are particularly vigilant against 'trojan horse' additions to the spec -
 features which only benefit particular players, or are designed to somehow
 cripple or fragment the open protocol and ecosystem in favour of competitive
-advantage. Commercial players are of course encouraged to build proprietary
+advantage. Commercial players are of course free to build proprietary
 implementations, or use custom event types, or even custom API extensions (e.g.
 more efficient network transports) - but implementations must fall back to
 interoperating correctly with the rest of the ecosystem.
