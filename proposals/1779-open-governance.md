@@ -338,7 +338,7 @@ code to the public https://github.com/matrix-org repositories, who are either
 working on matrix.org's reference implementations or the spec itself. Commit
 access is decided by those responsible for the projects in question, much like
 any other open source project.  Anyone is eligible for commit access if they
-have proved themselves a valuable long-term contributor, upholds the guiding
+have proved themselves a valuable long-term contributor, uphold the guiding
 principles and mission of the project and have proved themselves able to
 collaborate constructively with the existing core team. Active participation in
 the core team is also signified by membership of the +matrix:matrix.org Matrix
