@@ -1,11 +1,11 @@
 # Proposal for Open Governance of Matrix.org 
 
-This whole document is a **work in progress** draft of a constitution proposal
-for open governance for Matrix.org, and forms the basis of the first full
-Articles of Association (AoA) for [The Matrix.org Foundation
-C.I.C.](https://beta.companieshouse.gov.uk/company/11648710) - a non-profit legal
-entity incorporated to act as the neutral guardian of the Matrix decentralised
-communication standard on behalf of the whole Matrix community.
+This whole document is the proposed constitution proposal for Matrix.org, and
+will form the basis of the first full Articles of Association (AoA) for [The
+Matrix.org Foundation
+C.I.C.](https://beta.companieshouse.gov.uk/company/11648710) - a non-profit
+legal entity incorporated to act as the neutral guardian of the Matrix
+decentralised communication standard on behalf of the whole Matrix community.
 
 See https://matrix.org/blog/2018/10/29/introducing-the-matrix-org-foundation-part-1-of-2/
 for more context.
@@ -120,10 +120,6 @@ N.B. that we consider success to be the growth of the open federated network
 rather than closed deployments. For example, if WhatsApp adopted Matrix it
 wouldn’t be a complete win unless they openly federated with the rest of the
 Matrix network.
-
-TODO: spell out when features should land in the spec, versus via
-integration/widget or other non-core extension. e.g. should video conferencing
-be in the spec itself, or done via Jitsi?
 
 ### Values
 
