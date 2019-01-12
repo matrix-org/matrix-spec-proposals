@@ -213,7 +213,8 @@ New additions to the team require 100% consent from the current team members.
 Membership has to be formally proposed by someone already on the Spec Core Team.
 
 Members can be removed from the team if >= 75% of the team agrees they are no
-longer following the goals and guiding principles of the project.
+longer following the goals and guiding principles of the project.  (The 75% is
+measured of the whole team, including the member in question)
 
 Guardians act as a backstop, and can appoint or remove Spec Core Team members
 (requiring a 75% consensus threshold between the Guardians) if the Spec Core
