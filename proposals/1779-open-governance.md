@@ -221,8 +221,8 @@ Guardians act as a backstop, and can appoint or remove Spec Core Team members
 Team is unable to function or is failing to align with the Foundation's mission.
 
 It's suggested that one of the Spec Core Team members should also be a Guardian,
-to facilitate information between the Guardians and the Spec Core Team and
-represent the technical angle of the project to the other Guardians.
+to facilitate information exchange between the Guardians and the Spec Core Team,
+and to represent the technical angle of the project to the other Guardians.
 
 The project lead role acts to coordinate the team and to help steer the team to
 consensus in the event of failing to get agreement on a Matrix Spec Change.
