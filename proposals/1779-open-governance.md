@@ -354,19 +354,19 @@ Code Core Team members volunteer their time for free to work on the project.
 
 ## Responsibilities for the Foundation
 
- * Independent legal entity to act as neutral custodian of Matrix
- * Gathering donations
+ * Independent legal entity which acts as neutral custodian of Matrix
+ * Gathers donations
  * Owns the core Matrix IP in an asset lock, which shall be transferred from New Vector:
    * Owns the matrix.org domain and branding
    * Owns the copyright of the reference implementations of Matrix (i.e. everything in https://github.com/matrix-org).
      By assigning copyright to the Foundation, it’s protected against New Vector ever being tempted to relicense it.
    * Owns the IP of the website
    * Owns the Matrix.org marketing swag (t-shirts, stickers, exhibition stands etc)
- * It's responsible for finding someone to run the Matrix.org homeserver (currently New Vector)
- * Publishing the spec
+ * Responsible for finding someone to run the Matrix.org homeserver (currently New Vector)
+ * Publishes the spec
  * Responsible for tools and documentation that supports the spec
  * Responsible for ensuring reference implementations and test suite exists for the spec
- * Publishing the website (including ensuring This Week In Matrix and similar exist to promote independent projects)
+ * Publishes the website (including ensuring This Week In Matrix and similar exist to promote independent projects)
  * Manages IANA-style allocations for Matrix
    * mx:// URI scheme?
    * TCP port 8448
@@ -374,9 +374,9 @@ Code Core Team members volunteer their time for free to work on the project.
 
 In future:
 
- * contract entities to work on Matrix? (e.g. redistributing donations back to fund development)
- * manage a "Made for Matrix" certification process? (to confirm that products are actually compatible with Matrix)
- * promote Matrix (e.g. organise meetups & events & fund community activity)?
+ * contracts entities to work on Matrix? (e.g. redistributing donations back to fund development)
+ * manages a "Made for Matrix" certification process? (to confirm that products are actually compatible with Matrix)
+ * promotes Matrix (e.g. organise meetups & events & fund community activity)?
 
 ## Timings
 
