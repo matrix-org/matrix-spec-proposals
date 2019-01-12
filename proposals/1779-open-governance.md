@@ -232,7 +232,7 @@ term for the project lead.  The lead may be removed by the core team at any
 point (with 75% majority), and may resign the role at any point (notifying the
 team and the Guardians).  The lead automatically resigns the role if they resign
 from the Spec Core Team. Resignation automatically triggers selection of a new
-lead, who must be selected from the existing core spec team.
+lead, who must be selected from the existing Spec Core Team.
 
 It is vital that the core spec team has strong domain expertise covering all
 different domains of the spec (e.g. we don't want to end up with a core spec
