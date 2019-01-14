@@ -9,7 +9,6 @@ It is planned for future room versions to be able to change the format of events
 in various ways. To support this, all servers must know the room version
 whenever they need to parse an event.  Currently the `/invite` API does not
 include the room version, so the target server would be unable to parse the event included in the payload.
-able to be parsed.
 
 ## Proposal
 
