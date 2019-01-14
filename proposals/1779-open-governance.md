@@ -75,7 +75,7 @@ We believe:
 
  * The ability to converse securely and privately is a basic human right.
 
- * Communication should be available to everyone as an free and open,
+ * Communication should be available to everyone as a free and open,
    unencumbered, standard and global network.
 
 ### Mission
@@ -130,7 +130,7 @@ aligned on the overall philosophy of the project, particularly in more
 subjective areas.  The values we follow are:
 
  * Supporting the whole long-term ecosystem rather than individual stakeholder gain
- * Openness rather than proprietariness
+ * Openness rather than proprietary lock-in
  * Interoperability rather than fragmentation
  * Cross-platform rather than platform-specific
  * Collaboration rather than competition
@@ -141,6 +141,10 @@ subjective areas.  The values we follow are:
  * Proof rather than conjecture
 
 Patent encumbered IP is strictly prohibited from being added to the standard.
+
+Making the specification rely on non-standard/unspecified behaviour of other
+systems or actors (such as SaaS services, even open-sourced, not governed by a
+standard protocol) shall not be accepted, either.
 
 ## The Spec Core Team
 
@@ -208,8 +212,8 @@ Responsibilities include:
  * Ensuring the code of conduct for +matrix:matrix.org community rooms is
    maintained and applied
 
-If members are absent for more than 8 weeks without prior agreement, they will
-be assumed to have left the project.
+If members are absent (uncontactable) for more than 8 weeks without prior
+agreement, they will be assumed to have left the project.
 
 Spec Core Team members can resign whenever they want, but must notify the rest
 of the team and the Guardians on doing so.
@@ -375,16 +379,20 @@ Code Core Team members must arrange their own funding for their time.
  * Responsible for tools and documentation that supports the spec
  * Responsible for ensuring reference implementations and test suite exists for the spec
  * Publishes the website (including ensuring This Week In Matrix and similar exist to promote independent projects)
- * Manages IANA-style allocations for Matrix
-   * mx:// URI scheme?
+ * Manages IANA-style allocations for Matrix, including:
+   * mx:// URI scheme
    * TCP port 8448
-   * .well-known URIs…?
+   * .well-known URIs
+* Ensures that Matrix promotion is happening (e.g. ensuring that meetups &
+  events & community activity is supported)
 
 In future:
 
- * contracts entities to work on Matrix? (e.g. redistributing donations back to fund development)
+ * contracts entities to work on Matrix if such contracts help the Foundation to
+   fulfil its mission and obey the Guiding Principles (e.g. redistributing
+   donations back to fund development of reference implementations or compliance
+   kits)
  * manages a "Made for Matrix" certification process? (to confirm that products are actually compatible with Matrix)
- * promotes Matrix (e.g. organise meetups & events & fund community activity)?
 
 ## Timings
 
