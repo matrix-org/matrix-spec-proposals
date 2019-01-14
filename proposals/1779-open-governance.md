@@ -252,7 +252,7 @@ The initial Spec Core Team (and their domain areas) is:
  * Hubert Chathi (Cryptography, General)
  * Andrew Morgan (Servers, AS API, Spec Process)
  * Travis Ralston (Bots and Bridges & AS API, Media, acting with Dimension hat on)
- * kitsune (Clients on behalf of Community)
+ * Alexey Rusakov (Clients on behalf of Community)
  * TBD
 
 MSCs require >= 75% approval from the Spec Core Team to proceed to Final Comment
