@@ -48,7 +48,7 @@ The response is identical to `v1`, except that:
    bring the invite API into line with the rest of the federation API.
 
 
-If a call to `v2` `/invite` results in a unrecognised request exception **AND**
+If a call to `v2` `/invite` results in an unrecognised request exception **AND**
 the room version is `1` or `2` then the sending server should retry the request
 with the `v1` API.
 
