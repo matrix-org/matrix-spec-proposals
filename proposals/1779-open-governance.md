@@ -105,12 +105,14 @@ protocol. This includes (non-exhaustively):
 
 "Greater benefit" is defined as maximising:
 
- * the number of end-users reachable on the open Matrix network
+ * the number of Matrix-native end-users reachable on the open Matrix network
  * the number of regular users on the Matrix network (e.g. 30-day retained federated users)
- * the number of end-users reachable by Matrix (natively or via bridges)
  * the number of online servers in the open federation
  * the number of developers building on Matrix
  * the number of independent implementations which use Matrix
+ * the number of bridged end-users reachable on the open Matrix network
+ * the signal-to-noise ratio of the content on the open Matrix network (i.e. minimising spam)
+ * the ability for users to discover content on their terms (empowering them to select what to see and what not to see)
  * the quality and utility of the Matrix spec (as defined by ease and ability
    with which a developer can implement spec-compliant clients, servers, bots,
    bridges, and other integrations without needing to refer to any other
@@ -130,6 +132,7 @@ subjective areas.  The values we follow are:
  * Supporting the whole long-term ecosystem rather than individual stakeholder gain
  * Openness rather than proprietariness
  * Interoperability rather than fragmentation
+ * Cross-platform rather than platform-specific
  * Collaboration rather than competition
  * Accessibility rather than elitism
  * Transparency rather than stealth
@@ -187,7 +190,7 @@ team in the interests of not over-engineering it and scaling up elastically.
 
 Spec Core Team members need to be able to commit to at least 1 hour a week of
 availability to work on the spec and (where relevant) reference implementations.
-Members of the team volunteer their time for free to work on the project.
+Members must arrange their own funding for their time.
 
 Responsibilities include:
 
@@ -329,7 +332,7 @@ The intention is for Matthew & Amandine (the original founders of Matrix) to
 form a minority of the Guardians, in order to ensure the neutrality of the
 Foundation relative to Matthew & Amandine’s day jobs at New Vector.
 
-Guardians volunteer their time for free to work on the project.
+Guardians must arrange their own funding for their time.
 
 ## The Code Core Team (aka The Core Team)
 
@@ -355,7 +358,7 @@ Responsibilities include:
    way that fosters a healthy and happy community
  * Following the Guiding Principles and promoting them within the community
 
-Code Core Team members volunteer their time for free to work on the project.
+Code Core Team members must arrange their own funding for their time.
 
 ## Responsibilities for the Foundation
 
