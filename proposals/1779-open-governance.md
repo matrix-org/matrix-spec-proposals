@@ -379,7 +379,7 @@ Code Core Team members must arrange their own funding for their time.
  * Responsible for tools and documentation that supports the spec
  * Responsible for ensuring reference implementations and test suite exists for the spec
  * Publishes the website (including ensuring This Week In Matrix and similar exist to promote independent projects)
- * Manages IANA-style allocations for Matrix, including:
+ * Manages any future IANA-style allocations for Matrix, such as:
    * mx:// URI scheme
    * TCP port 8448
    * .well-known URIs
