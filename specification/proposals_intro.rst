@@ -33,25 +33,28 @@ Guiding Principles
 
 Proposals **must** act to the greater benefit of the entire Matrix ecosystem,
 rather than benefiting or privileging any single player or subset of players -
-and must not contain any patent encumbered intellectual property. Members of the Core Team pledge to act as
+and must not contain any patent encumbered intellectual property.
+Members of the Spec Core Team pledge to act as
 a neutral custodian for Matrix on behalf of the whole ecosystem.
 
 For clarity: the Matrix ecosystem is anyone who uses the Matrix protocol. That
-includes client users, server admins, client developers, bot developers,
-bridge and application service developers, users and admins who are indirectly using Matrix via
-3rd party networks which happen to be bridged, server developers, room
-moderators and admins, companies/projects building products or services on
-Matrix, spec contributors, translators, and those who created it in
-the first place.
+includes client users, server admins, client developers, bot developers, bridge
+and application service developers, users and admins who are indirectly using
+Matrix via 3rd party networks which happen to be bridged, server developers,
+room moderators and admins, companies/projects building products or services on
+Matrix, spec contributors, translators, and those who created it in the first
+place.
 
-"Greater benefit" includes maximising:
+"Greater benefit" is defined as maximising:
 
-* the number of end-users reachable on the open Matrix network
+* the number of Matrix-native end-users reachable on the open Matrix network
 * the number of regular users on the Matrix network (e.g. 30-day retained federated users)
-* the number of end-users reachable by Matrix (natively or via bridges)
 * the number of online servers in the open federation
 * the number of developers building on Matrix
 * the number of independent implementations which use Matrix
+* the number of bridged end-users reachable on the open Matrix network
+* the signal-to-noise ratio of the content on the open Matrix network (i.e. minimising spam)
+* the ability for users to discover content on their terms (empowering them to select what to see and what not to see)
 * the quality and utility of the Matrix spec (as defined by ease and ability
   with which a developer can implement spec-compliant clients, servers, bots,
   bridges, and other integrations without needing to refer to any other
@@ -61,14 +64,18 @@ In addition, proposal authors are expected to uphold the following values in
 their proposed changes to the Matrix protocol:
 
 * Supporting the whole long-term ecosystem rather than individual stakeholder gain
-* Openness rather than proprietariness
+* Openness rather than proprietary lock-in
 * Interoperability rather than fragmentation
+* Cross-platform rather than platform-specific
 * Collaboration rather than competition
 * Accessibility rather than elitism
 * Transparency rather than stealth
 * Empathy rather than contrariness
 * Pragmatism rather than perfection
 * Proof rather than conjecture
+
+Please see [MSC1779](https://github.com/matrix-org/matrix-doc/pull/1779)
+for full details of the project's Guiding Principles.
 
 Technical notes
 ---------------
@@ -104,33 +111,37 @@ engine behaviour be specified?
 
 There is no universal answer to this, but the following guidelines should be
 applied:
- * If the feature would benefit the whole Matrix ecosystem and is aligned with
+1. If the feature would benefit the whole Matrix ecosystem and is aligned with
    the guiding principles above, then it should be supported by the spec.
-   For instance, video conferencing is clearly a feature which would benefit
-   the whole ecosystem, and so the spec should find a way to make it happen.
- * If the spec already makes the feature possible without changing any of the
+2. If the spec already makes the feature possible without changing any of the
    implementations and spec, then it may not need to be added to the spec.
-   For instance, video conferencing done by widgets requires no compulsory
-   changes to clients nor servers to work, and so could be omitted.
- * However, if the best user experience for a feature does require custom
-   implementation behaviour - e.g. embedding Jitsi into your client rather than
-   using a widget, then the behaviour should be defined in the spec to allow
-   implementations to do so.
- * However, the spec must never add dependencies on unspecified/nonstandardised
-   3rd party behaviour. For instance, defining how to embed Jitsi is unlikely to
-   ever make it into the spec, given Jitsi does not implement a standardised
-   interface (although a URL-based calling standard may emerge in future, which
-   could be used as an extension to the current widget-based approach).
- * Therefore, our two options in the specific case of video conferencing are
-   either to spec SFU conferencing semantics on WebRTC (or refer to an existing spec
-   for doing so), or to keep it as a widget-based approach (optionally with widget
-   extensions specific for more deeply integrating video conferencing use cases).
+3. However, if the best user experience for a feature does require custom
+   implementation behaviour then the behaviour should be defined in the spec
+   such that all implementations may implement it.
+4. However, the spec must never add dependencies on unspecified/nonstandardised
+   3rd party behaviour.
+
+As a worked example:
+1. Video conferencing is clearly a feature which would benefit
+   the whole ecosystem, and so the spec should find a way to make it happen.
+2. Video conferencing can be achieved by widgets without requiring any
+   compulsory changes to changes to clients nor servers to work, and so could be
+   omitted from the spec.
+3. A better experience could be achieved by embedding Jitsi natively into clients
+   rather than using a widget...
+4. ...except that would add a dependency on unspecified/nonstandardised 3rd party
+   behaviour, so must not be added to the spec.
+
+Therefore, our two options in the specific case of video conferencing are
+either to spec SFU conferencing semantics for WebRTC (or refer to an existing spec
+for doing so), or to keep it as a widget-based approach (optionally with widget
+extensions specific for more deeply integrating video conferencing use cases).
 
 As an alternative example: it's very unlikely that "how to visualise Magnetic
 Resonsance Imaging data over Matrix" would ever be added to the Matrix spec
 (other than perhaps a custom event type in a wider standardised Matrix event
 registry) given that the spec's existing primitives of file transfer and
-extensible events (MSC1767) give excellent tools for transferring and
+extensible events (MSC1767) give excellent tools for transfering and
 visualising arbitrary rich data.
 
 Supporting public search engines are likely to not require custom spec features
