@@ -22,7 +22,7 @@ PUT /_matrix/federation/v2/invite/<room_id>/<event_id>
 {
     "room_version": <room_version>,
     "event": { ... },
-    "invite_room_state": { ... }
+    "invite_room_state": [ ... ]
 }
 ```
 
