@@ -150,11 +150,10 @@ clients using the existing CS API.  An exception could be API features required
 by decentralised search infrastructure (avoiding centralisation of power by
 a centralised search engine).
 
-Conversely, features such as reactions, threaded messages, editable messages,
+Features such as reactions, threaded messages, editable messages,
 spam/abuse/content filtering (and reputation systems), are all features which
-would clearly benefit the whole Matrix ecosystem and require both client &
-server implementation changes across the board to be implemented in an
-interoperable way, and so necessitate a spec change.
+would clearly benefit the whole Matrix ecosystem, and cannot be implemented in an
+interoperable way using the current spec; so they necessitate a spec change.
 
 Process
 -------
