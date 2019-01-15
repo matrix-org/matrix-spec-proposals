@@ -270,7 +270,9 @@ The above governance process for the Spec Core Team is considered as part of the
 spec and is updated using the Matrix Spec Change process.  However, changes to
 the governance process also require a 75% positive approval from the Guardians
 (acting as a formal decision of the Foundation's Directors), in order to ensure
-changes are aligned with the Foundation's mission.
+changes are aligned with the Foundation's mission.  For avoidance of doubt, Spec
+Core Team votes and Guardians' votes are distinct and a person having both hats
+has to vote independently on both forums with the respective hat on.
 
 ## The Guardians
 
