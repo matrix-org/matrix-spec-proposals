@@ -88,35 +88,35 @@ player or subset of players.
 For clarity: the Matrix ecosystem is defined as anyone who uses the Matrix
 protocol. This includes (non-exhaustively):
 
- * End-users of Matrix clients
- * Matrix client developers and testers
- * Spec developers
- * Server admins
- * Matrix packagers & maintainers
- * Companies building products or services on Matrix
- * Bridge developers
- * Bot developers
- * Widget developers
- * Server developers
- * Matrix room and community moderators
- * End-users who are using Matrix indirectly via bridges
- * External systems which are bridged into Matrix
- * Anyone using Matrix for data communications
+ * End-users of Matrix clients.
+ * Matrix client developers and testers.
+ * Spec developers.
+ * Server admins.
+ * Matrix packagers & maintainers.
+ * Companies building products or services on Matrix.
+ * Bridge developers.
+ * Bot developers.
+ * Widget developers.
+ * Server developers.
+ * Matrix room and community moderators.
+ * End-users who are using Matrix indirectly via bridges.
+ * External systems which are bridged into Matrix.
+ * Anyone using Matrix for data communications.
 
 "Greater benefit" is defined as maximising:
 
- * the number of Matrix-native end-users reachable on the open Matrix network
- * the number of regular users on the Matrix network (e.g. 30-day retained federated users)
- * the number of online servers in the open federation
- * the number of developers building on Matrix
- * the number of independent implementations which use Matrix
- * the number of bridged end-users reachable on the open Matrix network
- * the signal-to-noise ratio of the content on the open Matrix network (i.e. minimising spam)
- * the ability for users to discover content on their terms (empowering them to select what to see and what not to see)
+ * the number of Matrix-native end-users reachable on the open Matrix network.
+ * the number of regular users on the Matrix network (e.g. 30-day retained federated users).
+ * the number of online servers in the open federation.
+ * the number of developers building on Matrix.
+ * the number of independent implementations which use Matrix.
+ * the number of bridged end-users reachable on the open Matrix network.
+ * the signal-to-noise ratio of the content on the open Matrix network (i.e. minimising spam).
+ * the ability for users to discover content on their terms (empowering them to select what to see and what not to see).
  * the quality and utility of the Matrix spec (as defined by ease and ability
    with which a developer can implement spec-compliant clients, servers, bots,
    bridges, and other integrations without needing to refer to any other
-   external material)
+   external material).
 
 N.B. that we consider success to be the growth of the open federated network
 rather than closed deployments. For example, if WhatsApp adopted Matrix it
@@ -129,16 +129,16 @@ As Matrix evolves, it's critical that the Spec Core Team and Guardians are
 aligned on the overall philosophy of the project, particularly in more
 subjective areas.  The values we follow are:
 
- * Supporting the whole long-term ecosystem rather than individual stakeholder gain
- * Openness rather than proprietary lock-in
- * Interoperability rather than fragmentation
- * Cross-platform rather than platform-specific
- * Collaboration rather than competition
- * Accessibility rather than elitism
- * Transparency rather than stealth
- * Empathy rather than contrariness
- * Pragmatism rather than perfection
- * Proof rather than conjecture
+ * Supporting the whole long-term ecosystem rather than individual stakeholder gain.
+ * Openness rather than proprietary lock-in.
+ * Interoperability rather than fragmentation.
+ * Cross-platform rather than platform-specific.
+ * Collaboration rather than competition.
+ * Accessibility rather than elitism.
+ * Transparency rather than stealth.
+ * Empathy rather than contrariness.
+ * Pragmatism rather than perfection.
+ * Proof rather than conjecture.
 
 Patent encumbered IP is strictly prohibited from being added to the standard.
 
@@ -198,19 +198,19 @@ Members must arrange their own funding for their time.
 
 Responsibilities include:
 
- * Reviewing Matrix Spec Change proposals and Spec PRs
+ * Reviewing Matrix Spec Change proposals and Spec PRs.
 
  * Contributing to and reviewing reference implementations of Matrix Spec Change
-   proposals
+   proposals.
 
- * Shepherding Matrix Spec Changes on behalf of authors where needed
+ * Shepherding Matrix Spec Changes on behalf of authors where needed.
 
- * Triaging Matrix Spec issues
+ * Triaging Matrix Spec issues.
 
- * Coordinating reference implementations
+ * Coordinating reference implementations.
 
  * Ensuring the code of conduct for +matrix:matrix.org community rooms is
-   maintained and applied
+   maintained and applied.
 
 If members are absent (uncontactable) for more than 8 weeks without prior
 agreement, they will be assumed to have left the project.
@@ -283,18 +283,18 @@ is following its guiding principles, and provide a safety mechanism if the
 structure of the Spec Core Team runs into trouble.
 
 In practice, this means that:
- * Guardians must approve changes to the Spec Core Team
- * Guardians must keep each other honest, providing a ‘checks and balances’
+ * Guardians must approve changes to the Spec Core Team.
+ * Guardians must keep each other honest, providing a ‘checks and balances’.
    mechanism between each other to ensure that all Guardians and the Spec Core
    Team act in the best interests of the protocol and ecosystem.
  * Guardians may appoint/dismiss members of the Spec Core Team who are in serious
    breach of the guiding principles. This overrides the unanimous consent
    requirement for the Spec Core Team when appointing new members.
  * Guardians may also override deadlocks when appointing a Spec Core Team leader
-   (with a >= 75% majority)
+   (with a >= 75% majority).
  * Guardians must approve changes to the Guiding Principles (above)
  * Guardians are responsible for approving use of the Foundation's assets
-   (e.g. redistributing donations)
+   (e.g. redistributing donations).
  * In future, Guardians may also be responsible for ensuring staff are hired by
    the Foundation to support administrative functions and other roles required
    to facilitate the Foundation's mission.
@@ -354,46 +354,46 @@ community.
 
 Responsibilities include:
  * Helping ensure the quality of the projects' code repositories
- * Ensuring all commits are reviewed
- * Ensuring that all projects follow the Matrix spec
- * Helping architect the implementations
- * Contributing code to the implementations
+ * Ensuring all commits are reviewed.
+ * Ensuring that all projects follow the Matrix spec.
+ * Helping architect the implementations.
+ * Contributing code to the implementations.
  * Fostering contributions and engaging with contributors constructively in a
-   way that fosters a healthy and happy community
- * Following the Guiding Principles and promoting them within the community
+   way that fosters a healthy and happy community.
+ * Following the Guiding Principles and promoting them within the community.
 
 Code Core Team members must arrange their own funding for their time.
 
 ## Functions of the Foundation
 
- * Independent legal entity which acts as neutral custodian of Matrix
- * Gathers donations
+ * Independent legal entity which acts as neutral custodian of Matrix.
+ * Gathers donations.
  * Owns the core Matrix IP in an asset lock, which shall be transferred from New Vector:
-   * Owns the matrix.org domain and branding
+   * Owns the matrix.org domain and branding.
    * Owns the copyright of the reference implementations of Matrix (i.e. everything in https://github.com/matrix-org).
      By assigning copyright to the Foundation, it’s protected against New Vector ever being tempted to relicense it.
-   * Owns the IP of the website
-   * Owns the Matrix.org marketing swag (t-shirts, stickers, exhibition stands etc)
- * Responsible for finding someone to run the Matrix.org homeserver (currently New Vector)
- * Publishes the spec
- * Responsible for tools and documentation that supports the spec
- * Responsible for ensuring reference implementations and test suite exists for the spec
- * Publishes the website (including ensuring This Week In Matrix and similar exist to promote independent projects)
+   * Owns the IP of the website.
+   * Owns the Matrix.org marketing swag (t-shirts, stickers, exhibition stands etc).
+ * Responsible for finding someone to run the Matrix.org homeserver (currently New Vector).
+ * Publishes the spec.
+ * Responsible for tools and documentation that supports the spec.
+ * Responsible for ensuring reference implementations and test suite exists for the spec.
+ * Publishes the website (including ensuring This Week In Matrix and similar exist to promote independent projects).
  * Manages any future IANA-style allocations for Matrix, such as:
-   * mx:// URI scheme
-   * TCP port 8448
+   * mx:// URI scheme.
+   * TCP port 8448.
    * .well-known URIs
 * Ensures that Matrix promotion is happening (e.g. ensuring that meetups &
-  events & community activity is supported)
+  events & community activity is supported).
 
 In future:
 
  * contracts entities to work on Matrix if such contracts help the Foundation to
    fulfil its mission and obey the Guiding Principles (e.g. redistributing
    donations back to fund development of reference implementations or compliance
-   kits)
+   kits).
  * manages a "Made for Matrix" certification process? (to confirm that products
-   are actually compatible with Matrix)
+   are actually compatible with Matrix).
 
 ## Timings
 
