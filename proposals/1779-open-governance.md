@@ -173,13 +173,13 @@ toxic culture of bullying or competitive infighting.  Folks need to be able to
 compromise; we are not building a culture of folks pushing their personal
 agendas at the expense of the overall project.
 
-We are particularly vigilant against 'trojan horse' additions to the spec -
-features which only benefit particular players, or are designed to somehow
-cripple or fragment the open protocol and ecosystem in favour of competitive
-advantage. Commercial players are of course free to build proprietary
-implementations, or use custom event types, or even custom API extensions (e.g.
-more efficient network transports) - but implementations must fall back to
-interoperating correctly with the rest of the ecosystem.
+The team should be particularly vigilant against 'trojan horse' additions to the
+spec - features which only benefit particular players, or are designed to
+somehow cripple or fragment the open protocol and ecosystem in favour of
+competitive advantage. Commercial players are of course free to build
+proprietary implementations, or use custom event types, or even custom API
+extensions (e.g. more efficient network transports) - but implementations must
+fall back to interoperating correctly with the rest of the ecosystem.
 
 ### Spec Core Team logistics
 
