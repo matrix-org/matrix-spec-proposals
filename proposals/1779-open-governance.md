@@ -364,7 +364,7 @@ Responsibilities include:
 
 Code Core Team members must arrange their own funding for their time.
 
-## Responsibilities for the Foundation
+## Functions of the Foundation
 
  * Independent legal entity which acts as neutral custodian of Matrix
  * Gathers donations
@@ -392,7 +392,8 @@ In future:
    fulfil its mission and obey the Guiding Principles (e.g. redistributing
    donations back to fund development of reference implementations or compliance
    kits)
- * manages a "Made for Matrix" certification process? (to confirm that products are actually compatible with Matrix)
+ * manages a "Made for Matrix" certification process? (to confirm that products
+   are actually compatible with Matrix)
 
 ## Timings
 
