@@ -50,9 +50,9 @@ responsible for ensuring that the Foundation (and by extension the Spec Core
 Team) keeps on mission and neutrally protects the development of Matrix.
 Guardians are typically independent of the commercial Matrix ecosystem and may
 even not be members of today’s Matrix community, but are deeply aligned with the
-mission of the project, and who are respected and trusted by the wider community
-to uphold the guiding principles of the Foundation and keep the other Guardians
-honest.
+mission of the project.  Guardians are selected to be respected and trusted by
+the wider community to uphold the guiding principles of the Foundation and keep
+the other Guardians honest.
 
 In other words; the Spec Core Team builds the spec, and the Guardians provide an
 independent backstop to ensure the spec evolves in line with the Foundation's
