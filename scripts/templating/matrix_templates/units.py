@@ -757,7 +757,6 @@ class MatrixUnits(Units):
         is_ver = substitutions.get("%IDENTITY_RELEASE_LABEL%", "unstable")
         as_ver = substitutions.get("%APPSERVICE_RELEASE_LABEL%", "unstable")
         push_gw_ver = substitutions.get("%PUSH_GATEWAY_RELEASE_LABEL%", "unstable")
-        room_ver = substitutions.get("%CURRENT_ROOM_VERSION%", "unstable")
 
         # we abuse the typetable to return this info to the templates
         return TypeTable(rows=[
@@ -781,10 +780,6 @@ class MatrixUnits(Units):
                 "`Push Gateway API <push_gateway/"+push_gw_ver+".html>`_",
                 push_gw_ver,
                 "Push notifications for Matrix events",
-            ), TypeTableRow(
-                "`Rooms <rooms/"+room_ver+".html>`_",
-                room_ver,
-                "Specification for behaviour of rooms, such as event formats",
             ),
         ])
 

@@ -418,6 +418,87 @@ dedicated API.  The API is symmetrical to managing Profile data.
   Would it really be overengineered to use the same API for both profile &
   private user data, but with different ACLs?
 
+
+Room Versions
+-------------
+
+Rooms are central to how Matrix operates, and have strict rules for what
+is allowed to be contained within them. Rooms can also have various
+algorithms that handle different tasks, such as what to do when two or
+more events collide in the underlying DAG. To allow rooms to be improved
+upon through new algorithms or rules, "room versions" are employed to
+manage a set of expectations for each room. New room versions are assigned
+as needed.
+
+Room version grammar
+~~~~~~~~~~~~~~~~~~~~
+
+Room versions are used to change properties of rooms that may not be compatible
+with other servers. For example, changing the rules for event authorization would
+cause older servers to potentially end up in a split-brain situation due to them
+not understanding the new rules.
+
+A room version is defined as a string of characters which MUST NOT exceed 32
+codepoints in length. Room versions MUST NOT be empty and SHOULD contain only
+the characters ``a-z``, ``0-9``, ``.``, and ``-``.
+
+Room versions are not intended to be parsed and should be treated as opaque
+identifiers. Room versions consisting only of the characters ``0-9`` and ``.``
+are reserved for future versions of the Matrix protocol.
+
+The complete grammar for a legal room version is::
+
+  room_version = 1*room_version_char
+  room_version_char = DIGIT
+                    / %x61-7A         ; a-z
+                    / "-" / "."
+
+Examples of valid room versions are:
+
+* ``1`` (would be reserved by the Matrix protocol)
+* ``1.2`` (would be reserved by the Matrix protocol)
+* ``1.2-beta``
+* ``com.example.version``
+
+Recommended room versions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are varying degrees of what "recommended" means for a given room version.
+Currently, this is split into 5 categories:
+
+* **Development**: This is the default state for all room versions. When in this
+  state, a room version is documented but not recommended for use outside of a
+  development environment. These versions are not production-ready.
+* **Beta**: Versions in this state are not intended for wide-spread usage but
+  should be stable enough if a room requires the feature(s) introduced within.
+  Rooms will need to opt-in to these versions and should not be promoted to
+  upgrade.
+* **Default**: Exactly 1 room version will be in this category. The version under
+  this category should be used when creating rooms (unless another version is
+  requested by the user). Servers may wish to promote rooms to opt-in to this
+  version.
+* **Recommended**: Exactly 1 room version will be in this category as well. The
+  version here should be heavily promoted by servers for rooms to opt-in to using.
+  This version is often going to be the same as the Default version.
+* **Mandatory**: Servers are required to implement versions in this category. When
+  a version is flagged as mandatory, additional rules may apply to rooms. For example,
+  servers may be required to stop supporting another room version and automatically
+  upgrade all affected rooms.
+
+With the above categories, the following applies:
+
+* Servers MUST have Room Version 1 as the Default room version.
+* Servers MUST have Room Version 1 as the Recommended room version.
+* Servers MUST implement Room Version 1 as a Mandatory room version.
+
+Complete list of room versions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The available room versions are:
+
+* `Version 1 <rooms/v1.html>`_ - The current version of most rooms.
+* `Version 2 <rooms/v2.html>`_ - **Beta**. Implements State Resolution Version 2.
+
 Specification Versions
 ----------------------
 

@@ -1,4 +1,4 @@
-.. Copyright 2018 New Vector Ltd
+.. Copyright 2018-2019 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -12,31 +12,11 @@
 .. See the License for the specific language governing permissions and
 .. limitations under the License.
 
+Room Version 2
+==============
 
-.. Note: This document appended to the end of the intro, so this next line
-.. appears under "Other Room Versions".
-
-This is the specification for **room version 2** (``"2"``).
-
-.. Warning::
-
-   Room version 2 is under development and cannot be relied on in production
-   environments.
-
-
-Changelog
----------
-
-.. topic:: Room version 2
-{{rooms_changelog_v2}}
-
-This version of the specification is generated from
-`matrix-doc <https://github.com/matrix-org/matrix-doc>`_ as of Git commit
-`{{git_version}} <https://github.com/matrix-org/matrix-doc/tree/{{git_rev}}>`_.
-
-For the full historical changelog, see
-https://github.com/matrix-org/matrix-doc/blob/master/changelogs/rooms.rst
-
+This room version builds off of `version 1 <v1.html>`_ with an improved state
+resolution algorithm.
 
 Server implementation components
 --------------------------------
