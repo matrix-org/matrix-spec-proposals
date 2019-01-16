@@ -1024,12 +1024,6 @@ supports it, the client should redirect the user to the ``/redirect`` endpoint
 for `Single Sign-On <#sso-client-login>`_. After authentication is complete, the
 client will need to submit a ``/login`` request matching ``m.login.token``.
 
-If the homeserver advertises ``m.login.cas`` as a viable flow, and the client
-supports it, the client should redirect the user to the ``/redirect`` endpoint
-for `CAS <#cas-based-client-login>`_. Just like SSO authentication, the client
-is expected to submit a ``/login`` request matching ``m.login.token`` upon
-successful authentication.
-
 {{login_cs_http_api}}
 
 {{logout_cs_http_api}}
