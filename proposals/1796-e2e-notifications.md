@@ -70,6 +70,12 @@ is not running in the background.
 As a special case, `@room` is also allowed as a possible value of `m.mentions`,
 indicating when the message is attempting to notify the whole room.
 
+One possible extension here is to also define a `m.visible` field on the contents,
+which would be a boolean to let servers track whether a given message should
+contribute to unread message counts or not and so calculate unread room state
+and counts serverside rather than clientside.
+(See https://github.com/matrix-org/synapse/issues/2632)
+
 ### Better handling of custom keyword notifications
 
 The only way to safely notify for per-user specified custom keywords is for
