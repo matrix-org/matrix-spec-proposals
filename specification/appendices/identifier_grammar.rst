@@ -16,10 +16,10 @@
 Identifier Grammar
 ------------------
 
-Some identifiers are specific to given room versions, please see the
-`room specification`_ for more information.
+Some identifiers are specific to given room versions, please refer to the
+`room versions specification`_ for more information.
 
-.. _`room specification`: ../rooms/latest.html
+.. _`room versions specification`: ../index.html#room-versions
 
 
 Server Name

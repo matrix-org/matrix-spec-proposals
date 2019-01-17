@@ -1318,4 +1318,4 @@ Example code
 .. _`Checking for a signature`: ../appendices.html#checking-for-a-signature
 .. _`Device Management module`: ../client_server/%CLIENT_RELEASE_LABEL%.html#device-management
 .. _`End-to-End Encryption module`: ../client_server/%CLIENT_RELEASE_LABEL%.html#end-to-end-encryption
-.. _`room version specification`: ../rooms/latest.html
+.. _`room version specification`: ../index.html#room-versions
