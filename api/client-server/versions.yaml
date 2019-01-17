@@ -39,9 +39,12 @@ paths:
         may optionally include version information within their name if desired.
         Features listed here are not for optionally toggling parts of the Matrix
         specification and should only be used to advertise support for a feature
-        which has not yet landed in the spec. For example, an accepted proposal
-        for a feature needing implementation would advertise itself here with
-        the intention of being removed from this list once the spec changes land.
+        which has not yet landed in the spec. For example, a feature currently
+        undergoing the proposal process may appear here and eventually be taken
+        off this list once the feature lands in the spec and the server deems it
+        reasonable to do so. Servers may wish to keep advertising features here
+        after they've been released into the spec to give clients a chance to
+        upgrade appropriately.
       operationId: getVersions
       responses:
         200:
