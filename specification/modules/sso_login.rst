@@ -17,9 +17,9 @@ SSO client login
 
 .. _module:sso_login:
 
-Single Sign-On (SSO) is a generic web-based protocol for logging in users.
-As a special case, the Matrix specification supports `CAS-based login <#cas-based-client-login>`_
-as well as a subset of SSO login.
+Single Sign-On (SSO) is a generic term which refers to protocols which allow
+users to log into applications via a single web-based authentication portal.
+Examples include "Central Authentication Service" (CAS) and SAML.
 
 An overview of the process, as used in Matrix, is as follows:
 
