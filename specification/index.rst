@@ -481,10 +481,13 @@ Currently, this is split into 5 categories:
 * **Recommended**: Exactly 1 room version will be in this category as well. Servers
   should prompt as strongly as possible for rooms to opt-in to upgrade to this version.
   This version is often going to be the same as the Default version.
-* **Mandatory**: Servers are required to implement versions in this category. When
-  a version is flagged as mandatory, additional rules may apply to rooms. For example,
-  servers may be required to stop supporting another room version and automatically
-  upgrade all affected rooms.
+* **Mandatory**: Servers are required to implement versions in this category,
+  regardless as to how they are otherwise categorized. This allows for a Beta room
+  version to be mandatorily implemented by all servers in extremely rare circumstances,
+  as an example. Being a Mandatory room version does not imply that it is Recommended
+  or a Default version, just that the server needs to support it. Additional rules
+  may apply to room versions which are Mandatory, such as forcing servers to upgrade
+  all known rooms to a particular version where possible.
 
 With the above categories, the following applies:
 
