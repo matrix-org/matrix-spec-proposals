@@ -479,15 +479,15 @@ Currently, this is split into 5 categories:
   are not required to implement these versions.
 * **Beta**: Versions in this state are not intended for wide-spread usage but
   should be stable enough if a room requires the feature(s) introduced within.
-  Rooms will need to opt-in to these versions and should not be prompted to
-  upgrade. Servers additionally do not have to implement these versions.
+  Rooms may opt-in to these versions on their own, but should not be asked to
+  upgrade automatically. Servers do not have to implement these versions.
 * **Default**: Exactly 1 room version will be in this category. The version under
   this category should be used when creating rooms (unless another version is
-  requested by the user). Servers may wish to prompt rooms to opt-in to this
+  requested by the user). Servers may wish to advertise that rooms opt-in to this
   version.
 * **Recommended**: Exactly 1 room version will be in this category as well. Servers
-  should prompt as strongly as possible for rooms to opt-in to upgrade to this version.
-  This version is often going to be the same as the Default version.
+  should advertise as strongly as possible for rooms to opt-in to upgrade to this
+  version. This version is often going to be the same as the Default version.
 * **Mandatory**: Servers are required to implement versions in this category,
   regardless as to how they are otherwise categorized. This allows for a Beta room
   version to be mandatorily implemented by all servers in extremely rare circumstances,
