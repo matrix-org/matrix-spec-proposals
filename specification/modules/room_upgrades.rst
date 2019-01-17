@@ -29,32 +29,13 @@ Events
 Client behaviour
 ----------------
 
-Clients which understand ``m.room.tombstone`` events MUST:
-
-* Hide the old room from the user's list of rooms. Permalinks, backlinks, etc should
-  still be accessible to this room, however.
-* At the very bottom of the old room's timeline/message view, display a message which
-  indicates the room has been upgraded with a permalink to the new room. When the user
-  accesses the permalink, they are to be joined to the new room.
-
-  * Note that if the homeserver doesn't support the room version that the user may
-    receive an error upon trying to join.
-  * If the replacement room has a tombstone event, the client may automatically follow
-    the chain until it finds a room which does not have a tombstone in it.
-
-* Optionally, the client may wish to improve the presentation of unread messages when
-  the user is in both the old and new rooms. For example, if the user was not active
-  during the upgrade and had unread messages in the old room, the new room may have an
-  indicator which shows the sum of unread notifications between the rooms.
-
-Clients which understand ``m.room.tombstone`` events must also understand the ``predecessor``
-field on ``m.room.create`` events such that:
-
-* At the top of the scrollback/message view for the new room a message is displayed
-  indicating that the room is a continuation of a previous room, with a permalink to
-  the old room.
-* Optionally supporting search and other functions of the room to span across the old
-  and new rooms.
+Clients which understand ``m.room.tombstone`` events and the ``predecessor`` field on
+``m.room.create`` events should communicate to the user that the room was upgraded.
+One way of accomplishing this would be to hide the old room from the user's room list
+and showing banners linking between the old and new room - ensuring that permalinks
+work when referencing the old room. Another approach may be to virtually merge the
+rooms such that the old room's timeline seamlessly continues into the new timeline
+without the user having to jump between the rooms.
 
 {{room_upgrades_cs_http_api}}
 
