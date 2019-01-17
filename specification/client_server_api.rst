@@ -1016,8 +1016,13 @@ follows:
   }
 
 As with `token-based`_ interactive login, the ``token`` must encode the
-user id. In the case that the token is not valid, the homeserver must respond
+user ID. In the case that the token is not valid, the homeserver must respond
 with ``403 Forbidden`` and an error code of ``M_FORBIDDEN``.
+
+If the homeserver advertises ``m.login.sso`` as a viable flow, and the client
+supports it, the client should redirect the user to the ``/redirect`` endpoint
+for `Single Sign-On <#sso-client-login>`_. After authentication is complete, the
+client will need to submit a ``/login`` request matching ``m.login.token``.
 
 {{login_cs_http_api}}
 
