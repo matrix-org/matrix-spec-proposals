@@ -35,8 +35,18 @@ version, and at what state.
 Clients should prompt people with sufficient permissions to perform an upgrade to upgrade their rooms
 to the `m.recommended` room version.
 
-Similarly, clients should prompt room administrators (or those with enough permission) to upgrade
-their rooms where possible.
+Room versions might appear under multiple categories under some circumstances. In particular, it is
+expected that anything in `m.development` or `m.beta` appears exactly once in the whole capability
+whereas `m.default`, `m.recommended`, and `m.mandatory` may duplicate a room version. The duplication
+is possible due to the definitions of each category:
+
+* `m.default` - This is the room version that the server is going to apply to all new rooms by default.
+* `m.recommended` - The version clients should be prompting people to upgrade to.
+* `m.mandatory` - The version the server is going to enforce on all pre-existing rooms.
+
+With these definitions, it is possible that a room version fits multiple criteria (ie: "please upgrade
+your rooms to version X which is also the default for new rooms"). Clients will generally only be
+interested in the `m.recommended` room version, leaving the rest as informational for users.
 
 
 ## Potential issues
