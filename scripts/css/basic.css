@@ -462,6 +462,28 @@ dl.glossary dt {
     font-style: oblique;
 }
 
+/* -- proposals page -------------------------------------------------------- */
+
+#tables-of-tracked-proposals h2 {
+    padding-left: 10px;
+    position: -webkit-sticky;
+    position: sticky;
+}
+
+/* Move sticky headers below header bar on desktop */
+@media all and (min-width:980px) {
+    #tables-of-tracked-proposals h2 {
+        top: 52px;
+    }
+}
+
+/* Sticky headers stick to the top on mobile */
+@media all and (min-width:0px) and (max-width: 980px) {
+    #tables-of-tracked-proposals h2 {
+        top: 0px;
+    }
+}
+
 /* -- code displays --------------------------------------------------------- */
 
 pre {

@@ -1,4 +1,4 @@
-# Copyright 2016 OpenMarket Ltd
+# Copyright 2019 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 # limitations under the License.
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server CAS Login API"
+  title: "Matrix Client-Server SSO Login API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
@@ -21,34 +21,26 @@ schemes:
   - http
 basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
 paths:
-  "/login/cas/redirect":
+  "/login/sso/redirect":
     get:
-      summary: Redirect the user's browser to the CAS interface.
+      summary: Redirect the user's browser to the SSO interface.
       description: |-
         A web-based Matrix client should instruct the user's browser to
-        navigate to this endpoint in order to log in via CAS.
+        navigate to this endpoint in order to log in via SSO.
 
-        The server MUST respond with an HTTP redirect to the CAS interface. The
-        URI MUST include a ``service`` parameter giving the path of the
-        |/login/cas/ticket|_ endpoint (including the ``redirectUrl`` query
-        parameter).
-
-        For example, if the endpoint is called with
-        ``redirectUrl=https://client.example.com/?q=p``, it might redirect to
-        ``https://cas.example.com/?service=https%3A%2F%2Fserver.example.com%2F_matrix%2Fclient%2F%CLIENT_MAJOR_VERSION%%2Flogin%2Fcas%2Fticket%3FredirectUrl%3Dhttps%253A%252F%252Fclient.example.com%252F%253Fq%253Dp``.
-
-      operationId: redirectToCAS
+        The server MUST respond with an HTTP redirect to the SSO interface.
+      operationId: redirectToSSO
       parameters:
         - in: query
           type: string
           name: redirectUrl
           description: |-
             URI to which the user will be redirected after the homeserver has
-            authenticated the user with CAS.
+            authenticated the user with SSO.
           required: true
       responses:
         302:
-          description: A redirect to the CAS interface.
+          description: A redirect to the SSO interface.
           headers:
             Location:
               type: "string"
