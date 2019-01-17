@@ -30,10 +30,10 @@ The labels picked (`m.development`, etc) are based upon the categories for diffe
 Note that `m.default` and `m.recommended` reinforce that there is exactly 1 version in each category.
 
 Clients are encouraged to make use of this capability to determine if the server supports a given
-version, and at what state. Clients should cross-reference the versions with the room version spec
-where possible. For example, if a slightly older server hasn't yet put version `2` into `m.default`,
-but the spec says `2` is the new default and the client knows this, the client should treat `2` as
-the new default.
+version, and at what state.
+
+Clients should prompt people with sufficient permissions to perform an upgrade to upgrade their rooms
+to the `m.recommended` room version.
 
 Similarly, clients should prompt room administrators (or those with enough permission) to upgrade
 their rooms where possible.
