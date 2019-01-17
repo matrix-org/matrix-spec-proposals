@@ -19,10 +19,10 @@ proposal being accepted, then actually having your ideas implemented as
 committed changes to the `Specification repository
 <https://github.com/matrix-org/matrix-doc>`_.
 
-Meet the `members of the Core Team
+Meet the `members of the Spec Core Team
 <https://github.com/orgs/matrix-org/teams/spec-core-team/members>`_, a group of
 individuals tasked with ensuring the spec process is as smooth and painless as
-possible. Members of the Core Team will do their best to participate in
+possible. Members of the Spec Core Team will do their best to participate in
 discussion, summarise when things become long-winded, and generally try to act
 towards the benefit of everyone. As a majority, team members have the ability
 to change the state of a proposal, and individually have the final say in
@@ -74,7 +74,7 @@ their proposed changes to the Matrix protocol:
 * Pragmatism rather than perfection
 * Proof rather than conjecture
 
-Please see [MSC1779](https://github.com/matrix-org/matrix-doc/pull/1779)
+Please see [MSC1779](https://github.com/matrix-org/matrix-doc/blob/matthew/msc1779/proposals/1779-open-governance.md)
 for full details of the project's Guiding Principles.
 
 Technical notes
@@ -213,25 +213,25 @@ follows:
     viewpoints and get consensus, but this can sometimes be time-consuming (or
     the author may be biased), in which case an impartial 'shepherd' can be
     assigned to help guide the proposal through this process instead. A shepherd is
-    typically a neutral party from the Core Team or an experienced member of
+    typically a neutral party from the Spec Core Team or an experienced member of
     the community. There is no formal process for assignment. Simply ask for a
     shepherd to help get your proposal through and one will be assigned based
     on availability. Having a shepherd is not a requirement for proposal
     acceptance.
 
-- Members of the Core Team and community will review and discuss the PR in the
+- Members of the Spec Core Team and community will review and discuss the PR in the
   comments and in relevant rooms on Matrix. Discussion outside of GitHub should
   be summarised in a comment on the PR.
-- When a member of the Core Team believes that no new discussion points are
+- When a member of the Spec Core Team believes that no new discussion points are
   being made, they will propose a motion for a final comment period (FCP),
   along with a *disposition* of either merge, close or postpone. This FCP is
   provided to allow a short period of time for any invested party to provide a
   final objection before a major decision is made. If sufficient reasoning is
   given, an FCP can be cancelled. It is often preceded by a comment summarising
   the current state of the discussion, along with reasoning for its occurrence.
-- A concern can be raised by a Core Team member at any time, which will block
-  an FCP from beginning. An FCP will only begin when a **majority** of core
-  team members agree on its outcome, and all existing concerns have been
+- A concern can be raised by a Spec Core Team member at any time, which will block
+  an FCP from beginning. An FCP will only begin when 75% of the members of the
+  Spec Core Team team agree on its outcome, and all existing concerns have been
   resolved.
 - The FCP will then begin and last for 5 days, giving anyone else some time to
   speak up before it concludes. On its conclusion, the disposition of the FCP
@@ -321,7 +321,7 @@ Lifetime States
 Name                             GitHub Label                   Description
 ===============================  =============================  ====================================
 Proposal Drafting and Feedback   N/A                            A proposal document which is still work-in-progress but is being shared to incorporate feedback
-Proposal In Review               proposal-in-review             A proposal document which is now ready and waiting for review by the Core Team and community
+Proposal In Review               proposal-in-review             A proposal document which is now ready and waiting for review by the Spec Core Team and community
 Proposed Final Comment Period    proposed-final-comment-period  Currently awaiting signoff of a majority of team members in order to enter the final comment period
 Final Comment Period             final-comment-period           A proposal document which has reached final comment period either for merge, closure or postponement
 Final Commment Period Complete   finished-final-comment-period  The final comment period has been completed. Waiting for a demonstration implementation
@@ -342,7 +342,7 @@ pull request trackers of the `matrix-doc
 <https://github.com/matrix-org/matrix-doc>`_ repo.
 
 We use labels and some metadata in MSC PR descriptions to generate this page.
-Labels are assigned by the Core Team whilst triaging the proposals based on those
+Labels are assigned by the Spec Core Team whilst triaging the proposals based on those
 which exist in the `matrix-doc <https://github.com/matrix-org/matrix-doc>`_
 repo already.
 

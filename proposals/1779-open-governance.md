@@ -69,9 +69,9 @@ We believe:
 
  * People should have full control over their own communication.
 
- * People should not be locked into centralised communication silos, but free to
-   pick who they choose to host their communication without limiting who they
-   can reach.
+ * People should not be locked into centralised communication silos, but instead
+   be free to pick who they choose to host their communication without limiting
+   who they can reach.
 
  * The ability to converse securely and privately is a basic human right.
 
@@ -80,9 +80,9 @@ We believe:
 
 ### Mission
 
-The Matrix.org Foundation exists to act as a neutral custodian for Matrix and
+The Matrix.org Foundation exists to act as a neutral custodian for Matrix and to
 nurture it as efficiently as possible as a single unfragmented standard, for the
-greater benefit of the whole ecosystem; not benefiting or privileging any single
+greater benefit of the whole ecosystem, not benefiting or privileging any single
 player or subset of players.
 
 For clarity: the Matrix ecosystem is defined as anyone who uses the Matrix
@@ -185,8 +185,8 @@ fall back to interoperating correctly with the rest of the ecosystem.
 
 The Spec Core Team itself will be made up of roughly 8 members + 1 project lead.
 Roughly half the members are expected to be from the historical core team
-(similar to Rust).  The team must have 5 members to be quorate, with the aim of
-generally having between 7 and 9 members.
+(similar to Rust).  The team must have 5 members to be able to function, with
+the aim of generally having between 7 and 9 members.
 
 In future we may also have sub-teams (like Rust - e.g. CS/AS/Push API; SS API;
 IS API; Crypto), but as a starting point we are beginning with a single core
@@ -221,13 +221,14 @@ of the team and the Guardians on doing so.
 New additions to the team require 100% consent from the current team members.
 Membership has to be formally proposed by someone already on the Spec Core Team.
 
-Members can be removed from the team if >= 75% of the team agrees they are no
-longer following the goals and guiding principles of the project.  (The 75% is
-measured of the whole team, including the member in question)
+Members can be removed from the team if 75% of the current members approves and
+agrees they are no longer following the goals and guiding principles of the
+project.  (The 75% is measured of the whole team, including the member in
+question).
 
-Guardians act as a backstop, and can appoint or remove Spec Core Team members
-(requiring a 75% consensus threshold between the Guardians) if the Spec Core
-Team is unable to function or is failing to align with the Foundation's mission.
+Guardians act as a safety net, and can appoint or remove Spec Core Team members
+(requiring approval by 75% of the current Guardians) if the Spec Core Team is
+unable to function or is failing to align with the Foundation's mission.
 
 It's suggested that one of the Spec Core Team members should also be a Guardian,
 to facilitate information exchange between the Guardians and the Spec Core Team,
@@ -236,12 +237,14 @@ and to represent the technical angle of the project to the other Guardians.
 The project lead role acts to coordinate the team and to help steer the team to
 consensus in the event of failing to get agreement on a Matrix Spec Change.
 Every 12 months, a vote of confidence is held in the project lead, requiring the
-confidence of 75% of the team for the lead to be renewed.  There is no maximum
-term for the project lead.  The lead may be removed by the core team at any
-point (with 75% majority), and may resign the role at any point (notifying the
-team and the Guardians).  The lead automatically resigns the role if they resign
-from the Spec Core Team. Resignation automatically triggers selection of a new
-lead, who must be selected from the existing Spec Core Team.
+approval of 75% of the current Spec Core Team members for the lead to be
+renewed.  There is no maximum term for the project lead.  The lead may be
+removed by the core team at any point (requiring 75% approval of current
+members), and may resign the role at any point (notifying the team and the
+Guardians).  The lead automatically resigns the role if they resign from the
+Spec Core Team. Resignation automatically triggers selection of a new lead, who
+must be selected from the existing Spec Core Team with 75% approval from current
+members within 14 days.
 
 It is vital that the core spec team has strong domain expertise covering all
 different domains of the spec (e.g. we don't want to end up with a core spec
@@ -259,20 +262,23 @@ The initial Spec Core Team (and their domain areas) is:
  * Alexey Rusakov (Clients on behalf of Community)
  * TBD
 
-MSCs require >= 75% approval from the Spec Core Team to proceed to Final Comment
-Period (see https://matrix.org/docs/spec/proposals for the rest of the MSC
-process).
+MSCs require approval by 75% of the current members of the Spec Core Team to
+proceed to Final Comment Period (see https://matrix.org/docs/spec/proposals for
+the rest of the MSC process).
 
 Even though a threshold of only 75% is required for approval, the Spec Core Team
 is expected to seek consensus on MSCs.
 
 The above governance process for the Spec Core Team is considered as part of the
 spec and is updated using the Matrix Spec Change process.  However, changes to
-the governance process also require a 75% positive approval from the Guardians
+the governance process also require approval by 75% of the current Guardians
 (acting as a formal decision of the Foundation's Directors), in order to ensure
 changes are aligned with the Foundation's mission.  For avoidance of doubt, Spec
 Core Team votes and Guardians' votes are distinct and a person having both hats
 has to vote independently on both forums with the respective hat on.
+
+Spec Core Team decisions (e.g. appointing/removing members and lead)
+should be published openly and transparently for the public.
 
 ## The Guardians
 
@@ -285,16 +291,23 @@ is following its guiding principles, and provide a safety mechanism if the
 structure of the Spec Core Team runs into trouble.
 
 In practice, this means that:
- * Guardians must approve changes to the Spec Core Team.
+
+ * Guardians are responsible for ensuring the Spec Core Team continues to
+   function, and have the power to appoint/dismiss members of the spec core team
+   (with the agreement of 75% of the Guardians) to address issues with the Spec
+   Core Team.
  * Guardians must keep each other honest, providing a ‘checks and balances’.
    mechanism between each other to ensure that all Guardians and the Spec Core
    Team act in the best interests of the protocol and ecosystem.
- * Guardians may appoint/dismiss members of the Spec Core Team who are in serious
-   breach of the guiding principles. This overrides the unanimous consent
-   requirement for the Spec Core Team when appointing new members.
+ * Guardians may dismiss members of the Spec Core Team who are in serious
+   breach of the guiding principles.
+ * Guardians may appoint members of the Spec Core Team to break deadlocks in the
+   unanimous consent requirement for the Spec Core Team when appointing new
+   members.
  * Guardians may also override deadlocks when appointing a Spec Core Team leader
-   (with a >= 75% majority).
- * Guardians must approve changes to the Guiding Principles (above)
+   (with approval of 75% of the current Guardians).
+ * Guardians must approve changes to the above Guiding Principles (with approval
+   of 75% of the current Guardians)
  * Guardians are responsible for approving use of the Foundation's assets
    (e.g. redistributing donations).
  * In future, Guardians may also be responsible for ensuring staff are hired by
@@ -303,8 +316,14 @@ In practice, this means that:
  * As well as the Spec Core Team committee, they may also oversee committees for
    other areas such as marketing Matrix.org, registering custom event types,
    or "Made for Matrix" certification.
- * It's likely a subset of Guardians will be hands-on for day-to-day
-   administrative purposes, whilst the others act to keep them in balance.
+ * Guardians are responsible for choosing if, when and how staff are located by
+   the Foundation to fill administrative and other functions required to
+   facilitate the Foundations' mission.
+ * Guardians are responsible for choosing if and when additional committees are
+   formed, and to oversee those committees.
+ * Guardians are not required to be involved on a day-to-day basis, however
+   those not taking a hands on approach are required to monitor to ensure a
+   suitable balance is kept by those that do.
 
 Guardians are chosen typically to be independent of the commercial Matrix
 ecosystem (and especially independent from New Vector), and may even not be
@@ -313,18 +332,18 @@ the mission of the project, and respected and trusted by the wider community to
 uphold the guiding principles of the Foundation and keep the other Guardians
 honest.
 
-Guardians are responsible for maintaining and updating the Guiding
-Principles and Articles of Association of the Foundation if/when
-necessary. Changes to the Guiding Principles require a 75% majority from the
-Guardians and are passed as a 'special resolution' of the board.
+Guardians are responsible for maintaining and updating the Guiding Principles
+and Articles of Association of the Foundation if/when necessary. Changes to the
+Guiding Principles require approval from 75% of the current Guardians and are
+passed as a 'special resolution' of the board.
 
-New Guardians may be appointed with a 75% majority by the board.
+New Guardians may be appointed with approval from 75% of the current Guardians.
 
 Guardians may resign at any time, with notification to the board.
 
-Guardians may be removed due to serious breach of the guiding principles with a
-75% majority of the other Guardians, or if absent from 3 consecutive board
-meetings, or if they are legally disqualified from acting as a Director.
+Guardians may be removed due to serious breach of the guiding principles with
+approval by 75% of the other current Guardians, or if absent from 3 consecutive
+board meetings, or if they are legally disqualified from acting as a Director.
 
 We aim to recruit roughly 5 Guardians.  The initial Guardians are:
 
@@ -339,6 +358,9 @@ form a minority of the Guardians, in order to ensure the neutrality of the
 Foundation relative to Matthew & Amandine’s day jobs at New Vector.
 
 Guardians must arrange their own funding for their time.
+
+Guardian decisions (e.g. appointing/removing guardians; changes to the spec core
+team; etc) should be published openly and transparently for the public.
 
 ## The Code Core Team (aka The Core Team)
 
