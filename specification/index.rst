@@ -468,11 +468,12 @@ Currently, this is split into 5 categories:
 
 * **Development**: This is the default state for all room versions. When in this
   state, a room version is documented but not recommended for use outside of a
-  development environment. These versions are not production-ready.
+  development environment. These versions are not production-ready and servers
+  are not required to implement these versions.
 * **Beta**: Versions in this state are not intended for wide-spread usage but
   should be stable enough if a room requires the feature(s) introduced within.
   Rooms will need to opt-in to these versions and should not be promoted to
-  upgrade.
+  upgrade. Servers additionally do not have to implement these versions.
 * **Default**: Exactly 1 room version will be in this category. The version under
   this category should be used when creating rooms (unless another version is
   requested by the user). Servers may wish to promote rooms to opt-in to this
