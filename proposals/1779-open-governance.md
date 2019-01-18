@@ -377,7 +377,7 @@ the core team is also signified by membership of the +matrix:matrix.org Matrix
 community.
 
 Responsibilities include:
- * Helping ensure the quality of the projects' code repositories
+ * Helping ensure the quality of the projects' code repositories.
  * Ensuring all commits are reviewed.
  * Ensuring that all projects follow the Matrix spec.
  * Helping architect the implementations.
@@ -400,7 +400,7 @@ Code Core Team members must arrange their own funding for their time.
    * Owns the Matrix.org marketing swag (t-shirts, stickers, exhibition stands etc).
  * Responsible for finding someone to run the Matrix.org homeserver (currently New Vector).
  * Publishes the spec.
- * Responsible for tools and documentation that supports the spec.
+ * Responsible for tools and documentation that support the spec.
  * Responsible for ensuring reference implementations and test suite exists for the spec.
  * Publishes the website (including ensuring This Week In Matrix and similar exist to promote independent projects).
  * Manages any future IANA-style allocations for Matrix, such as:
@@ -412,11 +412,11 @@ Code Core Team members must arrange their own funding for their time.
 
 In future:
 
- * contracts entities to work on Matrix if such contracts help the Foundation to
+ * Contracts entities to work on Matrix if such contracts help the Foundation to
    fulfil its mission and obey the Guiding Principles (e.g. redistributing
    donations back to fund development of reference implementations or compliance
    kits).
- * manages a "Made for Matrix" certification process? (to confirm that products
+ * Manages a "Made for Matrix" certification process? (to confirm that products
    are actually compatible with Matrix).
 
 ## Timings
