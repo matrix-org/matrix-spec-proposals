@@ -1,4 +1,4 @@
-# Cross-signing devices with master keys
+# Cross-signing devices with device signing keys
 
 ## Background
 
@@ -8,215 +8,188 @@ this user must then verify each key on each of their devices.  If Alice has *n*
 devices, and Bob has *m* devices, then for Alice to be able to communicate with
 Bob on any of their devices, this involves *n×m* key verifications.
 
-One way to addresss this is for each user to use a "master key" for their
-identity which signs all of their devices.  Thus another user who wishes to
-verify their identity only needs to verify their master, key and can use the
-master key to verify their devices.
+One way to address this is for each user to use a device signing key to signs
+all of their devices.  Thus another user who wishes to verify their identity
+only needs to verify the device signing key and can use the signatures created
+by the device signing key to verify their devices.
 
 [MSC1680](https://github.com/matrix-org/matrix-doc/issues/1680) presents a
-different solution to the problem.
+different solution to the problem.  A comparison between this proposal and
+MSC1680 is presented below.
 
 ## Proposal
 
-Each user has a "master identity key" that is used to sign their devices, and
-is signed by all of their devices.  When one user (Alice) verifies another
-user's (Bob's) identity, Alice will sign Bob's master identity key with her
-master identity key.  (This will mean that verification methods will need to be
-modified to pass along the master identity key.)  Alice's device will trust
-Bob's device if:
+Each user has a self-signing key pair that is used to sign their own devices,
+and a user-signing key pair that is used to sign other users' signing keys. A
+user's user-signing key is also signed by their own self-signing key. When one
+user (e.g. Alice) verifies another user's (Bob's) identity, Alice will sign
+Bob's self-signing key with her user-signing key. (This will mean that
+verification methods will need to be modified to pass along the self-signing
+identity key.) Alice's device will trust Bob's device if:
 
-- Alice's device is using a master identity key that has signed Bob's master
-  identity key,
-- Bob's master identity key has signed Bob's device, and
-- none of those signatures have been revoked.
+- Alice's device is using a self-signing key that has signed her user-signing key,
+- Alice's user-signing key has signed Bob's self-signing key, and
+- Bob's self-signing key has signed Bob's device key.
 
-If Alice believes that her master identity key has been compromised, she can
-revoke it and create a new one.  This means that all trust involving Alice
-(i.e. Alice trusting other people and other people trusting Alice) needs to
-start from scratch.
+### Key security
 
-The master identity key's private key can be stored encrypted on the server
-(possibly along with the megolm key backup).  Clients may or may not want to
-store a copy of the private key locally.  Doing so would mean that an attacker
-who steals a device has access to the private key, and so can forge trusted
-devices until the user notices and resets their master key.  However, not doing
-so means that when the user verifies another user, they will need to re-fetch
-the private key, which means that they will need to re-enter their recovery
-key to decrypt it.
+A user's private half of their user-signing key pair may be kept unlocked on a
+device, but their self-signing key should not; the private half of the
+self-signing key pair should only be stored encrypted, requiring a passphrase
+to access. By keeping the user-signing key unlocked, Alice can verify Bob's
+identity and distribute signatures to all her devices without needing to enter
+a passphrase to decrypt the key.
 
-When a user logs in with a new device, they will fetch and decrypt the private
-master key, sign the new device's key with the master key, and sign the master
-key with the device's key.
+If a user's device is compromised, they can issue a new user-signing key,
+signed by their self-signing key, rendering the old user-signing key useless.
+If they are certain that the old user-signing key has not yet been used by an
+attacker, then they may also reissue signatures made by the old user-signing
+key by using the new user-signing key. Otherwise, they will need to re-verify
+the other users.
 
-Users will only be allowed to see signatures made by their own master identity
-key, or signatures made by other users' master identity keys on their own
-devices.
+If a user's self-signing key is compromised, then the user will need to issue
+both a new self-signing key and a new device-signing key. The user may sign
+their new self-signing key with their old self-signing key, allowing other
+users who have verified the old self-signing key to automatically trust the new
+self-signing key if they wish to. Otherwise, the users will need to re-verify
+each other.
+
+The private halves of the user-signing key pair and self-signing key pair may
+be stored encrypted on the server (possibly along with the megolm key backup)
+so that they may be retrieved by new devices. FIXME: explain how to do this
+
+### Signature distribution
+
+Currently, users will only be allowed to see signatures made by their own
+self-signing or user-signing keys, or signatures made by other users'
+self-signing keys about their own devices.  This is done in order to preserve
+the privacy of social connections.  Future proposals may define mechanisms for
+distributing signatures to other users in order to allow for other web-of-trust
+use cases.
 
 ### API description
 
-#### Possible API 1
+Public keys for the self-signing and user-signing keys are uploaded to the
+servers using `/keys/device_signing/upload`.  This endpoint requires [UI
+Auth](https://matrix.org/docs/spec/client_server/r0.4.0.html#user-interactive-authentication-api).
 
-Use the same API as MSC1680, but with additions.
-
-API to create new virtual device:
-
-`POST /devices/create`
-
-returns
+`POST /keys/device_signing/upload`
 
 ``` json
 {
-  "device_id": "ABCDEFG"
-}
-```
-
-The server should not allow any client to use this device ID when logging in or
-registering; if a client tries to log in using this device ID, then the server
-must respond with an error. (FIXME: what error?)
-
-Send public key using `/keys/upload` as a normal device, but with a special
-"algorithms" list:
-
-`POST /keys/upload`
-
-``` json
-{
-  "device_keys": {
+  "self_signing_key": {
     "user_id": "@alice:example.com",
-    "device_id": "ABCDEFG",
-    "algorithms": ["m.master"],
+    "usage": ["self_signing"],
     "keys": {
-      "ed25519:ABCDEFG": "base64+public+key"
+      "ed25519:base64+self+signing+public+key": "base64+self+signing+public+key",
+    }
+  },
+  "user_signing_key": {
+    "user_id": "@alice:example.com",
+    "keys": {
+      "ed25519:base64+device+signing+public+key": "base64+device+signing+public+key",
     },
+    "usage": ["user_signing"],
     "signatures": {
       "@alice:example.com": {
-        "ed25519:ABCDEFG": "base64+self+signature"
+        "ed25519:base64+self+signing+public+key": "base64+signature"
       }
     }
   }
 }
 ```
 
-(This may require changes in what `device_id`s are accepted by `/keys/upload`.)
+In order to ensure that there will be no collisions in the `signatures`
+property, the server must respond with an error (FIXME: what error?) if any of
+the uploaded public keys match an existing device ID for the user.  Similarly,
+if a user attempts to log in specifying a device ID matching one of the signing
+keys, the server must respond with an error (FIXME: what error?).
 
-Attestations/revocations will be uploaded and retrieved as described in
-MSC1680.  Creating a new master key would involve revoking the old master key
-by sending a signed revocation and deleting the device using `DELETE
-/devices/{deviceId}`, and then creating a new master key.
+If a user-signing key is uploaded, it must be signed by the current
+self-signing key (or the self-signing key that is included in the request)
 
-Private master key could be stored as part of the key backup (MSC1219), maybe
-as a special room ID + session ID, or possibly in the `auth_data` for the
-backup version (the latter would mean that changing the master key would
-require creating a new backup version, which may be what users need to do
-anyways).  Or the private master key could be stored in account data,
-e.g. `/user/{userId}/account_data/m.master.{deviceId}`.
+If a previous self-signing key exists, then the new self-signing key must have
+a `replaces` property whose value is the previous public self-signing key.
+Otherwise the server must respond with an error (FIXME: what error?).  The new
+self-signing key may also be signed with the old self-signing key.
 
-#### Possible API 2
+FIXME: document `usage` property
 
-Treat master key separately from normal devices and adding special handling for
-them.  This might result in a nicer API, but make the implementation more
-complicated.  For example, the server could automatically add master key
-signatures into a device's `signatures` field, rather than shipping the
-attestations separately.
+After uploading self-signing and user-signing keys, they will be included under
+the `/keys/query` endpoint under the `self_signing_key` and `user_signing_key`
+properties, respectively.  The `user_signing_key` will only be included when a
+user requests their own keys.
 
-Send public key using `/keys/upload`, under the `master_key` property.
-(Alternatively, could use a special endpoint, like `/keys/master/upload`.)
-
-`POST /keys/upload`
+`POST /keys/query`
 
 ``` json
 {
-  "master_key": {
-    "user_id": "@alice:example.com",
-    "key_id": "ABCDEFG",
-    "algorithm": "ed25519",
-    "key": "base64+public+key",
-    "signatures": {
-      "@alice:example.com": {
-        "ed25519:ABCDEFG": "base64+self+signature"
-      }
-    }
-  }
+   "device_keys": {
+      "@alice:example.com": []
+   },
+   "token": "string"
 }
 ```
 
-The key ID must be unique within the scope of a given user, and must not match
-any device ID.  This is required so that there will be no collisions in the
-`signatures` property.
-
-(FIXME: how do we make sure that the key ID doesn't collide with an existing
-device ID?  Just send an error and let the client retry?)
-
-The server should not allow any client to use the key ID as their device ID
-when logging in or registering; if a client tries to log in using this device
-ID, then the server must respond with an error. (FIXME: what error?)
-
-Uploading a new master key should invalidate any previous master key.
-
-After uploading a master key, it will be included under the `/keys/query`
-endpoint under the `master_key` property.
-
-`GET /keys/query`
+response:
 
 ``` json
 {
   "failures": {},
-  "master_key": {
+  "device_keys": {
+    "@alice:example.com": {
+      // ...
+    }
+  },
+  "self_signing_key": {
     "@alice:example.com": {
       "user_id": "@alice:example.com",
-      "key_id": "ABCDEFG",
-      "algorithm": "ed25519",
-      "key": "base64+public+key",
-      "signatures": {
-        "@alice:example.com": {
-          "ed25519:ABCDEFG": "base64+self+signature"
-        }
+      "usage": ["self_signing"],
+      "keys": {
+        "ed25519:base64+self+signing+public+key": "base64+self+signing+public+key"
       }
     }
   }
 }
 ```
 
-Signatures can be uploaded using `/keys/upload`, under the `signatures`
-property.  (Alternatively, could use a special endpoint, like
-`/keys/signatures/upload`.)
+Signatures of keys can be uploaded using `/keys/signatures/upload`.
 
-For example, Alice signs one of her devices (HIJKLMN), and Bob's master key.
+For example, Alice signs one of her devices (HIJKLMN), and Bob's self-signing key.
 
-`POST /keys/upload`
+`POST /keys/signatures/upload`
 
 ``` json
 {
-  "signatures": {
-    "@alice:example.com": {
-      "HIJKLMN": {
-        "user_id": "@alice:example.com",
-        "device_id": "HIJKLMN",
-        "algorithms": [
-          "m.olm.curve25519-aes-sha256",
-          "m.megolm.v1.aes-sha"
-        ],
-        "keys": {
-          "curve25519:HIJKLMN": "base64+curve25519+key",
-          "ed25519:HIJKLMN": "base64+ed25519+key"
-        },
-        "signatures": {
-          "@alice:example.com": {
-            "ed25519:ABCDEFG": "base64+signature+of+HIJKLMN"
-          }
+  "@alice:example.com": {
+    "HIJKLMN": {
+      "user_id": "@alice:example.com",
+      "device_id": "HIJKLMN",
+      "algorithms": [
+        "m.olm.curve25519-aes-sha256",
+        "m.megolm.v1.aes-sha"
+      ],
+      "keys": {
+        "curve25519:HIJKLMN": "base64+curve25519+key",
+        "ed25519:HIJKLMN": "base64+ed25519+key"
+      },
+      "signatures": {
+        "@alice:example.com": {
+          "ed25519:base64+user+signing+public+key": "base64+signature+of+HIJKLMN"
         }
       }
-    },
-    "@bob:example.com": {
-      "OPQRSTU": {
-        "user_id": "@bob:example.com",
-        "key_id": "OPQRSTU",
-        "algorithm": "ed25519",
-        "key": "base64+ed25519+key",
-        "signatures": {
-          "@alice:example.com": {
-            "ed25519:ABCDEFG": "base64+signature+of+OPQRSTU"
-          }
+    }
+  },
+  "@bob:example.com": {
+    "bobs+base64+self+signing+public+key": {
+      "user_id": "@bob:example.com",
+      "keys": {
+        "ed25519:bobs+base64+self+signing+public+key": "bobs+base64+self+signing+public+key"
+      },
+      "usage": ["self_signing"],
+      "signatures": {
+        "@alice:example.com": {
+          "ed25519:base64+user+signing+public+key": "base64+signature+of+bobs+self+signing+key"
         }
       }
     }
@@ -228,7 +201,18 @@ After Alice uploads a signature for her own devices, her signature will be
 included in the results of the `/keys/query` request when *anyone* requests her
 keys:
 
-`GET /keys/query`
+`POST /keys/query`
+
+``` json
+{
+   "device_keys": {
+      "@alice:example.com": []
+   },
+   "token": "string"
+}
+```
+
+response:
 
 ``` json
 {
@@ -249,7 +233,7 @@ keys:
         "signatures": {
           "@alice:example.com": {
             "ed25519:HIJKLMN": "base64+self+signature",
-            "ed25519:ABCDEFG": "base64+signature+of+HIJKLMN"
+            "ed25519:base64+user+signing+public+key": "base64+signature+of+HIJKLMN"
           }
         },
         "unsigned": {
@@ -258,47 +242,48 @@ keys:
       }
     }
   },
-  "master_keys": {
-    "@alice:example.com": {
-      "user_id": "@alice:example.com",
-      "key_id": "ABCDEFG",
-      "algorithm": "ed25519",
-      "key": "base64+public+key",
-      "signatures": {
-        "@alice:example.com": {
-          "ed25519:ABCDEFG": "base64+self+signature"
-        }
-      }
+  "self_signing_key": {
+    "user_id": "@alice:example.com",
+    "usage": ["self_signing"],
+    "keys": {
+      "ed25519:base64+self+signing+public+key": "base64+self+signing+public+key",
     }
   }
 }
 ```
 
-After Alice uploads a signature for Bob's master key, her signature will be
-included in the results of the `/keys/query` request when Alice requests Bob's
-key:
+After Alice uploads a signature for Bob's user-signing key, her signature will
+be included in the results of the `/keys/query` request when Alice requests
+Bob's key:
 
 `GET /keys/query`
 
 ``` json
 {
   "failures": {},
-  "master_key": {
+  "device_keys": {
+    "@bob:example.com": {
+      // ...
+    }
+  },
+  "self_signing_key": {
     "@bob:example.com": {
       "user_id": "@bob:example.com",
-      "key_id": "OPQRSTU",
-      "algorithm": "ed25519",
-      "key": "base64+ed25519+key",
+      "keys": {
+        "ed25519:bobs+base64+self+signing+public+key": "bobs+base64+self+signing+public+key"
+      },
+      "usage": ["self_signing"],
       "signatures": {
         "@alice:example.com": {
-          "ed25519:OPQRSTU": "base64+self+signature+OPQRSTU",
-          "ed25519:ABCDEFG": "base64+signature+of+OPQRSTU"
+          "ed25519:base64+user+signing+public+key": "base64+signature+of+bobs+self+signing+key"
         }
       }
     }
   }
 }
 ```
+
+FIXME: s2s stuff
 
 ## Comparison with MSC1680
 
@@ -323,8 +308,8 @@ look like:
 
 If Bob replaces his Dynabook without re-verifying with Alice, this will split
 the graph and Alice will not be able to verify Bob's other devices.  In
-contrast, in this proposal, Alice and Bob's master keys directly sign each
-other, and the attestation graph would look like:
+contrast, in this proposal, Alice and Bob sign each other's self-signing key
+with their user-signing keys, and the attestation graph would look like:
 
 ![](images/1756-graph2.dot.png)
 
@@ -337,11 +322,15 @@ devices, as there may be stale attestations and revocations lingering around.
 (This also relates to the question of whether a revocation should only revoke
 the signature created previously by the device making the attestation, or
 whether it should be a statement that the device should not be trusted at all.)
-In contrast, with this proposal, there is a clear way to rebuild the
-attestation graph: create a new master identity key, and re-verify all devices
-with it.
+In contrast, with this proposal, if a device is stolen, then only the
+user-signing key must be re-issued.
 
 ## Security considerations
+
+This proposal relies on servers to communicate when self-signing or
+user-signing keys are deleted and replaced.  An attacker who is able to both
+steal a user's device and control their homeserver could prevent that device
+from being marked as untrusted.
 
 ## Conclusion
 
