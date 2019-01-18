@@ -218,7 +218,7 @@ agreement, they will be assumed to have left the project.
 Spec Core Team members can resign whenever they want, but must notify the rest
 of the team and the Guardians on doing so.
 
-New additions to the team require 100% consent from the current team members.
+New additions to the team must be approved by all current members of the team.
 Membership has to be formally proposed by someone already on the Spec Core Team.
 
 Members can be removed from the team if 75% of the current members approves and
