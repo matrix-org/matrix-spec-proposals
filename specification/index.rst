@@ -435,7 +435,7 @@ are immutable once placed in the specification. Although there is a recommended
 set of versions, some rooms may benefit from features introduced by other versions.
 Rooms move between different versions by "upgrading" to the desired version. Due
 to versions not being ordered or hierarchical, this means a room can "upgrade" to
-version 1 from version 2, if it so desired.
+version 1 from version 2, if it is so desired.
 
 Room version grammar
 ~~~~~~~~~~~~~~~~~~~~
