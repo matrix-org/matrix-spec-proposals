@@ -46,15 +46,14 @@ string, b is as follows:
 
 The user provides a passphrase, P. The client generates the backup encryption
 private key, K<sup>-1</sup> by running PBKDF on this passphrase. The PBKDF
-parameters are stored in an object in the auth_data of the key backup under the
-'private_key' key:
+parameters are stored in the auth_data of the key backup under
+'private_key_salt' and 'private_key_iterations' keys, respectively:
 
 ```json
 {
-    "private_key": {
-        salt: "MmMsAlty",
-        rounds: 100000
-    }
+    [...]
+    "private_key_salt": "MmMsAlty",
+    "private_key_iterations": 100000
 }
 ```
 
