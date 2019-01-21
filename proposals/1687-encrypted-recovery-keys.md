@@ -26,6 +26,9 @@ Three solutions are given here (two of which are viable, one included for
 completeness), varying in the implications of the user changing their
 passphrase.
 
+Option 1 has been chosen, on the basis that we do not require the user to
+be able to change their passphrase without also changing their recovery key.
+
 ### Recovery Key
 
 In all options below, the process for generating a recovery key from a byte
