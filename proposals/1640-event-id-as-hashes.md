@@ -46,8 +46,8 @@ calculated by servers receiving the event.
 ## Changes to Event Formats
 
 As well as changing the format of event IDs, we also change the format of the
-`auth_events` and `prev_events` keys to simply be lists of event IDs (rather
-than being lists of tuples).
+`auth_events` and `prev_events` keys in events to simply be lists of event IDs
+(rather than being lists of tuples).
 
 A full event would therefore look something like (note that this is just an
 illustrative example, and that the hashes are not correct):
