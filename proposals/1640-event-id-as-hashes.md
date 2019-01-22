@@ -39,10 +39,9 @@ The auth rules also need to change:
 -   The event no longer needs to be signed by the domain of the event ID
     (but still needs to be signed by the sender’s domain)
 
--   In redactions we currently allow them if the domain of the redaction
-    event ID matches the domain of the event ID its redacting. This
-    allows self redaction for servers, but would no longer be possible
-    and there isn’t an obvious way round it.
-    The only practical suggestion to this is to accept the redactions and only
-    check if we should redact the target event once we received the target
-    event.
+-   We currently allow redactions if the domain of the redaction event ID
+    matches the domain of the event ID its redacting. This allows self redaction
+    for servers, but would no longer be possible and there isn’t an obvious way
+    round it. The only practical suggestion to this is to accept the redactions
+    and only check if we should redact the target event once we received the
+    target event.
