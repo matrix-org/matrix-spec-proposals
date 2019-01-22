@@ -42,6 +42,51 @@ which is:
 Event IDs will no longer be included as part of the event, and so must be
 calculated by servers receiving the event.
 
+### Changes in APIs
+
+All APIs that accept event IDs must accept event IDs of the new format
+
+
+### Changes to Event Formats
+
+As well as changing the format of event IDs, we also change the format of the
+`auth_events` and `prev_events` keys to simply be lists of event IDs (rather
+than being lists of tuples).
+
+A full event would therefore look something like (note that this is just an
+illustrative example, and that the hashes are not correct):
+
+```json
+{
+  "auth_events": [
+    "$5hdALbO+xIhzcLTxCkspx5uqry9wO8322h/OI9ApnHE",
+    "$Ga0DBIICBsWIZbN292ATv8fTHIGGimwjb++w+zcHLRo",
+    "$zc4ip/DpPI9FZVLM1wN9RLqN19vuVBURmIqAohZ1HXg",
+  ],
+  "content": {
+    "body": "Here is the message content",
+    "msgtype": "m.message"
+  },
+  "depth": 6,
+  "hashes": {
+    "sha256": "M6/LmcMMJKc1AZnNHsuzmf0PfwladVGK2Xbz+sUTN9k"
+  },
+  "origin": "localhost:8800",
+  "origin_server_ts": 1548094046693,
+  "prev_events": [
+    "$MoOzCuB/sacqHAvgBNOLICiGLZqGT4zB16MSFOuiO0s",
+  ],
+  "room_id": "!eBrhCHJWOgqrOizwwW:localhost:8800",
+  "sender": "@anon-20190121_180719-33:localhost:8800",
+  "signatures": {
+    "localhost:8800": {
+      "ed25519:a_iIHH": "N7hwZjvHyH6r811ebZ4wwLzofKhJuIAtrQzaD3NZbf4WQNijXl5Z2BNB047aWIQCS1JyFOQKPVom4et0q9UOAA"
+    }
+  },
+  "type": "m.room.message"
+}
+```
+
 
 ## Protocol Changes
 
