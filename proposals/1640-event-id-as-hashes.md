@@ -85,17 +85,20 @@ illustrative example, and that the hashes are not correct):
 
 ## Changes to existing APIs
 
-All APIs that accept event IDs must accept event IDs of the new format.
+All APIs that accept event IDs must accept event IDs in the new format.
 
-For S2S API, whenever a server needs to parse an event they must either already
-no the room version *or* be told. There are separate MSCs to update APIs where
+For S2S API, whenever a server needs to parse an event from a request or
+response they must either already know the room version *or* be told the room
+version in the request/response. There are separate MSCs to update APIs where
 necessary.
 
-For C2S API, the only change clients will see are that the event IDs have
-changed format, but clients should already be treating event IDs as opaque
-strings. Note that the `auth_events` and `prev_events` fields aren't sent to
-clients, and so the changes proposed above won't effect clients. Servers must
-add the `event_id` when sending the event to clients, however.
+For C2S API, the only change clients will see is that the event IDs have changed
+format. Clients should already be treating event IDs as opaque strings, so no
+changes should be required. Servers must add the `event_id` when sending the
+event to clients, however.
+
+Note that the `auth_events` and `prev_events` fields aren't sent to clients, and
+so the changes proposed above won't effect clients.
 
 
 ## Protocol Changes
