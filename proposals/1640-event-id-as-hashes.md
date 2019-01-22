@@ -42,12 +42,8 @@ which is:
 Event IDs will no longer be included as part of the event, and so must be
 calculated by servers receiving the event.
 
-### Changes in APIs
 
-All APIs that accept event IDs must accept event IDs of the new format
-
-
-### Changes to Event Formats
+## Changes to Event Formats
 
 As well as changing the format of event IDs, we also change the format of the
 `auth_events` and `prev_events` keys to simply be lists of event IDs (rather
@@ -86,6 +82,20 @@ illustrative example, and that the hashes are not correct):
   "type": "m.room.message"
 }
 ```
+
+## Changes to existing APIs
+
+All APIs that accept event IDs must accept event IDs of the new format.
+
+For S2S API, whenever a server needs to parse an event they must either already
+no the room version *or* be told. There are separate MSCs to update APIs where
+necessary.
+
+For C2S API, the only change clients will see are that the event IDs have
+changed format, but clients should already be treating event IDs as opaque
+strings. Note that the `auth_events` and `prev_events` fields aren't sent to
+clients, and so the changes proposed above won't effect clients. Servers must
+add the `event_id` when sending the event to clients, however.
 
 
 ## Protocol Changes
