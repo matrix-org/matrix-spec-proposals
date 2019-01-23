@@ -752,9 +752,8 @@ is at the top)::
 Suppose E3 and E4 are both ``m.room.name`` events which set the name of the
 room. What should the name of the room be at E5?
 
-Servers must use the appropriate recursively-defined algorithm as required
-by the room version. For a description of each room version's algorithm, please
-see the `room version specification`_ .
+The algorithm to be used for state resolution depends on the room version. For
+a description of each room version's algorithm, please see the `room version specification`_.
 
 
 Backfilling and retrieving missing events

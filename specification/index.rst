@@ -434,16 +434,16 @@ There is no implicit ordering or hierarchy to room versions, and their principle
 are immutable once placed in the specification. Although there is a recommended
 set of versions, some rooms may benefit from features introduced by other versions.
 Rooms move between different versions by "upgrading" to the desired version. Due
-to versions not being ordered or hierarchical, this means a room can "upgrade" to
-version 1 from version 2, if it is so desired.
+to versions not being ordered or hierarchical, this means a room can "upgrade"
+from version 2 to version 1, if it is so desired.
 
 Room version grammar
 ~~~~~~~~~~~~~~~~~~~~
 
 Room versions are used to change properties of rooms that may not be compatible
 with other servers. For example, changing the rules for event authorization would
-cause older servers to potentially end up in a split-brain situation due to them
-not understanding the new rules.
+cause older servers to potentially end up in a split-brain situation due to not
+understanding the new rules.
 
 A room version is defined as a string of characters which MUST NOT exceed 32
 codepoints in length. Room versions MUST NOT be empty and SHOULD contain only

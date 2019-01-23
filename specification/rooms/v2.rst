@@ -60,8 +60,8 @@ Power events
   A *power event* is a state event with type ``m.room.power_levels`` or
   ``m.room.join_rules``, or a state event with type ``m.room.member`` where the
   ``membership`` is ``leave`` or ``ban`` and the ``sender`` does not match the
-  ``state_key``. The idea behind this is that power events are events that have
-  may remove someone's ability to do something in the room.
+  ``state_key``. The idea behind this is that power events are events that might
+  remove someone's ability to do something in the room.
 
 Unconflicted state map and conflicted state set
   The *unconflicted state map* is the state where the value of each key exists
