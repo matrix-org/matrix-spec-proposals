@@ -467,48 +467,23 @@ Examples of valid room versions are:
 * ``1.2-beta``
 * ``com.example.version``
 
-Recommended room versions
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-There are varying degrees of what "recommended" means for a given room version.
-Currently, this is split into 5 categories:
-
-* **Development**: This is the default state for all room versions. When in this
-  state, a room version is documented but not recommended for use outside of a
-  development environment. These versions are not production-ready and servers
-  are not required to implement these versions.
-* **Beta**: Versions in this state are not intended for wide-spread usage but
-  should be stable enough if a room requires the feature(s) introduced within.
-  Rooms may opt-in to these versions on their own, but should not be asked to
-  upgrade automatically. Servers do not have to implement these versions.
-* **Default**: Exactly 1 room version will be in this category. The version under
-  this category should be used when creating rooms (unless another version is
-  requested by the user). Servers may wish to advertise that rooms opt-in to this
-  version.
-* **Recommended**: Exactly 1 room version will be in this category as well. Servers
-  should advertise as strongly as possible for rooms to opt-in to upgrade to this
-  version. This version is often going to be the same as the Default version.
-* **Mandatory**: Servers are required to implement versions in this category,
-  regardless as to how they are otherwise categorized. This allows for a Beta room
-  version to be mandatorily implemented by all servers in extremely rare circumstances,
-  as an example. Being a Mandatory room version does not imply that it is Recommended
-  or a Default version, just that the server needs to support it. Additional rules
-  may apply to room versions which are Mandatory, such as forcing servers to upgrade
-  all known rooms to a particular version where possible.
-
-With the above categories, the following applies:
-
-* Servers MUST have Room Version 1 as the Default room version.
-* Servers MUST have Room Version 1 as the Recommended room version.
-* Servers MUST implement Room Version 1 as a Mandatory room version.
-
 Complete list of room versions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Room versions are divided into two distinct groups: stable and unstable. Stable
+room versions may be used by rooms safely. Unstable room versions are everything
+else which is either not listed in the specification or flagged as unstable for
+some other reason. Versions can switch between stable and unstable periodically
+for a variety of reasons, including discovered security vulnerabilites and age.
+
+Clients should not ask room administrators to upgrade their rooms if the room is
+running a stable version. Servers SHOULD use room version 1 as the default room
+version when creating new rooms.
+
 The available room versions are:
 
-* `Version 1 <rooms/v1.html>`_ - The current version of most rooms.
-* `Version 2 <rooms/v2.html>`_ - **Beta**. Implements State Resolution Version 2.
+* `Version 1 <rooms/v1.html>`_ - **Stable**. The current version of most rooms.
+* `Version 2 <rooms/v2.html>`_ - **Stable**. Implements State Resolution Version 2.
 
 Specification Versions
 ----------------------
