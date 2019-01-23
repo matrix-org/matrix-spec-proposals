@@ -98,7 +98,7 @@ changes should be required. Servers must add the `event_id` when sending the
 event to clients, however.
 
 Note that the `auth_events` and `prev_events` fields aren't sent to clients, and
-so the changes proposed above won't effect clients.
+so the changes proposed above won't affect clients.
 
 
 ## Protocol Changes
