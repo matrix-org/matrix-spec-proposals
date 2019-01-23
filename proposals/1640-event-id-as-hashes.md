@@ -113,8 +113,9 @@ The auth rules also need to change:
     still needs to be signed by the sender’s domain)
 
 -   We currently allow redactions if the domain of the redaction event ID
-    matches the domain of the event ID its redacting. This allows self redaction
-    for servers, but would no longer be possible and there isn’t an obvious way
-    round it. The only practical suggestion to this is to accept the redactions
-    and only check if we should redact the target event once we received the
-    target event.
+    matches the domain of the event ID its redacting; which allows self
+    redaction. This check is removed and redaction events always accepted.
+    Instead, the redaction event only takes effect and is sent down to clients
+    if/when the original event is received, and the domain of the events'
+    senders match. (While this is clearly suboptimal, it is the only practical
+    suggestion)
