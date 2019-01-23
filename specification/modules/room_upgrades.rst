@@ -31,7 +31,7 @@ Client behaviour
 
 Clients which understand ``m.room.tombstone`` events and the ``predecessor`` field on
 ``m.room.create`` events should communicate to the user that the room was upgraded.
-One way of accomplishing this would be to hide the old room from the user's room list
+One way of accomplishing this would be hiding the old room from the user's room list
 and showing banners linking between the old and new room - ensuring that permalinks
 work when referencing the old room. Another approach may be to virtually merge the
 rooms such that the old room's timeline seamlessly continues into the new timeline
