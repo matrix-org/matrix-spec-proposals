@@ -114,7 +114,7 @@ The auth rules also need to change:
 
 -   We currently allow redactions if the domain of the redaction event ID
     matches the domain of the event ID its redacting; which allows self
-    redaction. This check is removed and redaction events always accepted.
+    redaction. This check is removed and redaction events are always accepted.
     Instead, the redaction event only takes effect and is sent down to clients
     if/when the original event is received, and the domain of the events'
     senders match. (While this is clearly suboptimal, it is the only practical
