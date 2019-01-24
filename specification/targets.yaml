@@ -70,6 +70,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/openid.rst
     - modules/server_acls.rst
     - modules/mentions.rst
+    - modules/room_upgrades.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`", "@", ":"]
