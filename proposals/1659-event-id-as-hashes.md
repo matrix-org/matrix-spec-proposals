@@ -121,3 +121,9 @@ The auth rules also need to change:
     if/when the original event is received, and the domain of the events'
     senders match. (While this is clearly suboptimal, it is the only practical
     suggestion)
+
+
+## Room Version
+
+There will be a new room version v3 that is the same as v2 except uses the new
+event format proposed above.
