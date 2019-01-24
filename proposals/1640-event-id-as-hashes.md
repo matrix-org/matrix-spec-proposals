@@ -27,7 +27,9 @@ the ID format.
 **Conclusion:** Don't encode the hash function, since the hash will depend on
 the version specific redaction algorithm anyway.
 
-The proposal is therefore that the event IDs are a base 64 encoded `sha256` hash
+The proposal is therefore that the event IDs are a sha256 hash, encoded using
+[unpadded
+Base64](https://matrix.org/docs/spec/appendices.html#unpadded-base64), and
 prefixed with `$` (to aid distinguishing different types of identifiers). For
 example, an event ID might be: `$CD66HAED5npg6074c6pDtLKalHjVfYb2q4Q3LZgrW6o`.
 
