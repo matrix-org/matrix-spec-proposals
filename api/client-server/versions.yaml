@@ -44,7 +44,8 @@ paths:
         off this list once the feature lands in the spec and the server deems it
         reasonable to do so. Servers may wish to keep advertising features here
         after they've been released into the spec to give clients a chance to
-        upgrade appropriately.
+        upgrade appropriately. Additionally, clients should avoid using unstable
+        features in their stable releases.
       operationId: getVersions
       responses:
         200:
