@@ -457,7 +457,7 @@ def main(targets, dest_dir, keep_intermediates, substitutions):
 
         rst_file = os.path.join(tmp_dir, "spec_%s.rst" % (target_name,))
         if version_label:
-            d = os.path.join(dest_dir, target_name)
+            d = os.path.join(dest_dir, target_name.split('@')[0])
             if not os.path.exists(d):
                 os.mkdir(d)
             html_file = os.path.join(d, "%s.html" % version_label)

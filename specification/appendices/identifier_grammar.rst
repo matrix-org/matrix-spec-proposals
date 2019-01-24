@@ -16,6 +16,12 @@
 Identifier Grammar
 ------------------
 
+Some identifiers are specific to given room versions, please refer to the
+`room versions specification`_ for more information.
+
+.. _`room versions specification`: ../index.html#room-versions
+
+
 Server Name
 ~~~~~~~~~~~
 
@@ -77,38 +83,6 @@ Some recommendations for a choice of server name follow:
 
 * The length of the complete server name should not exceed 230 characters.
 * Server names should not use upper-case characters.
-
-
-Room Versions
-~~~~~~~~~~~~~
-
-Room versions are used to change properties of rooms that may not be compatible
-with other servers. For example, changing the rules for event authorization would
-cause older servers to potentially end up in a split-brain situation due to them
-not understanding the new rules.
-
-A room version is defined as a string of characters which MUST NOT exceed 32
-codepoints in length. Room versions MUST NOT be empty and SHOULD contain only
-the characters ``a-z``, ``0-9``, ``.``, and ``-``.
-
-Room versions are not intended to be parsed and should be treated as opaque
-identifiers. Room versions consisting only of the characters ``0-9`` and ``.``
-are reserved for future versions of the Matrix protocol.
-
-The complete grammar for a legal room version is::
-
-  room_version = 1*room_version_char
-  room_version_char = DIGIT
-                    / %x61-7A         ; a-z
-                    / "-" / "."
-
-Examples of valid room versions are:
-
-* ``1`` (would be reserved by the Matrix protocol)
-* ``1.2`` (would be reserved by the Matrix protocol)
-* ``1.2-beta``
-* ``com.example.version``
-
 
 Common Identifier Format
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -327,7 +301,7 @@ matrix.to navigation
 
 .. NOTE::
    This namespacing is in place pending a ``matrix://`` (or similar) URI scheme.
-   This is **not** meant to be interpreted as an available web service - see 
+   This is **not** meant to be interpreted as an available web service - see
    below for more details.
 
 Rooms, users, aliases, and groups may be represented as a "matrix.to" URI.
@@ -343,7 +317,7 @@ in RFC 3986:
 The identifier may be a room ID, room alias, user ID, or group ID. The extra
 parameter is only used in the case of permalinks where an event ID is referenced.
 The matrix.to URI, when referenced, must always start with ``https://matrix.to/#/``
-followed by the identifier. 
+followed by the identifier.
 
 Clients should not rely on matrix.to URIs falling back to a web server if accessed
 and instead should perform some sort of action within the client. For example, if

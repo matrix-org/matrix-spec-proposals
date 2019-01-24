@@ -906,11 +906,26 @@ class MatrixUnits(Units):
     def load_changelogs(self):
         changelogs = {}
 
+        # Changelog generation is a bit complicated. We rely on towncrier to
+        # generate the unstable/current changelog, but otherwise use the RST
+        # edition to record historical changelogs. This is done by prepending
+        # the towncrier output to the RST in memory, then parsing the RST by
+        # hand. We parse the entire changelog to create a changelog for each
+        # version which may be of use in some APIs.
+
+        # Map specific headers to specific keys that'll be used eventually
+        # in variables. Things not listed here will get lowercased and formatted
+        # such that characters not [a-z0-9] will be replaced with an underscore.
+        keyword_versions = {
+            "Unreleased Changes": "unstable"
+        }
+
+        # Only generate changelogs for things that have an RST document
         for f in os.listdir(CHANGELOG_DIR):
             if not f.endswith(".rst"):
                 continue
             path = os.path.join(CHANGELOG_DIR, f)
-            name = f[:-4]
+            name = f[:-4]  # take off ".rst"
 
             # If there's a directory with the same name, we'll try to generate
             # a towncrier changelog and prepend it to the general changelog.
@@ -959,15 +974,39 @@ class MatrixUnits(Units):
                     prev_line = line
                 else:  # have title, get body (stop on next title or EOF)
                     if re.match("^[=]{3,}$", line.strip()):
-                        # we added the title in the previous iteration, pop it
-                        # then bail out.
-                        changelog_lines.pop()
-                        break
+                        # we hit another title, so pop the last line of
+                        # the changelog and record the changelog
+                        new_title = changelog_lines.pop()
+                        if name not in changelogs:
+                            changelogs[name] = {}
+                        if title_part in keyword_versions:
+                            title_part = keyword_versions[title_part]
+                        title_part = title_part.strip().replace("^[a-zA-Z0-9]", "_").lower()
+                        changelog = "".join(changelog_lines)
+                        changelogs[name][title_part] = changelog
+
+                        # reset for the next version
+                        changelog_lines = []
+                        title_part = new_title.strip()
+                        continue
                     # Don't generate subheadings (we'll keep the title though)
                     if re.match("^[-]{3,}$", line.strip()):
                         continue
+                    if line.strip().startswith(".. version: "):
+                        # The changelog is directing us to use a different title
+                        # for the changelog.
+                        title_part = line.strip()[len(".. version: "):]
+                        continue
+                    if line.strip().startswith(".. "):
+                        continue  # skip comments
                     changelog_lines.append("    " + line + '\n')
-            changelogs[name] = "".join(changelog_lines)
+            if len(changelog_lines) > 0 and title_part is not None:
+                if name not in changelogs:
+                    changelogs[name] = {}
+                if title_part in keyword_versions:
+                    title_part = keyword_versions[title_part]
+                changelog = "".join(changelog_lines)
+                changelogs[name][title_part.replace("^[a-zA-Z0-9]", "_").lower()] = changelog
 
         return changelogs
 
