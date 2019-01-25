@@ -22,7 +22,7 @@ this proposal suggests a `m.room_versions` capability be introduced like the fol
                 "2": "stable",
                 "state-res-v2-test": "unstable",
                 "event-ids-as-hashes": "unstable",
-                "3": "unstable"
+                "3": "future-scifi-label"
             }
         }
     }
@@ -30,7 +30,8 @@ this proposal suggests a `m.room_versions` capability be introduced like the fol
 ```
 
 Clients are encouraged to make use of this capability to determine if the server supports a given
-version, and at what level of stability.
+version, and at what level of stability. Anything not flagged explicitly as `stable` should be treated
+as `unstable` (ie: `future-scifi-label` is the same as `unstable`).
 
 The default version is the version that the server is using to create new rooms with. Clients can
 make the assumption that the default version is a stable version.
