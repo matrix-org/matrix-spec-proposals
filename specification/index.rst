@@ -315,8 +315,8 @@ The following conceptual diagram shows an
                     |     Content: { JSON object }       |
                     |....................................|
 
-Federation maintains *shared data structures* per-room between multiple home
-servers. The data is split into ``message events`` and ``state events``.
+Federation maintains *shared data structures* per-room between multiple
+homeservers. The data is split into ``message events`` and ``state events``.
 
 Message events:
   These describe transient 'once-off' activity in a room such as an
