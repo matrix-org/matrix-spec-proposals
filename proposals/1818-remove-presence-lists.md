@@ -6,6 +6,8 @@ While spec'd, no established client has implemented support and the only server 
 
 The proposal is to simply remove references to presence lists with a view to revisiting the same ideas in the future.
 
+This MSC addresses [#1810](https://github.com/matrix-org/matrix-doc/issues/1810)
+
 ## Proposal
 
 Presence lists seem like a good fit for ['MSC1769: Extensible profiles as rooms'](https://github.com/matrix-org/matrix-doc/pull/1769) proposal, meaning that the current design will most likely be superceded.
