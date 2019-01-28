@@ -111,6 +111,7 @@ engine behaviour be specified?
 
 There is no universal answer to this, but the following guidelines should be
 applied:
+
 1. If the feature would benefit the whole Matrix ecosystem and is aligned with
    the guiding principles above, then it should be supported by the spec.
 2. If the spec already makes the feature possible without changing any of the
@@ -122,6 +123,7 @@ applied:
    3rd party behaviour.
 
 As a worked example:
+
 1. Video conferencing is clearly a feature which would benefit
    the whole ecosystem, and so the spec should find a way to make it happen.
 2. Video conferencing can be achieved by widgets without requiring any
