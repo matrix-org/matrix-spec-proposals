@@ -1012,15 +1012,8 @@ The server API for presence is based entirely on exchange of the following
 EDUs. There are no PDUs or Federation Queries involved.
 
 Servers should only send presence updates for users that the receiving server
-would be interested in. This can include the receiving server sharing a room
-with a given user, or a user on the receiving server has added one of the
-sending server's users to their presence list.
-
-Clients may define lists of users that they are interested in via "Presence
-Lists" through the `Client-Server API`_. When users are added to a presence
-list, a ``m.presence_invite`` EDU is sent to them. The user may then accept
-or deny their involvement in the list by sending either an ``m.presence_accept``
-or ``m.presence_deny`` EDU back.
+would be interested in. Such as the receiving server sharing a room
+with a given user.
 
 .. TODO-doc
   - Explain the timing-based round-trip reduction mechanism for presence
@@ -1029,13 +1022,6 @@ or ``m.presence_deny`` EDU back.
   See also: docs/client-server/model/presence
 
 {{definition_ss_event_schemas_m_presence}}
-
-{{definition_ss_event_schemas_m_presence_invite}}
-
-{{definition_ss_event_schemas_m_presence_accept}}
-
-{{definition_ss_event_schemas_m_presence_deny}}
-
 
 Receipts
 --------
@@ -1114,7 +1100,7 @@ which should be used to correlate with subsequent ``m.device_list_update`` EDUs.
 
 .. TODO: this whole thing desperately feels like it should just be state in a room,
   rather than inventing a whole different DAG.  The same room could be used for
-  profiles, presence lists, etc.
+  profiles etc.
 
 {{user_devices_ss_http_api}}
 
