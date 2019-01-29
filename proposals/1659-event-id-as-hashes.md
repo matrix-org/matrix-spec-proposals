@@ -126,4 +126,5 @@ The auth rules also need to change:
 ## Room Version
 
 There will be a new room version v3 that is the same as v2 except uses the new
-event format proposed above.
+event format proposed above. v3 will be marked as 'stable' as defined in [MSC1804](https://github.com/matrix-org/matrix-doc/blob/travis/msc/room-version-client-advertising/proposals/1804-advertising-capable-room-versions.md)
+
