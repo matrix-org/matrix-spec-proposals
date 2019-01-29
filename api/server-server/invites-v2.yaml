@@ -40,8 +40,8 @@ paths:
         room by the inviting homeserver.
 
         This endpoint is preferred over the v1 API as it is more useful for servers. Senders
-        which receive a 400 or 404 response to this endpoint may wish to retry using the v1
-        API as the server may be older, if the room version supports doing so.
+        which receive a 400 or 404 response to this endpoint should retry using the v1
+        API as the server may be older, if the room version is "1" or "2".
       operationId: sendInviteV2
       security:
         - signedRequest: []
