@@ -26,7 +26,7 @@ Each user has the concept of presence information. This encodes:
 
 This information is collated from both per-device (``online``, ``idle``,
 ``last_active``) and per-user (status) data, aggregated by the user's homeserver
-and transmitted as an ``m.presence`` event. Presence event are sent to
+and transmitted as an ``m.presence`` event. Presence events are sent to
 interested parties where users share a room membership.
 
 User's presence state is represented by the ``presence`` key, which is an enum
