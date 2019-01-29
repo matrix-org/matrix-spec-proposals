@@ -65,6 +65,12 @@ paths:
           schema:
             type: object
             properties:
+              room_version:
+                type: string
+                description: |-
+                  The version of the room where the server is trying to join. If not provided,
+                  the room version is assumed to be either "1" or "2".
+                example: "2"
               event:
                 allOf:
                   - $ref: "definitions/unsigned_pdu.yaml"
@@ -80,7 +86,7 @@ paths:
                       origin:
                         type: string
                         description: The name of the resident homeserver.
-                        example: "matrix.org"    
+                        example: "matrix.org"
                       origin_server_ts:
                         type: integer
                         format: int64
@@ -113,7 +119,7 @@ paths:
                         type: array
                         description: |-
                           An event reference list containing the authorization events that would
-                          allow the member to join the room. This should normally be the 
+                          allow the member to join the room. This should normally be the
                           ``m.room.create``, ``m.room.power_levels``, and ``m.room.join_rules``
                           events.
                         items:
@@ -143,7 +149,8 @@ paths:
                       - state_key
           examples:
             application/json: {
-              event: {
+              "room_version": "2",
+              "event": {
                 "$ref": "examples/unsigned_pdu.json",
                 "type": "m.room.member",
                 "state_key": "@someone:example.org",
@@ -220,7 +227,7 @@ paths:
                   origin:
                     type: string
                     description: The name of the joining homeserver.
-                    example: "matrix.org"    
+                    example: "matrix.org"
                   origin_server_ts:
                     type: integer
                     format: int64
