@@ -1,6 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
-.. Copyright 2017 New Vector Ltd
-.. Copyright 2018 New Vector Ltd
+.. Copyright 2017-2019 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -889,7 +888,9 @@ the homeserver may sign the membership event itself and skip the process defined
 here. However, when a user invites another user on a different homeserver, a request
 to that homeserver to have the event signed and verified must be made.
 
-{{invites_ss_http_api}}
+{{invites_v1_ss_http_api}}
+
+{{invites_v2_ss_http_api}}
 
 Leaving Rooms (Rejecting Invites)
 ---------------------------------

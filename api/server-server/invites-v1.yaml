@@ -1,4 +1,4 @@
-# Copyright 2018 New Vector Ltd
+# Copyright 2018-2019 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ host: localhost:8448
 schemes:
   - https
 basePath: /_matrix/federation/v1
-consumes: 
+consumes:
   - application/json
 produces:
   - application/json
@@ -32,9 +32,13 @@ paths:
       summary: Invites a remote user to a room
       description: |-
         Invites a remote user to a room. Once the event has been  signed by both the inviting
-        homeserver and the invited homeserver, it can be sent to all of the servers in the 
+        homeserver and the invited homeserver, it can be sent to all of the servers in the
         room by the inviting homeserver.
-      operationId: sendInvite
+
+        Servers should prefer to use the v2 API for invites instead of the v1 API. Servers
+        which receive a v1 invite request must assume that the room version is either ``"1"``
+        or ``"2"``.
+      operationId: sendInviteV1
       security:
         - signedRequest: []
       parameters:
