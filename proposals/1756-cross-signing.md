@@ -8,7 +8,7 @@ this user must then verify each key on each of their devices.  If Alice has *n*
 devices, and Bob has *m* devices, then for Alice to be able to communicate with
 Bob on any of their devices, this involves *n×m* key verifications.
 
-One way to address this is for each user to use a device signing key to signs
+One way to address this is for each user to use a device signing key to sign
 all of their devices.  Thus another user who wishes to verify their identity
 only needs to verify the device signing key and can use the signatures created
 by the device signing key to verify their devices.
@@ -141,7 +141,7 @@ response:
       // ...
     }
   },
-  "self_signing_key": {
+  "self_signing_keys": {
     "@alice:example.com": {
       "user_id": "@alice:example.com",
       "usage": ["self_signing"],
@@ -152,6 +152,10 @@ response:
   }
 }
 ```
+
+After uploading self-signing and user-signing keys, the user will show up in
+the `changed` property of the `device_lists` field of the sync result of any
+others users who share an encrypted room with that user.
 
 Signatures of keys can be uploaded using `/keys/signatures/upload`.
 
@@ -242,11 +246,13 @@ response:
       }
     }
   },
-  "self_signing_key": {
-    "user_id": "@alice:example.com",
-    "usage": ["self_signing"],
-    "keys": {
-      "ed25519:base64+self+signing+public+key": "base64+self+signing+public+key",
+  "self_signing_keys": {
+    "@alice:example.com": {
+      "user_id": "@alice:example.com",
+      "usage": ["self_signing"],
+      "keys": {
+        "ed25519:base64+self+signing+public+key": "base64+self+signing+public+key",
+      }
     }
   }
 }
@@ -266,7 +272,7 @@ Bob's key:
       // ...
     }
   },
-  "self_signing_key": {
+  "self_signing_keys": {
     "@bob:example.com": {
       "user_id": "@bob:example.com",
       "keys": {
