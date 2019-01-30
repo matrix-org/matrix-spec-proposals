@@ -1,6 +1,6 @@
 # Remove references to presence lists
 
-[Presence](https://matrix.org/docs/spec/client_server/r0.4.0.html#id388) lists allow a given user the ability to subscribe to other users and be alerted to their current presence status.
+[Presence](https://matrix.org/docs/spec/client_server/r0.4.0.html#id107) lists allow a given user the ability to subscribe to other users and be alerted to their current presence status.
 
 While spec'd, no established client has implemented support and the only server side implementation raises privacy concerns.
 
