@@ -16,6 +16,18 @@ Additionally, no major client has implemented the behaviour to date and the only
 
 With this in mind the most pragmatic solution is to remove presence lists ahead of the r0 release.
 
+Specifically:-
+
+CS API: Remove
+* [POST /_matrix/client/r0/presence/list/{userId}](https://matrix.org/docs/spec/client_server/r0.4.0.html#post-matrix-client-r0-presence-list-userid)
+* [GET /_matrix/client/r0/presence/list/{userId}](https://matrix.org/docs/spec/client_server/r0.4.0.html#get-matrix-client-r0-presence-list-userid)
+
+SS API: Remove
+ * [m.presence_invite](https://matrix.org/docs/spec/server_server/unstable.html#m-presence-invite-schema)
+ * [m.presence_accept](https://matrix.org/docs/spec/server_server/unstable.html#m-presence-accept-schema)
+ * [m.presence_deny](https://matrix.org/docs/spec/server_server/unstable.html#m-presence-deny-schema)
+ 
+
 ## Tradeoffs
 
 Ideally this proposal would also come with an alternative design for this functionality. Out of pragmatism the proposal only covers removal of what is there today. 
