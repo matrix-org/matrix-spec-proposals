@@ -112,14 +112,22 @@ The process overall is as follows:
    IP address on all requests. Requests must be made with a ``Host``
    header containing the IP address, without port.
 
-2. If the hostname is not an IP literal, a ``/.well-known`` request is
+2. If the hostname is not an IP literal, and has an explicit port given,
+   resolve the IP address using AAAA or A records. Requests are made to
+   the resolved IP address and given port with a ``Host`` header of the
+   original hostname (without port). A valid TLS certificate must be
+   provided by the target server for the hostname.
+
+3. If the hostname is not an IP literal, a ``/.well-known`` request is
    made to the hostname (using port 443 exclusively, ignoring the port
-   provided in the server name). The target must present a valid TLS
-   certificate for the hostname, and a ``Host`` header containing the
-   hostname is used to make the request. The schema of the ``/.well-known``
-   request is later in this section. Assuming the response is valid,
-   the ``m.server`` property is parsed as ``<delegated_server_name>[:<delegated_port>]``
-   and processed as follows:
+   provided in the server name). This is done as a plain HTTPS request
+   which follows 30x redirects, being careful to avoid redirect loops.
+   The schema of the ``/.well-known`` request is later in this section.
+   If the response is invalid (bad JSON, missing properties, etc),
+   attempts to connect to the target server are aborted - no connections
+   should be attempted. If the response is valid, the ``m.server`` property
+   is parsed as ``<delegated_server_name>[:<delegated_port>]`` and processed
+   as follows:
 
    * If ``<delegated_server_name>`` is an IP literal, then that IP address
      should be used together with the ``<delegated_port>`` or 8448 if no
@@ -131,8 +139,8 @@ The process overall is as follows:
      is present, an IP address is disovered by looking up an AAAA or A
      record for ``<delegated_server_name>``. The resulting IP address is
      used, alongside the ``<delegated_port>``, to make requests with a
-     ``Host`` header of ``<delegated_server_name>``. A valid TLS certificate
-     must be provided by the target server for ``<delegated_server_name>``.
+     ``Host`` header of ``<delegated_server_name>:<delegated_port>``. A valid
+     TLS certificate must be provided by the target server for ``<delegated_server_name>``.
 
    * If ``<delegated_server_name>`` is not an IP literal and no
      ``<delegated_port>`` is present, an SRV record is looked up for
@@ -143,36 +151,38 @@ The process overall is as follows:
      valid TLS certificate must be provided by the target server for the
      ``<delegated_server_name>``.
 
-      * If no SRV record is found, an IP address is resolved using AAAA
-        or A records. Requests are then made to the resolve IP address
-        and a port of 8448, using a ``Host`` header of ``<delegated_server_name>``.
-        A valid TLS certificate for ``<delegated_server_name>`` must be
-        provided by the target server.
+   * If no SRV record is found, an IP address is resolved using AAAA
+     or A records. Requests are then made to the resolve IP address
+     and a port of 8448, using a ``Host`` header of ``<delegated_server_name>``.
+     A valid TLS certificate for ``<delegated_server_name>`` must be
+     provided by the target server.
 
-3. If the `/.well-known` request returned an error response, a server is
-   found by resolving an SRV record for ``_matrix._tcp.<hostname>``. This
+4. If the `/.well-known` request did not result in a 200 response, a server
+   is found by resolving an SRV record for ``_matrix._tcp.<hostname>``. This
    may result in a hostname (to be resolved using AAAA or A records) and
    port. Requests are made to the resolved IP address and port, using 8448
    as a default port, with a ``Host`` header of ``<hostname>``. A valid TLS
    certificate for ``<hostname>`` must be provided by the target server on
    all requests.
 
-4. If the `/.well-known` request returned an error response, and the SRV
+5. If the `/.well-known` request returned an error response, and the SRV
    record was not found, an IP address is resolved using AAAA and A records.
    Requests are made to the resolved IP address using port 8448 and a ``Host``
    header containing the ``<hostname>``. A valid TLS certificate for
    ``<hostname>`` must be provided by the target server on all requests.
 
 
-The TLS certificate provided by the target server must be present on all
-requests made to the server. The TLS certificate must be signed by a known
+The TLS certificate provided by the target server must be signed by a known
 Certificate Authority. Servers are ultimately responsible for determining
 the trusted Certificate Authorities, however are strongly encouraged to
 rely on the operating system's judgement. Servers can offer administrators
 a means to override the trusted authorities list. Servers can additionally
 skip the certificate validation for a given whitelist of domains or netmasks
 for the purposes of testing or in networks where verification is done
-elsewhere, such as with ``.onion`` addresses.
+elsewhere, such as with ``.onion`` addresses. Servers should respect SNI
+when making requests where possible: a SNI should be sent for the certificate
+which is expected, unless that certificate is expected to be an IP address in
+which case SNI is not supported and should not be sent.
 
 Servers are encouraged to make use of the
 `Certificate Transparency <https://www.certificate-transparency.org/>`_ project.
@@ -191,13 +201,6 @@ Retrieving server keys
   There was once a "version 1" of the key exchange. It has been removed from the
   specification due to lack of significance. It may be reviewed `from the historical draft
   <https://github.com/matrix-org/matrix-doc/blob/51faf8ed2e4a63d4cfd6d23183698ed169956cc0/specification/server_server_api.rst#232version-1>`_.
-
-.. NOTE::
-   Older drafts of this specification made use of a different style of key verification,
-   however for reasons discussed in `MSC1711 <https://github.com/matrix-org/matrix-doc/pull/1711>`_,
-   the approach was removed from the initial version of the specification. The older
-   draft may be reviewed `thanks to web.archive.org
-   <https://web.archive.org/web/20181019044236/https://matrix.org/docs/spec/server_server/unstable.html>`_.
 
 Each homeserver publishes its public keys under ``/_matrix/key/v2/server/{keyId}``.
 Homeservers query for keys by either getting ``/_matrix/key/v2/server/{keyId}``
