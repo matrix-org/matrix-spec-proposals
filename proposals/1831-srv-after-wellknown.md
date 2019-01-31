@@ -4,7 +4,7 @@ Currently there is a logistical error proposed by [MSC1708](https://github.com/m
 which results in some homeservers unable to migrate to the new functionality
 proposed by [MSC1711](https://github.com/matrix-org/matrix-doc/pull/1711). This
 can happen if the delegated homeserver cannot obtain a valid TLS certificate for
-the top level domain, and an SRV record is used for backwards compatibility reasons.
+the domain, and an SRV record is used for backwards compatibility reasons.
 
 ## Proposal
 
