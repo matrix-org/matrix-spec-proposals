@@ -13,7 +13,7 @@
 # limitations under the License.
 type: object
 title: Persistent Data Unit
-description: A persistent data unit (event)
+description: A persistent data unit (event) for room versions 1 and 2.
 example:
   $ref: "../examples/pdu.json"
 allOf:
@@ -40,7 +40,7 @@ allOf:
           Signatures for the PDU, following the algorithm specified in `Signing Events`_.
         example: {
           "example.com": {
-            "ed25519:key_version:": "86BytesOfUnpaddedBase64ToCoverAllFieldsIncludingHashes"
+            "ed25519:key_version:": "86BytesOfSignatureOfTheRedactedEvent"
           }
         }
         additionalProperties:

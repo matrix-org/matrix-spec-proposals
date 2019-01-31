@@ -15,7 +15,7 @@
 Room Version 3
 ==============
 
-This room version builds off of `version 2 <v2.html>`_ with an improved event format.
+This room version builds on `version 2 <v2.html>`_ with an improved event format.
 
 .. note:
    All requirements listed in this room version specification are scoped to rooms
@@ -49,29 +49,32 @@ Server implementation components
 
 
 Room version 3 uses the state resolution algorithm defined in `room version 2 <v2.html>`_,
-and the event format defined here. Other event formats and applicable algorithms
-may be used in other room versions.
+and the event format defined here.
 
 Event IDs
 ~~~~~~~~~
 
-In other room versions (namely version 1 and 2) the event ID is a distinct field
-from the remainder of the event, which must be tracked as such. This leads to
-complications where servers receive multiple events with the same ID in either the
-same or different rooms where the server cannot easily keep track of which event it
-should be using. By removing the use of a dedicated event ID, servers are required
-to track the hashes on an event to determine its ID.
+.. admonition:: Rationale
 
-The event ID must be a sha256 hash of the event, encoded using `Unpadded Base64`_
-and prefixed with `$`. For example, an event ID might be
-``$CD66HAED5npg6074c6pDtLKalHjVfYb2q4Q3LZgrW6o``.
+   In other room versions (namely version 1 and 2) the event ID is a distinct field
+   from the remainder of the event, which must be tracked as such. This leads to
+   complications where servers receive multiple events with the same ID in either the
+   same or different rooms where the server cannot easily keep track of which event it
+   should be using. By removing the use of a dedicated event ID, servers are required
+   to track the hashes on an event to determine its ID.
 
-The hash itself is calculated the same as previous reference hashes are:
+The event ID is calculated using the following algorithm. Note that the hashing
+algorithm used is the same as in previous room versions.
 
 1. Redact the event.
 2. Remove the `signatures` field from the event.
 3. Serialize the event into `Canonical JSON`_.
 4. Compute the hash of the JSON bytes.
+5. Encode the sha256 hash using `Unpadded Base64`_.
+6. Use the resulting string as the event ID prefixed with ``$``.
+
+A resulting event ID using this approach should look similar to
+``$CD66HAED5npg6074c6pDtLKalHjVfYb2q4Q3LZgrW6o``.
 
 Event IDs should not be sent over federation to servers when the room uses
 this room version. On the receiving end of an event, the server should compute
@@ -91,11 +94,10 @@ APIs which currently accept an event ID must do so with the new format. Servers
 must append the calculated event ID to all events sent to clients where an event
 ID would normally be expected.
 
-Because servers are not communicating the event ID over the wire to each other,
-servers must be aware of the room version where the event resides so that the
-server may parse and handle the event. The federation API has taken this concern
-into consideration by ensuring that servers are aware of (or can find) the room
-version during a request.
+Because the format of events has changed, servers must be aware of the room version
+where the event resides so that the server may parse and handle the event. The
+federation API has taken this concern into consideration by ensuring that servers
+are aware of (or can find) the room version during a request.
 
 Authorization rules for events
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -108,9 +110,12 @@ to the change in event format:
   domain.
 
 * Previously, redactions were allowed if the sender's domain matched the domain
-  in the event ID it was redacting, allowing self redaction. This check is removed
-  and redaction events are always accepted. Redaction events only take effect
-  when the original event is received, and the domain of the each event matches.
+  in the event ID it was redacting, allowing self redaction. Due to changes in
+  the event format, this check is now impossible to do. Instead, servers should
+  allow redactions from servers of the same origin to redact other events as a
+  self-redaction mechanism. The rules for allowing other servers to redact events
+  (as done by moderators) is unchanged. Redaction events only take effect when
+  the original event is received, and the domain of the each event matches.
   Servers should not send redactions down to clients until the redaction has
   taken effect.
 

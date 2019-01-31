@@ -13,7 +13,7 @@
 # limitations under the License.
 type: object
 title: Persistent Data Unit
-description: A persistent data unit (event) for room version 3.
+description: A persistent data unit (event) for room version 3 and beyond.
 example:
   $ref: "../examples/pdu_v3.json"
 allOf:
@@ -26,7 +26,7 @@ allOf:
           type: string
           description: Event ID.
         description: |-
-          Event IDs and reference hashes for the authorization events that would
+          Event IDs for the authorization events that would
           allow this event to be in the room.
         example: ["$base64EncodedHash", "$AnotherEvent"]
       prev_events:
@@ -35,7 +35,7 @@ allOf:
           type: string
           description: Event ID.
         description: |-
-          Event IDs and reference hashes for the most recent events in the room
+          Event IDs for the most recent events in the room
           that the homeserver was aware of when it made this event.
         example: ["$base64EncodedHash", "$AnotherEvent"]
       hashes:
@@ -58,7 +58,7 @@ allOf:
           Signatures for the PDU, following the algorithm specified in `Signing Events`_.
         example: {
           "example.com": {
-            "ed25519:key_version:": "86BytesOfUnpaddedBase64ToCoverAllFieldsIncludingHashes"
+            "ed25519:key_version:": "86BytesOfSignatureOfTheRedactedEvent"
           }
         }
         additionalProperties:
