@@ -28,7 +28,7 @@ allOf:
         description: |-
           Event IDs and reference hashes for the authorization events that would
           allow this event to be in the room.
-        example: ["$abase64encodedhash", "$anotherevent"]
+        example: ["$base64EncodedHash", "$AnotherEvent"]
       prev_events:
         type: array
         items:
@@ -37,20 +37,20 @@ allOf:
         description: |-
           Event IDs and reference hashes for the most recent events in the room
           that the homeserver was aware of when it made this event.
-        example: ["$abase64encodedhash", "$anotherevent"]
+        example: ["$base64EncodedHash", "$AnotherEvent"]
       hashes:
         type: object
         title: Event Hash
         description: |-
           Content hashes of the PDU, following the algorithm specified in `Signing Events`_.
         example: {
-          "sha256": "thishashcoversallfieldsincasethisisredacted"
+          "sha256": "ThisHashCoversAllFieldsInCaseThisIsRedacted"
         }
         properties:
           sha256:
             type: string
             description: The hash.
-            example: thishashcoversallfieldsincasthisisredacted
+            example: ThisHashCoversAllFieldsInCaseThisIsRedacted
         required: ['sha256']
       signatures:
         type: object
@@ -58,7 +58,7 @@ allOf:
           Signatures for the PDU, following the algorithm specified in `Signing Events`_.
         example: {
           "example.com": {
-            "ed25519:key_version:": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
+            "ed25519:key_version:": "86BytesOfUnpaddedBase64ToCoverAllFieldsIncludingHashes"
           }
         }
         additionalProperties:

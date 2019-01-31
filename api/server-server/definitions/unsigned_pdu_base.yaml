@@ -64,13 +64,13 @@ properties:
         - type: object
           title: Event Hash
           example: {
-            "sha256": "abase64encodedsha256hashshouldbe43byteslong"
+            "sha256": "Base64EncodedSha256HashesShouldBe43BytesLong"
           }
           properties:
             sha256:
               type: string
               description: The event hash.
-              example: abase64encodedsha256hashshouldbe43byteslong
+              example: Base64EncodedSha256HashesShouldBe43BytesLong
           required: ['sha256']
   depth:
     type: integer
@@ -95,13 +95,13 @@ properties:
         - type: object
           title: Event Hash
           example: {
-            "sha256": "abase64encodedsha256hashshouldbe43byteslong"
+            "sha256": "Base64EncodedSha256HashesShouldBe43BytesLong"
           }
           properties:
             sha256:
               type: string
               description: The event hash.
-              example: abase64encodedsha256hashshouldbe43byteslong
+              example: Base64EncodedSha256HashesShouldBe43BytesLong
           required: ['sha256']
   redacts:
     type: string
