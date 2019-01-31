@@ -112,14 +112,7 @@ The process overall is as follows:
    IP address on all requests. Requests must be made with a ``Host``
    header containing the IP address, without port.
 
-2. If the hostname is not an IP literal, a server is found by resolving
-   an SRV record for ``_matrix._tcp.<hostname>``. This may result in
-   a hostname (to be resolved using AAAA or A records) and port. Requests
-   are made to the resolved IP address and port, using 8448 as a default
-   port, with a ``Host`` header of ``<hostname>``. A valid TLS certificate
-   for ``<hostname>`` must be provided by the target server on all requests.
-
-3. If the SRV record yielded no results, a ``/.well-known`` request is
+2. If the hostname is not an IP literal, a ``/.well-known`` request is
    made to the hostname (using port 443 exclusively, ignoring the port
    provided in the server name). The target must present a valid TLS
    certificate for the hostname, and a ``Host`` header containing the
@@ -156,12 +149,19 @@ The process overall is as follows:
         A valid TLS certificate for ``<delegated_server_name>`` must be
         provided by the target server.
 
-4. If the `/.well-known` request was invalid or returned an error response,
-   and the SRV record was not found, an IP address is resolved using AAAA
-   and A records. Requests are made to the resolved IP address using port
-   8448 and a ``Host`` header containing the ``<hostname>``. A valid TLS
-   certificate for ``<hostname>`` must be provided by the target server
-   on all requests.
+3. If the `/.well-known` request returned an error response, a server is
+   found by resolving an SRV record for ``_matrix._tcp.<hostname>``. This
+   may result in a hostname (to be resolved using AAAA or A records) and
+   port. Requests are made to the resolved IP address and port, using 8448
+   as a default port, with a ``Host`` header of ``<hostname>``. A valid TLS
+   certificate for ``<hostname>`` must be provided by the target server on
+   all requests.
+
+4. If the `/.well-known` request returned an error response, and the SRV
+   record was not found, an IP address is resolved using AAAA and A records.
+   Requests are made to the resolved IP address using port 8448 and a ``Host``
+   header containing the ``<hostname>``. A valid TLS certificate for
+   ``<hostname>`` must be provided by the target server on all requests.
 
 
 The TLS certificate provided by the target server must be present on all
