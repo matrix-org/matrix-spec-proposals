@@ -38,7 +38,7 @@ paths:
       responses:
         200:
           description:
-            The capabilities of the server
+            The capabilities of the server.
           examples:
             application/json: {
               "capabilities": {
