@@ -1303,6 +1303,16 @@ Example code
    known hash functions like SHA-256 when none of the keys have been redacted]]
 
 
+Security considerations
+-----------------------
+
+When a domain's ownership changes, the new controller of the domain can masquerade
+as the previous owner, receiving messages (similarly to email) and request past
+messages from other servers. In the future, proposals like
+`MSC1228 <https://github.com/matrix-org/matrix-doc/issues/1228>`_ will address this
+issue.
+
+
 .. |/query/directory| replace:: ``/query/directory``
 .. _/query/directory: #get-matrix-federation-v1-query-directory
 
