@@ -122,12 +122,19 @@ The process overall is as follows:
    made to the hostname (using port 443 exclusively, ignoring the port
    provided in the server name). This is done as a plain HTTPS request
    which follows 30x redirects, being careful to avoid redirect loops.
-   The schema of the ``/.well-known`` request is later in this section.
-   If the response is invalid (bad JSON, missing properties, etc),
-   attempts to connect to the target server are aborted - no connections
-   should be attempted. If the response is valid, the ``m.server`` property
-   is parsed as ``<delegated_server_name>[:<delegated_port>]`` and processed
-   as follows:
+   Responses (successful or otherwise) to the ``/.well-known`` endpoint
+   should be cached by the requesting server. Servers should respect
+   the cache control headers present on the response, or use a sensible
+   default when headers are not present. The recommended sensible default
+   is 24 hours. Servers should additionally impose a maximum cache time
+   for responses: 48 hours is recommended. Errors are recommended to be
+   cached for up to an hour, and servers are encouraged to exponentially
+   back off for repeated failures. The schema of the ``/.well-known``
+   request is later in this section. If the response is invalid (bad JSON,
+   missing properties, etc), attempts to connect to the target server are
+   aborted - no connections should be attempted. If the response is valid,
+   the ``m.server`` property is parsed as ``<delegated_server_name>[:<delegated_port>]``
+   and processed as follows:
 
    * If ``<delegated_server_name>`` is an IP literal, then that IP address
      should be used together with the ``<delegated_port>`` or 8448 if no
