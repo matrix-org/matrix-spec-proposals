@@ -1070,6 +1070,107 @@ Current account information
 
 {{whoami_cs_http_api}}
 
+Capabilities negotiation
+------------------------
+
+A homeserver may not support certain operations and clients must be able to
+query for what the homeserver can and can't offer. For example, a homeserver
+may not support users changing their password as it is configured to perform
+authentication against an external system.
+
+The capabilities advertised through this system are intended to advertise
+functionality which is optional in the API, or which depend in some way on
+the state of the user or server. This system should not be used to advertise
+unstable or experimental features - this is better done by the ``/versions``
+endpoint.
+
+Some examples of what a reasonable capability could be are:
+
+* Whether the server supports user presence.
+
+* Whether the server supports optional features, such as the user or room
+  directories.
+
+* The rate limits or file type restrictions imposed on clients by the server.
+
+Some examples of what should **not** be a capability are:
+
+* Whether the server supports a feature in the ``unstable`` specification.
+
+* Media size limits - these are handled by the ``/media/%CLIENT_MAJOR_VERSION%/config``
+  API.
+
+* Optional encodings or alternative transports for communicating with the
+  server.
+
+Capabilities prefixed with ``m.`` are reserved for definition in the Matrix
+specification while other values may be used by servers using the Java package
+naming convention. The capabilities supported by the Matrix specification are
+defined later in this section.
+
+{{capabilities_cs_http_api}}
+
+
+``m.change_password`` capability
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This capability has a single flag, ``enabled``, which indicates whether or not
+the user can use the ``/account/password`` API to change their password. If not
+present, the client should assume that password changes are possible via the
+API. When present, clients SHOULD respect the capability's ``enabled`` flag
+and indicate to the user if they are unable to change their password.
+
+An example of the capability API's response for this capability is::
+
+  {
+    "capabilities": {
+      "m.change_password": {
+        "enabled": false
+      }
+    }
+  }
+
+
+``m.room_versions`` capability
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This capability describes the default and available room versions a server
+supports, and at what level of stability. Clients should make use of this
+capability to determine if users need to be encouraged to upgrade their rooms.
+
+An example of the capability API's response for this capability is::
+
+  {
+    "capabilities": {
+      "m.room_versions": {
+        "default": "1",
+        "available": {
+          "1": "stable",
+          "2": "stable",
+          "3": "unstable",
+          "custom-version": "unstable"
+        }
+      }
+    }
+  }
+
+This capability mirrors the same restrictions of `room versions`_ to describe
+which versions are stable and unstable. Clients should assume that the ``default``
+version is ``stable``. Any version not explicitly labelled as ``stable`` in the
+``available`` versions is to be treated as ``unstable``. For example, a version
+listed as ``future-stable`` should be treated as ``unstable``.
+
+The ``default`` version is the version the server is using to create new rooms.
+Clients should encourage users with sufficient permissions in a room to upgrade
+their room to the ``default`` version when the room is using an ``unstable``
+version.
+
+When this capability is not listed, clients should use ``"1"`` as the default
+and only stable ``available`` room version.
+
+.. _`room versions`: ../index.html#room-versions
+
+
 Pagination
 ----------
 

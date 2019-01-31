@@ -40,8 +40,10 @@ As a starting point, a single capability identifier is proposed:
 change the user's password via the `POST /_matrix/client/r0/account/password`
 API.
 
-The value of the `capabilities` object in the response should be the empty
-object.
+The value of the `capabilities` object in the response should contain a single
+boolean flag, `enabled`, to indicate whether a password change is possible. If
+the capability is not listed, the client should assume that password changes
+are possible.
 
 ### Fallback behaviour
 
