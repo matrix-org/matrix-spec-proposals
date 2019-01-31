@@ -6,6 +6,12 @@ proposed by [MSC1711](https://github.com/matrix-org/matrix-doc/pull/1711). This
 can happen if the delegated homeserver cannot obtain a valid TLS certificate for
 the top level domain, and an SRV record is used for backwards compatibility reasons.
 
+Specifically, in order to be compatible with requests from both Synapse 0.34 and 1.0,
+servers can have both a SRV and a .well-known file, with Synapse presenting a certificate
+corresponding to the target of the .well-known. Synapse 0.34 is then happy because it
+will follow the SRV (and won't care about the incorrect certificate); Synapse 1.0 is
+happy because it will follow the .well-known (and will see the correct cert).
+
 ## Proposal
 
 We change the order of operations to perform a .well-known lookup before falling
