@@ -1,5 +1,7 @@
 {
     "origin": "matrix.org",
     "origin_server_ts": 1234567890,
-    "pdus": [{"$ref": "pdu.json"}]
+    "pdus": [{
+        "see_room_version_spec": "The event format changes depending on the room version."
+    }]
 }
