@@ -275,7 +275,7 @@ The rules are as follows:
   Some consequences of these rules:
 
   * Unless you are a member of the room, the only permitted operations (apart
-    from the intial create/join) are: joining a public room; accepting or
+    from the initial create/join) are: joining a public room; accepting or
     rejecting an invitation to a room.
 
   * To unban somebody, you must have power level greater than or equal to both

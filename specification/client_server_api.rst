@@ -158,7 +158,7 @@ Other error codes the client might encounter are:
   Sent when the room alias given to the ``createRoom`` API is already in use.
 
 :``M_INVALID_ROOM_STATE``:
-  Sent when the intial state given to the ``createRoom`` API is invalid.
+  Sent when the initial state given to the ``createRoom`` API is invalid.
 
 :``M_THREEPID_IN_USE``:
   Sent when a threepid given to an API cannot be used because the same threepid is already in use.
@@ -636,7 +636,7 @@ To use this authentication type, clients should submit an auth dict as follows:
 where the ``identifier`` property is a user identifier object, as described in
 `Identifier types`_.
 
-For example, to authenticate using the user's Matrix ID, clients whould submit:
+For example, to authenticate using the user's Matrix ID, clients would submit:
 
 .. code:: json
 
@@ -928,7 +928,7 @@ Third-party ID
 :Type:
   ``m.id.thirdparty``
 :Description:
-  The user is identified by a third-party identifer in canonicalised form.
+  The user is identified by a third-party identifier in canonicalised form.
 
 A client can identify a user using a 3pid associated with the user's account on
 the homeserver, where the 3pid was previously associated using the

@@ -450,7 +450,7 @@ previously-received ``request`` message with the same ``request_id`` and
 .. NOTE::
 
   Key sharing can be a big attack vector, thus it must be done very carefully.
-  A reasonable stategy is for a user's client to only send keys requested by the
+  A reasonable strategy is for a user's client to only send keys requested by the
   verified devices of the same user.
 
 Key exports
@@ -696,7 +696,7 @@ An event encrypted using Megolm has the following format:
         "sender_key": "<sender_curve25519_key>",
         "device_id": "<sender_device_id>",
         "session_id": "<outbound_group_session_id>",
-        "ciphertext": "<encypted_payload_base_64>"
+        "ciphertext": "<encrypted_payload_base_64>"
       }
     }
 

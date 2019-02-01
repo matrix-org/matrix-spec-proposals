@@ -27,7 +27,7 @@ The account_data may be either global or scoped to a particular rooms.
 Events
 ------
 
-The client recieves the account data as events in the ``account_data`` sections
+The client receives the account data as events in the ``account_data`` sections
 of a ``/sync``.
 
 These events can also be received in a ``/events`` response or in the

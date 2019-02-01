@@ -203,7 +203,7 @@ a homeserver creating a user ID for a new user based on the username passed to
 
 Implementations are free to do this mapping however they choose. Since the user
 ID is opaque except to the implementation which created it, the only
-requirement is that the implemention can perform the mapping
+requirement is that the implementation can perform the mapping
 consistently. However, we suggest the following algorithm:
 
 1. Encode character strings as UTF-8.
