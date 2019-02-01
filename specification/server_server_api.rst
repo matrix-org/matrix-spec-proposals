@@ -112,7 +112,7 @@ The process overall is as follows:
    Requests must be made with a ``Host`` header containing the IP address,
    without port.
 
-2. If the hostname is not an IP literal, and has an explicit port given,
+2. If the hostname is not an IP literal, and the server name includes an explicit port,
    resolve the IP address using AAAA or A records. Requests are made to
    the resolved IP address and given port with a ``Host`` header of the
    original hostname (with port). The target server must present a valid
