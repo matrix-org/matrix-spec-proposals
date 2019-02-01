@@ -33,7 +33,7 @@ properties:
     type: array
     description: |-
       List of persistent updates to rooms. Must not include more than 50 PDUs. Note that
-      events have a different version depending on the room version - check the
+      events have a different format depending on the room version - check the
       `room version specification`_ for precise event formats.
     items:
       type: object

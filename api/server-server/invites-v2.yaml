@@ -43,7 +43,7 @@ paths:
         which receive a 400 or 404 response to this endpoint should retry using the v1
         API as the server may be older, if the room version is "1" or "2".
 
-        Note that events have a different version depending on the room version - check the
+        Note that events have a different format depending on the room version - check the
         `room version specification`_ for precise event formats. **The request and response
         bodies here describe the common event fields in more detail and may be missing other
         required fields for a PDU.**
@@ -154,7 +154,7 @@ paths:
         200:
           description: |-
             The event with the invited server's signature added. All other fields of the events
-            should remain untouched. Note that events have a different version depending on the
+            should remain untouched. Note that events have a different format depending on the
             room version - check the `room version specification`_ for precise event formats.
           schema:
             type: object

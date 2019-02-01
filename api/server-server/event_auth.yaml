@@ -59,7 +59,7 @@ paths:
                 description: |-
                   The full set of authorization events that make up the state of
                   the room, and their authorization events, recursively. Note that
-                  events have a different version depending on the room version -
+                  events have a different format depending on the room version -
                   check the `room version specification`_ for precise event formats.
                 items:
                   type: object
@@ -109,7 +109,7 @@ paths:
                 type: array
                 description: |-
                   The auth chain (the "remote auth"). Note that events have a different
-                  version depending on the room version - check the `room version specification`_
+                  format depending on the room version - check the `room version specification`_
                   for precise event formats.
                 items:
                   type: object
@@ -162,7 +162,7 @@ paths:
                 description: |-
                   The auth chain the receiver has, and used to determine the auth
                   chain differences (the "local auth"). Note that events have a different
-                  version depending on the room version - check the `room version specification`_
+                  format depending on the room version - check the `room version specification`_
                   for precise event formats.
                 items:
                   type: object
