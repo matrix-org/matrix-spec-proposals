@@ -107,76 +107,73 @@ The process overall is as follows:
    do so - just ensure that the result is the same!
 
 1. If the hostname is an IP literal, then that IP address should be used,
-   together with the given port number, or 8448 if no port is given. A
-   valid TLS certificate must be provided by the target server for the
-   IP address on all requests. Requests must be made with a ``Host``
-   header containing the IP address, without port.
+   together with the given port number, or 8448 if no port is given. The
+   target server must present a valid certificate for the IP address.
+   Requests must be made with a ``Host`` header containing the IP address,
+   without port.
 
 2. If the hostname is not an IP literal, and has an explicit port given,
    resolve the IP address using AAAA or A records. Requests are made to
    the resolved IP address and given port with a ``Host`` header of the
-   original hostname (without port). A valid TLS certificate must be
-   provided by the target server for the hostname.
+   original hostname (with port). The target server must present a valid
+   certificate for the hostname.
 
-3. If the hostname is not an IP literal, a ``/.well-known`` request is
-   made to the hostname (using port 443 exclusively, ignoring the port
-   provided in the server name). This is done as a plain HTTPS request
-   which follows 30x redirects, being careful to avoid redirect loops.
-   Responses (successful or otherwise) to the ``/.well-known`` endpoint
-   should be cached by the requesting server. Servers should respect
-   the cache control headers present on the response, or use a sensible
-   default when headers are not present. The recommended sensible default
-   is 24 hours. Servers should additionally impose a maximum cache time
-   for responses: 48 hours is recommended. Errors are recommended to be
-   cached for up to an hour, and servers are encouraged to exponentially
-   back off for repeated failures. The schema of the ``/.well-known``
-   request is later in this section. If the response is invalid (bad JSON,
-   missing properties, etc), attempts to connect to the target server are
-   aborted - no connections should be attempted. If the response is valid,
-   the ``m.server`` property is parsed as ``<delegated_server_name>[:<delegated_port>]``
-   and processed as follows:
+3. If the hostname is not an IP literal, a regular HTTPS request is made
+   to ``https://<hostname>/.well-known/matrix/server``, expecting the
+   schema defined later in this section. 30x redirects should be followed,
+   however redirection loops should be avoided. Responses (successful or
+   otherwise) to the ``/.well-known`` endpoint should be cached by the
+   requesting server. Servers should respect the cache control headers
+   present on the response, or use a sensible default when headers are not
+   present. The recommended sensible default is 24 hours. Servers should
+   additionally impose a maximum cache time for responses: 48 hours is
+   recommended. Errors are recommended to be cached for up to an hour,
+   and servers are encouraged to exponentially back off for repeated
+   failures. The schema of the ``/.well-known`` request is later in this
+   section. If the response is invalid (bad JSON, missing properties, etc),
+   attempts to connect to the target server are aborted - no connections
+   should be attempted. If the response is valid, the ``m.server`` property
+   is parsed as ``<delegated_server_name>[:<delegated_port>]`` and processed
+   as follows:
 
    * If ``<delegated_server_name>`` is an IP literal, then that IP address
      should be used together with the ``<delegated_port>`` or 8448 if no
-     port is provided. A valid TLS certificate must be provided by the
-     target server for that IP address. Requests must be made with a
-     ``Host`` header containing the IP address, without port.
+     port is provided. The target server must present a valid TLS certificate
+     for the IP address. Requests must be made with a ``Host`` header containing
+     the IP address, with port.
 
    * If ``<delegated_server_name>`` is not an IP literal, and ``<delegated_port>``
      is present, an IP address is disovered by looking up an AAAA or A
      record for ``<delegated_server_name>``. The resulting IP address is
      used, alongside the ``<delegated_port>``, to make requests with a
-     ``Host`` header of ``<delegated_server_name>:<delegated_port>``. A valid
-     TLS certificate must be provided by the target server for ``<delegated_server_name>``.
+     ``Host`` header of ``<delegated_server_name>:<delegated_port>``. The
+     target server must present a valid certificate for ``<delegated_server_name>``.
 
    * If ``<delegated_server_name>`` is not an IP literal and no
      ``<delegated_port>`` is present, an SRV record is looked up for
      ``_matrix._tcp.<delegated_server_name>``. This may result in another
      hostname (to be resolved using AAAA or A records) and port. Requests
      should be made to the resolved IP address and port with a ``Host``
-     header containing the ``<delegated_server_name>``. Additionally, a
-     valid TLS certificate must be provided by the target server for the
-     ``<delegated_server_name>``.
+     header containing the ``<delegated_server_name>``. The target server
+     must present a valid certificate for ``<delegated_server_name>``.
 
    * If no SRV record is found, an IP address is resolved using AAAA
      or A records. Requests are then made to the resolve IP address
      and a port of 8448, using a ``Host`` header of ``<delegated_server_name>``.
-     A valid TLS certificate for ``<delegated_server_name>`` must be
-     provided by the target server.
+     The target server must present a valid certificate for ``<delegated_server_name>``.
 
 4. If the `/.well-known` request did not result in a 200 response, a server
    is found by resolving an SRV record for ``_matrix._tcp.<hostname>``. This
    may result in a hostname (to be resolved using AAAA or A records) and
    port. Requests are made to the resolved IP address and port, using 8448
-   as a default port, with a ``Host`` header of ``<hostname>``. A valid TLS
-   certificate for ``<hostname>`` must be provided by the target server on
-   all requests.
+   as a default port, with a ``Host`` header of ``<hostname>``. The target
+   server must present a valid certificate for ``<hostname>``.
 
 5. If the `/.well-known` request returned an error response, and the SRV
    record was not found, an IP address is resolved using AAAA and A records.
    Requests are made to the resolved IP address using port 8448 and a ``Host``
-   header containing the ``<hostname>``. A valid TLS certificate for
-   ``<hostname>`` must be provided by the target server on all requests.
+   header containing the ``<hostname>``. The target server must present a
+   valid certificate for ``<hostname>``.
 
 
 The TLS certificate provided by the target server must be signed by a known
