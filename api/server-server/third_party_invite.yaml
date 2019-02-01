@@ -98,6 +98,7 @@ paths:
                         description: |-
                           A block of content which has been signed, which servers can use to
                           verify the event.
+                        title: Invite Signatures
                         properties:
                           signatures:
                             type: object
