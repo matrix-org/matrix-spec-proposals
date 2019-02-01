@@ -215,6 +215,7 @@ paths:
               - origin
               - origin_server_ts
               - type
+              - depth
               - content
           example: {
             "$ref": "examples/minimal_pdu.json",

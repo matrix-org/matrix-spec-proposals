@@ -121,6 +121,7 @@ paths:
                   - origin_server_ts
                   - type
                   - content
+                  - sender
           examples:
             application/json: {
               "room_version": "2",
