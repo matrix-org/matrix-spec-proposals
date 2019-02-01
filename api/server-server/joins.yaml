@@ -119,7 +119,6 @@ paths:
                   - origin
                   - origin_server_ts
                   - type
-                  - state_key
                   - content
           examples:
             application/json: {

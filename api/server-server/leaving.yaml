@@ -112,7 +112,6 @@ paths:
                   - origin
                   - origin_server_ts
                   - type
-                  - state_key
                   - content
           examples:
             application/json: {
@@ -212,7 +211,6 @@ paths:
               - origin
               - origin_server_ts
               - type
-              - state_key
               - content
           example: {
             "$ref": "examples/minimal_pdu.json",
