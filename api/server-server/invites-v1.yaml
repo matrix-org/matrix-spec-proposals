@@ -115,6 +115,9 @@ paths:
             "$ref": "examples/minimal_pdu.json",
             "type": "m.room.member",
             "state_key": "@joe:elsewhere.com",
+            "origin": "example.org",
+            "origin_server_ts": 1549041175876,
+            "sender": "@someone:example.org",
             "unsigned": {
               "invite_room_state": [
                 {
@@ -173,6 +176,9 @@ paths:
                   "$ref": "examples/minimal_pdu.json",
                   "type": "m.room.member",
                   "state_key": "@someone:example.org",
+                  "origin": "example.org",
+                  "origin_server_ts": 1549041175876,
+                  "sender": "@someone:example.org",
                   "unsigned": {
                     "invite_room_state": [
                       {

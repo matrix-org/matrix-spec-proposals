@@ -120,6 +120,9 @@ paths:
                 "$ref": "examples/minimal_pdu.json",
                 "type": "m.room.member",
                 "state_key": "@someone:example.org",
+                "origin": "example.org",
+                "origin_server_ts": 1549041175876,
+                "sender": "@someone:example.org",
                 "content": {
                   "membership": "leave"
                 }
@@ -216,6 +219,9 @@ paths:
             "$ref": "examples/minimal_pdu.json",
             "type": "m.room.member",
             "state_key": "@someone:example.org",
+            "origin": "example.org",
+            "origin_server_ts": 1549041175876,
+            "sender": "@someone:example.org",
             "content": {
                 "membership": "leave"
             }

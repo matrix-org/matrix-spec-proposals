@@ -127,6 +127,9 @@ paths:
                 "$ref": "examples/minimal_pdu.json",
                 "type": "m.room.member",
                 "state_key": "@someone:example.org",
+                "origin": "example.org",
+                "origin_server_ts": 1549041175876,
+                "sender": "@someone:example.org",
                 "content": {
                   "membership": "join"
                 }
@@ -228,12 +231,14 @@ paths:
               - origin
               - origin_server_ts
               - type
-              - state_key
               - content
           example: {
             "$ref": "examples/minimal_pdu.json",
             "type": "m.room.member",
             "state_key": "@someone:example.org",
+            "origin": "example.org",
+            "origin_server_ts": 1549041175876,
+            "sender": "@someone:example.org",
             "content": {
                 "membership": "join"
             }
@@ -267,19 +272,29 @@ paths:
                       type: object
                       title: PDU
                       description: |-
-                        The `PDUs <#pdus>`_ contained in the auth chain. The event format
-                        varies depending on the room version - check the `room version specification`_
-                        for precise event formats.
-                      properties: []
+                        The `PDUs <#pdus>`_ that make up the auth chain. The event format varies depending
+                        on the room version - check the `room version specification`_ for precise event formats.
+                      schema:
+                        type: object
+                        properties: []
                       example:
                         $ref: "examples/minimal_pdu.json"
                   state:
                     type: array
-                    description: The room state.
+                    description: |-
+                      The room state. The event format varies depending on the room version -
+                      check the `room version specification`_ for precise event formats.
                     items:
                       type: object
+                      title: PDU
+                      description: |-
+                        The `PDUs <#pdus>`_ for the fully resolved state of the room. The event format varies depending
+                        on the room version - check the `room version specification`_ for precise event formats.
                       schema:
-                        $ref: "definitions/pdu.yaml"
+                        type: object
+                        properties: []
+                      example:
+                        $ref: "examples/minimal_pdu.json"
                 required: ["auth_chain", "state", "origin"]
           examples:
             application/json: [
