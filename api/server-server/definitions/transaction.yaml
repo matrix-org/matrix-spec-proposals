@@ -42,5 +42,6 @@ properties:
         The `PDUs <#pdus>`_ contained in the transaction. The event format varies depending
         on the room version - check the `room version specification`_ for precise event formats.
       properties: []
-      example: {"see_room_version_spec": "The event format changes depending on the room version."}
+      example:
+        $ref: "../examples/minimal_pdu.json"
 required: ['origin', 'origin_server_ts', 'pdus']

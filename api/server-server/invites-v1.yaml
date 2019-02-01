@@ -38,6 +38,11 @@ paths:
         Servers should prefer to use the v2 API for invites instead of the v1 API. Servers
         which receive a v1 invite request must assume that the room version is either ``"1"``
         or ``"2"``.
+
+        Note that events have a different version depending on the room version - check the
+        `room version specification`_ for precise event formats. **The request and response
+        bodies here describe the common event fields in more detail and may be missing other
+        required fields for a PDU.**
       operationId: sendInviteV1
       security:
         - signedRequest: []
@@ -107,7 +112,7 @@ paths:
                           }
                         ]
           example: {
-            "$ref": "examples/pdu.json",
+            "$ref": "examples/minimal_pdu.json",
             "type": "m.room.member",
             "state_key": "@joe:elsewhere.com",
             "unsigned": {
@@ -143,7 +148,8 @@ paths:
         200:
           description: |-
             The event with the invited server's signature added. All other fields of the events
-            should remain untouched.
+            should remain untouched. Note that events have a different version depending on the
+            room version - check the `room version specification`_ for precise event formats.
           schema:
             type: array
             minItems: 2
@@ -164,7 +170,7 @@ paths:
               200,
               {
                 "event":  {
-                  "$ref": "examples/pdu.json",
+                  "$ref": "examples/minimal_pdu.json",
                   "type": "m.room.member",
                   "state_key": "@someone:example.org",
                   "unsigned": {

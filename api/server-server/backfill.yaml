@@ -130,6 +130,6 @@ paths:
           examples:
             application/json: {
               "events": [
-                {"see_room_version_spec": "The event format changes depending on the room version."}
+                {"$ref": "examples/minimal_pdu.json"}
               ]
             }

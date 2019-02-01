@@ -42,6 +42,11 @@ paths:
         This endpoint is preferred over the v1 API as it is more useful for servers. Senders
         which receive a 400 or 404 response to this endpoint should retry using the v1
         API as the server may be older, if the room version is "1" or "2".
+
+        Note that events have a different version depending on the room version - check the
+        `room version specification`_ for precise event formats. **The request and response
+        bodies here describe the common event fields in more detail and may be missing other
+        required fields for a PDU.**
       operationId: sendInviteV2
       security:
         - signedRequest: []
@@ -111,7 +116,7 @@ paths:
           example: {
             "room_version": "2",
             "event": {
-              "$ref": "examples/pdu.json",
+              "$ref": "examples/minimal_pdu.json",
               "type": "m.room.member",
               "state_key": "@joe:elsewhere.com",
               "content": {
@@ -146,7 +151,8 @@ paths:
         200:
           description: |-
             The event with the invited server's signature added. All other fields of the events
-            should remain untouched.
+            should remain untouched. Note that events have a different version depending on the
+            room version - check the `room version specification`_ for precise event formats.
           schema:
             type: object
             description: An object containing the signed invite event.
@@ -158,7 +164,7 @@ paths:
           examples:
             application/json: {
               "event":  {
-                "$ref": "examples/pdu.json",
+                "$ref": "examples/minimal_pdu.json",
                 "type": "m.room.member",
                 "state_key": "@someone:example.org",
                 "unsigned": {
