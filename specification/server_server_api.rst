@@ -281,6 +281,8 @@ Transactions are limited in size; they can have at most 50 PDUs and 100 EDUs.
 
 {{transactions_ss_http_api}}
 
+.. _`Persistent Data Unit schema`:
+
 PDUs
 ----
 
@@ -1050,11 +1052,13 @@ been given a redacted version of the event. To enforce this, the receiving
 server should use the redacted copy it calculated rather than the full copy it
 received.
 
+.. _`reference hashes`:
+
 Calculating the reference hash for an event
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The *reference hash* of an event covers the essential fields of an event,
-includuing content hashes. It is calculated as follows.
+including content hashes. It is calculated as follows.
 
 1. The event is put through the redaction algorithm.
 

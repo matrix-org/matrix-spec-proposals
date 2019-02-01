@@ -63,7 +63,7 @@ Event IDs
    should be using. By removing the use of a dedicated event ID, servers are required
    to track the hashes on an event to determine its ID.
 
-The event ID is the reference hash of the event encoded using `Unpadded Base64`_,
+The event ID is the `reference hash`_ of the event encoded using `Unpadded Base64`_,
 prefixed with ``$``. A resulting event ID using this approach should look similar to
 ``$CD66HAED5npg6074c6pDtLKalHjVfYb2q4Q3LZgrW6o``.
 
@@ -108,13 +108,14 @@ to the change in event format:
   ``events_default`` in the power levels). However, servers should not apply or send
   redactions to clients until both the redaction event and original event have been
   seen, and are valid. Servers should only apply redactions to events where the
-  origin sender's domains match, or the sender has the appropriate permissions per
-  the power levels.
+  sender's domains match, or the sender of the redaction has the appropriate
+  permissions per the power levels.
 
 
-The remaining rules are the same as room version 1.
+The remaining rules are the same as `room version 1 <v1.html#authorization-rules>`_.
 
 
 .. _`Unpadded Base64`:  ../../appendices.html#unpadded-base64
 .. _`Canonical JSON`: ../../appendices.html#canonical-json
 .. _`Signing Events`: ../../server_server/unstable.html#signing-events
+.. _`reference hash`: ../../server_server/unstable.html#reference-hashes
