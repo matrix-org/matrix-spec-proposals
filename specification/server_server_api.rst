@@ -1050,6 +1050,22 @@ been given a redacted version of the event. To enforce this, the receiving
 server should use the redacted copy it calculated rather than the full copy it
 received.
 
+Calculating the reference hash for an event
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The *reference hash* of an event covers the essential fields of an event,
+includuing content hashes. It is calculated as follows.
+
+1. The event is put through the redaction algorithm.
+
+2. The ``signatures``, ``age_ts``, and ``unsigned`` properties are removed
+   from the event, if present.
+
+3. The event is converted into `Canonical JSON`_.
+
+4. A sha256 hash is calculed on the resulting JSON object.
+
+
 Calculating the content hash for an event
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

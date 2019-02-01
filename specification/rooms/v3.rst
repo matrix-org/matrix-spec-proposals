@@ -63,17 +63,8 @@ Event IDs
    should be using. By removing the use of a dedicated event ID, servers are required
    to track the hashes on an event to determine its ID.
 
-The event ID is calculated using the following algorithm. Note that the hashing
-algorithm used is the same as in previous room versions.
-
-1. Redact the event.
-2. Remove the `signatures` field from the event.
-3. Serialize the event into `Canonical JSON`_.
-4. Compute the hash of the JSON bytes.
-5. Encode the sha256 hash using `Unpadded Base64`_.
-6. Use the resulting string as the event ID prefixed with ``$``.
-
-A resulting event ID using this approach should look similar to
+The event ID is the reference hash of the event encoded using `Unpadded Base64`_,
+prefixed with ``$``. A resulting event ID using this approach should look similar to
 ``$CD66HAED5npg6074c6pDtLKalHjVfYb2q4Q3LZgrW6o``.
 
 Event IDs should not be sent over federation to servers when the room uses
