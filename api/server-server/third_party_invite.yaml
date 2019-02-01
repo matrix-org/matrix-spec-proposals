@@ -85,6 +85,7 @@ paths:
                   third_party_invite:
                     type: object
                     description: The third party invite
+                    title: Third Party Invite
                     properties:
                       display_name:
                         type: string

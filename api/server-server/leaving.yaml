@@ -73,6 +73,7 @@ paths:
                   depending on the room version - check the `room version specification`_
                   for precise event formats.
                 type: object
+                title: Event Template
                 properties:
                   sender:
                     type: string
