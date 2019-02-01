@@ -26,12 +26,22 @@ properties:
     type: integer
     format: int64
     description: |-
-      POSIX timestamp in milliseconds on originating homeserver when this 
+      POSIX timestamp in milliseconds on originating homeserver when this
       transaction started.
     example: 1532991320875
   pdus:
     type: array
-    description: List of persistent updates to rooms. Must not include more than 50 PDUs.
+    description: |-
+      List of persistent updates to rooms. Must not include more than 50 PDUs. Note that
+      events have a different format depending on the room version - check the
+      `room version specification`_ for precise event formats.
     items:
-      $ref: "pdu.yaml"
+      type: object
+      title: PDU
+      description: |-
+        The `PDUs <#pdus>`_ contained in the transaction. The event format varies depending
+        on the room version - check the `room version specification`_ for precise event formats.
+      properties: []
+      example:
+        $ref: "../examples/minimal_pdu.json"
 required: ['origin', 'origin_server_ts', 'pdus']

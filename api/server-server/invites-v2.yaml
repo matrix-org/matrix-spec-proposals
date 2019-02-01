@@ -42,6 +42,11 @@ paths:
         This endpoint is preferred over the v1 API as it is more useful for servers. Senders
         which receive a 400 or 404 response to this endpoint should retry using the v1
         API as the server may be older, if the room version is "1" or "2".
+
+        Note that events have a different format depending on the room version - check the
+        `room version specification`_ for precise event formats. **The request and response
+        bodies here describe the common event fields in more detail and may be missing other
+        required fields for a PDU.**
       operationId: sendInviteV2
       security:
         - signedRequest: []
@@ -111,9 +116,12 @@ paths:
           example: {
             "room_version": "2",
             "event": {
-              "$ref": "examples/pdu.json",
+              "$ref": "examples/minimal_pdu.json",
               "type": "m.room.member",
               "state_key": "@joe:elsewhere.com",
+              "origin": "example.org",
+              "origin_server_ts": 1549041175876,
+              "sender": "@someone:example.org",
               "content": {
                   "membership": "invite"
               },
@@ -146,7 +154,8 @@ paths:
         200:
           description: |-
             The event with the invited server's signature added. All other fields of the events
-            should remain untouched.
+            should remain untouched. Note that events have a different format depending on the
+            room version - check the `room version specification`_ for precise event formats.
           schema:
             type: object
             description: An object containing the signed invite event.
@@ -158,9 +167,12 @@ paths:
           examples:
             application/json: {
               "event":  {
-                "$ref": "examples/pdu.json",
+                "$ref": "examples/minimal_pdu.json",
                 "type": "m.room.member",
                 "state_key": "@someone:example.org",
+                "origin": "example.org",
+                "origin_server_ts": 1549041175876,
+                "sender": "@someone:example.org",
                 "unsigned": {
                   "invite_room_state": [
                     {
