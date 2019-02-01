@@ -474,7 +474,7 @@ Room versions are divided into two distinct groups: stable and unstable. Stable
 room versions may be used by rooms safely. Unstable room versions are everything
 else which is either not listed in the specification or flagged as unstable for
 some other reason. Versions can switch between stable and unstable periodically
-for a variety of reasons, including discovered security vulnerabilites and age.
+for a variety of reasons, including discovered security vulnerabilities and age.
 
 Clients should not ask room administrators to upgrade their rooms if the room is
 running a stable version. Servers SHOULD use room version 1 as the default room

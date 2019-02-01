@@ -142,7 +142,7 @@ The process overall is as follows:
      the IP address, including the port if one was provided.
 
    * If ``<delegated_hostname>`` is not an IP literal, and ``<delegated_port>``
-     is present, an IP address is disovered by looking up an AAAA or A
+     is present, an IP address is discovered by looking up an AAAA or A
      record for ``<delegated_hostname>``. The resulting IP address is
      used, alongside the ``<delegated_port>``. Requests must be made with a
      ``Host`` header of ``<delegated_hostname>:<delegated_port>``. The
@@ -1125,7 +1125,7 @@ including content hashes. It is calculated as follows.
 
 3. The event is converted into `Canonical JSON`_.
 
-4. A sha256 hash is calculed on the resulting JSON object.
+4. A sha256 hash is calculated on the resulting JSON object.
 
 
 Calculating the content hash for an event
@@ -1170,7 +1170,7 @@ Example code
         # Keys under "unsigned" can be modified by other servers.
         # They are useful for conveying information like the age of an
         # event that will change in transit.
-        # Since they can be modifed we need to exclude them from the hash.
+        # Since they can be modified we need to exclude them from the hash.
         event_object.pop("unsigned", None)
 
         # Signatures will depend on the current value of the "hashes" key.
@@ -1192,7 +1192,7 @@ Example code
 
    [[TODO(markjh): Since the ``hash`` object cannot be redacted a server
    shouldn't allow too many hashes to be listed, otherwise a server might embed
-   illict data within the ``hash`` object.
+   illicit data within the ``hash`` object.
 
    We might want to specify a maximum number of keys for the
    ``hash`` and we might want to specify the maximum output size of a hash]]

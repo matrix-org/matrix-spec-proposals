@@ -116,7 +116,7 @@ Mainline ordering
   of condition 1 below.
 
   The *mainline ordering based on* :math:`P` of a set of events is the
-  ordering, from smallest to largest, using the following comparision relation
+  ordering, from smallest to largest, using the following comparison relation
   on events: for events :math:`x` and :math:`y`, :math:`x<y` if
 
   1. the closest mainline event to :math:`x` appears *before* the closest
