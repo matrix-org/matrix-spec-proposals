@@ -1,4 +1,4 @@
-# Copyright 2018 New Vector Ltd
+# Copyright 2019 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,13 +13,31 @@
 # limitations under the License.
 type: object
 title: Persistent Data Unit
-description: A persistent data unit (event) for room versions 1 and 2.
+description: A persistent data unit (event) for room version 3 and beyond.
 example:
-  $ref: "../examples/pdu.json"
+  $ref: "../examples/pdu_v3.json"
 allOf:
-  - $ref: "unsigned_pdu.yaml"
+  - $ref: "unsigned_pdu_base.yaml"
   - type: object
     properties:
+      auth_events:
+        type: array
+        items:
+          type: string
+          description: Event ID.
+        description: |-
+          Event IDs for the authorization events that would
+          allow this event to be in the room.
+        example: ["$base64EncodedHash", "$AnotherEvent"]
+      prev_events:
+        type: array
+        items:
+          type: string
+          description: Event ID.
+        description: |-
+          Event IDs for the most recent events in the room
+          that the homeserver was aware of when it made this event.
+        example: ["$base64EncodedHash", "$AnotherEvent"]
       hashes:
         type: object
         title: Event Hash
@@ -49,5 +67,7 @@ allOf:
           additionalProperties:
             type: string
     required:
+      - auth_events
+      - prev_events
       - hashes
       - signatures

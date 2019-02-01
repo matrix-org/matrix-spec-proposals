@@ -281,6 +281,8 @@ Transactions are limited in size; they can have at most 50 PDUs and 100 EDUs.
 
 {{transactions_ss_http_api}}
 
+.. _`Persistent Data Unit schema`:
+
 PDUs
 ----
 
@@ -327,7 +329,7 @@ following subset of the room state:
       ``m.room.third_party_invite`` event with ``state_key`` matching
       ``content.third_party_invite.signed.token``, if any.
 
-{{definition_ss_pdu}}
+For a full schema of what a PDU looks like, see the `room version specification`_.
 
 Checks performed on receipt of a PDU
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -379,189 +381,9 @@ Authorization rules
 
 The rules governing whether an event is authorized depends on a set of state. A
 given event is checked multiple times against different sets of state, as
-specified above. The types of state events that affect authorization are:
-
-- ``m.room.create``
-- ``m.room.member``
-- ``m.room.join_rules``
-- ``m.room.power_levels``
-- ``m.room.third_party_invite``
-
-The rules are as follows:
-
-1. If type is ``m.room.create``:
-
-   a. If it has any previous events, reject.
-   b. If the domain of the ``room_id`` does not match the domain of the
-      ``sender``, reject.
-   c. If ``content.room_version`` is present and is not a recognised version,
-      reject.
-   d. If ``content`` has no ``creator`` field, reject.
-   e. Otherwise, allow.
-
-#. Reject if event has ``auth_events`` that:
-
-   a. have duplicate entries for a given ``type`` and ``state_key`` pair
-   #. have entries whose ``type`` and ``state_key`` don't match those
-      specified by the `auth events selection`_ algorithm described above.
-
-#. If event does not have a ``m.room.create`` in its ``auth_events``, reject.
-
-#. If type is ``m.room.aliases``:
-
-   a. If event has no ``state_key``, reject.
-   b. If sender's domain doesn't matches ``state_key``, reject.
-   c. Otherwise, allow.
-
-#. If type is ``m.room.member``:
-
-   a. If no ``state_key`` key or ``membership`` key in ``content``, reject.
-
-   #. If ``membership`` is ``join``:
-
-      i. If the only previous event is an ``m.room.create``
-         and the ``state_key`` is the creator, allow.
-
-      #. If the ``sender`` does not match ``state_key``, reject.
-
-      #. If the ``sender`` is banned, reject.
-
-      #. If the ``join_rule`` is ``invite`` then allow if membership state
-         is ``invite`` or ``join``.
-
-      #. If the ``join_rule`` is ``public``, allow.
-
-      #. Otherwise, reject.
-
-   #. If ``membership`` is ``invite``:
-
-      i. If ``content`` has ``third_party_invite`` key:
-
-         #. If *target user* is banned, reject.
-
-         #. If ``content.third_party_invite`` does not have a
-            ``signed`` key, reject.
-
-         #. If ``signed`` does not have ``mxid`` and ``token`` keys, reject.
-
-         #. If ``mxid`` does not match ``state_key``, reject.
-
-         #. If there is no ``m.room.third_party_invite`` event in the
-            current room state with ``state_key`` matching ``token``, reject.
-
-         #. If ``sender`` does not match ``sender`` of the
-            ``m.room.third_party_invite``, reject.
-
-         #. If any signature in ``signed`` matches any public key in the
-            ``m.room.third_party_invite`` event, allow. The public keys are
-            in ``content`` of ``m.room.third_party_invite`` as:
-
-            #. A single public key in the ``public_key`` field.
-            #. A list of public keys in the ``public_keys`` field.
-
-         #. Otherwise, reject.
-
-      #. If the ``sender``'s current membership state is not ``join``, reject.
-
-      #. If *target user*'s current membership state is ``join`` or ``ban``,
-         reject.
-
-      #. If the ``sender``'s power level is greater than or equal to the *invite
-         level*, allow.
-
-      #. Otherwise, reject.
-
-   #. If ``membership`` is ``leave``:
-
-      i. If the ``sender`` matches ``state_key``, allow if and only if that user's
-         current membership state is ``invite`` or ``join``.
-
-      #. If the ``sender``'s current membership state is not ``join``, reject.
-
-      #. If the *target user*'s current membership state is ``ban``, and the
-         ``sender``'s power level is less than the *ban level*, reject.
-
-      #. If the ``sender``'s power level is greater than or equal to the *kick
-         level*, and the *target user*'s power level is less than the
-         ``sender``'s power level, allow.
-
-      #. Otherwise, reject.
-
-   #. If ``membership`` is ``ban``:
-
-      i. If the ``sender``'s current membership state is not ``join``, reject.
-
-      #. If the ``sender``'s power level is greater than or equal to the *ban
-         level*, and the *target user*'s power level is less than the
-         ``sender``'s power level, allow.
-
-      #. Otherwise, reject.
-
-   #. Otherwise, the membership is unknown. Reject.
-
-#. If the ``sender``'s current membership state is not ``join``, reject.
-
-#. If type is ``m.room.third_party_invite``:
-
-   a. Allow if and only if ``sender``'s current power level is greater than
-      or equal to the *invite level*.
-
-#. If the event type's *required power level* is greater than the ``sender``'s power
-   level, reject.
-
-#. If the event has a ``state_key`` that starts with an ``@`` and does not match
-   the ``sender``, reject.
-
-#. If type is ``m.room.power_levels``:
-
-   a. If ``users`` key in ``content`` is not a dictionary with keys that are
-      valid user IDs with values that are integers (or a string that is an
-      integer), reject.
-
-   #. If there is no previous ``m.room.power_levels`` event in the room, allow.
-
-   #. For each of the keys ``users_default``, ``events_default``,
-      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
-      each entry being changed under the ``events`` or ``users`` keys:
-
-      i. If the current value is higher than the ``sender``'s current power level,
-         reject.
-
-      #. If the new value is higher than the ``sender``'s current power level,
-         reject.
-
-   #. For each entry being changed under the ``users`` key, other than the
-      ``sender``'s own entry:
-
-      i. If the current value is equal to the ``sender``'s current power level,
-         reject.
-
-   #. Otherwise, allow.
-
-#. If type is ``m.room.redaction``:
-
-   a. If the ``sender``'s power level is greater than or equal to the *redact
-      level*, allow.
-
-   #. If the domain of the ``event_id`` of the event being redacted is the same
-      as the domain of the ``event_id`` of the ``m.room.redaction``, allow.
-
-   #. Otherwise, reject.
-
-#. Otherwise, allow.
-
-.. NOTE::
-
-  Some consequences of these rules:
-
-  * Unless you are a member of the room, the only permitted operations (apart
-    from the intial create/join) are: joining a public room; accepting or
-    rejecting an invitation to a room.
-
-  * To unban somebody, you must have power level greater than or equal to both
-    the kick *and* ban levels, *and* greater than the target user's power
-    level.
-
+specified above. Each room version can have a different algorithm for how the
+rules work, and which rules are applied. For more detailed information, please
+see the `room version specification`_.
 
 Rejection
 +++++++++
@@ -1229,6 +1051,24 @@ If the hash check fails, then it is assumed that this is because we have only
 been given a redacted version of the event. To enforce this, the receiving
 server should use the redacted copy it calculated rather than the full copy it
 received.
+
+.. _`reference hashes`:
+
+Calculating the reference hash for an event
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The *reference hash* of an event covers the essential fields of an event,
+including content hashes. It is calculated as follows.
+
+1. The event is put through the redaction algorithm.
+
+2. The ``signatures``, ``age_ts``, and ``unsigned`` properties are removed
+   from the event, if present.
+
+3. The event is converted into `Canonical JSON`_.
+
+4. A sha256 hash is calculed on the resulting JSON object.
+
 
 Calculating the content hash for an event
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
