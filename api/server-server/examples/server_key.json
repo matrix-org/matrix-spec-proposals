@@ -16,8 +16,5 @@
             "ed25519:auto2": "VGhpcyBzaG91bGQgYWN0dWFsbHkgYmUgYSBzaWduYXR1cmU"
         }
     },
-    "tls_fingerprints": [{
-        "sha256": "VGhpcyBpcyBoYXNoIHdoaWNoIHNob3VsZCBiZSBieXRlcw"
-    }],
     "valid_until_ts": 1652262000000
 }

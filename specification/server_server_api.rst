@@ -90,35 +90,107 @@ Server discovery
 Resolving server names
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Each matrix homeserver is identified by a server name consisting of a hostname
+Each Matrix homeserver is identified by a server name consisting of a hostname
 and an optional port, as described by the `grammar
-<../appendices.html#server-name>`_.  Server names should be resolved to an IP
-address and port using the following process:
+<../appendices.html#server-name>`_. Where applicable, a delegated server name
+uses the same grammar.
 
-* If the hostname is an IP literal, then that IP address should be used,
-  together with the given port number, or 8448 if no port is given.
+Server names are resolved to an IP address and port to connect to, and have
+various conditions affecting which certificates and ``Host`` headers to send.
+The process overall is as follows:
 
-* Otherwise, if the port is present, then an IP address is discovered by
-  looking up an AAAA or A record for the hostname, and the specified port is
-  used.
+.. Note from the author: The repetitive "use this Host header and this cert"
+   comments are intentional. The process is overall quite complicated, and
+   explaining explicitly what requests look like at each step helps ease the
+   understanding and ensure everyone is on the same page. Implementations
+   are of course welcome to realize where the process can be optimized, and
+   do so - just ensure that the result is the same!
 
-* If the hostname is not an IP literal and no port is given, the server is
-  discovered by first looking up a ``_matrix._tcp`` SRV record for the
-  hostname, which may give a hostname (to be looked up using AAAA or A queries)
-  and port.  If the SRV record does not exist, then the server is discovered by
-  looking up an AAAA or A record on the hostname and taking the default
-  fallback port number of 8448.
+1. If the hostname is an IP literal, then that IP address should be used,
+   together with the given port number, or 8448 if no port is given. The
+   target server must present a valid certificate for the IP address.
+   The ``Host`` header in the request should be set to the server name,
+   including the port if the server name included one.
 
-  Homeservers may use SRV records to load balance requests between multiple TLS
-  endpoints or to failover to another endpoint if an endpoint fails.
+2. If the hostname is not an IP literal, and the server name includes an
+   explicit port, resolve the IP address using AAAA or A records. Requests
+   are made to the resolved IP address and given port with a ``Host`` header
+   of the original server name (with port). The target server must present a
+   valid certificate for the hostname.
 
-When making requests to servers, use the hostname of the target server in the
-``Host`` header, regardless of any hostname given in the SRV record. For
-example, if the server name is ``example.org``, and the SRV record resolves to
-``matrix.example.org``, the ``Host`` header in the request should be
-``example.org``.  If an explicit port was given in the server name, it should be
-included in the ``Host`` header; otherwise, no port number should be given in
-the ``Host`` header.
+3. If the hostname is not an IP literal, a regular HTTPS request is made
+   to ``https://<hostname>/.well-known/matrix/server``, expecting the
+   schema defined later in this section. 30x redirects should be followed,
+   however redirection loops should be avoided. Responses (successful or
+   otherwise) to the ``/.well-known`` endpoint should be cached by the
+   requesting server. Servers should respect the cache control headers
+   present on the response, or use a sensible default when headers are not
+   present. The recommended sensible default is 24 hours. Servers should
+   additionally impose a maximum cache time for responses: 48 hours is
+   recommended. Errors are recommended to be cached for up to an hour,
+   and servers are encouraged to exponentially back off for repeated
+   failures. The schema of the ``/.well-known`` request is later in this
+   section. If the response is invalid (bad JSON, missing properties, non-200
+   response, etc), skip to step 4. If the response is valid, the ``m.server``
+   property is parsed as ``<delegated_hostname>[:<delegated_port>]`` and
+   processed as follows:
+
+   * If ``<delegated_hostname>`` is an IP literal, then that IP address
+     should be used together with the ``<delegated_port>`` or 8448 if no
+     port is provided. The target server must present a valid TLS certificate
+     for the IP address. Requests must be made with a ``Host`` header containing
+     the IP address, including the port if one was provided.
+
+   * If ``<delegated_hostname>`` is not an IP literal, and ``<delegated_port>``
+     is present, an IP address is disovered by looking up an AAAA or A
+     record for ``<delegated_hostname>``. The resulting IP address is
+     used, alongside the ``<delegated_port>``. Requests must be made with a
+     ``Host`` header of ``<delegated_hostname>:<delegated_port>``. The
+     target server must present a valid certificate for ``<delegated_hostname>``.
+
+   * If ``<delegated_hostname>`` is not an IP literal and no
+     ``<delegated_port>`` is present, an SRV record is looked up for
+     ``_matrix._tcp.<delegated_hostname>``. This may result in another
+     hostname (to be resolved using AAAA or A records) and port. Requests
+     should be made to the resolved IP address and port with a ``Host``
+     header containing the ``<delegated_hostname>``. The target server
+     must present a valid certificate for ``<delegated_hostname>``.
+
+   * If no SRV record is found, an IP address is resolved using AAAA
+     or A records. Requests are then made to the resolve IP address
+     and a port of 8448, using a ``Host`` header of ``<delegated_hostname>``.
+     The target server must present a valid certificate for ``<delegated_hostname>``.
+
+4. If the `/.well-known` request resulted in an error response, a server
+   is found by resolving an SRV record for ``_matrix._tcp.<hostname>``. This
+   may result in a hostname (to be resolved using AAAA or A records) and
+   port. Requests are made to the resolved IP address and port, using 8448
+   as a default port, with a ``Host`` header of ``<hostname>``. The target
+   server must present a valid certificate for ``<hostname>``.
+
+5. If the `/.well-known` request returned an error response, and the SRV
+   record was not found, an IP address is resolved using AAAA and A records.
+   Requests are made to the resolved IP address using port 8448 and a ``Host``
+   header containing the ``<hostname>``. The target server must present a
+   valid certificate for ``<hostname>``.
+
+
+The TLS certificate provided by the target server must be signed by a known
+Certificate Authority. Servers are ultimately responsible for determining
+the trusted Certificate Authorities, however are strongly encouraged to
+rely on the operating system's judgement. Servers can offer administrators
+a means to override the trusted authorities list. Servers can additionally
+skip the certificate validation for a given whitelist of domains or netmasks
+for the purposes of testing or in networks where verification is done
+elsewhere, such as with ``.onion`` addresses. Servers should respect SNI
+when making requests where possible: a SNI should be sent for the certificate
+which is expected, unless that certificate is expected to be an IP address in
+which case SNI is not supported and should not be sent.
+
+Servers are encouraged to make use of the
+`Certificate Transparency <https://www.certificate-transparency.org/>`_ project.
+
+{{wellknown_ss_http_api}}
 
 Server implementation
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -130,7 +202,7 @@ Retrieving server keys
 
 .. NOTE::
   There was once a "version 1" of the key exchange. It has been removed from the
-  specification due to lack of significance. It may be reviewed `here
+  specification due to lack of significance. It may be reviewed `from the historical draft
   <https://github.com/matrix-org/matrix-doc/blob/51faf8ed2e4a63d4cfd6d23183698ed169956cc0/specification/server_server_api.rst#232version-1>`_.
 
 Each homeserver publishes its public keys under ``/_matrix/key/v2/server/{keyId}``.
