@@ -100,15 +100,17 @@ to the change in event format:
   is no domain in the event ID), but still needs to be signed by the sender's
   domain.
 
-* Previously, redactions were allowed if the sender's domain matched the domain
-  in the event ID it was redacting, allowing self redaction. Due to changes in
-  the event format, this check is now impossible to do. Instead, servers should
-  allow redactions from servers of the same origin to redact other events as a
-  self-redaction mechanism. The rules for allowing other servers to redact events
-  (as done by moderators) is unchanged. Redaction events only take effect when
-  the original event is received, and the domain of the each event matches.
-  Servers should not send redactions down to clients until the redaction has
-  taken effect.
+* In past room versions, redactions were only permitted to enter the DAG if the
+  sender's domain matched the domain in the event ID being redacted, or the sender
+  had appropriate permissions per the power levels. Due to servers now not being
+  able to determine where an event came from during event authorization, redaction
+  events are always accepted (provided the event is allowed by ``events`` and
+  ``events_default`` in the power levels). However, servers should not apply or send
+  redactions to clients until both the redaction event and original event have been
+  seen, and are valid. Servers should only apply redactions to events where the
+  origin sender's domains match, or the sender has the appropriate permissions per
+  the power levels.
+
 
 The remaining rules are the same as room version 1.
 
