@@ -72,13 +72,13 @@ This version of the specification is generated from
 For the full historical changelog, see
 https://github.com/matrix-org/matrix-doc/blob/master/changelogs/server_server.rst
 
-
 Other versions of this specification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/server_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.1.0 <https://matrix.org/docs/spec/server_server/r0.1.0.html>`_
 
 Server discovery
 ----------------
