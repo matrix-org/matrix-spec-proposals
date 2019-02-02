@@ -40,10 +40,15 @@ The specification consists of the following parts:
 
 {{apis}}
 
+Additionally, this introduction page contains the key baseline information required to
+understand the specific APIs, including the sections on `room versions`_
+and `overall architecture <#architecture>`_.
+
 The `Appendices <appendices.html>`_ contain supplemental information not specific to
 one of the above APIs.
 
-The `Matrix Client-Server API Swagger Viewer <https://matrix.org/docs/api/client-server/>`_ is useful for browsing the Client-Server API.
+The `Matrix Client-Server API Swagger Viewer <https://matrix.org/docs/api/client-server/>`_
+is useful for browsing the Client-Server API.
 
 Introduction to the Matrix APIs
 -------------------------------
@@ -127,6 +132,8 @@ Spec Change Proposals
 To propose a change to the Matrix Spec, see the explanations at `Proposals
 for Spec Changes to Matrix <proposals>`_.
 
+
+.. _`architecture`:
 
 Architecture
 ------------
@@ -418,6 +425,7 @@ dedicated API.  The API is symmetrical to managing Profile data.
   Would it really be overengineered to use the same API for both profile &
   private user data, but with different ACLs?
 
+.. _`room versions`:
 
 Room Versions
 -------------
