@@ -16,10 +16,6 @@
 Federation API
 ==============
 
-.. WARNING::
-  This API is unstable and will change without warning or discussion while
-  we work towards a r0 release (scheduled for August 2018).
-
 Matrix homeservers use the Federation APIs (also known as server-server APIs)
 to communicate with each other. Homeservers use these APIs to push messages to
 each other in real-time, to retrieve historic messages from each other, and to
@@ -76,13 +72,13 @@ This version of the specification is generated from
 For the full historical changelog, see
 https://github.com/matrix-org/matrix-doc/blob/master/changelogs/server_server.rst
 
-
 Other versions of this specification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/server_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.1.0 <https://matrix.org/docs/spec/server_server/r0.1.0.html>`_
 
 Server discovery
 ----------------
