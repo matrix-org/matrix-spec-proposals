@@ -40,10 +40,14 @@ The specification consists of the following parts:
 
 {{apis}}
 
+Additionally, this introduction page is a valuable resource for all Matrix developers,
+including the sections on `room versions <#room-versions>`_ and `overall architecture <#architecture>`_.
+
 The `Appendices <appendices.html>`_ contain supplemental information not specific to
 one of the above APIs.
 
-The `Matrix Client-Server API Swagger Viewer <https://matrix.org/docs/api/client-server/>`_ is useful for browsing the Client-Server API.
+The `Matrix Client-Server API Swagger Viewer <https://matrix.org/docs/api/client-server/>`_
+is useful for browsing the Client-Server API.
 
 Introduction to the Matrix APIs
 -------------------------------
