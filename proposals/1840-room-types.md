@@ -1,0 +1,85 @@
+- **Author**: Jonathan Frederickson
+- **Created**: 2019-02-03
+
+# Room Types
+
+## Problem
+
+The Matrix protocol currently has no mechanism to differentiate rooms
+from each other based on their intended use case. There have been
+proposals such as
+[MSC1769](https://github.com/matrix-org/matrix-doc/pull/1769) and
+[MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772) that use
+rooms for purposes other than the traditional messaging
+use-case. Without a mechanism to differentiate them from messaging
+rooms, clients will display them as they do any other room unless they
+work around this limitation on a case-by-case basis.
+
+## Solution
+
+The proposal is to add a new state event, `m.room.type`, to define the
+intended usage of the room.
+
+This by itself could be used by a client to properly display rooms
+based on their intended usage. However, to optimize the use of
+bandwidth for an account used for varying purposes, the filter API
+could then be extended to allow for filtering the rooms that are
+returned from a sync based on room type. (A client meant for receiving
+IoT device data, for example, has no need to receive messages destined
+for that account, nor to be aware at all that messaging rooms exist.)
+
+N.B. There's an opportunity here to additionally scope access tokens
+to specific room types, but that feels like it's beyond the scope of
+this proposal at this point.
+
+## Examples
+
+### m.room.type
+
+```json
+{
+    "content": {
+        "type": "m.room_type.messaging"
+    },
+    "event_id": "$143273582443PhrSn:domain.com",
+    "origin_server_ts": 1432735824653,
+    "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
+    "sender": "@example:domain.com",
+    "state_key": "",
+    "type": "m.room.type",
+    "unsigned": {
+        "age": 1234
+    }
+}
+```
+
+### Filter API Changes
+
+```
+POST /_matrix/client/r0/user/%40alice%3Aexample.com/filter HTTP/1.1
+Content-Type: application/json
+
+{
+  "room": {
+    "state": {
+      "types": [
+        "m.room.*"
+      ],
+      "not_rooms": [
+        "!726s6s6q:example.com"
+      ],
+      "room_types": [
+        "m.room_type.messaging"
+      ],
+      "not_room_types": [
+        "m.room_type.iot.*"
+      ],
+    },
+  "event_format": "client",
+  "event_fields": [
+    "type",
+    "content",
+    "sender"
+  ]
+}
+```
