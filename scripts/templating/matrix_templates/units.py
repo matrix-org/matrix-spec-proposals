@@ -774,7 +774,7 @@ class MatrixUnits(Units):
                 "Privileged server plugins",
             ), TypeTableRow(
                 "`Identity Service API <identity_service/"+is_ver+".html>`_",
-                "unstable",
+                is_ver,
                 "Mapping of third party IDs to Matrix IDs",
             ), TypeTableRow(
                 "`Push Gateway API <push_gateway/"+push_gw_ver+".html>`_",
