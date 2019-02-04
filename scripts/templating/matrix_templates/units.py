@@ -903,8 +903,16 @@ class MatrixUnits(Units):
 
         return schema
 
-    def load_changelogs(self):
+    def load_changelogs(self, substitutions):
         changelogs = {}
+
+        preferred_versions = {
+            "server_server": substitutions.get("%SERVER_RELEASE_LABEL%", "unstable"),
+            "client_server": substitutions.get("%CLIENT_RELEASE_LABEL%", "unstable"),
+            "identity_service": substitutions.get("%IDENTITY_RELEASE_LABEL%", "unstable"),
+            "push_gateway": substitutions.get("%PUSH_GATEWAY_RELEASE_LABEL%", "unstable"),
+            "application_service": substitutions.get("%APPSERVICE_RELEASE_LABEL%", "unstable"),
+        }
 
         # Changelog generation is a bit complicated. We rely on towncrier to
         # generate the unstable/current changelog, but otherwise use the RST
@@ -1007,6 +1015,10 @@ class MatrixUnits(Units):
                     title_part = keyword_versions[title_part]
                 changelog = "".join(changelog_lines)
                 changelogs[name][title_part.replace("^[a-zA-Z0-9]", "_").lower()] = changelog
+            preferred_changelog = changelogs[name]["unstable"]
+            if name in preferred_versions:
+                preferred_changelog = changelogs[name][preferred_versions[name]]
+            changelogs[name]["preferred"] = preferred_changelog
 
         return changelogs
 

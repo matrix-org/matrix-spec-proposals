@@ -41,7 +41,7 @@ class MatrixSections(Sections):
                 version_var = "%s_%s" % (spec_var, version)
                 logger.info("Rendering changelog for %s" % version_var)
                 rendered[version_var] = changelog
-                if version == "unstable":
+                if version == "preferred":
                     rendered[spec_var] = changelog
         return rendered
 
