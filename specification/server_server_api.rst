@@ -157,14 +157,14 @@ The process overall is as follows:
      and a port of 8448, using a ``Host`` header of ``<delegated_hostname>``.
      The target server must present a valid certificate for ``<delegated_hostname>``.
 
-4. If the `/.well-known` request resulted in an error response, a server
+4. If the ``/.well-known`` request resulted in an error response, a server
    is found by resolving an SRV record for ``_matrix._tcp.<hostname>``. This
    may result in a hostname (to be resolved using AAAA or A records) and
    port. Requests are made to the resolved IP address and port, using 8448
    as a default port, with a ``Host`` header of ``<hostname>``. The target
    server must present a valid certificate for ``<hostname>``.
 
-5. If the `/.well-known` request returned an error response, and the SRV
+5. If the ``/.well-known`` request returned an error response, and the SRV
    record was not found, an IP address is resolved using AAAA and A records.
    Requests are made to the resolved IP address using port 8448 and a ``Host``
    header containing the ``<hostname>``. The target server must present a
@@ -220,12 +220,11 @@ server by querying other servers.
 Publishing Keys
 +++++++++++++++
 
-Homeservers publish the allowed TLS fingerprints and signing keys in a JSON
+Homeservers publish their signing keys in a JSON
 object at ``/_matrix/key/v2/server/{key_id}``. The response contains a list of
 ``verify_keys`` that are valid for signing federation requests made by the
 homeserver and for signing events. It contains a list of ``old_verify_keys`` which
-are only valid for signing events. Finally the response contains a list of TLS
-certificate fingerprints to validate any connection made to the homeserver.
+are only valid for signing events.
 
 {{keys_server_ss_http_api}}
 
