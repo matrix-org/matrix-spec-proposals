@@ -172,6 +172,7 @@ On success, returns a JSON object with keys:
 - `auth_data` (object): Required. Same as in the body parameters for
   `POST /room_keys/version`.
 - `version` (string): Required. The backup version.
+- `count` (number): Required. The number of keys stored in the backup.
 
 Error codes:
 
