@@ -1,1 +1,0 @@
-Clarify that servers should not fail to contact servers if ``/.well-known`` fails.
