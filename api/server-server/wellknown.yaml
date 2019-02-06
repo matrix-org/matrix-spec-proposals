@@ -35,9 +35,8 @@ paths:
             The delegated server information. The ``Content-Type`` for this response SHOULD
             be ``application/json``, however servers parsing the response should assume that
             the body is JSON regardless of type. Failures parsing the JSON or invalid data
-            provided in the resulting parsed JSON must result in server discovery failure (no
-            attempts should be made to continue finding an IP address/port number to connect
-            to).
+            provided in the resulting parsed JSON should not result in discovery failure -
+            consult the server discovery process for information on how to continue.
           examples:
             application/json: {
               "m.server": "delegated.example.com:1234"
