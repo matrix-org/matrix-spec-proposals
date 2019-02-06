@@ -172,6 +172,7 @@ On success, returns a JSON object with keys:
 - `auth_data` (object): Required. Same as in the body parameters for
   `POST /room_keys/version`.
 - `version` (string): Required. The backup version.
+- `hash` (string): Required. A hash value representing stored keys.
 - `count` (number): Required. The number of keys stored in the backup.
 
 Error codes:
@@ -240,7 +241,9 @@ Body parameters:
   `m.megolm_backup.v1.curve25519-aes-sha2`, see below for the definition of
   this property.
 
-On success, returns the empty JSON object.
+On success, returns a JSON object with keys:
+
+- `hash` (string): Required. The new hash value representing stored keys.
 
 Error codes:
 
@@ -267,8 +270,11 @@ Example:
 Result:
 
 ```javascript
-{}
+{
+  "hash": "abcdefghi"
+}
 ```
+
 ##### `PUT /room_keys/keys/${roomId}?version=$v`
 
 Store several keys for the given room, using the given backup version.
@@ -308,8 +314,11 @@ Example:
 Result:
 
 ```javascript
-{}
+{
+  "hash": "abcdefghi"
+}
 ```
+
 ##### `PUT /room_keys/keys?version=$v`
 
 Store several keys, using the given backup version.
@@ -353,7 +362,9 @@ Example:
 Result:
 
 ```javascript
-{}
+{
+  "hash": "abcdefghi"
+}
 ```
 
 #### Retrieving keys
