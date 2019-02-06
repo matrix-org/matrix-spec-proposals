@@ -177,6 +177,42 @@ Error codes:
 
 - `M_NOT_FOUND`: No backup version has been created.
 
+##### `PUT /room_keys/version/{version}`
+
+Update information about the given version, or the current version if `{version}`
+is omitted. Only `auth_data` can be updated.
+
+Body parameters:
+
+- `algorithm` (string): Optional. Must be the same as in the body parameters for `GET
+ /room_keys/version`.
+- `auth_data` (object): Required. algorithm-dependent data.  For
+  `m.megolm_backup.v1.curve25519-aes-sha2`, see below for the definition of
+  this property.
+- `version` (string): Optional. The backup version. Must be the same as the query parameter or must be the current version.
+
+Example:
+
+```javascript
+{
+  "auth_data": {
+    "public_key": "abcdefg",
+    "signatures": {
+      "something": {
+        "ed25519:something": "hijklmnop"
+        "ed25519:anotherthing": "abcdef"
+      }
+    }
+  }
+}
+```
+
+On success, returns the empty JSON object.
+
+Error codes:
+
+- `M_NOT_FOUND`: No backup version found.
+
 #### Storing keys
 
 ##### `PUT /room_keys/keys/${roomId}/${sessionId}?version=$v`
