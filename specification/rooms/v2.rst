@@ -27,7 +27,7 @@ Server implementation components
    details contained here, and can safely ignore their presence.
 
 
-Room version 2 uses the base compoennts of `room version 1 <v1.html>`_, changing
+Room version 2 uses the base components of `room version 1 <v1.html>`_, changing
 only the state resolution algorithm.
 
 
