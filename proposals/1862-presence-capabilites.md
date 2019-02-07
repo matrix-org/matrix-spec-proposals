@@ -11,14 +11,14 @@ to make the behaviour specced so that clients may avoid sending it presence info
 
 `GET /_matrix/client/r0/capabilities`
 
-```json
+```javascript
 {
   "capabilities": {
     "m.presence": {
       "send_enabled": false,
       "receive_enabled": false,
     },
-    ...
+    // ...
 }
 ```
 
