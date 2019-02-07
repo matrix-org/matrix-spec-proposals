@@ -27,9 +27,8 @@ Server implementation components
    details contained here, and can safely ignore their presence.
 
 
-The algorithms defined here should only apply to version 2 rooms. Other algorithms
-may be used by other room versions, and as such servers should be aware of which
-version room they are dealing with prior to executing a given algorithm.
+Room version 2 uses the base compoennts of `room version 1 <v1.html>`_, changing
+only the state resolution algorithm.
 
 
 State resolution
