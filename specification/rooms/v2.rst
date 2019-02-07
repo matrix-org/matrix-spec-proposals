@@ -18,6 +18,9 @@ Room Version 2
 This room version builds off of `version 1 <v1.html>`_ with an improved state
 resolution algorithm.
 
+.. contents:: Table of Contents
+.. sectnum::
+
 Server implementation components
 --------------------------------
 
