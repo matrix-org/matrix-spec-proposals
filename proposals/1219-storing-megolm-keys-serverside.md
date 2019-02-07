@@ -211,6 +211,7 @@ On success, returns a JSON object with keys:
 
 - `hash` (string): Required. The new hash value representing stored keys. See
 `GET /room_keys/version/{version}` for more details.
+- `count` (number): Required. The new count of keys stored in the backup.
 
 Error codes:
 
@@ -238,7 +239,8 @@ Result:
 
 ```javascript
 {
-  "hash": "abcdefghi"
+  "hash": "abcdefghi",
+  "count": 10
 }
 ```
 
@@ -282,7 +284,8 @@ Result:
 
 ```javascript
 {
-  "hash": "abcdefghi"
+  "hash": "abcdefghi",
+  "count": 10
 }
 ```
 
@@ -330,7 +333,8 @@ Result:
 
 ```javascript
 {
-  "hash": "abcdefghi"
+  "hash": "abcdefghi",
+  "count": 10
 }
 ```
 
