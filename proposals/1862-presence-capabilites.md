@@ -25,14 +25,18 @@ to make the behaviour specced so that clients may avoid sending it presence info
 An omission of `m.presence` would default both sending and receiving to true. An omission of either child flag
 would also default that flag to true.
 
-The /sync format does not change based on whether this is enabled. `presence.events` SHOULD be empty when `receive_enalbed` is `false`.
+When `send_enabled` is enabled, homeservers should respond to requests to 
+`PUT /_matrix/client/r0/presence/{userId}/status` with `M_FORBIDDEN`.
+
+When `receive_enabled` is enabled, homeservers should respond to requests to 
+`GET /_matrix/client/r0/presence/{userId}/status` with `M_FORBIDDEN`.
+
+The `/sync` format does not change based on whether this is enabled. `presence.events` SHOULD be empty when `receive_enabled` is `false`.
 
 ## Tradeoffs
 
-This proposal makes no attempt to address disabled presence over S2S (so remote homeservers are still
-clueless). 
-
-None that I can think of.
+This proposal makes no attempt to address disabled presence over S2S, so homeservers can still send EDUs containing
+presence to a server and the response when presence is disabled is undefined.
 
 ## Potential issues
 
