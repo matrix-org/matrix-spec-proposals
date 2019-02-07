@@ -18,6 +18,9 @@ Room Version 1
 This room version is the first ever version for rooms, and contains the building
 blocks for other room versions.
 
+.. contents:: Table of Contents
+.. sectnum::
+
 Server implementation components
 --------------------------------
 
