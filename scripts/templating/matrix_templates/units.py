@@ -904,9 +904,20 @@ class MatrixUnits(Units):
         return schema
 
     def load_changelogs(self, substitutions):
+        """Loads the changelog unit for later rendering in a section.
+
+        Args:
+            substitutions: dict of variable name to value. Provided by the gendoc script.
+
+        Returns:
+            A dict of API name ("client_server", for example) to changelog.
+        """
         changelogs = {}
 
-        preferred_versions = {
+        # The APIs and versions we'll prepare changelogs for. We use the substitutions
+        # to ensure that we pick up the right version for generated documentation. This
+        # defaults to "unstable" as a version for incremental generated documentation (CI).
+        prepare_versions = {
             "server_server": substitutions.get("%SERVER_RELEASE_LABEL%", "unstable"),
             "client_server": substitutions.get("%CLIENT_RELEASE_LABEL%", "unstable"),
             "identity_service": substitutions.get("%IDENTITY_RELEASE_LABEL%", "unstable"),
@@ -914,112 +925,100 @@ class MatrixUnits(Units):
             "application_service": substitutions.get("%APPSERVICE_RELEASE_LABEL%", "unstable"),
         }
 
-        # Changelog generation is a bit complicated. We rely on towncrier to
-        # generate the unstable/current changelog, but otherwise use the RST
-        # edition to record historical changelogs. This is done by prepending
-        # the towncrier output to the RST in memory, then parsing the RST by
-        # hand. We parse the entire changelog to create a changelog for each
-        # version which may be of use in some APIs.
+        # Changelogs are split into two places: towncrier for the unstable changelog and
+        # the RST file for historical versions. If the prepare_versions dict above has
+        # a version other than "unstable" specified for an API, we'll use the historical
+        # changelog and otherwise generate the towncrier log in-memory.
 
-        # Map specific headers to specific keys that'll be used eventually
-        # in variables. Things not listed here will get lowercased and formatted
-        # such that characters not [a-z0-9] will be replaced with an underscore.
-        keyword_versions = {
-            "Unreleased Changes": "unstable"
-        }
-
-        # Only generate changelogs for things that have an RST document
-        for f in os.listdir(CHANGELOG_DIR):
-            if not f.endswith(".rst"):
-                continue
-            path = os.path.join(CHANGELOG_DIR, f)
-            name = f[:-4]  # take off ".rst"
-
-            # If there's a directory with the same name, we'll try to generate
-            # a towncrier changelog and prepend it to the general changelog.
-            tc_path = os.path.join(CHANGELOG_DIR, name)
-            tc_lines = []
-            if os.path.isdir(tc_path):
-                logger.info("Generating towncrier changelog for: %s" % name)
-                p = subprocess.Popen(
-                    ['towncrier', '--version', 'Unreleased Changes', '--name', name, '--draft'],
-                    cwd=tc_path,
-                    stderr=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                )
-                stdout, stderr = p.communicate()
-                if p.returncode != 0:
-                    # Something broke - dump as much information as we can
-                    logger.error("Towncrier exited with code %s" % p.returncode)
-                    logger.error(stdout.decode('UTF-8'))
-                    logger.error(stderr.decode('UTF-8'))
-                    raw_log = ""
-                else:
-                    raw_log = stdout.decode('UTF-8')
-
-                    # This is a bit of a hack, but it does mean that the log at least gets *something*
-                    # to tell us it broke
-                    if not raw_log.startswith("Unreleased Changes"):
-                        logger.error("Towncrier appears to have failed to generate a changelog")
-                        logger.error(raw_log)
-                        raw_log = ""
-                tc_lines = raw_log.splitlines()
-
-            title_part = None
+        for api_name, target_version in prepare_versions.items():
+            logger.info("Generating changelog for %s at %s" % (api_name, target_version,))
             changelog_lines = []
-            with open(path, "r", encoding="utf-8") as f:
-                lines = f.readlines()
+            if target_version == 'unstable':
+                # generate towncrier log
+                tc_path = os.path.join(CHANGELOG_DIR, api_name)
+                if os.path.isdir(tc_path):
+                    logger.info("Generating towncrier changelog for: %s" % api_name)
+                    p = subprocess.Popen(
+                        ['towncrier', '--version', 'unstable', '--name', api_name, '--draft'],
+                        cwd=tc_path,
+                        stderr=subprocess.PIPE,
+                        stdout=subprocess.PIPE,
+                    )
+                    stdout, stderr = p.communicate()
+                    if p.returncode != 0:
+                        # Something broke - dump as much information as we can
+                        logger.error("Towncrier exited with code %s" % p.returncode)
+                        logger.error(stdout.decode('UTF-8'))
+                        logger.error(stderr.decode('UTF-8'))
+                        raw_log = ""
+                    else:
+                        raw_log = stdout.decode('UTF-8')
+
+                        # This is a bit of a hack, but it does mean that the log at least gets *something*
+                        # to tell us it broke
+                        if not raw_log.startswith("unstable"):
+                            logger.error("Towncrier appears to have failed to generate a changelog")
+                            logger.error(raw_log)
+                            raw_log = ""
+                    changelog_lines = raw_log.splitlines()
+            else:
+                # read in the existing RST changelog
+                logger.info("Reading changelog RST for %s" % api_name)
+                rst_path = os.path.join(CHANGELOG_DIR, "%s.rst" % api_name)
+                with open(rst_path, 'r', encoding="utf-8") as f:
+                    changelog_lines = f.readlines()
+
+            # Parse the changelog lines to find the header we're looking for and therefore
+            # the changelog body.
             prev_line = None
-            for line in (tc_lines + lines):
+            title_part = None
+            changelog_body_lines = []
+            have_changelog = False
+            for line in changelog_lines:
                 if prev_line is None:
                     prev_line = line
                     continue
                 if not title_part:
-                    # find the title underline (at least 3 =)
+                    # Titles we care about are underlined with at least 3 equal signs
                     if re.match("^[=]{3,}$", line.strip()):
-                        title_part = prev_line
+                        logger.info("Found header %s" % prev_line)
+                        title_part = prev_line.strip()
                         continue
                     prev_line = line
-                else:  # have title, get body (stop on next title or EOF)
+                else:
+                    # we have a title, start parsing the body
                     if re.match("^[=]{3,}$", line.strip()):
-                        # we hit another title, so pop the last line of
-                        # the changelog and record the changelog
-                        new_title = changelog_lines.pop()
-                        if name not in changelogs:
-                            changelogs[name] = {}
-                        if title_part in keyword_versions:
-                            title_part = keyword_versions[title_part]
-                        title_part = title_part.strip().replace("^[a-zA-Z0-9]", "_").lower()
-                        changelog = "".join(changelog_lines)
-                        changelogs[name][title_part] = changelog
-
-                        # reset for the next version
-                        changelog_lines = []
-                        title_part = new_title.strip()
+                        # we hit another title. prev_line will be the new section's header.
+                        # do a check to see if the section we just read is the one we want - if
+                        # it is, use that changelog and move on. If it isn't, keep reading.
+                        if title_part == target_version:
+                            changelogs[api_name] = "".join(changelog_body_lines)
+                            have_changelog = True
+                            break
+                        # not the section we want - start the next section
+                        title_part = changelog_body_lines.pop().strip()
+                        changelog_body_lines = []
                         continue
-                    # Don't generate subheadings (we'll keep the title though)
                     if re.match("^[-]{3,}$", line.strip()):
-                        continue
-                    if line.strip().startswith(".. version: "):
-                        # The changelog is directing us to use a different title
-                        # for the changelog.
-                        title_part = line.strip()[len(".. version: "):]
+                        # the last line is a subheading - drop this line because it's the underline
+                        # and that causes problems with rendering. We'll keep the header text though.
                         continue
                     if line.strip().startswith(".. "):
-                        continue  # skip comments
-                    changelog_lines.append("    " + line + '\n')
-            if len(changelog_lines) > 0 and title_part is not None:
-                if name not in changelogs:
-                    changelogs[name] = {}
-                if title_part in keyword_versions:
-                    title_part = keyword_versions[title_part]
-                changelog = "".join(changelog_lines)
-                changelogs[name][title_part.replace("^[a-zA-Z0-9]", "_").lower()] = changelog
-            preferred_changelog = changelogs[name]["unstable"]
-            if name in preferred_versions:
-                preferred_changelog = changelogs[name][preferred_versions[name]]
-            changelogs[name]["preferred"] = preferred_changelog
+                        # skip comments
+                        continue
+                    # if we made it this far, append the line to the changelog body. We indent it so
+                    # that it renders correctly in the section. We also add newlines so that there's
+                    # intentionally blank lines that make rst2html happy.
+                    changelog_body_lines.append("    " + line + '\n')
+            # do some quick checks to see if the last read section is our changelog
+            if not have_changelog:
+                logger.info("No changelog - testing %s == %s" % (target_version, title_part,))
+                if title_part == target_version and len(changelog_body_lines) > 0:
+                    changelogs[api_name] = "".join(changelog_body_lines)
+                else:
+                    raise ValueError("No changelog for %s at %s" % (api_name, target_version,))
 
+        # return our `dict[api_name] => changelog` as the last step.
         return changelogs
 
     def load_unstable_warnings(self, substitutions):
