@@ -179,17 +179,16 @@ Error codes:
 
 ##### `PUT /room_keys/version/{version}`
 
-Update information about the given version, or the current version if `{version}`
-is omitted. Only `auth_data` can be updated.
+Update information about the given version. Only `auth_data` can be updated.
 
 Body parameters:
 
-- `algorithm` (string): Optional. Must be the same as in the body parameters for `GET
+- `algorithm` (string): Required. Must be the same as in the body parameters for `GET
  /room_keys/version`.
 - `auth_data` (object): Required. algorithm-dependent data.  For
   `m.megolm_backup.v1.curve25519-aes-sha2`, see below for the definition of
   this property.
-- `version` (string): Optional. The backup version. Must be the same as the query parameter or must be the current version.
+- `version` (string): Required. The backup version. Must be the same as the query parameter or must be the current version.
 
 Example:
 
