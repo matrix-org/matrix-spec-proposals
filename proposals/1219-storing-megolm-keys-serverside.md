@@ -172,7 +172,10 @@ On success, returns a JSON object with keys:
 - `auth_data` (object): Required. Same as in the body parameters for
   `POST /room_keys/version`.
 - `version` (string): Required. The backup version.
-- `hash` (string): Required. A hash value representing stored keys.
+- `hash` (string): Required. The hash value which is an opaque string 
+ representing stored keys in the backup. Client can compare it with the `hash`
+ value they received in the response of their last key storage request.
+ If not equal, another matrix client pushed new keys to the backup.
 - `count` (number): Required. The number of keys stored in the backup.
 
 Error codes:
@@ -206,7 +209,8 @@ Body parameters:
 
 On success, returns a JSON object with keys:
 
-- `hash` (string): Required. The new hash value representing stored keys.
+- `hash` (string): Required. The new hash value representing stored keys. See
+`GET /room_keys/version/{version}` for more details.
 
 Error codes:
 
