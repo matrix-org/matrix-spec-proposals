@@ -22,7 +22,7 @@ to make the behaviour specced so that clients may avoid sending it presence info
 }
 ```
 
-An omission of `m.presence` would default both sending and reciving to true. An omission of either child flag
+An omission of `m.presence` would default both sending and recieving to true. An omission of either child flag
 would also default that flag to true.
 
 ## Tradeoffs
