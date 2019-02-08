@@ -194,6 +194,7 @@ Example:
 
 ```javascript
 {
+  "algorithm": "m.megolm_backup.v1.curve25519-aes-sha2",
   "auth_data": {
     "public_key": "abcdefg",
     "signatures": {
@@ -202,7 +203,8 @@ Example:
         "ed25519:anotherthing": "abcdef"
       }
     }
-  }
+  },
+  "version": "42"
 }
 ```
 
