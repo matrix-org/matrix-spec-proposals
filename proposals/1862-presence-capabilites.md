@@ -25,7 +25,7 @@ to make the behaviour specced so that clients may avoid sending it presence info
 An omission of `m.presence` would default both sending and receiving to true. An omission of either child flag
 would also default that flag to true.
 
-When `send_enabled` is enabled, homeservers should respond to requests to 
+When `send_enabled` is `false`, homeservers should respond to requests to 
 `PUT /_matrix/client/r0/presence/{userId}/status` with `M_FORBIDDEN`.
 
 When `receive_enabled` is enabled, homeservers should respond to requests to 
