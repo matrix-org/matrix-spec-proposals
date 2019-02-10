@@ -6,8 +6,16 @@ Some homeservers choose to disable the presence feature, so that users cannot se
 This should be specificed in the new capabilities API. Servers can also choose to restrict some users
 while allowing others, and the capabilities response should reflect this (since the endpoint is authed).
 
-It should be noted that homeservers such as matrix.org already disable presence, and this MSC is an attempt
-to make the behaviour specced so that clients may avoid sending it presence information.
+This proposal makes it optional to support presence in the spec, while this has been the reality in the 
+Matrix network for some time now.
+
+## Rationale
+
+While it would be good if every server enabled presence today, this is not the case. Some servers have opted to
+disable presence to reduce the strain on their servers (notably matrix.org and other larger community servers).
+This proposal allows these servers to advertise to clients connected over C2S that presence is not enabled.
+
+## Solution
 
 `GET /_matrix/client/r0/capabilities`
 
