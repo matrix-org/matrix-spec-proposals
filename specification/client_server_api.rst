@@ -210,10 +210,18 @@ Other error codes the client might encounter are:
   The resource being requested is reserved by an application service, or the
   application service making the request has not created the resource.
 
+:``M_RESOURCE_LIMIT_EXCEEDED``:
+  The request cannot be completed because the homeserver has reached a resource
+  limit imposed on it. For example, a homeserver held in a shared hosting environment
+  may reach a resource limit if it starts using too much memory or disk space. The
+  error MUST have an ``admin_contact`` field to provide the user receiving the error
+  a place to reach out to. Typically, this error will appear on routes which attempt
+  to modify state (eg: sending messages, account data, etc) and not routes which only
+  read state (eg: ``/sync``, get account data, etc).
+
 .. TODO: More error codes (covered by other issues)
 .. * M_CONSENT_NOT_GIVEN                - GDPR: https://github.com/matrix-org/matrix-doc/issues/1512
 .. * M_CANNOT_LEAVE_SERVER_NOTICE_ROOM  - GDPR: https://github.com/matrix-org/matrix-doc/issues/1254
-.. * M_RESOURCE_LIMIT_EXCEEDED          - Limits: https://github.com/matrix-org/matrix-doc/issues/1504
 
 .. _sect:txn_ids:
 
