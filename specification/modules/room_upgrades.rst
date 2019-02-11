@@ -59,6 +59,7 @@ When the client requests to upgrade a known room to a known version, the server:
    * ``m.room.guest_access``
    * ``m.room.history_visibility``
    * ``m.room.join_rules``
+   * ``m.room.power_levels``
 
    Membership events should not be transferred to the new room.
 
