@@ -19,7 +19,7 @@ Identifier Grammar
 Some identifiers are specific to given room versions, please refer to the
 `room versions specification`_ for more information.
 
-.. _`room versions specification`: ../index.html#room-versions
+.. _`room versions specification`: index.html#room-versions
 
 
 Server Name
@@ -234,18 +234,17 @@ A room has exactly one room ID. A room ID has the format::
 
   !opaque_id:domain
 
-An event has exactly one event ID. An event ID has the format::
+An event has exactly one event ID. The format of an event ID depends upon the
+`room version specification <index.html#room-versions>`_.
 
-  $opaque_id:domain
-
-The ``domain`` of a room/event ID is the `server name`_ of the homeserver which
+The ``domain`` of a room ID is the `server name`_ of the homeserver which
 created the room/event. The domain is used only for namespacing to avoid the
 risk of clashes of identifiers between different homeservers. There is no
 implication that the room or event in question is still available at the
 corresponding homeserver.
 
 Event IDs and Room IDs are case-sensitive. They are not meant to be human
-readable.
+readable. They are intended to be treated as fully opaque strings by clients.
 
 .. TODO-spec
   What is the grammar for the opaque part? https://matrix.org/jira/browse/SPEC-389
@@ -332,6 +331,10 @@ Examples of matrix.to URIs are:
 * Permalink by room alias: ``https://matrix.to/#/#somewhere:example.org/$event:example.org``
 * User: ``https://matrix.to/#/@alice:example.org``
 * Group: ``https://matrix.to/#/+example:example.org``
+
+.. Note::
+   Event IDs have the potential to contain slashes in some `room versions <index.html#room-versions>`_.
+   No component of the URI should be URL encoded.
 
 .. Note::
    Room ID permalinks are unroutable as there is no reliable domain to send requests
