@@ -19,8 +19,8 @@ The remainder of the process is as follows:
 1. Having checked out the new release branch, navigate your way over to `./changelogs`.
 1. Follow the release instructions provided in the README.md located there.
 1. Update any version/link references across all specifications.
-1. Generate the specification using `./scripts/gendoc.py -c r0.4.0`, specifying all the
-   API versions at the time of generation.
+1. Generate the specification using `./scripts/gendoc.py`, specifying all the
+   API versions at the time of generation. For example: `./scripts/gendoc.py -c r0.4.0 -s r0.1.0 -i r0.1.0 #etc`
 1. PR the changes to the matrix-org/matrix.org repository (for historic tracking).
    * This is done by making a PR to the `unstyled_docs/spec` folder for the version and
      specification you're releasing.
