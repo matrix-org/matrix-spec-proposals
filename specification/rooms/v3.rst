@@ -24,6 +24,9 @@ This room version builds on `version 2 <v2.html>`_ with an improved event format
    where the contextual room of the request is using this room version. Rooms using
    other room versions should not be affected by these sweeping requirements.
 
+.. contents:: Table of Contents
+.. sectnum::
+
 
 Client considerations
 ---------------------
@@ -117,5 +120,5 @@ The remaining rules are the same as `room version 1 <v1.html#authorization-rules
 
 .. _`Unpadded Base64`:  ../../appendices.html#unpadded-base64
 .. _`Canonical JSON`: ../../appendices.html#canonical-json
-.. _`Signing Events`: ../../server_server/r0.1.0.html#signing-events
-.. _`reference hash`: ../../server_server/r0.1.0.html#reference-hashes
+.. _`Signing Events`: ../../server_server/r0.1.1.html#signing-events
+.. _`reference hash`: ../../server_server/r0.1.1.html#reference-hashes
