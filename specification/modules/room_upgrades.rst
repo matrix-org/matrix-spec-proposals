@@ -47,9 +47,21 @@ When the client requests to upgrade a known room to a known version, the server:
 1. Checks that the user has permission to send ``m.room.tombstone`` events in the room.
 2. Creates a replacement room with a ``m.room.create`` event containing a ``predecessor``
    field and the applicable ``room_version``.
-3. Replicates the power levels, privacy, topic, and other transferable state events to
-   the new room. This generally excludes membership events but may include client-specified
-   events and other presentation details.
+3. Replicates transferable state events to the new room. The exact details for what is
+   transferred is left as an implementation detail, however the recommended state events
+   to transfer are:
+
+   * ``m.room.server_acl``
+   * ``m.room.encryption``
+   * ``m.room.name``
+   * ``m.room.avatar``
+   * ``m.room.topic``
+   * ``m.room.guest_access``
+   * ``m.room.history_visibility``
+   * ``m.room.join_rules``
+
+   Membership events should not be transferred to the new room.
+
 4. Moves any local aliases to the new room.
 5. Sends a ``m.room.tombstone`` event to the old room to indicate that it is not intended
    to be used any further.
@@ -57,5 +69,5 @@ When the client requests to upgrade a known room to a known version, the server:
    of events and inviting new users. For example, setting ``events_default`` and ``invite``
    to the greater of ``50`` and ``users_default + 1``.
 
-When a user joins the new room, the server may wish to automatically transfer/replicate
-some of the user's personalized settings such as notifications, tags, etc.
+When a user joins the new room, the server should automatically transfer/replicate some of
+the user's personalized settings such as notifications, tags, etc.
