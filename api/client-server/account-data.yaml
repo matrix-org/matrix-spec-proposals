@@ -43,8 +43,8 @@ paths:
           name: userId
           required: true
           description: |-
-            The id of the user to set account_data for. The access token must be
-            authorized to make requests for this user id.
+            The ID of the user to set account_data for. The access token must be
+            authorized to make requests for this user ID.
           x-example: "@alice:example.com"
         - in: path
           type: string
@@ -69,6 +69,41 @@ paths:
             The account_data was successfully added.
       tags:
         - User data
+    get:
+      summary: Get some account_data for the user.
+      description: |-
+        Get some account_data for the client. This config is only visible to the user
+        that set the account_data.
+      operationId: getAccountData
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          required: true
+          description: |-
+            The ID of the user to get account_data for. The access token must be
+            authorized to make requests for this user ID.
+          x-example: "@alice:example.com"
+        - in: path
+          type: string
+          name: type
+          required: true
+          description: |-
+            The event type of the account_data to get. Custom types should be
+            namespaced to avoid clashes.
+          x-example: "org.example.custom.config"
+      responses:
+        200:
+          description:
+            The account data content for the given type.
+          schema:
+            type: object
+            example: {
+              "custom_account_data_key": "custom_config_value"}
+      tags:
+        - User data
   "/user/{userId}/rooms/{roomId}/account_data/{type}":
     put:
       summary: Set some account_data for the user.
@@ -85,15 +120,15 @@ paths:
           name: userId
           required: true
           description: |-
-            The id of the user to set account_data for. The access token must be
-            authorized to make requests for this user id.
+            The ID of the user to set account_data for. The access token must be
+            authorized to make requests for this user ID.
           x-example: "@alice:example.com"
         - in: path
           type: string
           name: roomId
           required: true
           description: |-
-            The id of the room to set account_data on.
+            The ID of the room to set account_data on.
           x-example: "!726s6s6q:example.com"
         - in: path
           type: string
@@ -116,5 +151,47 @@ paths:
         200:
           description:
             The account_data was successfully added.
+      tags:
+        - User data
+    get:
+      summary: Get some account_data for the user.
+      description: |-
+        Get some account_data for the client on a given room. This config is only
+        visible to the user that set the account_data.
+      operationId: getAccountDataPerRoom
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          required: true
+          description: |-
+            The ID of the user to set account_data for. The access token must be
+            authorized to make requests for this user ID.
+          x-example: "@alice:example.com"
+        - in: path
+          type: string
+          name: roomId
+          required: true
+          description: |-
+            The ID of the room to get account_data for.
+          x-example: "!726s6s6q:example.com"
+        - in: path
+          type: string
+          name: type
+          required: true
+          description: |-
+            The event type of the account_data to get. Custom types should be
+            namespaced to avoid clashes.
+          x-example: "org.example.custom.room.config"
+      responses:
+        200:
+          description:
+            The account data content for the given type.
+          schema:
+            type: object
+            example: {
+              "custom_account_data_key": "custom_config_value"}
       tags:
         - User data
