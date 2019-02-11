@@ -61,7 +61,11 @@ When the client requests to upgrade a known room to a known version, the server:
    * ``m.room.join_rules``
    * ``m.room.power_levels``
 
-   Membership events should not be transferred to the new room.
+   Membership events should not be transferred to the new room due to technical limitations
+   of servers not being able to impersonate people from other homeservers. Additionally,
+   servers should not transfer state events which are sensitive to who sent them, such as
+   events outside of the Matrix namespace where clients may rely on the sender to match
+   certain criteria.
 
 4. Moves any local aliases to the new room.
 5. Sends a ``m.room.tombstone`` event to the old room to indicate that it is not intended
