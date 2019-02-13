@@ -69,6 +69,8 @@ use cases.
 
 ### API description
 
+#### Uploading signing keys
+
 Public keys for the self-signing and user-signing keys are uploaded to the
 servers using `/keys/device_signing/upload`.  This endpoint requires [UI
 Auth](https://matrix.org/docs/spec/client_server/r0.4.0.html#user-interactive-authentication-api).
@@ -99,6 +101,18 @@ Auth](https://matrix.org/docs/spec/client_server/r0.4.0.html#user-interactive-au
 }
 ```
 
+Self-signing and user-signing keys are JSON objects with the following
+properties:
+
+* `user_id` (string): The user who owns the key
+* `usage` ([string]): Allowed uses for the key.  Must be `["self_signing"]` for
+  self-signing keys, and `["user_signing"]` for user-signing keys.
+* `keys` ({string: string}): an object that must have one entry, whose name is
+  "`ed25519:`" followed by the unpadded base64 encoding of the public key, and
+  whose value is the unpadded base64 encoding of the public key.
+* `signatures` ({string: {stringg: string}}): signatures of the key.  A
+  user-signing key must be signed by the self-signing key.
+
 In order to ensure that there will be no collisions in the `signatures`
 property, the server must respond with an error (FIXME: what error?) if any of
 the uploaded public keys match an existing device ID for the user.  Similarly,
@@ -112,8 +126,6 @@ If a previous self-signing key exists, then the new self-signing key must have
 a `replaces` property whose value is the previous public self-signing key.
 Otherwise the server must respond with an error (FIXME: what error?).  The new
 self-signing key may also be signed with the old self-signing key.
-
-FIXME: document `usage` property
 
 After uploading self-signing and user-signing keys, they will be included under
 the `/keys/query` endpoint under the `self_signing_key` and `user_signing_key`
@@ -153,9 +165,21 @@ response:
 }
 ```
 
+Similarly, the federation endpoints `GET /user/keys/query` and
+`POST /user/devices/{userId}` will include the self-signing key.
+
+In addition, Alice's homeserver will send a `m.signing_key_update` EDU to
+servers that have users who share encrypted rooms with Alice.  The `content` of
+that EDU has the following properties:
+
+* `user_id` (string): Required. The user ID who owns the signing key
+* `self_signing_key` (object): Required. The self-signing key, as above.
+
 After uploading self-signing and user-signing keys, the user will show up in
 the `changed` property of the `device_lists` field of the sync result of any
 others users who share an encrypted room with that user.
+
+#### Uploading signatures
 
 Signatures of keys can be uploaded using `/keys/signatures/upload`.
 
@@ -258,6 +282,13 @@ response:
 }
 ```
 
+Similarly, the federation endpoints `GET /user/keys/query` and
+`POST /user/devices/{userId}` will include the new signature.
+
+In addition, Alice's server will send an `m.device_list_update` EDU to servers
+that have users who share encrypted rooms with Alice, updating her device to
+include her new signature.
+
 After Alice uploads a signature for Bob's user-signing key, her signature will
 be included in the results of the `/keys/query` request when Alice requests
 Bob's key:
@@ -288,8 +319,6 @@ Bob's key:
   }
 }
 ```
-
-FIXME: s2s stuff
 
 ## Comparison with MSC1680
 
