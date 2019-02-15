@@ -1,0 +1,59 @@
+---
+allOf:
+  - $ref: core-event-schema/state_event.yaml
+description: Describes all push rules for this user.
+properties:
+  content:
+    properties:
+      global:
+        type: object
+        title: Ruleset
+        description: The global ruleset
+        properties:
+          content:
+            items:
+              allOf:
+                - $ref: core-event-schema/push_rule.yaml
+              title: PushRule
+              type: object
+            type: array
+          override:
+            items:
+              allOf:
+                - $ref: core-event-schema/push_rule.yaml
+              title: PushRule
+              type: object
+            type: array
+          room:
+            items:
+              allOf:
+                - $ref: core-event-schema/push_rule.yaml
+              title: PushRule
+              type: object
+            type: array
+          sender:
+            items:
+              allOf:
+                - $ref: core-event-schema/push_rule.yaml
+              title: PushRule
+              type: object
+            type: array
+          underride:
+            items:
+              allOf:
+                - $ref: core-event-schema/push_rule.yaml
+              title: PushRule
+              type: object
+            type: array
+    type: object
+  state_key:
+    description: A zero-length string.
+    pattern: '^$'
+    type: string
+  type:
+    enum:
+      - m.push_rules
+    type: string
+title: Push rules
+type: object
+
