@@ -1,6 +1,6 @@
 ---
 allOf:
-  - $ref: core-event-schema/state_event.yaml
+  - $ref: core-event-schema/event.yaml
 description: Describes all push rules for this user.
 properties:
   content:
@@ -46,10 +46,6 @@ properties:
               type: object
             type: array
     type: object
-  state_key:
-    description: A zero-length string.
-    pattern: '^$'
-    type: string
   type:
     enum:
       - m.push_rules

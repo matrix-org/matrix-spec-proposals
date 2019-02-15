@@ -1,5 +1,5 @@
 {
-  "$ref": "core/state_event.json",
+  "$ref": "core/event.json",
   "type": "m.push_rules",
   "content": {
     "global": {
