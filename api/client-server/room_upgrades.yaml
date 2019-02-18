@@ -31,9 +31,7 @@ paths:
     post:
       summary: Upgrades a room to a new room version.
       description: |-
-        Upgrades the given room to a particular room version, migrating as much
-        data as possible over to the new room. See the `room_upgrades <#room-upgrades>`_
-        module for more information on what this entails.
+        Upgrades the given room to a particular room version.
       operationId: upgradeRoom
       security:
         - accessToken: []
