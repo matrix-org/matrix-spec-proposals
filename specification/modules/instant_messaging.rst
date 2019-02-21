@@ -185,25 +185,14 @@ reduced through clients making use of the transaction ID they used to send
 a particular event. The transaction ID used will be included in the event's
 ``unsigned`` data as ``transaction_id`` when it arrives through the event stream.
 
-Clients unable to make use of the transaction ID are more likely to experience
-flickering due to the following two scenarios, however the effect can be mitigated
-to a degree:
-
-- The client sends a message and the remote echo arrives on the event stream
-  *after* the request to send the message completes.
-- The client sends a message and the remote echo arrives on the event stream
-  *before* the request to send the message completes.
-
-In the first scenario, the client will receive an event ID when the request to
-send the message completes. This ID can be used to identify the duplicate event
-when it arrives on the event stream. However, in the second scenario, the event
-arrives before the client has obtained an event ID. This makes it impossible to
-identify it as a duplicate event. This results in the client displaying the
-message twice for a fraction of a second before the the original request to send
-the message completes. Once it completes, the client can take remedial actions
-to remove the duplicate event by looking for duplicate event IDs. A future version
-of the client-server API will resolve this by attaching the transaction ID of the
-sending request to the event itself.
+Clients unable to make use of the transaction ID are likely to experience
+flickering when the remote echo arrives on the event stream *before*
+the request to send the message completes. In that case the event
+arrives before the client has obtained an event ID, making it impossible to
+identify it as a remote echo. This results in the client displaying the message
+twice for some time (depending on the server responsiveness) before the original
+request to send the message completes. Once it completes, the client can take
+remedial actions to remove the duplicate event by looking for duplicate event IDs.
 
 
 Calculating the display name for a user
