@@ -34,7 +34,7 @@ following grammar::
 
     server_name = hostname [ ":" port ]
 
-    port        = *DIGIT
+    port        = 1*5DIGIT
 
     hostname    = IPv4address / "[" IPv6address "]" / dns-name
 
