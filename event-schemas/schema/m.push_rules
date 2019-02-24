@@ -9,42 +9,8 @@ properties:
         type: object
         title: Ruleset
         description: The global ruleset
-        properties:
-          content:
-            items:
-              allOf:
-                - $ref: core-event-schema/push_rule.yaml
-              title: PushRule
-              type: object
-            type: array
-          override:
-            items:
-              allOf:
-                - $ref: core-event-schema/push_rule.yaml
-              title: PushRule
-              type: object
-            type: array
-          room:
-            items:
-              allOf:
-                - $ref: core-event-schema/push_rule.yaml
-              title: PushRule
-              type: object
-            type: array
-          sender:
-            items:
-              allOf:
-                - $ref: core-event-schema/push_rule.yaml
-              title: PushRule
-              type: object
-            type: array
-          underride:
-            items:
-              allOf:
-                - $ref: core-event-schema/push_rule.yaml
-              title: PushRule
-              type: object
-            type: array
+        allOf:
+          - $ref: ../../api/client-server/definitions/push_ruleset.yaml
     type: object
   type:
     enum:
