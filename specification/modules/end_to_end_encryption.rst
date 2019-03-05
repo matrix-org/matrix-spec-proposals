@@ -463,7 +463,7 @@ passphrase, and is created as follows:
 1. Encode the sessions a JSON object, formatted as described in `Key export
    format`_.
 2. Generate a 512-bit key from the user-entered passphrase by computing
-   `PBKDF2`_\(HMAC-SHA-512, passphrase, S, N, 512), where S is a 128-bit
+   `PBKDF2`_ (HMAC-SHA-512, passphrase, S, N, 512), where S is a 128-bit
    cryptographically-random salt and N is the number of rounds.  N should be at
    least 100,000.  The keys K and K' are set to the first and last 256 bits of
    this generated key, respectively.  K is used as an AES-256 key, and K' is
