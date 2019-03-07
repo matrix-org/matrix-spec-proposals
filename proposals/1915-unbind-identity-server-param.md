@@ -57,8 +57,11 @@ should assume that the identity server doesn't support the `/unbind` API, unless
 it returns a specific matrix error response (i.e. the body is a JSON object with
 `error` and `errcode` fields).
 
-The identity server should accept any request to unbind a 3PID for a `user_id` from
-the homeserver controlling that user ID.
+The identity server should authenticate the request in one of two ways:
+
+1. The request is signed by the homeserver which controls the `user_id`.
+2. The request includes the `sid` and `client_server` params (as per `/bind`),
+   which proves ownership of the given 3PID.
 
 Example:
 
