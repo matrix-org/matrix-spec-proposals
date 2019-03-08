@@ -60,7 +60,7 @@ it returns a specific matrix error response (i.e. the body is a JSON object with
 The identity server should authenticate the request in one of two ways:
 
 1. The request is signed by the homeserver which controls the `user_id`.
-2. The request includes the `sid` and `client_server` params (as per `/bind`),
+2. The request includes the `sid` and `client_secret` params (as per `/bind`),
    which proves ownership of the given 3PID.
 
 Example:
