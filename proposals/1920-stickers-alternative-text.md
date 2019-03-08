@@ -1,6 +1,6 @@
 # Alternative texts for stickers
 
-The current `m.sticker` event definition include a description field for the
+The current `m.sticker` event definition includes `body` as a description field for the
 sticker. This allows clients to attach a short description of the sticker in an
 event. So far this field has mainly been used to give a literal description of
 what is being shown on the image (in the same way an alternative text would do),
