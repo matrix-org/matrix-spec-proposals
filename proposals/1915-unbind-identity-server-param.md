@@ -13,16 +13,16 @@ This is meant as a simple extension to the current APIs, and so this explicitly
 does not try and solve any existing usability concerns.
 
 
-## New APIs
+## API Changes
 
-### Client-Server API
+### Client-Server 3PID Delete API
 
-Add `POST /_matrix/client/r0/account/3pid/delete` API, which expects a JSON body
-with `medium`, `address` and `id_server` fields (as per existing APIs).
+Add an `id_server` param to `POST /_matrix/client/r0/account/3pid/delete` API,
+which matches the 3PID creation APIs.
 
-The `id_server` parameter is optional and if missing the server will attempt to
-unbind from a suitable identity server (e.g. its default identity server or the
-server used when originally binding the 3pid).
+The new `id_server` parameter is optional and if missing the server will attempt
+to unbind from a suitable identity server (e.g. its default identity server or
+the server used when originally binding the 3pid).
 
 The 200 response is a JSON object with an `id_server_unbind_result` field whose
 value is either `success` or `no-support`, where the latter indicates that the
@@ -45,8 +45,14 @@ HTTP/1.1 200 OK
 }
 ```
 
+### Client-Server Deactivate account API
 
-### Identity Server API
+Add an `id_server` param to `POST /_matrix/client/r0/account/deactivate` API,
+with the same semantics as above. This is used to unbind any bound threepids
+from the given identity server.
+
+
+### Identity Server 3PID Unbind API
 
 Add `POST /_matrix/identity/api/v1/unbind` with `mxid` and `threepid` fields.
 The `mxid` is the user's `user_id` and `threepid` is a dict with the usual
