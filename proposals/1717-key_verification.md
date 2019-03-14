@@ -28,7 +28,10 @@ appropriate `m.key.verification.cancel` message is received.  If Bob chooses to
 reject the key verification request, Bob's client should send a
 `m.key.verification.cancel` message to Alice's device.  If Bob's client does
 not understand any of the methods offered, it should display a message to Bob
-saying so.
+saying so.  However, it should not send a `m.key.verification.cancel` message
+to Alice's device unless Bob chooses to reject the verification request, as Bob
+may have another device that is capable of verifying using one of the given
+methods.
 
 To initiate a key verification process, Bob's device sends a `to_device` event
 to one of Alice's devices with the `type` set to `m.key.verification.start`.
