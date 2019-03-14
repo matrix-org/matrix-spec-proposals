@@ -2,8 +2,10 @@
 
 Key verification is an essential part of ensuring that end-to-end encrypted
 messages are secure.  Matrix may support multiple verification methods that
-require sending events; in fact, two such methods (such as MSC1267 and MSC1543)
-have already been proposed.
+require sending events; in fact, two such methods (such as [MSC
+1267](https://github.com/matrix-org/matrix-doc/issues/1267) and [MSC
+1543](https://github.com/matrix-org/matrix-doc/issues/1543)) have already been
+proposed.
 
 This proposal tries to present a common framework for verification methods to
 use, and presents a way to request key verification.
