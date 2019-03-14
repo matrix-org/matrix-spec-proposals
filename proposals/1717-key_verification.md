@@ -132,9 +132,17 @@ convention.
 
 ## Tradeoffs
 
-## Potential issues
+Rather than broadcasting verification requests to Bob's devices, Alice could
+simply send an `m.key.verification.start` request to a single device.  However,
+this would require Alice to choose the right device to send to, which may be
+hard for Alice to do if, for example, Bob has many devices, or if his devices
+have similar names.
 
 ## Security considerations
+
+An attacker could try to spam a user with verification requests.  Clients
+should take care that such requests do not interfere with a user's use of the
+client.
 
 ## Conclusion
 
