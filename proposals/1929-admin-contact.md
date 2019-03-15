@@ -39,7 +39,7 @@ for sensitive requests.
 `admins` is optional, but recommended.
 
 `support_page` is a optional property to specify a affiliated page of the homserver to give users help
-specific to their installation.
+specific to the homeserver, like extra login/registration steps.
 
 ## Alternative solutions
 
