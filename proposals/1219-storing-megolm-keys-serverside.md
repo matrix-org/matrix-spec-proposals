@@ -4,7 +4,7 @@ Storing megolm keys serverside
 Background
 ----------
 
-A user who uses end-to-end encyrption will usually have many inbound group session
+A user who uses end-to-end encryption will usually have many inbound group session
 keys.  Users who log into new devices and want to read old messages will need a
 convenient way to transfer the session keys from one device to another.  While
 users can currently export their keys from one device and import them to
