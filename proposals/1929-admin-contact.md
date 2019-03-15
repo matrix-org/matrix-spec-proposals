@@ -28,7 +28,7 @@ The response format should be:
 ```
 
 The `mxid` and `email` do NOT need to have the same domain as the homeserver. It is expected that
-a server will have a "backup" contact address if the server is down, like an email.
+an admin will have a "backup" contact address if the server is down, like an email or alternative mxid on a different homeserver.
 
 Entries may have a `mxid` OR an `email`, but at least one MUST be specified.
 
