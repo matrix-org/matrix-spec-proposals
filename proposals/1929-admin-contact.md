@@ -36,7 +36,7 @@ Entries may have a `mxid` OR an `email`, but at least one MUST be specified.
 proposal are "admin" and "security." Admins are a catchall user for any queries, where security is intended
 for sensitive requests.
 
-`admins` is optional, but reccomended.
+`admins` is optional, but recommended.
 
 `support_page` is a optional property to specify a affiliated page of the homserver to give users help
 specific to their installation.
