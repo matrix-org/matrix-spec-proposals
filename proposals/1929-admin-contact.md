@@ -10,7 +10,7 @@ This proposal aims to fix https://github.com/matrix-org/matrix-doc/issues/484
 
 The proposal suggests adding a new endpoint: `.well-known/matrix/support`.
 
-The file would contain:
+The response format should be:
 
 ```javascript
 {
@@ -35,6 +35,8 @@ Entries may have a `mxid` OR an `email`, but at least one MUST be specified.
 `role` is an informal description of what the address(es) are used for. The only two specified in this
 proposal are "admin" and "security." Admins are a catchall user for any queries, where security is intended
 for sensitive requests.
+
+`admins` is optional, but reccomended.
 
 `support_page` is a optional property to specify a affiliated page of the homserver to give users help
 specific to their installation.
