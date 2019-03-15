@@ -162,7 +162,7 @@ On success, returns a JSON object with keys:
 
 ##### `GET /room_keys/version/{version}`
 
-Get information about the given version, or the current version if `{version}`
+Get information about the given version, or the current version if `/{version}`
 is omitted.
 
 On success, returns a JSON object with keys:
@@ -448,7 +448,7 @@ On success, returns the empty JSON object.
 
 The `auth_data` property for the backup versions endpoints for
 `m.megolm_backup.v1.curve25519-aes-sha2` is a signedjson object with the
-followin keys:
+following keys:
 
 - `public_key` (string): the curve25519 public key used to encrypt the backups
 - `signatures` (object): signatures of the public key
