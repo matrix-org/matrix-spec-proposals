@@ -15,7 +15,7 @@ The response format should be:
 ```javascript
 {
     admins: [{
-        mxid: "@admin:domain.tld",
+        matrix_id: "@admin:domain.tld",
         email: "admin@domain.tld",
         role: "admin" # If omitted, the default will be "admin"
     },
@@ -27,10 +27,10 @@ The response format should be:
 }
 ```
 
-The `mxid` and `email` do NOT need to have the same domain as the homeserver. It is expected that
+The `matrix_id` and `email` do NOT need to have the same domain as the homeserver. It is expected that
 an admin will have a "backup" contact address if the server is down, like an email or alternative mxid on a different homeserver.
 
-Entries may have a `mxid` OR an `email`, but at least one MUST be specified.
+Entries may have a `matrix_id` OR an `email`, but at least one MUST be specified.
 
 `role` is an informal description of what the address(es) are used for. The only two specified in this
 proposal are "admin" and "security." Admins are a catchall user for any queries, where security is intended
