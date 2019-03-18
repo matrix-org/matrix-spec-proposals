@@ -21,12 +21,13 @@ Add an `id_server` param to `POST /_matrix/client/r0/account/3pid/delete` API,
 which matches the 3PID creation APIs.
 
 The new `id_server` parameter is optional and if missing the server will attempt
-to unbind from a suitable identity server (e.g. its default identity server or
-the server used when originally binding the 3pid).
+to unbind from the identity server used when originally binding the 3pid (if
+known by the homeserver).
 
 The 200 response is a JSON object with an `id_server_unbind_result` field whose
 value is either `success` or `no-support`, where the latter indicates that the
-identity server (IS) does not support unbinding 3PIDs directly.
+identity server (IS) does not support unbinding 3PIDs directly. If the identity
+server returns an error than that should be returned to the client.
 
 Example:
 
