@@ -292,7 +292,7 @@ v         string           **Required.** Version of the encrypted attachments
 Parameter Type      Description
 ========= ========= ============================================================
 kty       string    **Required.** Key type. Must be ``oct``.
-key_ops  [string]   **Required.** Key operations. Must at least contain
+key_ops   [string]  **Required.** Key operations. Must at least contain
                     ``encrypt`` and ``decrypt``.
 alg       string    **Required.** Algorithm. Must be ``A256CTR``.
 k         string    **Required.** The key, encoded as urlsafe unpadded base64.
