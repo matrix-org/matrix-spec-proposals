@@ -331,9 +331,9 @@ Examples of matrix.to URIs are:
 * Room alias: ``https://matrix.to/#/%23somewhere%3Aexample.org``
 * Room: ``https://matrix.to/#/!somewhere%3Aexample.org``
 * Permalink by room: ``https://matrix.to/#/!somewhere%3Aexample.org/%24event%3Aexample.org``
-* Permalink by room alias: ``https://matrix.to/#/#somewhere:example.org/$event:example.org``
-* User: ``https://matrix.to/#/@alice:example.org``
-* Group: ``https://matrix.to/#/+example:example.org``
+* Permalink by room alias: ``https://matrix.to/#/#somewhere:example.org/%24event%3Aexample.org``
+* User: ``https://matrix.to/#/%40alice%3Aexample.org``
+* Group: ``https://matrix.to/#/%2Bexample%3Aexample.org``
 
 .. Note::
    Historically, clients have not produced URIs which are fully encoded. Clients should
