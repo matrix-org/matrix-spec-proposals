@@ -323,18 +323,27 @@ and instead should perform some sort of action within the client. For example, i
 the user were to click on a matrix.to URI for a room alias, the client may open
 a view for the user to participate in the room.
 
+The components of the matrix.to URI (``<identifier>`` and ``<extra parameter>``)
+are to be percent-encoded as per RFC 3986.
+
 Examples of matrix.to URIs are:
 
-* Room alias: ``https://matrix.to/#/#somewhere:example.org``
-* Room: ``https://matrix.to/#/!somewhere:example.org``
-* Permalink by room: ``https://matrix.to/#/!somewhere:example.org/$event:example.org``
+* Room alias: ``https://matrix.to/#/%23somewhere%3Aexample.org``
+* Room: ``https://matrix.to/#/!somewhere%3Aexample.org``
+* Permalink by room: ``https://matrix.to/#/!somewhere%3Aexample.org/%24event%3Aexample.org``
 * Permalink by room alias: ``https://matrix.to/#/#somewhere:example.org/$event:example.org``
 * User: ``https://matrix.to/#/@alice:example.org``
 * Group: ``https://matrix.to/#/+example:example.org``
 
 .. Note::
-   Event IDs have the potential to contain slashes in some `room versions <index.html#room-versions>`_.
-   No component of the URI should be URL encoded.
+   Historically, clients have not produced URIs which are fully encoded. Clients should
+   try to interpret these cases to the best of their ability. For example, an unencoded
+   room alias should still work within the client if possible.
+
+.. Note::
+   Clients should be aware that decoding a matrix.to URI may result in extra slashes
+   appearing due to some `room versions <index.html#room-versions>`_. These slashes
+   should normally be encoded when producing matrix.to URIs, however.
 
 .. Note::
    Room ID permalinks are unroutable as there is no reliable domain to send requests
