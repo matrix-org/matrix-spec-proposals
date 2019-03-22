@@ -39,12 +39,15 @@ When `send_enabled` is `false`, homeservers should respond to requests to
 When `receive_enabled`  is `false`, homeservers should respond to requests to 
 `GET /_matrix/client/r0/presence/{userId}/status` with `M_FORBIDDEN`.
 
-The `/sync` format does not change based on whether this is enabled. `presence.events` SHOULD be empty when `receive_enabled` is `false`. `set_presence` is ignored and no presence information is changed. Clients should ensure that they have checked the capailities API before assuming that the flag will work.
+The `/sync` format does not change based on whether this is enabled. `presence.events` SHOULD be empty when
+`receive_enabled` is `false`. `set_presence` is ignored and no presence information is changed. Clients should
+ensure that they have checked the capailities API before assuming that the flag will work.
 
 ## Tradeoffs
 
-This proposal makes no attempt to address disabled presence over S2S, so remote homeservers can still send EDUs containing
-presence to a presence-disabled server and the expectation is that the transactions are accepted, but not processed.
+This proposal makes no attempt to address disabled presence over S2S, so remote homeservers can still send EDUs
+containing presence to a presence-disabled server and the expectation is that the transactions are accepted,
+but not processed.
 
 ## Potential issues
 
