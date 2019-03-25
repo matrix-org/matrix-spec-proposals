@@ -496,17 +496,8 @@ passphrase, and is created as follows:
 Key export format
 <<<<<<<<<<<<<<<<<
 
-The exported sessions are formatted as a JSON object of type ``ExportData``
+The exported sessions are formatted as a JSON array of ``SessionData`` objects
 described as follows:
-
-``ExportData``
-
-=============== ================= ==============================================
-Parameter       Type              Description
-=============== ================= ==============================================
-sessions        ``[SessionData]`` Required. The sessions that are being
-                                  exported.
-=============== ================= ==============================================
 
 ``SessionData``
 
@@ -529,7 +520,7 @@ sessions        ``[SessionData]`` Required. The sessions that are being
                                                device which initiated the session
                                                originally.
    sender_claimed_keys             {string:    Required. The Ed25519 key of the
-                                   integer}    device which initiated the session
+                                   string}     device which initiated the session
                                                originally.
    session_id                      string      Required. The ID of the session.
    session_key                     string      Required. The key for the session.
