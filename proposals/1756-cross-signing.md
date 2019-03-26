@@ -168,6 +168,58 @@ response:
 Similarly, the federation endpoints `GET /user/keys/query` and
 `POST /user/devices/{userId}` will include the self-signing key.
 
+`POST /keys/query`
+
+``` json
+{
+   "device_keys": {
+      "@alice:example.com": []
+   }
+}
+```
+
+response:
+
+``` json
+{
+  "device_keys": {
+    "@alice:example.com": {
+      // ...
+    }
+  },
+  "self_signing_keys": {
+    "@alice:example.com": {
+      "user_id": "@alice:example.com",
+      "usage": ["self_signing"],
+      "keys": {
+        "ed25519:base64+self+signing+public+key": "base64+self+signing+public+key"
+      }
+    }
+  }
+}
+```
+
+`GET /user/devices/%40alice%3Aexample.com`
+
+response:
+
+``` json
+{
+  "user_id": "@alice:example.com",
+  "stream_id": 5,
+  "devices": [
+     // ...
+  ],
+  "self_signing_keys": {
+    "user_id": "@alice:example.com",
+    "usage": ["self_signing"],
+    "keys": {
+      "ed25519:base64+self+signing+public+key": "base64+self+signing+public+key"
+    }
+  }
+}
+```
+
 In addition, Alice's homeserver will send a `m.signing_key_update` EDU to
 servers that have users who share encrypted rooms with Alice.  The `content` of
 that EDU has the following properties:
