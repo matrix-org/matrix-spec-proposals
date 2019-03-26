@@ -19,26 +19,40 @@ Java package naming convention.
 
 If Alice wants to verify keys with Bob, Alice's device may send `to_device`
 events to Bob's devices with the `type` set to `m.key.verification.request`, as
-described below.  The event lists the verification methods that Alice's device
-supports. Upon receipt of this message, Bob's client should prompt him to
-verify keys with Alice using one of the applicable methods.  In order to avoid
-displaying stale key verification prompts, if Bob does not interact with the
-prompt, it should be automatically hidden 10 minutes after the message is sent
-(according to the `timestamp` field), or 2 minutes after the client receives
-the message, whichever comes first.  The prompt should also be hidden if an
-appropriate `m.key.verification.cancel` message is received.  If Bob chooses to
-reject the key verification request, Bob's client should send a
-`m.key.verification.cancel` message to Alice's device.  If Bob's client does
-not understand any of the methods offered, it should display a message to Bob
-saying so.  However, it should not send a `m.key.verification.cancel` message
-to Alice's device unless Bob chooses to reject the verification request, as Bob
-may have another device that is capable of verifying using one of the given
-methods.
+described below.  The `m.key.verification.request` messages should all have the
+same `transaction_id`, and are considered to be a single request.  Thus, for
+example, if Bob rejects the request on one device, then the entire request
+should be considered as rejected across all of his devices.  Similarly, if Bob
+accepts the request on one device, that device is now in charge of completing
+the key verification, and Bob's other devices no longer need to be involved.
+
+The `m.key.verification.request` event lists the verification methods that
+Alice's device supports, and upon receipt of this message, Bob's client should
+prompt him to verify keys with Alice using one of the applicable methods.  In
+order to avoid displaying stale key verification prompts, if Bob does not
+interact with the prompt, it should be automatically hidden 10 minutes after
+the message is sent (according to the `timestamp` field), or 2 minutes after
+the client receives the message, whichever comes first.  The prompt should also
+be hidden if an appropriate `m.key.verification.cancel` message is received.
+
+If Bob chooses to reject the key verification request, Bob's client should send
+a `m.key.verification.cancel` message to Alice's device.  This indicates to
+Alice that Bob does not wish to verify keys with her.  In this case, Alice's
+device should send an `m.key.verification.cancel` message to all of Bob's
+devices to notify them that the request has been rejected.
+
+If one of Bob's clients does not understand any of the methods offered, it
+should display a message to Bob saying so.  However, it should not send a
+`m.key.verification.cancel` message to Alice's device unless Bob chooses to
+reject the verification request, as Bob may have another device that is capable
+of verifying using one of the given methods.
 
 To initiate a key verification process, Bob's device sends a `to_device` event
 to one of Alice's devices with the `type` set to `m.key.verification.start`.
 This may either be done in response to an `m.key.verification.request` message,
-or can be done independently.  If Alice's device receives an
+or can be done independently.  If it is done in response to an
+`m.key.verification.request` messsage, it should use the same `transaction_id`
+as the `m.key.verification.request` message.  If Alice's device receives an
 `m.key.verification.start` message in response to an
 `m.key.verification.request` message, it should send an
 `m.key.verification.cancel` message to Bob's other devices that it had
