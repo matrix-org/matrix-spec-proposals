@@ -34,7 +34,11 @@ An omission of `m.presence` would default both sending and receiving to true. An
 would also default that flag to true.
 
 When `send_enabled` is `false`, homeservers should respond to requests to 
-`PUT /_matrix/client/r0/presence/{userId}/status` with `M_FORBIDDEN`.
+`PUT /_matrix/client/r0/presence/{userId}/status` with a status of `200`, but with a body of `{"send_enabled": false}`
+This is to ensure that this spec is backwards compatible with existing clients who may explode on a non-200 response, 
+but will still report if it actually sent the presence. It's unfortunate that this isn't symmetrical with the `GET`
+request below.
+
 
 When `receive_enabled`  is `false`, homeservers should respond to requests to 
 `GET /_matrix/client/r0/presence/{userId}/status` with `M_FORBIDDEN`.
