@@ -19,7 +19,7 @@ Identifier Grammar
 Some identifiers are specific to given room versions, please refer to the
 `room versions specification`_ for more information.
 
-.. _`room versions specification`: ../index.html#room-versions
+.. _`room versions specification`: index.html#room-versions
 
 
 Server Name
@@ -234,18 +234,17 @@ A room has exactly one room ID. A room ID has the format::
 
   !opaque_id:domain
 
-An event has exactly one event ID. An event ID has the format::
+An event has exactly one event ID. The format of an event ID depends upon the
+`room version specification <index.html#room-versions>`_.
 
-  $opaque_id:domain
-
-The ``domain`` of a room/event ID is the `server name`_ of the homeserver which
+The ``domain`` of a room ID is the `server name`_ of the homeserver which
 created the room/event. The domain is used only for namespacing to avoid the
 risk of clashes of identifiers between different homeservers. There is no
 implication that the room or event in question is still available at the
 corresponding homeserver.
 
 Event IDs and Room IDs are case-sensitive. They are not meant to be human
-readable.
+readable. They are intended to be treated as fully opaque strings by clients.
 
 .. TODO-spec
   What is the grammar for the opaque part? https://matrix.org/jira/browse/SPEC-389
@@ -324,14 +323,27 @@ and instead should perform some sort of action within the client. For example, i
 the user were to click on a matrix.to URI for a room alias, the client may open
 a view for the user to participate in the room.
 
+The components of the matrix.to URI (``<identifier>`` and ``<extra parameter>``)
+are to be percent-encoded as per RFC 3986.
+
 Examples of matrix.to URIs are:
 
-* Room alias: ``https://matrix.to/#/#somewhere:example.org``
-* Room: ``https://matrix.to/#/!somewhere:example.org``
-* Permalink by room: ``https://matrix.to/#/!somewhere:example.org/$event:example.org``
-* Permalink by room alias: ``https://matrix.to/#/#somewhere:example.org/$event:example.org``
-* User: ``https://matrix.to/#/@alice:example.org``
-* Group: ``https://matrix.to/#/+example:example.org``
+* Room alias: ``https://matrix.to/#/%23somewhere%3Aexample.org``
+* Room: ``https://matrix.to/#/!somewhere%3Aexample.org``
+* Permalink by room: ``https://matrix.to/#/!somewhere%3Aexample.org/%24event%3Aexample.org``
+* Permalink by room alias: ``https://matrix.to/#/#somewhere:example.org/%24event%3Aexample.org``
+* User: ``https://matrix.to/#/%40alice%3Aexample.org``
+* Group: ``https://matrix.to/#/%2Bexample%3Aexample.org``
+
+.. Note::
+   Historically, clients have not produced URIs which are fully encoded. Clients should
+   try to interpret these cases to the best of their ability. For example, an unencoded
+   room alias should still work within the client if possible.
+
+.. Note::
+   Clients should be aware that decoding a matrix.to URI may result in extra slashes
+   appearing due to some `room versions <index.html#room-versions>`_. These slashes
+   should normally be encoded when producing matrix.to URIs, however.
 
 .. Note::
    Room ID permalinks are unroutable as there is no reliable domain to send requests
