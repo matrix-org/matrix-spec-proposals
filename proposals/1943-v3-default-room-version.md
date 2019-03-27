@@ -3,18 +3,24 @@
 Homeservers support multiple room versions, though one version is the default.
 All new rooms created by a server are of the default version.
 
-Room v3 contains support for the new state resolution algorithm and support
+Room v3 uses the new state resolution algorithm and support
 for event ids as hashes. Thereby closing a raft of security issues.
 
-This MSC proposes changing the default from v1 to v3.
+Room v3 uses the new state resolution algorithm, and replaces event IDs with
+hashes, thereby closing a raft of security issues.
+
+This MSC proposes changing the recommended default from v1 to v3.
 
 
 ## Proposal
 
 The default room should be updated to be room v3 from v1.
 
-Until we have greater confidence in the room upgrade UX v1 and v2 will continue
+Until we have greater confidence in the room upgrade UX v1 will continue
 to be marked as 'stable'.
+
+By contrast, very few rooms will be of version v2, and this version can be
+safely marked as 'unstable'.
 
 This means that new rooms will be created as v3 rooms, but existing rooms will
 not be prompted to upgrade. Separately we intend to deprecate v1 (and v2), but
@@ -22,15 +28,13 @@ doing will come as part of a separate MSC
 
 ## Tradeoffs
 
-Room v4 will arrive very soon and ideally it will become the default room
-version promptly. However in order for a room version to be the default there
+It is likely that the imminent Matrix 1.0 release will require a new room
+version. However, before this version can become the default there
 must be sufficient take up in the federation so as to avoid locking out old
 servers.
 
-That said v3 and v4 are very similar, the significant change being
-[server key validity period](https://github.com/matrix-org/synapse/issues/4364)
-and there is obvious value to the community to adopt v3 even in the
-knowledge that v4 will surpass it shortly.
+Therefore it is worth realising the value of v3 rooms immediately rather than
+waiting for the new room version to arrive and proliferate.
 
 ## Potential issues
 
