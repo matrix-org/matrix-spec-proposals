@@ -17,7 +17,7 @@ Until we have greater confidence in the room upgrade UX v1 and v2 will continue
 to be marked as 'stable'.
 
 This means that new rooms will be created as v3 rooms, but existing rooms will
-not be prompted to upgrade. Separately we intend to deprecate v1 (and v2), but
+not prompt admins to upgrade. Separately we intend to deprecate v1 (and v2), but
 doing so will come as part of a separate MSC.
 
 ## Tradeoffs
