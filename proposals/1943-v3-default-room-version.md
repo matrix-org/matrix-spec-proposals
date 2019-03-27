@@ -43,7 +43,7 @@ May 2018) ~2/3 servers support v3, and practically speaking ~90% of users are
 on v3 compatible servers.
 
 It does not seem unreasonable to expect Synapse admins to update to > 0.99.0
-server as a means to mitigate any difficulties caused by not support rooms v3.
+server as a means to mitigate any difficulties caused by not supporting v3 rooms.
 
 
 ## Security considerations
