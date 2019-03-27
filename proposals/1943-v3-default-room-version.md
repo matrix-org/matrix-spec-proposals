@@ -35,7 +35,7 @@ knowledge that v4 will surpass it shortly.
 ## Potential issues
 
 If new rooms are to be v3 some old servers will not be able to participate
-since they will not support v3. For context v3 was introduced in Synapse 0.99.0
+since they will not support v3. For context, v3 was introduced in Synapse 0.99.0
 on 5th Feb 2019.
 
 Ignoring a long tail of of pre 0.30.0 servers (0.30.0 was released in
