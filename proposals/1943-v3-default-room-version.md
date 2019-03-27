@@ -18,7 +18,7 @@ to be marked as 'stable'.
 
 This means that new rooms will be created as v3 rooms, but existing rooms will
 not be prompted to upgrade. Separately we intend to deprecate v1 (and v2), but
-doing will come as part of a separate MSC
+doing so will come as part of a separate MSC.
 
 ## Tradeoffs
 
