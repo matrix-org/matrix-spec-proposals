@@ -17,7 +17,7 @@ Until we have greater confidence in the room upgrade UX v1 will continue
 to be marked as 'stable'.
 
 By contrast, very few rooms will be of version v2, and this version can be
-safely marked as 'unstable'.
+safely marked as 'unstable' to denote that it is deprecated.
 
 This means that new rooms will be created as v3 rooms, but existing rooms will
 not prompt admins to upgrade. Separately we intend to deprecate v1, but
