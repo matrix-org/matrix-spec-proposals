@@ -3,9 +3,6 @@
 Homeservers support multiple room versions, though one version is the default.
 All new rooms created by a server are of the default version.
 
-Room v3 uses the new state resolution algorithm and support
-for event ids as hashes. Thereby closing a raft of security issues.
-
 Room v3 uses the new state resolution algorithm, and replaces event IDs with
 hashes, thereby closing a raft of security issues.
 
@@ -23,7 +20,7 @@ By contrast, very few rooms will be of version v2, and this version can be
 safely marked as 'unstable'.
 
 This means that new rooms will be created as v3 rooms, but existing rooms will
-not prompt admins to upgrade. Separately we intend to deprecate v1 (and v2), but
+not prompt admins to upgrade. Separately we intend to deprecate v1, but
 doing so will come as part of a separate MSC.
 
 ## Tradeoffs
