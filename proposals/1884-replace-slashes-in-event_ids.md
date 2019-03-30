@@ -11,12 +11,20 @@ solution is to ensure that event IDs are URL-encoded, so that `/` is instead
 represented as `%2F`. However, this is not entirely satisfactory for a number
 of reasons:
 
+ * The act of escaping and unescaping slash characters when doing casual
+   development and ops work becomes an constant and annoying chore which
+   is entirely avoidable.  Whenever using tools like `curl` and `grep` or
+   manipulating SQL, developers will have to constantly keep in mind whether
+   they are dealing with escaped or unescaped IDs, and manually convert between
+   the two as needed. This will only get worse with further keys-as-IDs
+   landing with MSC1228.
+
  * There exist a number of client (and possibly server) implementations which
    do not currently URL-encode such parameters; these are therefore broken by
    such event IDs and must be updated. Furthermore, all future client
    implementers must remember to do the encoding correctly.
 
- * Even if client implementations do rembember to URL-encode their parameters,
+ * Even if client implementations do remember to URL-encode their parameters,
    they may not do it correctly: many URL-encoding implementations may be
    intended to encode parameters in the query-string (which can of course
    contain literal slashes) rather tha the path component.
@@ -27,12 +35,36 @@ of reasons:
    existing setups will be broken by this change, and it is a trap for new
    users of the software.
 
+ * Cosmetically, URL-escaping base64 in otherwise-constant-length IDs results
+   in variable length IDs, making it harder to visually scan lists of IDs and
+   manipulate them in columnar form when doing devops work.
+
+ * Those developing against the CS API might reasonably expect us to use
+   URL-safe identifiers in URLs where available, rather than deliberately
+   choosing non-URL-safe IDs, which could be seen as developer-unfriendly.
+
 ## Proposal
 
 This MSC proposes that we should introduce a new room version, in which event
 IDs are encoded using the [URL-safe Base64
 encoding](https://tools.ietf.org/html/rfc4648#section-5) (which uses `-` and
 `_` as the 62nd and 63rd characters instead of `+` and `/`).
+
+URL-safe Base64 encoding is then used consistently for encoding binary
+identifiers in the CS API - particularly in upcoming MSC1228 IDs for rooms and
+users, such that typical CS API developers should be able to safely assume
+that for all common cases they should use URL-safe Base64 when decoding base64
+strings.
+
+The exception would be for E2EE data (device keys and signatures etc) which
+currently use normal Base64 with no easy mechanism to migrate to a new encoding.
+Given E2EE development is rare and requires expert skills, it seems acceptable
+to expect E2EE developers to be able to use the right encoding without tripping
+up significantly.
+
+Similarly, the S2S API could continue to use standard base64-encoded hashes and
+signatures, given they are only exposed to S2S API developers who are necessarily
+expert and should be able to correctly pick the right encoding.
 
 ## Counterarguments
 
@@ -44,6 +76,14 @@ encoding](https://tools.ietf.org/html/rfc4648#section-5) (which uses `-` and
 
    Changing event IDs alone would therefore leave us with a confusing mix of
    encodings.
+
+   However, the current uses of standard Base64 encodings are not exposed to
+   common CS API developers, and so whilst this might be slightly confusing
+   for the minority of expert homeserver developers, the confusion does not
+   exist today for client developers.  Therefore it seems safe to standardise
+   on URL-safe Base64 for identifiers exposed to the client developers, who
+   form by far the majority of the Matrix ecosystem today, and expect as
+   simple an API as possible.
 
    A potential extension would be to change *all* Base64 encodings to be
    URL-safe. This would address the inconsistency. However, it feels like a
@@ -70,6 +110,16 @@ encoding](https://tools.ietf.org/html/rfc4648#section-5) (which uses `-` and
    Of course, an alternative is to modify the grammars of all of these
    identifiers to forbid slashes.
 
+   The counter-counterargument to this is that it is of course best practice
+   for implementations is to URL-escape any IDs used in URLs, and human-selected
+   IDs such as Room aliases, Group IDs, Matrix user IDs etc apply an adequate
+   forcing function already to remind developers to do this.  However,
+   it doesn't follow that we should then also deliberately pick URL-unsafe
+   encodings for machine-selected IDs - the argument that it is better for software
+   to fail 50% of the time to force a fix is irrelevant when the possibility
+   exists for the software to fail 0% of the time in the first place by picking
+   an identifier format which cannot fail.
+
 [1] Discussion remains open as to whether allowing slashes in User IDs was a
 good idea.
 
@@ -87,5 +137,29 @@ solutions to that are also possible).
 
 ## Conclusion
 
-It's unclear to me that changing the format of event IDs alone solves any
-problems.
+There are two main questions here:
+
+ 1. Whether it's worth forcing casual CS API developers to juggle escaping of
+    machine-selected IDs in order to remind them to escape all variables in
+    their URIs correctly.
+
+ 2. Whether it's a significant problem for E2EE & SS API developers to have to
+    handle strings which are a mix of standard Base64 and URL-safe Base64
+    encodings.
+
+Both of these are a subjective judgement call.
+
+Given we wish the CS API particularly to be as easy for casual developers to
+use as possible, it feels that we should find another way to encourage
+developers to escape variables in their URLs in general - e.g. by recommending
+that developers test their clients against a 'torture room' full of exotic IDs
+and data, or by improving warnings in the spec... rather than (ab)using
+machine-selected IDs as a reminder.
+
+Meanwhile, given we have many more CS API developers than SS or E2EE developers,
+and we wish to make the CS API particularly easy for casual developers to use,
+it feels we should not prioritise consistency of encodings for SS/E2EE developers
+over the usability of the CS API.
+
+Therefore, on balance, it seems plausible that changing the format of event IDs
+does solve sufficient problems to make it desirable.
