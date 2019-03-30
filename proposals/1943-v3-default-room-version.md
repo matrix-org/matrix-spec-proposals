@@ -1,7 +1,6 @@
 # Set v3 to be the default room version
 
-Homeservers support multiple room versions, though one version is the default.
-All new rooms created by a server are of the default version.
+Homeservers support multiple room versions. Each server has a default version which is used when creating new rooms.
 
 Room v3 uses the new state resolution algorithm, and replaces event IDs with
 hashes, thereby closing a raft of security issues.
