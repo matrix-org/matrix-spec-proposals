@@ -27,7 +27,7 @@ of reasons:
  * Even if client implementations do remember to URL-encode their parameters,
    they may not do it correctly: many URL-encoding implementations may be
    intended to encode parameters in the query-string (which can of course
-   contain literal slashes) rather tha the path component.
+   contain literal slashes) rather than the path component.
 
  * Some proxy software may treat `%2F` specially: for instance, Apache, when
    configured as a reverse-proxy, will reject requests for a path containing
