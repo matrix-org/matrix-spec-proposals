@@ -80,10 +80,10 @@ right encoding.
    However, the current uses of standard Base64 encodings are not exposed to
    common CS API developers, and so whilst this might be slightly confusing
    for the minority of expert homeserver developers, the confusion does not
-   exist today for client developers.  Therefore it seems safe to standardise
-   (except those implementing E2EE) on URL-safe Base64 for identifiers exposed
-   to the client developers, who form by far the majority of the Matrix
-   ecosystem today, and expect as simple an API as possible.
+   exist today for client developers (except those implementing E2EE).
+   Therefore it seems safe to standardise on URL-safe Base64 for identifiers
+   exposed to the client developers, who form by far the majority of the
+   Matrix ecosystem today, and expect as simple an API as possible.
 
    A potential extension would be to change *all* Base64 encodings to be
    URL-safe. This would address the inconsistency. However, it feels like a
@@ -139,9 +139,9 @@ solutions to that are also possible).
 
 There are two main questions here:
 
- 1. Whether it's worth forcing manual CS API users to juggle escaping of
-    machine-selected IDs in order to remind them to escape all variables in
-    their URIs correctly.
+ 1. Whether it's worth forcing CS API developers to juggle escaping of
+    machine-selected IDs during manual use of the API in order to remind them
+    to escape all variables in their URIs correctly when writing code.
 
  2. Whether it's a significant problem for E2EE & SS API developers to have to
     handle strings which are a mix of standard Base64 and URL-safe Base64
@@ -156,10 +156,11 @@ developers test their clients against a 'torture room' full of exotic IDs and
 data, or by improving warnings in the spec... rather than (ab)using
 machine-selected IDs as a reminder.
 
-Meanwhile, given we have many more CS API developers than SS or E2EE
-developers, and we wish to make the CS API particularly easy for developers to
-manually invoke, it feels we should not prioritise consistency of encodings
-for SS/E2EE developers over the usability of the CS API.
+Meanwhile, given we have many more people manually invoking the CS API than
+developing on the SS or E2EE APIs, and we wish to make the CS API particularly
+easy for developers to manually invoke, it feels we should not prioritise
+consistency of encodings for SS/E2EE developers over the usability of the CS
+API.
 
 Therefore, on balance, it seems plausible that changing the format of event IDs
 does solve sufficient problems to make it desirable.
