@@ -50,7 +50,7 @@ will work.
 
 This proposal makes no attempt to address disabled presence over S2S, so remote homeservers can still send EDUs
 containing presence to a presence-disabled server and the expectation is that the transactions are accepted,
-but not processed.
+but any presence events contained within are not processed.
 
 ## Potential issues
 
