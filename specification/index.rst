@@ -40,10 +40,15 @@ The specification consists of the following parts:
 
 {{apis}}
 
+Additionally, this introduction page contains the key baseline information required to
+understand the specific APIs, including the sections on `room versions`_
+and `overall architecture <#architecture>`_.
+
 The `Appendices <appendices.html>`_ contain supplemental information not specific to
 one of the above APIs.
 
-The `Matrix Client-Server API Swagger Viewer <https://matrix.org/docs/api/client-server/>`_ is useful for browsing the Client-Server API.
+The `Matrix Client-Server API Swagger Viewer <https://matrix.org/docs/api/client-server/>`_
+is useful for browsing the Client-Server API.
 
 Introduction to the Matrix APIs
 -------------------------------
@@ -128,6 +133,8 @@ To propose a change to the Matrix Spec, see the explanations at `Proposals
 for Spec Changes to Matrix <proposals>`_.
 
 
+.. _`architecture`:
+
 Architecture
 ------------
 
@@ -189,7 +196,7 @@ allocated the account and has the form::
 
   @localpart:domain
 
-See `'Identifier Grammar' the appendices <appendices.html#identifier-grammar>`_ for full details of
+See `'Identifier Grammar' in the appendices <appendices.html#identifier-grammar>`_ for full details of
 the structure of user IDs.
 
 Devices
@@ -315,8 +322,8 @@ The following conceptual diagram shows an
                     |     Content: { JSON object }       |
                     |....................................|
 
-Federation maintains *shared data structures* per-room between multiple home
-servers. The data is split into ``message events`` and ``state events``.
+Federation maintains *shared data structures* per-room between multiple
+homeservers. The data is split into ``message events`` and ``state events``.
 
 Message events:
   These describe transient 'once-off' activity in a room such as an
@@ -417,6 +424,75 @@ dedicated API.  The API is symmetrical to managing Profile data.
 .. TODO
   Would it really be overengineered to use the same API for both profile &
   private user data, but with different ACLs?
+
+.. _`room versions`:
+
+Room Versions
+-------------
+
+Rooms are central to how Matrix operates, and have strict rules for what
+is allowed to be contained within them. Rooms can also have various
+algorithms that handle different tasks, such as what to do when two or
+more events collide in the underlying DAG. To allow rooms to be improved
+upon through new algorithms or rules, "room versions" are employed to
+manage a set of expectations for each room. New room versions are assigned
+as needed.
+
+There is no implicit ordering or hierarchy to room versions, and their principles
+are immutable once placed in the specification. Although there is a recommended
+set of versions, some rooms may benefit from features introduced by other versions.
+Rooms move between different versions by "upgrading" to the desired version. Due
+to versions not being ordered or hierarchical, this means a room can "upgrade"
+from version 2 to version 1, if it is so desired.
+
+Room version grammar
+~~~~~~~~~~~~~~~~~~~~
+
+Room versions are used to change properties of rooms that may not be compatible
+with other servers. For example, changing the rules for event authorization would
+cause older servers to potentially end up in a split-brain situation due to not
+understanding the new rules.
+
+A room version is defined as a string of characters which MUST NOT exceed 32
+codepoints in length. Room versions MUST NOT be empty and SHOULD contain only
+the characters ``a-z``, ``0-9``, ``.``, and ``-``.
+
+Room versions are not intended to be parsed and should be treated as opaque
+identifiers. Room versions consisting only of the characters ``0-9`` and ``.``
+are reserved for future versions of the Matrix protocol.
+
+The complete grammar for a legal room version is::
+
+  room_version = 1*room_version_char
+  room_version_char = DIGIT
+                    / %x61-7A         ; a-z
+                    / "-" / "."
+
+Examples of valid room versions are:
+
+* ``1`` (would be reserved by the Matrix protocol)
+* ``1.2`` (would be reserved by the Matrix protocol)
+* ``1.2-beta``
+* ``com.example.version``
+
+Complete list of room versions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Room versions are divided into two distinct groups: stable and unstable. Stable
+room versions may be used by rooms safely. Unstable room versions are everything
+else which is either not listed in the specification or flagged as unstable for
+some other reason. Versions can switch between stable and unstable periodically
+for a variety of reasons, including discovered security vulnerabilities and age.
+
+Clients should not ask room administrators to upgrade their rooms if the room is
+running a stable version. Servers SHOULD use room version 1 as the default room
+version when creating new rooms.
+
+The available room versions are:
+
+* `Version 1 <rooms/v1.html>`_ - **Stable**. The current version of most rooms.
+* `Version 2 <rooms/v2.html>`_ - **Stable**. Implements State Resolution Version 2.
+* `Version 3 <rooms/v3.html>`_ - **Stable**. Introduces events whose IDs are the event's hash.
 
 Specification Versions
 ----------------------

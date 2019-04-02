@@ -291,8 +291,8 @@ v         string           **Required.** Version of the encrypted attachments
 ========= ========= ============================================================
 Parameter Type      Description
 ========= ========= ============================================================
-key       string    **Required.** Key type. Must be ``oct``.
-key_opts  [string]  **Required.** Key operations. Must at least contain
+kty       string    **Required.** Key type. Must be ``oct``.
+key_ops   [string]  **Required.** Key operations. Must at least contain
                     ``encrypt`` and ``decrypt``.
 alg       string    **Required.** Algorithm. Must be ``A256CTR``.
 k         string    **Required.** The key, encoded as urlsafe unpadded base64.
@@ -450,7 +450,7 @@ previously-received ``request`` message with the same ``request_id`` and
 .. NOTE::
 
   Key sharing can be a big attack vector, thus it must be done very carefully.
-  A reasonable stategy is for a user's client to only send keys requested by the
+  A reasonable strategy is for a user's client to only send keys requested by the
   verified devices of the same user.
 
 Key exports
@@ -496,17 +496,8 @@ passphrase, and is created as follows:
 Key export format
 <<<<<<<<<<<<<<<<<
 
-The exported sessions are formatted as a JSON object of type ``ExportData``
+The exported sessions are formatted as a JSON array of ``SessionData`` objects
 described as follows:
-
-``ExportData``
-
-=============== ================= ==============================================
-Parameter       Type              Description
-=============== ================= ==============================================
-sessions        ``[SessionData]`` Required. The sessions that are being
-                                  exported.
-=============== ================= ==============================================
 
 ``SessionData``
 
@@ -529,7 +520,7 @@ sessions        ``[SessionData]`` Required. The sessions that are being
                                                device which initiated the session
                                                originally.
    sender_claimed_keys             {string:    Required. The Ed25519 key of the
-                                   integer}    device which initiated the session
+                                   string}     device which initiated the session
                                                originally.
    session_id                      string      Required. The ID of the session.
    session_key                     string      Required. The key for the session.
@@ -696,7 +687,7 @@ An event encrypted using Megolm has the following format:
         "sender_key": "<sender_curve25519_key>",
         "device_id": "<sender_device_id>",
         "session_id": "<outbound_group_session_id>",
-        "ciphertext": "<encypted_payload_base_64>"
+        "ciphertext": "<encrypted_payload_base_64>"
       }
     }
 

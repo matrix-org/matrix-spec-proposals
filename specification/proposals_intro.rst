@@ -324,7 +324,7 @@ Name                             GitHub Label                   Description
 ===============================  =============================  ====================================
 Proposal Drafting and Feedback   N/A                            A proposal document which is still work-in-progress but is being shared to incorporate feedback. Please prefix your proposal's title with ``[WIP]`` to make it easier for reviewers to skim their notifications list.
 Proposal In Review               proposal-in-review             A proposal document which is now ready and waiting for review by the Spec Core Team and community
-Proposed Final Comment Period    proposed-final-comment-period  Currently awaiting signoff of a majority of team members in order to enter the final comment period
+Proposed Final Comment Period    proposed-final-comment-period  Currently awaiting signoff of a 75% majority of team members in order to enter the final comment period
 Final Comment Period             final-comment-period           A proposal document which has reached final comment period either for merge, closure or postponement
 Final Commment Period Complete   finished-final-comment-period  The final comment period has been completed. Waiting for a demonstration implementation
 Spec PR Missing                  spec-pr-missing                The proposal has been agreed, and proven with a demonstration implementation. Waiting for a PR against the Spec

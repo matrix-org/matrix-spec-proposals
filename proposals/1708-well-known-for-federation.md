@@ -43,9 +43,9 @@ certificate validation, and following 30x redirects (being careful to avoid
 redirect loops). If the request does not return a 200, continue to step 4,
 otherwise:
 
-The response must have a `Content-Type` of `application/json`, and must be
-valid JSON which follows the structure documented below. Otherwise, the
-request is aborted.
+The response must be valid JSON which follows the structure documented
+below. Otherwise, continue to the next step in the discovery process. It is
+NOT necessary for the response to have a `Content-Type` of `application/json`.
 
 If the response is valid, the `m.server` property is parsed as
 `<delegated_server_name>[:<delegated_port>]`, and processed as follows:

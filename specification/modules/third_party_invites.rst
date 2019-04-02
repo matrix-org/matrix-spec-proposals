@@ -229,7 +229,7 @@ verification must still be performed, so the attack surface here is minimized.
 Security considerations
 -----------------------
 
-There are a number of privary and trust implications to this module.
+There are a number of privacy and trust implications to this module.
 
 It is important for user privacy that leaking the mapping between a matrix user
 ID and a third party identifier is hard. In particular, being able to look up

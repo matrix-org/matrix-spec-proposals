@@ -1,4 +1,4 @@
-# Copyright 2018 New Vector Ltd
+# Copyright 2018-2019 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,15 +13,14 @@
 # limitations under the License.
 type: object
 title: Invite Event
-description: An invite event
+description: |-
+  An invite event. Note that events have a different format depending on the
+  room version - check the `room version specification`_ for precise event formats.
 allOf:
-  - $ref: "pdu.yaml"
   - type: object
     properties:
-      # Note: we override a bunch of parameters to change their descriptions
       sender:
         type: string
-        # TODO: Verify/clarify this - it doesn't seem right, given this is a 'regular' invite
         description: |-
           The matrix ID of the user who sent the original ``m.room.third_party_invite``.
         example: "@someone:example.org"
@@ -46,7 +45,7 @@ allOf:
         type: object
         title: Membership Event Content
         description: |-
-          The content of the event, matching what is available in the 
+          The content of the event, matching what is available in the
           `Client-Server API`_. Must include a ``membership`` of ``invite``.
         example: {"membership": "invite"}
         properties:
@@ -55,33 +54,10 @@ allOf:
             description: The value ``invite``.
             example: "invite"
         required: ['membership']
-      auth_events:
-        type: array
-        description: |-
-          An event reference list containing the authorization events that would
-          allow the member to be invited to the room.
-        items:
-          type: array
-          maxItems: 2
-          minItems: 2
-          items:
-            - type: string
-              title: Event ID
-              example: "$abc123:matrix.org"
-            - type: object
-              title: Event Hash
-              example: {
-                "sha256": "abase64encodedsha256hashshouldbe43byteslong"
-              }
-              properties:
-                sha256:
-                  type: string
-                  description: The event hash.
-                  example: abase64encodedsha256hashshouldbe43byteslong
-              required: ['sha256']
-      redacts:
-        type: string
-        description: Not used.
     required:
-      # Every other field is already flagged as required by the $ref
       - state_key
+      - sender
+      - origin
+      - origin_server_ts
+      - type
+      - content

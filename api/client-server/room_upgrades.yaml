@@ -1,0 +1,93 @@
+# Copyright 2019 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Room Upgrades API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/rooms/{roomId}/upgrade":
+    post:
+      summary: Upgrades a room to a new room version.
+      description: |-
+        Upgrades the given room to a particular room version.
+      operationId: upgradeRoom
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          required: true
+          description: The ID of the room to upgrade.
+          x-example: "!oldroom:example.org"
+        - in: body
+          name: body
+          required: true
+          description: The request body
+          schema:
+            type: object
+            properties:
+              new_version:
+                type: string
+                description: The new version for the room.
+            example: {"new_version": "2"}
+            required: [new_version]
+      responses:
+        200:
+          description: The room was successfully upgraded.
+          examples:
+            application/json: {
+              "replacement_room": "!newroom:example.org"
+            }
+          schema:
+            type: object
+            properties:
+              replacement_room:
+                type: string
+                description: The ID of the new room.
+            required: [replacement_room]
+        400:
+          description: |-
+            The request was invalid. One way this can happen is if the room version
+            requested is not supported by the homeserver.
+          examples:
+            application/json: {
+              "errcode": "M_UNSUPPORTED_ROOM_VERSION",
+              "error": "This server does not support that room version"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+        403:
+          description: |-
+            The user is not permitted to upgrade the room.
+          examples:
+            application/json: {
+              "errcode": "M_FORBIDDEN",
+              "error": "You cannot upgrade this room"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+      tags:
+        - Room ugprades

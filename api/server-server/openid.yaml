@@ -33,7 +33,7 @@ paths:
         User ID of the owner.
       operationId: exchangeOpenIdToken
       parameters:
-        - in: path
+        - in: query
           name: access_token
           type: string
           description: |-

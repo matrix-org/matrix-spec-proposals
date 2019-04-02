@@ -26,6 +26,18 @@ targets:
     files:
       - push_gateway.rst
     version_label: "%PUSH_GATEWAY_RELEASE_LABEL%"
+  rooms@v1: # this is translated to be rooms/v1.html
+    files:
+      - rooms/v1.rst
+    version_label: v1
+  rooms@v2: # this is translated to be rooms/v2.html
+    files:
+      - rooms/v2.rst
+    version_label: v2
+  rooms@v3: # this is translated to be rooms/v3.html
+    files:
+      - rooms/v3.rst
+    version_label: v3
   appendices:
     files:
       - appendices.rst
@@ -70,6 +82,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/openid.rst
     - modules/server_acls.rst
     - modules/mentions.rst
+    - modules/room_upgrades.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`", "@", ":"]

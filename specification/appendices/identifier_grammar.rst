@@ -16,6 +16,12 @@
 Identifier Grammar
 ------------------
 
+Some identifiers are specific to given room versions, please refer to the
+`room versions specification`_ for more information.
+
+.. _`room versions specification`: index.html#room-versions
+
+
 Server Name
 ~~~~~~~~~~~
 
@@ -28,7 +34,7 @@ following grammar::
 
     server_name = hostname [ ":" port ]
 
-    port        = *DIGIT
+    port        = 1*5DIGIT
 
     hostname    = IPv4address / "[" IPv6address "]" / dns-name
 
@@ -77,38 +83,6 @@ Some recommendations for a choice of server name follow:
 
 * The length of the complete server name should not exceed 230 characters.
 * Server names should not use upper-case characters.
-
-
-Room Versions
-~~~~~~~~~~~~~
-
-Room versions are used to change properties of rooms that may not be compatible
-with other servers. For example, changing the rules for event authorization would
-cause older servers to potentially end up in a split-brain situation due to them
-not understanding the new rules.
-
-A room version is defined as a string of characters which MUST NOT exceed 32
-codepoints in length. Room versions MUST NOT be empty and SHOULD contain only
-the characters ``a-z``, ``0-9``, ``.``, and ``-``.
-
-Room versions are not intended to be parsed and should be treated as opaque
-identifiers. Room versions consisting only of the characters ``0-9`` and ``.``
-are reserved for future versions of the Matrix protocol.
-
-The complete grammar for a legal room version is::
-
-  room_version = 1*room_version_char
-  room_version_char = DIGIT
-                    / %x61-7A         ; a-z
-                    / "-" / "."
-
-Examples of valid room versions are:
-
-* ``1`` (would be reserved by the Matrix protocol)
-* ``1.2`` (would be reserved by the Matrix protocol)
-* ``1.2-beta``
-* ``com.example.version``
-
 
 Common Identifier Format
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -229,7 +203,7 @@ a homeserver creating a user ID for a new user based on the username passed to
 
 Implementations are free to do this mapping however they choose. Since the user
 ID is opaque except to the implementation which created it, the only
-requirement is that the implemention can perform the mapping
+requirement is that the implementation can perform the mapping
 consistently. However, we suggest the following algorithm:
 
 1. Encode character strings as UTF-8.
@@ -260,18 +234,17 @@ A room has exactly one room ID. A room ID has the format::
 
   !opaque_id:domain
 
-An event has exactly one event ID. An event ID has the format::
+An event has exactly one event ID. The format of an event ID depends upon the
+`room version specification <index.html#room-versions>`_.
 
-  $opaque_id:domain
-
-The ``domain`` of a room/event ID is the `server name`_ of the homeserver which
+The ``domain`` of a room ID is the `server name`_ of the homeserver which
 created the room/event. The domain is used only for namespacing to avoid the
 risk of clashes of identifiers between different homeservers. There is no
 implication that the room or event in question is still available at the
 corresponding homeserver.
 
 Event IDs and Room IDs are case-sensitive. They are not meant to be human
-readable.
+readable. They are intended to be treated as fully opaque strings by clients.
 
 .. TODO-spec
   What is the grammar for the opaque part? https://matrix.org/jira/browse/SPEC-389
@@ -327,7 +300,7 @@ matrix.to navigation
 
 .. NOTE::
    This namespacing is in place pending a ``matrix://`` (or similar) URI scheme.
-   This is **not** meant to be interpreted as an available web service - see 
+   This is **not** meant to be interpreted as an available web service - see
    below for more details.
 
 Rooms, users, aliases, and groups may be represented as a "matrix.to" URI.
@@ -343,21 +316,34 @@ in RFC 3986:
 The identifier may be a room ID, room alias, user ID, or group ID. The extra
 parameter is only used in the case of permalinks where an event ID is referenced.
 The matrix.to URI, when referenced, must always start with ``https://matrix.to/#/``
-followed by the identifier. 
+followed by the identifier.
 
 Clients should not rely on matrix.to URIs falling back to a web server if accessed
 and instead should perform some sort of action within the client. For example, if
 the user were to click on a matrix.to URI for a room alias, the client may open
 a view for the user to participate in the room.
 
+The components of the matrix.to URI (``<identifier>`` and ``<extra parameter>``)
+are to be percent-encoded as per RFC 3986.
+
 Examples of matrix.to URIs are:
 
-* Room alias: ``https://matrix.to/#/#somewhere:example.org``
-* Room: ``https://matrix.to/#/!somewhere:example.org``
-* Permalink by room: ``https://matrix.to/#/!somewhere:example.org/$event:example.org``
-* Permalink by room alias: ``https://matrix.to/#/#somewhere:example.org/$event:example.org``
-* User: ``https://matrix.to/#/@alice:example.org``
-* Group: ``https://matrix.to/#/+example:example.org``
+* Room alias: ``https://matrix.to/#/%23somewhere%3Aexample.org``
+* Room: ``https://matrix.to/#/!somewhere%3Aexample.org``
+* Permalink by room: ``https://matrix.to/#/!somewhere%3Aexample.org/%24event%3Aexample.org``
+* Permalink by room alias: ``https://matrix.to/#/#somewhere:example.org/%24event%3Aexample.org``
+* User: ``https://matrix.to/#/%40alice%3Aexample.org``
+* Group: ``https://matrix.to/#/%2Bexample%3Aexample.org``
+
+.. Note::
+   Historically, clients have not produced URIs which are fully encoded. Clients should
+   try to interpret these cases to the best of their ability. For example, an unencoded
+   room alias should still work within the client if possible.
+
+.. Note::
+   Clients should be aware that decoding a matrix.to URI may result in extra slashes
+   appearing due to some `room versions <index.html#room-versions>`_. These slashes
+   should normally be encoded when producing matrix.to URIs, however.
 
 .. Note::
    Room ID permalinks are unroutable as there is no reliable domain to send requests

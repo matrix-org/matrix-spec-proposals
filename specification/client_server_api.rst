@@ -73,7 +73,7 @@ MUST be encoded as UTF-8. Clients are authenticated using opaque
 ``access_token`` strings (see `Client Authentication`_ for details), passed as a
 query string parameter on all requests.
 
-The names of the API endponts for the HTTP transport follow a convention of
+The names of the API endpoints for the HTTP transport follow a convention of
 using underscores to separate words (for example ``/delete_devices``). The key
 names in JSON objects passed over the API also follow this convention.
 
@@ -158,7 +158,7 @@ Other error codes the client might encounter are:
   Sent when the room alias given to the ``createRoom`` API is already in use.
 
 :``M_INVALID_ROOM_STATE``:
-  Sent when the intial state given to the ``createRoom`` API is invalid.
+  Sent when the initial state given to the ``createRoom`` API is invalid.
 
 :``M_THREEPID_IN_USE``:
   Sent when a threepid given to an API cannot be used because the same threepid is already in use.
@@ -210,10 +210,18 @@ Other error codes the client might encounter are:
   The resource being requested is reserved by an application service, or the
   application service making the request has not created the resource.
 
+:``M_RESOURCE_LIMIT_EXCEEDED``:
+  The request cannot be completed because the homeserver has reached a resource
+  limit imposed on it. For example, a homeserver held in a shared hosting environment
+  may reach a resource limit if it starts using too much memory or disk space. The
+  error MUST have an ``admin_contact`` field to provide the user receiving the error
+  a place to reach out to. Typically, this error will appear on routes which attempt
+  to modify state (eg: sending messages, account data, etc) and not routes which only
+  read state (eg: ``/sync``, get account data, etc).
+
 .. TODO: More error codes (covered by other issues)
 .. * M_CONSENT_NOT_GIVEN                - GDPR: https://github.com/matrix-org/matrix-doc/issues/1512
 .. * M_CANNOT_LEAVE_SERVER_NOTICE_ROOM  - GDPR: https://github.com/matrix-org/matrix-doc/issues/1254
-.. * M_RESOURCE_LIMIT_EXCEEDED          - Limits: https://github.com/matrix-org/matrix-doc/issues/1504
 
 .. _sect:txn_ids:
 
@@ -636,7 +644,7 @@ To use this authentication type, clients should submit an auth dict as follows:
 where the ``identifier`` property is a user identifier object, as described in
 `Identifier types`_.
 
-For example, to authenticate using the user's Matrix ID, clients whould submit:
+For example, to authenticate using the user's Matrix ID, clients would submit:
 
 .. code:: json
 
@@ -650,7 +658,7 @@ For example, to authenticate using the user's Matrix ID, clients whould submit:
     "session": "<session ID>"
   }
 
-Alternatively reply using a 3pid bound to the user's account on the homeserver
+Alternatively reply using a 3PID bound to the user's account on the homeserver
 using the |/account/3pid|_ API rather then giving the ``user`` explicitly as
 follows:
 
@@ -667,7 +675,7 @@ follows:
     "session": "<session ID>"
   }
 
-In the case that the homeserver does not know about the supplied 3pid, the
+In the case that the homeserver does not know about the supplied 3PID, the
 homeserver must respond with 403 Forbidden.
 
 Google ReCaptcha
@@ -928,10 +936,10 @@ Third-party ID
 :Type:
   ``m.id.thirdparty``
 :Description:
-  The user is identified by a third-party identifer in canonicalised form.
+  The user is identified by a third-party identifier in canonicalised form.
 
-A client can identify a user using a 3pid associated with the user's account on
-the homeserver, where the 3pid was previously associated using the
+A client can identify a user using a 3PID associated with the user's account on
+the homeserver, where the 3PID was previously associated using the
 |/account/3pid|_ API.  See the `3PID Types`_ Appendix for a list of Third-party
 ID media.
 
@@ -987,7 +995,7 @@ request as follows:
     "password": "<password>"
   }
 
-Alternatively, a client can use a 3pid bound to the user's account on the
+Alternatively, a client can use a 3PID bound to the user's account on the
 homeserver using the |/account/3pid|_ API rather then giving the ``user``
 explicitly, as follows:
 
@@ -1002,7 +1010,7 @@ explicitly, as follows:
     "password": "<password>"
   }
 
-In the case that the homeserver does not know about the supplied 3pid, the
+In the case that the homeserver does not know about the supplied 3PID, the
 homeserver must respond with ``403 Forbidden``.
 
 To log in using a login token, clients should submit a ``/login`` request as
@@ -1069,6 +1077,107 @@ Current account information
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {{whoami_cs_http_api}}
+
+Capabilities negotiation
+------------------------
+
+A homeserver may not support certain operations and clients must be able to
+query for what the homeserver can and can't offer. For example, a homeserver
+may not support users changing their password as it is configured to perform
+authentication against an external system.
+
+The capabilities advertised through this system are intended to advertise
+functionality which is optional in the API, or which depend in some way on
+the state of the user or server. This system should not be used to advertise
+unstable or experimental features - this is better done by the ``/versions``
+endpoint.
+
+Some examples of what a reasonable capability could be are:
+
+* Whether the server supports user presence.
+
+* Whether the server supports optional features, such as the user or room
+  directories.
+
+* The rate limits or file type restrictions imposed on clients by the server.
+
+Some examples of what should **not** be a capability are:
+
+* Whether the server supports a feature in the ``unstable`` specification.
+
+* Media size limits - these are handled by the ``/media/%CLIENT_MAJOR_VERSION%/config``
+  API.
+
+* Optional encodings or alternative transports for communicating with the
+  server.
+
+Capabilities prefixed with ``m.`` are reserved for definition in the Matrix
+specification while other values may be used by servers using the Java package
+naming convention. The capabilities supported by the Matrix specification are
+defined later in this section.
+
+{{capabilities_cs_http_api}}
+
+
+``m.change_password`` capability
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This capability has a single flag, ``enabled``, which indicates whether or not
+the user can use the ``/account/password`` API to change their password. If not
+present, the client should assume that password changes are possible via the
+API. When present, clients SHOULD respect the capability's ``enabled`` flag
+and indicate to the user if they are unable to change their password.
+
+An example of the capability API's response for this capability is::
+
+  {
+    "capabilities": {
+      "m.change_password": {
+        "enabled": false
+      }
+    }
+  }
+
+
+``m.room_versions`` capability
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This capability describes the default and available room versions a server
+supports, and at what level of stability. Clients should make use of this
+capability to determine if users need to be encouraged to upgrade their rooms.
+
+An example of the capability API's response for this capability is::
+
+  {
+    "capabilities": {
+      "m.room_versions": {
+        "default": "1",
+        "available": {
+          "1": "stable",
+          "2": "stable",
+          "3": "unstable",
+          "custom-version": "unstable"
+        }
+      }
+    }
+  }
+
+This capability mirrors the same restrictions of `room versions`_ to describe
+which versions are stable and unstable. Clients should assume that the ``default``
+version is ``stable``. Any version not explicitly labelled as ``stable`` in the
+``available`` versions is to be treated as ``unstable``. For example, a version
+listed as ``future-stable`` should be treated as ``unstable``.
+
+The ``default`` version is the version the server is using to create new rooms.
+Clients should encourage users with sufficient permissions in a room to upgrade
+their room to the ``default`` version when the room is using an ``unstable``
+version.
+
+When this capability is not listed, clients should use ``"1"`` as the default
+and only stable ``available`` room version.
+
+.. _`room versions`: ../index.html#room-versions
+
 
 Pagination
 ----------
@@ -1166,7 +1275,21 @@ point in time::
 
   [E0]->[E1]->[E2]->[E3]->[E4]->[E5]
 
+.. WARNING::
 
+   The format of events can change depending on room version. Check the
+   `room version specification`_ for specific details on what to expect for
+   event formats. Examples contained within the client-server specification
+   are expected to be compatible with all specified room versions, however
+   some differences may still apply.
+
+   For this version of the specification, clients only need to worry about
+   the event ID format being different depending on room version. Clients
+   should not be parsing the event ID, and instead be treating it as an
+   opaque string. No changes should be required to support the currently
+   available room versions.
+
+.. _`room version specification`: ../index.html#room-versions
 
 Types of room events
 ~~~~~~~~~~~~~~~~~~~~
