@@ -45,7 +45,7 @@ When `receive_enabled`  is `false`, homeservers should respond to requests to
 
 The `/sync` format does not change based on whether this is enabled. `presence.events` SHOULD be empty when
 `receive_enabled` is `false`. `set_presence` is ignored and no presence information is changed. Clients should
-ensure that they have checked the capailities API before assuming that the flag will work.
+ensure that they have checked the capabilities API before assuming that the flag will work.
 
 ## Tradeoffs
 
