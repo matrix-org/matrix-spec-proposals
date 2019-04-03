@@ -11,11 +11,13 @@ Matrix network for some time now.
 
 ## Rationale
 
-While it would be good if every server enabled presence today, this is not the case. Some servers have opted to
-disable presence to reduce the strain on their servers (notably matrix.org and other larger community servers).
+While it would be good if every server enabled/supported presence today, this is not the case. Some servers have
+opted to disable presence to reduce the strain on their servers (notably matrix.org and other larger community servers).
 This proposal allows these servers to advertise to clients connected over C2S that presence is not enabled.
 
 ## Solution
+
+This proposal defines a set of flags inside the capabilities response.
 
 `GET /_matrix/client/r0/capabilities`
 
@@ -29,6 +31,10 @@ This proposal allows these servers to advertise to clients connected over C2S th
     // ...
 }
 ```
+
+This endpoint is authed (as stated in the spec), and the response MUST only apply to the requesting user. That is,
+the server may either disable presence server-wide or for a subset of it's users, but the capabilities API will make
+no distinction here and will just respond with the capabilites available to the user.
 
 An omission of `m.presence` would default both sending and receiving to true. An omission of either child flag
 would also default that flag to true.
