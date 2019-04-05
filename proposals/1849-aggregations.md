@@ -1,8 +1,8 @@
 # Proposal for aggregations via m.relates_to
 
 > WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP 
->
-> Checking this in so i can link to it, even though it's very much an informal draft
+
+A very rough WIP set of notes on how relations could work in Matrix.
 
 Today, replies looks like:
 
@@ -45,14 +45,10 @@ and
 }
 ```
 
-Problem:
- * Should the payload be inside or outside the E2E payload?
- * For reaction data to be useful for server-side calculated reputation work they have to be available outside E2E.   But perhaps we should be doing reputation analysis clientside instead?
-   * Folks who publish reputation data could deliberately do so aggregated, and outside E2E.  They could also lie through their teeth, but they can do that anyway.
- * We will never be able to do smart aggregations over federation if these are E2E encrypted, as the server won't know that 5 x 👍 == 5👍.
-
 And then the server just blitzes through `m.relates_to.event_id` and builds up all the relationships based on that field.
 This is kinda similar to pik's proposal below, but without the JSON schema.
+
+`event_id` should take either a string or a list of strings, to support relation DAGs (needed for ordering edits)
 
 ## CS API considerations
 
@@ -62,17 +58,14 @@ For edits, we'd want the most recent relation (by default)
 For reactions, we want all the reaction objects (or ideally their sum?)
 For replies, we don't want the original at all; the client can load it if needed via /context.
 
-Do we send the events down via normal pagination?  Or do we inline them?
-    We should probably do both: updates come in via pagination, but when doing a limited sync,
-    we should probably include them as inline as a basis.
+We should send the aggregated event down during normal pagination,
+as well as the individual relations down incrementally during sync.
 
-This in turn is related to LL members: ideally we wouldn't re-load LL members from scratch after
-a limited sync, but just load the difference somehow.  Similarly, we don't want to do a full snapshot
-of all reactions after a limited sync, but just the base delta that changed.  Perhaps this is okay, though:
-limited syncs can just include the number of reactions.
+After a limited sync, we should send a fresh aggregated event rather
+than try to calculate a delta.
 
 This is similar to how redactions are calculated today.  We just build up a table of which events reference
-which other events, and expand out the 'join' when syncing.
+which other events, and expand them out when syncing.
 
 So:
 
@@ -102,13 +95,82 @@ So:
 ]
 ```
 
+## Sending relations
+
+```json
+PUT /_matrix/client/r0/rooms/{roomId}/send_relation/{parent_id}/{eventType}/{txnId}
+{
+    "m.text": "👍",
+}
+```
+
+N.B. that the server then gets to populate out the m.relates_to field itself,
+adding the `parent_id` as one parent, but also adding any other dangling relations-dag extremitie.
+
+## Receiving relations
+
+TODO:
+
+/sync
+/messages
+/context
+
+## Pagination considerations
+
+How do we handle 20K edits in a row?
+ * we need to paginate 'vertically' somehow
+
+How do we handle a message with 20K different emojis?
+ * we need to paginate 'horizontally' somehow - return the 10 most popular emojis?
+
+Do relations automatically give us threads somehow?
+ * No; we will at the least need to define how to permalink to a relation then and then paginate around it.
+
+## Edge cases
+
+XXX: What happens when you react to an edit?
+ * You should be able to, but the reaction should be attributed to the edit (or its contents) rather than the message as a whole.
+ * So how do you aggregate?
+
+How do you handle racing edits?
+ * The edits could form a DAG of relations for robustness.
+    * Tie-break between forward DAG extremities based on origin_ts
+    * m.relates_to should be able to take an array of event_ids.
+ * ...or do we just always tiebreak on origin_ts, and rely on a social problem for it not to be abused?
+    * problem is that other relation types might well need a more robust way of ordering.
+
+Redactions
+ * Redacting an edited event in the UI should redact the original; the client will need to redact the original event to make this happen.
+ * Clients could also try to expand the relations and redact those too if they wanted to, but in practice the server shouldn't send down relations to redacted messages, so it's overkill.
+ * You can also redact specific relations if needed (e.g. to remove a reaction from ever happening)
+ * If you redact an relation, we keep the relation DAG (and solve that metadata leak alongside our others)
+
+What does it mean to call /context on a relation?
+ * We should probably just return the root event for now, and then refine it in future for threading?
+
+## E2E considerations
+
+In E2E rooms:
+ * The payload should be encrypted.  This means that we can't sum emoji reactions serverside;
+   they'll have to be passed around one by one.  Given E2E rooms tend to be smaller, this is
+   hopefully not a major problem.  We could reduce bandwidth by reusing the same key to
+   encrypt the relations as the original message.
+   * This means that reputation data can't be calculated serverside for E2E rooms however.
+   * It might be okay to calculate it clientside?  Or we could special-case reputation data to not be E2E?
+ * The m.relates_to field however should not be encrypted, so that the server can use it for
+   performing aggregations where possible (e.g. returning only the most recent edit).
+
 ## Federation considerations
 
 In general, no special considerations are needed for federation; relational events are just sent as needed over federation
-same as any other event type.
+same as any other event type - aggregated onto the original event if needed.
 
-We need some mechanism to know whether we have synced all the relational events that exist for a given event, however.
-Perhaps we should inline them into the original events, as we do on the CS API.
+XXX: We have a problem with resynchronising relations after a gap in federation.
+We have no way of knowing that an edit happened in the gap to one of the events
+we already have.  So, we'll show inconsistent data until we backfill the gap.
+ * We could write this off as a limitation.
+ * Or we could make relations a DAG, so we can spot holes at the next relation, and
+   go walk the DAG to pull in the missing relations?
 
 In future, we might want to aggregate relational events (e.g. send a summary of the events, rather than the
 actual original events).  This requires the payload to be non-E2E encrypted, and would also require some kind of
