@@ -45,22 +45,8 @@ and
 }
 ```
 
-or if building a relation DAG (for ordering for edits, and for pulling in missing relations after a federation outage):
-
-```json
-"type": "m.reaction",
-"contents": {
-    "m.text": "👍",
-    "m.relates_to": {
-        "event_id": ["$another:event.com", "$another2:event.com"]
-    }
-}
-```
-
 And then the server just blitzes through `m.relates_to.event_id` and builds up all the relationships based on that field.
 This is kinda similar to pik's proposal below, but without the JSON schema.
-
-XXX: `event_id` should take either a string or a list of strings, to support relation DAGs (needed for ordering edits)
 
 ## CS API considerations
 
@@ -70,16 +56,22 @@ For edits, we'd want the most recent relation (by default)
 For reactions, we want all the reaction objects (or ideally their sum?)
 For replies, we don't want the original at all; the client can load it if needed via /context.
 
+Proposal: start off syncing the relations individually, rather than summing reactions.
+For edits, the server can be smart and send the most recent msg.
+
 We should send the aggregated event down during normal pagination,
 as well as the individual relations down incrementally during sync.
 
 After a limited sync, we should send a fresh aggregated event rather
-than try to calculate a delta.
+than try to calculate a delta (possibly minus the contents field of
+the original event)
 
 This is similar to how redactions are calculated today.  We just build up a table of which events reference
 which other events, and expand them out when syncing.
 
 So:
+
+Without summing:
 
 ```json
 "type": "m.room.message",
@@ -90,22 +82,52 @@ So:
 "relations": [
     {
         "type": "m.reaction",
-        "event_id": "$reaction:alice.com",
-        "sender": "@alice:alice.com",
         "contents": {
+            "event_id": "$reaction:alice.com",
+            "sender": "@alice:alice.com",
             "m.text": "👍",
         }
     },
     {
         "type": "m.reaction",
-        "event_id": "$reaction2:bob.com",
-        "sender": "@bob:bob.com",
+        "contents": {
+            "event_id": "$reaction:alice.com",
+            "sender": "@alice:alice.com",
+            "m.text": "👎",
+        }
+    },
+    // etc...
+]
+```
+
+With summing, in future:
+
+```json
+"type": "m.room.message",
+"event_id": "$another:event.com",
+"contents": {
+    "m.text": "I have an excellent idea",
+},
+"relations": [
+    {
+        "type": "m.reaction",
+        "contents": {
+            "m.text": "👍",
+            "count": 120,
+        }
+    },
+    {
+        "type": "m.reaction",
         "contents": {
             "m.text": "👎",
+            "count": 42,
         }
     },
 ]
 ```
+
+XXX: if we are doing sums, we need to worry about races between aggregated events
+and the individual relation deltas in /sync responss.
 
 ## Sending relations
 
@@ -140,16 +162,21 @@ Do relations automatically give us threads somehow?
 
 ## Edge cases
 
-XXX: What happens when you react to an edit?
+What happens when you react to an edit?
  * You should be able to, but the reaction should be attributed to the edit (or its contents) rather than the message as a whole.
  * So how do you aggregate?
+ * Suggestion: edits gather their own reactions, and the clients should display the reactions on the most recent edit.
+   * This provides a social pressure to get your edits in quickly before there are many reactions, otherwise the reactions will get lost.
+   * And it avoids us randomly aggregating reactions to potentially very different contents of messages.
 
 How do you handle racing edits?
  * The edits could form a DAG of relations for robustness.
     * Tie-break between forward DAG extremities based on origin_ts
     * m.relates_to should be able to take an array of event_ids.
- * ...or do we just always tiebreak on origin_ts, and rely on a social problem for it not to be abused?
-    * problem is that other relation types might well need a more robust way of ordering.
+    * hard to see who is responsible for linearising the DAG when receiving.  Nasty for the client to do it, but the server would have to buffer, meaning relations could get stuck if an event in the DAG is unavailable.
+ * ...or do we just always order by on origin_ts, and rely on a social problem for it not to be abused?
+    * problem is that other relation types might well need a more robust way of ordering. XXX: can we think of any?
+    * could add the DAG in later if it's really needed?
 
 Redactions
  * Redacting an edited event in the UI should redact the original; the client will need to redact the original event to make this happen.
@@ -177,15 +204,24 @@ In E2E rooms:
 In general, no special considerations are needed for federation; relational events are just sent as needed over federation
 same as any other event type - aggregated onto the original event if needed.
 
-XXX: We have a problem with resynchronising relations after a gap in federation.
+We have a problem with resynchronising relations after a gap in federation:
 We have no way of knowing that an edit happened in the gap to one of the events
 we already have.  So, we'll show inconsistent data until we backfill the gap.
  * We could write this off as a limitation.
  * Or we could make *ALL* relations a DAG, so we can spot holes at the next relation, and
    go walk the DAG to pull in the missing relations?  Then, the next relation for an event
-   could pull in any of the missing relations.
+   could pull in any of the missing relations.  Socially this probably doesn't work as reactions
+   will likely drop-off over time, so by the time your server comes back there won't be any more
+   reactions pulling the missing ones in.
  * Could we also ask the server, after a gap, to provide all the relations which happened during the gap to events whose root preceeded the gap.
    * "Give me all relations which happened between this set of forward-extremities when I lost sync, and the point i've rejoined the DAG, for events which preceeded the gap"?
+   * Would be hard to auth all the relations which this api coughed up.
+     * We could auth them based only the auth events of the relation, except we lose the context of the nearby DAG which we'd have if it was a normal backfilled event.
+     * As a result it would be easier for a server to retrospectively lie about events on behalf of its users.
+     * This probably isn't the end of the world, plus it's more likely to be consistent than if we leave a gap.
+       * i.e. it's better to consistent with a small chance of being maliciously wrong, than inconsistent with a guaranteed chance of being innocently wrong.
+   * We'd need to worry about pagination.
+   * This is probably the best solution, but can also be added as a v2.
 
 In future, we might want to aggregate relational events (e.g. send a summary of the events, rather than the
 actual original events).  This requires the payload to be non-E2E encrypted, and would also require some kind of
