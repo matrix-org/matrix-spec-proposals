@@ -1,4 +1,4 @@
-# MSC0000: Integration manager discovery
+# MSC1957: Integration manager discovery
 
 *Note*: This is a required component of [MSC1956 - Integrations API](https://github.com/matrix-org/matrix-doc/pull/1956)
 
