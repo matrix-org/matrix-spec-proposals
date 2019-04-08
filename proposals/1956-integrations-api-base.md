@@ -1,4 +1,4 @@
-# MSC0000: Integrations API
+# MSC1956: Integrations API
 
 "Integration managers" are applications that help clients bring integrations (bridges, bots, widgets, etc)
 to users. This can be for things like setting up an IRC bridge or adding a Giphy bot to the room. Integration
