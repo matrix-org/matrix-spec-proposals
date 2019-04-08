@@ -59,8 +59,7 @@ A new Integrations API be introduced into Matrix which consists of the component
 **Components**:
 
 * API Standards (see later section of this proposal)
-* Discovery
-  * MSC not yet defined
+* Discovery - [MSC1957](https://github.com/matrix-org/matrix-doc/pull/1957)
 * Widgets
   * Includes [MSC1236](https://github.com/matrix-org/matrix-doc/issues/1236)
   * MSC for extensions and alterations not yet defined
