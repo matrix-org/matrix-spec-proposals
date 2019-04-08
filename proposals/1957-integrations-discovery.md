@@ -52,6 +52,11 @@ user ID. This is covered by other proposals.
 The `api_url` is the URL clients will use when *not* embedding the integration manager, and instead showing
 its own purpose-built interface.
 
+Clients should query the `.well-known` information for the homeserver periodically to update the integration
+manager settings for that homeserver. The client is not expected to validate or use any other information
+contained in the response. Current recommendations are to query the configuration when the client starts up
+and every 8 hours after that.
+
 #### User-configured integration managers
 
 Users can specify integration managers in the form of account widgets. The `type` is to be `m.integration_manager`
