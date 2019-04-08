@@ -17,7 +17,7 @@ at a given time, although the rules for how this can be handled are defined late
 #### Client-configured integration managers
 
 This is left as an implementation detail. In the case of Riot, this is likely to be part of the existing
-`config.json` options, although liekly modified to support multiple managers instead of one.
+`config.json` options, although likely modified to support multiple managers instead of one.
 
 #### Homeserver-configured integration managers
 
