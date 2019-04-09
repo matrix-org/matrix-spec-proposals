@@ -1,4 +1,4 @@
-# MSC0000: Integration manager authentication
+# MSC1961: Integration manager authentication
 
 A set of common APIs needs to be defined for clients to be able to interact with an integration
 manager. This proposal covers the authentication portion of that API.
