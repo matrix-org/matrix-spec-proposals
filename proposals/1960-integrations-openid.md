@@ -1,4 +1,4 @@
-# MSC0000: OpenID information exchange for widgets
+# MSC1960: OpenID information exchange for widgets
 
 With the various integrations API proposals, widgets are left with no options to verify the
 requesting user's ID if they need it. Widgets like the sticker picker must know who is making
