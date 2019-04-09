@@ -62,12 +62,16 @@ A new Integrations API be introduced into Matrix which consists of the component
 * Discovery - [MSC1957](https://github.com/matrix-org/matrix-doc/pull/1957)
 * Widgets
   * Includes [MSC1236](https://github.com/matrix-org/matrix-doc/issues/1236)
+  * Includes [MSC1958](https://github.com/matrix-org/matrix-doc/pull/1958)
+  * Includes [MSC1960](https://github.com/matrix-org/matrix-doc/pull/1960)
   * MSC for extensions and alterations not yet defined
     * ***TODO: MSC for each or group them by subject?***
   * The first version of the Widget API is to be `0.1.0`, with the existing `0.0.x` versions being flagged as
     development versions which are otherwise unspecified.
-* Authentication in integration managers
-  * MSC not yet defined
+* Sticker picker and custom emoji
+  * Includes [MSC1951](https://github.com/matrix-org/matrix-doc/pull/1951)
+  * Includes [MSC1959](https://github.com/matrix-org/matrix-doc/pull/1959)
+* Authentication in integration managers - [MSC1961](https://github.com/matrix-org/matrix-doc/pull/1961)
 * Integration manager specific APIs
   * MSC and scope not yet defined
 
