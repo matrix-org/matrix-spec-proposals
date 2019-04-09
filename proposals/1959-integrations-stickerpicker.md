@@ -1,4 +1,4 @@
-# MSC0000: Sticker picker API
+# MSC1959: Sticker picker API
 
 [MSC1951 - Custom sticker packs and emojis](https://github.com/matrix-org/matrix-doc/pull/1951) adds a way
 for pack authors to share their creations with other users, however the interaction between them and the
