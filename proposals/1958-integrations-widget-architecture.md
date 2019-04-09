@@ -66,13 +66,13 @@ The changes proposed which differ from MSC1236 are:
   one arbitrarily and use that as the canonical widget. MSC1236 does not define any behaviour. Integration
   manager ordering is defined by [MSC1957](https://github.com/matrix-org/matrix-doc/pull/1957).
 * `m.stickerpicker` widgets are required to have a `data` object containing an `api_url`. This is relevant
-  for [MSC0000 - Sticker picker API](https://github.com/matrix-org/matrix-doc/pull/0000). For backwards
+  for [MSC1959 - Sticker picker API](https://github.com/matrix-org/matrix-doc/pull/1959). For backwards
   compatibility with widgets which don't have this property, clients should try to determine the integration
   manager API URL for the widget or continue ignoring the property's existence (showing an iframe instead).
 
 To further clarify: Widgets should no longer be receiving a `scalar_token` via query params. If they need
 to authenticate the user, they are able to use
-[MSC0000 - OpenID information exchange for widgets](https://github.com/matrix-org/matrix-doc/pull/0000).
+[MSC1960 - OpenID information exchange for widgets](https://github.com/matrix-org/matrix-doc/pull/1960).
 
 #### Room widgets
 
@@ -83,7 +83,7 @@ video conferences, or dashboards however there is no restriction for what could 
 This proposal does not alter MSC1236 with respect to room widgets, however it does add some clarifications
 on top:
 * Like account widgets, room widgets should no longer be receiving a `scalar_token` and instead should be
-  using [MSC0000 - OpenID information exchange for widgets](https://github.com/matrix-org/matrix-doc/pull/0000).
+  using [MSC1960 - OpenID information exchange for widgets](https://github.com/matrix-org/matrix-doc/pull/1960).
 * Although not mentioned in MSC1236, clients are permitted to build widgets into their app if they like. For
   example, a Jitsi widget could translate to built-in call support instead of embedding an iframe. This is
   the one of the rationales for including specific `data` on widgets.
@@ -132,6 +132,6 @@ integration managers might. It is unclear to the author how other managers make 
 Token security is achieved by simply never providing it to the widgets. Some integration managers currently
 rely on the token being provided to restrict access to particular assets like the widget's script itself. The
 author proposes that those implementations make use of
-[MSC0000 - OpenID information exchange for widgets](https://github.com/matrix-org/matrix-doc/pull/0000)
+[MSC1960 - OpenID information exchange for widgets](https://github.com/matrix-org/matrix-doc/pull/1960)
 through minimal scripts which acquire a token, set appropriate cookies/headers, and load the remaining resources
 afterwards.
