@@ -106,6 +106,15 @@ to register with a likely unknown integration manager, effectively sending the u
 implement additional prompts however the concern becomes one of user experience where the title would be causing
 permission request dialogs for ultimately unimportant information.
 
+#### Extension: Theme and client identification support
+
+When filling out template variables in widgets, clients SHOULD support `$matrix_client_id` and `$matrix_client_theme`
+as variables. `$matrix_client_id` is a namespaced identifier which the widget/integration manager can use to
+identify the client is talking to. For example, this may be `im.vector.riot.web` or `com.github.quaternion`.
+`$matrix_client_theme` is the stringified name of the theme the client is running, if available. For example,
+`dark` or `light`. Clients which do not want to disclose the information should not replace the variables,
+leaving them as-is.
+
 
 ## Potential issues
 
