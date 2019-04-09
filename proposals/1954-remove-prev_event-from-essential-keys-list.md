@@ -53,10 +53,23 @@ the spec. On balance this seems unlikely and in the worst case those
 implementors could add the change to a subsequent room version, eventually
 reaching spec consistency as older room versions are deprecated.
 
+Another scenario is that a client may redact events according to the spec as is
+and persist prev_content through the redaction, thereby diverting from that on
+the server(s). Client authors will have to update their code to drop
+```prev_content``` - however, given that prev_content should not be used in
+important calculations and/or visualisations, this ought to be relatively
+uninvaisive change.
+
+
 ## Security considerations
 
-I am unaware of any security issues related to this proposal, but can certainly
-see issues with a precedent that the federation deviates from the spec.
+A further reason to support removal of ```prev_content``` is the case where a
+malicious user adds illegal or abusive content into a state event and then
+overwrites that state event. The content would then be preserved through the
+redaction.
+
+Additionally, there are plenty of reasons to have security concerns over a
+precedent that the federation can deviate from the spec.
 
 ## Conclusions
 Removing ```prev_content``` is pragmatic response to the current situation. It
