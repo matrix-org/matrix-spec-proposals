@@ -12,7 +12,7 @@ Some clients may wish to not embed the sticker picker widget into their applicat
 packs and render them as one common picker. To do this, the client would use the `api_url` specified in the
 widget's `data`. If the `api_url` is a trusted integration manager, the client should make requests to the API
 endpoints defined in this proposal using
-[MSC0000 - Integration manager authentication](https://github.com/matrix-org/matrix-doc/pull/0000). If the
+[MSC1961 - Integration manager authentication](https://github.com/matrix-org/matrix-doc/pull/1961). If the
 URL is not trusted, the user should be prompted for approval or the sticker picker skipped by the client.
 
 #### GET /_matrix/integrations/v1/widgets/{widgetId}/packs
