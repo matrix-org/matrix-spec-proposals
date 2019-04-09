@@ -1,4 +1,4 @@
-# MSC0000: Widget structure alterations
+# MSC1958: Widget structure alterations
 
 Widgets are already very powerful in Matrix due to [MSC1236](https://github.com/matrix-org/matrix-doc/issues/1236),
 however there are some areas which can be iterated upon.
