@@ -48,7 +48,7 @@ retrospectively to describe the de-facto redaction algorithm.
 ## Potential issues
 
 It is theoretically possible that a closed federation could exist whose servers
-do follow the spec as is. This MSC would render those servers uncompliant with
+do follow the spec as is. This MSC would render those servers non-compliant with
 the spec. On balance this seems unlikely and in the worst case those
 implementors could add the change to a subsequent room version, eventually
 reaching spec consistency as older room versions are deprecated.
@@ -57,8 +57,8 @@ Another scenario is that a client may redact events according to the spec as is
 and persist prev_content through the redaction, thereby diverting from that on
 the server(s). Client authors will have to update their code to drop
 ```prev_content``` - however, given that prev_content should not be used in
-important calculations and/or visualisations, this ought to be relatively
-uninvaisive change.
+important calculations and/or visualisations, this ought to be a relatively
+non-invasive change.
 
 
 ## Security considerations
