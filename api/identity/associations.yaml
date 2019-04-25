@@ -90,7 +90,7 @@ paths:
             }
           schema:
             $ref: "../client-server/definitions/errors/error.yaml"
-  "/bind":
+  "/3pid/bind":
     post:
       summary: Publish an association between a session and a Matrix user ID.
       description: |-
