@@ -48,7 +48,7 @@ key by using the new user-signing key. Otherwise, they will need to re-verify
 the other users.
 
 If a user's self-signing key is compromised, then the user will need to issue
-both a new self-signing key and a new device-signing key. The user may sign
+both a new self-signing key and a new user-signing key. The user may sign
 their new self-signing key with their old self-signing key, allowing other
 users who have verified the old self-signing key to automatically trust the new
 self-signing key if they wish to. Otherwise, the users will need to re-verify
