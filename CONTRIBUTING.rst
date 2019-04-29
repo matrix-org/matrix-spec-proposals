@@ -76,11 +76,11 @@ Adding to the changelog
 Currently only changes to the client-server API need to end up in a changelog. The
 other APIs are not yet stable and therefore do not have a changelog. Adding to the
 changelog can only be done after you've opened your pull request, so be sure to do
-that first. 
+that first.
 
 The changelog is managed by Towncrier (https://github.com/hawkowl/towncrier) in the
 form of "news fragments". The news fragments for the client-server API are stored
-under ``changelogs/client_server/newsfragments``. 
+under ``changelogs/client_server/newsfragments``.
 
 To create a changelog entry, create a file named in the format ``prNumber.type`` in
 the ``newsfragments`` directory. The ``type`` can be one of the following:
@@ -98,8 +98,10 @@ the ``newsfragments`` directory. The ``type`` can be one of the following:
 
 * ``deprecation`` - Used when deprecating something
 
-All news fragments must have a brief summary explaining the change in the contents
-of the file.
+All news fragments must have a brief summary explaining the change in the
+contents of the file. The summary must end in a full stop to be in line with
+the style guide and and formatting must be done using `Restructured Text
+<http://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_.
 
 Changes that do not change the spec, such as changes to the build script, formatting,
 CSS, etc should not get a news fragment.

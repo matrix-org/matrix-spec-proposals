@@ -1,4 +1,4 @@
-# Copyright 2018 New Vector Ltd
+# Copyright 2018-2019 New Vector Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ host: localhost:8448
 schemes:
   - https
 basePath: /_matrix/federation/v1
-consumes: 
+consumes:
   - application/json
 produces:
   - application/json
@@ -32,9 +32,18 @@ paths:
       summary: Invites a remote user to a room
       description: |-
         Invites a remote user to a room. Once the event has been  signed by both the inviting
-        homeserver and the invited homeserver, it can be sent to all of the servers in the 
+        homeserver and the invited homeserver, it can be sent to all of the servers in the
         room by the inviting homeserver.
-      operationId: sendInvite
+
+        Servers should prefer to use the v2 API for invites instead of the v1 API. Servers
+        which receive a v1 invite request must assume that the room version is either ``"1"``
+        or ``"2"``.
+
+        Note that events have a different format depending on the room version - check the
+        `room version specification`_ for precise event formats. **The request and response
+        bodies here describe the common event fields in more detail and may be missing other
+        required fields for a PDU.**
+      operationId: sendInviteV1
       security:
         - signedRequest: []
       parameters:
@@ -103,9 +112,12 @@ paths:
                           }
                         ]
           example: {
-            "$ref": "examples/pdu.json",
+            "$ref": "examples/minimal_pdu.json",
             "type": "m.room.member",
             "state_key": "@joe:elsewhere.com",
+            "origin": "example.org",
+            "origin_server_ts": 1549041175876,
+            "sender": "@someone:example.org",
             "unsigned": {
               "invite_room_state": [
                 {
@@ -139,7 +151,8 @@ paths:
         200:
           description: |-
             The event with the invited server's signature added. All other fields of the events
-            should remain untouched.
+            should remain untouched. Note that events have a different format depending on the
+            room version - check the `room version specification`_ for precise event formats.
           schema:
             type: array
             minItems: 2
@@ -160,9 +173,12 @@ paths:
               200,
               {
                 "event":  {
-                  "$ref": "examples/pdu.json",
+                  "$ref": "examples/minimal_pdu.json",
                   "type": "m.room.member",
                   "state_key": "@someone:example.org",
+                  "origin": "example.org",
+                  "origin_server_ts": 1549041175876,
+                  "sender": "@someone:example.org",
                   "unsigned": {
                     "invite_room_state": [
                       {

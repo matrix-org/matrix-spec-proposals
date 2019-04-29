@@ -48,7 +48,7 @@ When this is called, the server:
        "state_key": "",
        "room_id": "!QtykxKocfsgujksjgd:matrix.org",
        "content": {
-           "version": "2",
+           "room_version": "2",
            "predecessor": {
                "room_id": "!cURbaf:matrix.org",
                "event_id": "$1235135aksjgdkg:matrix.org"

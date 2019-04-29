@@ -20,7 +20,7 @@ host: localhost:8448
 schemes:
   - https
 basePath: /_matrix/federation/v1
-consumes: 
+consumes:
   - application/json
 produces:
   - application/json
@@ -58,10 +58,19 @@ paths:
                 type: array
                 description: |-
                   The full set of authorization events that make up the state of
-                  the room, and their authorization events, recursively. 
+                  the room, and their authorization events, recursively. Note that
+                  events have a different format depending on the room version -
+                  check the `room version specification`_ for precise event formats.
                 items:
-                  $ref: "definitions/pdu.yaml"
-                example: [{"$ref": "examples/pdu.json"}]
+                  type: object
+                  title: PDU
+                  description: |-
+                    The `PDUs <#pdus>`_ contained in the auth chain. The event format
+                    varies depending on the room version - check the `room version specification`_
+                    for precise event formats.
+                  properties: []
+                  example:
+                    $ref: "examples/minimal_pdu.json"
             required: ['auth_chain']
   "/query_auth/{roomId}/{eventId}":
     post:
@@ -98,10 +107,20 @@ paths:
             properties:
               auth_chain:
                 type: array
-                description: The auth chain (the "remote auth").
+                description: |-
+                  The auth chain (the "remote auth"). Note that events have a different
+                  format depending on the room version - check the `room version specification`_
+                  for precise event formats.
                 items:
-                  $ref: "definitions/pdu.yaml"
-                example: [{"$ref": "examples/pdu.json"}]
+                  type: object
+                  title: PDU
+                  description: |-
+                    The `PDUs <#pdus>`_ contained in the auth chain. The event format
+                    varies depending on the room version - check the `room version specification`_
+                    for precise event formats.
+                  properties: []
+                  example:
+                    $ref: "examples/minimal_pdu.json"
               missing:
                 type: array
                 description: |-
@@ -142,14 +161,23 @@ paths:
                 type: array
                 description: |-
                   The auth chain the receiver has, and used to determine the auth
-                  chain differences (the "local auth").
+                  chain differences (the "local auth"). Note that events have a different
+                  format depending on the room version - check the `room version specification`_
+                  for precise event formats.
                 items:
-                  $ref: "definitions/pdu.yaml"
-                example: [{"$ref": "examples/pdu.json"}]
+                  type: object
+                  title: PDU
+                  description: |-
+                    The `PDUs <#pdus>`_ contained in the auth chain. The event format
+                    varies depending on the room version - check the `room version specification`_
+                    for precise event formats.
+                  properties: []
+                  example:
+                    $ref: "examples/minimal_pdu.json"
               missing:
                 type: array
                 description: |-
-                  The list of event IDs that the receiver believes it is missing, 
+                  The list of event IDs that the receiver believes it is missing,
                   after comparing the "remote auth" and "local auth" chains.
                 items:
                   type: string

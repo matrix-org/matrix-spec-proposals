@@ -13,7 +13,7 @@
 # limitations under the License.
 type: object
 title: Persistent Data Unit
-description: A persistent data unit (event)
+description: A persistent data unit (event) for room versions 1 and 2.
 example:
   $ref: "../examples/pdu.json"
 allOf:
@@ -26,13 +26,13 @@ allOf:
         description: |-
           Content hashes of the PDU, following the algorithm specified in `Signing Events`_.
         example: {
-          "sha256": "thishashcoversallfieldsincasethisisredacted"
+          "sha256": "ThisHashCoversAllFieldsInCaseThisIsRedacted"
         }
         properties:
           sha256:
             type: string
             description: The hash.
-            example: thishashcoversallfieldsincasthisisredacted
+            example: ThisHashCoversAllFieldsInCaseThisIsRedacted
         required: ['sha256']
       signatures:
         type: object
@@ -40,7 +40,7 @@ allOf:
           Signatures for the PDU, following the algorithm specified in `Signing Events`_.
         example: {
           "example.com": {
-            "ed25519:key_version:": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
+            "ed25519:key_version:": "86BytesOfSignatureOfTheRedactedEvent"
           }
         }
         additionalProperties:

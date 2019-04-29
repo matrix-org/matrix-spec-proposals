@@ -17,7 +17,10 @@ from batesian.sections import Sections
 import inspect
 import json
 import os
+import logging
 
+
+logger = logging.getLogger(__name__)
 
 class MatrixSections(Sections):
 
@@ -28,26 +31,14 @@ class MatrixSections(Sections):
     def render_git_rev(self):
         return self.units.get("git_version")["revision"]
 
-    def render_client_server_changelog(self):
+    def render_changelogs(self):
+        rendered = {}
         changelogs = self.units.get("changelogs")
-        return changelogs["client_server"]
-
-    # TODO: We should make this a generic variable instead of having to add functions all the time.
-    def render_push_gateway_changelog(self):
-        changelogs = self.units.get("changelogs")
-        return changelogs["push_gateway"]
-
-    def render_identity_service_changelog(self):
-        changelogs = self.units.get("changelogs")
-        return changelogs["identity_service"]
-
-    def render_server_server_changelog(self):
-        changelogs = self.units.get("changelogs")
-        return changelogs["server_server"]
-
-    def render_application_service_changelog(self):
-        changelogs = self.units.get("changelogs")
-        return changelogs["application_service"]
+        for spec, changelog_text in changelogs.items():
+            spec_var = "%s_changelog" % spec
+            logger.info("Rendering changelog for spec: %s" % spec)
+            rendered[spec_var] = changelog_text
+        return rendered
 
     def _render_events(self, filterFn, sortFn):
         template = self.env.get_template("events.tmpl")

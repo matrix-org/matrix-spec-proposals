@@ -48,7 +48,7 @@ The tag namespace is defined as follows:
 * The namespace ``u.*`` is reserved for user-defined tags. The portion of the string after the ``u.``
   is defined to be the display name of this tag. No other semantics should be inferred from tags in
   this namespace.
-* A client or app willing to use special tags for advanced functionnality should namespace them similarly to state keys: ``tld.name.*``
+* A client or app willing to use special tags for advanced functionality should namespace them similarly to state keys: ``tld.name.*``
 * Any tag in the ``tld.name.*`` form but not matching the namespace of the current client should be ignored
 * Any tag not matching the above rules should be interpreted as a user tag from the ``u.*`` namespace, as if
   the name had already had ``u.`` stripped from the start (ie. the name of the tag is used as the

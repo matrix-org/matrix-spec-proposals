@@ -1,0 +1,7 @@
+{
+    "type": "m.room.minimal_pdu",
+    "room_id": "!somewhere:example.org",
+    "content": {
+        "see_room_version_spec": "The event format changes depending on the room version."
+    }
+}
