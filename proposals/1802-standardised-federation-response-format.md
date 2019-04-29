@@ -41,6 +41,10 @@ This proposal doesn't address the `PUT
 [MSC1794](https://github.com/matrix-org/matrix-doc/pull/1794) already takes care
 of it.
 
+If a call to any of the `v2` endpoints described in this proposal results in an
+unrecognised request exception, then the sending server should retry the request
+with the `v1` API.
+
 ## Alternative solutions
 
 An alternative solution would be to make the change in the `v1` fedration API,
