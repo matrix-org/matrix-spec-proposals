@@ -194,7 +194,7 @@ The `parent_id` is:
   * For replaces/edits the original event (not previous edits)
   * For references should be the original event (?)
 
-The same happens in the sync API, howevr the client will need to handle new
+The same happens in the sync API, however the client will need to handle new
 relations themselves when they come down incremental sync.
 
 
@@ -275,6 +275,77 @@ we already have.  So, we'll show inconsistent data until we backfill the gap.
          wrong.
    * We'd need to worry about pagination.
    * This is probably the best solution, but can also be added as a v2.
+
+
+## Extended annotation use case
+
+In future it might be useful to be able to annotate events with more
+information, some examples include:
+
+  * Annotate commit/PR notification messages with their associated CI state, e.g.
+    pending/passed/failed.
+  * If a user issues a command to a bot, e.g. `!deploy-site` the bot could
+    annotate that event with current state, like "acknowledged",
+    "redeploying...", "success", "failed", etc.
+  * Other use cases...?
+
+However, this doesn't really work with the proposed grouping, as the aggregation
+key wouldn't contain the right information needed to display it (unlike for
+reactions).
+
+One way to potentially support this is to include the events (or a subset of the
+event) when grouping, so that clients have enough information to render them.
+However this dramatically inceases the size of the parent event if we bundle the
+full events inside, even if limit the number we bundle in. To reduce the
+overhead the annotation event could include a `m.summary` field which gets
+included.
+
+This would look something like the following, where the annotation is:
+
+```json
+{
+  "type": "m.bot_command_response",
+  "content": {
+    "m.summary": {
+      "state": "success",
+    },
+    "m.relates_to": {
+      "type": "m.annotation",
+      "annotation_key": ""
+    }
+  }
+}
+```
+
+and gets bundled into an event like:
+
+```json
+{
+  "unsigned": {
+    "m.relations": {
+      "m.annotation": [
+        {
+          "type": "m.bot_command_response",
+          "aggregation_key": "",
+          "count": 1,
+          "chunk": [
+            {
+              "state": "success",
+            }
+          ],
+          "limited": false,
+        }
+      ]
+    }
+  }
+}
+```
+
+This is something that could be added later on. A few issues with this are:
+
+  * How does this work with end to end? How do we encrypt the `m.summary`?
+  * We would end up including old annotations that had been superceded, should
+    these be done via edits instead?
 
 
 ## Historical context
