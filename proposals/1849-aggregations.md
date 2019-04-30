@@ -198,7 +198,7 @@ The `parent_id` is:
 The same happens in the sync API, however the client will need to handle new
 relations themselves when they come down incremental sync.
 
-## Pagination
+## Pagination
 
 We need to paginate over:
  * The relations of a given event, via /messages? or /context? or something else?
