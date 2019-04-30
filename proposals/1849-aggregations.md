@@ -1,6 +1,6 @@
 # Proposal for aggregations via m.relates_to
 
-> WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP 
+> WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP
 
 A very rough WIP set of notes on how relations could work in Matrix.
 
@@ -17,223 +17,271 @@ Today, replies looks like:
 }
 ```
 
-`m.relates_to` is the signal to the server that the fields within describe aggregation operations.
+`m.relates_to` is the signal to the server that the fields within describe
+aggregation operations.
 
-This is a bit clunky as for other types of relations, we end up duplicating the "m.in_reply_to"
-type between the event type and the relationship type.
-So instead, perhaps we should only specify a relationship type if strictly needed, e.g.:
+We would like to add support for other types of relations, including message
+editing and reactions.
 
-```json
-"type": "m.room.message",
-"contents": {
-    "m.relates_to": {
-        "event_id": "$another:event.com",
-        "type": "m.reply"
-    }
-}
-```
 
-and
+## Types of relations
 
-```json
-"type": "m.reaction",
-"contents": {
-    "m.text": "👍",
-    "m.relates_to": {
-        "event_id": "$another:event.com",
-    }
-}
-```
+There are three broad types of relations: annotations, replacements and
+references.
 
-And then the server just blitzes through `m.relates_to.event_id` and builds up all the relationships based on that field.
-This is kinda similar to pik's proposal below, but without the JSON schema.
+Annotations are things like reactions, which should be displayed alongside the
+original event. These should support be aggregated so that e.g. if twenty people
+"likes" an event we can bundle the twenty events together when sending the
+original event to clients. Another usage of an annotation is e.g. for bots, who
+could use annotations to report the success/failure or progress of a command.
 
-## CS API considerations
+Replacements are essentially edits, and indicate that instead of giving clients
+the original event they should be handed the replacement event instead. Clients
+should be able to request all replacements of an event, i.e. the "edit history".
 
-Then, whenever the event is served down the CS API, we inline the relations for a given event (modulo filters)?
+References things like replies, where a later event refers to an earlier event
+in some way. The server should include references when sending an event to the
+client so they can display the number of replies, and navigate easily to them.
 
-For edits, we'd want the most recent relation (by default)
-For reactions, we want all the reaction objects (or ideally their sum?)
-For replies, we don't want the original at all; the client can load it if needed via /context.
+These types effect how the server bundles the related events with the original,
+and so the type must be known to servers when handling relations. However, the
+exact semantics of a particular relation only needs to be known by clients. This
+means that if we include the relation type in the related event we can use the
+event type to easily add new types of e.g annotations without requiring server
+side support.
 
-Proposal: start off syncing the relations individually, rather than summing reactions.
-For edits, the server can be smart and send the most recent msg.
 
-We should send the aggregated event down during normal pagination,
-as well as the individual relations down incrementally during sync.
+## Aggregating and paginating relations
 
-After a limited sync, we should send a fresh aggregated event rather
-than try to calculate a delta (possibly minus the contents field of
-the original event)
+In large rooms an event may end up having a large number of related events, and
+so we do not want to have to include all relations when sending the event to the
+client. How we limit depends on the relation type.
 
-This is similar to how redactions are calculated today.  We just build up a table of which events reference
-which other events, and expand them out when syncing.
+Annotations are grouped by their event type and an "aggregation key", and the
+top N groups with the highest number is included in the event. For example,
+reactions would be implemented as a `m.reaction` with aggration key of e.g.
+`👍`.
 
-So:
+    TODO: Should we include anything other than event type, aggregation key and
+    count?
 
-Without summing:
 
-```json
-"type": "m.room.message",
-"event_id": "$another:event.com",
-"contents": {
-    "m.text": "I have an excellent idea",
-},
-"relations": [
-    {
-        "type": "m.reaction",
-        "contents": {
-            "event_id": "$reaction:alice.com",
-            "sender": "@alice:alice.com",
-            "m.text": "👍",
-        }
-    },
-    {
-        "type": "m.reaction",
-        "contents": {
-            "event_id": "$reaction:alice.com",
-            "sender": "@alice:alice.com",
-            "m.text": "👎",
-        }
-    },
-    // etc...
-]
-```
+Replacements replace the original event, and so no aggregation is required.
+Though care must be taken by the server to ensure that if there are multiple
+replacement events it consistently chooses the same one as all other servers.
+The replacement event should also include a reference to the original event ID
+so that clients can tell that the message has been edited.
 
-With summing, in future:
+For references the original event should include the list of `type` and
+`event_id` of the earliest N references.
 
-```json
-"type": "m.room.message",
-"event_id": "$another:event.com",
-"contents": {
-    "m.text": "I have an excellent idea",
-},
-"relations": [
-    {
-        "type": "m.reaction",
-        "contents": {
-            "m.text": "👍",
-            "count": 120,
-        }
-    },
-    {
-        "type": "m.reaction",
-        "contents": {
-            "m.text": "👎",
-            "count": 42,
-        }
-    },
-]
-```
+    TODO: Do we need the type? Do we want to differentiate between replies and
+    other types of references? This assumes the type of the related event gives
+    some hint to clients.
 
-XXX: if we are doing sums, we need to worry about races between aggregated events
-and the individual relation deltas in /sync responss.
+In each case where we limit what is included there should be a corresponding API
+to paginate the full sets of events. Annotations would need APIs for both
+fetching more groups and fetching events in a group.
 
-## Sending relations
 
-PUT /_matrix/client/r0/rooms/{roomId}/send_relation/{parent_id}/{eventType}/{txnId}
+## Event format
+
+All the information about the relation is put under `m.relates_to` key.
+
+A reply would look something like:
+
 ```json
 {
-    "m.text": "👍",
+    "type": "m.room.message",
+    "contents": {
+        "m.relates_to": {
+            "type": "m.reply",
+            "event_id": "$some_event_id"
+        }
+    }
 }
 ```
 
-N.B. that the server then gets to populate out the m.relates_to field itself,
-adding the `parent_id` as one parent, but also adding any other dangling relations-dag extremitie.
+And a reaction might look like the following, where we define for `m.reaction`
+that the aggregation key is the unicode reaction itself.
 
-## Receiving relations
+```json
+{
+    "type": "m.reaction",
+    "contents": {
+        "m.relates_to": {
+            "type": "m.annotation",
+            "event_id": "$some_event_id",
+            "aggregation_key": "👍"
+        }
+    }
+}
+```
 
-TODO:
+    TODO: This limits an event to only having one relation, on the assumption
+    that there are no use cases and that it will make life simpler.
 
- * /sync
- * /messages
- * /context
 
-## Pagination considerations
+An event that has relations might look something like:
 
-How do we handle 20K edits in a row?
- * we need to paginate 'vertically' somehow
+```json
+{
+    ...,
+    "unsigned": {
+        "m.relations": {
+            "m.annotation": [
+                {
+                    "type": "m.reaction",
+                    "aggregation_key": "👍",
+                    "count": 3
+                }
+            ],
+            "m.reference": {
+                "chunk": [
+                    {
+                        "type": "m.room.message",
+                        "event_id": "$some_event"
+                    }
+                ],
+                "limited": false,
+                "count": 1
+            }
+        }
+    }
+}
+```
 
-How do we handle a message with 20K different emojis?
- * we need to paginate 'horizontally' somehow - return the 10 most popular emojis?
 
-Do relations automatically give us threads somehow?
- * No; we will at the least need to define how to permalink to a relation then and then paginate around it.
+## End to end encryption
+
+Since the server bundles related events the relation information must not be
+encrypted.
+
+For aggregations of annotations there are two options:
+
+1. Don't group together annotations and have the aggregation_key encrypted, so
+   as to not leak how someone reacted (though server would still see that they
+   did).
+2. In some way encrypt the `aggregation_key`, with the properties that different
+   users and clients reacting in the same way to the same event produce the same
+   `aggregation_key`, but isn't something the server can calculate and is
+   different between different events (to stop statistical analysis). Clients
+   also need to be able to go from encrypted `aggregation_key` to the actual
+   reaction.
+
+   One suggestion here was to use the decryption key of the event as a base for
+   a shared secret.
+
+
+## CS API
+
+Sending a related event uses an equivalent of the normal send API (with an
+equivalent `PUT` API):
+
+```
+POST /_matrix/client/r0/rooms/{roomId}/send_relation/{parent_id}/{relation_type}/{event_type}
+{
+    // event contents
+}
+```
+
+Whenever an event that has relations is sent to the client, e.g. pagination,
+event search etc, the server bundles the relations into the event as per above.
+
+The `parent_id` is:
+    - For annotations the event being displayed (which may be an edit)
+    - For replaces/edits the original event (not previous edits)
+    - For references should be the original event (?)
+
+The same happens in the sync API, howevr the client will need to handle new
+relations themselves when they come down incremental sync.
+
 
 ## Edge cases
 
 What happens when you react to an edit?
- * You should be able to, but the reaction should be attributed to the edit (or its contents) rather than the message as a whole.
+ * You should be able to, but the reaction should be attributed to the edit (or
+   its contents) rather than the message as a whole.
  * So how do you aggregate?
- * Suggestion: edits gather their own reactions, and the clients should display the reactions on the most recent edit.
-   * This provides a social pressure to get your edits in quickly before there are many reactions, otherwise the reactions will get lost.
-   * And it avoids us randomly aggregating reactions to potentially very different contents of messages.
+ * Suggestion: edits gather their own reactions, and the clients should display
+   the reactions on the most recent edit.
+   * This provides a social pressure to get your edits in quickly before there
+     are many reactions, otherwise the reactions will get lost.
+   * And it avoids us randomly aggregating reactions to potentially very
+     different contents of messages.
 
 How do you handle racing edits?
  * The edits could form a DAG of relations for robustness.
     * Tie-break between forward DAG extremities based on origin_ts
-    * m.relates_to should be able to take an array of event_ids.
-    * hard to see who is responsible for linearising the DAG when receiving.  Nasty for the client to do it, but the server would have to buffer, meaning relations could get stuck if an event in the DAG is unavailable.
- * ...or do we just always order by on origin_ts, and rely on a social problem for it not to be abused?
-    * problem is that other relation types might well need a more robust way of ordering. XXX: can we think of any?
+    * this should be different from the target event_id in the relations, to
+      make it easier to know what is being replaced.
+    * hard to see who is responsible for linearising the DAG when receiving.
+      Nasty for the client to do it, but the server would have to buffer,
+      meaning relations could get stuck if an event in the DAG is unavailable.
+ * ...or do we just always order by on origin_ts, and rely on a social problem
+   for it not to be abused?
+    * problem is that other relation types might well need a more robust way of
+      ordering. XXX: can we think of any?
     * could add the DAG in later if it's really needed?
 
 Redactions
- * Redacting an edited event in the UI should redact the original; the client will need to redact the original event to make this happen.
- * Clients could also try to expand the relations and redact those too if they wanted to, but in practice the server shouldn't send down relations to redacted messages, so it's overkill.
- * You can also redact specific relations if needed (e.g. to remove a reaction from ever happening)
- * If you redact an relation, we keep the relation DAG (and solve that metadata leak alongside our others)
+ * Redacting an edited event in the UI should redact the original; the client
+   will need to redact the original event to make this happen.
+   * Is this not problematic when trying to remove illegal content from servers?
+ * Clients could also try to expand the relations and redact those too if they
+   wanted to, but in practice the server shouldn't send down relations to
+   redacted messages, so it's overkill.
+ * You can also redact specific relations if needed (e.g. to remove a reaction
+   from ever happening)
+ * If you redact an relation, we keep the relation DAG (and solve that metadata
+   leak alongside our others)
 
 What does it mean to call /context on a relation?
- * We should probably just return the root event for now, and then refine it in future for threading?
-
-## E2E considerations
-
-In E2E rooms:
- * The payload should be encrypted.  This means that we can't sum emoji reactions serverside;
-   they'll have to be passed around one by one.  Given E2E rooms tend to be smaller, this is
-   hopefully not a major problem.  We could reduce bandwidth by reusing the same key to
-   encrypt the relations as the original message.
-   * This means that reputation data can't be calculated serverside for E2E rooms however.
-   * It might be okay to calculate it clientside?  Or we could special-case reputation data to not be E2E?
- * The m.relates_to field however should not be encrypted, so that the server can use it for
-   performing aggregations where possible (e.g. returning only the most recent edit).
+ * We should probably just return the root event for now, and then refine it in
+   future for threading?
 
 ## Federation considerations
 
-In general, no special considerations are needed for federation; relational events are just sent as needed over federation
-same as any other event type - aggregated onto the original event if needed.
+In general, no special considerations are needed for federation; relational
+events are just sent as needed over federation same as any other event type -
+aggregated onto the original event if needed.
 
 We have a problem with resynchronising relations after a gap in federation:
 We have no way of knowing that an edit happened in the gap to one of the events
 we already have.  So, we'll show inconsistent data until we backfill the gap.
  * We could write this off as a limitation.
- * Or we could make *ALL* relations a DAG, so we can spot holes at the next relation, and
-   go walk the DAG to pull in the missing relations?  Then, the next relation for an event
-   could pull in any of the missing relations.  Socially this probably doesn't work as reactions
-   will likely drop-off over time, so by the time your server comes back there won't be any more
-   reactions pulling the missing ones in.
- * Could we also ask the server, after a gap, to provide all the relations which happened during the gap to events whose root preceeded the gap.
-   * "Give me all relations which happened between this set of forward-extremities when I lost sync, and the point i've rejoined the DAG, for events which preceeded the gap"?
+ * Or we could make *ALL* relations a DAG, so we can spot holes at the next
+   relation, and go walk the DAG to pull in the missing relations?  Then, the
+   next relation for an event could pull in any of the missing relations.
+   Socially this probably doesn't work as reactions will likely drop-off over
+   time, so by the time your server comes back there won't be any more reactions
+   pulling the missing ones in.
+ * Could we also ask the server, after a gap, to provide all the relations which
+   happened during the gap to events whose root preceeded the gap.
+   * "Give me all relations which happened between this set of
+     forward-extremities when I lost sync, and the point i've rejoined the DAG,
+     for events which preceeded the gap"?
    * Would be hard to auth all the relations which this api coughed up.
-     * We could auth them based only the auth events of the relation, except we lose the context of the nearby DAG which we'd have if it was a normal backfilled event.
-     * As a result it would be easier for a server to retrospectively lie about events on behalf of its users.
-     * This probably isn't the end of the world, plus it's more likely to be consistent than if we leave a gap.
-       * i.e. it's better to consistent with a small chance of being maliciously wrong, than inconsistent with a guaranteed chance of being innocently wrong.
+     * We could auth them based only the auth events of the relation, except we
+       lose the context of the nearby DAG which we'd have if it was a normal
+       backfilled event.
+     * As a result it would be easier for a server to retrospectively lie about
+       events on behalf of its users.
+     * This probably isn't the end of the world, plus it's more likely to be
+       consistent than if we leave a gap.
+       * i.e. it's better to consistent with a small chance of being maliciously
+         wrong, than inconsistent with a guaranteed chance of being innocently
+         wrong.
    * We'd need to worry about pagination.
    * This is probably the best solution, but can also be added as a v2.
 
-In future, we might want to aggregate relational events (e.g. send a summary of the events, rather than the
-actual original events).  This requires the payload to be non-E2E encrypted, and would also require some kind of
-challenge-response mechanism to prove that the summary is accurate to the recipients (a ZK mechanism of some kind).
-In some ways this is a subset of the more general problem of how we can efficiently send summaries of rooms and even
-room state over federation without having to send all the events up front.
 
 ## Historical context
 
 pik's MSC441 has:
 
-Define the JSON schema for the aggregation event, so the server can work out which fields should be aggregated.
+Define the JSON schema for the aggregation event, so the server can work out
+which fields should be aggregated.
 
 ```json
 "type": "m.room._aggregation.emoticon",
@@ -244,8 +292,8 @@ Define the JSON schema for the aggregation event, so the server can work out whi
 }
 ```
 
-These would then aggregated, based on target_id, and returned as annotations on the source event in an
-`aggregation_data` field:
+These would then aggregated, based on target_id, and returned as annotations on
+the source event in an `aggregation_data` field:
 
 ```json
 "contents": {
