@@ -95,7 +95,7 @@ A reply would look something like:
     "type": "m.room.message",
     "contents": {
         "m.relates_to": {
-            "type": "m.reply",
+            "type": "m.references",
             "event_id": "$some_event_id"
         }
     }
@@ -189,9 +189,10 @@ Whenever an event that has relations is sent to the client, e.g. pagination,
 event search etc, the server bundles the relations into the event as per above.
 
 The `parent_id` is:
-    - For annotations the event being displayed (which may be an edit)
-    - For replaces/edits the original event (not previous edits)
-    - For references should be the original event (?)
+
+  * For annotations the event being displayed (which may be an edit)
+  * For replaces/edits the original event (not previous edits)
+  * For references should be the original event (?)
 
 The same happens in the sync API, howevr the client will need to handle new
 relations themselves when they come down incremental sync.
