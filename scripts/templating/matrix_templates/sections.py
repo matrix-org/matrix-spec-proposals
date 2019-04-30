@@ -34,15 +34,10 @@ class MatrixSections(Sections):
     def render_changelogs(self):
         rendered = {}
         changelogs = self.units.get("changelogs")
-        for spec, versioned in changelogs.items():
+        for spec, changelog_text in changelogs.items():
             spec_var = "%s_changelog" % spec
             logger.info("Rendering changelog for spec: %s" % spec)
-            for version, changelog in versioned.items():
-                version_var = "%s_%s" % (spec_var, version)
-                logger.info("Rendering changelog for %s" % version_var)
-                rendered[version_var] = changelog
-                if version == "unstable":
-                    rendered[spec_var] = changelog
+            rendered[spec_var] = changelog_text
         return rendered
 
     def _render_events(self, filterFn, sortFn):

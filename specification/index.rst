@@ -196,7 +196,7 @@ allocated the account and has the form::
 
   @localpart:domain
 
-See `'Identifier Grammar' the appendices <appendices.html#identifier-grammar>`_ for full details of
+See `'Identifier Grammar' in the appendices <appendices.html#identifier-grammar>`_ for full details of
 the structure of user IDs.
 
 Devices
