@@ -94,6 +94,7 @@ A reply would look something like:
 {
     "type": "m.room.message",
     "contents": {
+        "body": "i <3 shelties",
         "m.relates_to": {
             "type": "m.references",
             "event_id": "$some_event_id"
@@ -103,7 +104,7 @@ A reply would look something like:
 ```
 
 And a reaction might look like the following, where we define for `m.reaction`
-that the aggregation key is the unicode reaction itself.
+that the aggregation `key` is the unicode reaction itself.
 
 ```json
 {
@@ -112,7 +113,7 @@ that the aggregation key is the unicode reaction itself.
         "m.relates_to": {
             "type": "m.annotation",
             "event_id": "$some_event_id",
-            "aggregation_key": "👍"
+            "key": "👍"
         }
     }
 }
@@ -132,7 +133,7 @@ An event that has relations might look something like:
             "m.annotation": [
                 {
                     "type": "m.reaction",
-                    "aggregation_key": "👍",
+                    "key": "👍",
                     "count": 3
                 }
             ],
@@ -159,18 +160,18 @@ encrypted.
 
 For aggregations of annotations there are two options:
 
-1. Don't group together annotations and have the aggregation_key encrypted, so
+1. Don't group together annotations and have the aggregation `key` encrypted, so
    as to not leak how someone reacted (though server would still see that they
    did).
-2. In some way encrypt the `aggregation_key`, with the properties that different
+2. In some way encrypt the aggregation `key`, with the properties that different
    users and clients reacting in the same way to the same event produce the same
-   `aggregation_key`, but isn't something the server can calculate and is
+   `key`, but isn't something the server can calculate and is
    different between different events (to stop statistical analysis). Clients
-   also need to be able to go from encrypted `aggregation_key` to the actual
+   also need to be able to go from encrypted `key` to the actual
    reaction.
 
-   One suggestion here was to use the decryption key of the event as a base for
-   a shared secret.
+   One suggestion here was to use the message key of the event to encrypt the
+   aggregation `key`.
 
 
 ## CS API
@@ -197,6 +198,24 @@ The `parent_id` is:
 The same happens in the sync API, however the client will need to handle new
 relations themselves when they come down incremental sync.
 
+## Pagination
+
+We need to paginate over:
+ * The relations of a given event, via /messages? or /context? or something else?
+  * For replacements (i.e. edits) we get a paginated list of all edits on the source event
+    * Should permalinks point to the most recent revision of a given edit, or the original one?
+     * Permalinks should capture the event ID that the sender is viewing at that point (which might be an edit ID)
+     * The receiver should resolve this ID to the source event ID, and then display the most recent version that event.
+ * Groups of annotations
+  * Need to paginate across the different groups (i.e. how many different reactions of different types did it get?)
+  * List all the reactions individually per group for this message
+  * List all the reactions full stop for this message (same as paginating over replacements)
+ * References (i.e. threads of replies)
+  * We don't bundle contents in the references (at least for now); instead we just follow the event IDs to stitch the right events back together.
+  * We could include a count?
+  * We just provide the event IDs (to keep it nice and normalised) in a dict; we can denormalise it later for performance if needed by including the event type or whatever.  We could include event_type if it was useful to say "5 replies to this message", except given event types are not just m.room.message (in future), it wouldn't be very useful to say "3 image replies and 2 msg replies".
+
+TODO: WHAT IS THE API SHAPE ERIK?
 
 ## Edge cases
 
@@ -224,6 +243,9 @@ How do you handle racing edits?
     * problem is that other relation types might well need a more robust way of
       ordering. XXX: can we think of any?
     * could add the DAG in later if it's really needed?
+    * the abuse vector is for a malicious moderator to edit a message with origin_ts
+      of MAX_INT. the mitigation is to redact such malicious messages, although this
+      does mean the original message ends up being vandalised... :/
 
 Redactions
  * Redacting an edited event in the UI should redact the original; the client
@@ -276,6 +298,15 @@ we already have.  So, we'll show inconsistent data until we backfill the gap.
    * We'd need to worry about pagination.
    * This is probably the best solution, but can also be added as a v2.
 
+## Security considerations
+
+When using reactions for voting purposes we might well want to anonymise the
+reactor, at least from other users if not server admins, to avoid retribution problems.
+This gives an unfair advantage to people who run their own servers however and
+can cheat and deanonymise (and publish) reactor details.
+
+Or in a MSC1228 world... we could let users join the room under an anonymous
+persona from a big public server in order to vote?
 
 ## Extended annotation use case
 
@@ -311,7 +342,7 @@ This would look something like the following, where the annotation is:
     },
     "m.relates_to": {
       "type": "m.annotation",
-      "annotation_key": ""
+      "key": ""
     }
   }
 }
@@ -326,11 +357,13 @@ and gets bundled into an event like:
       "m.annotation": [
         {
           "type": "m.bot_command_response",
-          "aggregation_key": "",
+          "key": "",
           "count": 1,
           "chunk": [
             {
-              "state": "success",
+              "m.summary": {
+                "state": "success",
+              },
             }
           ],
           "limited": false,
