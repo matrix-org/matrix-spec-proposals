@@ -33,7 +33,7 @@ This proposal defines a set of flags inside the capabilities response.
 ```
 
 This endpoint is authed (as stated in the spec), and the response MUST only apply to the requesting user. That is,
-the server may either disable presence server-wide or for a subset of it's users, but the capabilities API will make
+the server may either disable presence server-wide or for a subset of its users, but the capabilities API will make
 no distinction here and will just respond with the capabilites available to the user.
 
 An omission of `m.presence` would default both sending and receiving to true. An omission of either child flag
