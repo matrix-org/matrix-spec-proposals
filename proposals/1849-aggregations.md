@@ -215,7 +215,70 @@ We need to paginate over:
   * We could include a count?
   * We just provide the event IDs (to keep it nice and normalised) in a dict; we can denormalise it later for performance if needed by including the event type or whatever.  We could include event_type if it was useful to say "5 replies to this message", except given event types are not just m.room.message (in future), it wouldn't be very useful to say "3 image replies and 2 msg replies".
 
-TODO: WHAT IS THE API SHAPE ERIK?
+### API
+
+We provide two API endpoints, one to paginate relations based in normal
+topological order, the second to paginate aggregated annotations.
+
+
+Standard pagination API looks like the following, where you can optionally
+specify relation and event type to filter by. The `dir` param allows client to
+paginate forwards or backwards.
+
+```
+GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{eventType}]]
+```
+
+```json
+{
+  "chunk": [ ... ],
+  "next_batch": "some_token",
+  "prev_batch": "some_token"
+}
+```
+
+Group pagination API operates in two modes, the first is to paginate the groups
+themselves (order by count):
+
+```
+GET /_matrix/client/r0/rooms/{roomID}/annotations/{eventID}[/{eventType}]
+```
+
+```json
+{
+  "chunk": [
+    {
+      "type": "m.reaction",
+      "key": "👍",
+      "count": 5,
+    }
+  ],
+  "next_batch": "some_token",
+  "prev_batch": "some_token"
+}
+```
+
+The second paginates within a group, in normal topological order:
+
+```
+GET /_matrix/client/r0/rooms/{roomID}/annotations/{eventID}/{eventType}/{key}
+```
+
+```json
+{
+  "chunk": [
+    {
+      "type": "m.reaction",
+      "sender": "..",
+      "content": { ... }
+    },
+    ...
+  ],
+  "next_batch": "some_token",
+  "prev_batch": "some_token"
+}
+```
+
 
 ## Edge cases
 
