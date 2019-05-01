@@ -42,8 +42,8 @@ This proposal doesn't address the `PUT
 of it.
 
 If a call to any of the `v2` endpoints described in this proposal results in an
-unrecognised request exception, then the sending server should retry the request
-with the `v1` API.
+unrecognised request exception (i.e. in a response with a 400 or a 404 status
+code), then the sending server should retry the request with the `v1` API.
 
 ## Alternative solutions
 
