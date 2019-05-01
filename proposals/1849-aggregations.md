@@ -111,7 +111,7 @@ that the aggregation `key` is the unicode reaction itself.
     "type": "m.reaction",
     "contents": {
         "m.relates_to": {
-            "type": "m.annotation",
+            "rel_type": "m.annotation",
             "event_id": "$some_event_id",
             "key": "👍"
         }
@@ -130,13 +130,17 @@ An event that has relations might look something like:
     ...,
     "unsigned": {
         "m.relations": {
-            "m.annotation": [
-                {
-                    "type": "m.reaction",
-                    "key": "👍",
-                    "count": 3
-                }
-            ],
+            "m.annotation": {
+                "chunk": [
+                  {
+                      "type": "m.reaction",
+                      "key": "👍",
+                      "count": 3
+                  }
+                ],
+                "limited": false,
+                "count": 1
+            },
             "m.reference": {
                 "chunk": [
                     {
@@ -152,6 +156,7 @@ An event that has relations might look something like:
 }
 ```
 
+ERIK, WE NEED AN EDIT EXAMPLE O:-)
 
 ## End to end encryption
 
@@ -247,11 +252,17 @@ GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{even
 ```
 
 The aggregated pagination API operates in two modes, the first is to paginate
-the groups themselves (order by count):
+the groups themselves
 
 ```
-GET /_matrix/client/r0/rooms/{roomID}/annotations/{eventID}[/{eventType}]
+GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{eventType}][?filter=id]
 ```
+
+We use the filter to specify/override how to aggregate the relations, and we use the same filter shape
+to inform /sync how we want to be receiving our bundled relations.  By default:
+ * rel_type of m.annotations == group by count, and order by count desc
+ * rel_type of m.replaces == we just get the most recent message, no bundles.
+ * rel_type of m.references == we get the IDs of the events replying to us, and the total count of replies to this msg
 
 ```json
 {
@@ -270,7 +281,13 @@ GET /_matrix/client/r0/rooms/{roomID}/annotations/{eventID}[/{eventType}]
 The second paginates within a group, in normal topological order:
 
 ```
-GET /_matrix/client/r0/rooms/{roomID}/annotations/{eventID}/{eventType}/{key}
+GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}/${relationType}/{eventType}/{key}
+```
+
+e.g.
+
+```
+GET /_matrix/client/r0/rooms/!asd:matrix.org/aggregations/$1cd23476/m.annotation/m.reaction/👍
 ```
 
 ```json
