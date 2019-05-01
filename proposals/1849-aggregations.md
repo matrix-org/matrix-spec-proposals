@@ -220,10 +220,13 @@ We need to paginate over:
 We provide two API endpoints, one to paginate relations based in normal
 topological order, the second to paginate aggregated annotations.
 
+Both APIs behave in a similar way to `/messages`, except using `next_batch` and
+`prev_batch` names (in line with `/sync` API). Clients can start paginating
+either from the earliest or latest events using the `dir` param.
+
 
 Standard pagination API looks like the following, where you can optionally
-specify relation and event type to filter by. The `dir` param allows client to
-paginate forwards or backwards.
+specify relation and event type to filter by.
 
 ```
 GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{eventType}]]
@@ -231,14 +234,20 @@ GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{even
 
 ```json
 {
-  "chunk": [ ... ],
+  "chunk": [
+    {
+      "type": "m.reaction",
+      "sender": "...",
+      "content": { }
+    }
+  ],
   "next_batch": "some_token",
   "prev_batch": "some_token"
 }
 ```
 
-Group pagination API operates in two modes, the first is to paginate the groups
-themselves (order by count):
+The aggregated pagination API operates in two modes, the first is to paginate
+the groups themselves (order by count):
 
 ```
 GET /_matrix/client/r0/rooms/{roomID}/annotations/{eventID}[/{eventType}]
@@ -269,10 +278,9 @@ GET /_matrix/client/r0/rooms/{roomID}/annotations/{eventID}/{eventType}/{key}
   "chunk": [
     {
       "type": "m.reaction",
-      "sender": "..",
-      "content": { ... }
+      "sender": "...",
+      "content": { }
     },
-    ...
   ],
   "next_batch": "some_token",
   "prev_batch": "some_token"
