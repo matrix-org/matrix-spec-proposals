@@ -30,5 +30,5 @@ go get gopkg.in/fsnotify/fsnotify.v1
 
 # build the spec for matrix.org.
 # (we don't actually use it on travis, but it's still useful to check we
-# can build it. On Jenkins, this is then used to deploy to matrix.org).
+# can build it. On Buildkite, this is then used to deploy to matrix.org).
 ./scripts/generate-matrix-org-assets

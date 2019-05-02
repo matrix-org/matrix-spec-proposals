@@ -291,8 +291,8 @@ v         string           **Required.** Version of the encrypted attachments
 ========= ========= ============================================================
 Parameter Type      Description
 ========= ========= ============================================================
-key       string    **Required.** Key type. Must be ``oct``.
-key_opts  [string]  **Required.** Key operations. Must at least contain
+kty       string    **Required.** Key type. Must be ``oct``.
+key_ops   [string]  **Required.** Key operations. Must at least contain
                     ``encrypt`` and ``decrypt``.
 alg       string    **Required.** Algorithm. Must be ``A256CTR``.
 k         string    **Required.** The key, encoded as urlsafe unpadded base64.
@@ -496,17 +496,8 @@ passphrase, and is created as follows:
 Key export format
 <<<<<<<<<<<<<<<<<
 
-The exported sessions are formatted as a JSON object of type ``ExportData``
+The exported sessions are formatted as a JSON array of ``SessionData`` objects
 described as follows:
-
-``ExportData``
-
-=============== ================= ==============================================
-Parameter       Type              Description
-=============== ================= ==============================================
-sessions        ``[SessionData]`` Required. The sessions that are being
-                                  exported.
-=============== ================= ==============================================
 
 ``SessionData``
 
@@ -529,7 +520,7 @@ sessions        ``[SessionData]`` Required. The sessions that are being
                                                device which initiated the session
                                                originally.
    sender_claimed_keys             {string:    Required. The Ed25519 key of the
-                                   integer}    device which initiated the session
+                                   string}     device which initiated the session
                                                originally.
    session_id                      string      Required. The ID of the session.
    session_key                     string      Required. The key for the session.

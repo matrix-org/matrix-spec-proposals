@@ -98,8 +98,10 @@ the ``newsfragments`` directory. The ``type`` can be one of the following:
 
 * ``deprecation`` - Used when deprecating something
 
-All news fragments must have a brief summary explaining the change in the contents
-of the file. The summary must end in a full stop to be in line with the style guide.
+All news fragments must have a brief summary explaining the change in the
+contents of the file. The summary must end in a full stop to be in line with
+the style guide and and formatting must be done using `Restructured Text
+<http://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_.
 
 Changes that do not change the spec, such as changes to the build script, formatting,
 CSS, etc should not get a news fragment.

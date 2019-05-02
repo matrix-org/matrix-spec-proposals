@@ -202,6 +202,7 @@ paths:
           type: integer
           x-example: 64
           name: width
+          required: true
           description: |-
             The *desired* width of the thumbnail. The actual thumbnail may not
             match the size specified.
@@ -209,6 +210,7 @@ paths:
           type: integer
           x-example: 64
           name: height
+          required: true
           description: |-
             The *desired* height of the thumbnail. The actual thumbnail may not
             match the size specified.

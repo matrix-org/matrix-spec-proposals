@@ -73,7 +73,7 @@ MUST be encoded as UTF-8. Clients are authenticated using opaque
 ``access_token`` strings (see `Client Authentication`_ for details), passed as a
 query string parameter on all requests.
 
-The names of the API endponts for the HTTP transport follow a convention of
+The names of the API endpoints for the HTTP transport follow a convention of
 using underscores to separate words (for example ``/delete_devices``). The key
 names in JSON objects passed over the API also follow this convention.
 
@@ -210,10 +210,18 @@ Other error codes the client might encounter are:
   The resource being requested is reserved by an application service, or the
   application service making the request has not created the resource.
 
+:``M_RESOURCE_LIMIT_EXCEEDED``:
+  The request cannot be completed because the homeserver has reached a resource
+  limit imposed on it. For example, a homeserver held in a shared hosting environment
+  may reach a resource limit if it starts using too much memory or disk space. The
+  error MUST have an ``admin_contact`` field to provide the user receiving the error
+  a place to reach out to. Typically, this error will appear on routes which attempt
+  to modify state (eg: sending messages, account data, etc) and not routes which only
+  read state (eg: ``/sync``, get account data, etc).
+
 .. TODO: More error codes (covered by other issues)
 .. * M_CONSENT_NOT_GIVEN                - GDPR: https://github.com/matrix-org/matrix-doc/issues/1512
 .. * M_CANNOT_LEAVE_SERVER_NOTICE_ROOM  - GDPR: https://github.com/matrix-org/matrix-doc/issues/1254
-.. * M_RESOURCE_LIMIT_EXCEEDED          - Limits: https://github.com/matrix-org/matrix-doc/issues/1504
 
 .. _sect:txn_ids:
 
@@ -650,7 +658,7 @@ For example, to authenticate using the user's Matrix ID, clients would submit:
     "session": "<session ID>"
   }
 
-Alternatively reply using a 3pid bound to the user's account on the homeserver
+Alternatively reply using a 3PID bound to the user's account on the homeserver
 using the |/account/3pid|_ API rather then giving the ``user`` explicitly as
 follows:
 
@@ -667,7 +675,7 @@ follows:
     "session": "<session ID>"
   }
 
-In the case that the homeserver does not know about the supplied 3pid, the
+In the case that the homeserver does not know about the supplied 3PID, the
 homeserver must respond with 403 Forbidden.
 
 Google ReCaptcha
@@ -930,8 +938,8 @@ Third-party ID
 :Description:
   The user is identified by a third-party identifier in canonicalised form.
 
-A client can identify a user using a 3pid associated with the user's account on
-the homeserver, where the 3pid was previously associated using the
+A client can identify a user using a 3PID associated with the user's account on
+the homeserver, where the 3PID was previously associated using the
 |/account/3pid|_ API.  See the `3PID Types`_ Appendix for a list of Third-party
 ID media.
 
@@ -987,7 +995,7 @@ request as follows:
     "password": "<password>"
   }
 
-Alternatively, a client can use a 3pid bound to the user's account on the
+Alternatively, a client can use a 3PID bound to the user's account on the
 homeserver using the |/account/3pid|_ API rather then giving the ``user``
 explicitly, as follows:
 
@@ -1002,7 +1010,7 @@ explicitly, as follows:
     "password": "<password>"
   }
 
-In the case that the homeserver does not know about the supplied 3pid, the
+In the case that the homeserver does not know about the supplied 3PID, the
 homeserver must respond with ``403 Forbidden``.
 
 To log in using a login token, clients should submit a ``/login`` request as
