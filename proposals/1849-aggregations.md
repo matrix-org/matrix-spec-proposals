@@ -171,8 +171,6 @@ An event that has relations might look something like:
 }
 ```
 
-ERIK, WE NEED AN EDIT EXAMPLE O:-)
-
 ## End to end encryption
 
 Since the server bundles related events the relation information must not be
