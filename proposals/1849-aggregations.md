@@ -96,7 +96,7 @@ A reply would look something like:
     "contents": {
         "body": "i <3 shelties",
         "m.relates_to": {
-            "type": "m.references",
+            "type": "m.reference",
             "event_id": "$some_event_id"
         }
     }
@@ -122,6 +122,21 @@ that the aggregation `key` is the unicode reaction itself.
     TODO: This limits an event to only having one relation, on the assumption
     that there are no use cases and that it will make life simpler.
 
+An edit would be:
+
+```json
+{
+    "type": "m.room.message",
+    "contents": {
+        "body": "Hello! I'm an edit",
+        "msgtype": "m.text",
+        "m.relates_to": {
+            "rel_type": "m.replace",
+            "event_id": "$some_event_id",
+        }
+    }
+}
+```
 
 An event that has relations might look something like:
 
@@ -206,19 +221,30 @@ relations themselves when they come down incremental sync.
 ## Pagination
 
 We need to paginate over:
- * The relations of a given event, via /messages? or /context? or something else?
+ * The relations of a given event, via /messages? or /context? or something
+   else?
   * For replacements (i.e. edits) we get a paginated list of all edits on the source event
-    * Should permalinks point to the most recent revision of a given edit, or the original one?
-     * Permalinks should capture the event ID that the sender is viewing at that point (which might be an edit ID)
-     * The receiver should resolve this ID to the source event ID, and then display the most recent version that event.
+    * Should permalinks point to the most recent revision of a given edit, or
+      the original one?
+     * Permalinks should capture the event ID that the sender is viewing at that
+       point (which might be an edit ID)
+     * The receiver should resolve this ID to the source event ID, and then
+       display the most recent version that event.
  * Groups of annotations
-  * Need to paginate across the different groups (i.e. how many different reactions of different types did it get?)
+  * Need to paginate across the different groups (i.e. how many different
+    reactions of different types did it get?)
   * List all the reactions individually per group for this message
   * List all the reactions full stop for this message (same as paginating over replacements)
  * References (i.e. threads of replies)
-  * We don't bundle contents in the references (at least for now); instead we just follow the event IDs to stitch the right events back together.
+  * We don't bundle contents in the references (at least for now); instead we
+    just follow the event IDs to stitch the right events back together.
   * We could include a count?
-  * We just provide the event IDs (to keep it nice and normalised) in a dict; we can denormalise it later for performance if needed by including the event type or whatever.  We could include event_type if it was useful to say "5 replies to this message", except given event types are not just m.room.message (in future), it wouldn't be very useful to say "3 image replies and 2 msg replies".
+  * We just provide the event IDs (to keep it nice and normalised) in a dict; we
+    can denormalise it later for performance if needed by including the event
+    type or whatever.  We could include event_type if it was useful to say "5
+    replies to this message", except given event types are not just
+    m.room.message (in future), it wouldn't be very useful to say "3 image
+    replies and 2 msg replies".
 
 ### API
 
@@ -258,11 +284,13 @@ the groups themselves
 GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{eventType}][?filter=id]
 ```
 
-We use the filter to specify/override how to aggregate the relations, and we use the same filter shape
-to inform /sync how we want to be receiving our bundled relations.  By default:
+We use the filter to specify/override how to aggregate the relations, and we use
+the same filter shape to inform /sync how we want to be receiving our bundled
+relations.  By default:
  * rel_type of m.annotations == group by count, and order by count desc
  * rel_type of m.replaces == we just get the most recent message, no bundles.
- * rel_type of m.references == we get the IDs of the events replying to us, and the total count of replies to this msg
+ * rel_type of m.references == we get the IDs of the events replying to us, and
+   the total count of replies to this msg
 
 ```json
 {
