@@ -460,7 +460,7 @@ Keys can be manually exported from one device to an encrypted file, copied to
 another device, and imported. The file is encrypted using a user-supplied
 passphrase, and is created as follows:
 
-1. Encode the sessions a JSON object, formatted as described in `Key export
+1. Encode the sessions as a JSON object, formatted as described in `Key export
    format`_.
 2. Generate a 512-bit key from the user-entered passphrase by computing
    `PBKDF2`_\(HMAC-SHA-512, passphrase, S, N, 512), where S is a 128-bit
