@@ -253,7 +253,7 @@ paths:
       responses:
         200:
           description:
-            The claimed keys
+            The claimed keys.
           schema:
             type: object
             properties:
