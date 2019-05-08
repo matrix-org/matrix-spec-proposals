@@ -182,7 +182,7 @@ process:
    field as the ``from`` parameter. If the client is tracking the device list
    of any of the users listed in the response, it marks them as outdated. It
    combines this list with those already flagged as outdated, and initiates a
-   |/keys/query|_ requests for all of them.
+   |/keys/query|_ request for all of them.
 
 .. Warning::
 
