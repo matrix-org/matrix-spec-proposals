@@ -108,7 +108,7 @@ to_device ToDevice  Optional. Information on the send-to-device messages
 ========= ========= =============================================
 Parameter Type      Description
 ========= ========= =============================================
-events    [Event]   List of send-to-device messages
+events    [Event]   List of send-to-device messages.
 ========= ========= =============================================
 
 ``Event``
