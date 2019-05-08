@@ -3,7 +3,7 @@
 ## Proposal
 
 Some homeservers choose to disable the presence feature, so that users cannot send or receive presence.
-This should be specificed in the new capabilities API. Servers can also choose to restrict some users
+This should be specified in the new capabilities API. Servers can also choose to restrict some users
 while allowing others, and the capabilities response should reflect this (since the endpoint is authed).
 
 This proposal makes it optional to support presence in the spec, while this has been the reality in the 
