@@ -21,7 +21,7 @@
 This proposal introduces the concept of relations, which can be used to associate
 new information with an existing event.  Relations are events which have an `m.relates_to`
 mixin in their contents, and the new information they convey is expressed in their
-usual event `type` and `contents`.
+usual event `type` and `content`.
 
 Clients send relations using the new `/send_relation` API.
 
