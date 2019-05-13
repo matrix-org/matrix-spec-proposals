@@ -1,5 +1,21 @@
 # Proposal for aggregations via m.relates_to
 
+  - [Overview](#overview)
+  - [Context](#context)
+  - [Types of relations](#types-of-relations)
+  - [Aggregating and paginating relations](#aggregating-and-paginating-relations)
+  - [Event format](#event-format)
+  - [End to end encryption](#end-to-end-encryption)
+  - [CS API](#cs-api)
+  - [Pagination](#pagination)
+    - [API](#api)
+  - [Edge cases](#edge-cases)
+  - [Federation considerations](#federation-considerations)
+  - [Extended annotation use case](#extended-annotation-use-case)
+  - [Tradeoffs](#tradeoffs)
+    - [Event shape](#event-shape)
+  - [Historical context](#historical-context)
+
 ## Overview
 
 This proposal introduces the concept of relations, which can be used to associate
