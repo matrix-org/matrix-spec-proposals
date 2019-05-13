@@ -38,7 +38,7 @@ within a group).
 Three types of relations are defined, each defining different behaviour when aggregated:
 
  * `m.annotation` - lets you define an event which annotates an existing event.
-   When aggregated, groups events together based on `key` and returns a `count`.  (aka SQL's COUNT)
+   When aggregated, groups events together based on `key` and returns a `count`. (aka SQL's COUNT)
    These are primarily intended for handling reactions.
 
  * `m.replace` - lets you define an event which replaces an existing event.
@@ -121,7 +121,7 @@ This proposal defines three types of relations: annotations, replacements and
 references.
 
  * Annotations are things like reactions, which should be displayed alongside the
-original event. These should support aggregations so that e.g. if twenty people
+original event. These should support being aggregated so that e.g. if twenty peoples
 "like" an event we can bundle the twenty events together when sending the
 original event to clients. Another usage of an annotation is e.g. for bots, who
 could use annotations to report the success/failure or progress of a command.
