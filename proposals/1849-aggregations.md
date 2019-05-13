@@ -397,6 +397,10 @@ How do you handle racing edits?
     * the abuse vector is for a malicious moderator to edit a message with origin_ts
       of MAX_INT. the mitigation is to redact such malicious messages, although this
       does mean the original message ends up being vandalised... :/
+ * Conclusion: let's do it for origin_ts as a first cut, but use event shapes which
+   could be switched to DAG in future is/as needed.  Good news is that it only
+   affects the server implementation; the clients can trust the server to linearise
+   correctly.
 
 How do you remove a reaction?
  * You redact it.
@@ -416,6 +420,32 @@ Redactions
 What does it mean to call /context on a relation?
  * We should probably just return the root event for now, and then refine it in
    future for threading?
+
+Should we enforce that each user can only send one type of reaction to a msg?
+ * Yes. We can do that when sending at CS API as the first cut
+  * But what do we use as a response?  We can do a 400 with an error code that tells us
+    why - i.e. that it's because you can't react multiple times.
+  * We mandate txn IDs to provide idempotency.
+  * (Or can we rely on including our own reactions in bundles to tell whether
+    are doublecounting our own reactions or not?)
+ * However, we need to be able to handle bad servers who send duplicate events anyway.
+   * The only way to do this will be at SS API, and refuse to accept duplicatee
+     events.
+
+Should we always include our own reactions in a bundle, to make it easier to redact them,
+or to show the UI in the right state?
+ * Probably, but this can be a future refinement.
+ * ...but might be needed for imposing one type of reaction per msg.
+
+Should we stop reactions being sent by the normal /send API?
+
+What can we edit?
+ * Only non-state events for now.
+ * We can't change event types, or anything else which is in an E2E payload
+
+How do diffs work on edits if you are missing intermediary edits?
+ * We just have to ensure that the UI for visualising diffs makes it clear
+   that diffs could span multiple edits rather than strictly be per-edit-event.
 
 ## Federation considerations
 
