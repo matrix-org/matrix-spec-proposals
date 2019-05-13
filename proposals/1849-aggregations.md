@@ -1,8 +1,56 @@
 # Proposal for aggregations via m.relates_to
 
-This is WIP, but converging on a final draft which should soon be ready for review
-
 ## Overview
+
+This proposal introduces the concept of relations, which can be used to associate
+new information with an existing event.  Relations are events which have an `m.relates_to`
+mixin in their contents, and the new information they convey is expressed in their
+usual event `type` and `contents`.
+
+Clients send relations using the new `/send_relation` API.
+
+Clients receive relations as normal events in /sync (aka 'unbundled relations'),
+or may also be aggregated together by the server, and presented as
+a 'bundle' attached to the original event.
+
+Bundles of relations for a given event are
+paginated to prevent overloading the client with relations, and may be traversed by
+via the new `/relations` API (which iterates over all relations for an event) or the
+new `/aggregations` API (which iterates over the groups of relations, or the relations
+within a group).
+
+Three types of relations are defined, each defining different behaviour when aggregated:
+
+ * m.annotation - lets you define an event which annotates an existing event.
+   When aggregated, groups events together based on `key` and returns a `count`.  (aka SQL's COUNT)
+   These are primarily intended for handling reactions.
+
+ * m.replace - lets you define an event which replaces an existing event.
+   When aggregated, returns the most recent replacement event. (aka SQL's MAX)
+   These are primarily intended for handling edits.
+
+ * m.reference - lets you define an event which references an existing event.
+   When aggregated, currently doesn't do anything special, but in future could bundle
+   chains of references (i.e. threads).
+   These are primarily intended for handling replies (and in future threads).
+
+This model has been designed for scenarios where the relationship is known between
+two events at the point that the 2nd event is sent.  Therefore, extensible info about
+the relationship is intended to be stored in the 2nd event, rather than the relation
+itself.  For instance, to distinguish different types of references (in_reply_to v. refers
+v. cites v. quotes) you would look at the fields of the 2nd event.  Alternatively, one
+could add fields to the `m.relates_to` object.
+
+    XXX: do we want to support multiple parents for a m.reference event, if a given event
+    references differernt parents in differernt ways?
+
+In future, it may be desirable to send relationship events which link together two
+events retrospectively - e.g. an `m.duplicate` event with an `m.link` relation type
+might be a way to flag that existing 2 events are somehow duplicates of each other.
+However, this would be defined as an entirely different relation type of `m.link`,
+which might bundle together both referenced events when aggregated.
+
+## Context
 
 Today, replies looks like:
 
@@ -24,7 +72,8 @@ We would like to add support for other types of relations, including message
 editing and reactions.
 
 We take the opportunity to simplify m.relates_to to avoid giving the impression
-that relation types are mixins, and we define new relation types to describe the
+that relation types are mixins and that you can send multiple different type of
+relations for a given event, and we define new relation types to describe the
 different classes of aggregations.
 
 ```json
@@ -37,24 +86,14 @@ different classes of aggregations.
 }
 ```
 
-    FIXME: how *do* we specify multiple relations between two events, then,
-    if the only way we can define a relation is attached to the 'object'?
-    Answer: If we have a relation type that applies to two existing events
-    in retrospect, then it would be an event in its own right (with rel_type m.reference).
-    Otherwise, we can save time by applying the m.reference to the object directly.
-
-    FIXME: don't we need a way to specify more specific relation types than
-    m.reference etc?  The difference between a reply and a quote and a thread
-    etc?
-
-    FIXME: should we have a contents in the relation itself?
-
     TODO: given we're changing the shape, should we rename the new type as
     `m.relation` or something, to distinguish from the old `m.relates_to`
     type?
 
     FIXME: Or should we jump straight to m.reference, m.annotation, m.replace
-    as top level mixin types?
+    as top level mixin types?  Erik would prefer not to, as grouping them all
+    under `m.relates_to` makes it very clear that they should not be E2E encrypted
+    etc.  In fact, we could even move this outside of `contents`?
 
 Relation events are then aggregated together based on the behaviour implied by
 their `rel_type`, and bundled appropriately their target event when you /sync.
@@ -62,7 +101,7 @@ Additional APIs are available to send relations and paginate them.
 
 ## Types of relations
 
-There are three broad types of relations: annotations, replacements and
+This proposal defines three types of relations: annotations, replacements and
 references.
 
  * Annotations are things like reactions, which should be displayed alongside the
@@ -208,10 +247,6 @@ An event that has relations bundled alongside it then looks like:
     }
 }
 ```
-
-    FIXME: why `m.relations`?
-    FIXME: this is asymmetric with the rel_types shape we use to send them;
-    is this a problem?
 
 ## End to end encryption
 
@@ -447,6 +482,16 @@ How do diffs work on edits if you are missing intermediary edits?
  * We just have to ensure that the UI for visualising diffs makes it clear
    that diffs could span multiple edits rather than strictly be per-edit-event.
 
+What happens when we edit a reply?
+ * We just send an m.replace which refers to the m.reference target; nothing
+   special is needed.  i.e. you cannot change who the event is replying to.
+
+Do we need to support retrospective references?
+ * For something like "m.duplicate" to retrospectively declare that one event
+   dupes another, we might need to bundle two-levels deep (subject+ref and then
+   ref+target).  We can cross this bridge when we get there though, as a 4th
+   aggregation type
+
 ## Federation considerations
 
 In general, no special considerations are needed for federation; relational
@@ -567,13 +612,6 @@ This is something that could be added later on. A few issues with this are:
 
 ## Tradeoffs
 
-### Aggregation extensibility
-
-We have a choice between freeform aggregation functions a la SQL (SUM, MAX, ARRAY_AGG)
-rather than defining rel_types like m.annotation, m.replace, m.reference respectively.
-
-It's unclear how we are meant to define custom relations or extend these rel types.
-
 ### Event shape
 
 Shape of
@@ -587,7 +625,6 @@ Shape of
     }
 }
 ```
-
 versus
 
 ```json
