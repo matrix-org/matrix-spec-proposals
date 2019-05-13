@@ -37,15 +37,15 @@ within a group).
 
 Three types of relations are defined, each defining different behaviour when aggregated:
 
- * m.annotation - lets you define an event which annotates an existing event.
+ * `m.annotation` - lets you define an event which annotates an existing event.
    When aggregated, groups events together based on `key` and returns a `count`.  (aka SQL's COUNT)
    These are primarily intended for handling reactions.
 
- * m.replace - lets you define an event which replaces an existing event.
+ * `m.replace` - lets you define an event which replaces an existing event.
    When aggregated, returns the most recent replacement event. (aka SQL's MAX)
    These are primarily intended for handling edits.
 
- * m.reference - lets you define an event which references an existing event.
+ * `m.reference` - lets you define an event which references an existing event.
    When aggregated, currently doesn't do anything special, but in future could bundle
    chains of references (i.e. threads).
    These are primarily intended for handling replies (and in future threads).
@@ -369,9 +369,9 @@ GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{
 ```
 
 By default, the aggregation behaviour is defined by the relation type:
- * rel_type of m.annotation == group by count, and order by count desc
- * rel_type of m.replace == we just get the most recent message, no bundles.
- * rel_type of m.reference == we get the IDs of the events replying to us, and
+ * rel_type of `m.annotation` == group by count, and order by count desc
+ * rel_type of `m.replace` == we just get the most recent message, no bundles.
+ * rel_type of `m.reference` == we get the IDs of the events replying to us, and
    the total count of replies to this msg
 
 In future, we could use a filter to specify/override how to aggregate the relations,
@@ -622,7 +622,7 @@ and gets bundled into an event like:
 
 This is something that could be added later on. A few issues with this are:
 
-  * How does this work with end to end? How do we encrypt the `m.summary`?
+  * How does this work with E2EE? How do we encrypt the `m.summary`?
   * We would end up including old annotations that had been superceded, should
     these be done via edits instead?
 
@@ -652,7 +652,7 @@ versus
 }
 ```
 
-The reasons to go with rel_type is:
+The reasons to go with `rel_type` is:
  * we don't need the extra indirection to let multiple relations apply to a given pair of
    events, as that should be expressed as separate relation events.
  * if we want 'adverbs' to apply to 'verbs' in the subject-verb-object triples which
