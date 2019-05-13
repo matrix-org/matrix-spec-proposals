@@ -72,7 +72,7 @@ Today, replies looks like:
 
 ```json
 "type": "m.room.message",
-"contents": {
+"content": {
     "m.relates_to": {
         "m.in_reply_to": {
             "event_id": "$another:event.com"
@@ -94,7 +94,7 @@ different classes of aggregations.
 
 ```json
 "type": "m.room.message",
-"contents": {
+"content": {
     "m.relates_to": {
         "rel_type": "m.reference",
         "event_id": "$another:event.com"
@@ -186,7 +186,7 @@ A reply would look something like:
 ```json
 {
     "type": "m.room.message",
-    "contents": {
+    "content": {
         "body": "i <3 shelties",
         "m.relates_to": {
             "rel_type": "m.reference",
@@ -202,7 +202,7 @@ that the aggregation `key` is the unicode reaction itself.
 ```json
 {
     "type": "m.reaction",
-    "contents": {
+    "content": {
         "m.relates_to": {
             "rel_type": "m.annotation",
             "event_id": "$some_event_id",
@@ -220,7 +220,7 @@ An edit would be:
 ```json
 {
     "type": "m.room.message",
-    "contents": {
+    "content": {
         "body": "Hello! I'm an edit",
         "msgtype": "m.text",
         "m.relates_to": {
@@ -633,7 +633,7 @@ This is something that could be added later on. A few issues with this are:
 Shape of
 
 ```json
-"contents": {
+"content": {
     "m.relates_to": {
         "m.reference": {
             "event_id": "$another:event.com"
@@ -644,7 +644,7 @@ Shape of
 versus
 
 ```json
-"contents": {
+"content": {
     "m.relates_to": {
         "rel_type": "m.reference",
         "event_id": "$another:event.com"
@@ -672,7 +672,7 @@ which fields should be aggregated.
 
 ```json
 "type": "m.room._aggregation.emoticon",
-"contents": {
+"content": {
     "emoticon": "::smile::",
     "msgtype": "?",
     "target_id": "$another:event.com"
@@ -683,7 +683,7 @@ These would then aggregated, based on target_id, and returned as annotations on
 the source event in an `aggregation_data` field:
 
 ```json
-"contents": {
+"content": {
     ...
     "aggregation_data": {
         "m.room._aggregation.emoticon": {
