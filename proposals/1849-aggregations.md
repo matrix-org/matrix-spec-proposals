@@ -472,7 +472,7 @@ What does it mean to call /context on a relation?
  * We should probably just return the root event for now, and then refine it in
    future for threading?
 
-Should we enforce that each user can only send one type of reaction to a msg?
+Should we enforce that each user can only send one of each type of reaction to a msg?
  * Yes. We can do that when sending at CS API as the first cut
   * But what do we use as a response?  We can do a 400 with an error code that tells us
     why - i.e. that it's because you can't react multiple times.
