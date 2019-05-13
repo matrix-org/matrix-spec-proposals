@@ -58,7 +58,7 @@ v. cites v. quotes) you would look at the fields of the 2nd event.  Alternativel
 could add fields to the `m.relates_to` object.
 
     XXX: do we want to support multiple parents for a m.reference event, if a given event
-    references differernt parents in differernt ways?
+    references different parents in different ways?
 
 In future, it may be desirable to send relationship events which link together two
 events retrospectively - e.g. an `m.duplicate` event with an `m.link` relation type
