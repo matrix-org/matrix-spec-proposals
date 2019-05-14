@@ -221,8 +221,12 @@ An edit would be:
 {
     "type": "m.room.message",
     "content": {
-        "body": "Hello! I'm an edit",
+        "body": "s/foo/bar/",
         "msgtype": "m.text",
+        "m.new_content": {
+            "body": "Hello! My name is bar",
+            "msgtype": "m.text",
+        },
         "m.relates_to": {
             "rel_type": "m.replace",
             "event_id": "$some_event_id",
@@ -507,6 +511,10 @@ Do we need to support retrospective references?
    dupes another, we might need to bundle two-levels deep (subject+ref and then
    ref+target).  We can cross this bridge when we get there though, as a 4th
    aggregation type
+
+What power level do you need to be able to edit other people's messages, and how
+does it fit in with fedeation event auth rules?
+ * 50, by default?
 
 ## Federation considerations
 
