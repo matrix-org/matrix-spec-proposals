@@ -23,7 +23,7 @@ which would return the following response with a 200 status code:
 }
 ```
 
-This response format is intentionnally generic so that it allows server
+This response format is intentionally generic so that it allows server
 administrators to rely on a custom solution, for example Dropbox's
 [zxcvbn](https://github.com/dropbox/zxcvbn) tool (in which case the `params`
 object could contain a `complexity` metric with a minimum complexity score the
