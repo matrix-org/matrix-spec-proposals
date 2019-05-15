@@ -789,7 +789,14 @@ Dummy Auth
 :Description:
   Dummy authentication always succeeds and requires no extra parameters. Its
   purpose is to allow servers to not require any form of User-Interactive
-  Authentication to perform a request.
+  Authentication to perform a request. It can also be used to differentiate
+  flows where otherwise one flow would be a subset of another flow. eg. if
+  a server offers flows ``m.login.recaptcha`` and ``m.login.recaptcha,
+  m.login.email.identity`` and the client completes the recaptcha stage first,
+  the auth would succeed with the former flow, even if the client was intending
+  to then complete the email auth stage. A server can instead send flows
+  ``m.login.recaptcha, m.login.dummy`` and ``m.login.recaptcha,
+  m.login.email.identity`` to fix the ambiguity.
 
 To use this authentication type, clients should submit an auth dict with just
 the type and session, if provided:
