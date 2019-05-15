@@ -11,24 +11,6 @@ an appropriate UX.
 
 ## Proposal
 
-This proposal changes the following routes:
-
-* `POST /_matrix/client/r0/register`
-* `POST /_matrix/client/r0/account/password`
-
-By adding a new error response with a 400 status code:
-
-```json
-{
-    "errcode": "M_WEAK_PASSWORD",
-    "error": "<text explaining why the password has been refused>"
-}
-```
-
-This response would be returned by the server following a request to any of
-these routes that contains a password that doesn't comply with the password
-policy configured by the server's administrator.
-
 This proposal also adds a new route, `GET /_matrix/client/r0/password_policy`,
 which would return the following response with a 200 status code:
 
@@ -60,6 +42,42 @@ which `params` have the form:
 }
 ```
 
+This proposal adds new error codes to the existing list:
+
+* `M_PASSWORD_TOO_SHORT`: the provided password's length is shorter than the
+  minimum length required by the server.
+* `M_PASSWORD_NO_DIGITS`: the password doesn't contain any digit but the server
+  requires at least one.
+* `M_PASSWORD_NO_UPPERCASE`: the password doesn't contain any uppercase letter
+  but the server requires at least one.
+* `M_PASSWORD_NO_LOWERCASE`: the password doesn't contain any lowercase letter
+  but the server requires at least one.
+* `M_PASSWORD_NO_SYMBOLS`: the password doesn't contain any symbol but the
+  server requires at least one.
+* `M_PASSWORD_IN_DICTIONNARY`: the password was found in a dictionnary.
+
+Finally, this proposal changes the following routes:
+
+* `POST /_matrix/client/r0/register`
+* `POST /_matrix/client/r0/account/password`
+
+By adding new response formats with a 400 status code following this format:
+
+```json
+{
+    "errcode": "<error code>",
+    "error": "<text further describing the error>"
+}
+```
+
+This response would be returned by the server following a request to any of
+these routes that contains a password that doesn't comply with the password
+policy configured by the server's administrator.
+
+In this response, `<error code>` is one of the error code described above, or
+`M_WEAK_PASSWORD` if the reason the password has been refused doesn't fall into
+one of these categories.
+
 ## Tradeoffs
 
 A less flexible way to define a password policy (e.g. limiting a policy's
@@ -67,10 +85,3 @@ definition to the params for `m.default_policy`) would have been simpler,
 however some clients are already implementing their own passowrd complexity
 policy (Riot Web, for example, uses zxcvbn), and this solution would improve the
 compatibility of the proposed solution with existing software.
-
-Another point is that the localisation of the weak password message is here left
-to the server's responsibility. This is not optimal, and there's an argument for
-more detailed error codes (as opposed to a catch-all `M_WEAK_PASSWORD`).
-However, this isn't really feasible with the approach described in this proposal
-which allows for third-party solutions with their own criteria to evaluate a
-password's complexity.
