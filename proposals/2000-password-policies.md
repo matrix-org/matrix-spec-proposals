@@ -11,7 +11,7 @@ an appropriate UX.
 
 ## Proposal
 
-This proposal also adds a new route, `GET /_matrix/client/r0/password_policy`,
+This proposal adds a new route, `GET /_matrix/client/r0/password_policy`,
 which would return the following response with a 200 status code:
 
 ```json
