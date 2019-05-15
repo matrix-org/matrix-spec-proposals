@@ -54,7 +54,7 @@ This proposal adds new error codes to the existing list:
   but the server requires at least one.
 * `M_PASSWORD_NO_SYMBOLS`: the password doesn't contain any symbol but the
   server requires at least one.
-* `M_PASSWORD_IN_DICTIONNARY`: the password was found in a dictionnary.
+* `M_PASSWORD_IN_DICTIONNARY`: the password was found in a dictionary, and is not acceptable.
 
 Finally, this proposal changes the following routes:
 
