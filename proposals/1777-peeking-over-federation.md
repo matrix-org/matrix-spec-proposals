@@ -22,7 +22,7 @@ inconvenient in many other ways:
 
 ## Solution
 
-If a client asks to peek into a room which its server is nor currently joined
+If a client asks to peek into a room which its server is not currently joined
 to, the server should attempt to join the room using a pseudouser account which
 represents the server itself.
 
