@@ -16,31 +16,29 @@ which would return the following response with a 200 status code:
 
 ```json
 {
-    "type": "<policy type>",
-    "params": {
-        // Parameters
+    "policy": {
+        // Policy parameter
     }
 }
 ```
 
-This response format is intentionally generic so that it allows server
-administrators to rely on a custom solution, for example Dropbox's
-[zxcvbn](https://github.com/dropbox/zxcvbn) tool (in which case the `params`
-object could contain a `complexity` metric with a minimum complexity score the
-password must reach).
+Five optional policy parameters are also specified:
 
-This proposal also specifies a default policy type, named `m.default_policy`,
-which `params` have the form:
+* `m.minimum_length` (integer): Minimum accepted length for a password.
+* `m.require_digits` (boolean): Wether the password must contain at least one
+  digit.
+* `m.require_symbols` (boolean): Wether the password must contain at least one
+  symbol.
+* `m.require_lowercase` (boolean): Wether the password must contain at least one
+  lowercase letter.
+* `m.require_uppercase` (boolean): Wether the password must contain at least one
+  uppercase letter.
 
-```json
-{
-    "minimum_length": 20,
-    "require_digits": true,
-    "require_uppercase": true,
-    "require_lowercase": true,
-    "require_symbols": true
-}
-```
+Implementations are free to add their own policy parameters in their own
+namespace. This  allows server administrators to rely on a custom solution, for
+example Dropbox's [zxcvbn](https://github.com/dropbox/zxcvbn) tool which could
+lead to a `org.example.complexity` parameter describing the minimum expected
+complexity score from zxcvbn's analysis.
 
 This proposal adds new error codes to the existing list:
 
@@ -54,29 +52,31 @@ This proposal adds new error codes to the existing list:
   but the server requires at least one.
 * `M_PASSWORD_NO_SYMBOLS`: the password doesn't contain any symbol but the
   server requires at least one.
-* `M_PASSWORD_IN_DICTIONNARY`: the password was found in a dictionary, and is not acceptable.
+* `M_PASSWORD_IN_DICTIONNARY`: the password was found in a dictionary, and is
+  not acceptable.
 
 Finally, this proposal changes the following routes:
 
 * `POST /_matrix/client/r0/register`
 * `POST /_matrix/client/r0/account/password`
 
-By adding new response formats with a 400 status code following this format:
+By adding new error codes to the list of possible ones returned with a 400
+status code:
 
-```json
-{
-    "errcode": "<error code>",
-    "error": "<text further describing the error>"
-}
-```
-
-This response would be returned by the server following a request to any of
-these routes that contains a password that doesn't comply with the password
-policy configured by the server's administrator.
-
-In this response, `<error code>` is one of the error code described above, or
-`M_WEAK_PASSWORD` if the reason the password has been refused doesn't fall into
-one of these categories.
+* `M_PASSWORD_TOO_SHORT`: the provided password's length is shorter than the
+  minimum length required by the server.
+* `M_PASSWORD_NO_DIGITS`: the password doesn't contain any digit but the server
+  requires at least one.
+* `M_PASSWORD_NO_UPPERCASE`: the password doesn't contain any uppercase letter
+  but the server requires at least one.
+* `M_PASSWORD_NO_LOWERCASE`: the password doesn't contain any lowercase letter
+  but the server requires at least one.
+* `M_PASSWORD_NO_SYMBOLS`: the password doesn't contain any symbol but the
+  server requires at least one.
+* `M_PASSWORD_IN_DICTIONNARY`: the password was found in a dictionary, and is
+  not acceptable.
+* `M_WEAK_PASSWORD` if the reason the password has been refused doesn't fall
+  into one of the previous categories.
 
 ## Tradeoffs
 
