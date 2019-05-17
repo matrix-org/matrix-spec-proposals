@@ -37,7 +37,7 @@ To conclude, the proposed plan is:
     2. Implement this MSC
     3. Define room v5 as this MSC
  4. Release Matrix 1.0, defining room v4 as the new default for creating rooms,
-    but also shipping spport for room v5 for the first time.
+    but also shipping support for room v5 for the first time.
  5. Wait for enough servers to speak v5 rooms.
  6. Define room v5 as the new default for creating rooms.
  7. Define room versions prior to v5 as unsafe, thus prompting users to upgrade their
