@@ -6,8 +6,8 @@ room ID grammar to that proposed in MSC1884.
 ## Proposal
 
 The new room version is called "4". The only difference between v4 and v3 is
-that v4 rooms use the grammar for defining room IDs as proposed in MSC1884 -
-expressing room IDs as url-safe base64 rather than plain base64 for the
+that v4 rooms use the grammar for defining event IDs as proposed in MSC1884 -
+expressing event IDs as url-safe base64 rather than plain base64 for the
 convenience of client implementors.
 
 It is not proposed that servers change the default room version used when
@@ -18,7 +18,7 @@ existing rooms to v4.
 
 We would like to default to creating rooms with a reasonably secure room
 algorithm in upcoming Matrix 1.0.  We do not want to default to creating v3
-rooms due to the inconvenience the v3 room ID grammar might cause, so instead
+rooms due to the inconvenience the v3 event ID grammar might cause, so instead
 we are proposing favouring v4.
 
 Ideally we would also include other room algorithm changes in v4 (e.g.
