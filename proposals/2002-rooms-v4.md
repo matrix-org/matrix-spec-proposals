@@ -33,9 +33,9 @@ To conclude, the proposed plan is:
  1. Define room v4 as MSC1884
  2. Introduce servers with v4 support into the public network as rapidly as possible
  3. Wait for enough servers to speak v4.  Meanwhile:
-   1. Define an MSC for honouring server signing key validity periods
-   2. Implement this MSC
-   3. Define room v5 as this MSC
+    1. Define an MSC for honouring server signing key validity periods
+    2. Implement this MSC
+    3. Define room v5 as this MSC
  4. Release Matrix 1.0, defining room v4 as the new default for creating rooms,
     but also shipping spport for room v5 for the first time.
  5. Wait for enough servers to speak v5 rooms.
