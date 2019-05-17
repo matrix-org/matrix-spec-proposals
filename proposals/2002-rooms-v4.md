@@ -11,7 +11,8 @@ expressing room IDs as url-safe base64 rather than plain base64 for the
 convenience of client implementors.
 
 It is not proposed that servers change the default room version used when
-creating new rooms.
+creating new rooms, and it is not proposed that servers recommend upgrading
+existing rooms to v4.
 
 ## Rationale and Context
 
@@ -20,14 +21,19 @@ algorithm in upcoming Matrix 1.0.  We do not want to default to creating v3
 rooms due to the inconvenience the v3 room ID grammar might cause, so instead
 we are proposing favouring v4.
 
-Ideally we would also include other room algorithm changes in v4 (e.g. honouring
-server signing key validity periods, as per
-https://github.com/matrix-org/synapse/issues/4364), but as spec & implementation
-work is still ongoing there, we are proposing using v4 as a ubiquitous room
-version which can be circulated before Matrix 1.0 and then used as the initial default
-for creating rooms.  The expectation is for the versions of the spec which coincide
-with 1.0 to also support v5 rooms, but in practice v5 will not be marked as default
-until it has sufficient adoption on the public network.
+Ideally we would also include other room algorithm changes in v4 (e.g.
+honouring server signing key validity periods, as per
+https://github.com/matrix-org/synapse/issues/4364), but as spec &
+implementation work is still ongoing there, we are proposing using v4 as a
+room version which can be supported in the wild before Matrix 1.0 and then
+used as the initial default for creating rooms.  The expectation is for the
+versions of the spec which coincide with 1.0 to also support v5 rooms, but in
+practice v5 will not be marked as default until it has sufficient adoption on
+the public network.
+
+The expectation is never to recommend upgrading existing
+rooms to v4, but instead v5 (once ready), to avoid overburdening room admins
+with upgrade notifications.
 
 To conclude, the proposed plan is:
  1. Define room v4 as MSC1884
