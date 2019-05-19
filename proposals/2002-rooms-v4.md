@@ -1,7 +1,7 @@
 # MSC 2002 - Rooms V4
 
 This MSC proposes creating a new room version named v4 to allow servers to switch
-room ID grammar to that proposed in MSC1884.
+event ID grammar to that proposed in MSC1884.
 
 ## Proposal
 
