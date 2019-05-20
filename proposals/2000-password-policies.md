@@ -58,7 +58,7 @@ status code:
   but the server requires at least one.
 * `M_PASSWORD_NO_SYMBOLS`: the password doesn't contain any symbol but the
   server requires at least one.
-* `M_PASSWORD_IN_DICTIONNARY`: the password was found in a dictionary, and is
+* `M_PASSWORD_IN_DICTIONARY`: the password was found in a dictionary, and is
   not acceptable.
 * `M_WEAK_PASSWORD` if the reason the password has been refused doesn't fall
   into one of the previous categories.
