@@ -40,21 +40,6 @@ example Dropbox's [zxcvbn](https://github.com/dropbox/zxcvbn) tool which could
 lead to a `org.example.complexity` parameter describing the minimum expected
 complexity score from zxcvbn's analysis.
 
-This proposal adds new error codes to the existing list:
-
-* `M_PASSWORD_TOO_SHORT`: the provided password's length is shorter than the
-  minimum length required by the server.
-* `M_PASSWORD_NO_DIGITS`: the password doesn't contain any digit but the server
-  requires at least one.
-* `M_PASSWORD_NO_UPPERCASE`: the password doesn't contain any uppercase letter
-  but the server requires at least one.
-* `M_PASSWORD_NO_LOWERCASE`: the password doesn't contain any lowercase letter
-  but the server requires at least one.
-* `M_PASSWORD_NO_SYMBOLS`: the password doesn't contain any symbol but the
-  server requires at least one.
-* `M_PASSWORD_IN_DICTIONNARY`: the password was found in a dictionary, and is
-  not acceptable.
-
 Finally, this proposal changes the following routes:
 
 * `POST /_matrix/client/r0/register`
