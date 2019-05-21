@@ -19,49 +19,51 @@ MSC1680 is presented below.
 
 ## Proposal
 
-Each user has a self-signing key pair that is used to sign their own devices,
-and a user-signing key pair that is used to sign other users' signing keys. A
-user's user-signing key is also signed by their own self-signing key. When one
-user (e.g. Alice) verifies another user's (Bob's) identity, Alice will sign
-Bob's self-signing key with her user-signing key. (This will mean that
+Each user has three sets of key pairs:
+
+- a master cross-signing key pair that is used to identify themselves and to
+  sign their other cross-signing keys,
+- a self-signing key pair that is used to sign their own devices, and
+- a user-signing key pair that is used to sign other users' master keys.
+
+When one user (e.g. Alice) verifies another user's (Bob's) identity, Alice will
+sign Bob's self-signing key with her user-signing key. (This will mean that
 verification methods will need to be modified to pass along the self-signing
 identity key.) Alice's device will trust Bob's device if:
 
-- Alice's device is using a self-signing key that has signed her user-signing key,
-- Alice's user-signing key has signed Bob's self-signing key, and
+- Alice's device is using a master key that has signed her user-signing key,
+- Alice's user-signing key has signed Bob's master key,
+- Bob's master key has signed Bob's self-signing key, and
 - Bob's self-signing key has signed Bob's device key.
 
 ### Key security
 
-A user's private half of their user-signing key pair may be kept unlocked on a
-device, but their self-signing key should not; the private half of the
-self-signing key pair should only be stored encrypted, requiring a passphrase
-to access. By keeping the user-signing key unlocked, Alice can verify Bob's
-identity and distribute signatures to all her devices without needing to enter
-a passphrase to decrypt the key.
+A user's master key could allow an attacker to impersonate that user to other
+users, or other users to that user.  Thus clients must ensure that the private
+part of the master key is treated securely.  If clients do not have a secure
+means of storing the master key (such as an secret storage system provided by
+the operating system), then clients must not store the private part.  If a user
+changes their master key, clients of users that they communicate with must
+notify their users about the change.
 
-If a user's device is compromised, they can issue a new user-signing key,
-signed by their self-signing key, rendering the old user-signing key useless.
-If they are certain that the old user-signing key has not yet been used by an
-attacker, then they may also reissue signatures made by the old user-signing
-key by using the new user-signing key. Otherwise, they will need to re-verify
-the other users.
+A user's user-signing and self-signing keys are intended to be easily
+replaceable if they are compromised by re-issuing a new key signed by the
+user's master key and possibly by re-verifying devices or users.  However,
+doing so relies on the user being able to notice when their keys have been
+compromised, and it involves extra work for the user, and so although clients
+do not have to treat the private parts as sensitively as the master key,
+clients should still make efforts to store the private part securely, or not
+store it at all.  Clients will need to balance the security of the keys with
+the usability of signing users and devices when performing key verification.
 
-If a user's self-signing key is compromised, then the user will need to issue
-both a new self-signing key and a new user-signing key. The user may sign
-their new self-signing key with their old self-signing key, allowing other
-users who have verified the old self-signing key to automatically trust the new
-self-signing key if they wish to. Otherwise, the users will need to re-verify
-each other.
-
-The private halves of the user-signing key pair and self-signing key pair may
-be stored encrypted on the server (possibly along with the megolm key backup)
-so that they may be retrieved by new devices. FIXME: explain how to do this
+The private halves of a user's cross-signing keys be stored encrypted on the
+server so that they may be retrieved by new devices. FIXME: explain how to do
+this via MSC 1946
 
 ### Signature distribution
 
-Currently, users will only be allowed to see signatures made by their own
-self-signing or user-signing keys, or signatures made by other users'
+Currently, users will only be allowed to see signatures made by her own master,
+self-signing or user-signing keys, or signatures made by other users' master or
 self-signing keys about their own devices.  This is done in order to preserve
 the privacy of social connections.  Future proposals may define mechanisms for
 distributing signatures to other users in order to allow for other web-of-trust
@@ -71,19 +73,31 @@ use cases.
 
 #### Uploading signing keys
 
-Public keys for the self-signing and user-signing keys are uploaded to the
-servers using `/keys/device_signing/upload`.  This endpoint requires [UI
+Public keys for the cross-signing keys are uploaded to the servers using
+`/keys/device_signing/upload`.  This endpoint requires [UI
 Auth](https://matrix.org/docs/spec/client_server/r0.4.0.html#user-interactive-authentication-api).
 
 `POST /keys/device_signing/upload`
 
 ``` json
 {
+  "master_key": {
+    "user_id": "@alice:example.com",
+    "usage": ["master"],
+    "keys": {
+      "ed25519:base64+master+public+key": "base64+self+master+key",
+    }
+  },
   "self_signing_key": {
     "user_id": "@alice:example.com",
     "usage": ["self_signing"],
     "keys": {
       "ed25519:base64+self+signing+public+key": "base64+self+signing+public+key",
+    },
+    "signatures": {
+      "@alice:example.com": {
+        "ed25519:base64+master+public+key": "base64+signature"
+      }
     }
   },
   "user_signing_key": {
@@ -94,24 +108,25 @@ Auth](https://matrix.org/docs/spec/client_server/r0.4.0.html#user-interactive-au
     "usage": ["user_signing"],
     "signatures": {
       "@alice:example.com": {
-        "ed25519:base64+self+signing+public+key": "base64+signature"
+        "ed25519:base64+master+public+key": "base64+signature"
       }
     }
   }
 }
 ```
 
-Self-signing and user-signing keys are JSON objects with the following
+Cross-signing keys are JSON objects with the following
 properties:
 
 * `user_id` (string): The user who owns the key
-* `usage` ([string]): Allowed uses for the key.  Must be `["self_signing"]` for
-  self-signing keys, and `["user_signing"]` for user-signing keys.
+* `usage` ([string]): Allowed uses for the key.  Must contain `"master"` for
+  master keys, `"self_signing"` for self-signing keys, and `"user_signing"`
+  for user-signing keys.
 * `keys` ({string: string}): an object that must have one entry, whose name is
   "`ed25519:`" followed by the unpadded base64 encoding of the public key, and
   whose value is the unpadded base64 encoding of the public key.
-* `signatures` ({string: {stringg: string}}): signatures of the key.  A
-  user-signing key must be signed by the self-signing key.
+* `signatures` ({string: {string: string}}): signatures of the key. A
+  self-signing or user-signing key must be signed by the master key.
 
 In order to ensure that there will be no collisions in the `signatures`
 property, the server must respond with an error (FIXME: what error?) if any of
@@ -119,18 +134,14 @@ the uploaded public keys match an existing device ID for the user.  Similarly,
 if a user attempts to log in specifying a device ID matching one of the signing
 keys, the server must respond with an error (FIXME: what error?).
 
-If a user-signing key is uploaded, it must be signed by the current
-self-signing key (or the self-signing key that is included in the request)
+If a self-signing or user-signing key is uploaded, it must be signed by the
+master key that is included in the request, or the current master key if no
+master key is included.
 
-If a previous self-signing key exists, then the new self-signing key must have
-a `replaces` property whose value is the previous public self-signing key.
-Otherwise the server must respond with an error (FIXME: what error?).  The new
-self-signing key may also be signed with the old self-signing key.
-
-After uploading self-signing and user-signing keys, they will be included under
-the `/keys/query` endpoint under the `self_signing_key` and `user_signing_key`
-properties, respectively.  The `user_signing_key` will only be included when a
-user requests their own keys.
+After uploading cross-signing keys, they will be included under the
+`/keys/query` endpoint under the `master_keys`, `self_signing_keys` and
+`user_signing_keys` properties.  The `user_signing_keys` property will only be
+included when a user requests their own keys.
 
 `POST /keys/query`
 
@@ -153,12 +164,26 @@ response:
       // ...
     }
   },
+  "master_keys": {
+    "@alice:example.com": {
+      "user_id": "@alice:example.com",
+      "usage": ["master"],
+      "keys": {
+        "ed25519:base64+master+public+key": "base64+master+public+key"
+      }
+    }
+  },
   "self_signing_keys": {
     "@alice:example.com": {
       "user_id": "@alice:example.com",
       "usage": ["self_signing"],
       "keys": {
         "ed25519:base64+self+signing+public+key": "base64+self+signing+public+key"
+      },
+      "signatures": {
+        "@alice:example.com": {
+          "ed25519:base64+master+public+key": "base64+signature"
+        }
       }
     }
   }
@@ -166,7 +191,9 @@ response:
 ```
 
 Similarly, the federation endpoints `GET /user/keys/query` and
-`POST /user/devices/{userId}` will include the self-signing key.
+`POST /user/devices/{userId}` will include the master and self-signing keys.
+(It will not include the user-signing key because it is not intended to be
+visible to other users.)
 
 `POST /keys/query`
 
@@ -187,12 +214,26 @@ response:
       // ...
     }
   },
+  "master_keys": {
+    "@alice:example.com": {
+      "user_id": "@alice:example.com",
+      "usage": ["master"],
+      "keys": {
+        "ed25519:base64+master+public+key": "base64+master+public+key"
+      }
+    }
+  },
   "self_signing_keys": {
     "@alice:example.com": {
       "user_id": "@alice:example.com",
       "usage": ["self_signing"],
       "keys": {
         "ed25519:base64+self+signing+public+key": "base64+self+signing+public+key"
+      },
+      "signatures": {
+        "@alice:example.com": {
+          "ed25519:base64+master+public+key": "base64+signature"
+        }
       }
     }
   }
@@ -210,11 +251,23 @@ response:
   "devices": [
      // ...
   ],
-  "self_signing_keys": {
+  "master_key": {
+    "user_id": "@alice:example.com",
+    "usage": ["master"],
+    "keys": {
+      "ed25519:base64+master+public+key": "base64+master+public+key"
+    }
+  },
+  "self_signing_key": {
     "user_id": "@alice:example.com",
     "usage": ["self_signing"],
     "keys": {
       "ed25519:base64+self+signing+public+key": "base64+self+signing+public+key"
+    },
+    "signatures": {
+      "@alice:example.com": {
+        "ed25519:base64+master+public+key": "base64+signature"
+      }
     }
   }
 }
@@ -225,7 +278,8 @@ servers that have users who share encrypted rooms with Alice.  The `content` of
 that EDU has the following properties:
 
 * `user_id` (string): Required. The user ID who owns the signing key
-* `self_signing_key` (object): Required. The self-signing key, as above.
+* `master_key` (object): The master key, as above.
+* `self_signing_key` (object): The self-signing key, as above.
 
 After uploading self-signing and user-signing keys, the user will show up in
 the `changed` property of the `device_lists` field of the sync result of any
@@ -235,7 +289,8 @@ others users who share an encrypted room with that user.
 
 Signatures of keys can be uploaded using `/keys/signatures/upload`.
 
-For example, Alice signs one of her devices (HIJKLMN), and Bob's self-signing key.
+For example, Alice signs one of her devices (HIJKLMN) (using her self-signing
+key), and signs Bob's master key (using her user-signing key).
 
 `POST /keys/signatures/upload`
 
@@ -255,7 +310,7 @@ For example, Alice signs one of her devices (HIJKLMN), and Bob's self-signing ke
       },
       "signatures": {
         "@alice:example.com": {
-          "ed25519:base64+user+signing+public+key": "base64+signature+of+HIJKLMN"
+          "ed25519:base64+self+signing+public+key": "base64+signature+of+HIJKLMN"
         }
       }
     }
@@ -264,12 +319,12 @@ For example, Alice signs one of her devices (HIJKLMN), and Bob's self-signing ke
     "bobs+base64+self+signing+public+key": {
       "user_id": "@bob:example.com",
       "keys": {
-        "ed25519:bobs+base64+self+signing+public+key": "bobs+base64+self+signing+public+key"
+        "ed25519:bobs+base64+master+public+key": "bobs+base64+master+public+key"
       },
-      "usage": ["self_signing"],
+      "usage": ["master"],
       "signatures": {
         "@alice:example.com": {
-          "ed25519:base64+user+signing+public+key": "base64+signature+of+bobs+self+signing+key"
+          "ed25519:base64+user+signing+public+key": "base64+signature+of+bobs+master+key"
         }
       }
     }
@@ -313,7 +368,7 @@ response:
         "signatures": {
           "@alice:example.com": {
             "ed25519:HIJKLMN": "base64+self+signature",
-            "ed25519:base64+user+signing+public+key": "base64+signature+of+HIJKLMN"
+            "ed25519:base64+self+signing+public+key": "base64+signature+of+HIJKLMN"
           }
         },
         "unsigned": {
@@ -322,12 +377,22 @@ response:
       }
     }
   },
-  "self_signing_keys": {
-    "@alice:example.com": {
-      "user_id": "@alice:example.com",
-      "usage": ["self_signing"],
-      "keys": {
-        "ed25519:base64+self+signing+public+key": "base64+self+signing+public+key",
+  "master_key": {
+    "user_id": "@alice:example.com",
+    "usage": ["master"],
+    "keys": {
+      "ed25519:base64+master+public+key": "base64+master+public+key"
+    }
+  },
+  "self_signing_key": {
+    "user_id": "@alice:example.com",
+    "usage": ["self_signing"],
+    "keys": {
+      "ed25519:base64+self+signing+public+key": "base64+self+signing+public+key"
+    },
+    "signatures": {
+      "@alice:example.com": {
+        "ed25519:base64+master+public+key": "base64+signature"
       }
     }
   }
@@ -343,7 +408,7 @@ include her new signature.
 
 After Alice uploads a signature for Bob's user-signing key, her signature will
 be included in the results of the `/keys/query` request when Alice requests
-Bob's key:
+Bob's key, but will not be included when anyone else requests Bob's key:
 
 `GET /keys/query`
 
@@ -355,16 +420,16 @@ Bob's key:
       // ...
     }
   },
-  "self_signing_keys": {
+  "master_keys": {
     "@bob:example.com": {
       "user_id": "@bob:example.com",
       "keys": {
-        "ed25519:bobs+base64+self+signing+public+key": "bobs+base64+self+signing+public+key"
+        "ed25519:bobs+base64+master+public+key": "bobs+base64+master+public+key"
       },
-      "usage": ["self_signing"],
+      "usage": ["master"],
       "signatures": {
         "@alice:example.com": {
-          "ed25519:base64+user+signing+public+key": "base64+signature+of+bobs+self+signing+key"
+          "ed25519:base64+user+signing+public+key": "base64+signature+of+bobs+master+key"
         }
       }
     }
@@ -414,11 +479,13 @@ user-signing key must be re-issued.
 
 ## Security considerations
 
-This proposal relies on servers to communicate when self-signing or
-user-signing keys are deleted and replaced.  An attacker who is able to both
-steal a user's device and control their homeserver could prevent that device
-from being marked as untrusted.
+This proposal relies on servers to communicate when cross-signing keys are
+deleted and replaced.  An attacker who is able to both steal a user's device
+and control their homeserver could prevent that device from being marked as
+untrusted.
 
 ## Conclusion
 
-This proposal presents an alternative cross-signing mechanism to MSC1680.
+This proposal presents an alternative cross-signing mechanism to MSC1680,
+allowing users to trust another user's devices without needing to verify each
+one individually.
