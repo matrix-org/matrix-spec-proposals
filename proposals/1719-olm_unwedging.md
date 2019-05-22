@@ -36,8 +36,7 @@ time of the session.  The spec will be changed to read:
 > If a client has multiple sessions established with another device, it should
 > use the session from which it last received and successfully decrypted a
 > message.  For these purposes, a session that has not received any messages
-> should consider its creation time to be the time that it last received a
-> message.
+> should use its creation time as the time that it last received a message.
 
 ## Tradeoffs
 
