@@ -16,8 +16,7 @@ empty contents.
 In order to avoid creating too many extra sessions, a client should rate-limit
 the number of new sessions it creates per device that it receives a message
 from; the client should not create a new session with another device if it has
-already created one for that given device in the past 1 hour. (TODO: is 1 hour
-the right amount of time?)
+already created one for that given device in the past 1 hour.
 
 Clients may wish to ask the sender of the undecryptable messages to re-send the
 message.  For exampe, if the undecryptable message was a megolm session, then
