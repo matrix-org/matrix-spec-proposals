@@ -10,7 +10,9 @@ To render the spoiler the content is hidden and then revealed once interacted so
 ## Proposal
 This proposal is about adding a new attribute to the `formatted_body` of messages with type `m.room.message` and msgtype `m.text`.
 
-It adds a new attribute, `data-mx-spoiler`, to the `<span>` tag. If the attribute is present the contents of the span tag should be rendered as a spoiler. Optionally, you can specify a reason for the spoiler by setting the attribute string.
+It adds a new attribute, `data-mx-spoiler`, to the `<span>` tag. If the attribute is present the contents of the span tag should be rendered as a spoiler. Optionally, you can specify a reason for the spoiler by setting the attribute string. It could be rendered, for example, similar to this:
+
+![Spoiler rendering idea](https://user-images.githubusercontent.com/2433620/58178745-082c1480-7ca7-11e9-901b-13b147cfd157.png)
 
 The plain-text fallback could be rendered as `(Spoiler: <content>)` and `(Spoiler for <reason>: <content>)` respectively.
 
