@@ -45,6 +45,10 @@ time of the session.  The spec will be changed to read:
 
 ## Security considerations
 
+An attacker could use this to create a new session on a device that they are
+able to read. However, this would require the attacker to have compromised the
+device's keys.
+
 ## Conclusion
 
 This proposal outlines how wedged olm sessions can be replaced by a new
