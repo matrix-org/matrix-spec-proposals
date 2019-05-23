@@ -29,7 +29,7 @@ another device, it should use the session from which it last received a
 message." (the last paragraph of the [`m.olm.v1.curve25519-aes-sha2`
 section](https://matrix.org/docs/spec/client_server/r0.4.0.html#m-olm-v1-curve25519-aes-sha2)).
 When comparing the time of the last received message for each session, the
-client should consider only consider messages that were successfully decrypted,
+client should only consider messages that were successfully decrypted,
 and for sessions that have never received a message, it should use the creation
 time of the session.  The spec will be changed to read:
 
