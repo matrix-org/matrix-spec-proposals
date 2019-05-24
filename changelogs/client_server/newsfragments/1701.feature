@@ -1,1 +1,1 @@
-Documented megolm session export format.
+Add megolm session export format.
