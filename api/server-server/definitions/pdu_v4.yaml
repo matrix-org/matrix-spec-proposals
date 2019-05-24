@@ -1,4 +1,4 @@
-# Copyright 2019 New Vector Ltd
+# Copyright 2019 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,15 +15,15 @@ type: object
 title: Persistent Data Unit
 description: A persistent data unit (event) for room version 3 and beyond.
 example:
-  $ref: "../examples/pdu_v3.json"
+  $ref: "../examples/pdu_v4.json"
 allOf:
-  - $ref: "unsigned_pdu_base.yaml"
+  - $ref: "pdu_v3.yaml"
   - type: object
     properties:
       redacts:
         type: string
         description: For redaction events, the ID of the event being redacted.
-        example: "$def/456+oldevent"
+        example: "$def_456-oldevent"
       auth_events:
         type: array
         items:
@@ -32,7 +32,7 @@ allOf:
         description: |-
           Event IDs for the authorization events that would
           allow this event to be in the room.
-        example: ["$base64EncodedHash", "$AnotherEvent"]
+        example: ["$URLsafe-base64EncodedHash", "$Another_Event"]
       prev_events:
         type: array
         items:
@@ -41,37 +41,7 @@ allOf:
         description: |-
           Event IDs for the most recent events in the room
           that the homeserver was aware of when it made this event.
-        example: ["$base64EncodedHash", "$AnotherEvent"]
-      hashes:
-        type: object
-        title: Event Hash
-        description: |-
-          Content hashes of the PDU, following the algorithm specified in `Signing Events`_.
-        example: {
-          "sha256": "ThisHashCoversAllFieldsInCaseThisIsRedacted"
-        }
-        properties:
-          sha256:
-            type: string
-            description: The hash.
-            example: ThisHashCoversAllFieldsInCaseThisIsRedacted
-        required: ['sha256']
-      signatures:
-        type: object
-        description: |-
-          Signatures for the PDU, following the algorithm specified in `Signing Events`_.
-        example: {
-          "example.com": {
-            "ed25519:key_version:": "86BytesOfSignatureOfTheRedactedEvent"
-          }
-        }
-        additionalProperties:
-          type: object
-          title: Server Signatures
-          additionalProperties:
-            type: string
+        example: ["$URLsafe-base64EncodedHash", "$Another_Event"]
     required:
       - auth_events
       - prev_events
-      - hashes
-      - signatures

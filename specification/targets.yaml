@@ -38,6 +38,10 @@ targets:
     files:
       - rooms/v3.rst
     version_label: v3
+  rooms@v4: # this is translated to be rooms/v4.html
+    files:
+      - rooms/v4.rst
+    version_label: v4
   appendices:
     files:
       - appendices.rst
