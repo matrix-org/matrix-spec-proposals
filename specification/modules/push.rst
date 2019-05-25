@@ -177,7 +177,7 @@ notification is delivered for a matching event. The following actions are define
   This prevents each matching event from generating a notification
 ``coalesce``
   This enables notifications for matching events but activates homeserver
-  specific behaviour to intelligently coalesce multiple events into a single 
+  specific behaviour to intelligently coalesce multiple events into a single
   notification. Not all homeservers may support this. Those that do not support
   it should treat it as the ``notify`` action.
 ``set_tweak``
@@ -364,6 +364,37 @@ Definition:
             },
             {
                 "set_tweak": "highlight"
+            }
+        ]
+    }
+
+
+``.m.rule.tombstone``
+`````````````````````
+Matches any event whose type is ``m.room.tombstone``. This is intended
+to notify users of a room when it is upgraded, similar to what an
+``@room`` notification would accomplish.
+
+Definition:
+
+.. code:: json
+
+    {
+        "rule_id": ".m.rule.tombstone",
+        "default": true,
+        "enabled": true,
+        "conditions": [
+            {
+                "kind": "event_match",
+                "key": "type",
+                "pattern": "m.room.tombstone"
+            }
+        ],
+        "actions": [
+            "notify",
+            {
+                "set_tweak": "highlight",
+                "value": true
             }
         ]
     }
@@ -599,7 +630,7 @@ Definition:
 Conditions
 ++++++++++
 
-Override, Underride and Default Rules MAY have a list of 'conditions'. 
+Override, Underride and Default Rules MAY have a list of 'conditions'.
 All conditions must hold true for an event in order to apply the ``action`` for
 the event. A rule with no conditions always matches. Room, Sender, User and
 Content rules do not have conditions in the same way, but instead have
