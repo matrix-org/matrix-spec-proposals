@@ -1500,7 +1500,6 @@ the following list:
 - ``room_id``
 - ``sender``
 - ``state_key``
-- ``prev_content``
 - ``content``
 - ``hashes``
 - ``signatures``
