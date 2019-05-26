@@ -38,7 +38,8 @@ When the invitee's homeserver receives the notification of the binding, it
 should insert an ``m.room.member`` event into the room's graph for that user,
 with ``content.membership`` = ``invite``, as well as a
 ``content.third_party_invite`` property which contains proof that the invitee
-does indeed own that third party identifier.
+does indeed own that third party identifier. See the `m.room.member <#m-room-member>`_
+schema for more information.
 
 
 Events
