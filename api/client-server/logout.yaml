@@ -32,7 +32,8 @@ paths:
       summary: Invalidates a user access token
       description: |-
         Invalidates an existing access token, so that it can no longer be used for
-        authorization.
+        authorization. The device associated with the access token is also deleted.
+        `Device keys <#device-keys>`_ for the device are deleted alongside the device.
       operationId: logout
       security:
         - accessToken: []
@@ -49,7 +50,9 @@ paths:
       summary: Invalidates all access tokens for a user
       description: |-
         Invalidates all access tokens for a user, so that they can no longer be used for
-        authorization. This includes the access token that made this request. 
+        authorization. This includes the access token that made this request. All devices
+        for the user are also deleted. `Device keys <#device-keys>`_ for the device are
+        deleted alongside the device.
 
         This endpoint does not require UI authorization because UI authorization is
         designed to protect against attacks where the someone gets hold of a single access
