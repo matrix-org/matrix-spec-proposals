@@ -7,7 +7,7 @@ which could benefit from knowing the `device_id` associated with a token.
 
 ## Proposal
 
-The `/account/whoami` endpoint receives an additional optional field for the `device_id`
+The `/account/whoami` endpoint receives an additional response field for the `device_id`
 associated with the access token. The field is optional because appservice users may not
 have a real device associated with them. Non-appservice users should always have a device
 associated with them.
