@@ -36,7 +36,8 @@ paths:
         incremental deltas to the state, and to receive new messages.
 
         *Note*: this endpoint supports lazy-loading. See `Filtering <#filtering>`_
-        for more information.
+        for more information. Lazy-loading members is only supported on a ``StateFilter``
+        for this endpoint.
       operationId: sync
       security:
         - accessToken: []

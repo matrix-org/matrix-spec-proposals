@@ -1268,6 +1268,39 @@ Filters can be created on the server and can be passed as as a parameter to APIs
 which return events. These filters alter the data returned from those APIs.
 Not all APIs accept filters.
 
+Lazy-loading room members
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Membership events often take significant resources for clients to track. In an
+effort to reduce the number of resources used, clients can enable "lazy-loading"
+for room members. By doing this, servers will only ever send membership events
+which are relevant to the client.
+
+In terms of filters, this means enabling ``lazy_load_members`` on a ``StateFilter``
+or ``RoomEventFilter``. When enabled, lazy-loading aware endpoints (see below)
+will only include membership events for the ``sender`` of events being included
+in the response. For example, if a client makes a ``/sync`` request with lazy-loading
+enabled, the server will only return membership events for the ``sender`` of events
+in the timeline, not all members of a room.
+
+Repeated calls to lazy-loading aware endpoints will result in redundant membership
+events being excluded by default. Clients often track which membership events they
+already have, therefore making the extra information not as useful to the client.
+Clients can always request redundant members by setting ``include_redundant_members``
+to true in the filter.
+
+Servers should be cautious about which events they consider redundant. Membership
+events can change over time, and should be included as relevant to maintain the
+historical record. Likewise, clients should be cautious about treating an older event
+as the current membership event for a user.
+
+.. Note::
+   Repeated calls using the same filter to *any* lazy-loading aware endpoint may
+   result in redundant members being excluded from future calls. For example, a
+   request to ``/sync`` followed by a request to ``/messages`` may result in a
+   future call to ``/sync`` excluding members included by the ``/messages`` call.
+
+
 {{filter_cs_http_api}}
 
 Events
