@@ -108,6 +108,23 @@ paths:
                   type: object
                   title: RoomEvent
                   "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+              state:
+                type: array
+                description: |-
+                  A list of state events relevant to showing the ``chunk``. For example, if
+                  lazy-loading members is enabled in the filter then this will contain any
+                  applicable membership events. Servers should be careful to not exclude
+                  membership events which are older than ones already sent to the client.
+                  Likewise, clients should be cautious and avoid using older membership
+                  events as the current membership event when paginating backwards.
+
+                  Unless ``include_redundant_members`` is ``true``, the server should remove
+                  redundant members which would have already been sent to clients in prior calls
+                  to ``/messages`` or ``/sync`` with the same filter.
+                items:
+                  type: object
+                  title: RoomStateEvent
+                  $ref: "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
           examples:
             application/json: {
                 "start": "t47429-4392820_219380_26003_2265",
