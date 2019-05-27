@@ -34,6 +34,9 @@ paths:
         Clients use this API when they first log in to get an initial snapshot
         of the state on the server, and then continue to call this API to get
         incremental deltas to the state, and to receive new messages.
+
+        *Note*: this endpoint supports lazy-loading. See `Filtering <#filtering>`_
+        for more information.
       operationId: sync
       security:
         - accessToken: []

@@ -34,6 +34,9 @@ paths:
         This API returns a number of events that happened just before and
         after the specified event. This allows clients to get the context
         surrounding an event.
+
+        *Note*: this endpoint supports lazy-loading. See `Filtering <#filtering>`_
+        for more information.
       operationId: getEventContext
       security:
         - accessToken: []

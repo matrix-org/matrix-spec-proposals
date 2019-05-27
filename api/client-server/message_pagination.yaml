@@ -33,6 +33,9 @@ paths:
       description: |-
         This API returns a list of message and state events for a room. It uses
         pagination query parameters to paginate history in the room.
+
+        *Note*: this endpoint supports lazy-loading. See `Filtering <#filtering>`_
+        for more information.
       operationId: getRoomEvents
       security:
         - accessToken: []
@@ -120,7 +123,7 @@ paths:
 
                   Unless ``include_redundant_members`` is ``true``, the server should remove
                   redundant members which would have already been sent to clients in prior calls
-                  to ``/messages`` or ``/sync`` with the same filter.
+                  to lazy-loading aware endpoints with the same filter.
                 items:
                   type: object
                   title: RoomStateEvent
