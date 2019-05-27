@@ -148,5 +148,14 @@ paths:
               }
           schema:
             type: object
+        404:
+          description: There is no mapped room ID for this room alias.
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "Room alias #monkeys:example.org not found."
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Room directory
