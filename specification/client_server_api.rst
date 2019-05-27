@@ -618,6 +618,7 @@ This specification defines the following auth types:
  - ``m.login.recaptcha``
  - ``m.login.oauth2``
  - ``m.login.email.identity``
+ - ``m.login.msisdn``
  - ``m.login.token``
  - ``m.login.dummy``
 
@@ -772,6 +773,34 @@ To use this authentication type, clients should submit an auth dict as follows:
 
   {
     "type": "m.login.email.identity",
+    "threepidCreds": [
+      {
+        "sid": "<identity server session id>",
+        "client_secret": "<identity server client secret>",
+        "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>"
+      }
+    ],
+    "session": "<session ID>"
+  }
+
+Phone number/MSISDN-based (identity server)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+:Type:
+  ``m.login.msisdn``
+:Description:
+  Authentication is supported by authorising a phone number with an identity
+  server.
+
+Prior to submitting this, the client should authenticate with an identity
+server. After authenticating, the session information should be submitted to
+the homeserver.
+
+To use this authentication type, clients should submit an auth dict as follows:
+
+.. code:: json
+
+  {
+    "type": "m.login.msisdn",
     "threepidCreds": [
       {
         "sid": "<identity server session id>",
