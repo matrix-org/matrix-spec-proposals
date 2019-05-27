@@ -1531,6 +1531,15 @@ property of the redacted event, under the ``redacted_because`` key. When a
 client receives a redaction event it should change the redacted event in the
 same way a server does.
 
+.. NOTE::
+
+    Redacted events can still affect the state of the room. For example, a
+    redacted ``join`` event will still result in the user being considered
+    joined. Similarly, a redacted topic does not necessarily cause the topic
+    to revert to what is was prior to the event - it causes the topic to be
+    removed from the room.
+
+
 Events
 ++++++
 
