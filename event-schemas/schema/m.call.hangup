@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "Sent by either party to signal their termination of the call. This can be sent either once the call has has been established or before to abort the call.",
+    "description": "Sent by either party to signal their termination of the call. This can be sent either once the call has has been established or before to abort the call. The ``reason`` for the hangup is expected to be provided when there was an error in the call negotiation, such as ``ice_failed`` for when ICE negotiation fails or ``invite_timeout`` for when the other party did not answer in time.",
     "allOf": [{
         "$ref": "core-event-schema/room_event.yaml"
     }],
@@ -15,6 +15,14 @@
                 "version": {
                     "type": "integer",
                     "description": "The version of the VoIP specification this message adheres to. This specification is version 0."
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Optional error reason for the hangup. This should not be provided when the user naturally ends or rejects the call.",
+                    "enum": [
+                        "ice_failed",
+                        "invite_timeout"
+                    ]
                 }
             },
             "required": ["call_id", "version"]
