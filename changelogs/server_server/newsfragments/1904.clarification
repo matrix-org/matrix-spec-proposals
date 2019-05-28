@@ -1,1 +1,1 @@
-Fix the `access_token` parameter in the open_id endpoint.
+Fix the ``access_token`` parameter in the open_id endpoint.
