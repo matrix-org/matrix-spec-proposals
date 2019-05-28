@@ -1534,7 +1534,7 @@ same way a server does.
 .. NOTE::
 
     Redacted events can still affect the state of the room. When redacted,
-    state events behave as though their properties were simply not specified
+    state events behave as though their properties were simply not specified,
     except those protected by the redaction algorithm. For example,
     a redacted ``join`` event will still result in the user being considered joined.
     Similarly, a redacted topic does not necessarily cause the topic to revert to
