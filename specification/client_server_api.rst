@@ -1300,6 +1300,11 @@ as the current membership event for a user.
    request to ``/sync`` followed by a request to ``/messages`` may result in a
    future call to ``/sync`` excluding members included by the ``/messages`` call.
 
+The current endpoints which support lazy-loading room members are:
+
+* |/sync|_
+* |/rooms/<room_id>/messages|_
+* |/rooms/{roomId}/context/{eventId}|_
 
 {{filter_cs_http_api}}
 
