@@ -187,6 +187,14 @@ An example registration file for an IRC-bridging application service is below:
 Homeserver -> Application Service API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Authorization
++++++++++++++
+
+Homeservers MUST include a query parameter named ``access_token`` containing the
+``hs_token`` from the application service's registration when making requests to
+the application service. Application services MUST verify the provided ``access_token``
+matches their known ``hs_token``, failing the request with a ``M_FORBIDDEN`` error.
+
 Legacy routes
 +++++++++++++
 
