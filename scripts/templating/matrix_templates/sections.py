@@ -110,12 +110,13 @@ class MatrixSections(Sections):
     # Special function: Returning a dict will specify multiple sections where
     # the key is the section name and the value is the value of the section
     def render_group_events(self):
-        # map all event schemata to the form $EVENTTYPE_event with s/./_/g
-        # e.g. m_room_topic_event
+        # map all event schemata to the form $EVENTTYPE_event with s/.#/_/g
+        # e.g. m_room_topic_event or m_room_message_m_text_event
         schemas = self.units.get("event_schemas")
         renders = {}
         for event_type in schemas:
-            renders[event_type.replace(".", "_") + "_event"] = self._render_events(
+            underscored_event_type = event_type.replace(".", "_").replace("#", "_")
+            renders[underscored_event_type + "_event"] = self._render_events(
                 lambda x: x == event_type, sorted
             )
         return renders
@@ -141,9 +142,15 @@ class MatrixSections(Sections):
             "m.room.message#m.notice", "m.room.message#m.image",
             "m.room.message#m.file"
         ]
+        excluded_types = [
+            # We exclude server notices from here because we handle them in a
+            # dedicated module. We do not want to confuse developers this early
+            # in the spec.
+            "m.room.message#m.server_notice",
+        ]
         other_msgtypes = [
             k for k in schemas.keys() if k.startswith("m.room.message#") and
-            k not in msgtype_order
+            k not in msgtype_order and k not in excluded_types
         ]
         for event_name in (msgtype_order + other_msgtypes):
             if not event_name.startswith("m.room.message#m."):

@@ -846,6 +846,7 @@ class MatrixUnits(Units):
             "title": None,
             "desc": None,
             "msgtype": None,
+            "type_with_msgtype": None, # for the template's sake
             "content_fields": [
                 # <TypeTable>
             ]
@@ -884,6 +885,7 @@ class MatrixUnits(Units):
         )
         if msgtype:
             schema["msgtype"] = msgtype[0]  # enum prop
+            schema["type_with_msgtype"] = schema["type"] + " (" + msgtype[0] + ")"
 
         # link to msgtypes for m.room.message
         if schema["type"] == "m.room.message" and not msgtype:

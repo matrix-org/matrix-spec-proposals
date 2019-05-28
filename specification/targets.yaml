@@ -87,6 +87,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/server_acls.rst
     - modules/mentions.rst
     - modules/room_upgrades.rst
+    - modules/server_notices.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`", "@", ":"]

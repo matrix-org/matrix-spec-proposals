@@ -219,9 +219,12 @@ Other error codes the client might encounter are:
   to modify state (eg: sending messages, account data, etc) and not routes which only
   read state (eg: ``/sync``, get account data, etc).
 
+:``M_CANNOT_LEAVE_SERVER_NOTICE_ROOM``:
+  The user is unable to reject an invite to join the server notices room. See the
+  `Server Notices <#server-notices>`_ module for more information.
+
 .. TODO: More error codes (covered by other issues)
 .. * M_CONSENT_NOT_GIVEN                - GDPR: https://github.com/matrix-org/matrix-doc/issues/1512
-.. * M_CANNOT_LEAVE_SERVER_NOTICE_ROOM  - GDPR: https://github.com/matrix-org/matrix-doc/issues/1254
 
 .. _sect:txn_ids:
 
