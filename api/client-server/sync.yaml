@@ -53,6 +53,8 @@ paths:
             requests. Creating a filter using the filter API is recommended for
             clients that reuse the same filter multiple times, for example in
             long poll requests.
+
+            See `Filtering <#filtering>`_ for more information.
           x-example: "66696p746572"
         - in: query
           name: since
