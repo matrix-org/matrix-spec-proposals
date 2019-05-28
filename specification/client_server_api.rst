@@ -289,7 +289,7 @@ In this section, the following terms are used with specific meanings:
 ``FAIL_ERROR``
   Inform the user that auto-discovery did not return any usable URLs. Do not
   continue further with the current login process. At this point, valid data
-  was obtained, but no homeserver is available to serve the client. No further
+  was obtained, but no server is available to serve the client. No further
   guess should be attempted and the user should make a conscientious decision
   what to do next.
 
