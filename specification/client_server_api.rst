@@ -406,8 +406,9 @@ an additional stage. This exchange continues until the final success.
 
 For each endpoint, a server offers one or more 'flows' that the client can use
 to authenticate itself. Each flow comprises a series of stages, as described
-above. The client is free to choose which flow it follows. When all stages in a
-flow are complete, authentication is complete and the API call succeeds.
+above. The client is free to choose which flow it follows, however the flow's
+stages must be completed in order. When all stages in a flow are complete,
+authentication is complete and the API call succeeds.
 
 User-interactive API in the REST API
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
