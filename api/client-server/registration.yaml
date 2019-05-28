@@ -326,13 +326,17 @@ paths:
       description: |-
         Changes the password for an account on this homeserver.
 
-        This API endpoint uses the `User-Interactive Authentication API`_.
+        This API endpoint uses the `User-Interactive Authentication API`_ to
+        ensure the user changing the password is actually the owner of the
+        account.
 
         An access token should be submitted to this endpoint if the client has
         an active session.
 
         The homeserver may change the flows available depending on whether a
-        valid access token is provided.
+        valid access token is provided. The homeserver SHOULD NOT revoke the
+        access token provided in the request, however all other access tokens
+        for the user should be revoked if the request succeeds.
       security:
         - accessToken: []
       operationId: changePassword
