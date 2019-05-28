@@ -1,0 +1,1 @@
+Add missing ``reason`` to ``m.call.hangup``.
