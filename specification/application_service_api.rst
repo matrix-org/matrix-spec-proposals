@@ -193,7 +193,8 @@ Authorization
 Homeservers MUST include a query parameter named ``access_token`` containing the
 ``hs_token`` from the application service's registration when making requests to
 the application service. Application services MUST verify the provided ``access_token``
-matches their known ``hs_token``, failing the request with a ``M_FORBIDDEN`` error.
+matches their known ``hs_token``, failing the request with a ``M_FORBIDDEN`` error
+if it does not match.
 
 Legacy routes
 +++++++++++++
