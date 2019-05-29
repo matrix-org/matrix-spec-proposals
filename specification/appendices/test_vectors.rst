@@ -114,7 +114,7 @@ The event signing algorithm should emit the following signed event:
         "origin_server_ts": 1000000,
         "signatures": {
             "domain": {
-                "ed25519:1": "2Wptgo4CwmLo/Y8B8qinxApKaCkBG2fjTWB7AbP5Uy+aIbygsSdLOFzvdDjww8zUVKCmI02eP9xtyJxc/cLiBA"
+                "ed25519:1": "JV2dlZUASAefSdywnyCxzykHlyr7xkKGK7IRir1cF8eYsnONrCSb+GRn7aXXstr1UHKvzYjRXPx0001+boD1Ag"
             }
         },
         "type": "X",
@@ -129,7 +129,7 @@ Given the following event containing redactable content:
 
     {
         "content": {
-            "body": "Here is the message content",
+            "body": "Here is the message content"
         },
         "event_id": "$0:domain",
         "origin": "domain",
@@ -149,7 +149,7 @@ The event signing algorithm should emit the following signed event:
 
     {
         "content": {
-            "body": "Here is the message content",
+            "body": "Here is the message content"
         },
         "event_id": "$0:domain",
         "hashes": {
@@ -162,7 +162,7 @@ The event signing algorithm should emit the following signed event:
         "sender": "@u:domain",
         "signatures": {
             "domain": {
-                "ed25519:1": "Wm+VzmOUOz08Ds+0NTWb1d4CZrVsJSikkeRxh6aCcUwu6pNC78FunoD7KNWzqFn241eYHYMGCA5McEiVPdhzBA"
+                "ed25519:1": "4zc79tH2cU6Y+eg4YbbF7KiDOrnwEDjlhTqIKiH4k7L9zD9XCiomD7x9odL9eEwnyy1144QyMBe8O3HK++GHBg"
             }
         },
         "unsigned": {
