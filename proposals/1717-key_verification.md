@@ -139,7 +139,8 @@ Properties:
     device, an `m.key.verification.cancel` message with `code` set to
     `m.accepted` is sent to the other devices
 - `reason` (string): human-readable reason for cancelling.  This should only be
-  used if the recieving client does not understand the code given.
+  used if the recieving client does not understand the code given in the `code`
+  property.
 
 Verification methods may define their own additional cancellation codes.
 Cancellation codes defined in the Matrix spec will begin with `m.`; other
