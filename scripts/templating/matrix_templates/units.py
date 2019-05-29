@@ -521,6 +521,7 @@ class MatrixUnits(Units):
         path_template = path
         example_query_params = []
         example_body = ""
+        example_mime = "application/json"
         for param in endpoint_swagger.get("parameters", []):
             # even body params should have names, otherwise the active docs don't work.
             param_name = param["name"]
@@ -532,6 +533,10 @@ class MatrixUnits(Units):
                     self._handle_body_param(param, endpoint)
                     example_body = get_example_for_param(param)
                     continue
+
+                if param_loc == "header":
+                    if param["name"] == "Content-Type" and param["x-example"]:
+                        example_mime = param["x-example"]
 
                 # description
                 desc = param.get("description", "")
@@ -610,8 +615,8 @@ class MatrixUnits(Units):
             example_query_params)
         if example_body:
             endpoint["example"][
-                "req"] = "%s %s%s HTTP/1.1\nContent-Type: application/json\n\n%s" % (
-                method.upper(), path_template, query_string, example_body
+                "req"] = "%s %s%s HTTP/1.1\nContent-Type: %s\n\n%s" % (
+                method.upper(), path_template, query_string, example_mime, example_body
             )
         else:
             endpoint["example"]["req"] = "%s %s%s HTTP/1.1\n\n" % (
