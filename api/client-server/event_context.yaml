@@ -105,18 +105,18 @@ paths:
               "events_after": [
                 {
                   "room_id": "!636q39766251:example.com",
-                  "$ref": "definitions/event-schemas/examples/m.room.message#m.text"
+                  "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
                 }
               ],
               "event": {
                 "event_id": "$f3h4d129462ha:example.com",
                 "room_id": "!636q39766251:example.com",
-                "$ref": "definitions/event-schemas/examples/m.room.message#m.image"
+                "$ref": "definitions/event-schemas/examples/m.room.message$m.image"
               },
               "events_before": [
                 {
                   "room_id": "!636q39766251:example.com",
-                  "$ref": "definitions/event-schemas/examples/m.room.message#m.file"
+                  "$ref": "definitions/event-schemas/examples/m.room.message$m.file"
                 }
               ],
               "start": "t27-54_2_0_2",

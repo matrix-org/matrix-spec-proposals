@@ -795,7 +795,7 @@ class MatrixUnits(Units):
             if not filename.startswith("m."):
                 continue
 
-            event_name = filename.split("#")[0]
+            event_name = filename.split("$")[0]
             filepath = os.path.join(path, filename)
             logger.info("Reading event example: %s" % filepath)
             try:

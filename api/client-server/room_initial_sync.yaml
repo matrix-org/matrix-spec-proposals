@@ -44,11 +44,11 @@ paths:
                   "chunk": [
                     {
                       "room_id": "!636q39766251:example.com",
-                      "$ref": "definitions/event-schemas/examples/m.room.message#m.text"
+                      "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
                     },
                     {
                       "room_id": "!636q39766251:example.com",
-                      "$ref": "definitions/event-schemas/examples/m.room.message#m.file"
+                      "$ref": "definitions/event-schemas/examples/m.room.message$m.file"
                     }
                   ],
                   "end": "s3456_9_0",

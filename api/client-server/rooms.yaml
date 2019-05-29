@@ -55,7 +55,7 @@ paths:
           examples:
             application/json: {
               "room_id": "!636q39766251:matrix.org",
-              "$ref": "definitions/event-schemas/examples/m.room.message#m.text"
+              "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
             }
           schema:
             allOf:
