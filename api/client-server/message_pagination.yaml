@@ -114,43 +114,16 @@ paths:
                 "end": "t47409-4357353_219380_26003_2265",
                 "chunk": [
                   {
-                    "origin_server_ts": 1444812213737,
-                    "sender": "@alice:example.com",
-                    "event_id": "$1444812213350496Caaaa:example.com",
-                    "content": {
-                      "body": "hello world",
-                      "msgtype":"m.text"
-                    },
-                    "room_id":"!Xq3620DUiqCaoxq:example.com",
-                    "type":"m.room.message",
-                    "age": 1042
+                    "room_id": "!636q39766251:example.com",
+                    "$ref": "definitions/event-schemas/examples/m.room.message#m.text"
                   },
                   {
-                    "origin_server_ts": 1444812194656 ,
-                    "sender": "@bob:example.com",
-                    "event_id": "$1444812213350496Cbbbb:example.com",
-                    "content": {
-                      "body": "the world is big",
-                      "msgtype":"m.text"
-                    },
-                    "room_id":"!Xq3620DUiqCaoxq:example.com",
-                    "type":"m.room.message",
-                    "age": 20123
+                    "room_id": "!636q39766251:example.com",
+                    "$ref": "definitions/event-schemas/examples/m.room.name"
                   },
                   {
-                    "origin_server_ts": 1444812163990,
-                    "sender": "@bob:example.com",
-                    "event_id": "$1444812213350496Ccccc:example.com",
-                    "content": {
-                      "name": "New room name"
-                    },
-                    "prev_content": {
-                      "name": "Old room name"
-                    },
-                    "state_key": "",
-                    "room_id":"!Xq3620DUiqCaoxq:example.com",
-                    "type":"m.room.name",
-                    "age": 50789
+                    "room_id": "!636q39766251:example.com",
+                    "$ref": "definitions/event-schemas/examples/m.room.message#m.video"
                   }
                 ]
               }

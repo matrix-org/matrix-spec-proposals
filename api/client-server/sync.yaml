@@ -310,11 +310,7 @@ paths:
                 "next_batch": "s72595_4483_1934",
                 "presence": {
                   "events": [
-                    {
-                      "sender": "@alice:example.com",
-                      "type": "m.presence",
-                      "content": {"presence": "online"}
-                    }
+                    {"$ref": "definitions/event-schemas/examples/m.presence"}
                   ]
                 },
                 "account_data": {
@@ -333,36 +329,20 @@ paths:
                       "state": {
                         "events": [
                           {
-                            "sender": "@alice:example.com",
-                            "type": "m.room.member",
-                            "state_key": "@alice:example.com",
-                            "content": {"membership": "join"},
-                            "origin_server_ts": 1417731086795,
-                            "event_id": "$66697273743031:example.com"
+                            "room_id": "!726s6s6q:example.com",
+                            "$ref": "definitions/event-schemas/examples/m.room.member"
                           }
                         ]
                       },
                       "timeline": {
                         "events": [
                           {
-                            "sender": "@bob:example.com",
-                            "type": "m.room.member",
-                            "state_key": "@bob:example.com",
-                            "content": {"membership": "join"},
-                            "prev_content": {"membership": "invite"},
-                            "origin_server_ts": 1417731086795,
-                            "event_id": "$7365636s6r6432:example.com"
+                            "room_id": "!726s6s6q:example.com",
+                            "$ref": "definitions/event-schemas/examples/m.room.member"
                           },
                           {
-                            "sender": "@alice:example.com",
-                            "type": "m.room.message",
-                            "txn_id": "1234",
-                            "content": {
-                              "body": "I am a fish",
-                              "msgtype": "m.text"
-                            },
-                            "origin_server_ts": 1417731086797,
-                            "event_id": "$74686972643033:example.com"
+                            "room_id": "!726s6s6q:example.com",
+                            "$ref": "definitions/event-schemas/examples/m.room.message#m.text"
                           }
                         ],
                         "limited": true,
@@ -370,18 +350,12 @@ paths:
                       },
                       "ephemeral": {
                         "events": [
-                          {
-                            "type": "m.typing",
-                            "content": {"user_ids": ["@alice:example.com"]}
-                          }
+                          {"$ref": "definitions/event-schemas/examples/m.typing"}
                         ]
                       },
                       "account_data": {
                         "events": [
-                          {
-                            "type": "m.tag",
-                            "content": {"tags": {"work": {"order": 1}}}
-                          },
+                          {"$ref": "definitions/event-schemas/examples/m.tag"},
                           {
                             "type": "org.example.custom.room.config",
                             "content": {
