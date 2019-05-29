@@ -13,11 +13,17 @@ Proposals for Spec Changes to Matrix
 If you are interested in submitting a change to the Matrix Specification,
 please take note of the following guidelines.
 
-All changes to Specification content require a formal proposal process. This
-involves writing a proposal, having it reviewed by everyone, having the
-proposal being accepted, then actually having your ideas implemented as
-committed changes to the `Specification repository
+Most changes to the Specification require a formal proposal. Bug fixes, typos,
+and clarifications to existing behaviour do not need proposals - see the
+`contributing guide <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_
+for more information on what does and does not need a proposal.
+
+The proposal process involves some technical writing, having it reviewed by
+everyone, having the proposal being accepted, then actually having your ideas
+implemented as committed changes to the `Specification repository
 <https://github.com/matrix-org/matrix-doc>`_.
+
+.. TODO: Replace GH team link with https://matrix.org/foundation or something
 
 Meet the `members of the Core Team
 <https://github.com/orgs/matrix-org/teams/spec-core-team/members>`_, a group of
@@ -33,14 +39,15 @@ Guiding Principles
 
 Proposals **must** act to the greater benefit of the entire Matrix ecosystem,
 rather than benefiting or privileging any single player or subset of players -
-and must not contain any patent encumbered intellectual property. Members of the Core Team pledge to act as
-a neutral custodian for Matrix on behalf of the whole ecosystem.
+and must not contain any patent encumbered intellectual property. Members of
+the Core Team pledge to act as a neutral custodian for Matrix on behalf of the
+whole ecosystem.
 
 For clarity: the Matrix ecosystem is anyone who uses the Matrix protocol. That
 includes client users, server admins, client developers, bot developers,
-bridge and application service developers, users and admins who are indirectly using Matrix via
-3rd party networks which happen to be bridged, server developers, room
-moderators and admins, companies/projects building products or services on
+bridge and application service developers, users and admins who are indirectly
+using Matrix via 3rd party networks which happen to be bridged, server developers,
+room moderators and admins, companies/projects building products or services on
 Matrix, spec contributors, translators, and those who created it in
 the first place.
 
@@ -242,6 +249,7 @@ Spec PR Merged                   merged                         A proposal with 
 Postponed                        proposal-postponed             A proposal that is temporarily blocked or a feature that may not be useful currently but perhaps
                                                                 sometime in the future
 Closed                           proposal-closed                A proposal which has been reviewed and deemed unsuitable for acceptance
+Obsolete                         obsolete                       A proposal which has been made obsolete by another proposal or decision elsewhere.
 ===============================  =============================  ====================================
 
 
