@@ -19,7 +19,7 @@ from; the client should not create a new session with another device if it has
 already created one for that given device in the past 1 hour.
 
 Clients may wish to ask the sender of the undecryptable messages to re-send the
-message.  For exampe, if the undecryptable message was a megolm session, then
+message.  For example, if the undecryptable message was a megolm session, then
 the client can send an
 [`m.room_key_request`](https://matrix.org/docs/spec/client_server/r0.4.0.html#m-room-key-request)
 message to request that the sender re-send the key.
