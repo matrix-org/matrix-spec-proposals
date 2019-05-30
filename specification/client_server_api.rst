@@ -289,7 +289,7 @@ In this section, the following terms are used with specific meanings:
 ``FAIL_ERROR``
   Inform the user that auto-discovery did not return any usable URLs. Do not
   continue further with the current login process. At this point, valid data
-  was obtained, but no homeserver is available to serve the client. No further
+  was obtained, but no server is available to serve the client. No further
   guess should be attempted and the user should make a conscientious decision
   what to do next.
 
@@ -406,8 +406,10 @@ an additional stage. This exchange continues until the final success.
 
 For each endpoint, a server offers one or more 'flows' that the client can use
 to authenticate itself. Each flow comprises a series of stages, as described
-above. The client is free to choose which flow it follows. When all stages in a
-flow are complete, authentication is complete and the API call succeeds.
+above. The client is free to choose which flow it follows, however the flow's
+stages must be completed in order. Failing to follow the flows in order must
+result in an HTTP 401 response, as defined below. When all stages in a flow
+are complete, authentication is complete and the API call succeeds.
 
 User-interactive API in the REST API
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
