@@ -39,7 +39,8 @@ properties:
       avoid repeatedly sending the same email in the case of request
       retries between the POSTing user and the identity server.
       The client should increment this value if they desire a new
-      email (e.g. a reminder) to be sent.
+      email (e.g. a reminder) to be sent. If they do not, the server
+      should return a success but not resend the email.
     example: 1
   next_link:
     type: string
