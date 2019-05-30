@@ -1,4 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
+.. Copyright 2019 The Matrix.org Foundation C.I.C.
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -18,7 +19,7 @@ End-to-End Encryption
 .. _module:e2e:
 
 Matrix optionally supports end-to-end encryption, allowing rooms to be created
-whose conversation contents is not decryptable or interceptable on any of the
+whose conversation contents are not decryptable or interceptable on any of the
 participating homeservers.
 
 Key Distribution
@@ -549,6 +550,31 @@ Example:
         ]
     }
 
+
+Recovering from undecryptable messages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Occasionally messages may be undecryptable by clients due to a variety of reasons.
+When this happens to an Olm-encrypted message, the client should assume that the Olm
+session has become corrupted and create a new one to replace it.
+
+.. Note::
+   Megolm-encrypted messages generally do not have the same problem. Usually the key
+   for an undecryptable Megolm-encrypted message will come later, allowing the client
+   to decrypt it successfully. Olm does not have a way to recover from the failure,
+   making this session replacement process required.
+
+To establish a new session, the client sends a `m.dummy <#m-dummy>`_ to-device event
+to the other party to notify them of the new session details.
+
+Clients should rate-limit the number of sessions it creates per device that it receives
+a message from. Clients should not create a new session with another device if it has
+already created on for that given device in the past 1 hour.
+
+Clients should attempt to mitigate loss of the undecryptable messages. For example,
+Megolm sessions that were sent using the old session would have been lost. The client
+can attempt to retrieve the lost sessions through ``m.room_key_request`` messages.
+
 Messaging Algorithms
 --------------------
 
@@ -658,10 +684,13 @@ part of the ed25519 key it claims to have in the Olm payload.
 This is crucial when the ed25519 key corresponds to a verified device.
 
 If a client has multiple sessions established with another device, it should
-use the session from which it last received a message.  A client may expire old
-sessions by defining a maximum number of olm sessions that it will maintain for
-each device, and expiring sessions on a Least Recently Used basis.  The maximum
-number of olm sessions maintained per device should be at least 4.
+use the session from which it last received and successfully decrypted a
+message. For these purposes, a session that has not received any messages
+should use its creation time as the time that it last received a message.
+A client may expire old sessions by defining a maximum number of olm sessions
+that it will maintain for each device, and expiring sessions on a Least Recently
+Used basis.  The maximum number of olm sessions maintained per device should
+be at least 4.
 
 ``m.megolm.v1.aes-sha2``
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -739,6 +768,8 @@ Events
 {{m_room_key_request_event}}
 
 {{m_forwarded_room_key_event}}
+
+{{m_dummy_event}}
 
 Key management API
 ~~~~~~~~~~~~~~~~~~
