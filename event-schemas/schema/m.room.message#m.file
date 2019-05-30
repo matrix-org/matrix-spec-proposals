@@ -53,7 +53,7 @@ properties:
     required:
       - msgtype
       - body
-      - filename
+      - url
     type: object
   type:
     enum:
