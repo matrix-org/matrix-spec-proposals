@@ -11,7 +11,7 @@ description: |-
   to send a key share request shortly after this message, causing the receiving client to
   process this ``m.dummy`` event as the most recent event and using the keyshare request
   to set up the session. The keyshare request and ``m.dummy`` combination should result
-  in the original sending client receiving keys over the newly establish session.
+  in the original sending client receiving keys over the newly established session.
 properties:
   content:
     properties: {}
