@@ -569,7 +569,7 @@ to the other party to notify them of the new session details.
 
 Clients should rate-limit the number of sessions it creates per device that it receives
 a message from. Clients should not create a new session with another device if it has
-already created on for that given device in the past 1 hour.
+already created one for that given device in the past 1 hour.
 
 Clients should attempt to mitigate loss of the undecryptable messages. For example,
 Megolm sessions that were sent using the old session would have been lost. The client
