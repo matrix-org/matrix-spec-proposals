@@ -550,31 +550,6 @@ Example:
         ]
     }
 
-
-Recovering from undecryptable messages
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Occasionally messages may be undecryptable by clients due to a variety of reasons.
-When this happens to an Olm-encrypted message, the client should assume that the Olm
-session has become corrupted and create a new one to replace it.
-
-.. Note::
-   Megolm-encrypted messages generally do not have the same problem. Usually the key
-   for an undecryptable Megolm-encrypted message will come later, allowing the client
-   to decrypt it successfully. Olm does not have a way to recover from the failure,
-   making this session replacement process required.
-
-To establish a new session, the client sends a `m.dummy <#m-dummy>`_ to-device event
-to the other party to notify them of the new session details.
-
-Clients should rate-limit the number of sessions it creates per device that it receives
-a message from. Clients should not create a new session with another device if it has
-already created one for that given device in the past 1 hour.
-
-Clients should attempt to mitigate loss of the undecryptable messages. For example,
-Megolm sessions that were sent using the old session would have been lost. The client
-can attempt to retrieve the lost sessions through ``m.room_key_request`` messages.
-
 Messaging Algorithms
 --------------------
 
@@ -691,6 +666,31 @@ A client may expire old sessions by defining a maximum number of olm sessions
 that it will maintain for each device, and expiring sessions on a Least Recently
 Used basis.  The maximum number of olm sessions maintained per device should
 be at least 4.
+
+Recovering from undecryptable messages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Occasionally messages may be undecryptable by clients due to a variety of reasons.
+When this happens to an Olm-encrypted message, the client should assume that the Olm
+session has become corrupted and create a new one to replace it.
+
+.. Note::
+   Megolm-encrypted messages generally do not have the same problem. Usually the key
+   for an undecryptable Megolm-encrypted message will come later, allowing the client
+   to decrypt it successfully. Olm does not have a way to recover from the failure,
+   making this session replacement process required.
+
+To establish a new session, the client sends a `m.dummy <#m-dummy>`_ to-device event
+to the other party to notify them of the new session details.
+
+Clients should rate-limit the number of sessions it creates per device that it receives
+a message from. Clients should not create a new session with another device if it has
+already created one for that given device in the past 1 hour.
+
+Clients should attempt to mitigate loss of the undecryptable messages. For example,
+Megolm sessions that were sent using the old session would have been lost. The client
+can attempt to retrieve the lost sessions through ``m.room_key_request`` messages.
+
 
 ``m.megolm.v1.aes-sha2``
 ~~~~~~~~~~~~~~~~~~~~~~~~
