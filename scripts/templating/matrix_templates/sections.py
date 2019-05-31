@@ -115,7 +115,7 @@ class MatrixSections(Sections):
         schemas = self.units.get("event_schemas")
         renders = {}
         for event_type in schemas:
-            underscored_event_type = event_type.replace(".", "_").replace("#", "_")
+            underscored_event_type = event_type.replace(".", "_").replace("$", "_")
             renders[underscored_event_type + "_event"] = self._render_events(
                 lambda x: x == event_type, sorted
             )
@@ -125,7 +125,7 @@ class MatrixSections(Sections):
         def filterFn(eventType):
             return (
                 eventType.startswith("m.room") and
-                not eventType.startswith("m.room.message#m.")
+                not eventType.startswith("m.room.message$m.")
             )
         return self._render_events(filterFn, sorted)
 
@@ -138,22 +138,22 @@ class MatrixSections(Sections):
         ]["subtitle"]
         sections = []
         msgtype_order = [
-            "m.room.message#m.text", "m.room.message#m.emote",
-            "m.room.message#m.notice", "m.room.message#m.image",
-            "m.room.message#m.file"
+            "m.room.message$m.text", "m.room.message$m.emote",
+            "m.room.message$m.notice", "m.room.message$m.image",
+            "m.room.message$m.file"
         ]
         excluded_types = [
             # We exclude server notices from here because we handle them in a
             # dedicated module. We do not want to confuse developers this early
             # in the spec.
-            "m.room.message#m.server_notice",
+            "m.room.message$m.server_notice",
         ]
         other_msgtypes = [
-            k for k in schemas.keys() if k.startswith("m.room.message#") and
+            k for k in schemas.keys() if k.startswith("m.room.message$") and
             k not in msgtype_order and k not in excluded_types
         ]
         for event_name in (msgtype_order + other_msgtypes):
-            if not event_name.startswith("m.room.message#m."):
+            if not event_name.startswith("m.room.message$m."):
                 continue
             sections.append(template.render(
                 example=examples[event_name][0],

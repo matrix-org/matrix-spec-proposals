@@ -56,7 +56,7 @@ paths:
             example: {
               "events": [
                 {"$ref": "../../event-schemas/examples/m.room.member"},
-                {"$ref": "../../event-schemas/examples/m.room.message#m.text"}
+                {"$ref": "../../event-schemas/examples/m.room.message$m.text"}
               ]
             }
             description: Transaction information

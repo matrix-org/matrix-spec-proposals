@@ -280,7 +280,7 @@ paths:
                           Any groups that were requested.
 
                           The outer ``string`` key is the group key requested (eg: ``room_id``
-                          or ``sender``). The inner ``string`` key is the grouped value (eg: 
+                          or ``sender``). The inner ``string`` key is the grouped value (eg:
                           a room's ID or a user's ID).
                         additionalProperties:
                           type: object
@@ -347,16 +347,9 @@ paths:
                         {
                           "rank": 0.00424866,
                           "result": {
-                            "age": 526228296,
-                            "content": {
-                              "body": "Test content martians and men",
-                              "msgtype": "m.text"
-                            },
-                            "event_id": "$144429830826TWwbB:localhost",
-                            "origin_server_ts": 1444298308034,
                             "room_id": "!qPewotXpIctQySfjSy:localhost",
-                            "type": "m.room.message",
-                            "sender": "@test:localhost"
+                            "event_id": "$144429830826TWwbB:localhost",
+                            "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
                           }
                         }
                       ]

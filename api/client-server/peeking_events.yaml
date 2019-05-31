@@ -75,16 +75,8 @@ paths:
                 "end": "s3457_9_0",
                 "chunk": [
                   {
-                    "age": 32,
-                    "content": {
-                        "body": "incoming message",
-                        "msgtype": "m.text"
-                    },
-                    "event_id": "$14328055551tzaee:localhost",
-                    "origin_server_ts": 1432804485886,
-                    "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
-                    "type": "m.room.message",
-                    "sender": "@bob:localhost"
+                    "room_id": "!somewhere:over.the.rainbow",
+                    "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
                   }
                 ]
               }
