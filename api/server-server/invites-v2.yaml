@@ -83,25 +83,7 @@ paths:
                   identify the room. The recommended events to include are the join rules,
                   canonical alias, avatar, and name of the room.
                 items:
-                  type: object
-                  title: Invite Room State Event
-                  properties:
-                    type:
-                      type: string
-                      description: The type of event.
-                      example: "m.room.join_rules"
-                    state_key:
-                      type: string
-                      description: The state key for the event. May be an empty string.
-                      example: ""
-                    content:
-                      type: object
-                      description: The content for the event.
-                    sender:
-                      type: string
-                      description: The sender of the event.
-                      example: "@someone:matrix.org"
-                  required: ['type', 'state_key', 'content', 'sender']
+                  $ref: "../client-server/definitions/event-schemas/schema/stripped_state.yaml"
                 example: [
                   {
                     "type": "m.room.join_rules",
