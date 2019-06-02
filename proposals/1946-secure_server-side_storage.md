@@ -9,7 +9,7 @@ way of storing such data.
 
 ## Proposal
 
-Secrets are data that clients need to use and thate are sent through or stored
+Secrets are data that clients need to use and that are sent through or stored
 on the server, but should not be visible to server operators.  Secrets are
 plain strings -- if clients need to use more complicated data, it must be
 encoded as a string.
