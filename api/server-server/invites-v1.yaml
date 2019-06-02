@@ -83,16 +83,8 @@ paths:
                           canonical alias, avatar, and name of the room.
                         items:
                           $ref: "../client-server/definitions/event-schemas/schema/stripped_state.yaml"
-                        example: [
-                          {
-                            "type": "m.room.join_rules",
-                            "sender": "@someone:matrix.org",
-                            "state_key": "",
-                            "content": {
-                              "join_rule": "public"
-                            }
-                          }
-                        ]
+                        example:
+                          $ref: "../client-server/definitions/event-schemas/examples/stripped_state.json"
           example: {
             "$ref": "examples/minimal_pdu.json",
             "type": "m.room.member",
@@ -100,26 +92,6 @@ paths:
             "origin": "example.org",
             "origin_server_ts": 1549041175876,
             "sender": "@someone:example.org",
-            "unsigned": {
-              "invite_room_state": [
-                {
-                  "type": "m.room.join_rules",
-                  "sender": "@someone:matrix.org",
-                  "state_key": "",
-                  "content": {
-                    "join_rule": "public"
-                  }
-                },
-                {
-                  "type": "m.room.name",
-                  "sender": "@someone:matrix.org",
-                  "state_key": "",
-                  "content": {
-                    "name": "Cool New Room"
-                  }
-                }
-              ]
-            },
             "content": {
                 "membership": "invite"
             },
@@ -162,24 +134,9 @@ paths:
                   "origin_server_ts": 1549041175876,
                   "sender": "@someone:example.org",
                   "unsigned": {
-                    "invite_room_state": [
-                      {
-                        "type": "m.room.join_rules",
-                        "sender": "@someone:matrix.org",
-                        "state_key": "",
-                        "content": {
-                          "join_rule": "public"
-                        }
-                      },
-                      {
-                        "type": "m.room.name",
-                        "sender": "@someone:matrix.org",
-                        "state_key": "",
-                        "content": {
-                          "name": "Cool New Room"
-                        }
-                      }
-                    ]
+                    "invite_room_state": {
+                      "$ref": "../../client-server/definitions/event-schemas/examples/stripped_state.json"
+                    }
                   },
                   "content": {
                       "membership": "invite"
