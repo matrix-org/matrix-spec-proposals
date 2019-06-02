@@ -82,9 +82,9 @@ paths:
                           identify the room. The recommended events to include are the join rules,
                           canonical alias, avatar, and name of the room.
                         items:
-                          $ref: "../client-server/definitions/event-schemas/schema/stripped_state.yaml"
+                          $ref: "../../event-schemas/schema/stripped_state.yaml"
                         example:
-                          $ref: "../client-server/definitions/event-schemas/examples/stripped_state.json"
+                          $ref: "../../event-schemas/examples/stripped_state.json"
           example: {
             "$ref": "examples/minimal_pdu.json",
             "type": "m.room.member",
@@ -135,7 +135,7 @@ paths:
                   "sender": "@someone:example.org",
                   "unsigned": {
                     "invite_room_state": {
-                      "$ref": "../../client-server/definitions/event-schemas/examples/stripped_state.json"
+                      "$ref": "../../../event-schemas/examples/stripped_state.json"
                     }
                   },
                   "content": {
