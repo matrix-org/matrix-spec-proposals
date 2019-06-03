@@ -8,7 +8,7 @@
   "unsigned": {
     "age": 1234,
     "invite_room_state": {
-      "$ref": "stripped_state.json"
+      "$ref": "invite_room_state.json"
     }
   }
 }
