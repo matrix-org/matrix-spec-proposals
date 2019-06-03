@@ -100,10 +100,73 @@ paths:
             "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - Media
-  "/download/{serverName}/{mediaId}/{fileName}":
+  "/download/{serverName}/{mediaId}":
     get:
       summary: "Download content from the content repository."
       operationId: getContent
+      produces: ["*/*"]
+      parameters:
+        - in: path
+          type: string
+          name: serverName
+          x-example: matrix.org
+          required: true
+          description: |
+            The server name from the ``mxc://`` URI (the authoritory component)
+        - in: path
+          type: string
+          name: mediaId
+          x-example: ascERGshawAWawugaAcauga
+          required: true
+          description: |
+            The media ID from the ``mxc://`` URI (the path component)
+        - in: query
+          type: boolean
+          name: allow_remote
+          x-example: false
+          required: false
+          default: true
+          description: |
+            Indicates to the server that it should not attempt to fetch the media if it is deemed
+            remote. This is to prevent routing loops where the server contacts itself. Defaults to
+            true if not provided.
+      responses:
+        200:
+          description: "The content that was previously uploaded."
+          headers:
+            Content-Type:
+              description: "The content type of the file that was previously uploaded."
+              type: "string"
+            Content-Disposition:
+              description: |-
+                The name of the file that was previously uploaded, if set.
+              type: "string"
+          schema:
+            type: file
+            # This is a workaround for us not being able to say the response is required.
+            description: "**Required.** The bytes for the uploaded file."
+        502:
+          description: |-
+            The content is too large for the server to serve.
+          examples:
+            application/json: {
+              "errcode": "M_TOO_LARGE",
+              "error": "Content is too large to serve"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - Media
+  "/download/{serverName}/{mediaId}/{fileName}":
+    get:
+      summary: |-
+        Download content from the content repository. This is the same as
+        the download endpoint above, except permitting a desired file name.
+      operationId: getContentOverrideName
       produces: ["*/*"]
       parameters:
         - in: path
@@ -124,7 +187,8 @@ paths:
           type: string
           name: fileName
           x-example: filename.jpg
-          description: An optional filename to give in the ``Content-Disposition`` header.
+          required: true
+          description: A filename to give in the ``Content-Disposition`` header.
         - in: query
           type: boolean
           name: allow_remote
