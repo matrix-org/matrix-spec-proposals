@@ -18,6 +18,7 @@ import inspect
 import json
 import os
 import logging
+import re
 
 
 logger = logging.getLogger(__name__)
@@ -224,4 +225,20 @@ class MatrixSections(Sections):
                 definition=swagger_def['definition'],
                 examples=swagger_def['examples'],
                 title_kind=subtitle_title_char)
+        return rendered
+
+    def render_sas_emoji_table(self):
+        emoji = self.units.get("sas_emoji")
+        rendered = ".. csv-table::\n"
+        rendered += "  :header: \"Number\", \"Emoji\", \"Unicode\", \"Description\"\n"
+        rendered += "  :widths: 10, 10, 15, 20\n"
+        rendered += "\n"
+        for row in emoji:
+            rendered += "  %d, \"%s\", \"``%s``\", \"%s\"\n" % (
+                row['number'],
+                row['emoji'],
+                row['unicode'],
+                row['description'],
+            )
+        rendered += "\n"
         return rendered
