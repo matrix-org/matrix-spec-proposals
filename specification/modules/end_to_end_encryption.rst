@@ -668,7 +668,7 @@ Used basis.  The maximum number of olm sessions maintained per device should
 be at least 4.
 
 Recovering from undecryptable messages
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 Occasionally messages may be undecryptable by clients due to a variety of reasons.
 When this happens to an Olm-encrypted message, the client should assume that the Olm
