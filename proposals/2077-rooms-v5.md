@@ -1,4 +1,4 @@
-# MSC2077 - Rooms V6
+# MSC2077 - Rooms V5
 
 This MSC proposes creating a new room version named v5, which will enforce the
 signing key `valid_until_ts` timestamps proposed in
