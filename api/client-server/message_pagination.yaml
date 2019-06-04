@@ -103,7 +103,10 @@ paths:
               chunk:
                 type: array
                 description: |-
-                  A list of room events. The order depends on the ``dir`` parameter. For ``dir=b`` events will be in reverse-chronological order, for ``dir=f`` in chronological order, so that events start at the ``from`` point.
+                  A list of room events. The order depends on the ``dir`` parameter.
+                  For ``dir=b`` events will be in reverse-chronological order,
+                  for ``dir=f`` in chronological order, so that events start
+                  at the ``from`` point.
                 items:
                   type: object
                   title: RoomEvent
