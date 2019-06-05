@@ -31,6 +31,17 @@ an endpoint (with the same parameters as
 [/_matrix/identity/api/v1/validate/email/submitToken](https://matrix.org/docs/spec/identity_service/r0.1.0.html#post-matrix-identity-api-v1-validate-email-submittoken))
 to verify that token.
 
+Consideration was taken not to make `id_server` and optional field. Let's
+assume for a moment that it was optional. Now, a client could send a request to
+`/requestToken` omitting the `id_server` field. The homeserver however has
+opted to continue proxying `/requestToken` to the identity server, even though
+it knows this is potentially insecure. The homeserver now has no idea which
+identity server to proxy the request to, and must return a failure to the
+client. The client could then make another request with an `id_server`, but
+we've now made two requests that ended up in the same outcome, instead of one,
+in hopes of saving a very small amount of bandwidth by omitting the field
+originally.
+
 An additional complication is that in the case of SMS, a full link to reset
 passwords is not sent, but a short code. The client then asks the user to enter
 this code, however the client may now not know where to send the code. Should
@@ -40,15 +51,19 @@ In order to combat this problem, the field `submit_url` should be added in the
 response from both the email and msisdn variants of the `/requestToken`
 Client-Server API, if and only if the verification message contains a code the
 user is expected to enter into the client (for instance in the case of a short
-code through SMS). If this field is omitted, the client should continue the
-same behaviour from before, which is to send the token to the identity server
-directly. This is intended for backwards compatibility with older servers.
+code through SMS). It SHOULD be in the form of
+`/_matrix/identity/api/v1/validate/{3pid_type}/submitToken`, similar to the
+[same endpoint that exists in the Identity-Server
+API](https://matrix.org/docs/spec/identity_service/r0.1.0.html#post-matrix-identity-api-v1-validate-email-submittoken).
+If this field is omitted, the client MUST continue the same behaviour from
+before, which is to send the token to the identity server directly. This is
+intended for backwards compatibility with older servers.
 
-If the client receives a response to `/requestToken` with `submit_url`, it
-should accept the token from user input, then make a POST request to the
-content of `submit_url` with the `sid`, `client_secret` and user-entered token.
+If the client receives a response to `/requestToken` with `submit_url`, it MUST
+accept the token from user input, then make a POST request to the content of
+`submit_url` with the `sid`, `client_secret` and user-entered token.
 `submit_url` can lead to anywhere the homeserver deems necessary for
-verification. This data should be submitted as a JSON body.
+verification. This data MUST be submitted as a JSON body.
 
 An example exchange from the client's perspective is shown below:
 
@@ -69,7 +84,7 @@ collect a token from the user and then submit it to the provided URL.
 ```
 {
   "sid": "123abc",
-  "submit_url": "https://homeserver.tld/path/to/submitToken"
+  "submit_url": "https://homeserver.tld/_matrix/identity/api/v1/validate/msisdn/submitToken"
 }
 ```
 
@@ -78,7 +93,7 @@ user, say "123456", and then submit that as a POST request to the
 `"submit_url"`.
 
 ```
-POST https://homeserver.tld/path/to/submitToken
+POST https://homeserver.tld/_matrix/identity/api/v1/validate/msisdn/submitToken
 
 {
   "sid": "123abc",
