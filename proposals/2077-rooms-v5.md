@@ -1,18 +1,17 @@
-# MSC2077 - Rooms V5
+# MSC2077 - Room version 5
 
-This MSC proposes creating a new room version named v5, which will enforce the
-signing key `valid_until_ts` timestamps proposed in
+This MSC proposes creating room version 5, which will enforce the signing key
+`valid_until_ts` timestamps proposed in
 [MSC2076](https://github.com/matrix-org/matrix-doc/issues/2076).
 
 ## Proposal
 
-The new room version is called "5". The only difference between v5 and v4 is
+The new room version is called `5`. The only difference between v5 and v4 is
 that v5 rooms enforce the `valid_until_ts` timestamp on signing keys as
 proposed in [MSC2076](https://github.com/matrix-org/matrix-doc/issues/2076).
 
-It is not yet proposed that servers change the default room version used when
-creating new rooms, and it is not yet proposed that servers recommend upgrading
-existing rooms to v5.
+It is not yet proposed to change the default room version to v5. Version 5 will
+be considered a "stable" version.
 
 ## Notes
 
