@@ -62,8 +62,8 @@ paths:
         `Relationship between access tokens and devices`_.
 
         When registering a guest account, all parameters in the request body
-        with the exception of ``initial_device_display_name`` are ignored by
-        the server. The server will pick a ``device_id`` for the account
+        with the exception of ``initial_device_display_name`` MUST BE ignored
+        by the server. The server MUST pick a ``device_id`` for the account
         regardless of input.
       operationId: register
       parameters:
