@@ -34,7 +34,7 @@ to verify that token.
 
 An additional complication is that in the case of SMS, a full link to reset passwords is not sent, but a short code. The client then asks the user to enter this code, however the client may now not know where to send the code. Should it send it to the identity server or the homeserver? Which sent out the code?
 
-In order to combat this problem, the field `submit_url` should be added in the response from both the email and msisdn variants of the `/requestToken` Client-Server API, if and only if the verification message contains a code the user is expected to enter into the client (for instance in the case of a short code through SMS). If this field is omitted, the client knows that the link has been sent in its entirety and the verification will be handled out of band.
+In order to combat this problem, the field `submit_url` should be added in the response from both the email and msisdn variants of the `/requestToken` Client-Server API, if and only if the verification message contains a code the user is expected to enter into the client (for instance in the case of a short code through SMS). If this field is omitted, the client should continue the same behaviour from before, which is to send the token to the identity server directly. This is intended for backwards compatibility with older servers.
 
 If the client receives a response to `/requestToken` with `submit_url`, it should accept the token from user input, then make a request (either POST or GET, depending on whether it desires a machine- or human-readable response) to the content of `submit_url` with the `sid`, `client_secret` and user-entered token. This data should be submitted as query parameters for `GET` request, and a JSON body for a `POST`.
 
