@@ -1,16 +1,22 @@
-# MSC2078 - Sending Password Reset Emails via the Homeserver
+# MSC2078 - Sending Third-Party Request Tokens via the Homeserver
 
 This MSC proposes removing the current requirement of the identity server to
-send password reset tokens, and allows homeservers to implement the
-functionality instead. The intention is to put less trust in the identity
-server which is currently one of the most centralised components of Matrix. As
-it stands, an attacker in control of a identity server can reset a user's
-password if the identity server is considered trusted by that homeserver, and
-the user has registered at least one third-party identifier (3PID). This is due
-to the identity server currently handling the job of confirming the user's
-control of that identity.
+send third-party request tokens, and allows homeservers to implement the
+functionality instead. These request tokens are used to verify the identity of
+the request auther as an owner of the third-party identity (3PID). This can be
+used for binding a 3PID to an account, or for resetting passwords via email or
+SMS. The latter is what this proposal mainly focuses on, but be aware that it
+allows for any task that requires requesting a token through a 3PID to be
+taken on by the homeserver instead of the identity server.
 
-The MSC aims to simply clarify that homeservers can take on the responisibility
+The intention is to put less trust in the identity server, which is currently
+one of the most centralised components of Matrix. As it stands, an attacker in
+control of a identity server can reset a user's password if the identity server
+is considered trusted by that homeserver, and the user has registered at least
+one 3PID. This is due to the identity server currently handling the job of
+confirming the user's control of that identity.
+
+The MSC aims to simply clarify that homeservers can take on the responsibility
 of sending password reset tokens themselves.
 
 ## Proposal
