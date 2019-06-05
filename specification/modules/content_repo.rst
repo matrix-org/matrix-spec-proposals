@@ -34,8 +34,6 @@ header. The recommended policy is ``sandbox; default-src 'none'; script-src
 'none'; plugin-types application/pdf; style-src 'unsafe-inline'; object-src
 'self';``.
 
-Content in the repository should be treated as bytes as it may be encrypted.
-
 Matrix Content (MXC) URIs
 -------------------------
 
@@ -78,12 +76,7 @@ requested dimensions, unless the content being thumbnailed is smaller than
 the dimensions. When the content is smaller than the requested dimensions,
 servers should return the original content rather than thumbnail it.
 
-Servers SHOULD pre-calculate or have a list of set dimensions for which they
-will thumbnail content at. For example, the server may choose that it will
-only create thumbnails sized 96x96 or 512x512. When the client requests a
-thumbnail, the server will pick the size which is larger than the requested
-dimensions. Servers SHOULD pre-calculate the following thumbnails for uploaded
-content, and limit thumbnails to the same sizes:
+Servers SHOULD produce thumbnails with the following dimensions and methods:
 
 * 32x32, crop
 * 96x96, crop
@@ -97,7 +90,9 @@ In summary:
  * The server will return an image larger than or equal to the dimensions requested
    where possible.
 
-Servers MUST NOT upscale thumbnails under any circumstance.
+Servers MUST NOT upscale thumbnails under any circumstance. Servers MUST NOT
+return a smaller thumbnail than requested, unless the original content makes
+that impossible.
 
 Security considerations
 -----------------------
