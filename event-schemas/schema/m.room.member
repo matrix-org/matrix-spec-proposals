@@ -21,6 +21,29 @@ description: |-
   This event may also include an ``invite_room_state`` key inside the event's ``unsigned`` data.
   If present, this contains an array of ``StrippedState`` Events. These events provide information
   on a subset of state events such as the room name.
+
+  The user for which a membership applies is represented by the ``state_key``. Under some conditions,
+  the ``sender`` and ``state_key`` may not match - this may be interpreted as the ``sender`` affecting
+  the membership state of the ``state_key`` user.
+
+  The ``membership`` for a given user can change over time. The table below represents the various changes
+  over time and how clients and servers must interpret those changes. Previous membership can be retrieved
+  from the ``prev_content`` object on an event. If not present, the user's previous membership must be assumed
+  as ``leave``.
+
+  .. TODO: Improve how this table is written? We use a csv-table to get around vertical header restrictions.
+
+  .. csv-table::
+    :header-rows: 1
+    :stub-columns: 1
+
+    "","to ``invite``","to ``join``","to ``leave``","to ``ban``","to ``knock``"
+    "from ``invite``","No change.","User joined the room.","If the ``state_key`` is the same as the ``sender``, the user rejected the invite. Otherwise, the ``state_key`` user had their invite revoked.","User was banned.","Not implemented."
+    "from ``join``","Must never happen.","``displayname`` or ``avatar_url`` changed.","If the ``state_key`` is the same as the ``sender``, the user left. Otherwise, the ``state_key`` user was kicked.","User was kicked and banned.","Not implemented."
+    "from ``leave``","New invitation sent.","User joined.","No change.","User was banned.","Not implemented."
+    "from ``ban``","Must never happen.","Must never happen.","User was unbanned.","No change.","Not implemented."
+    "from ``knock``","Not implemented.","Not implemented.","Not implemented.","Not implemented.","Not implemented."
+
 properties:
   content:
     properties:
