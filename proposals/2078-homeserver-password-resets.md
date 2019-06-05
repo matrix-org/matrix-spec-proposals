@@ -5,8 +5,9 @@ send password reset tokens, and allows homeservers to implement the
 functionality instead. The intention is to put less trust in the identity
 server which is currently one of the most centralised components of Matrix. As
 it stands, an attacker in control of a identity server can reset a user's
-password if that user has registered a third-party identifier (3PID) with that
-identity server, due to itself also handling the job of confirming the user's
+password if the identity server is considered trusted by that homeserver, and
+the user has registered at least one third-party identifier (3PID). This is due
+to the identity server currently handling the job of confirming the user's
 control of that identity.
 
 The MSC aims to simply clarify that homeservers can take on the responisibility
