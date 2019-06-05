@@ -16,16 +16,20 @@ title: PushCondition
 type: object
 properties:
   kind:
-    enum:
-    - event_match
-    - contains_display_name
-    - room_member_count
     type: string
+    description: |-
+      The kind of condition to apply. See `conditions <#conditions>`_ for
+      more information on the allowed kinds and how they work.
   key:
     type: string
     description: |-
       Required for ``event_match`` conditions. The dot-separated field of the
       event to match.
+
+      Required for ``sender_notification_permission`` conditions. The field in
+      the power level event the user needs a minimum power level for. Fields
+      must be specified under the ``notifications`` property in the power level
+      event's ``content``.
     x-example: content.body
   pattern:
     type: string
