@@ -21,9 +21,7 @@ or
 [/_matrix/client/r0/account/password/msisdn/requestToken](https://matrix.org/docs/spec/client_server/r0.4.0.html#post-matrix-client-r0-account-password-msisdn-requesttoken).
 This request is supplied all the necessary details as well as a `id_server`
 field containing the address of a trusted identity server which the user has
-used in the past to bind their 3PID. Understand that it is recommended for the
-homeserver to only grant the request if the given identity server is in a
-trusted list.
+used in the past to bind their 3PID.
 
 The `id_server` field is currently required as the homeserver must know where
 to proxy the request to. This MSC proposes not to change the requirements of
@@ -34,9 +32,11 @@ to
 [/_matrix/identity/api/v1/validate/email/submitToken](https://matrix.org/docs/spec/identity_service/r0.1.0.html#post-matrix-identity-api-v1-validate-email-submittoken)
 to verify that token.
 
-Thus, this proposal really only requests that it be clear that a homeserver
-does not need to proxy requests to `/requestToken`, and instead can ignore the
-`id_server` field and perform emailing/sms message sending by itself.
+An additional complication is that in the case of sms, a full link to reset passwords is not sent, but a short code. The client then asks the user to enter this code, however the client may now not know where to send the code. Should it send it to the identity server or the homeserver? Which sent out the code?
+
+In order to combat this problem, the field `submit_url` should be added in the response from both the email and msisdn variants of the `/requestToken` Client-Server API, if and only if the homeserver has not sent out the entire link (for instance in the case of a short code through sms). If this field is omitted, the client knows that the link has been sent in its entirety and the verification will be handled out of band.
+
+If the client receives a response to `/requestToken` with `submit_url`, it should accept the token from user input, then make a request (either POST or GET, depending on whether it desires a machine- or human-readable response) to the content of `submit_url` with the `sid`, `client_secret` and user-entered token. This data should be submitted as query parameters for `GET` request, and a JSON body for a `POST`.
 
 ## Tradeoffs
 
