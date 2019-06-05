@@ -15,7 +15,7 @@ of sending password reset tokens themselves.
 
 ## Proposal
 
-Currently when a client requests a password reset, they make a call to either
+Currently when a client requests a password reset, it makes a call to either
 [/_matrix/client/r0/account/password/email/requestToken](https://matrix.org/docs/spec/client_server/r0.4.0.html#post-matrix-client-r0-account-password-email-requesttoken)
 or
 [/_matrix/client/r0/account/password/msisdn/requestToken](https://matrix.org/docs/spec/client_server/r0.4.0.html#post-matrix-client-r0-account-password-msisdn-requesttoken).
