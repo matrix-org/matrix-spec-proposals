@@ -47,8 +47,57 @@ directly. This is intended for backwards compatibility with older servers.
 If the client receives a response to `/requestToken` with `submit_url`, it
 should accept the token from user input, then make a POST request to the
 content of `submit_url` with the `sid`, `client_secret` and user-entered token.
-This data should be submitted as query parameters for `GET` request, and a JSON
-body for a `POST`.
+`submit_url` can lead to anywhere the homeserver deems necessary for
+verification. This data should be submitted as a JSON body.
+
+An example exchange from the client's perspective is shown below:
+
+```
+POST https://homeserver.tld/_matrix/client/r0/account/password/email/requestToken
+
+{
+  "client_secret": "monkeys_are_AWESOME",
+  "email": "alice@homeserver.tld",
+  "send_attempt": 1,
+  "id_server": "id.example.com"
+}
+```
+
+If the server responds with a `submit_url` field, it means the client should
+collect a token from the user and then submit it to the provided URL.
+
+```
+{
+  "sid": "123abc",
+  "submit_url": "https://homeserver.tld/path/to/submitToken"
+}
+```
+
+Since a `submit_url` was provided, the client will now collect a token from the
+user, say "123456", and then submit that as a POST request to the
+`"submit_url"`.
+
+```
+POST https://homeserver.tld/path/to/submitToken
+
+{
+  "sid": "123abc",
+  "client_secret": "monkeys_are_AWESOME",
+  "token": "123456"
+}
+```
+
+The client will then receive an appropriate response:
+
+```
+{
+  "success": true
+}
+```
+
+If the client did not receive a `submit_url` field, they should instead assume
+that verification will be completed out of band (e.g. the user clicks a link in
+their email and makes the submitToken request with their web browser).
 
 ## Tradeoffs
 
