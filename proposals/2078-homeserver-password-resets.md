@@ -1,6 +1,6 @@
 # MSC2078 - Sending Password Reset Emails via the Homeserver
 
-This MSC proposes removing the current requirement of the identity server to send password reset tokens, and allows homeservers to implement the functionality instead. The intention is to put less trust in the identity server which is currently one of the most centralised components of Matrix. As it stands, an attacker in control of a identity server can reset a user's password if that user has registered a third-party identifier (3PID) with that identity server, due to itself also handling the job of confirming the user's control of that identity.
+This MSC proposes removing the current requirement of the identity server to send password reset tokens, and allows homeservers to implement the functionality instead. The intention is to put less trust in the identity server which is currently one of the most centralised components of Matrix.
 
 The MSC aims to simply clarify that homeservers can take on the responisibility of sending password reset tokens themselves.
 
