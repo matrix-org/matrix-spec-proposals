@@ -37,7 +37,13 @@ paths:
 
         *Note*: This endpoint supports lazy-loading. See `Filtering <#filtering>`_
         for more information. Lazy-loading members is only supported on a ``StateFilter``
-        for this endpoint.
+        for this endpoint. When lazy-loading is enabled, servers MUST include the
+        syncing user's own membership event when they join a room, or when the
+        full state of rooms is requested. The user's own membership event is eligible
+        for being considered redudant by the server. When a sync is ``limited``,
+        the server MUST return membership events for the timeline, even if the
+        applicable events are not in the response, regardless as to whether or not
+        they are redundant.
       operationId: sync
       security:
         - accessToken: []
