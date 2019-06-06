@@ -83,6 +83,17 @@ The following other versions are also available, in reverse chronological order:
 - `r0.1.1 <https://matrix.org/docs/spec/server_server/r0.1.1.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/server_server/r0.1.0.html>`_
 
+
+API standards
+-------------
+
+The mandatory baseline for client-server communication in Matrix is exchanging
+JSON objects over HTTP APIs. More efficient optional transports will in future
+be supported as optional extensions - e.g. a packed binary encoding over
+stream-cipher encrypted TCP socket for low-bandwidth/low-roundtrip mobile usage.
+For the default HTTP transport, all API calls use a Content-Type of
+``application/json``.  In addition, all strings MUST be encoded as UTF-8.
+
 Server discovery
 ----------------
 
