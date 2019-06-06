@@ -5,7 +5,6 @@ targets:
   client_server:
     files:
       - client_server_api.rst
-      - { 1: events.rst }
       - { 1: modules.rst }
       - { 2: feature_profiles.rst }
       - { 2: "group:modules" }  # reference a group of files

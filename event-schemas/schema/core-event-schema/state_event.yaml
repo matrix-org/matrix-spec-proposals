@@ -1,7 +1,6 @@
 allOf:
 - $ref: room_event.yaml
 - $ref: sync_state_event.yaml
-description: In addition to the Room Event fields, State Events have the following
-  additional fields.
+description: State Events have the following fields.
 title: State Event
 type: object

@@ -1326,6 +1326,63 @@ the event ``type`` key SHOULD follow the Java package naming convention,
 e.g. ``com.example.myapp.event``.  This ensures event types are suitably
 namespaced for each application and reduces the risk of clashes.
 
+.. Note::
+  Events are not limited to the types defined in this specification. New or custom
+  event types can be created on a whim using the Java package naming convention.
+  For example, a ``com.example.game.score`` event can be sent by clients and other
+  clients would receive it through Matrix.
+
+Note that the structure of these events may be different than those in the
+server-server API.
+
+{{common_event_fields}}
+
+{{common_room_event_fields}}
+
+{{common_state_event_fields}}
+
+
+Size limits
+~~~~~~~~~~~
+
+The complete event MUST NOT be larger than 65535 bytes, when formatted as a
+`PDU for the Server-Server protocol <../server_server/%SERVER_RELEASE_LABEL%#pdus>`_,
+including any signatures, and encoded as `Canonical JSON`_.
+
+There are additional restrictions on sizes per key:
+
+- ``sender`` MUST NOT exceed 255 bytes (including domain).
+- ``room_id`` MUST NOT exceed 255 bytes.
+- ``state_key`` MUST NOT exceed 255 bytes.
+- ``type`` MUST NOT exceed 255 bytes.
+- ``event_id`` MUST NOT exceed 255 bytes.
+
+Some event types have additional size restrictions which are specified in
+the description of the event. Additional keys have no limit other than that
+implied by the total 65 KB limit on events.
+
+Room Events
+~~~~~~~~~~~
+.. NOTE::
+  This section is a work in progress.
+
+This specification outlines several standard event types, all of which are
+prefixed with ``m.``
+
+{{m_room_aliases_event}}
+
+{{m_room_canonical_alias_event}}
+
+{{m_room_create_event}}
+
+{{m_room_join_rules_event}}
+
+{{m_room_member_event}}
+
+{{m_room_power_levels_event}}
+
+{{m_room_redaction_event}}
+
 
 Syncing
 ~~~~~~~
