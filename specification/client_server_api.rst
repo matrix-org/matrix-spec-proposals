@@ -242,6 +242,9 @@ recommended.
 
 {{versions_cs_http_api}}
 
+
+.. _`CORS`:
+
 Web Browser Clients
 -------------------
 
@@ -250,9 +253,14 @@ web browser or similar environment. In these cases, the homeserver should respon
 to pre-flight requests and supply Cross-Origin Resource Sharing (CORS) headers on
 all requests.
 
-When a client approaches the server with a pre-flight (``OPTIONS``) request, the
-server should respond with the CORS headers for that route. The recommended CORS
-headers to be returned by servers on all requests are:
+Servers MUST expect that clients will approach them with ``OPTIONS`` requests,
+allowing clients to discover the CORS headers. All endpoints in this specification s
+upport the ``OPTIONS`` method, however the server MUST NOT perform any logic defined
+for the endpoints when approached with an ``OPTIONS`` request.
+
+When a client approaches the server with a request, the server should respond with
+the CORS headers for that route. The recommended CORS headers to be returned by
+servers on all requests are:
 
 .. code::
 
@@ -295,6 +303,10 @@ In this section, the following terms are used with specific meanings:
 
 Well-known URI
 ~~~~~~~~~~~~~~
+
+.. Note::
+  Servers hosting the ``.well-known`` JSON file SHOULD offer CORS headers, as
+  per the `CORS`_ section in this specification.
 
 The ``.well-known`` method uses a JSON file at a predetermined location to
 specify parameter values. The flow for this method is as follows:
