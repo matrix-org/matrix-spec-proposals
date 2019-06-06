@@ -31,7 +31,9 @@ properties:
 
       State keys starting with an ``@`` are reserved for referencing user IDs, such
       as room members. With the exception of a few events, state events set with a
-      given user's ID as the state key MUST only be set by that user.
+      given user's ID as the state key MUST only be set by that user, however this
+      restriction MUST NOT permit the user to send state events without the appropriate
+      permissions.
     type: string
 required:
 - state_key
