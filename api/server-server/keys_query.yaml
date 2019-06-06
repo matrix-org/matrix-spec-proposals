@@ -44,8 +44,10 @@ paths:
           type: string
           description: |-
             **Deprecated**. Servers should not use this parameter and instead
-            opt to return all keys, not just the requested one. The key ID to 
+            opt to return all keys, not just the requested one. The key ID to
             look up.
+
+            When excluded, the trailing slash on this endpoint is optional.
           required: false
           x-example: "ed25519:abc123"
         - in: query
@@ -53,7 +55,7 @@ paths:
           type: integer
           format: int64
           description: |-
-            A millisecond POSIX timestamp in milliseconds indicating when the returned 
+            A millisecond POSIX timestamp in milliseconds indicating when the returned
             certificates will need to be valid until to be useful to the requesting server.
 
             If not supplied, the current time as determined by the notary server is used.
@@ -114,7 +116,7 @@ paths:
                         format: int64
                         description: |-
                           A millisecond POSIX timestamp in milliseconds indicating when
-                          the returned certificates will need to be valid until to be 
+                          the returned certificates will need to be valid until to be
                           useful to the requesting server.
 
                           If not supplied, the current time as determined by the notary

@@ -1,0 +1,1 @@
+Clarify that the trailing slash is optional on ``/keys/*`` endpoints when no key ID is requested.
