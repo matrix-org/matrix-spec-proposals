@@ -557,9 +557,10 @@ message in the standard format. For example:
   }
 
 If the client has completed all stages of a flow, the homeserver performs the
-API call and returns the result as normal. Completed stages cannot be re-tried;
-The client must abandon the current session and start over. Homeservers should
-treat retries as authentication errors.
+API call and returns the result as normal. Completed stages cannot be retried
+by clients, therefore servers must return either a 401 response with the completed
+stages, or the result of the API call if all stages were completed when a client
+retries a stage.
 
 Some authentication types may be completed by means other than through the
 Matrix client, for example, an email confirmation may be completed when the user
