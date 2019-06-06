@@ -17,9 +17,8 @@ Modules
 =======
 
 Modules are parts of the Client-Server API which are not universal to all
-endpoints and are accessible to all clients. Modules are strictly defined
-within this specification and should not be mistaken for XEP or equivalent
-extensions from other protocols - in order for an implementation to be
-compliant with the Client-Server specification it MUST support all modules
-and supporting specification. The exception being clients, which are governed
-by `Feature Profiles <#feature-profiles>`_.
+endpoints. Modules are strictly defined within this specification and
+should not be mistaken for XEP or equivalent extensions from other protocols
+- in order for an implementation to be compliant with the Client-Server
+specification it MUST support all modules and supporting specification.
+The exception being clients, which are governed by `Feature Profiles <#feature-profiles>`_.
