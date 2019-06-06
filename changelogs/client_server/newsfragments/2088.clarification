@@ -1,0 +1,1 @@
+De-duplicate ``/state/<event_type>`` endpoints, clarifying that the ``<state_key>`` is optional.
