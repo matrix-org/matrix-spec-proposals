@@ -52,14 +52,11 @@ is useful for browsing the Client-Server API.
 
 Introduction to the Matrix APIs
 -------------------------------
-.. WARNING::
-  The Matrix specification is still evolving: the APIs are not yet frozen
-  and this document is in places a work in progress or stale. We have made every
-  effort to clearly flag areas which are still being finalised.
-  We're publishing it at this point because it's complete enough to be more than
-  useful and provide a canonical reference to how Matrix is evolving. Our end
-  goal is to mirror WHATWG's `Living Standard
-  <https://whatwg.org/faq?#living-standard>`_.
+.. Note::
+  The Matrix specification is currently at version 1.0 - a milestone indicating that
+  anything built on top of Matrix can safely rely on the APIs in the specification
+  not changing drastically. The specification continues to evolve, however, mirroring
+  something similar to WHATWG's `Living Standard <https://whatwg.org/faq?#living-standard>`_.
 
 Matrix is a set of open APIs for open-federated Instant Messaging (IM), Voice
 over IP (VoIP) and Internet of Things (IoT) communication, designed to create
