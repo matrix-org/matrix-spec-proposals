@@ -156,4 +156,4 @@ paths:
         200:
           description: A transaction containing a single PDU which is the event requested.
           schema:
-            $ref: "definitions/transaction.yaml"
+            $ref: "definitions/single_pdu_transaction.yaml"
