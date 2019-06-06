@@ -58,7 +58,6 @@ paths:
             here describes the common event fields in more detail and may be missing other
             required fields for a PDU.**
           schema:
-          schema:
             type: object
             properties:
               room_version:

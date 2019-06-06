@@ -27,6 +27,7 @@ paths:
     get:
       summary: Get the implementation name and version of this homeserver.
       description: Get the implementation name and version of this homeserver.
+      operationId: getVersion
       responses:
         200:
           description:
