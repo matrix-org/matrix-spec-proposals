@@ -530,12 +530,12 @@ The process between Alice and Bob verifying each other would be:
 .. |BobPublicKey| replace:: :math:`K_{B}^{public}`
 .. |BobPrivateKey| replace:: :math:`K_{B}^{private}`
 .. |BobCurve25519| replace:: :math:`K_{B}^{private},K_{B}^{public}`
-.. |AliceBobCurve25519| replace:: :math:`K_{A}^{private}K_{B}^{public}`
 .. |BobAliceCurve25519| replace:: :math:`K_{B}^{private}K_{A}^{public}`
 .. |AliceBobECDH| replace:: :math:`ECDH(K_{A}^{private},K_{B}^{public})`
 
-1. Alice and Bob establish a secure out-of-band connection, such as meeting in-person or a video call. "Secure"
-   here means that either party cannot be impersonated, not explicit secrecy.
+1. Alice and Bob establish a secure out-of-band connection, such as meeting
+   in-person or a video call. "Secure" here means that either party cannot be
+   impersonated, not explicit secrecy.
 #. Alice and Bob communicate which devices they'd like to verify with each other.
 #. Alice selects Bob's device from the device list and begins verification.
 #. Alice's client ensures it has a copy of Bob's device key.
@@ -565,9 +565,9 @@ The process between Alice and Bob verifying each other would be:
    they match or not.
 #. Assuming they match, Alice and Bob's devices calculate the HMAC of their own device keys
    and a comma-separated sorted list of of the key IDs that they wish the other user
-   to verify, using SHA-256 as the hash function. HMAC is defined in [RFC 2104](https://tools.ietf.org/html/rfc2104). The key for
-   the HMAC is different for each item and is calculated by generating 32 bytes (256 bits)
-   using `the key verification HKDF <#SAS-HKDF>`_.
+   to verify, using SHA-256 as the hash function. HMAC is defined in [RFC 2104](https://tools.ietf.org/html/rfc2104).
+   The key for the HMAC is different for each item and is calculated by generating
+   32 bytes (256 bits) using `the key verification HKDF <#SAS-HKDF>`_.
 #. Alice's device sends Bob's device a ``m.key.verification.mac`` message containing the
    MAC of Alice's device keys and the MAC of her key IDs to be verified. Bob's device does
    the same for Bob's device keys and key IDs concurrently with Alice.
@@ -611,12 +611,12 @@ to do when an error happens:
 * Alice or Bob can cancel the verification at any time. A ``m.key.verification.cancel``
   message must be sent to signify the cancellation.
 * The verification can time out. Clients should time out a verification that does not
-  complete within 5 minutes. Additionally, clients should expire a ``transaction_id``
-  which goes unused for 5 minutes after having last sent/received it. The client should
-  inform the user that the verification timed out, and send an appropriate ``m.key.verification.cancel``
-  message to the other device.
-* When the same device attempts to intiate multiple verification attempts, cancel all
-  attempts with that device.
+  complete within 10 minutes. Additionally, clients should expire a ``transaction_id``
+  which goes unused for 10 minutes after having last sent/received it. The client should
+  inform the user that the verification timed out, and send an appropriate
+  ``m.key.verification.cancel`` message to the other device.
+* When the same device attempts to intiate multiple verification attempts, the receipient
+  should cancel all attempts with that device.
 * When a device receives an unknown ``transaction_id``, it should send an appropriate
   ``m.key.verfication.cancel`` message to the other device indicating as such. This
   does not apply for inbound ``m.key.verification.start`` or ``m.key.verification.cancel``
@@ -658,10 +658,10 @@ are used in addition to those already specified:
 HKDF calculation
 <<<<<<<<<<<<<<<<
 
-In all of the SAS methods, HKDF is as defined in [RFC 5869](https://tools.ietf.org/html/rfc5869) and uses the previously
-agreed-upon hash function for the hash function. The shared secret is supplied
-as the input keying material. No salt is used, and the input parameter is the
-concatenation of:
+In all of the SAS methods, HKDF is as defined in [RFC 5869](https://tools.ietf.org/html/rfc5869)
+and uses the previously agreed-upon hash function for the hash function. The shared
+secret is supplied as the input keying material. No salt is used, and the input
+parameter is the concatenation of:
 
   * The string ``MATRIX_KEY_VERIFICATION_SAS``.
   * The Matrix ID of the user who sent the ``m.key.verification.start`` message.
@@ -670,8 +670,9 @@ concatenation of:
   * The Device ID of the device which sent the ``m.key.verification.accept`` message.
   * The ``transaction_id`` being used.
 
-HKDF is used over the plain shared secret as it results in a harder attack
-as well as more uniform data to work with.
+.. admonition:: Rationale
+  HKDF is used over the plain shared secret as it results in a harder attack
+  as well as more uniform data to work with.
 
 For verification of each party's device keys, HKDF is as defined in RFC 5869 and
 uses SHA-256 as the hash function. The shared secret is supplied as the input keying
@@ -697,7 +698,7 @@ The bitwise operations to get the numbers given the 5 bytes
 :math:`B_{0}, B_{1}, B_{2}, B_{3}, B_{4}` would be:
 
 * First: :math:`(B_{0} \ll 5 | B_{1} \gg 3) + 1000`
-* Second: :math:`(B_{1} \& 0x7 | B_{2} \ll 2 | B_{3} \gg 6) + 1000`
+* Second: :math:`((B_{1} \& 0x7) \ll 10 | B_{2} \ll 2 | B_{3} \gg 6) + 1000`
 * Third: :math:`((B_{3} \& 0x3F) \ll 7 | B_{4} \gg 1) + 1000`
 
 The digits are displayed to the user either with an appropriate separator,
