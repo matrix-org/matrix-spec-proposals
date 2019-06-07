@@ -485,7 +485,7 @@ some other reason. Versions can switch between stable and unstable periodically
 for a variety of reasons, including discovered security vulnerabilities and age.
 
 Clients should not ask room administrators to upgrade their rooms if the room is
-running a stable version. Servers SHOULD use room version 1 as the default room
+running a stable version. Servers SHOULD use room version 4 as the default room
 version when creating new rooms.
 
 The available room versions are:
@@ -493,6 +493,7 @@ The available room versions are:
 * `Version 1 <rooms/v1.html>`_ - **Stable**. The current version of most rooms.
 * `Version 2 <rooms/v2.html>`_ - **Stable**. Implements State Resolution Version 2.
 * `Version 3 <rooms/v3.html>`_ - **Stable**. Introduces events whose IDs are the event's hash.
+* `Version 4 <rooms/v4.html>`_ - **Stable**. Builds on v3 by using URL-safe base64 for event IDs.
 
 Specification Versions
 ----------------------

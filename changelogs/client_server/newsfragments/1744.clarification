@@ -1,1 +1,1 @@
-Add missing status_msg to m.presence schema.
+Add missing ``status_msg`` to ``m.presence`` schema.

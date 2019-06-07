@@ -41,7 +41,7 @@ paths:
           name: Content-Type
           type: string
           description: The content type of the file being uploaded
-          x-example: "Content-Type: audio/mpeg"
+          x-example: "Content-Type: application/pdf"
         - in: query
           type: string
           x-example: "War and Peace.pdf"
@@ -51,6 +51,7 @@ paths:
           name: "<content>"
           description: The content to be uploaded.
           required: true
+          x-example: "<bytes>" # so the spec shows "<bytes>" without quotes.
           schema:
             type: string
             example: "<bytes>"
@@ -103,7 +104,7 @@ paths:
           default: true
           description: |
             Indicates to the server that it should not attempt to fetch the media if it is deemed
-            remote. This is to prevent routing loops where the server contacts itself. Defaults to 
+            remote. This is to prevent routing loops where the server contacts itself. Defaults to
             true if not provided.
       responses:
         200:
@@ -158,7 +159,7 @@ paths:
           default: true
           description: |
             Indicates to the server that it should not attempt to fetch the media if it is deemed
-            remote. This is to prevent routing loops where the server contacts itself. Defaults to 
+            remote. This is to prevent routing loops where the server contacts itself. Defaults to
             true if not provided.
       responses:
         200:
@@ -202,6 +203,7 @@ paths:
           type: integer
           x-example: 64
           name: width
+          required: true
           description: |-
             The *desired* width of the thumbnail. The actual thumbnail may not
             match the size specified.
@@ -209,6 +211,7 @@ paths:
           type: integer
           x-example: 64
           name: height
+          required: true
           description: |-
             The *desired* height of the thumbnail. The actual thumbnail may not
             match the size specified.
@@ -226,7 +229,7 @@ paths:
           default: true
           description: |
             Indicates to the server that it should not attempt to fetch the media if it is deemed
-            remote. This is to prevent routing loops where the server contacts itself. Defaults to 
+            remote. This is to prevent routing loops where the server contacts itself. Defaults to
             true if not provided.
       responses:
         200:
@@ -328,7 +331,7 @@ paths:
               m.upload.size:
                 type: integer
                 format: int64
-                description: |- 
+                description: |-
                   The maximum size an upload can be in bytes.
                   Clients SHOULD use this as a guide when uploading content.
                   If not listed or null, the size limit should be treated as unknown.

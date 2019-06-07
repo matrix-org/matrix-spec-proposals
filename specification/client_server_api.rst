@@ -57,6 +57,8 @@ The following other versions are also available, in reverse chronological order:
 API Standards
 -------------
 
+.. TODO: Move a lot of this to a common area for all specs.
+
 .. TODO
   Need to specify any HMAC or access_token lifetime/ratcheting tricks
   We need to specify capability negotiation for extensible transports
@@ -81,7 +83,6 @@ names in JSON objects passed over the API also follow this convention.
    There are a few historical exceptions to this rule, such as
    ``/createRoom``. A future version of this specification will address the
    inconsistency.
-
 
 Any errors which occur at the Matrix API level MUST return a "standard error
 response". This is a JSON object which looks like:
@@ -219,9 +220,12 @@ Other error codes the client might encounter are:
   to modify state (eg: sending messages, account data, etc) and not routes which only
   read state (eg: ``/sync``, get account data, etc).
 
+:``M_CANNOT_LEAVE_SERVER_NOTICE_ROOM``:
+  The user is unable to reject an invite to join the server notices room. See the
+  `Server Notices <#server-notices>`_ module for more information.
+
 .. TODO: More error codes (covered by other issues)
 .. * M_CONSENT_NOT_GIVEN                - GDPR: https://github.com/matrix-org/matrix-doc/issues/1512
-.. * M_CANNOT_LEAVE_SERVER_NOTICE_ROOM  - GDPR: https://github.com/matrix-org/matrix-doc/issues/1254
 
 .. _sect:txn_ids:
 
@@ -286,7 +290,7 @@ In this section, the following terms are used with specific meanings:
 ``FAIL_ERROR``
   Inform the user that auto-discovery did not return any usable URLs. Do not
   continue further with the current login process. At this point, valid data
-  was obtained, but no homeserver is available to serve the client. No further
+  was obtained, but no server is available to serve the client. No further
   guess should be attempted and the user should make a conscientious decision
   what to do next.
 
@@ -403,8 +407,10 @@ an additional stage. This exchange continues until the final success.
 
 For each endpoint, a server offers one or more 'flows' that the client can use
 to authenticate itself. Each flow comprises a series of stages, as described
-above. The client is free to choose which flow it follows. When all stages in a
-flow are complete, authentication is complete and the API call succeeds.
+above. The client is free to choose which flow it follows, however the flow's
+stages must be completed in order. Failing to follow the flows in order must
+result in an HTTP 401 response, as defined below. When all stages in a flow
+are complete, authentication is complete and the API call succeeds.
 
 User-interactive API in the REST API
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -448,11 +454,10 @@ params
   presented, that type may be present as a key in this dictionary. For example,
   the public part of an OAuth client ID could be given here.
 session
-  This is a session identifier that the client must pass back to the home
-  server, if one is provided, in subsequent attempts to authenticate in the same
-  API call.
+  This is a session identifier that the client must pass back to the homeserver,
+  if one is provided, in subsequent attempts to authenticate in the same API call.
 
-The client then chooses a flow and attempts to complete one of the stages. It
+The client then chooses a flow and attempts to complete the first stage. It
 does this by resubmitting the same request with the addition of an ``auth``
 key in the object that it submits. This dictionary contains a ``type`` key whose
 value is the name of the authentication type that the client is attempting to complete.
@@ -553,7 +558,10 @@ message in the standard format. For example:
   }
 
 If the client has completed all stages of a flow, the homeserver performs the
-API call and returns the result as normal.
+API call and returns the result as normal. Completed stages cannot be retried
+by clients, therefore servers must return either a 401 response with the completed
+stages, or the result of the API call if all stages were completed when a client
+retries a stage.
 
 Some authentication types may be completed by means other than through the
 Matrix client, for example, an email confirmation may be completed when the user
@@ -618,6 +626,7 @@ This specification defines the following auth types:
  - ``m.login.recaptcha``
  - ``m.login.oauth2``
  - ``m.login.email.identity``
+ - ``m.login.msisdn``
  - ``m.login.token``
  - ``m.login.dummy``
 
@@ -782,6 +791,34 @@ To use this authentication type, clients should submit an auth dict as follows:
     "session": "<session ID>"
   }
 
+Phone number/MSISDN-based (identity server)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+:Type:
+  ``m.login.msisdn``
+:Description:
+  Authentication is supported by authorising a phone number with an identity
+  server.
+
+Prior to submitting this, the client should authenticate with an identity
+server. After authenticating, the session information should be submitted to
+the homeserver.
+
+To use this authentication type, clients should submit an auth dict as follows:
+
+.. code:: json
+
+  {
+    "type": "m.login.msisdn",
+    "threepidCreds": [
+      {
+        "sid": "<identity server session id>",
+        "client_secret": "<identity server client secret>",
+        "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>"
+      }
+    ],
+    "session": "<session ID>"
+  }
+
 Dummy Auth
 <<<<<<<<<<
 :Type:
@@ -789,7 +826,14 @@ Dummy Auth
 :Description:
   Dummy authentication always succeeds and requires no extra parameters. Its
   purpose is to allow servers to not require any form of User-Interactive
-  Authentication to perform a request.
+  Authentication to perform a request. It can also be used to differentiate
+  flows where otherwise one flow would be a subset of another flow. eg. if
+  a server offers flows ``m.login.recaptcha`` and ``m.login.recaptcha,
+  m.login.email.identity`` and the client completes the recaptcha stage first,
+  the auth would succeed with the former flow, even if the client was intending
+  to then complete the email auth stage. A server can instead send flows
+  ``m.login.recaptcha, m.login.dummy`` and ``m.login.recaptcha,
+  m.login.email.identity`` to fix the ambiguity.
 
 To use this authentication type, clients should submit an auth dict with just
 the type and session, if provided:
@@ -1493,7 +1537,6 @@ the following list:
 - ``room_id``
 - ``sender``
 - ``state_key``
-- ``prev_content``
 - ``content``
 - ``hashes``
 - ``signatures``
@@ -1524,6 +1567,16 @@ The server should add the event causing the redaction to the ``unsigned``
 property of the redacted event, under the ``redacted_because`` key. When a
 client receives a redaction event it should change the redacted event in the
 same way a server does.
+
+.. NOTE::
+
+    Redacted events can still affect the state of the room. When redacted,
+    state events behave as though their properties were simply not specified,
+    except those protected by the redaction algorithm. For example,
+    a redacted ``join`` event will still result in the user being considered joined.
+    Similarly, a redacted topic does not necessarily cause the topic to revert to
+    what is was prior to the event - it causes the topic to be removed from the room.
+
 
 Events
 ++++++

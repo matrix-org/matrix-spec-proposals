@@ -1,0 +1,16 @@
+steps:
+  - label: ":books: Build spec"
+    command:
+      - python3 -m venv env
+      - env/bin/pip install -r scripts/requirements.txt
+      - ". env/bin/activate; scripts/generate-matrix-org-assets"
+    artifact_paths:
+      - assets.tar.gz
+    plugins:
+      - docker#v3.0.1:
+          image: "python:3.6"
+
+  - label: "rebuild matrix.org"
+    trigger: "matrix-dot-org"
+    async: true
+    branches: "master"

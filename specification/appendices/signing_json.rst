@@ -59,7 +59,7 @@ Grammar
 +++++++
 
 Adapted from the grammar in http://tools.ietf.org/html/rfc7159 removing
-insignificant whitespace, fractions, exponents and redundant character escapes
+insignificant whitespace, fractions, exponents and redundant character escapes.
 
 .. code::
 

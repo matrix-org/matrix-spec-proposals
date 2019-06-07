@@ -63,7 +63,7 @@ paths:
               - one_time_keys
       responses:
         200:
-          description: The claimed keys
+          description: The claimed keys.
           schema:
             type: object
             properties:

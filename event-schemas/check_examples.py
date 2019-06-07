@@ -106,14 +106,17 @@ def check_example_dir(exampledir, schemadir):
             if filename.startswith("."):
                 # Skip over any vim .swp files.
                 continue
+            if filename.endswith(".json"):
+                # Skip over any explicit examples (partial event definitions)
+                continue
             cwd = os.path.basename(os.path.dirname(os.path.join(root, filename)))
             if cwd == "core":
                 # Skip checking the underlying definitions
                 continue
             examplepath = os.path.join(root, filename)
             schemapath = examplepath.replace(exampledir, schemadir)
-            if schemapath.find("#") >= 0:
-                schemapath = schemapath[:schemapath.find("#")]
+            if schemapath.find("$") >= 0:
+                schemapath = schemapath[:schemapath.find("$")]
             try:
                 check_example_file(examplepath, schemapath)
             except Exception as e:
