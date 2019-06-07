@@ -1286,7 +1286,7 @@ for the ``sender`` of events in the timeline, not all members of a room.
 Repeated calls to lazy-loading aware endpoints will result in redundant membership
 events being excluded by default. Clients often track which membership events they
 already have, therefore making the extra information not as useful to the client.
-Clients can always request redundant members by setting ``include_redundant_members``
+Clients can always request redundant membership events by setting ``include_redundant_members``
 to true in the filter.
 
 Servers should be cautious about which events they consider redundant. Membership
@@ -1296,9 +1296,9 @@ as the current membership event for a user.
 
 .. Note::
    Repeated calls using the same filter to *any* lazy-loading aware endpoint may
-   result in redundant members being excluded from future calls. For example, a
+   result in redundant membership events being excluded from future calls. For example, a
    request to ``/sync`` followed by a request to ``/messages`` may result in a
-   future call to ``/sync`` excluding members included by the ``/messages`` call.
+   future call to ``/sync`` excluding membership events returned by the ``/messages`` call.
 
 The current endpoints which support lazy-loading room members are:
 
