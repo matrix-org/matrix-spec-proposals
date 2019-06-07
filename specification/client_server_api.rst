@@ -453,11 +453,10 @@ params
   presented, that type may be present as a key in this dictionary. For example,
   the public part of an OAuth client ID could be given here.
 session
-  This is a session identifier that the client must pass back to the home
-  server, if one is provided, in subsequent attempts to authenticate in the same
-  API call.
+  This is a session identifier that the client must pass back to the homeserver,
+  if one is provided, in subsequent attempts to authenticate in the same API call.
 
-The client then chooses a flow and attempts to complete one of the stages. It
+The client then chooses a flow and attempts to complete the first stage. It
 does this by resubmitting the same request with the addition of an ``auth``
 key in the object that it submits. This dictionary contains a ``type`` key whose
 value is the name of the authentication type that the client is attempting to complete.
@@ -558,7 +557,10 @@ message in the standard format. For example:
   }
 
 If the client has completed all stages of a flow, the homeserver performs the
-API call and returns the result as normal.
+API call and returns the result as normal. Completed stages cannot be retried
+by clients, therefore servers must return either a 401 response with the completed
+stages, or the result of the API call if all stages were completed when a client
+retries a stage.
 
 Some authentication types may be completed by means other than through the
 Matrix client, for example, an email confirmation may be completed when the user
