@@ -204,10 +204,11 @@ paths:
     post:
       summary: Begins the validation process for an email to be used during registration.
       description: |-
-        Proxies the Identity Service API ``validate/email/requestToken``, but
-        first checks that the given email address is not already associated
-        with an account on this homeserver. See the Identity Service API for
-        further information.
+        The homeserver should check that the given email address is **not**
+        already associated with an account on this homeserver. The homeserver
+        has the choice of validating the email address itself, or proxying the
+        request to the ``validate/email/requestToken`` Identity Server API on
+        the server sent in ``id_server``.
       operationId: requestTokenToRegisterEmail
       parameters:
         - in: body
@@ -231,8 +232,34 @@ paths:
             An email has been sent to the specified address.
             Note that this may be an email containing the validation token or it may be informing
             the user of an error.
+
+            ``submit_url`` is an optional field containing a URL where the
+            client must submit a validation token to, with identical parameters
+            to the Identity Service API's ``/validate/email/submitToken``
+            endpoint. The homeserver will send this token to the user, which
+            should then be prompted to provide it to the client.
+
+            If this field is not present, the client can assume that
+            verification will happen without the client's involvement.
           schema:
-            $ref: "../identity/definitions/sid.yaml"
+            allOf:
+              - $ref: "../identity/definitions/sid.yaml"
+              - type: object
+                properties:
+                  submit_url:
+                    type: string
+                    description: |-
+                      An optional field containing a URL where the client
+                      must submit a validation token to, with identical
+                      parameters to the Identity Service API's
+                      ``/validate/email/submitToken`` endpoint. The homeserver
+                      will send this token to the user, which should then be
+                      prompted to provide it to the client.
+
+                      If this field is not present, the client can assume that
+                      verification will happen without the client's
+                      involvement.
+                    example: "https://example.org/path/to/submitToken"
         403:
           description: The homeserver does not permit the address to be bound.
           schema:
@@ -264,10 +291,11 @@ paths:
     post:
       summary: Requests a validation token be sent to the given phone number for the purpose of registering an account
       description: |-
-        Proxies the Identity Service API ``validate/msisdn/requestToken``, but
-        first checks that the given phone number is not already associated
-        with an account on this homeserver. See the Identity Service API for
-        further information.
+        The homeserver should check that the given phone number is **not**
+        already associated with an account on this homeserver. The homeserver
+        has the choice of validating the phone number itself, or proxying the
+        request to the ``validate/msisdn/requestToken`` Identity Server API on
+        the server sent in ``id_server``.
       operationId: requestTokenToRegisterMSISDN
       parameters:
         - in: body
@@ -291,8 +319,34 @@ paths:
             An SMS message has been sent to the specified phone number.
             Note that this may be an SMS message containing the validation token or it may be informing
             the user of an error.
+
+            ``submit_url`` is an optional field containing a URL where the
+            client must submit a validation token to, with identical parameters
+            to the Identity Service API's ``/validate/msisdn/submitToken``
+            endpoint. The homeserver will send this token to the user, which
+            should then be prompted to provide it to the client.
+
+            If this field is not present, the client can assume that
+            verification will happen without the client's involvement.
           schema:
-            $ref: "../identity/definitions/sid.yaml"
+            allOf:
+              - $ref: "../identity/definitions/sid.yaml"
+              - type: object
+                properties:
+                  submit_url:
+                    type: string
+                    description: |-
+                      An optional field containing a URL where the client
+                      must submit a validation token to, with identical
+                      parameters to the Identity Service API's
+                      ``/validate/email/submitToken`` endpoint. The homeserver
+                      will send this token to the user, which should then be
+                      prompted to provide it to the client.
+
+                      If this field is not present, the client can assume that
+                      verification will happen without the client's
+                      involvement.
+                    example: "https://example.org/path/to/submitToken"
         403:
           description: The homeserver does not permit the address to be bound.
           schema:
@@ -377,16 +431,21 @@ paths:
     post:
       summary: Requests a validation token be sent to the given email address for the purpose of resetting a user's password
       description: |-
-        Proxies the Identity Service API ``validate/email/requestToken``, but
-        first checks that the given email address **is** associated with an account
-        on this homeserver. This API should be used to request
-        validation tokens when authenticating for the
-        `account/password` endpoint. This API's parameters and response are
-        identical to that of the HS API |/register/email/requestToken|_ except that
-        `M_THREEPID_NOT_FOUND` may be returned if no account matching the
-        given email address could be found. The server may instead send an
-        email to the given address prompting the user to create an account.
-        `M_THREEPID_IN_USE` may not be returned.
+        The homeserver should check that the given email address **is
+        associated** with an account on this homeserver. This API should be
+        used to request validation tokens when authenticating for the
+        ``account/password`` endpoint.
+        
+        This API's parameters and response are identical to that of the HS API
+        |/register/email/requestToken|_ except that ``M_THREEPID_NOT_FOUND``
+        may be returned if no account matching the given email address could be
+        found. The server may instead send an email to the given address
+        prompting the user to create an account. ``M_THREEPID_IN_USE`` may not
+        be returned.
+        
+        The homeserver has the choice of validating the email address itself,
+        or proxying the request to the ``validate/email/requestToken`` Identity
+        server api on the server sent in ``id_server``.
 
         .. |/register/email/requestToken| replace:: ``/register/email/requestToken``
 
@@ -412,7 +471,24 @@ paths:
         200:
           description: An email was sent to the given address.
           schema:
-            $ref: "../identity/definitions/sid.yaml"
+            allOf:
+              - $ref: "../identity/definitions/sid.yaml"
+              - type: object
+                properties:
+                  submit_url:
+                    type: string
+                    description: |-
+                      An optional field containing a URL where the client must
+                      submit a validation token to, with identical parameters
+                      to the Identity Service API's
+                      ``/validate/email/submitToken`` endpoint. The homeserver
+                      will send this token to the user, which should then be
+                      prompted to provide it to the client.
+
+                      If this field is not present, the client can assume that
+                      verification will happen without the client's
+                      involvement.
+                    example: "https://example.org/path/to/submitToken"
         403:
           description: |-
             The homeserver does not allow the third party identifier as a
@@ -439,16 +515,21 @@ paths:
     post:
       summary: Requests a validation token be sent to the given phone number for the purpose of resetting a user's password.
       description: |-
-        Proxies the Identity Service API ``validate/msisdn/requestToken``, but
-        first checks that the given phone number **is** associated with an account
-        on this homeserver. This API should be used to request
-        validation tokens when authenticating for the
-        `account/password` endpoint. This API's parameters and response are
-        identical to that of the HS API |/register/msisdn/requestToken|_ except that
-        `M_THREEPID_NOT_FOUND` may be returned if no account matching the
-        given phone number could be found. The server may instead send an
-        SMS message to the given address prompting the user to create an account.
-        `M_THREEPID_IN_USE` may not be returned.
+        The homeserver should check that the given phone number **is
+        associated** with an account on this homeserver. This API should be
+        used to request validation tokens when authenticating for the
+        ``account/password`` endpoint.
+        
+        This API's parameters and response are identical to that of the HS API
+        |/register/msisdn/requestToken|_ except that ``M_THREEPID_NOT_FOUND`` may
+        be returned if no account matching the given phone number could be
+        found. The server may instead send the SMS to the given phone number
+        prompting the user to create an account. ``M_THREEPID_IN_USE`` may not
+        be returned.
+        
+        The homeserver has the choice of validating the phone number itself, or
+        proxying the request to the ``validate/msisdn/requestToken`` Identity
+        server api on the server sent in ``id_server``.
 
         .. |/register/msisdn/requestToken| replace:: ``/register/msisdn/requestToken``
 
@@ -474,7 +555,24 @@ paths:
         200:
           description: An SMS message was sent to the given phone number.
           schema:
-            $ref: "../identity/definitions/sid.yaml"
+            allOf:
+              - $ref: "../identity/definitions/sid.yaml"
+              - type: object
+                properties:
+                  submit_url:
+                    type: string
+                    description: |-
+                      An optional field containing a URL where the client must
+                      submit a validation token to, with identical parameters
+                      to the Identity Service API's
+                      ``/validate/msisdn/submitToken`` endpoint. The homeserver
+                      will send this token to the user, which should then be
+                      prompted to provide it to the client.
+
+                      If this field is not present, the client can assume that
+                      verification will happen without the client's
+                      involvement.
+                    example: "https://example.org/path/to/submitToken"
         403:
           description: |-
             The homeserver does not allow the third party identifier as a
