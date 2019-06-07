@@ -384,20 +384,10 @@ man-in-the-middle. This verification process requires an out-of-band channel:
 there is no way to do it within Matrix without trusting the administrators of
 the homeservers.
 
-In Matrix, the basic process for device verification is for Alice to verify
-that the public Ed25519 signing key she received via ``/keys/query`` for Bob's
-device corresponds to the private key in use by Bob's device. For now, it is
-recommended that clients provide mechanisms by which the user can see:
-
-1. The public part of their device's Ed25519 signing key, encoded using
-   `unpadded Base64`_.
-
-2. The list of devices in use for each user in a room, along with the public
-   Ed25519 signing key for each device, again encoded using unpadded Base64.
-
-Alice can then meet Bob in person, or contact him via some other trusted
-medium, and use `SAS Verification`_ or ask him to read out the Ed25519 key
-shown on his device, comparing it to the one shown on Alice's device.
+In Matrix, verification works by Alice meeting Bob in person, or contact him
+via some other trusted medium, and use `SAS Verification`_ to interactively
+verify Bob's devices. Alice and Bob may also read aloud their unpadded base64
+encoded Ed25519 public key, as returned by ``/keys/query``.
 
 Device verification may reach one of several conclusions. For example:
 
