@@ -1276,12 +1276,12 @@ effort to reduce the number of resources used, clients can enable "lazy-loading"
 for room members. By doing this, servers will only ever send membership events
 which are relevant to the client.
 
-In terms of filters, this means enabling ``lazy_load_members`` on a ``StateFilter``
-or ``RoomEventFilter``. When enabled, lazy-loading aware endpoints (see below)
-will only include membership events for the ``sender`` of events being included
-in the response. For example, if a client makes a ``/sync`` request with lazy-loading
-enabled, the server will only return membership events for the ``sender`` of events
-in the timeline, not all members of a room.
+In terms of filters, this means enabling ``lazy_load_members`` on a ``RoomEventFilter``
+(or a ``StateFilter`` in the case of ``/sync`` only). When enabled, lazy-loading
+aware endpoints (see below) will only include membership events for the ``sender``
+of events being included in the response. For example, if a client makes a ``/sync``
+request with lazy-loading enabled, the server will only return membership events
+for the ``sender`` of events in the timeline, not all members of a room.
 
 Repeated calls to lazy-loading aware endpoints will result in redundant membership
 events being excluded by default. Clients often track which membership events they
