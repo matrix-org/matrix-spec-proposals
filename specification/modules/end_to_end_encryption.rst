@@ -536,15 +536,15 @@ The process between Alice and Bob verifying each other would be:
 
 .. |AlicePublicKey| replace:: :math:`K_{A}^{public}`
 .. |AlicePrivateKey| replace:: :math:`K_{A}^{private}`
-.. |AliceCurve25519| replace:: :math:`K_{A}^{private}K_{A}^{public}`
+.. |AliceCurve25519| replace:: :math:`K_{A}^{private},K_{A}^{public}`
 .. |BobPublicKey| replace:: :math:`K_{B}^{public}`
 .. |BobPrivateKey| replace:: :math:`K_{B}^{private}`
-.. |BobCurve25519| replace:: :math:`K_{B}^{private}K_{B}^{public}`
+.. |BobCurve25519| replace:: :math:`K_{B}^{private},K_{B}^{public}`
 .. |AliceBobCurve25519| replace:: :math:`K_{A}^{private}K_{B}^{public}`
 .. |BobAliceCurve25519| replace:: :math:`K_{B}^{private}K_{A}^{public}`
 .. |AliceBobECDH| replace:: :math:`ECDH(K_{A}^{private},K_{B}^{public})`
 
-1. Alice and Bob establish a secure connection, likely meeting in-person. "Secure"
+1. Alice and Bob establish a secure out-of-band connection, such as meeting in-person or a video call. "Secure"
    here means that either party cannot be impersonated, not explicit secrecy.
 #. Alice and Bob communicate which devices they'd like to verify with each other.
 #. Alice selects Bob's device from the device list and begins verification.
@@ -573,9 +573,9 @@ The process between Alice and Bob verifying each other would be:
    methods are available, clients should allow the users to select a method.
 #. Alice and Bob compare the strings shown by their devices, and tell their devices if
    they match or not.
-#. Assuming they match, Alice and Bob's devices calculate the HMAC of their own device
+#. Assuming they match, Alice and Bob's devices calculate the HMAC of their own device keys
    and a comma-separated sorted list of of the key IDs that they wish the other user
-   to verify. HMAC is defined in RFC 2104, and SHA-256 as the hash function. The key for
+   to verify, using SHA-256 as the hash function. HMAC is defined in [RFC 2104](https://tools.ietf.org/html/rfc2104). The key for
    the HMAC is different for each item and is calculated by generating 32 bytes (256 bits)
    using `the key verification HKDF <#SAS-HKDF>`_.
 #. Alice's device sends Bob's device a ``m.key.verification.mac`` message containing the
@@ -619,7 +619,7 @@ At any point the interactive verfication can go wrong. The following describes w
 to do when an error happens:
 
 * Alice or Bob can cancel the verification at any time. A ``m.key.verification.cancel``
-  message must be sent to signify the cancelation.
+  message must be sent to signify the cancellation.
 * The verification can time out. Clients should time out a verification that does not
   complete within 5 minutes. Additionally, clients should expire a ``transaction_id``
   which goes unused for 5 minutes after having last sent/received it. The client should
@@ -668,8 +668,8 @@ are used in addition to those already specified:
 HKDF calculation
 <<<<<<<<<<<<<<<<
 
-In all of the SAS methods, HKDF is as defined in RFC 5869 and uses the previously
-agreed upon hash function for the hash function. The shared secret is supplied
+In all of the SAS methods, HKDF is as defined in [RFC 5869](https://tools.ietf.org/html/rfc5869) and uses the previously
+agreed-upon hash function for the hash function. The shared secret is supplied
 as the input keying material. No salt is used, and the input parameter is the
 concatenation of:
 
