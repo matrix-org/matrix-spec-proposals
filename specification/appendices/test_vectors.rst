@@ -162,7 +162,7 @@ The event signing algorithm should emit the following signed event:
         "sender": "@u:domain",
         "signatures": {
             "domain": {
-                "ed25519:1": "4zc79tH2cU6Y+eg4YbbF7KiDOrnwEDjlhTqIKiH4k7L9zD9XCiomD7x9odL9eEwnyy1144QyMBe8O3HK++GHBg"
+                "ed25519:1": "Wm+VzmOUOz08Ds+0NTWb1d4CZrVsJSikkeRxh6aCcUwu6pNC78FunoD7KNWzqFn241eYHYMGCA5McEiVPdhzBA"
             }
         },
         "unsigned": {
