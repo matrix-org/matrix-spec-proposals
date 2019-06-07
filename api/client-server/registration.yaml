@@ -248,6 +248,7 @@ paths:
             If this field is not present, the client can assume that
             verification will happen without the client's involvement.
           schema:
+            type: object
             allOf:
               - $ref: "../identity/definitions/sid.yaml"
               - type: object
@@ -335,6 +336,7 @@ paths:
             If this field is not present, the client can assume that
             verification will happen without the client's involvement.
           schema:
+            type: object
             allOf:
               - $ref: "../identity/definitions/sid.yaml"
               - type: object
@@ -477,6 +479,7 @@ paths:
         200:
           description: An email was sent to the given address.
           schema:
+            type: object
             allOf:
               - $ref: "../identity/definitions/sid.yaml"
               - type: object
@@ -561,6 +564,7 @@ paths:
         200:
           description: An SMS message was sent to the given phone number.
           schema:
+            type: object
             allOf:
               - $ref: "../identity/definitions/sid.yaml"
               - type: object
