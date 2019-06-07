@@ -421,9 +421,8 @@ must ensure that the event:
 Further details of these checks, and how to handle failures, are described
 below.
 
-.. TODO:
-  Flesh this out a bit more, and probably change the doc to group the various
-  checks in one place, rather than have them spread out.
+The `Signing Events <#signing-events>`_ section has more information on which hashes
+and signatures are expected on events, and how to calculate them.
 
 
 Definitions
@@ -1098,6 +1097,15 @@ algorithm`_, and the resultant object is checked for a signature from the
 originating server, following the algorithm described in `Checking for a signature`_.
 Note that this step should succeed whether we have been sent the full event or
 a redacted copy.
+
+The signatures expected on an event are:
+
+* The ``sender``'s server, unless the invite was created as a result of 3rd party invite.
+  The sender must already match the 3rd party invite, and the server which actually
+  sends the event may be a different server.
+* For room versions 1 and 2, the server which created the ``event_id``. Other room
+  versions do not track the ``event_id`` over federation and therefore do not need
+  a signature from those servers.
 
 If the signature is found to be valid, the expected content hash is calculated
 as described below. The content hash in the ``hashes`` property of the received
