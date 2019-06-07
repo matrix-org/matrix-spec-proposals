@@ -293,7 +293,7 @@ choose a name:
       users (`disambiguating them if required`_) and concatenating them. For
       example, the client may choose to show "Alice, Bob, and Charlie
       (@charlie:example.org)" as the room name. The client may optionally
-      limit the number
+      limit the number of users it uses to generate a room name.
 
    #. If there are fewer heroes than ``m.joined_member_count + m.invited_member_count
       - 1``, and ``m.joined_member_count + m.invited_member_count`` is greater

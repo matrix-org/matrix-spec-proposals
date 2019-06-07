@@ -25,7 +25,7 @@ allOf:
     include_redundant_members:
       type: boolean
       description: |-
-        If ``true``, enables redudant membership events. Does not
+        If ``true``, enables redundant membership events. Does not
         apply unless ``lazy_load_members`` is ``true``. See
         `Lazy-loading room members <#lazy-loading-room-members>`_
         for more information. Defaults to ``false``.

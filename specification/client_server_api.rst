@@ -1306,6 +1306,9 @@ The current endpoints which support lazy-loading room members are:
 * |/rooms/<room_id>/messages|_
 * |/rooms/{roomId}/context/{eventId}|_
 
+API endpoints
+~~~~~~~~~~~~~
+
 {{filter_cs_http_api}}
 
 Events
