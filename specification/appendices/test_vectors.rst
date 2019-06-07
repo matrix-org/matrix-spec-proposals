@@ -93,19 +93,14 @@ Given the following minimally-sized event:
     {
         "room_id": "!x:domain",
         "sender": "@a:domain",
-        "event_id": "$0:domain",
         "origin": "domain",
         "origin_server_ts": 1000000,
         "signatures": {},
         "hashes": {},
         "type": "X",
         "content": {},
-        "prev_events": [
-            ["$1:domain", "ExampleHash"]
-        ],
-        "auth_events": [
-            ["$2", "ExampleHash2"]
-        ],
+        "prev_events": [],
+        "auth_events": [],
         "depth": 3,
         "unsigned": {
             "age_ts": 1000000
@@ -117,25 +112,20 @@ The event signing algorithm should emit the following signed event:
 .. code:: json
 
     {
-        "auth_events": [
-            ["$2", "6tJjLpXtggfke8UxFhAKg82QVkJzvKOVOOSjUDK4ZSI"]
-        ],
+        "auth_events": [],
         "content": {},
         "depth": 3,
-        "event_id": "$0:domain",
         "hashes": {
-            "sha256": "6AaJICN1NJURTtaomDYfJlCPMIU+0gtkwg7qzd8FiJM"
+            "sha256": "5jM4wQpv6lnBo7CLIghJuHdW+s2CMBJPUOGOC89ncos"
         },
         "origin": "domain",
         "origin_server_ts": 1000000,
-        "prev_events": [
-            ["$1:domain", "onLKD1bGljeBWQhWZ1kaP9SorVmRQNdN5aM2JYU2n/g"]
-        ],
+        "prev_events": [],
         "room_id": "!x:domain",
         "sender": "@a:domain",
         "signatures": {
             "domain": {
-                "ed25519:1": "51U0wpKYsaNLTQRbha2v5EGO2cVA6pCtnAKEXguu3j3efCLlmq/53vEfWhsk3tY6gnLsV0YM4Lx2NGZkzmV2Ag"
+                "ed25519:1": "KxwGjPSDEtvnFgU00fwFz+l6d2pJM6XBIaMEn81SXPTRl16AqLAYqfIReFGZlHi5KLjAWbOoMszkwsQma+lYAg"
             }
         },
         "type": "X",
