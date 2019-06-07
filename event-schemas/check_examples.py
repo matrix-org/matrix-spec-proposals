@@ -106,6 +106,9 @@ def check_example_dir(exampledir, schemadir):
             if filename.startswith("."):
                 # Skip over any vim .swp files.
                 continue
+            if filename.endswith(".json"):
+                # Skip over any explicit examples (partial event definitions)
+                continue
             cwd = os.path.basename(os.path.dirname(os.path.join(root, filename)))
             if cwd == "core":
                 # Skip checking the underlying definitions
