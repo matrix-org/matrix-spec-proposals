@@ -1100,7 +1100,7 @@ a redacted copy.
 
 The signatures expected on an event are:
 
-* The sender's server, unless the invite was created as a result of 3rd party invite.
+* The ``sender``'s server, unless the invite was created as a result of 3rd party invite.
   The sender must already match the 3rd party invite, and the server which actually
   sends the event may be a different server.
 * For room versions 1 and 2, the server which created the ``event_id``. Other room
