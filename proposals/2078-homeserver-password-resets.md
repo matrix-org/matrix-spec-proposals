@@ -75,7 +75,9 @@ If the client receives a response to `/requestToken` with `submit_url`, it MUST
 accept a token from user input, then make a POST request to the content of
 `submit_url` with the `sid`, `client_secret` and user-entered token.
 `submit_url` can lead to anywhere the homeserver deems necessary for
-verification. This data MUST be submitted as a JSON body.
+verification. To be clear the content of `id_server` does not matter here, the
+client should just submit a POST request to the value of `submit_url`. Additionally 
+data MUST be submitted as a JSON body.
 
 An example exchange from the client's perspective is shown below:
 
