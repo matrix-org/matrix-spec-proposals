@@ -384,7 +384,7 @@ man-in-the-middle. This verification process requires an out-of-band channel:
 there is no way to do it within Matrix without trusting the administrators of
 the homeservers.
 
-In Matrix, verification works by Alice meeting Bob in person, or contact him
+In Matrix, verification works by Alice meeting Bob in person, or contacting him
 via some other trusted medium, and use `SAS Verification`_ to interactively
 verify Bob's devices. Alice and Bob may also read aloud their unpadded base64
 encoded Ed25519 public key, as returned by ``/keys/query``.
