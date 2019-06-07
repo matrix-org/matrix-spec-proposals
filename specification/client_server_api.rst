@@ -57,6 +57,8 @@ The following other versions are also available, in reverse chronological order:
 API Standards
 -------------
 
+.. TODO: Move a lot of this to a common area for all specs.
+
 .. TODO
   Need to specify any HMAC or access_token lifetime/ratcheting tricks
   We need to specify capability negotiation for extensible transports
@@ -81,7 +83,6 @@ names in JSON objects passed over the API also follow this convention.
    There are a few historical exceptions to this rule, such as
    ``/createRoom``. A future version of this specification will address the
    inconsistency.
-
 
 Any errors which occur at the Matrix API level MUST return a "standard error
 response". This is a JSON object which looks like:
