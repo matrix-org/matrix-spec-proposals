@@ -12,6 +12,9 @@ for more context.
 
 This obsoletes [MSC1318](https://github.com/matrix-org/matrix-doc/issues/1318).
 
+**This MSC is now formalised in the official Rules of the Matrix.org Foundation,
+maintained at https://docs.google.com/document/d/1MhqsuIUxPc7Vf_y8D250mKZlLeQS6E39DPY6Azpc2NY**
+
 ## Introduction
 
 Historically the core team of Matrix has been paid to work on it by the same
