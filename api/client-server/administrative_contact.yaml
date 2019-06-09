@@ -235,7 +235,7 @@ paths:
         account. This API's parameters and response are identical to that of
         the |/register/email/requestToken|_ endpoint. The homeserver has the
         choice of validating the email address itself, or proxying the request
-        to the ``validate/email/requestToken`` Identity Service API as
+        to the ``/validate/email/requestToken`` Identity Service API as
         identified by ``id_server``.
       operationId: requestTokenTo3PIDEmail
       parameters:
@@ -312,7 +312,7 @@ paths:
         account. This API's parameters and response are identical to that of
         the |/register/msisdn/requestToken|_ endpoint. The homeserver has the
         choice of validating the phone number itself, or proxying the request
-        to the ``validate/msisdn/requestToken`` Identity Service API as
+        to the ``/validate/msisdn/requestToken`` Identity Service API as
         identified by ``id_server``.
       operationId: requestTokenTo3PIDMSISDN
       parameters:

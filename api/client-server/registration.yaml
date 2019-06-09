@@ -213,7 +213,7 @@ paths:
         The homeserver must check that the given email address is **not**
         already associated with an account on this homeserver. The homeserver
         has the choice of validating the email address itself, or proxying the
-        request to the ``validate/email/requestToken`` Identity Service API. The
+        request to the ``/validate/email/requestToken`` Identity Service API. The
         request should be proxied to the domain that is sent by the client in
         the ``id_server``. It is imperative that the homeserver keep a list of
         trusted Identity Servers and only proxies to those it trusts.
@@ -294,7 +294,7 @@ paths:
         The homeserver must check that the given phone number is **not**
         already associated with an account on this homeserver. The homeserver
         has the choice of validating the phone number itself, or proxying the
-        request to the ``validate/msisdn/requestToken`` Identity Service API. The
+        request to the ``/validate/msisdn/requestToken`` Identity Service API. The
         request should be proxied to the domain that is sent by the client in
         the ``id_server``. It is imperative that the homeserver keep a list of
         trusted Identity Servers and only proxies to those it trusts.
@@ -428,7 +428,7 @@ paths:
         The homeserver must check that the given email address **is
         associated** with an account on this homeserver. This API should be
         used to request validation tokens when authenticating for the
-        ``account/password`` endpoint.
+        ``/account/password`` endpoint.
         
         This API's parameters and response are identical to that of the
         |/register/email/requestToken|_ endpoint, except that
@@ -438,7 +438,7 @@ paths:
         ``M_THREEPID_IN_USE`` may not be returned.
         
         The homeserver has the choice of validating the email address itself,
-        or proxying the request to the ``validate/email/requestToken`` Identity
+        or proxying the request to the ``/validate/email/requestToken`` Identity
         Server API. The request should be proxied to the domain that is sent by
         the client in the ``id_server``. It is imperative that the homeserver
         keep a list of trusted Identity Servers and only proxies to those it
@@ -517,7 +517,7 @@ paths:
         The homeserver must check that the given phone number **is
         associated** with an account on this homeserver. This API should be
         used to request validation tokens when authenticating for the
-        ``account/password`` endpoint.
+        ``/account/password`` endpoint.
         
         This API's parameters and response are identical to that of the
         |/register/msisdn/requestToken|_ endpoint, except that
@@ -527,7 +527,7 @@ paths:
         ``M_THREEPID_IN_USE`` may not be returned.
         
         The homeserver has the choice of validating the phone number itself,
-        or proxying the request to the ``validate/msisdn/requestToken`` Identity
+        or proxying the request to the ``/validate/msisdn/requestToken`` Identity
         Server API. The request should be proxied to the domain that is sent by
         the client in the ``id_server``. It is imperative that the homeserver
         keep a list of trusted Identity Servers and only proxies to those it
