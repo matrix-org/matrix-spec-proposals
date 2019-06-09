@@ -132,8 +132,7 @@ paths:
               }
       responses:
         200:
-          description: |-
-            The addition was successful.
+          description: The addition was successful.
           examples:
             application/json: {
                 "submit_url": "https://example.org/path/to/submitToken"
@@ -257,11 +256,10 @@ paths:
       responses:
         200:
           description: |-
-            An email was sent to the given address.
-            Note that this may be an email containing the validation token or
-            it may be informing the user of an error.
+            An email was sent to the given address. Note that this may be an
+            email containing the validation token or it may be informing the
+            user of an error.
           schema:
-            type: object
             $ref: "definitions/sid.yaml"
         403:
           description: |-
@@ -316,10 +314,8 @@ paths:
                 required: ['id_server']
       responses:
         200:
-          description: |-
-            A SMS message was sent to the given phone number.
+          description: A SMS message was sent to the given phone number.
           schema:
-            type: object
             $ref: "definitions/sid.yaml"
         403:
           description: |-
