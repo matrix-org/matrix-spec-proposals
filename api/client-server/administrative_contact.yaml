@@ -261,7 +261,8 @@ paths:
             Note that this may be an email containing the validation token or
             it may be informing the user of an error.
           schema:
-            - $ref: "../identity/definitions/sid.yaml"
+            type: object
+            $ref: "definitions/sid.yaml"
         403:
           description: |-
             The homeserver does not allow the third party identifier as a
@@ -318,7 +319,8 @@ paths:
           description: |-
             A SMS message was sent to the given phone number.
           schema:
-            - $ref: "../identity/definitions/sid.yaml"
+            type: object
+            $ref: "definitions/sid.yaml"
         403:
           description: |-
             The homeserver does not allow the third party identifier as a

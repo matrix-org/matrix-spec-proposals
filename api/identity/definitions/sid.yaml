@@ -21,18 +21,4 @@ properties:
       ``[0-9a-zA-Z.=_-]``. Their length must not exceed 255 characters and they
       must not be empty.
     example: "123abc"
-  submit_url:
-    type: string
-    description: |-
-      An optional field containing a URL where the client must
-      submit the validation token to, with identical parameters
-      to the Identity Service API's
-      ``/validate/email/submitToken`` endpoint. The homeserver
-      must send this token to the user (if applicable), which
-      should then be prompted to provide it to the client.
-
-      If this field is not present, the client can assume that
-      verification will happen without the client's
-      involvement.
-    example: "https://example.org/path/to/submitToken"
 required: ['sid']
