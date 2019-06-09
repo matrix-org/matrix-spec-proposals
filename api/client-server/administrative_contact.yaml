@@ -261,25 +261,7 @@ paths:
             Note that this may be an email containing the validation token or
             it may be informing the user of an error.
           schema:
-            type: object
-            allOf:
-              - $ref: "../identity/definitions/sid.yaml"
-              - type: object
-                properties:
-                  submit_url:
-                    type: string
-                    description: |-
-                      An optional field containing a URL where the client must
-                      submit the validation token to, with identical parameters
-                      to the Identity Service API's
-                      ``/validate/email/submitToken`` endpoint. The homeserver
-                      must send this token to the user, which should then be
-                      prompted to provide it to the client.
-
-                      If this field is not present, the client can assume that
-                      verification will happen without the client's
-                      involvement.
-                    example: "https://example.org/path/to/submitToken"
+            - $ref: "../identity/definitions/sid.yaml"
         403:
           description: |-
             The homeserver does not allow the third party identifier as a
@@ -336,26 +318,7 @@ paths:
           description: |-
             A SMS message was sent to the given phone number.
           schema:
-            type: object
-            allOf:
-              - $ref: "../identity/definitions/sid.yaml"
-              - type: object
-                properties:
-                  submit_url:
-                    type: string
-                    description: |-
-                      An optional field containing a URL where the client must
-                      submit the validation token to, with identical parameters
-                      to the Identity Service API's
-                      ``/validate/email/submitToken`` endpoint. The homeserver
-                      must send this token to the user (if applicable), which
-                      should then be prompted to provide it to the client.
-
-                      If this field is not present, the client can assume that
-                      verification will happen without the client's
-                      involvement.
-                    example: "https://example.org/path/to/submitToken"
-
+            - $ref: "../identity/definitions/sid.yaml"
         403:
           description: |-
             The homeserver does not allow the third party identifier as a
