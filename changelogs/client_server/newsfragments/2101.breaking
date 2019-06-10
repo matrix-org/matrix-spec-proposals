@@ -1,1 +1,1 @@
-Breaking change: Add a new ``submit_url`` field to the response of various `.../requestToken` endpoints. Clients should request a token from the user to submit 3PID validation when they received this field. Older clients will not know about this field and thus may display a deceptive message thinking that validation will be handled out of bounds.
+Add a new ``submit_url`` field to the responses of ``/requestToken`` which older clients will not be able to handle correctly.
