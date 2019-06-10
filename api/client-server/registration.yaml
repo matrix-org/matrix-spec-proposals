@@ -223,17 +223,7 @@ paths:
           name: body
           required: true
           schema:
-            allOf:
-              - $ref: "../identity/definitions/request_email_validation.yaml"
-              - type: object
-                properties:
-                  id_server:
-                    type: string
-                    description: |-
-                      The hostname of the identity server to communicate with. May
-                      optionally include a port.
-                    example: "id.example.com"
-                required: ['id_server']
+            $ref: "../identity/definitions/request_email_validation.yaml"
       responses:
         200:
           description: |-
@@ -286,17 +276,7 @@ paths:
           name: body
           required: true
           schema:
-            allOf:
-              - $ref: "../identity/definitions/request_msisdn_validation.yaml"
-              - type: object
-                properties:
-                  id_server:
-                    type: string
-                    description: |-
-                      The hostname of the identity server to communicate with. May
-                      optionally include a port.
-                    example: "id.example.com"
-                required: ['id_server']
+            $ref: "../identity/definitions/request_msisdn_validation.yaml"
       responses:
         200:
           description: |-
@@ -418,17 +398,7 @@ paths:
           name: body
           required: true
           schema:
-            allOf:
-              - $ref: "../identity/definitions/request_email_validation.yaml"
-              - type: object
-                properties:
-                  id_server:
-                    type: string
-                    description: |-
-                      The hostname of the identity server to communicate with. May
-                      optionally include a port.
-                    example: "id.example.com"
-                required: ['id_server']
+            $ref: "../identity/definitions/request_email_validation.yaml"
       responses:
         200:
           description: An email was sent to the given address.
@@ -488,17 +458,7 @@ paths:
           name: body
           required: true
           schema:
-            allOf:
-              - $ref: "../identity/definitions/request_msisdn_validation.yaml"
-              - type: object
-                properties:
-                  id_server:
-                    type: string
-                    description: |-
-                      The hostname of the identity server to communicate with. May
-                      optionally include a port.
-                    example: "id.example.com"
-                required: ['id_server']
+            $ref: "../identity/definitions/request_msisdn_validation.yaml"
       responses:
         200:
           description: An SMS message was sent to the given phone number.
