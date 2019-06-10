@@ -115,15 +115,13 @@ paths:
                 type: array
                 description: |-
                   A list of state events relevant to showing the ``chunk``. For example, if
-                  ``lazy_load_members`` is enabled in the filter then this will contain any
-                  the membership events for the the senders of events in the ``chunk``. Servers should be careful to not exclude
-                  membership events which are older than ones already sent to the client.
-                  Likewise, clients should be cautious and avoid using older membership
-                  events as the current membership event when paginating backwards.
+                  ``lazy_load_members`` is enabled in the filter then this may contain
+                  the membership events for the senders of events in the ``chunk``.
 
-                  Unless ``include_redundant_members`` is ``true``, the server should remove
-                  membership events which would have already been sent to clients in prior calls
-                  to lazy-loading aware endpoints with the same filter.
+                  Unless ``include_redundant_members`` is ``true``, the server
+                  may remove membership events which would have already been
+                  sent to the client in prior calls to this endpoint, assuming
+                  the membership of those members has not changed.
                 items:
                   type: object
                   title: RoomStateEvent

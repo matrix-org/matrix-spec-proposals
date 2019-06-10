@@ -39,12 +39,15 @@ paths:
         for more information. Lazy-loading members is only supported on a ``StateFilter``
         for this endpoint. When lazy-loading is enabled, servers MUST include the
         syncing user's own membership event when they join a room, or when the
-        full state of rooms is requested. The user's own membership event is eligible
+        full state of rooms is requested, to aid discovering the user's avatar &
+        displayname.
+
+        Like other members, the user's own membership event is eligible
         for being considered redundant by the server. When a sync is ``limited``,
-        the server MUST return membership events for events in the gap (between ``since`` and the start of the returned timeline),
-        regardless as to whether
-        or not they are redundant. ``include_redundant_members`` is ignored for limited
-        syncs.
+        the server MUST return membership events for events in the gap
+        (between ``since`` and the start of the returned timeline), regardless
+        as to whether or not they are redundant.  This ensures that joins/leaves
+        and profile changes which occur during the gap are not lost.
       operationId: sync
       security:
         - accessToken: []
@@ -149,9 +152,9 @@ paths:
                               type: array
                               description: |-
                                 The users which can be used to generate a room name
-                                if the room does not have one. Required if the room
-                                does not have a ``m.room.name`` or ``m.room.canonical_alias``
-                                state event with non-empty content.
+                                if the room does not have one. Required if the room's
+                                ``m.room.name`` or ``m.room.canonical_alias`` state events
+                                are unset or empty.
 
                                 This should be the first 5 members of the room, ordered
                                 by stream ordering, which are joined or invited. The

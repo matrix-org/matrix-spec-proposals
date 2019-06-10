@@ -287,7 +287,7 @@ choose a name:
    on the members of the room. Clients should consider `m.room.member`_ events
    for users other than the logged-in user, as defined below.
 
-   i. If the ``m.heroes`` for the room are greater or equal to
+   i. If the number of ``m.heroes`` for the room are greater or equal to
       ``m.joined_member_count + m.invited_member_count - 1``, then use the
       membership events for the heroes to calculate display names for the
       users (`disambiguating them if required`_) and concatenating them. For
