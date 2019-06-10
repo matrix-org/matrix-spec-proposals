@@ -1340,7 +1340,28 @@ server-server API.
 
 {{common_room_event_fields}}
 
-{{common_state_event_fields}}
+.. This is normally where we'd put the common_state_event_fields variable for the
+.. magic table of what makes up a state event, however the table is verbose in our
+.. custom rendering of swagger. To combat this, we just hardcode this particular
+.. table.
+
+State Event Fields
+++++++++++++++++++
+
+In addition to the fields of a Room Event, State Events have the following fields.
+
++-----------+--------+-------------------------------------------------------------+
+| Key       | Type   | Description                                                 |
++===========+========+=============================================================+
+| state_key | string | **Required.** A unique key which defines the overwriting    |
+|           |        | semantics for this piece of room state. This value is often |
+|           |        | a zero-length string. The presence of this key makes this   |
+|           |        | event a State Event. State keys starting with an ``@`` are  |
+|           |        | reserved for referencing user IDs, such as room members.    |
+|           |        | With the exception of a few events, state events set with   |
+|           |        | a given user's ID as the state key MUST only be set by that |
+|           |        | user.                                                       |
++-----------+--------+-------------------------------------------------------------+
 
 
 Size limits
