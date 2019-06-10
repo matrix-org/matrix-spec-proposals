@@ -65,6 +65,9 @@ paths:
         with the exception of ``initial_device_display_name`` MUST BE ignored
         by the server. The server MUST pick a ``device_id`` for the account
         regardless of input.
+
+        Any user ID returned by this API must conform to the grammar given in the
+        `Matrix specification <../appendices.html#user-identifiers>`_.
       operationId: register
       parameters:
         - in: query
@@ -152,7 +155,7 @@ paths:
                   The fully-qualified Matrix user ID (MXID) that has been registered.
 
                   Any user ID returned by this API must conform to the grammar given in the
-                  `Matrix specification <https://matrix.org/docs/spec/appendices.html#user-identifiers>`_.
+                  `Matrix specification <../appendices.html#user-identifiers>`_.
               access_token:
                 type: string
                 description: |-
