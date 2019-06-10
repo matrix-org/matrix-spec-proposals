@@ -29,6 +29,7 @@ paths:
         Gets information about the delegated server for server-server communication
         between Matrix homeservers. Servers should follow 30x redirects, carefully
         avoiding redirect loops, and use normal X.509 certificate validation.
+      operationId: getWellKnown
       responses:
         200:
           description:

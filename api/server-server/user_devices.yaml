@@ -42,7 +42,6 @@ paths:
           description: |-
             The user ID to retrieve devices for. Must be a user local to the
             receiving homeserver.
-          required: true
           x-example: "@alice:example.org"
       responses:
         200:

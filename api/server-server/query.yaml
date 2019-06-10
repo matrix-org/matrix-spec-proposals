@@ -81,7 +81,7 @@ paths:
               servers:
                 type: array
                 description: |-
-                  An array of server names that are likely to hold the given room. This 
+                  An array of server names that are likely to hold the given room. This
                   list may or may not include the server answering the query.
                 items:
                   type: string
@@ -128,7 +128,7 @@ paths:
           x-example: "@someone:example.org"
         - in: query
           name: field
-          type: enum
+          type: string
           enum: ['displayname', 'avatar_url']
           description: |-
             The field to query. If specified, the server will only return the given field
@@ -139,7 +139,7 @@ paths:
           description: |-
             The profile for the user. If a ``field`` is specified in the request, only the
             matching field should be included in the response. If no ``field`` was specified,
-            the response should include the fields of the user's profile that can be made 
+            the response should include the fields of the user's profile that can be made
             public, such as the display name and avatar.
 
             If the user does not have a particular field set on their profile, the server
