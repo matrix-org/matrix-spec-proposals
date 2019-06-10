@@ -446,12 +446,13 @@ Namespacing
 Namespacing helps prevent conflicts between multiple applications and the specification
 itself. Where namespacing is used, ``m.`` prefixes are used by the specification to
 indicate that the field is controlled by the specification. Custom or non-specified
-namespaces used in the wild SHOULD use the Java package naming convention to prevent
+namespaces used in the wild MUST use the Java package naming convention to prevent
 conflicts.
 
-As an example, event types are namespaced under ``m.`` in the specification however
-any client can send a custom event type, such as ``com.example.game.score`` without
-needing to put the event into the ``m.`` namespace.
+As an example, event types defined in the specification are namespaced under the
+special ``m.`` prefix, however any client can send a custom event type, such as
+``com.example.game.score`` (assuming the client has rights to the ``com.example``
+namespace) without needing to put the event into the ``m.`` namespace.
 
 Timestamps
 ~~~~~~~~~~
