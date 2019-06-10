@@ -432,13 +432,7 @@ Common concepts
 Various things are common throughout all of the Matrix APIs. They are
 documented here.
 
-Trailing slashes on API endpoints
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Unless the endpoint is explicltly specified to have a trailing slash, the
-slash is optional. For example, an endpoint specified as ``/_matrix/example/``
-would require a trailing slash, however an endpoint specified as ``/_matrix/example``
-has an optional slash (can be excluded when making requests).
+.. TODO: Some words about trailing slashes. See https://github.com/matrix-org/matrix-doc/issues/2107
 
 Namespacing
 ~~~~~~~~~~~
