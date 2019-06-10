@@ -15,8 +15,8 @@
 Room Version 5
 ==============
 
-This room version builds on `version 4 <v4.html>`_, enforcing signing key validity
-periods for events.
+This room version builds on `version 4 <v4.html>`_ while enforcing signing
+key validity periods for events.
 
 .. contents:: Table of Contents
 .. sectnum::
@@ -52,3 +52,8 @@ validated. Servers missing a copy of the signing key MUST try to obtain one via 
 or `POST /_matrix/key/v2/query <../server_server/r0.1.1.html#post-matrix-key-v2-query>`_
 APIs. When using the ``/query`` endpoint, servers MUST set the ``minimum_valid_until_ts``
 property to prompt the notary server to attempt to refresh the key if appropriate.
+
+Servers MUST use the lesser of ``valid_until_ts`` and 7 days into the future when
+determining if a key is valid. This is to avoid a situation where an attacker
+publishes a key which is valid for a significant amount of time without a way for
+the homeserver owner to revoke it.
