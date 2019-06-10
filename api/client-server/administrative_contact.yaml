@@ -314,7 +314,7 @@ paths:
                 required: ['id_server']
       responses:
         200:
-          description: A SMS message was sent to the given phone number.
+          description: An SMS message was sent to the given phone number.
           schema:
             $ref: "definitions/sid.yaml"
         403:

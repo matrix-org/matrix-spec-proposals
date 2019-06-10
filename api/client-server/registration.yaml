@@ -300,7 +300,7 @@ paths:
       responses:
         200:
           description: |-
-            A SMS message has been sent to the specified phone number. Note
+            An SMS message has been sent to the specified phone number. Note
             that this may be an SMS message containing the validation token or
             it may be informing the user of an error.
           schema:
@@ -501,7 +501,7 @@ paths:
                 required: ['id_server']
       responses:
         200:
-          description: A SMS message was sent to the given phone number.
+          description: An SMS message was sent to the given phone number.
           schema:
             $ref: "definitions/sid.yaml"
         403:
