@@ -59,6 +59,8 @@ TARGETS = os.path.join(matrix_doc_dir, "specification/targets.yaml")
 ROOM_EVENT = "core-event-schema/room_event.yaml"
 STATE_EVENT = "core-event-schema/state_event.yaml"
 
+SAS_EMOJI_JSON = os.path.join(matrix_doc_dir, "data-definitions/sas-emoji.json")
+
 logger = logging.getLogger(__name__)
 
 # a yaml Loader which loads mappings into OrderedDicts instead of regular
@@ -1088,3 +1090,21 @@ class MatrixUnits(Units):
             "string": git_version,
             "revision": git_commit
         }
+
+    def load_sas_emoji(self):
+        with open(SAS_EMOJI_JSON, 'r', encoding='utf-8') as sas_json:
+            emoji = json.load(sas_json)
+
+            # Verify the emoji matches the unicode
+            for c in emoji:
+                e = c['emoji']
+                logger.info("Checking emoji %s (%s)", e, c['description'])
+                u = re.sub(r'U\+([0-9a-fA-F]+)', lambda m: chr(int(m.group(1), 16)), c['unicode'])
+                if e != u:
+                    raise Exception("Emoji %s should be %s not %s" % (
+                        c['description'],
+                        repr(e),
+                        c['unicode'],
+                    ))
+
+            return emoji
