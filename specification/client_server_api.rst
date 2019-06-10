@@ -1273,32 +1273,51 @@ Lazy-loading room members
 
 Membership events often take significant resources for clients to track. In an
 effort to reduce the number of resources used, clients can enable "lazy-loading"
-for room members. By doing this, servers will only ever send membership events
+for room members. By doing this, servers will attempt to only send membership events
 which are relevant to the client.
 
-In terms of filters, this means enabling ``lazy_load_members`` on a ``RoomEventFilter``
-(or a ``StateFilter`` in the case of ``/sync`` only). When enabled, lazy-loading
-aware endpoints (see below) will only include membership events for the ``sender``
-of events being included in the response. For example, if a client makes a ``/sync``
-request with lazy-loading enabled, the server will only return membership events
-for the ``sender`` of events in the timeline, not all members of a room.
+It is important to understand that lazy-loading is not intended to be a
+perfect optimisation, and that it may not be practical for the server to
+calculate precisely which membership events are relevant to the client.  As a
+result, it is valid for the server to send redundant membership events to the
+client to ease implementation, although such redundancy should be minimised
+where possible to conserve bandwidth.
 
-Repeated calls to lazy-loading aware endpoints will result in redundant membership
-events being excluded by default. Clients often track which membership events they
-already have, therefore making the extra information not as useful to the client.
-Clients can always request redundant membership events by setting ``include_redundant_members``
-to true in the filter.
+In terms of filters, lazy-loading is enabled by enabling ``lazy_load_members``
+on a ``RoomEventFilter`` (or a ``StateFilter`` in the case of ``/sync`` only).
+When enabled, lazy-loading aware endpoints (see below) will only include
+membership events for the ``sender`` of events being included in the response.
+For example, if a client makes a ``/sync`` request with lazy-loading enabled,
+the server will only return membership events for the ``sender`` of events in
+the timeline, not all members of a room.
 
-Servers should be cautious about which events they consider redundant. Membership
-events can change over time, and should be included as relevant to maintain the
-historical record. Likewise, clients should be cautious about treating an older event
-as the current membership event for a user.
+When processing a sequence of events (e.g. by looping on ``/sync`` or
+paginating ``/messages``), it is common for blocks of events in the sequence
+to share a similar set of senders.  Rather than responses in the sequence
+sending duplicate membership events for these senders to the client, the
+server MAY assume that clients will remember membership events they have
+already been sent, and choose to skip sending membership events for members
+whose membership has not changed.  These are called 'redundant membership
+events'. Clients may request that redundant membership events are always
+included in responses by setting ``include_redundant_members`` to true in the
+filter.
 
-.. Note::
-   Repeated calls using the same filter to *any* lazy-loading aware endpoint may
-   result in redundant membership events being excluded from future calls. For example, a
-   request to ``/sync`` followed by a request to ``/messages`` may result in a
-   future call to ``/sync`` excluding membership events returned by the ``/messages`` call.
+The expected pattern for using lazy-loading is currently:
+
+* Client performs an initial /sync with lazy-loading enabled, and receives
+  only the membership events which relate to the senders of the events it
+  receives.
+* Clients which support display-name tab-completion or other operations which
+  require rapid access to all members in a room should call /members for the
+  currently selected room, with an ``?at`` parameter set to the /sync
+  response's from token. The member list for the room is then maintained by
+  the state in subsequent incremental /sync responses.
+* Clients which do not support tab-completion may instead pull in profiles for
+  arbitrary users (e.g. read receipts, typing notifications) on demand by
+  querying the room state or ``/profile``.
+
+.. TODO-spec
+  This implies that GET /state should also take an ``?at`` param
 
 The current endpoints which support lazy-loading room members are:
 
