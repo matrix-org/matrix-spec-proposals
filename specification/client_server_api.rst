@@ -1330,7 +1330,8 @@ namespaced for each application and reduces the risk of clashes.
   Events are not limited to the types defined in this specification. New or custom
   event types can be created on a whim using the Java package naming convention.
   For example, a ``com.example.game.score`` event can be sent by clients and other
-  clients would receive it through Matrix.
+  clients would receive it through Matrix, assuming the client has access to the
+  ``com.example`` namespace.
 
 Note that the structure of these events may be different than those in the
 server-server API.
