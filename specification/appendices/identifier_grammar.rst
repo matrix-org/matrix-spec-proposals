@@ -88,8 +88,8 @@ Common Identifier Format
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Matrix protocol uses a common format to assign unique identifiers to a
-number of entities, including users, events and rooms. Each identifier takes
-the form::
+number of entities, including users, events and rooms. Each identifier typically
+takes the form::
 
   &localpart:domain
 
@@ -106,7 +106,9 @@ The sigil characters are as follows:
 * ``#``: Room alias
 
 The precise grammar defining the allowable format of an identifier depends on
-the type of identifier.
+the type of identifier. For example, event IDs can be represented without a
+``domain`` component under some conditions - see the `Event IDs <#room-ids-and-event-ids>`_
+section below for more information.
 
 User Identifiers
 ++++++++++++++++
