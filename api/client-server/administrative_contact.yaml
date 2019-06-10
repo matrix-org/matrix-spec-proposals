@@ -135,7 +135,7 @@ paths:
           description: The addition was successful.
           examples:
             application/json: {
-                "submit_url": "https://example.org/path/to/submitToken"
+              "submit_url": "https://example.org/path/to/submitToken"
             }
             schema:
               type: object
@@ -235,7 +235,9 @@ paths:
         the |/register/email/requestToken|_ endpoint. The homeserver has the
         choice of validating the email address itself, or proxying the request
         to the ``/validate/email/requestToken`` Identity Service API as
-        identified by ``id_server``.
+        identified by ``id_server``. It is imperative that the
+        homeserver keep a list of trusted Identity Servers and only proxies to
+        those that it trusts.
       operationId: requestTokenTo3PIDEmail
       parameters:
         - in: body
@@ -260,7 +262,7 @@ paths:
             email containing the validation token or it may be informing the
             user of an error.
           schema:
-            $ref: "definitions/sid.yaml"
+            $ref: "definitions/request_token_response.yaml"
         403:
           description: |-
             The homeserver does not allow the third party identifier as a
@@ -294,7 +296,9 @@ paths:
         the |/register/msisdn/requestToken|_ endpoint. The homeserver has the
         choice of validating the phone number itself, or proxying the request
         to the ``/validate/msisdn/requestToken`` Identity Service API as
-        identified by ``id_server``.
+        identified by ``id_server``. It is imperative that the
+        homeserver keep a list of trusted Identity Servers and only proxies to
+        those that it trusts.
       operationId: requestTokenTo3PIDMSISDN
       parameters:
         - in: body
@@ -316,7 +320,7 @@ paths:
         200:
           description: An SMS message was sent to the given phone number.
           schema:
-            $ref: "definitions/sid.yaml"
+            $ref: "definitions/request_token_response.yaml"
         403:
           description: |-
             The homeserver does not allow the third party identifier as a

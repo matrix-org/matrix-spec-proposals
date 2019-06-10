@@ -241,7 +241,7 @@ paths:
             may be an email containing the validation token or it may be
             informing the user of an error.
           schema:
-            $ref: "definitions/sid.yaml"
+            $ref: "definitions/request_token_response.yaml"
         403:
           description: The homeserver does not permit the address to be bound.
           schema:
@@ -304,7 +304,7 @@ paths:
             that this may be an SMS message containing the validation token or
             it may be informing the user of an error.
           schema:
-            $ref: "definitions/sid.yaml"
+            $ref: "definitions/request_token_response.yaml"
         403:
           description: The homeserver does not permit the address to be bound.
           schema:
@@ -402,11 +402,11 @@ paths:
         ``M_THREEPID_IN_USE`` may not be returned.
         
         The homeserver has the choice of validating the email address itself,
-        or proxying the request to the ``/validate/email/requestToken`` Identity
-        Server API. The request should be proxied to the domain that is sent by
-        the client in the ``id_server``. It is imperative that the homeserver
-        keep a list of trusted Identity Servers and only proxies to those it
-        trusts.
+        or proxying the request to the ``/validate/email/requestToken``
+        Identity Service API. The request should be proxied to the domain that
+        is sent by the client in the ``id_server``. It is imperative that the
+        homeserver keep a list of trusted Identity Servers and only proxies to
+        those that it trusts.
 
 
         .. |/register/email/requestToken| replace:: ``/register/email/requestToken``
@@ -433,7 +433,7 @@ paths:
         200:
           description: An email was sent to the given address.
           schema:
-            $ref: "definitions/sid.yaml"
+            $ref: "definitions/request_token_response.yaml"
         403:
           description: |-
             The homeserver does not allow the third party identifier as a
@@ -472,12 +472,12 @@ paths:
         to the given phone number prompting the user to create an account.
         ``M_THREEPID_IN_USE`` may not be returned.
         
-        The homeserver has the choice of validating the phone number itself,
-        or proxying the request to the ``/validate/msisdn/requestToken`` Identity
-        Server API. The request should be proxied to the domain that is sent by
-        the client in the ``id_server``. It is imperative that the homeserver
-        keep a list of trusted Identity Servers and only proxies to those it
-        trusts.
+        The homeserver has the choice of validating the phone number itself, or
+        proxying the request to the ``/validate/msisdn/requestToken`` Identity
+        Service API. The request should be proxied to the domain that is sent
+        by the client in the ``id_server``. It is imperative that the
+        homeserver keep a list of trusted Identity Servers and only proxies to
+        those that it trusts.
 
         .. |/register/msisdn/requestToken| replace:: ``/register/msisdn/requestToken``
 
@@ -503,7 +503,7 @@ paths:
         200:
           description: An SMS message was sent to the given phone number.
           schema:
-            $ref: "definitions/sid.yaml"
+            $ref: "definitions/request_token_response.yaml"
         403:
           description: |-
             The homeserver does not allow the third party identifier as a
