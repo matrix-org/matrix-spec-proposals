@@ -1,4 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
+.. Copyright 2019 The Matrix.org Foundation C.I.C.
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -115,6 +116,16 @@ may be useful so that users can see a summary of what important messages they
 have received.
 
 {{notifications_cs_http_api}}
+
+Receiving notifications
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Servers MUST include the number of unread notifications in a client's ``/sync``
+stream, and MUST update it as it changes. Notifications are determined by the
+push rules which apply to an event.
+
+When the user updates their read receipt (either by using the API or by sending an
+event), notifications prior to and including that event MUST be marked as read.
 
 Push Rules
 ~~~~~~~~~~

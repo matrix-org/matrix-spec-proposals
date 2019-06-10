@@ -172,8 +172,8 @@ paths:
                           type: object
                           description: |-
                             Counts of unread notifications for this room. See the
-                            `Receipts module <#module-receipts>`_ for more information
-                            on how these are calculated.
+                            `Receiving notifications section <#receiving-notifications>`_
+                            for more information on how these are calculated.
                           properties:
                             highlight_count:
                                 title: Highlighted notification count

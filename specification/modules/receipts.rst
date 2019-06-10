@@ -26,9 +26,8 @@ to a homeserver. To prevent this from becoming a problem, receipts are implement
 using "up to" markers. This marker indicates that the acknowledgement applies
 to all events "up to and including" the event specified. For example, marking
 an event as "read" would indicate that the user had read all events *up to* the
-referenced event. Servers MUST decremement the number of pending notifications
-for a user if the events are up to or including the read receipt. This is typically
-done by adjusting the ``unread_notifications`` value in a ``/sync`` response.
+referenced event. See the `Receiving notifications <#receiving-notifications>`_
+section for more information on how read receipts affect notification counts.
 
 Events
 ------
