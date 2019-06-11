@@ -72,6 +72,9 @@ paths:
                 description: |-
                   One-time keys for the queried devices. A map from user ID, to a
                   map from devices to a map from ``<algorithm>:<key_id>`` to the key object.
+
+                  See the Client-Server Key Algorithms section for more information on
+                  the Key Object format.
                 additionalProperties:
                   type: object
                   additionalProperties:

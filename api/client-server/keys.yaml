@@ -56,7 +56,7 @@ paths:
                   One-time public keys for "pre-key" messages.  The names of
                   the properties should be in the format
                   ``<algorithm>:<key_id>``. The format of the key is determined
-                  by the key algorithm.
+                  by the `key algorithm <#key-algorithms>`_.
 
                   May be absent if no new one-time keys are required.
                 additionalProperties:
@@ -299,6 +299,9 @@ paths:
                 description: |-
                   One-time keys for the queried devices. A map from user ID, to a
                   map from devices to a map from ``<algorithm>:<key_id>`` to the key object.
+
+                  See the `key algorithms <#key-algorithms>`_ section for information
+                  on the Key Object format.
                 additionalProperties:
                   type: object
                   additionalProperties:
