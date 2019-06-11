@@ -59,22 +59,22 @@ paths:
                   by the key algorithm.
 
                   May be absent if no new one-time keys are required.
-                  additionalProperties:
-                    type:
-                      - string
-                      - type: object
-                        title: KeyObject
-                        properties:
-                          key:
+                additionalProperties:
+                  type:
+                    - string
+                    - type: object
+                      title: KeyObject
+                      properties:
+                        key:
+                          type: string
+                          description: The key, encoded using unpadded base64.
+                        signatures:
+                          type: object
+                          description: |-
+                            Signature for the device. Mapped from user ID to signature object.
+                          additionalProperties:
                             type: string
-                            description: The key, encoded using unpadded base64.
-                          signatures:
-                            type: object
-                            description: |-
-                              Signature for the device. Mapped from user ID to signature object.
-                            additionalProperties:
-                              type: string
-                        required: ['key', 'signatures']
+                      required: ['key', 'signatures']
                 example: {
                   "curve25519:AAAAAQ": "/qyvZvwjiTxGdGU0RCguDCLeR+nmsb3FfNG3/Ve4vU8",
                   "signed_curve25519:AAAAHg": {
