@@ -68,6 +68,9 @@ paths:
     get:
       summary: Get the state identified by the type and key.
       description: |-
+        .. For backwards compatibility with older links...
+        .. _`get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state-eventtype`:
+
         Looks up the contents of a state event in a room. If the user is
         joined to the room then the state is taken from the current
         state of the room. If the user has left the room then the state is
@@ -91,51 +94,11 @@ paths:
         - in: path
           type: string
           name: stateKey
-          description: The key of the state to look up.
+          description: |-
+            The key of the state to look up. Defaults to an empty string. When
+            an empty string, the trailing slash on this endpoint is optional.
           required: true
           x-example: ""
-      responses:
-        200:
-          description: The content of the state event.
-          examples:
-            application/json: {
-              "name": "Example room name"}
-          schema:
-            type: object
-        404:
-          description: The room has no state with the given type or key.
-        403:
-          description: >
-            You aren't a member of the room and weren't previously a
-            member of the room.
-      tags:
-        - Room participation
-  "/rooms/{roomId}/state/{eventType}":
-    get:
-      summary: Get the state identified by the type, with the empty state key.
-      description: |-
-        Looks up the contents of a state event in a room. If the user is
-        joined to the room then the state is taken from the current
-        state of the room. If the user has left the room then the state is
-        taken from the state of the room when they left.
-
-        This looks up the state event with the empty state key.
-      operationId: getRoomStateByType
-      security:
-        - accessToken: []
-      parameters:
-        - in: path
-          type: string
-          name: roomId
-          description: The room to look up the state in.
-          required: true
-          x-example: "!636q39766251:example.com"
-        - in: path
-          type: string
-          name: eventType
-          description: The type of state to look up.
-          required: true
-          x-example: "m.room.name"
       responses:
         200:
           description: The content of the state event.
