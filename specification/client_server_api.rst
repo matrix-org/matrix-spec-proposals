@@ -1430,6 +1430,88 @@ the event ``type`` key SHOULD follow the Java package naming convention,
 e.g. ``com.example.myapp.event``.  This ensures event types are suitably
 namespaced for each application and reduces the risk of clashes.
 
+.. Note::
+  Events are not limited to the types defined in this specification. New or custom
+  event types can be created on a whim using the Java package naming convention.
+  For example, a ``com.example.game.score`` event can be sent by clients and other
+  clients would receive it through Matrix, assuming the client has access to the
+  ``com.example`` namespace.
+
+Note that the structure of these events may be different than those in the
+server-server API.
+
+{{common_event_fields}}
+
+{{common_room_event_fields}}
+
+.. This is normally where we'd put the common_state_event_fields variable for the
+.. magic table of what makes up a state event, however the table is verbose in our
+.. custom rendering of swagger. To combat this, we just hardcode this particular
+.. table.
+
+State Event Fields
+++++++++++++++++++
+
+In addition to the fields of a Room Event, State Events have the following fields.
+
++--------------+--------------+-------------------------------------------------------------+
+| Key          | Type         | Description                                                 |
++==============+==============+=============================================================+
+| state_key    | string       | **Required.** A unique key which defines the overwriting    |
+|              |              | semantics for this piece of room state. This value is often |
+|              |              | a zero-length string. The presence of this key makes this   |
+|              |              | event a State Event. State keys starting with an ``@`` are  |
+|              |              | reserved for referencing user IDs, such as room members.    |
+|              |              | With the exception of a few events, state events set with   |
+|              |              | a given user's ID as the state key MUST only be set by that |
+|              |              | user.                                                       |
++--------------+--------------+-------------------------------------------------------------+
+| prev_content | EventContent | Optional. The previous ``content`` for this event. If there |
+|              |              | is no previous content, this key will be missing.           |
++--------------+--------------+-------------------------------------------------------------+
+
+
+Size limits
+~~~~~~~~~~~
+
+The complete event MUST NOT be larger than 65535 bytes, when formatted as a
+`PDU for the Server-Server protocol <../server_server/%SERVER_RELEASE_LABEL%#pdus>`_,
+including any signatures, and encoded as `Canonical JSON`_.
+
+There are additional restrictions on sizes per key:
+
+- ``sender`` MUST NOT exceed 255 bytes (including domain).
+- ``room_id`` MUST NOT exceed 255 bytes.
+- ``state_key`` MUST NOT exceed 255 bytes.
+- ``type`` MUST NOT exceed 255 bytes.
+- ``event_id`` MUST NOT exceed 255 bytes.
+
+Some event types have additional size restrictions which are specified in
+the description of the event. Additional keys have no limit other than that
+implied by the total 65 KB limit on events.
+
+Room Events
+~~~~~~~~~~~
+.. NOTE::
+  This section is a work in progress.
+
+This specification outlines several standard event types, all of which are
+prefixed with ``m.``
+
+{{m_room_aliases_event}}
+
+{{m_room_canonical_alias_event}}
+
+{{m_room_create_event}}
+
+{{m_room_join_rules_event}}
+
+{{m_room_member_event}}
+
+{{m_room_power_levels_event}}
+
+{{m_room_redaction_event}}
+
 
 Syncing
 ~~~~~~~

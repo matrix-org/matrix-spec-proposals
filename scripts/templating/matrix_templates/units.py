@@ -750,6 +750,7 @@ class MatrixUnits(Units):
 
             with open(filepath, encoding="utf-8") as f:
                 event_schema = yaml.load(f, OrderedLoader)
+                event_schema = resolve_references(filepath, event_schema)
 
             schema_info = process_data_type(
                 event_schema,

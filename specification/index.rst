@@ -348,6 +348,12 @@ pushed over federation to the participating servers in a room, currently using
 full mesh topology. Servers may also request backfill of events over federation
 from the other servers participating in a room.
 
+.. Note::
+  Events are not limited to the types defined in this specification. New or custom
+  event types can be created on a whim using the Java package naming convention.
+  For example, a ``com.example.game.score`` event can be sent by clients and other
+  clients would receive it through Matrix, assuming the client has access to the
+  ``com.example`` namespace.
 
 Room Aliases
 ++++++++++++
