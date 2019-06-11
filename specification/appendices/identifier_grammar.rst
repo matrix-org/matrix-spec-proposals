@@ -91,11 +91,10 @@ The Matrix protocol uses a common format to assign unique identifiers to a
 number of entities, including users, events and rooms. Each identifier takes
 the form::
 
-  &localpart:domain
+  &string
 
-where ``&`` represents a 'sigil' character; ``domain`` is the `server name`_ of
-the homeserver which allocated the identifier, and ``localpart`` is an
-identifier allocated by that homeserver.
+where ``&`` represents a 'sigil' character; ``string`` is the string which makes
+up the identifier.
 
 The sigil characters are as follows:
 
@@ -105,8 +104,17 @@ The sigil characters are as follows:
 * ``+``: Group ID
 * ``#``: Room alias
 
+User IDs, group IDs, room IDs, room aliases, and sometimes event IDs take the form::
+
+  &localpart:domain
+
+where ``domain`` is the `server name`_ of the homeserver which allocated the
+identifier, and ``localpart`` is an identifier allocated by that homeserver.
+
 The precise grammar defining the allowable format of an identifier depends on
-the type of identifier.
+the type of identifier. For example, event IDs can sometimes be represented with
+a ``domain`` component under some conditions - see the `Event IDs <#room-ids-and-event-ids>`_
+section below for more information.
 
 User Identifiers
 ++++++++++++++++
