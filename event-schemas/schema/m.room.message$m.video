@@ -28,8 +28,8 @@ properties:
             type: integer
           thumbnail_url:
             description: |-
-              The `MXC URI`_ to an image thumbnail of the video clip. Only present if the
-              thumbnail is unencrypted.
+              The URL (typically `MXC URI`_) to an image thumbnail of
+              the video clip. Only present if the thumbnail is unencrypted.
             type: string
           thumbnail_file:
             description: |-
@@ -48,7 +48,9 @@ properties:
           - m.video
         type: string
       url:
-        description: Required if the file is unencrypted. The `MXC URI`_ to the video clip.
+        description: |-
+          Required if the file is unencrypted. The URL (typically `MXC URI`_)
+          to the video clip.
         type: string
       file:
         description: |-

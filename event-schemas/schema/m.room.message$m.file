@@ -42,7 +42,9 @@ properties:
           - m.file
         type: string
       url:
-        description: Required if the file is unencrypted. The `MXC URI`_ to the file.
+        description: |-
+          Required if the file is unencrypted. The URL (typically `MXC URI`_)
+          to the file.
         type: string
       file:
         description: |-

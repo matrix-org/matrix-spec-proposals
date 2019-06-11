@@ -27,7 +27,9 @@ properties:
           - m.audio
         type: string
       url:
-        description: Required if the file is not encrypted. The `MXC URI`_ to the audio clip.
+        description: |-
+          Required if the file is not encrypted. The URL (typically `MXC URI`_)
+          to the audio clip.
         type: string
       file:
         description: |-
