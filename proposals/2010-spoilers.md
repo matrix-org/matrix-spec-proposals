@@ -20,7 +20,7 @@ It adds a new attribute, `data-mx-spoiler`, to the `<span>` tag. If the attribut
 contents of the span tag should be rendered as a spoiler. Optionally, you can specify a reason for
 the spoiler by setting the attribute string. It could be rendered, for example, similar to this:
 
-![Spoiler rendering idea](https://user-images.githubusercontent.com/2433620/58178745-082c1480-7ca7-11e9-901b-13b147cfd157.png)
+![Spoiler rendering idea](https://user-images.githubusercontent.com/2433620/59299700-95063480-8c8d-11e9-9348-3e2c8bc94bdc.gif)
 
 The plain-text fallback could be rendered as `(Spoiler: <content>)` and
 `(Spoiler for <reason>: <content>)` respectively.
