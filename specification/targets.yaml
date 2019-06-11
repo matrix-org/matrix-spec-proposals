@@ -42,6 +42,10 @@ targets:
     files:
       - rooms/v4.rst
     version_label: v4
+  rooms@v5: # this is translated to be rooms/v5.html
+    files:
+      - rooms/v5.rst
+    version_label: v5
   appendices:
     files:
       - appendices.rst
