@@ -147,7 +147,7 @@ paths:
                     submit the validation token to, with identical parameters
                     to the Identity Service API's ``POST
                     /validate/email/submitToken`` endpoint. The homeserver must
-                    send this token to the user (if applicable), which should
+                    send this token to the user (if applicable), who should
                     then be prompted to provide it to the client.
 
                     If this field is not present, the client can assume that
