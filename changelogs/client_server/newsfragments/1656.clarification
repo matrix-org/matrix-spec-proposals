@@ -1,1 +1,0 @@
-Clarify that ``state_default`` in ``m.room.power_levels`` always defaults to 50.

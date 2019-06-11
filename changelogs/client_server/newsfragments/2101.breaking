@@ -1,1 +1,0 @@
-Add a new ``submit_url`` field to the responses of ``/requestToken`` which older clients will not be able to handle correctly.
