@@ -35,8 +35,8 @@ paths:
         after the specified event. This allows clients to get the context
         surrounding an event.
 
-        *Note*: This endpoint supports lazy-loading of room member events. See `Filtering <#lazy-loading-room-members>`_
-        for more information.
+        *Note*: This endpoint supports lazy-loading of room member events. See
+        `Lazy-loading room members <#lazy-loading-room-members>`_ for more information.
       operationId: getEventContext
       security:
         - accessToken: []
