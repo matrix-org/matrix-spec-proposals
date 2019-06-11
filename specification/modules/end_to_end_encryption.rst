@@ -671,6 +671,7 @@ parameter is the concatenation of:
   * The ``transaction_id`` being used.
 
 .. admonition:: Rationale
+
   HKDF is used over the plain shared secret as it results in a harder attack
   as well as more uniform data to work with.
 
