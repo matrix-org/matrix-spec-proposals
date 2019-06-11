@@ -50,16 +50,34 @@ one of the above APIs.
 The `Matrix Client-Server API Swagger Viewer <https://matrix.org/docs/api/client-server/>`_
 is useful for browsing the Client-Server API.
 
+
+Matrix versions
+~~~~~~~~~~~~~~~
+
+.. Note::
+  As of June 10th 2019, the Matrix specification is considered out of beta -
+  indicating that all currently released APIs are considered stable and secure
+  to the best of our knowledge, and the spec should contain the complete
+  information necessary to develop production-grade implementations of Matrix
+  without the need for external reference.
+
+Matrix 1.0 (released June 10th, 2019) consists of the following minimum API
+versions:
+
+=======================  =======
+API/Specification        Version
+=======================  =======
+Client-Server API        r0.5.0
+Server-Server API        r0.1.2
+Application Service API  r0.1.1
+Identity Service API     r0.1.1
+Push Gateway API         r0.1.0
+Room Version             v5
+=======================  =======
+
+
 Introduction to the Matrix APIs
 -------------------------------
-.. WARNING::
-  The Matrix specification is still evolving: the APIs are not yet frozen
-  and this document is in places a work in progress or stale. We have made every
-  effort to clearly flag areas which are still being finalised.
-  We're publishing it at this point because it's complete enough to be more than
-  useful and provide a canonical reference to how Matrix is evolving. Our end
-  goal is to mirror WHATWG's `Living Standard
-  <https://whatwg.org/faq?#living-standard>`_.
 
 Matrix is a set of open APIs for open-federated Instant Messaging (IM), Voice
 over IP (VoIP) and Internet of Things (IoT) communication, designed to create
