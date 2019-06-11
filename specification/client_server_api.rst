@@ -762,17 +762,17 @@ the auth code. Homeservers can choose any path for the ``redirect URI``. Once
 the OAuth flow has completed, the client retries the request with the session
 only, as above.
 
-Email-based (identity server)
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Email-based (identity / homeserver)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 :Type:
   ``m.login.email.identity``
 :Description:
   Authentication is supported by authorising an email address with an identity
-  server.
+  server, or homeserver if supported.
 
 Prior to submitting this, the client should authenticate with an identity
-server. After authenticating, the session information should be submitted to
-the homeserver.
+server (or homeserver). After authenticating, the session information should
+be submitted to the homeserver.
 
 To use this authentication type, clients should submit an auth dict as follows:
 
@@ -790,17 +790,17 @@ To use this authentication type, clients should submit an auth dict as follows:
     "session": "<session ID>"
   }
 
-Phone number/MSISDN-based (identity server)
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Phone number/MSISDN-based (identity / homeserver)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 :Type:
   ``m.login.msisdn``
 :Description:
   Authentication is supported by authorising a phone number with an identity
-  server.
+  server, or homeserver if supported.
 
 Prior to submitting this, the client should authenticate with an identity
-server. After authenticating, the session information should be submitted to
-the homeserver.
+server (or homeserver). After authenticating, the session information should
+be submitted to the homeserver.
 
 To use this authentication type, clients should submit an auth dict as follows:
 
