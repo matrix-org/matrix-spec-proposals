@@ -4,7 +4,7 @@
   "type": "m.room.member",
   "content": {
     "membership": "join",
-    "avatar_url": "mxc://example.org/SEsfnsuifSDFSSEF#auto",
+    "avatar_url": "mxc://example.org/SEsfnsuifSDFSSEF",
     "displayname": "Alice Margatroid"
   }
 }

@@ -17,7 +17,9 @@ properties:
           - m.image
         type: string
       url:
-        description: Required if the file is unencrypted. The URL to the image.
+        description: |-
+          Required if the file is unencrypted. The URL (typically `MXC URI`_)
+          to the image.
         type: string
       file:
         description: |-

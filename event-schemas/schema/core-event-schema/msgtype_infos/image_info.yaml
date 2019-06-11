@@ -19,8 +19,8 @@ properties:
     type: integer
   thumbnail_url:
     description: |-
-      The URL to a thumbnail of the image. Only present if the
-      thumbnail is unencrypted.
+      The URL (typically `MXC URI`_) to a thumbnail of the image.
+      Only present if the thumbnail is unencrypted.
     type: string
   thumbnail_file:
     description: |-

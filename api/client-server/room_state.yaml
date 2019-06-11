@@ -75,7 +75,7 @@ paths:
             type: object
             example: {
                 "membership": "join",
-                "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF#auto",
+                "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF",
                 "displayname": "Alice Margatroid"
               }
       responses:
