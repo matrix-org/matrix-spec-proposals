@@ -278,70 +278,42 @@ choose a name:
 #. If the room has an `m.room.canonical_alias`_ state event with a non-empty
    ``alias`` field, use the alias given by that field as the name.
 
-#. If neither of the above conditions are met, a name should be composed based
+#. If neither of the above conditions are met, the client can optionally guess
+   an alias from the ``m.room.alias`` events in the room. This is a temporary
+   measure while clients do not promote canonical aliases as prominently. This
+   step may be removed in a future version of the specification.
+
+#. If none of the above conditions are met, a name should be composed based
    on the members of the room. Clients should consider `m.room.member`_ events
-   for users other than the logged-in user, with ``membership: join`` or
-   ``membership: invite``.
+   for users other than the logged-in user, as defined below.
 
-   .. _active_members:
+   i. If the number of ``m.heroes`` for the room are greater or equal to
+      ``m.joined_member_count + m.invited_member_count - 1``, then use the
+      membership events for the heroes to calculate display names for the
+      users (`disambiguating them if required`_) and concatenating them. For
+      example, the client may choose to show "Alice, Bob, and Charlie
+      (@charlie:example.org)" as the room name. The client may optionally
+      limit the number of users it uses to generate a room name.
 
-   i. If there is only one such event, the display name for the room should be
-      the `disambiguated display name`_ of the corresponding user.
+   #. If there are fewer heroes than ``m.joined_member_count + m.invited_member_count
+      - 1``, and ``m.joined_member_count + m.invited_member_count`` is greater
+      than 1, the client should use the heroes to calculate display names for
+      the users (`disambiguating them if required`_) and concatenating them
+      alongside a count of the remaining users. For example, "Alice, Bob, and
+      1234 others".
 
-   #. If there are two such events, they should be lexicographically sorted by
-      their ``state_key`` (i.e. the corresponding user IDs), and the display
-      name for the room should be the  `disambiguated display name`_ of both
-      users: "<user1> and <user2>", or a localised variant thereof.
+   #. If ``m.joined_member_count + m.invited_member_count`` is less than or
+      equal to 1 (indicating the member is alone), the client should use the
+      rules above to indicate that the room was empty. For example, "Empty
+      Room (was Alice)", "Empty Room (was Alice and 1234 others)", or
+      "Empty Room" if there are no heroes.
 
-   #. If there are three or more such events, the display name for the room
-      should be based on the disambiguated display name of the user
-      corresponding to the first such event, under a lexicographical sorting
-      according to their ``state_key``. The display name should be in the
-      format "<user1> and <N> others" (or a localised variant thereof), where N
-      is the number of `m.room.member`_ events with ``membership: join`` or
-      ``membership: invite``, excluding the logged-in user and "user1".
+Clients SHOULD internationalise the room name to the user's language when using
+the ``m.heroes`` to calculate the name. Clients SHOULD use minimum 5 heroes to
+calculate room names where possible, but may use more or less to fit better with
+their user experience.
 
-      For example, if Alice joins a room, where Bob (whose user id is
-      ``@superuser:example.com``), Carol (user id ``@carol:example.com``) and
-      Dan (user id ``@dan:matrix.org``) are in conversation, Alice's
-      client should show the room name as "Carol and 2 others".
-
-   .. TODO-spec
-     Sorting by user_id certainly isn't ideal, as IDs at the start of the
-     alphabet will end up dominating room names: they will all be called
-     "Arathorn and 15 others". Furthermore - user_ids are not necessarily
-     ASCII, which means we need to either specify a collation order, or specify
-     how to choose one.
-
-     Ideally we might sort by the time when the user was first invited to, or
-     first joined the room. But we don't have this information.
-
-     See https://matrix.org/jira/browse/SPEC-267 for further discussion.
-
-#. If the room has no valid ``m.room.name`` or ``m.room.canonical_alias``
-   event, and no active members other than the current user, clients should
-   consider ``m.room.member`` events with ``membership: leave``. If such events
-   exist, a display name such as "Empty room (was <user1> and <N> others)" (or
-   a localised variant thereof) should be used, following similar rules as for
-   active members (see `above <active_members_>`_).
-
-#. A complete absence of room name, canonical alias, and room members is likely
-   to indicate a problem with creating the room or synchronising the state
-   table; however clients should still handle this situation. A display name
-   such as "Empty room" (or a localised variant thereof) should be used in this
-   situation.
-
-.. _`disambiguated display name`: `Calculating the display name for a user`_
-
-Clients SHOULD NOT use `m.room.aliases`_ events as a source for room names, as
-it is difficult for clients to agree on the best alias to use, and aliases can
-change unexpectedly.
-
-.. TODO-spec
-  How can we make this less painful for clients to implement, without forcing
-  an English-language implementation on them all? See
-  https://matrix.org/jira/browse/SPEC-425.
-
+.. _`disambiguating them if required`: `Calculating the display name for a user`_
 
 Forming relationships between events
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

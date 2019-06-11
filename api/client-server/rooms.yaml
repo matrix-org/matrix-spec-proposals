@@ -184,6 +184,44 @@ paths:
           description: The room to get the member events for.
           required: true
           x-example: "!636q39766251:example.com"
+        - in: query
+          name: at
+          type: string
+          description: |-
+            The point in time (pagination token) to return members for in the room.
+            This token can be obtained from a ``prev_batch`` token returned for
+            each room by the sync API. Defaults to the current state of the room,
+            as determined by the server.
+          x-example: "YWxsCgpOb25lLDM1ODcwOA"
+        # XXX: As mentioned in MSC1227, replacing `[not_]membership` with a JSON
+        # filter might be a better alternative.
+        # See https://github.com/matrix-org/matrix-doc/issues/1337
+        - in: query
+          name: membership
+          type: string
+          enum:
+            - join
+            - invite
+            - leave
+            - ban
+          description: |-
+            The kind of membership to filter for. Defaults to no filtering if
+            unspecified. When specified alongside ``not_membership``, the two
+            parameters create an 'or' condition: either the membership *is*
+            the same as ``membership`` **or** *is not* the same as ``not_membership``.
+          x-example: "join"
+        - in: query
+          name: not_membership
+          type: string
+          enum:
+            - join
+            - invite
+            - leave
+            - ban
+          description: |-
+            The kind of membership to exclude from the results. Defaults to no
+            filtering if unspecified.
+          x-example: leave
       security:
         - accessToken: []
       responses:
