@@ -30,6 +30,8 @@ properties:
       prompted to provide it to the client.
 
       If this field is not present, the client can assume that verification
-      will happen without the client's involvement.
+      will happen without the client's involvement provided the homeserver
+      advertises this specification version in the ``/versions`` response
+      (ie: r0.5.0).
     example: "https://example.org/path/to/submitToken"
 required: ['sid']
