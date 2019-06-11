@@ -120,5 +120,5 @@ The remaining rules are the same as `room version 1 <v1.html#authorization-rules
 
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
 .. _`Canonical JSON`: ../appendices.html#canonical-json
-.. _`Signing Events`: ../server_server/r0.1.1.html#signing-events
-.. _`reference hash`: ../server_server/r0.1.1.html#reference-hashes
+.. _`Signing Events`: ../server_server/%SERVER_RELEASE_LABEL%.html#signing-events
+.. _`reference hash`: ../server_server/%SERVER_RELEASE_LABEL%.html#reference-hashes

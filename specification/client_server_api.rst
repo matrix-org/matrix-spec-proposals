@@ -1491,6 +1491,8 @@ Some event types have additional size restrictions which are specified in
 the description of the event. Additional keys have no limit other than that
 implied by the total 65 KB limit on events.
 
+.. _`Canonical JSON`: ../appendices.html#canonical-json
+
 Room Events
 ~~~~~~~~~~~
 .. NOTE::

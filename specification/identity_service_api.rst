@@ -51,6 +51,7 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/identity_service/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.2.0 <https://matrix.org/docs/spec/identity_service/r0.2.0.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/identity_service/r0.1.0.html>`_
 
 General principles
@@ -279,4 +280,4 @@ this isn't possible.
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
 .. _`3PID Types`:  ../appendices.html#pid-types
 .. _`Signing JSON`: ../appendices.html#signing-json
-.. _`/3pid/onbind`: ../server_server/r0.1.1.html#put-matrix-federation-v1-3pid-onbind
+.. _`/3pid/onbind`: ../server_server/%SERVER_RELEASE_LABEL%.html#put-matrix-federation-v1-3pid-onbind

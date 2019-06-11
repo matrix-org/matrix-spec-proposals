@@ -1,3 +1,20 @@
+r0.1.2
+======
+
+Spec Clarifications
+-------------------
+
+- Change examples to use example.org instead of a real domain. (`#1650 <https://github.com/matrix-org/matrix-doc/issues/1650>`_)
+- Fix the ``access_token`` parameter in the open_id endpoint. (`#1906 <https://github.com/matrix-org/matrix-doc/issues/1906>`_)
+- Fix various spelling mistakes throughout the specification. (`#1991 <https://github.com/matrix-org/matrix-doc/issues/1991>`_)
+- Clarify exactly what invite_room_state consists of. (`#2067 <https://github.com/matrix-org/matrix-doc/issues/2067>`_)
+- Clarify how ``valid_until_ts`` behaves with respect to room version. (`#2080 <https://github.com/matrix-org/matrix-doc/issues/2080>`_)
+- Clarify which servers are supposed to sign events. (`#2081 <https://github.com/matrix-org/matrix-doc/issues/2081>`_)
+- Clarify the key object definition for the key management API. (`#2083 <https://github.com/matrix-org/matrix-doc/issues/2083>`_)
+- Clarify how many PDUs are contained in transaction objects for various endpoints. (`#2095 <https://github.com/matrix-org/matrix-doc/issues/2095>`_)
+- Clarify that the trailing slash is optional on ``/keys/*`` endpoints when no key ID is requested. (`#2097 <https://github.com/matrix-org/matrix-doc/issues/2097>`_)
+
+
 r0.1.1
 ======
 
