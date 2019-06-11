@@ -167,11 +167,13 @@ paths:
                             this room.
                           allOf:
                           - $ref: "definitions/event_batch.yaml"
-                        "unread_notifications":
+                        unread_notifications:
                           title: Unread Notification Counts
                           type: object
                           description: |-
-                            Counts of unread notifications for this room
+                            Counts of unread notifications for this room. See the
+                            `Receiving notifications section <#receiving-notifications>`_
+                            for more information on how these are calculated.
                           properties:
                             highlight_count:
                                 title: Highlighted notification count
