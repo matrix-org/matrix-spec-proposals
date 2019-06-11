@@ -45,7 +45,15 @@ properties:
   next_link:
     type: string
     description: |-
-      Optional. When the validation is completed, the identity
-      server will redirect the user to this URL.
+      Optional. When the validation is completed, the identity server will
+      redirect the user to this URL. This option is ignored when submitting
+      3PID validation information through a POST request.
     example: "https://example.org/congratulations.html"
-required: ["client_secret", "email", "send_attempt"]
+  id_server:
+    type: string
+    description: |-
+      The hostname of the identity server to communicate with. May optionally
+      include a port. This parameter is ignored when the homeserver handles
+      3PID verification.
+    example: "id.example.com"
+required: ["client_secret", "email", "send_attempt", "id_server"]

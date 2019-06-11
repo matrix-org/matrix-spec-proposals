@@ -229,35 +229,28 @@ paths:
     post:
       summary: Begins the validation process for an email to be used during registration.
       description: |-
-        Proxies the Identity Service API ``validate/email/requestToken``, but
-        first checks that the given email address is not already associated
-        with an account on this homeserver. See the Identity Service API for
-        further information.
+        The homeserver must check that the given email address is **not**
+        already associated with an account on this homeserver. The homeserver
+        has the choice of validating the email address itself, or proxying the
+        request to the ``/validate/email/requestToken`` Identity Service API. The
+        request should be proxied to the domain that is sent by the client in
+        the ``id_server``. It is imperative that the homeserver keep a list of
+        trusted Identity Servers and only proxies to those it trusts.
       operationId: requestTokenToRegisterEmail
       parameters:
         - in: body
           name: body
           required: true
           schema:
-            allOf:
-              - $ref: "../identity/definitions/request_email_validation.yaml"
-              - type: object
-                properties:
-                  id_server:
-                    type: string
-                    description: |-
-                      The hostname of the identity server to communicate with. May
-                      optionally include a port.
-                    example: "id.example.com"
-                required: ['id_server']
+            $ref: "../identity/definitions/request_email_validation.yaml"
       responses:
         200:
           description: |-
-            An email has been sent to the specified address.
-            Note that this may be an email containing the validation token or it may be informing
-            the user of an error.
+            An email has been sent to the specified address. Note that this
+            may be an email containing the validation token or it may be
+            informing the user of an error.
           schema:
-            $ref: "../identity/definitions/sid.yaml"
+            $ref: "definitions/request_token_response.yaml"
         403:
           description: The homeserver does not permit the address to be bound.
           schema:
@@ -289,35 +282,28 @@ paths:
     post:
       summary: Requests a validation token be sent to the given phone number for the purpose of registering an account
       description: |-
-        Proxies the Identity Service API ``validate/msisdn/requestToken``, but
-        first checks that the given phone number is not already associated
-        with an account on this homeserver. See the Identity Service API for
-        further information.
+        The homeserver must check that the given phone number is **not**
+        already associated with an account on this homeserver. The homeserver
+        has the choice of validating the phone number itself, or proxying the
+        request to the ``/validate/msisdn/requestToken`` Identity Service API. The
+        request should be proxied to the domain that is sent by the client in
+        the ``id_server``. It is imperative that the homeserver keep a list of
+        trusted Identity Servers and only proxies to those it trusts.
       operationId: requestTokenToRegisterMSISDN
       parameters:
         - in: body
           name: body
           required: true
           schema:
-            allOf:
-              - $ref: "../identity/definitions/request_msisdn_validation.yaml"
-              - type: object
-                properties:
-                  id_server:
-                    type: string
-                    description: |-
-                      The hostname of the identity server to communicate with. May
-                      optionally include a port.
-                    example: "id.example.com"
-                required: ['id_server']
+            $ref: "../identity/definitions/request_msisdn_validation.yaml"
       responses:
         200:
           description: |-
-            An SMS message has been sent to the specified phone number.
-            Note that this may be an SMS message containing the validation token or it may be informing
-            the user of an error.
+            An SMS message has been sent to the specified phone number. Note
+            that this may be an SMS message containing the validation token or
+            it may be informing the user of an error.
           schema:
-            $ref: "../identity/definitions/sid.yaml"
+            $ref: "definitions/request_token_response.yaml"
         403:
           description: The homeserver does not permit the address to be bound.
           schema:
@@ -402,16 +388,25 @@ paths:
     post:
       summary: Requests a validation token be sent to the given email address for the purpose of resetting a user's password
       description: |-
-        Proxies the Identity Service API ``validate/email/requestToken``, but
-        first checks that the given email address **is** associated with an account
-        on this homeserver. This API should be used to request
-        validation tokens when authenticating for the
-        `account/password` endpoint. This API's parameters and response are
-        identical to that of the HS API |/register/email/requestToken|_ except that
-        `M_THREEPID_NOT_FOUND` may be returned if no account matching the
+        The homeserver must check that the given email address **is
+        associated** with an account on this homeserver. This API should be
+        used to request validation tokens when authenticating for the
+        ``/account/password`` endpoint.
+        
+        This API's parameters and response are identical to that of the
+        |/register/email/requestToken|_ endpoint, except that
+        ``M_THREEPID_NOT_FOUND`` may be returned if no account matching the
         given email address could be found. The server may instead send an
         email to the given address prompting the user to create an account.
-        `M_THREEPID_IN_USE` may not be returned.
+        ``M_THREEPID_IN_USE`` may not be returned.
+        
+        The homeserver has the choice of validating the email address itself,
+        or proxying the request to the ``/validate/email/requestToken``
+        Identity Service API. The request should be proxied to the domain that
+        is sent by the client in the ``id_server``. It is imperative that the
+        homeserver keep a list of trusted Identity Servers and only proxies to
+        those that it trusts.
+
 
         .. |/register/email/requestToken| replace:: ``/register/email/requestToken``
 
@@ -422,22 +417,12 @@ paths:
           name: body
           required: true
           schema:
-            allOf:
-              - $ref: "../identity/definitions/request_email_validation.yaml"
-              - type: object
-                properties:
-                  id_server:
-                    type: string
-                    description: |-
-                      The hostname of the identity server to communicate with. May
-                      optionally include a port.
-                    example: "id.example.com"
-                required: ['id_server']
+            $ref: "../identity/definitions/request_email_validation.yaml"
       responses:
         200:
           description: An email was sent to the given address.
           schema:
-            $ref: "../identity/definitions/sid.yaml"
+            $ref: "definitions/request_token_response.yaml"
         403:
           description: |-
             The homeserver does not allow the third party identifier as a
@@ -464,16 +449,24 @@ paths:
     post:
       summary: Requests a validation token be sent to the given phone number for the purpose of resetting a user's password.
       description: |-
-        Proxies the Identity Service API ``validate/msisdn/requestToken``, but
-        first checks that the given phone number **is** associated with an account
-        on this homeserver. This API should be used to request
-        validation tokens when authenticating for the
-        `account/password` endpoint. This API's parameters and response are
-        identical to that of the HS API |/register/msisdn/requestToken|_ except that
-        `M_THREEPID_NOT_FOUND` may be returned if no account matching the
-        given phone number could be found. The server may instead send an
-        SMS message to the given address prompting the user to create an account.
-        `M_THREEPID_IN_USE` may not be returned.
+        The homeserver must check that the given phone number **is
+        associated** with an account on this homeserver. This API should be
+        used to request validation tokens when authenticating for the
+        ``/account/password`` endpoint.
+        
+        This API's parameters and response are identical to that of the
+        |/register/msisdn/requestToken|_ endpoint, except that
+        ``M_THREEPID_NOT_FOUND`` may be returned if no account matching the
+        given phone number could be found. The server may instead send the SMS
+        to the given phone number prompting the user to create an account.
+        ``M_THREEPID_IN_USE`` may not be returned.
+        
+        The homeserver has the choice of validating the phone number itself, or
+        proxying the request to the ``/validate/msisdn/requestToken`` Identity
+        Service API. The request should be proxied to the domain that is sent
+        by the client in the ``id_server``. It is imperative that the
+        homeserver keep a list of trusted Identity Servers and only proxies to
+        those that it trusts.
 
         .. |/register/msisdn/requestToken| replace:: ``/register/msisdn/requestToken``
 
@@ -484,22 +477,12 @@ paths:
           name: body
           required: true
           schema:
-            allOf:
-              - $ref: "../identity/definitions/request_msisdn_validation.yaml"
-              - type: object
-                properties:
-                  id_server:
-                    type: string
-                    description: |-
-                      The hostname of the identity server to communicate with. May
-                      optionally include a port.
-                    example: "id.example.com"
-                required: ['id_server']
+            $ref: "../identity/definitions/request_msisdn_validation.yaml"
       responses:
         200:
           description: An SMS message was sent to the given phone number.
           schema:
-            $ref: "../identity/definitions/sid.yaml"
+            $ref: "definitions/request_token_response.yaml"
         403:
           description: |-
             The homeserver does not allow the third party identifier as a
