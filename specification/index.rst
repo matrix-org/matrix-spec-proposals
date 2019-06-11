@@ -425,6 +425,37 @@ dedicated API.  The API is symmetrical to managing Profile data.
   Would it really be overengineered to use the same API for both profile &
   private user data, but with different ACLs?
 
+
+Common concepts
+---------------
+
+Various things are common throughout all of the Matrix APIs. They are
+documented here.
+
+.. TODO: Some words about trailing slashes. See https://github.com/matrix-org/matrix-doc/issues/2107
+
+Namespacing
+~~~~~~~~~~~
+
+Namespacing helps prevent conflicts between multiple applications and the specification
+itself. Where namespacing is used, ``m.`` prefixes are used by the specification to
+indicate that the field is controlled by the specification. Custom or non-specified
+namespaces used in the wild MUST use the Java package naming convention to prevent
+conflicts.
+
+As an example, event types defined in the specification are namespaced under the
+special ``m.`` prefix, however any client can send a custom event type, such as
+``com.example.game.score`` (assuming the client has rights to the ``com.example``
+namespace) without needing to put the event into the ``m.`` namespace.
+
+Timestamps
+~~~~~~~~~~
+
+Unless otherwise stated, timestamps are measured as milliseconds since the Unix epoch.
+Throughout the specification this may be referred to as POSIX, Unix, or just "time in
+milliseconds".
+
+
 .. _`room versions`:
 
 Room Versions
