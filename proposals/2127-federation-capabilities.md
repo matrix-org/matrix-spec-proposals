@@ -139,6 +139,12 @@ therefore putting the responsibility on the homeserver seems wise.
 Servers SHOULD rate limit these endpoints aggressively, particularly if they are not
 caching the responses.
 
+Servers which fail to respond or do not list the requested capability should be recorded
+as empty objects in the responses. Clients MUST interpret this however the capability
+asks to be interpretted. In the case of `m.room_versions`, lack of the capability being
+advertised means the server should be assumed to support room version 1 as the only
+default and stable version.
+
 
 ## Potential issues
 
