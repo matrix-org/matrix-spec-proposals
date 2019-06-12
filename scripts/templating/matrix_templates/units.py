@@ -962,6 +962,9 @@ class MatrixUnits(Units):
                 if re.match("^[=]{3,}$", line.strip()):
                     # the last line was a header - use that as our new title_part
                     title_part = prev_line.strip()
+                    # take off the last line from the changelog_body_lines because it's the title
+                    if len(changelog_body_lines) > 0:
+                        changelog_body_lines = changelog_body_lines[:len(changelog_body_lines) - 1]
                     continue
                 if re.match("^[-]{3,}$", line.strip()):
                     # the last line is a subheading - drop this line because it's the underline
@@ -975,6 +978,7 @@ class MatrixUnits(Units):
                     # that it renders correctly in the section. We also add newlines so that there's
                     # intentionally blank lines that make rst2html happy.
                     changelog_body_lines.append("    " + line + '\n')
+                prev_line = line
 
             if len(changelog_body_lines) > 0:
                 changelogs[api_name] = "".join(changelog_body_lines)
