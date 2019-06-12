@@ -246,7 +246,7 @@ paths:
           name: body
           required: true
           schema:
-            $ref: "../identity/definitions/request_email_validation.yaml"
+            $ref: "./definitions/request_email_validation.yaml"
       responses:
         200:
           description: |-
@@ -297,7 +297,7 @@ paths:
           name: body
           required: true
           schema:
-            $ref: "../identity/definitions/request_msisdn_validation.yaml"
+            $ref: "./definitions/request_msisdn_validation.yaml"
       responses:
         200:
           description: An SMS message was sent to the given phone number.
