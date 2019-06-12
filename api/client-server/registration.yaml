@@ -242,7 +242,7 @@ paths:
           name: body
           required: true
           schema:
-            $ref: "../identity/definitions/request_email_validation.yaml"
+            $ref: "./definitions/request_email_validation.yaml"
       responses:
         200:
           description: |-
@@ -295,7 +295,7 @@ paths:
           name: body
           required: true
           schema:
-            $ref: "../identity/definitions/request_msisdn_validation.yaml"
+            $ref: "./definitions/request_msisdn_validation.yaml"
       responses:
         200:
           description: |-
@@ -392,14 +392,14 @@ paths:
         associated** with an account on this homeserver. This API should be
         used to request validation tokens when authenticating for the
         ``/account/password`` endpoint.
-        
+
         This API's parameters and response are identical to that of the
         |/register/email/requestToken|_ endpoint, except that
         ``M_THREEPID_NOT_FOUND`` may be returned if no account matching the
         given email address could be found. The server may instead send an
         email to the given address prompting the user to create an account.
         ``M_THREEPID_IN_USE`` may not be returned.
-        
+
         The homeserver has the choice of validating the email address itself,
         or proxying the request to the ``/validate/email/requestToken``
         Identity Service API. The request should be proxied to the domain that
@@ -417,7 +417,7 @@ paths:
           name: body
           required: true
           schema:
-            $ref: "../identity/definitions/request_email_validation.yaml"
+            $ref: "./definitions/request_email_validation.yaml"
       responses:
         200:
           description: An email was sent to the given address.
@@ -453,14 +453,14 @@ paths:
         associated** with an account on this homeserver. This API should be
         used to request validation tokens when authenticating for the
         ``/account/password`` endpoint.
-        
+
         This API's parameters and response are identical to that of the
         |/register/msisdn/requestToken|_ endpoint, except that
         ``M_THREEPID_NOT_FOUND`` may be returned if no account matching the
         given phone number could be found. The server may instead send the SMS
         to the given phone number prompting the user to create an account.
         ``M_THREEPID_IN_USE`` may not be returned.
-        
+
         The homeserver has the choice of validating the phone number itself, or
         proxying the request to the ``/validate/msisdn/requestToken`` Identity
         Service API. The request should be proxied to the domain that is sent
