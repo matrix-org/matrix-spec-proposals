@@ -55,16 +55,13 @@ in the following CS API endpoints.
 
 In order to configure two-factor providers, several new CS API endpoints are required:
 
-  * `GET /_matrix/client/r0/account/two-factor` to get the current state of enabled providers for the account.
-  * `POST /_matrix/client/r0/account/two-factor` to configure providers.
-  * `POST /_matrix/client/r0/account/two-factor/disable` to disable providers.
+  * `GET /_matrix/client/r0/account/twoFactor` to get the current state of enabled providers for the account.
+  * `POST /_matrix/client/r0/account/twoFactor` to configure providers.
+  * `DELETE /_matrix/client/r0/account/twoFactor` to disable providers.
 
-The `POST` endpoints all require authentication (including the appropriate
-`m.login.two-factor.*` stages if already configured).
-
-**XXX: Should it be possible for a server to require using two-factor
-providers, and in that case should the registration process also involve
-configuring two-factor?**
+The `POST` and `DELETE` and endpoints all require user-interactive
+authentication (including the appropriate `m.login.two-factor.*` stages if
+already configured).
 
 The details of these changes are outlined in the next few sections.
 
@@ -109,7 +106,7 @@ authentication succeeds and the token must be marked as used so it cannot be
 re-used for future authentication flows. Otherwise the server must generate a
 401 error.
 
-### `GET /_matrix/client/r0/account/two-factor`
+### `GET /_matrix/client/r0/account/twoFactor`
 
 This endpoint provides information about how the user's two-factor settings are
 configured.
@@ -146,7 +143,7 @@ An example JSON returned would be:
 }
 ```
 
-### `POST /_matrix/client/r0/account/two-factor`
+### `POST /_matrix/client/r0/account/twoFactor`
 
 This endpoint allows the client to enable (or reset) a two-factor provider. In
 order to avoid users locking themselves out of their accounts, servers should
@@ -166,7 +163,7 @@ configurable two-factor providers).
 ##### Example
 
 ```
-POST /_matrix/client/r0/account/two-factor HTTP/1.1
+POST /_matrix/client/r0/account/twoFactor HTTP/1.1
 Content-Type: application/json
 
 {
@@ -262,10 +259,7 @@ And then the server returns a JSON object with the following structure:
 }
 ```
 
-### `POST /_matrix/client/r0/account/two-factor/disable`
-
-**XXX: This path is super ugly, but is required because we need to have
-Authentication Data associated with the request and thus cannot use DELETE.**
+### `DELETE /_matrix/client/r0/account/twoFactor`
 
 This is used to disable two-factor providers. The server must only disable the
 providers requested with the exception of `m.login.two-factor.recovery`. If,
@@ -275,6 +269,9 @@ enabled anymore then the server may also disable `m.login.two-factor.recovery`.
 The value `m.login.two-factor.*` has a special meaning, and is used to indicate
 that all enabled providers should be disabled for this user. **XXX: This
 interface is probably racy and might not be super-useful.**
+
+**NOTE**: While HTTP does not explicitly define the meaning of a content-body
+with `DELETE` we assume it to be the same as `POST` here.
 
 #### Request
 
@@ -288,7 +285,7 @@ Authentication Data is identical as in the existing spec.
 ##### Example
 
 ```
-POST /_matrix/client/r0/account/two-factor/disable HTTP/1.1
+DELETE /_matrix/client/r0/account/twoFactor HTTP/1.1
 Content-Type: application/json
 
 {
@@ -350,10 +347,6 @@ Content-Type: application/json
   it. However the two-factor endpoints have been made generic enough that (in
   the future) other two-factor systems (such as YubiKey) could be added easily
   and in a backwards-compatible way.
-
-* `POST .../two-factor/disable` is used instead of `DELETE .../two-factor`
-  because the latter doesn't really support request bodies and thus we cannot
-  pass the JSON `auth` blob.
 
 ## Potential issues
 
