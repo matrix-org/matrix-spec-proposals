@@ -279,6 +279,19 @@ paths:
             If the response body is not a JSON Matrix error, the identity server
             does not support unbinds. If a JSON Matrix error is in the response
             body, the requesting party should respect the error.
+        403:
+          description: |-
+            The credentials supplied to authenticate the request were invalid.
+            This may also be returned if the identity server does not support
+            the chosen authentication method (such as blocking homeservers from
+            unbinding identifiers).
+          examples:
+            application/json: {
+              "errcode": "M_FORBIDDEN",
+              "error": "Invalid homeserver signature"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
         501:
           description: |-
             If the response body is not a JSON Matrix error, the identity server
