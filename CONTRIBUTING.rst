@@ -75,10 +75,8 @@ ask.
 Adding to the changelog
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Currently only changes to the client-server API need to end up in a changelog. The
-other APIs are not yet stable and therefore do not have a changelog. Adding to the
-changelog can only be done after you've opened your pull request, so be sure to do
-that first.
+All API specifications require a changelog entry. Adding to the changelog can only
+be done after you've opened your pull request, so be sure to do that first.
 
 The changelog is managed by Towncrier (https://github.com/hawkowl/towncrier) in the
 form of "news fragments". The news fragments for the client-server API are stored
