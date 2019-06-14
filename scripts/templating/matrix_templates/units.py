@@ -902,6 +902,15 @@ class MatrixUnits(Units):
                 "`m.room.message msgtypes`_."
             )
 
+        # method types for m.key.verification.start
+        if schema["type"] == "m.key.verification.start":
+            methods = Units.prop(
+                json_schema, "properties/content/properties/method/enum"
+            )
+            if methods:
+                schema["type_with_msgtype"] = schema["type"] + " (" + methods[0] + ")"
+
+
         # Assign state key info if it has some
         if schema["typeof"] == "State Event":
             skey_desc = Units.prop(
