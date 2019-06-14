@@ -55,7 +55,6 @@ properties:
     required:
       - msgtype
       - body
-      - url
     type: object
   type:
     enum:

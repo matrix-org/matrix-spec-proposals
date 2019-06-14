@@ -28,7 +28,7 @@ properties:
         type: string
       url:
         description: |-
-          Required if the file is not encrypted. The URL (typically `MXC URI`_)
+          Required if the file is unencrypted. The URL (typically `MXC URI`_)
           to the audio clip.
         type: string
       file:
@@ -40,7 +40,6 @@ properties:
     required:
       - msgtype
       - body
-      - url
     type: object
   type:
     enum:
