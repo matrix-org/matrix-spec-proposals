@@ -419,7 +419,7 @@ Key verification framework
 
 Verifying keys manually by reading out the Ed25519 key is not very user friendly,
 and can lead to errors. In order to help mitigate errors, and to make the process
-eaiser for users, some verification methods are supported by the specification.
+easier for users, some verification methods are supported by the specification.
 The methods all use a common framework for negotiating the key verification.
 
 To use this framework, Alice's client would send ``m.key.verification.request``
