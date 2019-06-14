@@ -36,7 +36,7 @@ Changelog
 ---------
 
 
-.. topic:: Version: unstable
+.. topic:: Version: %APPSERVICE_RELEASE_LABEL%
 {{application_service_changelog}}
 
 This version of the specification is generated from
