@@ -2,15 +2,15 @@
 
 [Issue #2130](https://github.com/matrix-org/matrix-doc/issues/2130) has been recently
 created in response to a security issue brought up by an independant party. To summarise
-the issue, lookups (of matrix userids) are performed using non-hashed 3pids which means
-that the 3pid is identifiable to anyone who can see the payload (e.g. willh AT matrix.org
-can be identified by a human).
+the issue, lookups (of matrix user ids) are performed using non-hashed 3pids which means
+that the 3pid is identifiable to anyone who can see the payload (e.g. willh@matrix.org
+can be identified).
 
 The problem with this, is that a malicious identity service could then store the plaintext
 3pid and make an assumption that the requesting entity knows the holder of the 3pid, even
 if the identity service does not know of the 3pid beforehand.
 
-If the 3pid is hashed, the identity service could not determinethe owner of the 3pid
+If the 3pid is hashed, the identity service could not determine the owner of the 3pid
 unless the identity service has already been made aware of the 3pid by the owner
 themselves (using the /bind mechanism).
 
@@ -20,7 +20,6 @@ a mystery until /bind is used.
 
 It should be clear that there is a need to hide any address from the identity service that
 has not been explicitly bound to it, and this proposal aims to solve that for the lookup API.
-
 
 ## Proposal
 
@@ -58,7 +57,7 @@ should return a `M_FORBIDDEN` `errcode` if so.
 ## Tradeoffs
 
 * This approach means that the client now needs to calculate a hash by itself, but the belief
-  is that most librarys provide a mechanism for doing so.
+  is that most languages provide a mechanism for doing so.
 * There is a small cost incurred by doing hashes before requests, but this is outweighed by
   the privacy implications of sending plaintext addresses.
 
@@ -69,6 +68,10 @@ This proposal does not force a identity service to stop handling plaintext reque
 a large amount of the matrix ecosystem relies upon this behavior. However, a conscious effort
 should be made by all users to use the privacy respecting endpoints outlined above. Identity
 services may disallow use of the v1 endpoint.
+
+Base64 has been chosen to encode the value due to it's ubiquitous support in many languages,
+however it does mean that special characters in the address will have to be encoded when used
+as a parameter value.
 
 
 ## Security considerations
