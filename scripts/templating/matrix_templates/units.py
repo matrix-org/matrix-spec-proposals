@@ -910,7 +910,6 @@ class MatrixUnits(Units):
             if methods:
                 schema["type_with_msgtype"] = schema["type"] + " (" + methods[0] + ")"
 
-
         # Assign state key info if it has some
         if schema["typeof"] == "State Event":
             skey_desc = Units.prop(
