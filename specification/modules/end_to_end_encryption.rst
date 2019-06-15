@@ -411,7 +411,7 @@ Device verification may reach one of several conclusions. For example:
    protocol to verify that a given message was sent from a device holding that
    Ed25519 private key, or to encrypt a message so that it may only be
    decrypted by such a device. For the Olm protocol, this is documented at
-   https://matrix.org/docs/spec/olm_signing.html.
+   https://matrix.org/docs/olm_signing.html.
 
 
 Key verification framework
