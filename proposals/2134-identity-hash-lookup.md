@@ -31,7 +31,7 @@ to the nature of this proposal, the new endpoints should be on a `v2` path:
 - `/_matrix/identity/api/v2/bulk_lookup`
 
 The parameters will remain the same, but `address` should no longer be in a plain-text
-format. Medium will now take a SHA-256 format hash value, and the resulting digest should
+format. `address` will now take a SHA-256 format hash value, and the resulting digest should
 be encoded in base64 format. For example:
 
 ```python
@@ -41,6 +41,8 @@ result_address = base64.encodebytes(digest).decode()
 print(result_address)
 CpvOgBf0hFzdqZD4ASvWW0DAefErRRX5y8IegMBO98w=
 ```
+
+### Example request
 
 SHA-256 has been chosen as it is [currently used elsewhere](https://matrix.org/docs/spec/server_server/r0.1.2#adding-hashes-and-signatures-to-outgoing-events) in the Matrix protocol, and the only
 requirement for the hashing algorithm is that it cannot be used to guess the real value of the address
