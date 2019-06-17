@@ -80,6 +80,6 @@ None
 
 ## Conclusion
 
-This proposal outlines a quick and effective method to stop bulk collection of users contact
+This proposal outlines a quick and effective method to stop bulk collection of user's contact
 lists and their social graphs without any disasterous side effects. All functionality which
 depends on the lookup service should continue to function unhindered by the use of hashes.
