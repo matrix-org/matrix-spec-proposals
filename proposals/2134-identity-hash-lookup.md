@@ -93,10 +93,6 @@ We could let an identity server specify its own salt for the hashes, however it
 would require an extra network call before uploading 3pid hashes in order for
 the client to ask the server which salt it requires.
 
-## Security considerations
-
-None
-
 ## Conclusion
 
 This proposal outlines an effective method to stop bulk collection of user's
