@@ -43,10 +43,12 @@ CpvOgBf0hFzdqZD4ASvWW0DAefErRRX5y8IegMBO98w
 
 SHA-256 has been chosen as it is [currently used
 elsewhere](https://matrix.org/docs/spec/server_server/r0.1.2#adding-hashes-and-signatures-to-outgoing-events)
-in the Matrix protocol. As time goes on, this algorithm may be changed provided
-a spec bump is performed. Then, clients making a request to `/lookup` must use
-the hashing algorithm defined in whichever version of the CS spec they and the
-IS have agreed to speaking.
+in the Matrix protocol. Additionally a hardcoded salt (“matrix” or something)
+must be prepended to the data before hashing in order to serve as a weak
+defense against existing rainbow tables. As time goes on, this algorithm may be
+changed provided a spec bump is performed. Then, clients making a request to
+`/lookup` must use the hashing algorithm defined in whichever version of the CS
+spec they and the IS have agreed to speaking.
 
 No parameter changes will be made to /bind, but identity services should keep a
 hashed value for each address it knows about in order to process lookups
