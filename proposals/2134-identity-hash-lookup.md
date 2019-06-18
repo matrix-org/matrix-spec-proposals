@@ -89,6 +89,10 @@ versions is impractical if the hashing algorithm ever needs to be changed.
 
 Bloom filters are an alternative method of providing private contact discovery, however does not scale well due to clients needing to download a large filter that needs updating every time a new bind is made. Further considered solutions are explored in https://signal.org/blog/contact-discovery/ Signal's eventual solution of using SGX is considered impractical for a Matrix-style setup.
 
+We could let an identity server specify its own salt for the hashes, however it
+would require an extra network call before uploading 3pid hashes in order for
+the client to ask the server which salt it requires.
+
 ## Security considerations
 
 None
