@@ -20,7 +20,7 @@ It was specifically designed to overcome challenges related to short/long pollin
 By introducing this technology, we can get the next benefits:
 * only 1 persisted connection per client that is kept open "forever".
 * SSE is built on top of HTTP protocol, so can be used in communication between servers
-* SSE is more compliant with existing IT infrastructure like (Load Balancer, Firewall, etc)
+* SSE is more compliant with existing IT infrastructure like (Load Balancer, Firewall, etc) than websockets
 * web and mobile browsers support automatic reconnection and `Last-Event-Id` header out of the box
 * Matrix protocol is built over HTTP, so SSE should fit good in protocol specification
 
@@ -38,22 +38,26 @@ Support for SSE exists in Android and iOS libraries as well (few quickly googled
 * iOS - https://github.com/inaka/EventSource
 
 This proposal doesn't change the shape of Matrix events or required parameters to do state synchronization
-but instead propose to use a different underlying technology to do this.
-As it was suggested in the related issue:
-* lets expose `/sync/stream` URL for SSE in order to be backward compatible with other clients and servers
+but instead propose to use a different underlying technology to do this. So:
+* lets expose `/sync/sse` URL for SSE in order to be backward compatible with other clients and servers
 * this URL returns the same data as continually calling `/sync`
 * it accepts the same parameters as `/sync`, except `since` and `timeout`
-* instead of using the `since` query parameter, the next batch token will be passed through the `Last-Event-ID` header.
-* each event will have the same format as what `/sync` returns. The id of each event will be the `next_batch` token
-* the server sends events in exactly the same way that it would send responses to `/sync` calls with the `since`
+* it accepts additional `heartbeat_interval` parameter in seconds.
+  If not passed, server will send heartbeat payload every 5 seconds (I guess we need configuration on server side for this).
+  The server must send heartbeat payload every `heartbeat_interval` seconds.
+  The heartbeat payload has the form of the empty SSE comment `: \n\n`
+* instead of using the `since` query parameter, the next batch token will be passed through the `Last-Event-ID` header
+* each [SSE event payload][sse-payload] will have the same format as what [`/sync` returns][matrix-sync]. The `id` of each SSE event equals to the `next_batch` token
+* the server sends SSE events in exactly the same way that it would send responses to `/sync` calls with the `since`
   parameter set to the previous `next_batch`
+
 
 ## Tradeoffs
 
 Another alternative is to implement websocket communication for state synchronization. So, why not websockets?
 * websockets are built over TCP protocol and requires implementation in server language
 * some proxy servers or firewalls may block websockets
-* HTTP/2 was standardized in 2015 without any mention of WebSockets
+* [HTTP/2 was standardized in 2015 without any mention of WebSockets][http2-websockets]
   and only in 2019 support for websockets over HTTP/2 was added.
 * lack of built-in support for `Last-Event-Id` and automatic reconnection
 
@@ -64,7 +68,7 @@ So, it's not an issue anymore to send requests from client via regular HTTP and 
 
 ## Potential issues
 
-Don't see issues. There are old clients which does not support SSE
+Don't see issues. There are old web browsers which does not support SSE
 but polyfills with SSE implementation can be used.
 
 ## Security considerations
@@ -79,3 +83,6 @@ SSE is just a HTTP streaming (basically `Content-Type`),
 so it should fit good in existing HTTP infrastructure and Matrix protocol.
 
 [mdn-sse]: https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events
+[http2-websockets]: https://medium.com/@pgjones/http-2-websockets-81ae3aab36dd
+[sse-payload]: https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format
+[matrix-sync]: https://matrix.org/docs/spec/client_server/r0.5.0#get-matrix-client-r0-sync
