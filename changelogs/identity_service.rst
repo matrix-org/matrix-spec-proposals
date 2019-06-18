@@ -1,3 +1,13 @@
+r0.2.1
+======
+
+Spec Clarifications
+-------------------
+
+- Remove incorrect ``id_server`` parameter from ``/requestToken`` endpoints. (`#2124 <https://github.com/matrix-org/matrix-doc/issues/2124>`_)
+- Clarify that identity servers can return 403 for unbind requests. (`#2126 <https://github.com/matrix-org/matrix-doc/issues/2126>`_)
+
+
 r0.2.0
 ======
 

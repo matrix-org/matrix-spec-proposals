@@ -1,1 +1,0 @@
-Remove incorrect ``id_server`` parameter from ``/requestToken`` endpoints.
