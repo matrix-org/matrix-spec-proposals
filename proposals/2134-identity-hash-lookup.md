@@ -22,10 +22,11 @@ This proposal thus calls for the Identity Service’s /lookup API to use hashed
 
 This proposal suggests making changes to the Identity Service API's lookup
 endpoints. Due to the nature of this proposal, the new endpoints should be on a
-`v2` path:
+`v2` path (we also drop the `/api` in order to preserve consistency across
+other endpoints):
 
-- `/_matrix/identity/api/v2/lookup`
-- `/_matrix/identity/api/v2/bulk_lookup`
+- `/_matrix/identity/v2/lookup`
+- `/_matrix/identity/v2/bulk_lookup`
 
 The parameters will remain the same, but `address` should no longer be in a
 plain-text format. `address` will now take a hash value, and the resulting
