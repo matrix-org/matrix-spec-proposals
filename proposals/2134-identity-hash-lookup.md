@@ -33,7 +33,8 @@ digest should be encoded in unpadded base64. For example:
 
 ```python
 address = "user@example.org"
-digest = hashlib.sha256(address.encode()).digest()
+salt = "matrix"
+digest = hashlib.sha256((salt + address).encode()).digest()
 result_address = unpaddedbase64.encode_base64(digest)
 print(result_address)
 CpvOgBf0hFzdqZD4ASvWW0DAefErRRX5y8IegMBO98w
@@ -84,6 +85,8 @@ is necessary for the identity server to send an email/sms message during a
 bind, as it cannot trust a homeserver to do so as the homeserver may be lying.
 Additionally, only storing 3pid hashes at rest instead of the plain-text
 versions is impractical if the hashing algorithm ever needs to be changed.
+
+Bloom filters are an alternative method of providing private contact discovery, however does not scale well due to clients needing to download a large filter that needs updating every time a new bind is made. Further considered solutions are explored in https://signal.org/blog/contact-discovery/ Signal's eventual solution of using SGX is considered impractical for a Matrix-style setup.
 
 ## Security considerations
 
