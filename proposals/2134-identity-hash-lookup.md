@@ -53,7 +53,12 @@ Then, clients making a request to `/lookup` must use the hashing algorithm
 defined in whichever version of the CS spec they and the IS have agreed to
 speaking.
 
-Identity servers can specify their own peppers, which can be handy if a rainbow table is released for their current one. Identity servers could also set a timer for rotating this value to further impede rainbow table publishing. As such, it must be possible for clients to be able to query what pepper an identity server requires before sending it hashes. Thus a new endpoint must be added:
+Identity servers can specify their own peppers, which can be handy if a rainbow
+table is released for their current one. Identity servers could also set a
+timer for rotating this value to further impede rainbow table publishing. As
+such, it must be possible for clients to be able to query what pepper an
+identity server requires before sending it hashes. Thus a new endpoint must be
+added:
 
 ```
 GET /_matrix/identity/v2/lookup_pepper
@@ -81,15 +86,15 @@ Thus, a call to `/bulk_lookup` would look like the following:
   "threepids": [
     [
       "email",
-      "user@example.org"
+      "vNjEQuRCOmBp/KTuIpZ7RUJgPAbVAyqa0Uzh770tQaw"
     ],
     [
       "msisdn",
-      "123456789"
+      "0VnvYk7YZpe08fP/CGqs3f39QtRjqAA2lPd14eLZXiw"
     ],
     [
       "email",
-      "user2@example.org"
+      "BJaLI0RrLFDMbsk0eEp5BMsYDYzvOzDneQP/9NTemYA"
     ]
   ],
   "pepper": "matrixrocks"
@@ -143,13 +148,14 @@ that needs updating every time a new bind is made. Further considered solutions
 are explored in https://signal.org/blog/contact-discovery/ Signal's eventual
 solution of using SGX is considered impractical for a Matrix-style setup.
 
-Bit out of scope for this MSC, but there was an argument for not keeping all
-IDs as hashed on disk in the identity server, that being if a hashing algorithm
-was broken, we couldn't update the hashing algorithm without having the
-plaintext 3PIDs. Well @toml helpfully said that we could just take the old
-hashes and rehash them in the more secure hashing algorithm, thus transforming
-the algo from ex. SHA256 to SHA256+SomeBetterAlg. This may spur an MSC in the
-future that supports this, unless it is just an implementation detail.
+While a bit out of scope for this MSC, there has been debate over preventing
+3pids as being kept as plain-text on disk. The argument against this was that
+if the hashing algorithm (in this case SHA-256) was broken, we couldn't update
+the hashing algorithm without having the plaintext 3PIDs. Well @toml helpfully
+added that we could just take the old hashes and rehash them in the more secure
+hashing algorithm, thus transforming the hash from SHA-256 to
+SHA-256+SomeBetterAlg. This may spur on an MSC in the future that supports
+this, unless it is just an implementation detail.
 
 ## Conclusion
 
