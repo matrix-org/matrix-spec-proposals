@@ -61,23 +61,28 @@ identity server requires before sending it hashes. Thus a new endpoint must be
 added:
 
 ```
-GET /_matrix/identity/v2/lookup_pepper
+GET /_matrix/identity/v2/hash_details
 ```
 
 This endpoint takes no parameters, and simply returns the current pepper as a JSON object:
 
 ```
 {
-  "pepper": "matrixrocks"
+  "pepper": "matrixrocks",
+  "algorithm": "sha256",
 }
 ```
 
-In addition, the pepper the client used must be appended as a parameter to the
-new `/lookup` and `/bulk_lookup` endpoints, ensuring that the client is using
-the right one. If it does not match what the server has on file (which may be
-the case is it rotated right after the client's request for it), then client
-will know to query the pepper again instead of just getting a response saying
-no contacts are registered on that identity server.
+Clients should request this endpoint every time before making a
+`/(bulk_)lookup`, to handle identity servers which may rotate their pepper
+values frequently.
+
+In addition, the pepper and hashing algorithm the client used must be a request
+body field for the new `/lookup` and `/bulk_lookup` endpoints, ensuring that
+the client is using the right parameters. If it does not match what the server
+has on file (which may be the case is it rotated right after the client's
+request for it), then the client will know to query the hash details again
+instead of assuming that no contacts are registered on that identity server.
 
 Thus, a call to `/bulk_lookup` would look like the following:
 
@@ -97,22 +102,33 @@ Thus, a call to `/bulk_lookup` would look like the following:
       "BJaLI0RrLFDMbsk0eEp5BMsYDYzvOzDneQP/9NTemYA"
     ]
   ],
-  "pepper": "matrixrocks"
+  "pepper": "matrixrocks",
+  "algorithm": "sha256"
 }
 ```
 
 If the pepper does not match the server's, the client should receive a `400
-M_INVALID_PARAM` with the error `Provided pepper value does not match
-'$server_pepper'`. Clients should ensure they don't enter an infinite loop if
-they receive this error more than once even after changing to the correct
-pepper.
+M_INVALID_PARAM` with the error `Provided pepper does not match
+'$server_pepper'`. If the algorithm does not match the server's, the client
+should receive a `400 M_INVALID_PARAM` with the error `Provided algorithm does
+not match '$server_algorithm'`. Clients should ensure they don't enter an
+infinite loop if they receive these errors more than once even after changing
+to the correct pepper and hash.
 
 No parameter changes will be made to /bind, but identity servers should keep a
 hashed value for each address it knows about in order to process lookups
 quicker. It is the recommendation that this is done during the act of binding.
 
+## Fallback considerations
+
 `v1` versions of these endpoints may be disabled at the discretion of the
-implementation, and should return a `M_FORBIDDEN` `errcode` if so.
+implementation, and should return a HTTP 403 with a `M_FORBIDDEN` `errcode` if
+so.
+
+If an identity server is too old and a HTTP 404 is received when accessing the
+`v2` endpoint, they should fallback to the `v1` endpoint instead. However,
+clients should be aware that plain-text 3pids are required, and should ask for
+user consent accordingly.
 
 
 ## Tradeoffs
