@@ -1,4 +1,4 @@
-# MSCXXXX: Terms of Service API for Identity Servers and Integration Managers
+# MSC2140: Terms of Service API for Identity Servers and Integration Managers
 
 MSC1692 introduces a method for homeservers to require that users read and
 agree to certain documents before being permitted to use the service. This
