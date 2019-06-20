@@ -164,6 +164,14 @@ in a simple and backwards-compatible way. Indtroducing the UI Auth mechanism
 into these other APIs would add significant complexity, so this functionality
 has been provided with simpler, dedicated endpoints.
 
+The `m.third_party_terms` section contains only URLs of the documents that
+have been agreed to. This loses information like the name and version of
+the document, but:
+ * It would be up to the clients to copy this information correctly into
+   account data.
+ * Having just the URLs makes it much easier for clients to make a list
+   of URLs and find documents not already agreed to.
+
 ## Potential issues
 
 If the server does not authentcate users, some mechanism is required to track
