@@ -118,8 +118,7 @@ is rotated.
 ## Fallback considerations
 
 `v1` versions of these endpoints may be disabled at the discretion of the
-implementation, and should return a HTTP 400 with a `M_DEPRECATED` `errcode` if
-so.
+implementation, and should return a HTTP 404 if so.
 
 If an identity server is too old and a HTTP 404 is received when accessing the
 `v2` endpoint, they should fallback to the `v1` endpoint instead. However,
