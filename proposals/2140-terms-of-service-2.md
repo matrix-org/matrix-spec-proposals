@@ -99,12 +99,13 @@ The server may instead choose to supply an `acceptance_token`, for example if,
 as in the IS API, the user is unauthenticated and therefore the server is
 unable to store the fact a user has agreed to a set of terms.
 
-The `acceptance_token` is opaque and it is up to the server how it computes it,
-but the server must be able to given an `acceptance_token`, compute whether it
-constitutes agreement to a given set of terms. For example, the simplest (but
-most verbose) implemenation would be to make the `acceptance_token` the JSON
-array of documents as provided in the request. A smarter implementation may be
-a simple hash, or even cryptograhic hash if desired.
+The `acceptance_token` is an opaque string contining characters
+`[a-zA-Z0-9._-]`. It is up to the server how it computes it, but the server
+must be able to, given an `acceptance_token`, compute whether it constitutes
+agreement to a given set of terms. For example, the simplest (but most verbose)
+implemenation would be to make the `acceptance_token` the JSON array of
+documents as provided in the request. A smarter implementation may be a simple
+hash, or even cryptograhic hash if desired.
 
 ### Third-Party Terms Account Data
 
