@@ -68,10 +68,13 @@ This endpoint takes no parameters, and simply returns the current pepper as a JS
 
 ```
 {
-  "pepper": "matrixrocks",
+  "lookup_pepper": "matrixrocks",
   "algorithm": "sha256",
 }
 ```
+
+`lookup_pepper` was chosen in order to account for pepper values being returned
+for other endpoints in the future.
 
 Clients should request this endpoint every time before making a
 `/(bulk_)lookup`, to handle identity servers which may rotate their pepper
