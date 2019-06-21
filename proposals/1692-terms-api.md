@@ -209,9 +209,13 @@ additional `policies` property like in the following example:
 ```
 
 The homeserver should not prevent the use of `/sync` (and similar endpoints) but may withhold any
-event that is not an update to the `m.terms` account data event. This is to ensure that clients
-are not left in the dark when another client for the user accepts the terms of service, or when
-the user accepts the terms elsewhere.
+event that is not an update to the `m.terms` account data event. If a server is witholding events,
+it MUST set `withheld: true` as a top level field in the sync response. This is to ensure
+that clients are not left in the dark when another client for the user accepts the terms of service,
+or when the user accepts the terms elsewhere.
+
+*Note*: `withheld` was chosen over `limited` due to `limited` already having special meaning in
+the context of sync.
 
 In addition, the homeserver should not prevent the use of the special "terms acceptance" API
 described in the next section.
