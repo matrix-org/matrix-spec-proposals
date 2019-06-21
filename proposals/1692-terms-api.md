@@ -176,6 +176,14 @@ amongst policies, the client can determine whether a policy is being updated or 
 homeserver will push this account data event to the client as it would for any other account data
 event.
 
+*Note*: [MSC2140](https://github.com/matrix-org/matrix-doc/pull/2140) requires the client to treat
+URLs for policies returned by this API to be de-duplicated. The expectation is that clients will
+continue to use this terms of service API to manage approval of policies with their homeserver and
+consider duplicated policies from the identity server/integration manager where appropriate. Ultimately,
+the client may end up making several requests to all 3 servers despite only rendering a single
+checkbox for the user to click. This only applies to a post-MSC2140 world and does not otherwise
+affect this proposal.
+
 The `required` boolean indicates whether the homeserver is going to prevent use of the account (without
 logging the user out) by responding with a 403 `M_TERMS_NOT_SIGNED` error. The error will include an
 additional `policies` property like in the following example:
