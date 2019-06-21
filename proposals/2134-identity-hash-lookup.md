@@ -28,37 +28,15 @@ other endpoints):
 - `/_matrix/identity/v2/lookup`
 - `/_matrix/identity/v2/bulk_lookup`
 
-`address` should no longer be in a plain-text format, but will now take a hash
-value, and the resulting digest should be encoded in unpadded base64. For
-example:
+`address` MUST no longer be in a plain-text format, but rather will be a peppered hash
+value, and the resulting digest MUST be encoded in unpadded base64.
 
-```python
-address = "user@example.org"
-pepper = "matrix"
-digest = hashlib.sha256((pepper + address).encode()).digest()
-result_address = unpaddedbase64.encode_base64(digest)
-print(result_address)
-CpvOgBf0hFzdqZD4ASvWW0DAefErRRX5y8IegMBO98w
-```
-
-SHA-256 has been chosen as it is [currently used
-elsewhere](https://matrix.org/docs/spec/server_server/r0.1.2#adding-hashes-and-signatures-to-outgoing-events)
-in the Matrix protocol. Additionally a
-[pepper](https://en.wikipedia.org/wiki/Pepper_(cryptography)) must be prepended
-to the data before hashing in order to serve as a weak defense against existing
-rainbow tables. This pepper will be specified by the identity server in order
-to prevent a single rainbow table being generated for all identity servers. As
-time goes on, this algorithm may be changed provided a spec bump is performed.
-Then, clients making a request to `/lookup` must use the hashing algorithm
-defined in whichever version of the CS spec they and the IS have agreed to
-speaking.
-
-Identity servers can specify their own peppers, which can be handy if a rainbow
-table is released for their current one. Identity servers could also set a
-timer for rotating this value to further impede rainbow table publishing. As
-such, it must be possible for clients to be able to query what pepper an
-identity server requires before sending it hashes. Thus a new endpoint must be
-added:
+Identity servers must specify their own hashing algorithms (from a list of
+specified values) and peppers, which will be useful if a rainbow table is
+released for their current one. Identity servers could also set a timer for
+rotating the pepper value to further impede rainbow table publishing. As such,
+it must be possible for clients to be able to query what pepper an identity
+server requires before sending it hashes. A new endpoint must be added:
 
 ```
 GET /_matrix/identity/v2/hash_details
@@ -73,21 +51,39 @@ This endpoint takes no parameters, and simply returns the current pepper as a JS
 }
 ```
 
-`lookup_pepper` was chosen in order to account for pepper values being returned
-for other endpoints in the future.
+The name `lookup_pepper` was chosen in order to account for pepper values being
+returned for other endpoints in the future.
 
-Clients should request this endpoint every time before making a
-`/(bulk_)lookup`, to handle identity servers which may rotate their pepper
-values frequently.
+Clients should request this endpoint each time before making a `/lookup` or
+`/(bulk_)lookup` request, to handle identity servers which may rotate their
+pepper values frequently.
 
-In addition, the pepper and hashing algorithm the client used must be a request
-body field for the new `/lookup` and `/bulk_lookup` endpoints, ensuring that
-the client is using the right parameters. If it does not match what the server
-has on file (which may be the case is it rotated right after the client's
-request for it), then the client will know to query the hash details again
-instead of assuming that no contacts are registered on that identity server.
+An example of generating a hash using the above hash and pepper is as follows:
 
-Thus, a call to `/bulk_lookup` would look like the following:
+```python
+address = "user@example.org"
+pepper = "matrixrocks"
+digest = hashlib.sha256((pepper + address).encode()).digest()
+result_address = unpaddedbase64.encode_base64(digest)
+print(result_address)
+vNjEQuRCOmBp/KTuIpZ7RUJgPAbVAyqa0Uzh770tQaw
+```
+
+SHA-256 should be the first specified hash function. It has been chosen as it
+is [currently used
+elsewhere](https://matrix.org/docs/spec/server_server/r0.1.2#adding-hashes-and-signatures-to-outgoing-events)
+in the Matrix protocol, and is reasonably secure as of 2019.
+
+When performing a lookup, the pepper and hashing algorithm the client used must
+be part of the request body. If they do not match what the server has on file
+(which may be the case if the pepper was rotated right after the client's
+request for it), then the server can inform the client that they need to query
+the hash details again, instead of just returning an empty response, which
+clients would assume to mean that no contacts are registered on that identity
+server.
+
+Thus, an example client request to `/bulk_lookup` would look like the
+following:
 
 ```
 {
@@ -110,17 +106,19 @@ Thus, a call to `/bulk_lookup` would look like the following:
 }
 ```
 
-If the pepper does not match the server's, the client should receive a `400
+If the pepper does not match the server's, the server should return a `400
 M_INVALID_PARAM`.
 
 No parameter changes will be made to /bind, but identity servers should keep a
 hashed value for each address it knows about in order to process lookups
 quicker. It is the recommendation that this is done during the act of binding.
+Be wary that these hashes will need to be changed whenever the server's pepper
+is rotated.
 
 ## Fallback considerations
 
 `v1` versions of these endpoints may be disabled at the discretion of the
-implementation, and should return a HTTP 403 with a `M_FORBIDDEN` `errcode` if
+implementation, and should return a HTTP 400 with a `M_DEPRECATED` `errcode` if
 so.
 
 If an identity server is too old and a HTTP 404 is received when accessing the
@@ -128,13 +126,12 @@ If an identity server is too old and a HTTP 404 is received when accessing the
 clients should be aware that plain-text 3pids are required, and should ask for
 user consent accordingly.
 
-
 ## Tradeoffs
 
-* This approach means that the client now needs to calculate a hash by itself, but the belief
-  is that most languages provide a mechanism for doing so.
-* There is a small cost incurred by doing hashes before requests, but this is outweighed by
-  the privacy implications of sending plain-text addresses.
+* This approach means that the client now needs to calculate a hash by itself,
+  but the belief is that most languages provide a mechanism for doing so.
+* There is a small cost incurred by performing hashes before requests, but this
+  is outweighed by the privacy implications of sending plain-text addresses.
 
 ## Potential issues
 
@@ -151,7 +148,7 @@ address will have to be encoded when used as a parameter value.
 ## Other considered solutions
 
 Ideally identity servers would never receive plain-text addresses, however it
-is necessary for the identity server to send an email/sms message during a
+is necessary for the identity server to send email/sms messages during a
 bind, as it cannot trust a homeserver to do so as the homeserver may be lying.
 Additionally, only storing 3pid hashes at rest instead of the plain-text
 versions is impractical if the hashing algorithm ever needs to be changed.
