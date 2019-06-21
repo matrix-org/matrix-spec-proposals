@@ -185,13 +185,17 @@ checkbox for the user to click. This only applies to a post-MSC2140 world and do
 affect this proposal.
 
 The `required` boolean indicates whether the homeserver is going to prevent use of the account (without
-logging the user out) by responding with a 403 `M_TERMS_NOT_SIGNED` error. The error will include an
-additional `policies` property like in the following example:
+logging the user out) by responding with a 401 `M_TERMS_NOT_SIGNED` error, including setting a `soft_logout`
+flag as per [MSC1466](https://github.com/matrix-org/matrix-doc/issues/1466). Clients should not log
+out the user if they understand the error code, instead opting to prompt the user to accept the new
+policies required by the homeserver. The error will include an additional `policies` property like in
+the following example:
 
 ```json
 {
     "errcode": "M_TERMS_NOT_SIGNED",
     "error": "Please sign the terms of service",
+    "soft_logout": true,
     "policies": {
         "terms_of_service": {
             "version": "2.0",
