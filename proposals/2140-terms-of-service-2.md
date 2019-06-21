@@ -90,7 +90,7 @@ client is operating in: users should not have to re-consent to documents if
 they change their client to a different language.
 
 The response MAY contain a `acceptance_token` which, if given, is an
-opaque string that the client must store for user in subsequent requests
+opaque string that the client must store for use in subsequent requests
 to any endpoint to the same server.
 
 If the server has stored the fact that the user has agreed to these terms,
