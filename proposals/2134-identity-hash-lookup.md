@@ -108,12 +108,7 @@ Thus, a call to `/bulk_lookup` would look like the following:
 ```
 
 If the pepper does not match the server's, the client should receive a `400
-M_INVALID_PARAM` with the error `Provided pepper does not match
-'$server_pepper'`. If the algorithm does not match the server's, the client
-should receive a `400 M_INVALID_PARAM` with the error `Provided algorithm does
-not match '$server_algorithm'`. Clients should ensure they don't enter an
-infinite loop if they receive these errors more than once even after changing
-to the correct pepper and hash.
+M_INVALID_PARAM`.
 
 No parameter changes will be made to /bind, but identity servers should keep a
 hashed value for each address it knows about in order to process lookups
