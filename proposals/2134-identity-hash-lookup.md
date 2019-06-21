@@ -34,9 +34,12 @@ value, and the resulting digest MUST be encoded in unpadded base64.
 Identity servers must specify their own hashing algorithms (from a list of
 specified values) and peppers, which will be useful if a rainbow table is
 released for their current one. Identity servers could also set a timer for
-rotating the pepper value to further impede rainbow table publishing. As such,
-it must be possible for clients to be able to query what pepper an identity
-server requires before sending it hashes. A new endpoint must be added:
+rotating the pepper value to further impede rainbow table publishing (the
+recommended period is every 30m, which should be enough for a client to
+complete the hashing of all of a user's contacts, but also be nowhere near as
+long enough to create a sophisticated rainbow table). As such, it must be
+possible for clients to be able to query what pepper an identity server
+requires before sending it hashes. A new endpoint must be added:
 
 ```
 GET /_matrix/identity/v2/hash_details
