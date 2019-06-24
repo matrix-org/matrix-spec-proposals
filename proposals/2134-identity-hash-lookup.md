@@ -72,8 +72,8 @@ print(result_address)
 vNjEQuRCOmBp/KTuIpZ7RUJgPAbVAyqa0Uzh770tQaw
 ```
 
-SHA-256 should be the first specified hash function. It has been chosen as it
-is [currently used
+SHA-256 MUST be supported at a minimum. It has been chosen as it is [currently
+used
 elsewhere](https://matrix.org/docs/spec/server_server/r0.1.2#adding-hashes-and-signatures-to-outgoing-events)
 in the Matrix protocol, and is reasonably secure as of 2019.
 
@@ -123,10 +123,10 @@ is rotated.
 `v1` versions of these endpoints may be disabled at the discretion of the
 implementation, and should return a HTTP 404 if so.
 
-If an identity server is too old and a HTTP 404 is received when accessing the
-`v2` endpoint, they should fallback to the `v1` endpoint instead. However,
-clients should be aware that plain-text 3pids are required, and should ask for
-user consent accordingly.
+If an identity server is too old and a HTTP 404, 405 or 501 is received when
+accessing the `v2` endpoint, they should fallback to the `v1` endpoint instead.
+However, clients should be aware that plain-text 3pids are required, and should
+ask for user consent accordingly.
 
 ## Tradeoffs
 
