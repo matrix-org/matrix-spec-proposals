@@ -130,16 +130,19 @@ An `m.accepted_terms` section therefore resembles the following:
 }
 ```
 
-Whenever a client submits a `POST $prefix/terms` request to an IS or IM, it
-SHOULD update this account data section adding any the URLs of any additional
-documents that the user agreed to to this list.
+Whenever a client submits a `POST $prefix/terms` request to an IS or IM or
+completes an `m.terms` flow on the HS, it SHOULD update this account data
+section adding any the URLs of any additional documents that the user agreed to
+to this list.
 
 ### Terms Acceptance in the API
 
 Any request to any endpoint in the IS and IM APIs, with the exception of
 `/_matrix/identity/api/v1` may return a `M_TERMS_NOT_SIGNED` errcode. This
 indicates that the user must agree to (new) terms in order to use or continue
-to use the service.
+to use the service. The `_matrix/identity/api/v1/3pid/unbind` must also not
+return the `M_TERMS_NOT_SIGNED` if the request has a valid signature from a
+Homeserver.
 
 The client uses the `GET $prefix/terms` endpoint to get the latest set of terms
 that must be agreed to. It then cross-references this set of documents against
@@ -152,6 +155,11 @@ set of documents that the user has agreed to.
 If the server returns an `acceptance_token`, the client should include this
 token in the `X-TERMS-TOKEN` HTTP header in all subsequent requests to an
 endpoint on the API with the exception of `/_matrix/identity/api/v1`.
+
+The client must also include the X-TERMS-TOKEN on any request to the Homeserver
+where it specifies an Identity Server to be used by the Homeserver. Homeservers
+must read this header from the request headers of any such endpoint and add it
+to the request headers of any request it makes to the Identity Server.
 
 Both making the `POST $prefix/terms` request and providing an `X-TERMS-TOKEN`
 header signal that the user consents to the terms contained within the
