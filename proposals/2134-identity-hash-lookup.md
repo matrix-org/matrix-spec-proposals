@@ -45,7 +45,8 @@ requires before sending it hashes. A new endpoint must be added:
 GET /_matrix/identity/v2/hash_details
 ```
 
-This endpoint takes no parameters, and simply returns the current pepper as a JSON object:
+This endpoint takes no parameters, and simply returns supported hash algorithms
+and pepper as a JSON object:
 
 ```
 {
@@ -72,8 +73,8 @@ print(result_address)
 vNjEQuRCOmBp/KTuIpZ7RUJgPAbVAyqa0Uzh770tQaw
 ```
 
-SHA-256 MUST be supported at a minimum. It has been chosen as it is [currently
-used
+SHA-256 MUST be supported by both servers and clients at a minimum. It has been
+chosen as it is [currently used
 elsewhere](https://matrix.org/docs/spec/server_server/r0.1.2#adding-hashes-and-signatures-to-outgoing-events)
 in the Matrix protocol, and is reasonably secure as of 2019.
 
@@ -104,7 +105,7 @@ following:
       "BJaLI0RrLFDMbsk0eEp5BMsYDYzvOzDneQP/9NTemYA"
     ]
   ],
-  "pepper": "matrixrocks",
+  "lookup_pepper": "matrixrocks",
   "algorithm": "sha256"
 }
 ```
@@ -144,8 +145,8 @@ behavior. However, a conscious effort should be made by all users to use the
 privacy respecting endpoints outlined above. Identity servers may disallow use
 of the v1 endpoint.
 
-Unpadded base64 has been chosen to encode the value due to its ubiquitous
-support in many languages, however it does mean that special characters in the
+Unpadded base64 has been chosen to encode the value due to use in many other
+portions of the spec. However, it does mean that special characters in the
 address will have to be encoded when used as a parameter value.
 
 ## Other considered solutions
@@ -160,16 +161,22 @@ Bloom filters are an alternative method of providing private contact discovery,
 however does not scale well due to clients needing to download a large filter
 that needs updating every time a new bind is made. Further considered solutions
 are explored in https://signal.org/blog/contact-discovery/ Signal's eventual
-solution of using SGX is considered impractical for a Matrix-style setup.
+solution of using Software Guard Extensions (detailed in
+https://signal.org/blog/private-contact-discovery/) is considered impractical
+for a federated network, as it requires specialized hardware.
 
 While a bit out of scope for this MSC, there has been debate over preventing
 3PIDs as being kept as plain-text on disk. The argument against this was that
 if the hashing algorithm (in this case SHA-256) was broken, we couldn't update
-the hashing algorithm without having the plaintext 3PIDs. Well @toml helpfully
+the hashing algorithm without having the plaintext 3PIDs. @lampholder helpfully
 added that we could just take the old hashes and rehash them in the more secure
 hashing algorithm, thus transforming the hash from SHA-256 to
-SHA-256+SomeBetterAlg. This may spur on an MSC in the future that supports
-this, unless it is just an implementation detail.
+SHA-256+SomeBetterAlg. However @erikjohnston then pointed out that if
+`BrokenAlgo(a) == BrokenAlgo(b)` then `SuperGreatHash(BrokenAlgo(a)) ==
+SuperGreatHash(BrokenAlgo(b))`, so all you'd need to do is find a match in the
+broken algo, and you'd break the new algorithm as well. This means that you
+would need the plaintext 3pids to encode a new hash, and thus storing them
+hashed on disk is not possible.
 
 ## Conclusion
 
