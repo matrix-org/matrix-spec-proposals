@@ -112,7 +112,7 @@ implemenation would be to make the `acceptance_token` the JSON array of
 documents as provided in the request. A smarter implementation may be a simple
 hash, or even cryptograhic hash if desired.
 
-### Third-Party Terms Account Data
+### Accepted Terms Account Data
 
 This proposal also defines the `m.accepted_terms` section in User Account
 Data in the client/server API that clients SHOULD use to track what sets of
