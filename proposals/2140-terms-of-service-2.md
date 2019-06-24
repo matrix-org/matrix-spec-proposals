@@ -156,7 +156,7 @@ endpoint on the API with the exception of `/_matrix/identity/api/v1`.
 Both making the `POST $prefix/terms` request and providing an `X-TERMS-TOKEN`
 header signal that the user consents to the terms contained within the
 corresponding documents. That is to say, if a client or user obtains an
-acceptance token via means other than a response to the `POST $perfix/terms`
+acceptance token via means other than a response to the `POST $prefix/terms`
 API, inclusion of the acceptance token in an `X-TERMS-TOKEN` header in a
 request still constitutes agreement to the terms in the corresponding
 documents.
