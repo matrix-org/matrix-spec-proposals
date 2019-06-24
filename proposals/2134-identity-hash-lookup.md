@@ -2,21 +2,21 @@
 
 [Issue #2130](https://github.com/matrix-org/matrix-doc/issues/2130) has been
 recently created in response to a security issue brought up by an independent
-party. To summarise the issue, lookups (of matrix user ids) are performed using
-non-hashed 3pids (third-party IDs) which means that the identity server can
-identify and record every 3pid that the user wants to check, whether that
+party. To summarise the issue, lookups (of Matrix user IDs) are performed using
+non-hashed 3PIDs (third-party IDs) which means that the identity server can
+identify and record every 3PID that the user wants to check, whether that
 address is already known by the identity server or not.
 
-If the 3pid is hashed, the identity service could not determine the address
+If the 3PID is hashed, the identity server could not determine the address
 unless it has already seen that address in plain-text during a previous call of
 the /bind mechanism.
 
 Note that in terms of privacy, this proposal does not stop an identity service
-from mapping hashed 3pids to users, resulting in a social graph. However, the
-identity of the 3pid will at least remain a mystery until /bind is used.
+from mapping hashed 3PIDs to users, resulting in a social graph. However, the
+identity of the 3PID will at least remain a mystery until /bind is used.
 
 This proposal thus calls for the Identity Service’s /lookup API to use hashed
-3pids instead of their plain-text counterparts.
+3PIDs instead of their plain-text counterparts.
 
 ## Proposal
 
@@ -137,10 +137,10 @@ ask for user consent accordingly.
 
 ## Potential issues
 
-This proposal does not force an identity service to stop handling plain-text
-requests, because a large amount of the matrix ecosystem relies upon this
+This proposal does not force an identity server to stop handling plain-text
+requests, because a large amount of the Matrix ecosystem relies upon this
 behavior. However, a conscious effort should be made by all users to use the
-privacy respecting endpoints outlined above. Identity services may disallow use
+privacy respecting endpoints outlined above. Identity servers may disallow use
 of the v1 endpoint.
 
 Unpadded base64 has been chosen to encode the value due to its ubiquitous
@@ -152,7 +152,7 @@ address will have to be encoded when used as a parameter value.
 Ideally identity servers would never receive plain-text addresses, however it
 is necessary for the identity server to send email/sms messages during a
 bind, as it cannot trust a homeserver to do so as the homeserver may be lying.
-Additionally, only storing 3pid hashes at rest instead of the plain-text
+Additionally, only storing 3PID hashes at rest instead of the plain-text
 versions is impractical if the hashing algorithm ever needs to be changed.
 
 Bloom filters are an alternative method of providing private contact discovery,
@@ -162,7 +162,7 @@ are explored in https://signal.org/blog/contact-discovery/ Signal's eventual
 solution of using SGX is considered impractical for a Matrix-style setup.
 
 While a bit out of scope for this MSC, there has been debate over preventing
-3pids as being kept as plain-text on disk. The argument against this was that
+3PIDs as being kept as plain-text on disk. The argument against this was that
 if the hashing algorithm (in this case SHA-256) was broken, we couldn't update
 the hashing algorithm without having the plaintext 3PIDs. Well @toml helpfully
 added that we could just take the old hashes and rehash them in the more secure
@@ -176,4 +176,3 @@ This proposal outlines an effective method to stop bulk collection of user's
 contact lists and their social graphs without any disastrous side effects. All
 functionality which depends on the lookup service should continue to function
 unhindered by the use of hashes.
-
