@@ -58,7 +58,7 @@ The name `lookup_pepper` was chosen in order to account for pepper values being
 returned for other endpoints in the future.
 
 Clients should request this endpoint each time before making a `/lookup` or
-`/(bulk_)lookup` request, to handle identity servers which may rotate their
+`/bulk_lookup` request, to handle identity servers which may rotate their
 pepper values frequently.
 
 An example of generating a hash using the above hash and pepper is as follows:
@@ -125,8 +125,9 @@ implementation, and should return a HTTP 404 if so.
 
 If an identity server is too old and a HTTP 404, 405 or 501 is received when
 accessing the `v2` endpoint, they should fallback to the `v1` endpoint instead.
-However, clients should be aware that plain-text 3pids are required, and should
-ask for user consent accordingly.
+However, clients should be aware that plain-text 3pids are required, and MUST
+ask for user consent to send 3pids in plain-text, and be clear about where they
+are being sent to.
 
 ## Tradeoffs
 
