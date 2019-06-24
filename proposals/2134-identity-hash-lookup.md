@@ -46,12 +46,12 @@ GET /_matrix/identity/v2/hash_details
 ```
 
 This endpoint takes no parameters, and simply returns supported hash algorithms
-and pepper as a JSON object:
+and peppers as a JSON object:
 
 ```
 {
   "lookup_pepper": "matrixrocks",
-  "algorithm": "sha256",
+  "algorithms": ["sha256"],
 }
 ```
 
@@ -60,9 +60,11 @@ returned for other endpoints in the future.
 
 Clients should request this endpoint each time before making a `/lookup` or
 `/bulk_lookup` request, to handle identity servers which may rotate their
-pepper values frequently.
+pepper values frequently. Clients must choose one of the given hash algorithms
+to encrypt the 3pid during lookup.
 
-An example of generating a hash using the above hash and pepper is as follows:
+An example of generating a hash using SHA-256 and the provided pepper is as
+follows:
 
 ```python
 address = "user@example.org"
@@ -73,10 +75,12 @@ print(result_address)
 vNjEQuRCOmBp/KTuIpZ7RUJgPAbVAyqa0Uzh770tQaw
 ```
 
-SHA-256 MUST be supported by both servers and clients at a minimum. It has been
-chosen as it is [currently used
-elsewhere](https://matrix.org/docs/spec/server_server/r0.1.2#adding-hashes-and-signatures-to-outgoing-events)
-in the Matrix protocol, and is reasonably secure as of 2019.
+Possible hashing algorithms will be defined in the Matrix specification, and an
+Identity Server can choose to implement one or all of them. Later versions of
+the specification may deprecate algorithms when necessary. Currently the only
+listed hashing algorithm is SHA-256 as defined by [RFC
+4634](https://tools.ietf.org/html/rfc4634) and Identity Servers and clients
+MUST agree to its use with the string `sha256`.
 
 When performing a lookup, the pepper and hashing algorithm the client used must
 be part of the request body. If they do not match what the server has on file
