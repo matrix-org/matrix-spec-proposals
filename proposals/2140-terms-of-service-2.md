@@ -34,7 +34,7 @@ API in question, ie. `/_matrix/identity/api/v1` for the IS API and
 
 This proposal introduces:
  * The `$prefix/terms` endpoint
- * The `m.third_party_terms` section in account data
+ * The `m.accepted_terms` section in account data
  * The `X-TERMS-TOKEN` HTTP header
 
 ### Terms API
@@ -114,12 +114,12 @@ hash, or even cryptograhic hash if desired.
 
 ### Third-Party Terms Account Data
 
-This proposal also defines the `m.third_party_terms` section in User Account
+This proposal also defines the `m.accepted_terms` section in User Account
 Data in the client/server API that clients SHOULD use to track what sets of
 terms the user has consented to. This has an array of URLs under the 'accepted'
 key to which the user has agreed to.
 
-An `m.third_party_terms` section therefore resembles the following:
+An `m.accepted_terms` section therefore resembles the following:
 
 ```json
 {
@@ -143,7 +143,7 @@ to use the service.
 
 The client uses the `GET $prefix/terms` endpoint to get the latest set of terms
 that must be agreed to. It then cross-references this set of documents against
-the `m.third_party_terms` account data and presents to the user any documents
+the `m.accepted_terms` account data and presents to the user any documents
 that they have not already agreed to, along with UI for them to indicate their
 agreement. Once the user has indicated their agreement, then, and only then,
 must the client use the `POST $prefix/terms` API to signal to the server the
@@ -170,7 +170,7 @@ in a simple and backwards-compatible way. Indtroducing the UI Auth mechanism
 into these other APIs would add significant complexity, so this functionality
 has been provided with simpler, dedicated endpoints.
 
-The `m.third_party_terms` section contains only URLs of the documents that
+The `m.accepted_terms` section contains only URLs of the documents that
 have been agreed to. This loses information like the name and version of
 the document, but:
  * It would be up to the clients to copy this information correctly into
