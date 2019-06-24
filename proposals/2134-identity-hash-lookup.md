@@ -45,8 +45,8 @@ requires before sending it hashes. A new endpoint must be added:
 GET /_matrix/identity/v2/hash_details
 ```
 
-This endpoint takes no parameters, and simply returns supported hash algorithms
-and peppers as a JSON object:
+This endpoint takes no parameters, and simply returns any supported hash
+algorithms and pepper as a JSON object:
 
 ```
 {
@@ -61,7 +61,7 @@ returned for other endpoints in the future.
 Clients should request this endpoint each time before making a `/lookup` or
 `/bulk_lookup` request, to handle identity servers which may rotate their
 pepper values frequently. Clients must choose one of the given hash algorithms
-to encrypt the 3pid during lookup.
+to encrypt the 3PID during lookup.
 
 An example of generating a hash using SHA-256 and the provided pepper is as
 follows:
@@ -130,8 +130,8 @@ implementation, and should return a HTTP 404 if so.
 
 If an identity server is too old and a HTTP 404, 405 or 501 is received when
 accessing the `v2` endpoint, they should fallback to the `v1` endpoint instead.
-However, clients should be aware that plain-text 3pids are required, and MUST
-ask for user consent to send 3pids in plain-text, and be clear about where they
+However, clients should be aware that plain-text 3PIDs are required, and MUST
+ask for user consent to send 3PIDs in plain-text, and be clear about where they
 are being sent to.
 
 ## Tradeoffs
@@ -179,7 +179,7 @@ SHA-256+SomeBetterAlg. However @erikjohnston then pointed out that if
 `BrokenAlgo(a) == BrokenAlgo(b)` then `SuperGreatHash(BrokenAlgo(a)) ==
 SuperGreatHash(BrokenAlgo(b))`, so all you'd need to do is find a match in the
 broken algo, and you'd break the new algorithm as well. This means that you
-would need the plaintext 3pids to encode a new hash, and thus storing them
+would need the plaintext 3PIDs to encode a new hash, and thus storing them
 hashed on disk is not possible.
 
 ## Conclusion
