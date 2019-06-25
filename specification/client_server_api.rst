@@ -1314,7 +1314,7 @@ to keep moving forwards.
 Filtering
 ---------
 
-Filters can be created on the server and can be passed as as a parameter to APIs
+Filters can be created on the server and can be passed as a parameter to APIs
 which return events. These filters alter the data returned from those APIs.
 Not all APIs accept filters.
 
