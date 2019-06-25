@@ -43,28 +43,12 @@ paths:
                 "messages": {
                   "chunk": [
                     {
-                      "age": 343513403,
-                      "content": {
-                        "body": "foo",
-                        "msgtype": "m.text"
-                      },
-                      "event_id": "$14328044851tzTJS:example.com",
-                      "origin_server_ts": 1432804485886,
                       "room_id": "!636q39766251:example.com",
-                      "type": "m.room.message",
-                      "sender": "@alice:example.com"
+                      "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
                     },
                     {
-                      "age": 343511809,
-                      "content": {
-                        "body": "bar",
-                        "msgtype": "m.text"
-                      },
-                      "event_id": "$14328044872spjFg:example.com",
-                      "origin_server_ts": 1432804487480,
                       "room_id": "!636q39766251:example.com",
-                      "type": "m.room.message",
-                      "sender": "@bob:example.com"
+                      "$ref": "definitions/event-schemas/examples/m.room.message$m.file"
                     }
                   ],
                   "end": "s3456_9_0",
@@ -73,81 +57,20 @@ paths:
                 "room_id": "!636q39766251:example.com",
                 "state": [
                   {
-                    "age": 7148266897,
-                    "content": {
-                      "join_rule": "public"
-                    },
-                    "event_id": "$14259997323TLwtb:example.com",
-                    "origin_server_ts": 1425999732392,
                     "room_id": "!636q39766251:example.com",
-                    "state_key": "",
-                    "type": "m.room.join_rules",
-                    "sender": "@alice:example.com"
+                    "$ref": "definitions/event-schemas/examples/m.room.join_rules"
                   },
                   {
-                    "age": 6547561012,
-                    "content": {
-                      "avatar_url": "mxc://example.com/fzysBrHpPEeTGANCVLXWXNMI#auto",
-                      "membership": "join"
-                    },
-                    "event_id": "$1426600438280zExKY:example.com",
-                    "membership": "join",
-                    "origin_server_ts": 1426600438277,
                     "room_id": "!636q39766251:example.com",
-                    "state_key": "@alice:example.com",
-                    "type": "m.room.member",
-                    "sender": "@alice:example.com"
+                    "$ref": "definitions/event-schemas/examples/m.room.member"
                   },
                   {
-                    "age": 7148267200,
-                    "content": {
-                        "creator": "@alice:example.com"
-                    },
-                    "event_id": "$14259997320KhbwJ:example.com",
-                    "origin_server_ts": 1425999732089,
                     "room_id": "!636q39766251:example.com",
-                    "state_key": "",
-                    "type": "m.room.create",
-                    "sender": "@alice:example.com"
+                    "$ref": "definitions/event-schemas/examples/m.room.create"
                   },
                   {
-                    "age": 1622568720,
-                    "content": {
-                        "avatar_url": "mxc://example.com/GCmhgzMPRjqgpODLsNQzVuHZ#auto",
-                        "displayname": "Bob",
-                        "membership": "join"
-                    },
-                    "event_id": "$1431525430134MxlLX:example.com",
-                    "origin_server_ts": 1431525430569,
-                    "replaces_state": "$142652023736BSXcM:example.com",
                     "room_id": "!636q39766251:example.com",
-                    "state_key": "@bob:example.com",
-                    "type": "m.room.member",
-                    "sender": "@bob:example.com"
-                  },
-                  {
-                    "age": 7148267004,
-                    "content": {
-                      "ban": 50,
-                      "events": {
-                        "m.room.name": 100,
-                        "m.room.power_levels": 100
-                      },
-                      "events_default": 0,
-                      "kick": 50,
-                      "redact": 50,
-                      "state_default": 50,
-                      "users": {
-                        "@alice:example.com": 100
-                      },
-                      "users_default": 0
-                    },
-                    "event_id": "$14259997322mqfaq:example.com",
-                    "origin_server_ts": 1425999732285,
-                    "room_id": "!636q39766251:example.com",
-                    "state_key": "",
-                    "type": "m.room.power_levels",
-                    "sender": "@alice:example.com"
+                    "$ref": "definitions/event-schemas/examples/m.room.power_levels"
                   }
                 ],
                 "visibility": "private",

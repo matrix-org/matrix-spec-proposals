@@ -1,1 +1,0 @@
-Clarify that ``width`` and ``height`` are required parameters on ``/_matrix/media/r0/thumbnail/{serverName}/{mediaId}``. It is somewhat meaningless to request a thumbnail without specifying a desired size, and Synapse has never permitted such requests.

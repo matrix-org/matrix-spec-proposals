@@ -293,5 +293,5 @@ Events in version 1 rooms have the following structure:
 {{definition_ss_pdu}}
 
 
-.. _`auth events selection`: ../../server_server/r0.1.1.html#auth-events-selection
-.. _`Signing Events`: ../../server_server/r0.1.1.html#signing-events
+.. _`auth events selection`: ../server_server/%SERVER_RELEASE_LABEL%.html#auth-events-selection
+.. _`Signing Events`: ../server_server/%SERVER_RELEASE_LABEL%.html#signing-events

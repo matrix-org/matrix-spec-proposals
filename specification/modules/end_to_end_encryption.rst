@@ -1,4 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
+.. Copyright 2019 The Matrix.org Foundation C.I.C.
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -18,7 +19,7 @@ End-to-End Encryption
 .. _module:e2e:
 
 Matrix optionally supports end-to-end encryption, allowing rooms to be created
-whose conversation contents is not decryptable or interceptable on any of the
+whose conversation contents are not decryptable or interceptable on any of the
 participating homeservers.
 
 Key Distribution
@@ -182,7 +183,7 @@ process:
    field as the ``from`` parameter. If the client is tracking the device list
    of any of the users listed in the response, it marks them as outdated. It
    combines this list with those already flagged as outdated, and initiates a
-   |/keys/query|_ requests for all of them.
+   |/keys/query|_ request for all of them.
 
 .. Warning::
 
@@ -383,20 +384,10 @@ man-in-the-middle. This verification process requires an out-of-band channel:
 there is no way to do it within Matrix without trusting the administrators of
 the homeservers.
 
-In Matrix, the basic process for device verification is for Alice to verify
-that the public Ed25519 signing key she received via ``/keys/query`` for Bob's
-device corresponds to the private key in use by Bob's device. For now, it is
-recommended that clients provide mechanisms by which the user can see:
-
-1. The public part of their device's Ed25519 signing key, encoded using
-   `unpadded Base64`_.
-
-2. The list of devices in use for each user in a room, along with the public
-   Ed25519 signing key for each device, again encoded using unpadded Base64.
-
-Alice can then meet Bob in person, or contact him via some other trusted
-medium, and ask him to read out the Ed25519 key shown on his device. She
-compares this with the value shown for his device on her client.
+In Matrix, verification works by Alice meeting Bob in person, or contacting him
+via some other trusted medium, and use `SAS Verification`_ to interactively
+verify Bob's devices. Alice and Bob may also read aloud their unpadded base64
+encoded Ed25519 public key, as returned by ``/keys/query``.
 
 Device verification may reach one of several conclusions. For example:
 
@@ -420,7 +411,330 @@ Device verification may reach one of several conclusions. For example:
    protocol to verify that a given message was sent from a device holding that
    Ed25519 private key, or to encrypt a message so that it may only be
    decrypted by such a device. For the Olm protocol, this is documented at
-   https://matrix.org/git/olm/about/docs/signing.rst.
+   https://matrix.org/docs/olm_signing.html.
+
+
+Key verification framework
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Verifying keys manually by reading out the Ed25519 key is not very user friendly,
+and can lead to errors. In order to help mitigate errors, and to make the process
+easier for users, some verification methods are supported by the specification.
+The methods all use a common framework for negotiating the key verification.
+
+To use this framework, Alice's client would send ``m.key.verification.request``
+events to Bob's devices. All of the ``to_device`` messages sent to Bob MUST have
+the same ``transaction_id`` to indicate they are part of the same request. This
+allows Bob to reject the request on one device, and have it apply to all of his
+devices. Similarly, it allows Bob to process the verification on one device without
+having to involve all of his devices.
+
+When Bob's device receives a ``m.key.verification.request``, it should prompt Bob
+to verify keys with Alice using one of the supported methods in the request. If
+Bob's device does not understand any of the methods, it should not cancel the request
+as one of his other devices may support the request. Instead, Bob's device should
+tell Bob that an unsupported method was used for starting key verification. The
+prompt for Bob to accept/reject Alice's request (or the unsupported method prompt)
+should be automatically dismissed 10 minutes after the ``timestamp`` field or 2
+minutes after Bob's client receives the message, whichever comes first, if Bob
+does not interact with the prompt. The prompt should additionally be hidden if
+an appropriate ``m.key.verification.cancel`` message is received.
+
+If Bob rejects the request, Bob's client must send a ``m.key.verification.cancel``
+message to Alice's device. Upon receipt, Alice's device should tell her that Bob
+does not want to verify her device and send ``m.key.verification.cancel`` messages
+to all of Bob's devices to notify them that the request was rejected.
+
+If Bob accepts the request, Bob's device starts the key verification process by
+sending a ``m.key.verification.start`` message to Alice's device. Upon receipt
+of this message, Alice's device should send a ``m.key.verification.cancel`` message
+to all of Bob's other devices to indicate the process has been started. The start
+message must use the same ``transaction_id`` from the original key verification
+request if it is in response to the request. The start message can be sent indepdently
+of any request.
+
+Individual verification methods may add additional steps, events, and properties to
+the verification messages. Event types for methods defined in this specification must
+be under the ``m.key.verification`` namespace and any other event types must be namespaced
+according to the Java package naming convention.
+
+Any of Alice's or Bob's devices can cancel the key verification request or process
+at any time with a ``m.key.verification.cancel`` message to all applicable devices.
+
+This framework yields the following handshake, assuming both Alice and Bob each have
+2 devices, Bob's first device accepts the key verification request, and Alice's second
+device initiates the request. Note how Alice's first device is not involved in the
+request or verification process.
+
+::
+
+  +---------------+ +---------------+                    +-------------+ +-------------+
+  | AliceDevice1  | | AliceDevice2  |                    | BobDevice1  | | BobDevice2  |
+  +---------------+ +---------------+                    +-------------+ +-------------+
+          |                 |                                   |               |
+          |                 | m.key.verification.request        |               |
+          |                 |---------------------------------->|               |
+          |                 |                                   |               |
+          |                 | m.key.verification.request        |               |
+          |                 |-------------------------------------------------->|
+          |                 |                                   |               |
+          |                 |          m.key.verification.start |               |
+          |                 |<----------------------------------|               |
+          |                 |                                   |               |
+          |                 | m.key.verification.cancel         |               |
+          |                 |-------------------------------------------------->|
+          |                 |                                   |               |
+
+
+After the handshake, the verification process begins.
+
+{{m_key_verification_request_event}}
+
+{{m_key_verification_start_event}}
+
+{{m_key_verification_cancel_event}}
+
+
+.. _`SAS Verification`:
+
+Short Authentication String (SAS) verification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SAS verification is a user-friendly key verification process built off the common
+framework outlined above. SAS verification is intended to be a highly interactive
+process for users, and as such exposes verfiication methods which are easier for
+users to use.
+
+The verification process is heavily inspired by Phil Zimmerman's ZRTP key agreement
+handshake. A key part of key agreement in ZRTP is the hash commitment: the party that
+begins the Diffie-Hellman key sharing sends a hash of their part of the Diffie-Hellman
+exchange, and does not send their part of the Diffie-Hellman exchange until they have
+received the other party's part. Thus an attacker essentially only has one attempt to
+attack the Diffie-Hellman exchange, and hence we can verify fewer bits while still
+achieving a high degree of security: if we verify n bits, then an attacker has a 1 in
+2\ :sup:`n` chance of success.  For example, if we verify 40 bits, then an attacker has
+a 1 in 1,099,511,627,776 chance (or less than 1 in 1012 chance) of success. A failed
+attack would result in a mismatched Short Authentication String, alerting users to the
+attack.
+
+The verification process takes place over `to-device`_ messages in two phases:
+
+1. Key agreement phase (based on `ZRTP key agreement <https://tools.ietf.org/html/rfc6189#section-4.4.1>`_).
+#. Key verification phase (based on HMAC).
+
+The process between Alice and Bob verifying each other would be:
+
+.. |AlicePublicKey| replace:: :math:`K_{A}^{public}`
+.. |AlicePrivateKey| replace:: :math:`K_{A}^{private}`
+.. |AliceCurve25519| replace:: :math:`K_{A}^{private},K_{A}^{public}`
+.. |BobPublicKey| replace:: :math:`K_{B}^{public}`
+.. |BobPrivateKey| replace:: :math:`K_{B}^{private}`
+.. |BobCurve25519| replace:: :math:`K_{B}^{private},K_{B}^{public}`
+.. |BobAliceCurve25519| replace:: :math:`K_{B}^{private}K_{A}^{public}`
+.. |AliceBobECDH| replace:: :math:`ECDH(K_{A}^{private},K_{B}^{public})`
+
+1. Alice and Bob establish a secure out-of-band connection, such as meeting
+   in-person or a video call. "Secure" here means that either party cannot be
+   impersonated, not explicit secrecy.
+#. Alice and Bob communicate which devices they'd like to verify with each other.
+#. Alice selects Bob's device from the device list and begins verification.
+#. Alice's client ensures it has a copy of Bob's device key.
+#. Alice's device sends Bob's device a ``m.key.verification.start`` message.
+#. Bob's device receives the message and selects a key agreement protocol, hash
+   algorithm, message authentication code, and SAS method supported by Alice's
+   device.
+#. Bob's device ensures it has a copy of Alice's device key.
+#. Bob's device creates an ephemeral Curve25519 key pair (|BobCurve25519|), and
+   calculates the hash (using the chosen algorithm) of the public key |BobPublicKey|.
+#. Bob's device replies to Alice's device with a ``m.key.verification.accept`` message.
+#. Alice's device receives Bob's message and stores the commitment hash for later use.
+#. Alice's device creates an ephemeral Curve25519 key pair (|AliceCurve25519|) and
+   replies to Bob's device with a ``m.key.verification.key``, sending only the public
+   key |AlicePublicKey|.
+#. Bob's device receives Alice's message and replies with its own ``m.key.verification.key``
+   message containing its public key |BobPublicKey|.
+#. Alice's device receives Bob's message and verifies the commitment hash from earlier
+   matches the hash of the key Bob's device just sent and the content of Alice's
+   ``m.key.verification.start`` message.
+#. Both Alice and Bob's devices perform an Elliptic-curve Diffie-Hellman (|AliceBobECDH|),
+   using the result as the shared secret.
+#. Both Alice and Bob's devices display a SAS to their users, which is derived
+   from the shared key using one of the methods in this section. If multiple SAS
+   methods are available, clients should allow the users to select a method.
+#. Alice and Bob compare the strings shown by their devices, and tell their devices if
+   they match or not.
+#. Assuming they match, Alice and Bob's devices calculate the HMAC of their own device keys
+   and a comma-separated sorted list of of the key IDs that they wish the other user
+   to verify, using SHA-256 as the hash function. HMAC is defined in [RFC 2104](https://tools.ietf.org/html/rfc2104).
+   The key for the HMAC is different for each item and is calculated by generating
+   32 bytes (256 bits) using `the key verification HKDF <#SAS-HKDF>`_.
+#. Alice's device sends Bob's device a ``m.key.verification.mac`` message containing the
+   MAC of Alice's device keys and the MAC of her key IDs to be verified. Bob's device does
+   the same for Bob's device keys and key IDs concurrently with Alice.
+#. When the other device receives the ``m.key.verification.mac`` message, the device
+   calculates the HMAC of its copies of the other device's keys given in the message,
+   as well as the HMAC of the comma-seperated, sorted, list of key IDs in the message.
+   The device compares these with the HMAC values given in the message, and if everything
+   matches then the device keys are verified.
+
+The wire protocol looks like the following between Alice and Bob's devices::
+
+  +-------------+                    +-----------+
+  | AliceDevice |                    | BobDevice |
+  +-------------+                    +-----------+
+        |                                 |
+        | m.key.verification.start        |
+        |-------------------------------->|
+        |                                 |
+        |       m.key.verification.accept |
+        |<--------------------------------|
+        |                                 |
+        | m.key.verification.key          |
+        |-------------------------------->|
+        |                                 |
+        |          m.key.verification.key |
+        |<--------------------------------|
+        |                                 |
+        | m.key.verification.mac          |
+        |-------------------------------->|
+        |                                 |
+        |          m.key.verification.mac |
+        |<--------------------------------|
+        |                                 |
+
+Error and exception handling
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+At any point the interactive verfication can go wrong. The following describes what
+to do when an error happens:
+
+* Alice or Bob can cancel the verification at any time. A ``m.key.verification.cancel``
+  message must be sent to signify the cancellation.
+* The verification can time out. Clients should time out a verification that does not
+  complete within 10 minutes. Additionally, clients should expire a ``transaction_id``
+  which goes unused for 10 minutes after having last sent/received it. The client should
+  inform the user that the verification timed out, and send an appropriate
+  ``m.key.verification.cancel`` message to the other device.
+* When the same device attempts to intiate multiple verification attempts, the receipient
+  should cancel all attempts with that device.
+* When a device receives an unknown ``transaction_id``, it should send an appropriate
+  ``m.key.verfication.cancel`` message to the other device indicating as such. This
+  does not apply for inbound ``m.key.verification.start`` or ``m.key.verification.cancel``
+  messages.
+* If the two devices do not share a common key share, hash, HMAC, or SAS method then
+  the device should notify the other device with an appropriate ``m.key.verification.cancel``
+  message.
+* If the user claims the Short Authentication Strings do not match, the device should
+  send an appropriate ``m.key.verification.cancel`` message to the other device.
+* If the device receives a message out of sequence or that it was not expecting, it should
+  notify the other device with an appropriate ``m.key.verification.cancel`` message.
+
+
+Verification messages specific to SAS
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+Building off the common framework, the following events are involved in SAS verification.
+
+The ``m.key.verification.cancel`` event is unchanged, however the following error codes
+are used in addition to those already specified:
+
+* ``m.unknown_method``: The devices are unable to agree on the key agreement, hash, MAC,
+  or SAS method.
+* ``m.mismatched_commitment``: The hash commitment did not match.
+* ``m.mismatched_sas``: The SAS did not match.
+
+
+{{m_key_verification_start_m_sas_v1_event}}
+
+{{m_key_verification_accept_event}}
+
+{{m_key_verification_key_event}}
+
+{{m_key_verification_mac_event}}
+
+
+.. _`SAS-HKDF`:
+
+HKDF calculation
+<<<<<<<<<<<<<<<<
+
+In all of the SAS methods, HKDF is as defined in [RFC 5869](https://tools.ietf.org/html/rfc5869)
+and uses the previously agreed-upon hash function for the hash function. The shared
+secret is supplied as the input keying material. No salt is used, and the input
+parameter is the concatenation of:
+
+  * The string ``MATRIX_KEY_VERIFICATION_SAS``.
+  * The Matrix ID of the user who sent the ``m.key.verification.start`` message.
+  * The Device ID of the device which sent the ``m.key.verification.start`` message.
+  * The Matrix ID of the user who sent the ``m.key.verification.accept`` message.
+  * The Device ID of the device which sent the ``m.key.verification.accept`` message.
+  * The ``transaction_id`` being used.
+
+.. admonition:: Rationale
+
+  HKDF is used over the plain shared secret as it results in a harder attack
+  as well as more uniform data to work with.
+
+For verification of each party's device keys, HKDF is as defined in RFC 5869 and
+uses SHA-256 as the hash function. The shared secret is supplied as the input keying
+material. No salt is used, and in the input parameter is the concatenation of:
+
+  * The string ``MATRIX_KEY_VERIFICATION_MAC``.
+  * The Matrix ID of the user whose key is being MAC-ed.
+  * The Device ID of the device sending the MAC.
+  * The Matrix ID of the other user.
+  * The Device ID of the device receiving the MAC.
+  * The ``transaction_id`` being used.
+  * The Key ID of the key being MAC-ed, or the string ``KEY_IDS`` if the item
+    being MAC-ed is the list of key IDs.
+
+SAS method: ``decimal``
+<<<<<<<<<<<<<<<<<<<<<<<
+
+Generate 5 bytes using `HKDF <#SAS-HKDF>`_ then take sequences of 13 bits to
+convert to decimal numbers (resulting in 3 numbers between 0 and 8191 inclusive
+each). Add 1000 to each calculated number.
+
+The bitwise operations to get the numbers given the 5 bytes
+:math:`B_{0}, B_{1}, B_{2}, B_{3}, B_{4}` would be:
+
+* First: :math:`(B_{0} \ll 5 | B_{1} \gg 3) + 1000`
+* Second: :math:`((B_{1} \& 0x7) \ll 10 | B_{2} \ll 2 | B_{3} \gg 6) + 1000`
+* Third: :math:`((B_{3} \& 0x3F) \ll 7 | B_{4} \gg 1) + 1000`
+
+The digits are displayed to the user either with an appropriate separator,
+such as dashes, or with the numbers on individual lines.
+
+SAS method: ``emoji``
+<<<<<<<<<<<<<<<<<<<<<
+
+Generate 6 bytes using `HKDF <#SAS-HKDF>`_ then split the first 42 bits into
+7 groups of 6 bits, similar to how one would base64 encode something. Convert
+each group of 6 bits to a number and use the following table to get the corresponding
+emoji:
+
+{{sas_emoji_table}}
+
+.. Note::
+   This table is available as JSON at
+   https://github.com/matrix-org/matrix-doc/blob/master/data-definitions/sas-emoji.json
+
+.. admonition:: Rationale
+
+   The emoji above were chosen to:
+
+   * Be recognisable without colour.
+   * Be recognisable at a small size.
+   * Be recognisable by most cultures.
+   * Be distinguishable from each other.
+   * Easily described by a few words.
+   * Avoid symbols with negative connotations.
+   * Be likely similar across multiple platforms.
+
+Clients SHOULD show the emoji with the descriptions from the table, or appropriate
+translation of those descriptions. Client authors SHOULD collaborate to create a
+common set of translations for all languages.
+
 
 .. section name changed, so make sure that old links keep working
 .. _key-sharing:
@@ -460,7 +774,7 @@ Keys can be manually exported from one device to an encrypted file, copied to
 another device, and imported. The file is encrypted using a user-supplied
 passphrase, and is created as follows:
 
-1. Encode the sessions a JSON object, formatted as described in `Key export
+1. Encode the sessions as a JSON object, formatted as described in `Key export
    format`_.
 2. Generate a 512-bit key from the user-entered passphrase by computing
    `PBKDF2`_\(HMAC-SHA-512, passphrase, S, N, 512), where S is a 128-bit
@@ -658,10 +972,38 @@ part of the ed25519 key it claims to have in the Olm payload.
 This is crucial when the ed25519 key corresponds to a verified device.
 
 If a client has multiple sessions established with another device, it should
-use the session from which it last received a message.  A client may expire old
-sessions by defining a maximum number of olm sessions that it will maintain for
-each device, and expiring sessions on a Least Recently Used basis.  The maximum
-number of olm sessions maintained per device should be at least 4.
+use the session from which it last received and successfully decrypted a
+message. For these purposes, a session that has not received any messages
+should use its creation time as the time that it last received a message.
+A client may expire old sessions by defining a maximum number of olm sessions
+that it will maintain for each device, and expiring sessions on a Least Recently
+Used basis.  The maximum number of olm sessions maintained per device should
+be at least 4.
+
+Recovering from undecryptable messages
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+Occasionally messages may be undecryptable by clients due to a variety of reasons.
+When this happens to an Olm-encrypted message, the client should assume that the Olm
+session has become corrupted and create a new one to replace it.
+
+.. Note::
+   Megolm-encrypted messages generally do not have the same problem. Usually the key
+   for an undecryptable Megolm-encrypted message will come later, allowing the client
+   to decrypt it successfully. Olm does not have a way to recover from the failure,
+   making this session replacement process required.
+
+To establish a new session, the client sends a `m.dummy <#m-dummy>`_ to-device event
+to the other party to notify them of the new session details.
+
+Clients should rate-limit the number of sessions it creates per device that it receives
+a message from. Clients should not create a new session with another device if it has
+already created one for that given device in the past 1 hour.
+
+Clients should attempt to mitigate loss of the undecryptable messages. For example,
+Megolm sessions that were sent using the old session would have been lost. The client
+can attempt to retrieve the lost sessions through ``m.room_key_request`` messages.
+
 
 ``m.megolm.v1.aes-sha2``
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -739,6 +1081,8 @@ Events
 {{m_room_key_request_event}}
 
 {{m_forwarded_room_key_event}}
+
+{{m_dummy_event}}
 
 Key management API
 ~~~~~~~~~~~~~~~~~~

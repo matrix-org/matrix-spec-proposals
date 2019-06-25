@@ -36,7 +36,7 @@ Changelog
 ---------
 
 
-.. topic:: Version: unstable
+.. topic:: Version: %APPSERVICE_RELEASE_LABEL%
 {{application_service_changelog}}
 
 This version of the specification is generated from
@@ -52,6 +52,7 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/application_service/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.1.1 <https://matrix.org/docs/spec/application_service/r0.1.1.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/application_service/r0.1.0.html>`_
 
 
@@ -186,6 +187,15 @@ An example registration file for an IRC-bridging application service is below:
 
 Homeserver -> Application Service API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Authorization
++++++++++++++
+
+Homeservers MUST include a query parameter named ``access_token`` containing the
+``hs_token`` from the application service's registration when making requests to
+the application service. Application services MUST verify the provided ``access_token``
+matches their known ``hs_token``, failing the request with a ``M_FORBIDDEN`` error
+if it does not match.
 
 Legacy routes
 +++++++++++++
