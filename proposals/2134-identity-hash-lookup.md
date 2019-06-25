@@ -56,7 +56,8 @@ algorithms and pepper as a JSON object:
 ```
 
 The name `lookup_pepper` was chosen in order to account for pepper values being
-returned for other endpoints in the future.
+returned for other endpoints in the future. The contents of `lookup_pepper`
+MUST match the regular expression `[a-zA-Z0-9]*`.
 
 Clients should request this endpoint each time before making a `/lookup` or
 `/bulk_lookup` request, to handle identity servers which may rotate their
