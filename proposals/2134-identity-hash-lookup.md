@@ -11,7 +11,7 @@ If the 3PID is hashed, the identity server could not determine the address
 unless it has already seen that address in plain-text during a previous call of
 the /bind mechanism.
 
-Note that in terms of privacy, this proposal does not stop an identity service
+Note that in terms of privacy, this proposal does not stop an identity server
 from mapping hashed 3PIDs to users, resulting in a social graph. However, the
 identity of the 3PID will at least remain a mystery until /bind is used.
 
@@ -32,13 +32,13 @@ other endpoints):
 value, and the resulting digest MUST be encoded in unpadded base64.
 
 Identity servers must specify their own hashing algorithms (from a list of
-specified values) and peppers, which will be useful if a rainbow table is
+specified values) and pepper, which will be useful if a rainbow table is
 released for their current one. Identity servers could also set a timer for
 rotating the pepper value to further impede rainbow table publishing (the
-recommended period is every 30m, which should be enough for a client to
+recommended period is every 30 minutes, which should be enough for a client to
 complete the hashing of all of a user's contacts, but also be nowhere near as
 long enough to create a sophisticated rainbow table). As such, it must be
-possible for clients to be able to query what pepper an identity server
+possible for clients to be able to query what pepper the identity server
 requires before sending it hashes. A new endpoint must be added:
 
 ```
@@ -80,12 +80,16 @@ Identity Server can choose to implement one or all of them. Later versions of
 the specification may deprecate algorithms when necessary. Currently the only
 listed hashing algorithm is SHA-256 as defined by [RFC
 4634](https://tools.ietf.org/html/rfc4634) and Identity Servers and clients
-MUST agree to its use with the string `sha256`.
+MUST agree to its use with the string `sha256`. SHA-256 was chosen as it is
+currently used throughout the Matrix spec, as well as its properties of being
+quick to hash. While this reduces the resources necessary to generate a rainbow
+table for attackers, a fast hash is necessary if particularly slow mobile
+clients are going to be hashing thousands of contacts.
 
 When performing a lookup, the pepper and hashing algorithm the client used must
 be part of the request body. If they do not match what the server has on file
 (which may be the case if the pepper was rotated right after the client's
-request for it), then the server can inform the client that they need to query
+request for it), then the server must inform the client that they need to query
 the hash details again, instead of just returning an empty response, which
 clients would assume to mean that no contacts are registered on that identity
 server.
@@ -117,20 +121,16 @@ following:
 If the pepper does not match the server's, the server should return a `400
 M_INVALID_PARAM`.
 
-No parameter changes will be made to /bind, but identity servers should keep a
-hashed value for each address it knows about in order to process lookups
-quicker. It is the recommendation that this is done during the act of binding.
-Be wary that these hashes will need to be changed whenever the server's pepper
-is rotated.
+No parameter changes will be made to /bind.
 
 ## Fallback considerations
 
 `v1` versions of these endpoints may be disabled at the discretion of the
-implementation, and should return a HTTP 404 if so.
+implementation, and should return a HTTP 403 if so.
 
 If an identity server is too old and a HTTP 404, 405 or 501 is received when
 accessing the `v2` endpoint, they should fallback to the `v1` endpoint instead.
-However, clients should be aware that plain-text 3PIDs are required, and MUST
+However, clients should be aware that plain-text 3PIDs are required, and SHOULD
 ask for user consent to send 3PIDs in plain-text, and be clear about where they
 are being sent to.
 
@@ -147,11 +147,10 @@ This proposal does not force an identity server to stop handling plain-text
 requests, because a large amount of the Matrix ecosystem relies upon this
 behavior. However, a conscious effort should be made by all users to use the
 privacy respecting endpoints outlined above. Identity servers may disallow use
-of the v1 endpoint.
+of the v1 endpoint, as per above.
 
 Unpadded base64 has been chosen to encode the value due to use in many other
-portions of the spec. However, it does mean that special characters in the
-address will have to be encoded when used as a parameter value.
+portions of the spec.
 
 ## Other considered solutions
 
@@ -180,7 +179,8 @@ SHA-256+SomeBetterAlg. However @erikjohnston then pointed out that if
 SuperGreatHash(BrokenAlgo(b))`, so all you'd need to do is find a match in the
 broken algo, and you'd break the new algorithm as well. This means that you
 would need the plaintext 3PIDs to encode a new hash, and thus storing them
-hashed on disk is not possible.
+hashed on disk would require a transition period where 3pids were reuploaded in
+a strong hash variant.
 
 ## Conclusion
 
