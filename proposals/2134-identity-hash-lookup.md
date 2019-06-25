@@ -160,11 +160,11 @@ bind, as it cannot trust a homeserver to do so as the homeserver may be lying.
 Additionally, only storing 3PID hashes at rest instead of the plain-text
 versions is impractical if the hashing algorithm ever needs to be changed.
 
-Bloom filters are an alternative method of providing private contact discovery,
-however does not scale well due to clients needing to download a large filter
-that needs updating every time a new bind is made. Further considered solutions
-are explored in https://signal.org/blog/contact-discovery/ Signal's eventual
-solution of using Software Guard Extensions (detailed in
+Bloom filters are an alternative method of providing private contact discovery.
+However, they do not scale well due to requiring clients to download a large
+filter that needs updating every time a new bind is made. Further considered
+solutions are explored in https://signal.org/blog/contact-discovery/. Signal's
+eventual solution of using Software Guard Extensions (detailed in
 https://signal.org/blog/private-contact-discovery/) is considered impractical
 for a federated network, as it requires specialized hardware.
 
