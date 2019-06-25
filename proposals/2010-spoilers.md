@@ -52,16 +52,16 @@ however that wouldn't be HTML-compliant.
 Instead of limiting the proposed `data-mx-spoiler` attribute only to the `<span>`-tag it could be
 added to all tags, however it might make implementations for clients more complicated.
 
-Clients would have to come up with a way how to input spoilers. This could be done, for example,
-by adding a custom markdown tag (like discord does), so that you do `Text ||spoiler||`, however
-that doesn't take a spoiler reason into account.
-
 ## Potential issues
 Depending on context it might make sense to put other events, such as `m.image`, into spoilers,
 too. This MSC doesn't address that at all. Using
 `<span data-mx-spoiler><img src="mxc://server/media"></span>` seems rather sub-optimal for that.
 
 This MSC doesn't take HTML block elements into account.
+
+Clients would have to come up with a way how to input spoilers. This could be done, for example,
+by adding a custom markdown tag (like discord does), so that you do `Text ||spoiler||`, however
+that doesn't take a spoiler reason into account.
 
 ## Security considerations
 The spoiler reason needs to be properly escaped when rendered.
