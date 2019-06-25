@@ -31,15 +31,11 @@ other endpoints):
 `address` MUST no longer be in a plain-text format, but rather will be a peppered hash
 value encoded in unpadded base64.
 
-Identity servers must specify their own hashing algorithms (from a list of
-specified values) and pepper, which will be useful if a rainbow table is
-released for their current one. Identity servers could also set a timer for
-rotating the pepper value to further impede rainbow table publishing (the
-recommended period is every 30 minutes, which should be enough for a client to
-complete the hashing of all of a user's contacts, but also be nowhere near as
-long enough to create a sophisticated rainbow table). As such, it must be
-possible for clients to be able to query what pepper the identity server
-requires before sending it hashes. A new endpoint must be added:
+Identity servers must specify the hashing algorithms and a pepper that they
+support, which will allow for rotation if a rainbow table is ever released
+coinciding with their current hash and pepper. As such, it must be possible for
+clients to be able to query what pepper the identity server requires before
+sending it hashes. A new endpoint must be added:
 
 ```
 GET /_matrix/identity/v2/hash_details
@@ -64,13 +60,13 @@ Clients should request this endpoint each time before making a `/lookup` or
 pepper values frequently. Clients must choose one of the given hash algorithms
 to encrypt the 3PID during lookup.
 
-An example of generating a hash using SHA-256 and the provided pepper is as
-follows:
+Peppers are appended to the end of the 3PID before hashing. An example of
+generating a hash using SHA-256 and the provided pepper is as follows:
 
 ```python
 address = "user@example.org"
 pepper = "matrixrocks"
-digest = hashlib.sha256((pepper + address).encode()).digest()
+digest = hashlib.sha256((address + pepper).encode()).digest()
 result_address = unpaddedbase64.encode_base64(digest)
 print(result_address)
 vNjEQuRCOmBp/KTuIpZ7RUJgPAbVAyqa0Uzh770tQaw
@@ -119,15 +115,17 @@ following:
 }
 ```
 
-If the pepper does not match the server's, the server should return a `400
-M_INVALID_PARAM`.
+If the algorithm does not match the server's, the server should return a 400
+`M_INVALID_PARAM`. If the pepper does not match the server's, the server should
+return a new error code, 400 `M_INVALID_PEPPER`. A new error code is not
+defined for an invalid algorithm as that is considered a client bug.
 
 No parameter changes will be made to /bind.
 
 ## Fallback considerations
 
 `v1` versions of these endpoints may be disabled at the discretion of the
-implementation, and should return a HTTP 403 if so.
+implementation, and should return a 403 `M_FORBIDDEN` error if so.
 
 If an identity server is too old and a HTTP 404, 405 or 501 is received when
 accessing the `v2` endpoint, they should fallback to the `v1` endpoint instead.
@@ -180,7 +178,7 @@ SHA-256+SomeBetterAlg. However @erikjohnston then pointed out that if
 SuperGreatHash(BrokenAlgo(b))`, so all you'd need to do is find a match in the
 broken algo, and you'd break the new algorithm as well. This means that you
 would need the plaintext 3PIDs to encode a new hash, and thus storing them
-hashed on disk would require a transition period where 3pids were reuploaded in
+hashed on disk would require a transition period where 3PIDs were reuploaded in
 a strong hash variant.
 
 ## Conclusion
