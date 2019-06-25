@@ -56,11 +56,15 @@ and adds authentication to accross the Identity Service API.
 All current endpoints within `/_matrix/identity/api/v1/` will be duplicated
 into `/_matrix/identity/v2`.
 
-Any request to any endpoint within `/_matrix/identity/v2`, with the exception of
-`/_matrix/identity/v2` and the new `/_matrix/identity/v2/account/register` may
-return an error with `M_UNAUTHORIZED` errcode with HTTP status code 401. This
-indicates that the user must authenticate with OpenID and supply a valid
-`access_token`.
+Any request to any endpoint within `/_matrix/identity/v2`, with the exception
+of `/_matrix/identity/v2` and the new `/_matrix/identity/v2/account/register`
+and `GET /_matrix/identity/v2/terms` may return an error with `M_UNAUTHORIZED`
+errcode with HTTP status code 401. This indicates that the user must
+authenticate with OpenID and supply a valid `access_token`.
+
+These endpoints require authentication by the client supplying an access token
+either via an `Authorization` header with a `Bearer` token or an `access_token`
+query parameter.
 
 The existing endpoints under `/_matrix/identity/api/v1/` continue to be unauthenticated.
 ISes may support the old v1 API for as long as they wish. Clients must update to use
@@ -115,7 +119,7 @@ that the URL contains the version number of the document. The name
 and version keys, however, are used only to provide a human-readable
 description of the document to the user.
 
-The client should provide authentication for this endpoint.
+This endpoint does *not* require authentication.
 
 #### `POST $prefix/terms`:
 Requests to this endpoint have a single key, `user_accepts` whose value is
@@ -128,7 +132,7 @@ the user has agreed to:
 }
 ```
 
-The client should provide authentication for this endpoint.
+This endpoint requires authentication.
 
 The clients MUST include the correct URL for the language of the document that
 was presented to the user and they agreed to. How servers store or serialise
@@ -164,6 +168,22 @@ to this list.
 
 ### Terms Acceptance in the API
 
+Before any requests are made to an Identity Server or Integration Manager,
+the client must use the `GET $prefix/terms` endpoint to fetch the set of
+documents that the user must agree to in order to use the service.
+
+It then cross-references this set of documents against the `m.accepted_terms`
+account data and presents to the user any documents that they have not already
+agreed to, along with UI for them to indicate their agreement. Once the user
+has indicated their agreement, it adds these URLs to `m.accepted_terms` account
+data. Once this has succeeded, then, and only then, must the client perform
+OpenID authentication, getting a token from the Homeserver and submitting this
+to the service using the `register` endpoint.
+
+Having done this, if the user agreed to any new documents, it performs a `POST
+$prefix/terms` request to signal to the server the set of documents that the
+user has agreed to.
+
 Any request to any endpoint in the IM API, and the `_matrix/identity/v2/`
 namespace of the IS API, with the exception of `/_matrix/identity/v2` itself,
 may return:
@@ -176,13 +196,20 @@ may return:
 The `_matrix/identity/v2/3pid/unbind` must not return either of these
 errors if the request has a valid signature from a Homeserver.
 
-The client uses the `GET $prefix/terms` endpoint to get the latest set of terms
-that must be agreed to. It then cross-references this set of documents against
-the `m.accepted_terms` account data and presents to the user any documents
-that they have not already agreed to, along with UI for them to indicate their
-agreement. Once the user has indicated their agreement, then, and only then,
-must the client use the `POST $prefix/terms` API to signal to the server the
-set of documents that the user has agreed to.
+In summary, the process for using a service that has not previously been used
+in the current login sessions is:
+
+ * `GET $prefix/terms`
+ * Compare result with `m.accepted_terms` account data, get set of documents
+   pending agreement
+ * If non-empty, show this set of documents to the user and wait for the user
+   to indicate their agreement.
+ * Add the newly agreed documents to `m.accepted_terms`
+ * On success, or if there were no documents pending agreement, get an OpenID
+   token from the Homeserver and submit this token to the `register` endpoint.
+   Store the resulting access token.
+ * If the set of documents pending agreement was non-empty, Perform a
+   `POST $prefix/terms` request to the servcie with these documents.
 
 ## Tradeoffs
 
