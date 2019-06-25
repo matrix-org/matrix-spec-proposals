@@ -29,7 +29,7 @@ other endpoints):
 - `/_matrix/identity/v2/bulk_lookup`
 
 `address` MUST no longer be in a plain-text format, but rather will be a peppered hash
-value, and the resulting digest MUST be encoded in unpadded base64.
+value encoded in unpadded base64.
 
 Identity servers must specify their own hashing algorithms (from a list of
 specified values) and pepper, which will be useful if a rainbow table is
