@@ -6,16 +6,15 @@ documents before being permitted to use the service. This proposal introduces a
 corresponding method that can be used with Identity Servers and Integration
 Managers.
 
-The challenge here is that Identity Servers do not require any kind of user
-login to access the service and so are unable to track what users have agreed
-to what terms in the way that Homeservers do. We thereforce cannot re-use the
-same method for Identity Servers without fundamentally changing the Identity
-Service API.
-
 Requirements for this proposal are:
  * ISs and IMs should be able to give multiple documents a user must agree to
    abide by
  * Each document shoud be versioned
+ * ISes and IMs must, for each request that they handle, know that the user
+   making the request has agreed to their data being used. This need not be
+   absolute proof (we will always have to trust that the client actually
+   showed the document to the user) but it must be reasonably demonstrable that
+   the user has given informed consent for the client to use that service.
  * ISs and IMs must be able to prevent users from using the service if they
    have not provided agreement.
  * A user should only have to agree to each version of each document once for
@@ -27,16 +26,61 @@ Requirements for this proposal are:
    (bearing in mind that the user must be able to opt-out of components of a
    service whilst still being able to use the service without that component).
 
+Identity Servers do not currently require any kind of user login to access the
+service and so are unable to track what users have agreed to what terms in the
+way that Homeservers do.
+
 ## Proposal
 
 Throuhgout this proposal, $prefix will be used to refer to the prefix of the
-API in question, ie. `/_matrix/identity/api/v1` for the IS API and
+API in question, ie. `/_matrix/identity/v2` for the IS API and
 `/_matrix/integrations/v1` for the IM API.
+
+Note the removal of the `/api` prefix and migration to v2 in the IS API
+following convention from
+[MSC2134](https://github.com/matrix-org/matrix-doc/issues/2134).
 
 This proposal introduces:
  * The `$prefix/terms` endpoint
  * The `m.accepted_terms` section in account data
- * The `X-TERMS-TOKEN` HTTP header
+
+This proposal relies on both Integration Managers and Identity Servers being
+able to identity users by their mxid and store the fact that a given mxid has
+indicated that they accept the terms given. Integration Managers already
+identity users in this way by authenticating them using the OpenID endpoint on
+the Homeserver. This proposal introduces the same mechanism to Identity Servers
+and adds authentication to accross the Identity Service API.
+
+### IS API Authentication
+
+All current endpoints within `/_matrix/identity/api/v1/` will be duplicated
+into `/_matrix/identity/v2`.
+
+Any request to any endpoint within `/_matrix/identity/v2`, with the exception of
+`/_matrix/identity/v2` and the new `/_matrix/identity/v2/account/register` may
+return an error with `M_UNAUTHORIZED` errcode with HTTP status code 401. This
+indicates that the user must authenticate with OpenID and supply a valid
+`access_token`.
+
+The existing endpoints under `/_matrix/identity/api/v1/` continue to be unauthenticated.
+ISes may support the old v1 API for as long as they wish. Clients must update to use
+the v2 API as soon as possible.
+
+OpenID authentication in the IS API will work the same as in the Integration Manager
+API, as specified in [MSC1961](https://github.com/matrix-org/matrix-doc/issues/1961).
+
+### IS Register API
+
+The following new APIs will be introduced to support OpenID auth as per
+[MSC1961](https://github.com/matrix-org/matrix-doc/issues/1961):
+
+ * `/_matrix/identity/v2/account/register`
+ * `/_matrix/identity/v2/account`
+ * `/_matrix/identity/v2/account/logout`
+
+Note again the removal of the `/api` prefix and migration to v2 following
+convention from
+[MSC2134](https://github.com/matrix-org/matrix-doc/issues/2134).
 
 ### Terms API
 
@@ -71,7 +115,7 @@ that the URL contains the version number of the document. The name
 and version keys, however, are used only to provide a human-readable
 description of the document to the user.
 
-In the IM API, the client should provide authentication for this endpoint.
+The client should provide authentication for this endpoint.
 
 #### `POST $prefix/terms`:
 Requests to this endpoint have a single key, `user_accepts` whose value is
@@ -84,7 +128,7 @@ the user has agreed to:
 }
 ```
 
-In the IM API, the client should provide authentication for this endpoint.
+The client should provide authentication for this endpoint.
 
 The clients MUST include the correct URL for the language of the document that
 was presented to the user and they agreed to. How servers store or serialise
@@ -94,24 +138,6 @@ if the server deems it appropriate to do so. Servers should accept agreement of
 any one language of each document as sufficient, regardless of what language a
 client is operating in: users should not have to re-consent to documents if
 they change their client to a different language.
-
-The response MAY contain a `acceptance_token` which, if given, is an
-opaque string that the client must store for use in subsequent requests
-to any endpoint to the same server.
-
-If the server has stored the fact that the user has agreed to these terms,
-(which implies the user is authenticated) it can supply no `acceptance_token`.
-The server may instead choose to supply an `acceptance_token`, for example if,
-as in the IS API, the user is unauthenticated and therefore the server is
-unable to store the fact a user has agreed to a set of terms.
-
-The `acceptance_token` is an opaque string contining characters
-`[a-zA-Z0-9._-]`. It is up to the server how it computes it, but the server
-must be able to, given an `acceptance_token`, compute whether it constitutes
-agreement to a given set of terms. For example, the simplest (but most verbose)
-implemenation would be to make the `acceptance_token` the JSON array of
-documents as provided in the request. A smarter implementation may be a simple
-hash, or even cryptograhic hash if desired.
 
 ### Accepted Terms Account Data
 
@@ -138,12 +164,17 @@ to this list.
 
 ### Terms Acceptance in the API
 
-Any request to any endpoint in the IS and IM APIs, with the exception of
-`/_matrix/identity/api/v1` may return a `M_TERMS_NOT_SIGNED` errcode. This
-indicates that the user must agree to (new) terms in order to use or continue
-to use the service. The `_matrix/identity/api/v1/3pid/unbind` must also not
-return the `M_TERMS_NOT_SIGNED` if the request has a valid signature from a
-Homeserver.
+Any request to any endpoint in the IM API, and the `_matrix/identity/v2/`
+namespace of the IS API, with the exception of `/_matrix/identity/v2` itself,
+may return:
+
+ * `M_UNAUTHORIZED` errcode with HTTP status code 401. This indicates that
+   the user must authenticate with OpenID and supply a valid `access_token`.
+ * `M_TERMS_NOT_SIGNED` errcode. This indicates that the user must agree to
+   (new) terms in order to use or continue to use the service.
+
+The `_matrix/identity/v2/3pid/unbind` must not return either of these
+errors if the request has a valid signature from a Homeserver.
 
 The client uses the `GET $prefix/terms` endpoint to get the latest set of terms
 that must be agreed to. It then cross-references this set of documents against
@@ -153,24 +184,16 @@ agreement. Once the user has indicated their agreement, then, and only then,
 must the client use the `POST $prefix/terms` API to signal to the server the
 set of documents that the user has agreed to.
 
-If the server returns an `acceptance_token`, the client should include this
-token in the `X-TERMS-TOKEN` HTTP header in all subsequent requests to an
-endpoint on the API with the exception of `/_matrix/identity/api/v1`.
-
-The client must also include the X-TERMS-TOKEN on any request to the Homeserver
-where it specifies an Identity Server to be used by the Homeserver. Homeservers
-must read this header from the request headers of any such endpoint and add it
-to the request headers of any request it makes to the Identity Server.
-
-Both making the `POST $prefix/terms` request and providing an `X-TERMS-TOKEN`
-header signal that the user consents to the terms contained within the
-corresponding documents. That is to say, if a client or user obtains an
-acceptance token via means other than a response to the `POST $prefix/terms`
-API, inclusion of the acceptance token in an `X-TERMS-TOKEN` header in a
-request still constitutes agreement to the terms in the corresponding
-documents.
-
 ## Tradeoffs
+
+The Identity Service API previously did not require authentication, and OpenID
+is reasonably complex, adding a significant burden to both clients and servers.
+A custom HTTP Header was also considered that could be added to assert that the
+client agrees to a particular set of terms. We decided against this in favour
+of re-using existing primitives that already exist in the Matrix ecosystem.
+Custom HTTP Headers are not used anywhere else within Matrix. This also gives a
+very simple and natural way for ISes to enforce that users may only bind 3pids
+to their own mxids.
 
 This introduces a different way of accepting terms from the client/server API
 which uses User-Interactive Authentication. In the client/server API, the use
@@ -189,21 +212,15 @@ the document, but:
 
 ## Potential issues
 
-If the server does not authentcate users, some mechanism is required to track
-users agreement to terms. The introduction of an extra HTTP header on all
-requests adds overhead to every request and complexity to the client to add a
-custom header.
-
+This change is not backwards compatible: clients implementing older versions of
+the specification will expect to be able to access all IS API endpoints without
+authentication. Care should be taken to manage the rollout of authentication
+on IS APIs.
 
 ## Security considerations
 
-The `acceptance_token` is, in effect, a cookie and could be used to identify
-users of the service.  Users of the Integration manager must be authenticated
-anyway, so this is irrelevant for the IM API. It could allow an Identity Server
-to identify users where it may otherwise not be able to do so (if a client was
-careful to mask other identifying HTTP headers). Given most requests to the IS
-API, by their nature, include 3pids which, even if hashed, will make users
-easily identifiable, this probably does not add any significant concern.
+Requiring authentication on the IS API means it will no longer be possible to
+use it anonymously.
 
 It is assumed that once servers publish a given version of a document at a
 given URL, the contents of that URL will not change. This could be mitigated by
