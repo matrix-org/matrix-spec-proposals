@@ -28,8 +28,10 @@ other endpoints):
 - `/_matrix/identity/v2/lookup`
 - `/_matrix/identity/v2/bulk_lookup`
 
-`address` MUST no longer be in a plain-text format, but rather will be a peppered hash
-value, and the resulting digest MUST be encoded in unpadded base64.
+`address` MUST no longer be in a plain-text format, but rather will be a
+peppered hash value, and the resulting digest MUST be encoded in URL-safe
+unpadded base64 (similar to [room version 4's event
+IDs](https://matrix.org/docs/spec/rooms/v4#event-ids)).
 
 Identity servers must specify their own hashing algorithms (from a list of
 specified values) and pepper, which will be useful if a rainbow table is
@@ -119,8 +121,23 @@ following:
 }
 ```
 
-If the pepper does not match the server's, the server should return a `400
-M_INVALID_PARAM`.
+If the algorithm does not match the server's, the server should return a `400
+M_INVALID_PARAM`. If the pepper does not match the server's, the server should
+return a new error code, 400 `M_INVALID_PEPPER`. A new error code is not
+defined for an invalid algorithm as that is considered a client bug. Each of
+these error responses should contain the correct `algorithm` and
+`lookup_pepper` fields. This is to prevent the client from needing to query
+`/hash_details` again, thus saving a round-trip. An example response to an
+incorrect pepper would be:
+
+```
+{
+  "error": "Incorrect value for lookup_pepper",
+  "errcode": "M_INVALID_PEPPER",
+  "algorithm": "sha256",
+  "lookup_pepper": "matrixrocks"
+}
+```
 
 No parameter changes will be made to /bind.
 
