@@ -75,6 +75,12 @@ possible.
 OpenID authentication in the IS API will work the same as in the Integration Manager
 API, as specified in [MSC1961](https://github.com/matrix-org/matrix-doc/issues/1961).
 
+When clients supply an identity server to the Homeserver in order for the Homeserver
+to make calls to the IS on its behalf, it must also supply its access token for the
+Identity Server either as the `is_token` query parameter or a bearer token in the
+`X-Identity-Authorization` HTTP header with the same syntax as an `Authorizationn`
+header.
+
 ### IS Register API
 
 The following new APIs will be introduced to support OpenID auth as per
