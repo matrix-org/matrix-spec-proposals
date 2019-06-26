@@ -66,9 +66,11 @@ These endpoints require authentication by the client supplying an access token
 either via an `Authorization` header with a `Bearer` token or an `access_token`
 query parameter.
 
-The existing endpoints under `/_matrix/identity/api/v1/` continue to be unauthenticated.
-ISes may support the old v1 API for as long as they wish. Clients must update to use
-the v2 API as soon as possible.
+The existing endpoints under `/_matrix/identity/api/v1/` continue to be
+unauthenticated but will be deprecated.  ISes may support the old v1 API for as
+long as they wish. Once ISes remove support for the old APIs, those endpoints
+must return HTTP Status 404. Clients must update to use the v2 API as soon as
+possible.
 
 OpenID authentication in the IS API will work the same as in the Integration Manager
 API, as specified in [MSC1961](https://github.com/matrix-org/matrix-doc/issues/1961).
