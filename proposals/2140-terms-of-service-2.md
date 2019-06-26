@@ -243,10 +243,8 @@ the document, but:
 
 ## Potential issues
 
-This change is not backwards compatible: clients implementing older versions of
-the specification will expect to be able to access all IS API endpoints without
-authentication. Care should be taken to manage the rollout of authentication
-on IS APIs.
+This change deprecates all v1 endpoints and so will require clients to update
+to continue working.
 
 ## Security considerations
 
