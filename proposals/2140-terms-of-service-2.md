@@ -196,7 +196,7 @@ may return:
    (new) terms in order to use or continue to use the service.
 
 The `_matrix/identity/v2/3pid/unbind` must not return either of these
-errors if the request has a valid signature from a Homeserver.
+errors if the request has a valid signature from a Homeserver, and is being authenticated as such.
 
 In summary, the process for using a service that has not previously been used
 in the current login sessions is:
