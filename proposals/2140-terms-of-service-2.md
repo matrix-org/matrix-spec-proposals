@@ -45,7 +45,7 @@ This proposal introduces:
  * The `m.accepted_terms` section in account data
 
 This proposal relies on both Integration Managers and Identity Servers being
-able to identity users by their mxid and store the fact that a given mxid has
+able to identity users by their MXID and store the fact that a given MXID has
 indicated that they accept the terms given. Integration Managers already
 identity users in this way by authenticating them using the OpenID endpoint on
 the Homeserver. This proposal introduces the same mechanism to Identity Servers
@@ -221,8 +221,8 @@ A custom HTTP Header was also considered that could be added to assert that the
 client agrees to a particular set of terms. We decided against this in favour
 of re-using existing primitives that already exist in the Matrix ecosystem.
 Custom HTTP Headers are not used anywhere else within Matrix. This also gives a
-very simple and natural way for ISes to enforce that users may only bind 3pids
-to their own mxids.
+very simple and natural way for ISes to enforce that users may only bind 3PIDs
+to their own MXIDs.
 
 This introduces a different way of accepting terms from the client/server API
 which uses User-Interactive Authentication. In the client/server API, the use
