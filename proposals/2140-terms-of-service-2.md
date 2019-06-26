@@ -21,7 +21,7 @@ Requirements for this proposal are:
    their Matrix ID, ie. having agreed to a set of terms in one client, they
    should not have to agree to them again when using a different client.
  * Documents should be de-duplicated between services. If two or more services
-   are hosted by the same organisation, the organistation should have the
+   are hosted by the same organisation, the organisation should have the
    option to give their users a single document that encompasses both services
    (bearing in mind that the user must be able to opt-out of components of a
    service whilst still being able to use the service without that component).
