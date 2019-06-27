@@ -93,6 +93,13 @@ perform is unbinding, ie. `/_matrix/client/r0/account/deactivate` and
 `/_matrix/client/r0/account/3pid/delete`, in which case the unbind is authenticated
 by a signed request from the Homeserver.
 
+### HS Register API
+
+The `bind_email` and `bind_msisdn` options to `/_matrix/client/r0/register` in
+the client/server API will be deprecated. Due to the fact that
+`/_matrix/identity/v2/3pid/bind` requires authentication, it will no longer be
+possible for the Homeserver to bind 3PIDs as part of the registration process.
+
 ### IS Register API
 
 The following new APIs will be introduced to support OpenID auth as per
