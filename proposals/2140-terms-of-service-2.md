@@ -71,7 +71,7 @@ This indicates that the user must authenticate with OpenID and supply a valid
 in the registration process before the user has an MXID and therefore cannot
 log in with OpenID. It is up to the IS to manage its privacy obligations
 appropriately when fulfilling these requests, bearing in mind that the user has
-not explictly incicated their agreement to any documents, and may abort the
+not explicitly indicated their agreement to any documents, and may abort the
 registration process without doing so.
 
 All other endpoints require authentication by the client supplying an access token
