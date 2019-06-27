@@ -76,7 +76,7 @@ looks like:
    most recent replacement event.  The replacement event must contain an
    `m.new_content` which defines the replacement content (allowing the normal
    `body` fields to be used for a fallback for clients who do not understand
-   replacement events).
+   replacement events).  The newest replacement is determined... FIXME
 
 For instance, an `m.room.message` which `replaces` an existing event looks like:
 
@@ -127,6 +127,55 @@ This MSC doesn't attempt to define these subtypes.
 
 ### Sending relations
 
+Related events are normal Matrix events, but it's possible that the server may need to
+process them before sending them into a room (for instance, if we ever use a DAG to
+define the ordering of an m.relations
+
+Similar to membership events, related events may be sent either by the normal
+
+Sending a related event uses an equivalent of the normal send API (with an
+equivalent `PUT` API):
+
+```
+POST /_matrix/client/r0/rooms/{roomId}/send_relation/{parent_id}/{relation_type}/{event_type}
+{
+    // event contents
+}
+```
+
+
+### Receiving relations
+
+```json
+{
+    ...,
+    "unsigned": {
+        "m.relations": {
+            "m.annotation": {
+                "chunk": [
+                  {
+                      "type": "m.reaction",
+                      "key": "👍",
+                      "count": 3
+                  }
+                ],
+                "limited": false,
+                "count": 1
+            },
+            "m.reference": {
+                "chunk": [
+                    {
+                        "type": "m.room.message",
+                        "event_id": "$some_event_id"
+                    }
+                ],
+                "limited": false,
+                "count": 1
+            }
+        }
+    }
+}
+```
 
 
 
@@ -168,75 +217,9 @@ In each case where we limit what is included there should be a corresponding API
 to paginate the full sets of events. Annotations would need APIs for both
 fetching more groups and fetching events in a group.
 
-## Event format
 
-All the information about the relation is put under `m.relates_to` key.
 
-A reply would look something like:
 
-```json
-{
-    "type": "m.room.message",
-    "content": {
-        "body": "i <3 shelties",
-        "m.relates_to": {
-            "rel_type": "m.reference",
-            "event_id": "$some_event_id"
-        }
-    }
-}
-```
-
-And a reaction might look like the following, where we define for `m.reaction`
-that the aggregation `key` is the unicode reaction itself.
-
-```json
-{
-    "type": "m.reaction",
-    "content": {
-        "m.relates_to": {
-            "rel_type": "m.annotation",
-            "event_id": "$some_event_id",
-            "key": "👍"
-        }
-    }
-}
-```
-
-An edit would be:
-
-An event that has relations bundled alongside it then looks like:
-
-```json
-{
-    ...,
-    "unsigned": {
-        "m.relations": {
-            "m.annotation": {
-                "chunk": [
-                  {
-                      "type": "m.reaction",
-                      "key": "👍",
-                      "count": 3
-                  }
-                ],
-                "limited": false,
-                "count": 1
-            },
-            "m.reference": {
-                "chunk": [
-                    {
-                        "type": "m.room.message",
-                        "event_id": "$some_event_id"
-                    }
-                ],
-                "limited": false,
-                "count": 1
-            }
-        }
-    }
-}
-```
 
 ## End to end encryption
 
@@ -261,15 +244,6 @@ For aggregations of annotations there are two options:
 
 ## CS API
 
-Sending a related event uses an equivalent of the normal send API (with an
-equivalent `PUT` API):
-
-```
-POST /_matrix/client/r0/rooms/{roomId}/send_relation/{parent_id}/{relation_type}/{event_type}
-{
-    // event contents
-}
-```
 
 Whenever an event that has relations is sent to the client, e.g. sync, pagination,
 event search etc, the server bundles the relations into the event as per above.
