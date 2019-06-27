@@ -22,8 +22,9 @@ the spoiler by setting the attribute string. It could be rendered, for example, 
 
 ![Spoiler rendering idea](https://user-images.githubusercontent.com/2433620/59299700-95063480-8c8d-11e9-9348-3e2c8bc94bdc.gif)
 
-The plain-text fallback could be rendered as `(Spoiler: <content>)` and
-`(Spoiler for <reason>: <content>)` respectively.
+To preserve the semantics of a spoiler in the plaintext fallback it is recommended to upload the contents of the spoiler
+as a text file and then link this: `[Spoiler](mxc://someserver/somefile)` and
+`[Spoiler for reason](mxc://someserver/somefile)` respectively.
 
 ### Example
 Without reason:
@@ -32,7 +33,7 @@ Without reason:
     "msgtype": "m.text",
     "format": "org.matrix.custom.html",
     "body": "Hello there, the movie was (Spoiler: awesome)",
-    "formatted_body": "Hello there, the movie was <span data-mx-spoiler>awesome</span>"
+    "formatted_body": "Hello there, the movie was [Spoiler](mxc://someserver/somefile)"
 }
 ```
 With reason:
@@ -41,7 +42,7 @@ With reason:
     "msgtype": "m.text",
     "format": "org.matrix.custom.html",
     "body": "Hey (Spoiler for movie: the movie was awesome)",
-    "formatted_body": "Hey <span data-mx-spoiler="movie">the movie was awesome</span>"
+    "formatted_body": "Hey [Spoiler for movie](mxc://someserver/somefile)"
 }
 ```
 
