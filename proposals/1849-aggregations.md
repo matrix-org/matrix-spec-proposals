@@ -1,147 +1,138 @@
-# Proposal for aggregations via m.relates_to
+# Proposal for aggregations via relations
 
-  - [Overview](#overview)
-  - [Context](#context)
-  - [Types of relations](#types-of-relations)
-  - [Aggregating and paginating relations](#aggregating-and-paginating-relations)
-  - [Event format](#event-format)
-  - [End to end encryption](#end-to-end-encryption)
-  - [CS API](#cs-api)
-  - [Pagination](#pagination)
-    - [API](#api)
-  - [Edge cases](#edge-cases)
-  - [Federation considerations](#federation-considerations)
-  - [Extended annotation use case](#extended-annotation-use-case)
-  - [Tradeoffs](#tradeoffs)
-    - [Event shape](#event-shape)
-  - [Historical context](#historical-context)
+## Problem
 
-## Overview
+It's common to want to send events in Matrix which relate to existing events -
+for instance, reactions, edits and even replies/threads.
 
-This proposal introduces the concept of relations, which can be used to associate
-new information with an existing event.  Relations are events which have an `m.relates_to`
-mixin in their contents, and the new information they convey is expressed in their
-usual event `type` and `content`.
+Clients typically need to track the related events alongside the original
+event they relate to, in order to correctly display them.  For instance,
+reaction events need to aggregated together by summing and be shown next to
+the event they react to; edits need to be aggregated together by replacing the
+original event and subsequent edits; replies need to be indented after the
+message they respond to, etc.
 
-Clients send relations using the new `/send_relation` API.
+It is possible to treat relations as normal events and aggregate them
+clientside, but to do so comprehensively could be very resource intensive, as
+the client would need to spider all possible events in a room to find
+relationships and maintain an correct view.
 
-Clients receive relations as normal events in /sync (aka 'unbundled relations'),
-or may also be aggregated together by the server, and presented as
-a 'bundle' attached to the original event.
+Instead, this proposal seeks to solve this problem by:
+ * Defining a standard shape for defining events which relate to other events
+ * Defining APIs to let the server calculate the aggregations on behalf of the
+   client, and so bundle the related events with the original event where
+   appropriate.
 
-Bundles of relations for a given event are
-paginated to prevent overloading the client with relations, and may be traversed by
-via the new `/relations` API (which iterates over all relations for an event) or the
-new `/aggregations` API (which iterates over the groups of relations, or the relations
-within a group).
+## Proposal
 
-Three types of relations are defined, each defining different behaviour when aggregated:
+This proposal introduces the concept of relations, which can be used to
+associate new information with an existing event.
 
- * `m.annotation` - lets you define an event which annotates an existing event.
-   When aggregated, groups events together based on `key` and returns a `count`. (aka SQL's COUNT)
-   These are primarily intended for handling reactions.
+Relations are any event which have an `m.relationship` mixin in their
+contents. The `m.relationship` field must include a `rel_type` field that
+gives the type of relationship being defined, and the `event_id` field that
+gives the event which is the target of the relation.  All the information about
+the relationship lives under the `m.relationship` key.
 
- * `m.replace` - lets you define an event which replaces an existing event.
-   When aggregated, returns the most recent replacement event. (aka SQL's MAX)
-   These are primarily intended for handling edits.
+If it helps, you can think of relations as a "subject verb object" triple,
+where the subject is the relation event itself; the verb is the `rel_type`
+field of the `m.relationship` and the object is the `event_id` field.
 
- * `m.reference` - lets you define an event which references an existing event.
-   When aggregated, currently doesn't do anything special, but in future could bundle
-   chains of references (i.e. threads).
-   These are primarily intended for handling replies (and in future threads).
+We consciously do not support multiple different relations within a single event,
+in order to keep the API simple, and in the absence of identifiable use cases.
+Instead, one would send multiple events, each with its own `m.relationship`
+defined.
 
-This model has been designed for scenarios where the relationship is known between
-two events at the point that the 2nd event is sent.  Therefore, extensible info about
-the relationship is intended to be stored in the 2nd event, rather than the relation
-itself.  For instance, to distinguish different types of references (in_reply_to v. refers
-v. cites v. quotes) you would look at the fields of the 2nd event.  Alternatively, one
-could add fields to the `m.relates_to` object.
+### Relation types
 
-    XXX: do we want to support multiple parents for a m.reference event, if a given event
-    references different parents in different ways?
+This proposal defines three `rel_type`s, each which provide different behaviour
+when aggregated:
 
-In future, it may be desirable to send relationship events which link together two
-events retrospectively - e.g. an `m.duplicate` event with an `m.link` relation type
-might be a way to flag that existing 2 events are somehow duplicates of each other.
-However, this would be defined as an entirely different relation type of `m.link`,
-which might bundle together both referenced events when aggregated.
+ * `m.annotation` - Intended primarily for handling emoji reactions, these let
+   you define an event which annotates an existing event. The annotations are
+   typically presented alongside the event. When aggregated, it groups events
+   together based on their `key` and returns a `count`.  Another usage of an
+   annotation is e.g. for bots, who could use annotations to report the
+   success/failure or progress of a command.
 
-## Context
-
-Today, replies looks like:
+For example, an `m.reaction` event which `annotates` an existing event with a 👍
+looks like:
 
 ```json
-"type": "m.room.message",
-"content": {
-    "m.relates_to": {
-        "m.in_reply_to": {
-            "event_id": "$another:event.com"
+{
+    "type": "m.reaction",
+    "content": {
+        "m.relationship": {
+            "rel_type": "m.annotation",
+            "event_id": "$some_event_id",
+            "key": "👍"
         }
     }
 }
 ```
 
-`m.relates_to` is the signal to the server that the fields within describe
-an aggregation operation.
+ * `m.replace` - Intended primarily for handling edits, these let you define
+   an event which replaces an existing event.  When aggregated, returns the
+   most recent replacement event.  The replacement event must contain an
+   `m.new_content` which defines the replacement content (allowing the normal
+   `body` fields to be used for a fallback for clients who do not understand
+   replacement events).
 
-We would like to add support for other types of relations, including message
-editing and reactions.
-
-We take the opportunity to simplify m.relates_to to avoid giving the impression
-that relation types are mixins and that you can send multiple different type of
-relations for a given event, and we define new relation types to describe the
-different classes of aggregations.
+For instance, an `m.room.message` which `replaces` an existing event looks like:
 
 ```json
-"type": "m.room.message",
-"content": {
-    "m.relates_to": {
-        "rel_type": "m.reference",
-        "event_id": "$another:event.com"
+{
+    "type": "m.room.message",
+    "content": {
+        "body": "s/foo/bar/",
+        "msgtype": "m.text",
+        "m.new_content": {
+            "body": "Hello! My name is bar",
+            "msgtype": "m.text",
+        },
+        "m.relates_to": {
+            "rel_type": "m.replace",
+            "event_id": "$some_event_id",
+        }
     }
 }
 ```
 
-    TODO: given we're changing the shape, should we rename the new type as
-    `m.relation` or something, to distinguish from the old `m.relates_to`
-    type?
+ * `m.reference` - Intended in future for handling replies and threading,
+   these let you define an event which references an existing event. When
+   aggregated, currently doesn't do anything special, but in future could
+   bundle chains of references (i.e. threads). These do not yet replace
+   `m.relates_to`-style replies however.
 
-    FIXME: Or should we jump straight to m.reference, m.annotation, m.replace
-    as top level mixin types?  Erik would prefer not to, as grouping them all
-    under `m.relates_to` makes it very clear that they should not be E2E encrypted
-    etc.  In fact, we could even move this outside of `contents`?
+For instance, an `m.room.message` which `references` an existing event
+would look like:
 
-Relation events are then aggregated together based on the behaviour implied by
-their `rel_type`, and bundled appropriately their target event when you /sync.
-Additional APIs are available to send relations and paginate them.
+```json
+"type": "m.room.message",
+"content": {
+    "body": "i <3 shelties",
+    "m.relationship": {
+        "rel_type": "m.reference",
+        "event_id": "$another_event_id"
+    }
+}
+```
 
-## Types of relations
+Different subtypes of references could be defined through additional fields on
+the `m.relationship` object, to distinguish between replies, threads, etc.
+This MSC doesn't attempt to define these subtypes.
 
-This proposal defines three types of relations: annotations, replacements and
-references.
+  XXX: do we want to support multiple parents for a m.reference event, if a given event
+  references different parents in different ways?
 
- * Annotations are things like reactions, which should be displayed alongside the
-original event. These should support being aggregated so that e.g. if twenty peoples
-"like" an event we can bundle the twenty events together when sending the
-original event to clients. Another usage of an annotation is e.g. for bots, who
-could use annotations to report the success/failure or progress of a command.
+### Sending relations
 
- * Replacements are essentially edits, and indicate that instead of giving clients
-the original event they should be handed the replacement event instead. Clients
-should be able to request all replacements of an event, i.e. the "edit history".
 
- * References are things like replies, where a later event refers to an earlier event
-in some way. The server should include references when sending an event to the
-client so they can display the number of replies, and navigate easily to them.
 
-These types effect how the server bundles the related events with the original,
-and so the type must be known to servers when handling relations. However, the
-exact semantics of a particular relation only needs to be known by clients. This
-means that if we include the relation type in the related event we can use the
-event type to easily add new types of e.g annotations without requiring server
-side support.
 
-## Aggregating and paginating relations
+### Aggregating and paginating relations
+
+Relations may be sent to clients 
 
 In large rooms an event may end up having a large number of related events, and
 so we do not want to have to include all relations when sending the event to the
@@ -212,28 +203,7 @@ that the aggregation `key` is the unicode reaction itself.
 }
 ```
 
-    TODO: This limits an event to only having one relation, on the assumption
-    that there are no use cases and that it will make life simpler.
-
 An edit would be:
-
-```json
-{
-    "type": "m.room.message",
-    "content": {
-        "body": "s/foo/bar/",
-        "msgtype": "m.text",
-        "m.new_content": {
-            "body": "Hello! My name is bar",
-            "msgtype": "m.text",
-        },
-        "m.relates_to": {
-            "rel_type": "m.replace",
-            "event_id": "$some_event_id",
-        }
-    }
-}
-```
 
 An event that has relations bundled alongside it then looks like:
 
@@ -422,6 +392,34 @@ GET /_matrix/client/r0/rooms/!asd:matrix.org/aggregations/$1cd23476/m.annotation
   "prev_batch": "some_token"
 }
 ```
+
+### Client Server API
+
+
+To receive relations:
+
+Relation events are then aggregated together based on the behaviour implied by
+their `rel_type`, and bundled appropriately their target event when you /sync.
+Additional APIs are available to send relations and paginate them.
+
+To send relations:
+
+
+Clients receive relations as normal events in /sync (aka 'unbundled relations'),
+or may also be aggregated together by the server, and presented as
+a 'bundle' attached to the original event.
+
+Bundles of relations for a given event are
+paginated to prevent overloading the client with relations, and may be traversed by
+via the new `/relations` API (which iterates over all relations for an event) or the
+new `/aggregations` API (which iterates over the groups of relations, or the relations
+within a group).
+
+
+### E2E Encryption
+
+
+
 
 ## Edge cases
 
