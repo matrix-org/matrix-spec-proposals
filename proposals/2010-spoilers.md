@@ -32,8 +32,8 @@ Without reason:
 {
     "msgtype": "m.text",
     "format": "org.matrix.custom.html",
-    "body": "Hello there, the movie was (Spoiler: awesome)",
-    "formatted_body": "Hello there, the movie was [Spoiler](mxc://someserver/somefile)"
+    "body": "Hello there, the movie was [spoiler](mxc://someserver/somefile)",
+    "formatted_body": "Hello there, the movie was <span data-mx-spoiler>awesome</span>"
 }
 ```
 With reason:
@@ -41,8 +41,8 @@ With reason:
 {
     "msgtype": "m.text",
     "format": "org.matrix.custom.html",
-    "body": "Hey (Spoiler for movie: the movie was awesome)",
-    "formatted_body": "Hey [Spoiler for movie](mxc://someserver/somefile)"
+    "body": "Hey [Spoiler for movie](mxc://someserver/somefile)",
+    "formatted_body": "Hey <span data-mx-spoiler="movie">the movie was awesome</span>"
 }
 ```
 
