@@ -57,12 +57,20 @@ All current endpoints within `/_matrix/identity/api/v1/` will be duplicated
 into `/_matrix/identity/v2`, noting that MSC2134 changes the behaviour of lookups. Authentication is still expected on MSC2134's proposed endpoints.
 
 Any request to any endpoint within `/_matrix/identity/v2`, with the exception
-of `/_matrix/identity/v2` and the new `/_matrix/identity/v2/account/register`
-and `GET /_matrix/identity/v2/terms` may return an error with `M_UNAUTHORIZED`
-errcode with HTTP status code 401. This indicates that the user must
-authenticate with OpenID and supply a valid `access_token`.
+of `/_matrix/identity/v2`, any `requestToken` endpoint and the new
+`/_matrix/identity/v2/account/register` and `GET /_matrix/identity/v2/terms`
+may return an error with `M_UNAUTHORIZED` errcode with HTTP status code 401.
+This indicates that the user must authenticate with OpenID and supply a valid
+`access_token`.
 
-These endpoints require authentication by the client supplying an access token
+`requestToken` endpoints are excluded from the auth check because they are used
+in the registration process before the user has an MXID and therefore cannot
+log in with OpenID. It is up to the IS to manage its privacy obligations
+appropriately when fulfilling these requests, bearing in mind that the user has
+not explictly incicated their agreement to any documents, and may abort the
+registration process without doing so.
+
+All other endpoints require authentication by the client supplying an access token
 either via an `Authorization` header with a `Bearer` token or an `access_token`
 query parameter.
 
