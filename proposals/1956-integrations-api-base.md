@@ -72,6 +72,7 @@ A new Integrations API be introduced into Matrix which consists of the component
   * Includes [MSC1951](https://github.com/matrix-org/matrix-doc/pull/1951)
   * Includes [MSC1959](https://github.com/matrix-org/matrix-doc/pull/1959)
 * Authentication in integration managers - [MSC1961](https://github.com/matrix-org/matrix-doc/pull/1961)
+* Terms of service / policies - [MSC2140](https://github.com/matrix-org/matrix-doc/pull/2140)
 * Integration manager specific APIs
   * MSC and scope not yet defined
 
