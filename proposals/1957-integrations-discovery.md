@@ -106,6 +106,30 @@ Integration managers shown in this way must be treated like widgets, regardless 
 this means exposing the Widget API to the manager and applying necessary scoping to keep the manager
 as an account widget rather than a room widget.
 
+#### Discovering a manager by only the domain name
+
+Clients may wish to ask users for a single canonical domain name so they can find the manager to add
+to the user's account transparently. Similar to the .well-known discovery done by servers (and clients
+during login), clients which have an integrations domain (eg: "example.org") make a regular HTTPS
+request to `https://example.org/.well-known/matrix/integrations` which returns an object which looks
+like the following:
+```json
+{
+    "m.integrations_widget": {
+        "url": "https://integrations.example.org/ui?displayName=$matrix_display_name",
+        "data": {
+            "api_url": "https://integrations.example.org"
+        }
+    }
+}
+```
+
+The response should be parsed as JSON. If the endpoint returns an error or is missing the `m.integrations_widget`
+property, the client should assume there is no integrations manager running on that domain. The
+`m.integrations_widget` is an object which has the exact same format as the account widget for
+an integration manager, described above. The client should wrap the object verbatim into the appropriate
+account data location.
+
 
 ## Tradeoffs
 
