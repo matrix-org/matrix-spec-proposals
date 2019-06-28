@@ -64,7 +64,7 @@ paths:
             A transaction containing the PDUs that preceded the given event(s), including the given
             event(s), up to the given limit.
           schema:
-            $ref: "definitions/transaction.yaml"
+            $ref: "definitions/unlimited_pdu_transaction.yaml"
   "/get_missing_events/{roomId}":
     post:
       summary: Retrieves events that the sender is missing

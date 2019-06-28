@@ -27,7 +27,9 @@ known by the homeserver).
 The 200 response is a JSON object with an `id_server_unbind_result` field whose
 value is either `success` or `no-support`, where the latter indicates that the
 identity server (IS) does not support unbinding 3PIDs directly. If the identity
-server returns an error then that should be returned to the client.
+server returns an error then that should be returned to the client. If the homeserver
+is unable to determine an `id_server` to use, it should return `no-support` for
+the `id_server_unbind_result`.
 
 Example:
 
@@ -55,12 +57,12 @@ from the given identity server.
 
 ### Identity Server 3PID Unbind API
 
-Add `POST /_matrix/identity/api/v1/unbind` with `mxid` and `threepid` fields.
+Add `POST /_matrix/identity/api/v1/3pid/unbind` with `mxid` and `threepid` fields.
 The `mxid` is the user's `user_id` and `threepid` is a dict with the usual
 `medium` and `address` fields.
 
 If the server returns a 400, 404 or 501 HTTP error code then the homeserver
-should assume that the identity server doesn't support the `/unbind` API, unless
+should assume that the identity server doesn't support the `/3pid/unbind` API, unless
 it returns a specific matrix error response (i.e. the body is a JSON object with
 `error` and `errcode` fields).
 
@@ -73,7 +75,7 @@ The identity server should authenticate the request in one of two ways:
 Example:
 
 ```
-POST /_matrix/identity/api/v1/unbind HTTP/1.1
+POST /_matrix/identity/api/v1/3pid/unbind HTTP/1.1
 
 {
     "mxid": "@foobar:example.com",

@@ -13,16 +13,20 @@ Proposals for Spec Changes to Matrix
 If you are interested in submitting a change to the Matrix Specification,
 please take note of the following guidelines.
 
-All changes to Specification content require a formal proposal process. This
-involves writing a proposal, having it reviewed by everyone, having the
-proposal being accepted, then actually having your ideas implemented as
-committed changes to the `Specification repository
+Most changes to the Specification require a formal proposal. Bug fixes, typos,
+and clarifications to existing behaviour do not need proposals - see the
+`contributing guide <https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst>`_
+for more information on what does and does not need a proposal.
+
+The proposal process involves some technical writing, having it reviewed by
+everyone, having the proposal being accepted, then actually having your ideas
+implemented as committed changes to the `Specification repository
 <https://github.com/matrix-org/matrix-doc>`_.
 
 Meet the `members of the Core Team
-<https://github.com/orgs/matrix-org/teams/spec-core-team/members>`_, a group of
+<https://matrix.org/foundation>`_, a group of
 individuals tasked with ensuring the spec process is as smooth and painless as
-possible. Members of the Core Team will do their best to participate in
+possible. Members of the Spec Core Team will do their best to participate in
 discussion, summarise when things become long-winded, and generally try to act
 towards the benefit of everyone. As a majority, team members have the ability
 to change the state of a proposal, and individually have the final say in
@@ -33,14 +37,15 @@ Guiding Principles
 
 Proposals **must** act to the greater benefit of the entire Matrix ecosystem,
 rather than benefiting or privileging any single player or subset of players -
-and must not contain any patent encumbered intellectual property. Members of the Core Team pledge to act as
-a neutral custodian for Matrix on behalf of the whole ecosystem.
+and must not contain any patent encumbered intellectual property. Members of
+the Core Team pledge to act as a neutral custodian for Matrix on behalf of the
+whole ecosystem.
 
 For clarity: the Matrix ecosystem is anyone who uses the Matrix protocol. That
 includes client users, server admins, client developers, bot developers,
-bridge and application service developers, users and admins who are indirectly using Matrix via
-3rd party networks which happen to be bridged, server developers, room
-moderators and admins, companies/projects building products or services on
+bridge and application service developers, users and admins who are indirectly
+using Matrix via 3rd party networks which happen to be bridged, server developers,
+room moderators and admins, companies/projects building products or services on
 Matrix, spec contributors, translators, and those who created it in
 the first place.
 
@@ -52,19 +57,110 @@ the first place.
 * the number of online servers in the open federation
 * the number of developers building on Matrix
 * the number of independent implementations which use Matrix
-* the quality and utility of the Matrix spec
+* the number of bridged end-users reachable on the open Matrix network
+* the signal-to-noise ratio of the content on the open Matrix network (i.e. minimising spam)
+* the ability for users to discover content on their terms (empowering them to select what to see and what not to see)
+* the quality and utility of the Matrix spec (as defined by ease and ability
+  with which a developer can implement spec-compliant clients, servers, bots,
+  bridges, and other integrations without needing to refer to any other
+  external material)
 
 In addition, proposal authors are expected to uphold the following values in
 their proposed changes to the Matrix protocol:
 
 * Supporting the whole long-term ecosystem rather than individual stakeholder gain
-* Openness rather than proprietariness
+* Openness rather than proprietary lock-in
+* Interoperability rather than fragmentation
+* Cross-platform rather than platform-specific
 * Collaboration rather than competition
 * Accessibility rather than elitism
 * Transparency rather than stealth
 * Empathy rather than contrariness
 * Pragmatism rather than perfection
 * Proof rather than conjecture
+
+Please see [MSC1779](https://github.com/matrix-org/matrix-doc/blob/matthew/msc1779/proposals/1779-open-governance.md)
+for full details of the project's Guiding Principles.
+
+Technical notes
+---------------
+
+Proposals **must** develop Matrix as a layered protocol: with new features
+building on layers of shared abstractions rather than introducing tight vertical
+coupling within the stack.  This ensures that new features can evolve rapidly by
+building on existing layers and swapping out old features without impacting the
+rest of the stack or requiring substantial upgrades to the whole ecosystem.
+This is critical for Matrix to rapidly evolve and compete effectively with
+centralised systems, despite being a federated protocol.
+
+For instance, new features should be implemented using the highest layer
+abstractions possible (e.g. new event types, which layer on top of the existing
+room semantics, and so don't even require any API changes). Failing that, the
+next recourse would be backwards-compatible changes to the next layer down (e.g.
+room APIs); failing that, considering changes to the format of events or the
+DAG; etc.  It would be a very unusual feature which doesn't build on the
+existing infrastructure provided by the spec and instead created new primitives
+or low level APIs.
+
+Backwards compatibility is very important for Matrix, but not at the expense of
+hindering the protocol's evolution.  Backwards incompatible changes to endpoints
+are allowed when no other alternative exists, and must be versioned under a new
+major release of the API.  Backwards incompatible changes to the room algorithm
+are also allowed when no other alternative exists, and must be versioned under a
+new version of the room algorithm.
+
+There is sometimes a dilemma over where to include higher level features: for
+instance, should video conferencing be formalised in the spec, or should it be
+implemented via widgets? Should reputation systems be specified? Should search
+engine behaviour be specified?
+
+There is no universal answer to this, but the following guidelines should be
+applied:
+
+1. If the feature would benefit the whole Matrix ecosystem and is aligned with
+   the guiding principles above, then it should be supported by the spec.
+2. If the spec already makes the feature possible without changing any of the
+   implementations and spec, then it may not need to be added to the spec.
+3. However, if the best user experience for a feature does require custom
+   implementation behaviour then the behaviour should be defined in the spec
+   such that all implementations may implement it.
+4. However, the spec must never add dependencies on unspecified/nonstandardised
+   3rd party behaviour.
+
+As a worked example:
+
+1. Video conferencing is clearly a feature which would benefit
+   the whole ecosystem, and so the spec should find a way to make it happen.
+2. Video conferencing can be achieved by widgets without requiring any
+   compulsory changes to changes to clients nor servers to work, and so could be
+   omitted from the spec.
+3. A better experience could be achieved by embedding Jitsi natively into clients
+   rather than using a widget...
+4. ...except that would add a dependency on unspecified/nonstandardised 3rd party
+   behaviour, so must not be added to the spec.
+
+Therefore, our two options in the specific case of video conferencing are
+either to spec SFU conferencing semantics for WebRTC (or refer to an existing spec
+for doing so), or to keep it as a widget-based approach (optionally with widget
+extensions specific for more deeply integrating video conferencing use cases).
+
+As an alternative example: it's very unlikely that "how to visualise Magnetic
+Resonsance Imaging data over Matrix" would ever be added to the Matrix spec
+(other than perhaps a custom event type in a wider standardised Matrix event
+registry) given that the spec's existing primitives of file transfer and
+extensible events (MSC1767) give excellent tools for transfering and
+visualising arbitrary rich data.
+
+Supporting public search engines are likely to not require custom spec features
+(other than possibly better bulk access APIs), given they can be implemented as
+clients using the existing CS API.  An exception could be API features required
+by decentralised search infrastructure (avoiding centralisation of power by
+a centralised search engine).
+
+Features such as reactions, threaded messages, editable messages,
+spam/abuse/content filtering (and reputation systems), are all features which
+would clearly benefit the whole Matrix ecosystem, and cannot be implemented in an
+interoperable way using the current spec; so they necessitate a spec change.
 
 Process
 -------
@@ -124,25 +220,25 @@ follows:
     viewpoints and get consensus, but this can sometimes be time-consuming (or
     the author may be biased), in which case an impartial 'shepherd' can be
     assigned to help guide the proposal through this process instead. A shepherd is
-    typically a neutral party from the Core Team or an experienced member of
+    typically a neutral party from the Spec Core Team or an experienced member of
     the community. There is no formal process for assignment. Simply ask for a
     shepherd to help get your proposal through and one will be assigned based
     on availability. Having a shepherd is not a requirement for proposal
     acceptance.
 
-- Members of the Core Team and community will review and discuss the PR in the
+- Members of the Spec Core Team and community will review and discuss the PR in the
   comments and in relevant rooms on Matrix. Discussion outside of GitHub should
   be summarised in a comment on the PR.
-- When a member of the Core Team believes that no new discussion points are
+- When a member of the Spec Core Team believes that no new discussion points are
   being made, they will propose a motion for a final comment period (FCP),
   along with a *disposition* of either merge, close or postpone. This FCP is
   provided to allow a short period of time for any invested party to provide a
   final objection before a major decision is made. If sufficient reasoning is
   given, an FCP can be cancelled. It is often preceded by a comment summarising
   the current state of the discussion, along with reasoning for its occurrence.
-- A concern can be raised by a Core Team member at any time, which will block
-  an FCP from beginning. An FCP will only begin when a **75% majority** of core
-  team members agree on its outcome, and all existing concerns have been
+- A concern can be raised by a Spec Core Team member at any time, which will block
+  an FCP from beginning. An FCP will only begin when 75% of the members of the
+  Spec Core Team team agree on its outcome, and all existing concerns have been
   resolved.
 - The FCP will then begin and last for 5 days, giving anyone else some time to
   speak up before it concludes. On its conclusion, the disposition of the FCP
@@ -232,7 +328,7 @@ Lifetime States
 Name                             GitHub Label                   Description
 ===============================  =============================  ====================================
 Proposal Drafting and Feedback   N/A                            A proposal document which is still work-in-progress but is being shared to incorporate feedback. Please prefix your proposal's title with ``[WIP]`` to make it easier for reviewers to skim their notifications list.
-Proposal In Review               proposal-in-review             A proposal document which is now ready and waiting for review by the Core Team and community
+Proposal In Review               proposal-in-review             A proposal document which is now ready and waiting for review by the Spec Core Team and community
 Proposed Final Comment Period    proposed-final-comment-period  Currently awaiting signoff of a 75% majority of team members in order to enter the final comment period
 Final Comment Period             final-comment-period           A proposal document which has reached final comment period either for merge, closure or postponement
 Final Commment Period Complete   finished-final-comment-period  The final comment period has been completed. Waiting for a demonstration implementation
@@ -242,6 +338,7 @@ Spec PR Merged                   merged                         A proposal with 
 Postponed                        proposal-postponed             A proposal that is temporarily blocked or a feature that may not be useful currently but perhaps
                                                                 sometime in the future
 Closed                           proposal-closed                A proposal which has been reviewed and deemed unsuitable for acceptance
+Obsolete                         obsolete                       A proposal which has been made obsolete by another proposal or decision elsewhere.
 ===============================  =============================  ====================================
 
 
@@ -253,7 +350,7 @@ pull request trackers of the `matrix-doc
 <https://github.com/matrix-org/matrix-doc>`_ repo.
 
 We use labels and some metadata in MSC PR descriptions to generate this page.
-Labels are assigned by the Core Team whilst triaging the proposals based on those
+Labels are assigned by the Spec Core Team whilst triaging the proposals based on those
 which exist in the `matrix-doc <https://github.com/matrix-org/matrix-doc>`_
 repo already.
 

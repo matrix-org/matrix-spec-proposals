@@ -1,4 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
+.. Copyright 2019 The Matrix.org Foundation C.I.C.
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -116,6 +117,16 @@ have received.
 
 {{notifications_cs_http_api}}
 
+Receiving notifications
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Servers MUST include the number of unread notifications in a client's ``/sync``
+stream, and MUST update it as it changes. Notifications are determined by the
+push rules which apply to an event.
+
+When the user updates their read receipt (either by using the API or by sending an
+event), notifications prior to and including that event MUST be marked as read.
+
 Push Rules
 ~~~~~~~~~~
 A push rule is a single rule that states under what *conditions* an event should
@@ -177,7 +188,7 @@ notification is delivered for a matching event. The following actions are define
   This prevents each matching event from generating a notification
 ``coalesce``
   This enables notifications for matching events but activates homeserver
-  specific behaviour to intelligently coalesce multiple events into a single 
+  specific behaviour to intelligently coalesce multiple events into a single
   notification. Not all homeservers may support this. Those that do not support
   it should treat it as the ``notify`` action.
 ``set_tweak``
@@ -364,6 +375,37 @@ Definition:
             },
             {
                 "set_tweak": "highlight"
+            }
+        ]
+    }
+
+
+``.m.rule.tombstone``
+`````````````````````
+Matches any event whose type is ``m.room.tombstone``. This is intended
+to notify users of a room when it is upgraded, similar to what an
+``@room`` notification would accomplish.
+
+Definition:
+
+.. code:: json
+
+    {
+        "rule_id": ".m.rule.tombstone",
+        "default": true,
+        "enabled": true,
+        "conditions": [
+            {
+                "kind": "event_match",
+                "key": "type",
+                "pattern": "m.room.tombstone"
+            }
+        ],
+        "actions": [
+            "notify",
+            {
+                "set_tweak": "highlight",
+                "value": true
             }
         ]
     }
@@ -599,7 +641,7 @@ Definition:
 Conditions
 ++++++++++
 
-Override, Underride and Default Rules MAY have a list of 'conditions'. 
+Override, Underride and Default Rules MAY have a list of 'conditions'.
 All conditions must hold true for an event in order to apply the ``action`` for
 the event. A rule with no conditions always matches. Room, Sender, User and
 Content rules do not have conditions in the same way, but instead have

@@ -58,38 +58,9 @@ paths:
           name: third_party_signed
           schema:
             type: object
-            example: {
-                "third_party_signed": {
-                  "sender": "@cat:the.hat",
-                  "mxid": "@green:eggs.ham",
-                  "token": "random8nonce",
-                  "signatures": {
-                    "horton.hears": {
-                      "ed25519:0": "some9signature"
-                    }
-                  }
-                }
-              }
             properties:
               third_party_signed:
-                type: object
-                title: ThirdPartySigned
-                description: A signature of an ``m.third_party_invite`` token to prove that this user owns a third party identity which has been invited to the room.
-                properties:
-                  sender:
-                    type: string
-                    description: The Matrix ID of the user who issued the invite.
-                  mxid:
-                    type: string
-                    description: The Matrix ID of the invitee.
-                  token:
-                    type: string
-                    description: The state key of the m.third_party_invite event.
-                  signatures:
-                    type: object
-                    description: A signatures object containing a signature of the entire signed object.
-                    title: Signatures
-                required: ["sender", "mxid", "token", "signatures"]
+                $ref: "definitions/third_party_signed.yaml"
       responses:
         200:
           description: |-
@@ -163,45 +134,9 @@ paths:
           name: third_party_signed
           schema:
             type: object
-            example: {
-                "third_party_signed": {
-                  "signed": {
-                    "sender": "@cat:the.hat",
-                    "mxid": "@green:eggs.ham",
-                    "token": "random8nonce",
-                    "signatures": {
-                      "horton.hears": {
-                        "ed25519:0": "some9signature"
-                      }
-                    }
-                  }
-                }
-              }
             properties:
               third_party_signed:
-                type: object
-                title: ThirdPartySigned
-                description: A signature of an ``m.third_party_invite`` token to prove that this user owns a third party identity which has been invited to the room.
-                properties:
-                  signed:
-                    type: object
-                    title: Signed
-                    properties:
-                      sender:
-                        type: string
-                        description: The Matrix ID of the user who issued the invite.
-                      mxid:
-                        type: string
-                        description: The Matrix ID of the invitee.
-                      token:
-                        type: string
-                        description: The state key of the m.third_party_invite event.
-                      signatures:
-                        type: object
-                        description: A signatures object containing a signature of the entire signed object.
-                        title: Signatures
-                    required: ["sender", "mxid", "token", "signatures"]
-                required: ["signed"]
+                $ref: "definitions/third_party_signed.yaml"
       responses:
         200:
           description: |-
