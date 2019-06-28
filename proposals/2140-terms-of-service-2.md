@@ -259,9 +259,10 @@ to their own MXIDs.
 This introduces a different way of accepting terms from the client/server API
 which uses User-Interactive Authentication. In the client/server API, the use
 of UI auth allows terms acceptance to be integrated into the registration flow
-in a simple and backwards-compatible way. Indtroducing the UI Auth mechanism
-into these other APIs would add significant complexity, so this functionality
-has been provided with simpler, dedicated endpoints.
+in a simple and backwards-compatible way. Another option here would be to use
+UI Auth on the register endpoint. This would also not allow users to register
+before accepting the terms. However, this would then make the OpenID
+registration process different and non-standard.
 
 The `m.accepted_terms` section contains only URLs of the documents that
 have been agreed to. This loses information like the name and version of
