@@ -54,7 +54,8 @@ and adds authentication to accross the Identity Service API.
 ### IS API Authentication
 
 All current endpoints within `/_matrix/identity/api/v1/` will be duplicated
-into `/_matrix/identity/v2`, noting that MSC2134 changes the behaviour of lookups. Authentication is still expected on MSC2134's proposed endpoints.
+into `/_matrix/identity/v2`, noting that MSC2134 changes the behaviour of
+lookups. Authentication is still expected on MSC2134's proposed endpoints.
 
 Any request to any endpoint within `/_matrix/identity/v2`, with the exception
 of:
