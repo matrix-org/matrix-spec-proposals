@@ -224,7 +224,7 @@ may return:
 
  * `M_UNAUTHORIZED` errcode with HTTP status code 401. This indicates that
    the user must authenticate with OpenID and supply a valid `access_token`.
- * `M_CONSENT_NOT_GIVEN` errcode. This indicates that the user must agree to
+ * `M_TERMS_NOT_SIGNED` errcode. This indicates that the user must agree to
    (new) terms in order to use or continue to use the service.
 
 The `_matrix/identity/v2/3pid/unbind` must not return either of these
