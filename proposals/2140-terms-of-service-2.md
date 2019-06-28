@@ -175,6 +175,9 @@ any one language of each document as sufficient, regardless of what language a
 client is operating in: users should not have to re-consent to documents if
 they change their client to a different language.
 
+The server responds with an empty JSON object. The server must not assume that
+the client will agree to all documents in a single request.
+
 ### Accepted Terms Account Data
 
 This proposal also defines the `m.accepted_terms` section in User Account
