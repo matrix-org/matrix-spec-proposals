@@ -5,7 +5,6 @@ targets:
   client_server:
     files:
       - client_server_api.rst
-      - { 1: events.rst }
       - { 1: modules.rst }
       - { 2: feature_profiles.rst }
       - { 2: "group:modules" }  # reference a group of files
@@ -38,6 +37,14 @@ targets:
     files:
       - rooms/v3.rst
     version_label: v3
+  rooms@v4: # this is translated to be rooms/v4.html
+    files:
+      - rooms/v4.rst
+    version_label: v4
+  rooms@v5: # this is translated to be rooms/v5.html
+    files:
+      - rooms/v5.rst
+    version_label: v5
   appendices:
     files:
       - appendices.rst
@@ -83,6 +90,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/server_acls.rst
     - modules/mentions.rst
     - modules/room_upgrades.rst
+    - modules/server_notices.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`", "@", ":"]

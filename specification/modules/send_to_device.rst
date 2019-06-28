@@ -63,7 +63,7 @@ If the client sends messages to users on remote domains, those messages should
 be sent on to the remote servers via
 `federation`_.
 
-.. _`federation`: ../server_server/latest.html#send-to-device-messaging
+.. _`federation`: ../server_server/%SERVER_RELEASE_LABEL%.html#send-to-device-messaging
 
 .. TODO-spec:
 
@@ -108,7 +108,7 @@ to_device ToDevice  Optional. Information on the send-to-device messages
 ========= ========= =============================================
 Parameter Type      Description
 ========= ========= =============================================
-events    [Event]   List of send-to-device messages
+events    [Event]   List of send-to-device messages.
 ========= ========= =============================================
 
 ``Event``

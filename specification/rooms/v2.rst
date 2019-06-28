@@ -161,7 +161,7 @@ The *resolution* of a set of states is obtained as follows:
    resolved state.
 
 
-.. _`authorization rules`: ../server_server/r0.1.1.html#authorization-rules
+.. _`authorization rules`: ../server_server/%SERVER_RELEASE_LABEL%.html#authorization-rules
 
 Rejected events
 +++++++++++++++
