@@ -8,7 +8,8 @@ manager. This proposal covers the authentication portion of that API.
 
 All specified APIs (except `/register`) will take an `Authorization` header with a `Bearer` token returned
 from a call to `/register`. This token is used to authorize the request and to identify who is making the
-request.
+request. The token may also be specified as the `access_token` query string parameter, similar to the
+Client-Server API.
 
 #### POST /_matrix/integrations/v1/account/register
 
