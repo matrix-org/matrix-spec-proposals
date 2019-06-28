@@ -50,31 +50,66 @@ paths:
         requests to ``/_matrix/identity/api/v1/pubkey/ephemeral/isvalid``.
 
         Currently, invites may only be issued for 3pids of the ``email`` medium.
+
+        Optional fields in the request should be populated to the best of the
+        server's ability. Identity servers may use these variables when notifying
+        the ``address`` of the pending invite for display purposes.
       operationId: storeInvite
       parameters:
         - in: body
           name: body
           schema:
             type: object
-            example: {
-              "medium": "email",
-              "address": "foo@bar.baz",
-              "room_id": "!something:example.tld",
-              "sender": "@bob:example.com"
-            }
             properties:
               medium:
                 type: string
                 description: The literal string ``email``.
+                example: "email"
               address:
                 type: string
                 description: The email address of the invited user.
+                example: "foo@example.com"
               room_id:
                 type: string
                 description: The Matrix room ID to which the user is invited
+                example: "!something:example.org"
               sender:
                 type: string
                 description: The Matrix user ID of the inviting user
+                example: "@bob:example.com"
+              room_alias:
+                type: string
+                description: |-
+                  The Matrix room alias for the room to which the user is
+                  invited. This should be retrieved from the ``m.room.canonical_alias``
+                  state event.
+                example: "#somewhere:exmaple.org"
+              room_avatar_url:
+                type: string
+                description: |-
+                  The Content URI for the room to which the user is invited. This should
+                  be retrieved from the ``m.room.avatar`` state event.
+                example: "mxc://example.org/s0meM3dia"
+              room_join_rules:
+                type: string
+                description: |-
+                  The ``join_rule`` for the room to which the user is invited. This should
+                  be retrieved from the ``m.room.join_rules`` state event.
+                example: "public"
+              room_name:
+                type: string
+                description: |-
+                  The name of the room to which the user is invited. This should be retrieved
+                  from the ``m.room.name`` state event.
+                example: "Bob's Emporium of Messages"
+              sender_display_name:
+                type: string
+                description: The display name of the user ID initiating the invite.
+                example: "Bob Smith"
+              sender_avatar_url:
+                type: string
+                description: The Content URI for the avatar of the user ID initiating the invite.
+                example: "mxc://example.org/an0th3rM3dia"
             required: ["medium", "address", "room_id", "sender"]
       responses:
         200:

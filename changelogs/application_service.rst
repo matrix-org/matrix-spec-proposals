@@ -1,3 +1,13 @@
+r0.1.1
+======
+
+Spec Clarifications
+-------------------
+
+- Change examples to use example.org instead of a real domain. (`#1650 <https://github.com/matrix-org/matrix-doc/issues/1650>`_)
+- Add missing definition for how appservices verify requests came from a homeserver. (`#2037 <https://github.com/matrix-org/matrix-doc/issues/2037>`_)
+
+
 r0.1.0
 ======
 

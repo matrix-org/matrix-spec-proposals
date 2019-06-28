@@ -10,7 +10,7 @@
             "properties": {
                 "call_id": {
                     "type": "string",
-                    "description": "A unique identifer for the call."
+                    "description": "A unique identifier for the call."
                 },
                 "offer": {
                     "type": "object",

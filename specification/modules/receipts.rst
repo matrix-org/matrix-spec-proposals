@@ -26,7 +26,8 @@ to a homeserver. To prevent this from becoming a problem, receipts are implement
 using "up to" markers. This marker indicates that the acknowledgement applies
 to all events "up to and including" the event specified. For example, marking
 an event as "read" would indicate that the user had read all events *up to* the
-referenced event.
+referenced event. See the `Receiving notifications <#receiving-notifications>`_
+section for more information on how read receipts affect notification counts.
 
 Events
 ------
@@ -60,7 +61,8 @@ Clients should send read receipts when there is some certainty that the event in
 question has been **displayed** to the user. Simply receiving an event does not
 provide enough certainty that the user has seen the event. The user SHOULD need
 to *take some action* such as viewing the room that the event was sent to or
-dismissing a notification in order for the event to count as "read".
+dismissing a notification in order for the event to count as "read". Clients
+SHOULD NOT send read receipts for events sent by their own user.
 
 A client can update the markers for its user by interacting with the following
 HTTP APIs.
@@ -94,4 +96,3 @@ Security considerations
 
 As receipts are sent outside the context of the event graph, there are no
 integrity checks performed on the contents of ``m.receipt`` events.
-

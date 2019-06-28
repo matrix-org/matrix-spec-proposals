@@ -20,6 +20,10 @@ allOf:
   - $ref: "unsigned_pdu_base.yaml"
   - type: object
     properties:
+      redacts:
+        type: string
+        description: For redaction events, the ID of the event being redacted.
+        example: "$def/456+oldevent"
       auth_events:
         type: array
         items:

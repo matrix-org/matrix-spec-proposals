@@ -59,6 +59,8 @@ TARGETS = os.path.join(matrix_doc_dir, "specification/targets.yaml")
 ROOM_EVENT = "core-event-schema/room_event.yaml"
 STATE_EVENT = "core-event-schema/state_event.yaml"
 
+SAS_EMOJI_JSON = os.path.join(matrix_doc_dir, "data-definitions/sas-emoji.json")
+
 logger = logging.getLogger(__name__)
 
 # a yaml Loader which loads mappings into OrderedDicts instead of regular
@@ -521,6 +523,7 @@ class MatrixUnits(Units):
         path_template = path
         example_query_params = []
         example_body = ""
+        example_mime = "application/json"
         for param in endpoint_swagger.get("parameters", []):
             # even body params should have names, otherwise the active docs don't work.
             param_name = param["name"]
@@ -532,6 +535,10 @@ class MatrixUnits(Units):
                     self._handle_body_param(param, endpoint)
                     example_body = get_example_for_param(param)
                     continue
+
+                if param_loc == "header":
+                    if param["name"] == "Content-Type" and param["x-example"]:
+                        example_mime = param["x-example"]
 
                 # description
                 desc = param.get("description", "")
@@ -610,8 +617,8 @@ class MatrixUnits(Units):
             example_query_params)
         if example_body:
             endpoint["example"][
-                "req"] = "%s %s%s HTTP/1.1\nContent-Type: application/json\n\n%s" % (
-                method.upper(), path_template, query_string, example_body
+                "req"] = "%s %s%s HTTP/1.1\nContent-Type: %s\n\n%s" % (
+                method.upper(), path_template, query_string, example_mime, example_body
             )
         else:
             endpoint["example"]["req"] = "%s %s%s HTTP/1.1\n\n" % (
@@ -743,6 +750,7 @@ class MatrixUnits(Units):
 
             with open(filepath, encoding="utf-8") as f:
                 event_schema = yaml.load(f, OrderedLoader)
+                event_schema = resolve_references(filepath, event_schema)
 
             schema_info = process_data_type(
                 event_schema,
@@ -790,7 +798,7 @@ class MatrixUnits(Units):
             if not filename.startswith("m."):
                 continue
 
-            event_name = filename.split("#")[0]
+            event_name = filename.split("$")[0]
             filepath = os.path.join(path, filename)
             logger.info("Reading event example: %s" % filepath)
             try:
@@ -846,6 +854,7 @@ class MatrixUnits(Units):
             "title": None,
             "desc": None,
             "msgtype": None,
+            "type_with_msgtype": None, # for the template's sake
             "content_fields": [
                 # <TypeTable>
             ]
@@ -884,6 +893,7 @@ class MatrixUnits(Units):
         )
         if msgtype:
             schema["msgtype"] = msgtype[0]  # enum prop
+            schema["type_with_msgtype"] = schema["type"] + " (" + msgtype[0] + ")"
 
         # link to msgtypes for m.room.message
         if schema["type"] == "m.room.message" and not msgtype:
@@ -891,6 +901,14 @@ class MatrixUnits(Units):
                 " For more information on ``msgtypes``, see "+
                 "`m.room.message msgtypes`_."
             )
+
+        # method types for m.key.verification.start
+        if schema["type"] == "m.key.verification.start":
+            methods = Units.prop(
+                json_schema, "properties/content/properties/method/enum"
+            )
+            if methods:
+                schema["type_with_msgtype"] = schema["type"] + " (" + methods[0] + ")"
 
         # Assign state key info if it has some
         if schema["typeof"] == "State Event":
@@ -952,6 +970,9 @@ class MatrixUnits(Units):
                 if re.match("^[=]{3,}$", line.strip()):
                     # the last line was a header - use that as our new title_part
                     title_part = prev_line.strip()
+                    # take off the last line from the changelog_body_lines because it's the title
+                    if len(changelog_body_lines) > 0:
+                        changelog_body_lines = changelog_body_lines[:len(changelog_body_lines) - 1]
                     continue
                 if re.match("^[-]{3,}$", line.strip()):
                     # the last line is a subheading - drop this line because it's the underline
@@ -965,6 +986,7 @@ class MatrixUnits(Units):
                     # that it renders correctly in the section. We also add newlines so that there's
                     # intentionally blank lines that make rst2html happy.
                     changelog_body_lines.append("    " + line + '\n')
+                prev_line = line
 
             if len(changelog_body_lines) > 0:
                 changelogs[api_name] = "".join(changelog_body_lines)
@@ -1081,3 +1103,21 @@ class MatrixUnits(Units):
             "string": git_version,
             "revision": git_commit
         }
+
+    def load_sas_emoji(self):
+        with open(SAS_EMOJI_JSON, 'r', encoding='utf-8') as sas_json:
+            emoji = json.load(sas_json)
+
+            # Verify the emoji matches the unicode
+            for c in emoji:
+                e = c['emoji']
+                logger.info("Checking emoji %s (%s)", e, c['description'])
+                u = re.sub(r'U\+([0-9a-fA-F]+)', lambda m: chr(int(m.group(1), 16)), c['unicode'])
+                if e != u:
+                    raise Exception("Emoji %s should be %s not %s" % (
+                        c['description'],
+                        repr(e),
+                        c['unicode'],
+                    ))
+
+            return emoji

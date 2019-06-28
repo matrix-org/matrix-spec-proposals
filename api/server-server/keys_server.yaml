@@ -51,6 +51,8 @@ paths:
             **Deprecated**. Servers should not use this parameter and instead
             opt to return all keys, not just the requested one. The key ID to
             look up.
+
+            When excluded, the trailing slash on this endpoint is optional.
           required: false
           x-example: "ed25519:abc123"
           deprecated: true
