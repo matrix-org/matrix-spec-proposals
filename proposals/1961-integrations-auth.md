@@ -11,7 +11,7 @@ from a call to `/register`. This token is used to authorize the request and to i
 request. The token may also be specified as the `access_token` query string parameter, similar to the
 Client-Server API.
 
-#### POST /_matrix/integrations/v1/account/register
+#### POST `/_matrix/integrations/v1/account/register`
 
 Exchanges an OpenID object for a token which can be used to authorize future requests to the manager.
 
@@ -31,7 +31,7 @@ to the `matrix_server_name` provided in the original OpenID object.
 Applications which register for a token are responsible for tracking which integration manager they are for.
 This can usually be done by tracking the hostname of the integration manager and matching a token with it.
 
-#### GET /_matrix/integrations/v1/account
+#### GET `/_matrix/integrations/v1/account`
 
 Gets information about the token's owner, such as the user ID for which it belongs.
 
@@ -56,7 +56,7 @@ here. Preferably, custom information is stored under a namespaced key like so:
 }
 ```
 
-#### POST /_matrix/integrations/v1/account/logout
+#### POST `/_matrix/integrations/v1/account/logout`
 
 Logs the token out, rendering it useless for future requests.
 
