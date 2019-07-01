@@ -47,7 +47,7 @@ The client will hash each 3PID as a concatenation of the medium and address,
 separated by a space and a pepper appended to the end. Note that phone numbers
 should be formatted as defined by
 https://matrix.org/docs/spec/appendices#pstn-phone-numbers, before being
-hashed).
+hashed). First the client must prepend the medium to the address:
 
      "alice@example.com" -> "email alice@example.com"
      "bob@example.com"   -> "email bob@example.com"  
@@ -57,9 +57,7 @@ hashed).
 
 Hashes must be peppered in order to reduce both the information a client gains
 during the process, and attacks the identity server can perform (namely sending
-a rainbow table of hashes back in the response to `/lookup`). The resulting
-digest MUST be encoded in URL-safe unpadded base64 (similar to [room version
-4's event IDs](https://matrix.org/docs/spec/rooms/v4#event-ids)).
+a rainbow table of hashes back in the response to `/lookup`).
 
 In order for clients to know the pepper and hashing algorithm they should use,
 Identity Servers must make the information available on the `/hash_details`
@@ -126,9 +124,11 @@ incorrect pepper would be:
       "lookup_pepper": "matrixrocks"
     }
 
-Now comes time for the lookup. Once hashing has been performed using the
-defined hashing algorithm, the client sends the first `k` characters of each
-hash in an array, deduplicating any matching entries.
+Now comes time for the lookup. Note that the resulting hash digest MUST be
+encoded in URL-safe unpadded base64 (similar to [room version 4's event
+IDs](https://matrix.org/docs/spec/rooms/v4#event-ids)). Once hashing has been
+performed using the defined hashing algorithm, the client sends the first `k`
+characters of each hash in an array, deduplicating any matching entries.
 
 `k` is a value chosen by the client. It is a tradeoff between leaking the
 hashes of 3PIDs that the Identity Server doesn't know about, and the amount of
@@ -137,7 +137,7 @@ hashing the server must perform. In addition to k, the client can also set a
 `max_k = 6` (see below for the reasoning behind this). Let's say the client
 chooses these values.
 
-    NOTE: Example numbers, not real hash values.
+    NOTE: Example digests, not real hash values.
 
     "email alice@example.commatrixrocks" -> "70b1b5637937ab99f6aad01f694b3665541a5b9cbdfe54880462b3f1ad35d1f4"
     "email bob@example.commatrixrocks"   -> "21375b56a47c2cdc41a0596549a16ec51b64d26eb47b8e915d45b18ed17b72ff"
@@ -145,8 +145,9 @@ chooses these values.
     "msisdn 12345678910matrixrocks"      -> "21375b3f1b61c975b13c8cecd6481a82e239e6aad644c29dc815836188ae8351"
     "email denny@example.commatrixrocks" -> "70b1b5637937ab9846a94a8015e12313643a2f5323ca8f5b4ed6982fc8c3619b"
 
-    Note that pairs (bob@example.com, 12345678910) and (alice@example.com, denny@example.com)
-    have the same leading characters in their hashed representations.
+    Also note that pairs (bob@example.com, 12345678910) and (alice@example.com,
+    denny@example.com) have the same leading characters in their hashed
+    representations.
 
     POST /_matrix/identity/v2/lookup
 
@@ -214,9 +215,9 @@ hashing to be done) of each that match:
     }
 
 The client can then deduce which hashes actually lead to Matrix IDs. In this
-case, 70b1b5637937 are the leading characters of "alice@example.com" and
-"denny@example.com", while 21375b3f1b61 are the leading characters of
-"+12345678910" whereas 70b1b1b28dcf does not match any of the hashes the client
+case, `70b1b5637937` are the leading characters of "alice@example.com" and
+"denny@example.com", while `21375b3f1b61` are the leading characters of
+"+12345678910" and `70b1b1b28dcf` does not match any of the hashes the client
 has locally, so it is ignored. "bob@example.com" and "carl@example.com" do not
 seem to have Matrix IDs associated with them.
 
@@ -247,12 +248,12 @@ any non-Matrix 3PIDs that slipped in. Salts MUST match the regular expression
     becomes
     "1f64ed6ac9d6da86b65bcc68a39c7c4d083f77193ec7e5adc4b09617f8d0d81a"
 
-A new salt is generated and applied to each hash **prefix** individually. Doing
-so requires the identity server to only rehash the 3PIDs whose unsalted hashes
-matched the earlier prefixes (in the case of 70b1b, hashes 5637937...  and
-1b28dcf...). This adds only a small multiplier of additional hashes needing to
-be performed by the Identity Server (the median number of hashes that fit each
-prefix, a function of the chosen `k` value).
+A new salt is generated per **hash prefix** and applied to each hash
+individually. Doing so requires the identity server to only rehash the 3PIDs
+whose unsalted hashes matched the earlier prefixes (in the case of `70b1b`,
+hashes `5637937...`  and `1b28dcf...`). This adds only a small multiplier of
+additional hashes needing to be performed by the Identity Server (the median
+number of hashes that fit each prefix, a function of the chosen `k` value).
 
 An attacker would now need to create a new rainbow table per hash prefix, per
 lookup. This reduces the attack surface significantly to only very targeted
