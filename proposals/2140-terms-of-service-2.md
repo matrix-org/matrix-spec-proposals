@@ -56,6 +56,8 @@ and adds authentication across the Identity Service API.
 All current endpoints within `/_matrix/identity/api/v1/` will be duplicated
 into `/_matrix/identity/v2`, noting that MSC2134 changes the behaviour of
 lookups. Authentication is still expected on MSC2134's proposed endpoints.
+Support for `application/x-form-www-urlencoded` parameters in requests will
+be dropped from all endpoints.
 
 Any request to any endpoint within `/_matrix/identity/v2`, with the exception
 of:
