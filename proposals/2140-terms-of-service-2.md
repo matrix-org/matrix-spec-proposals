@@ -197,9 +197,10 @@ An `m.accepted_terms` section therefore resembles the following:
 ```
 
 Whenever a client submits a `POST $prefix/terms` request to an IS or IM or
-completes an `m.terms` flow on the HS, it SHOULD update this account data
-section adding any the URLs of any additional documents that the user agreed to
-to this list.
+completes an `m.terms` flow on the HS (or as soon as possible afterwards, ie.
+after registration is complete), it SHOULD update this account data section
+adding any the URLs of any additional documents that the user agreed to to this
+list.
 
 ### Terms Acceptance in the API
 
