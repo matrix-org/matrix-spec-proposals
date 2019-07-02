@@ -66,7 +66,7 @@ the backup's `auth_data` to see of the key config is the same?
 ##### `m.secret_storage.v1.curve25519-aes-sha2`
 
 The public key is stored in the `pubkey` property of the `m.secret_storage.key.[key
-ID]` `account_data`.
+ID]` `account_data` as a base64-encoded string.
 
 The data is encrypted and MACed as follows:
 
@@ -117,7 +117,7 @@ ID]` account-data:
     "passphrase": {
         "algorithm": "m.pbkdf2",
         "salt": "MmMsAlty",
-        "rounds": 100000
+        "iterations": 100000
     },
     ...
 }
@@ -125,8 +125,8 @@ ID]` account-data:
 
 **`m.pbkdf2`**
 
-The key is generated using PBKDF2 using the salt given in the `salt`
-parameter, and the number of rounds given in the `rounds` parameter.
+The key is generated using PBKDF2 using the salt given in the `salt` parameter,
+and the number of iterations given in the `iterations` parameter.
 
 ### Sharing
 
@@ -136,7 +136,7 @@ shared key, devices can send secrets to each other, encrypted using olm.
 To request a secret, a client sends a `m.secret.request` event with `action`
 set to `request` to other devices, and `name` set to the name of the secret
 that it wishes to retrieve.  A device that wishes to share the secret will
-reply with a `m.secret.share` event, encrypted using olm.  When the original
+reply with a `m.secret.send` event, encrypted using olm.  When the original
 client obtains the secret, it sends a `m.secret.request` event with `action`
 set to `cancel_request` to all devices other than the one that it received the
 secret from.
@@ -165,7 +165,7 @@ unencrypted to-device event.
   request for a secret. If the secret is requested multiple times, it should be
   reused. It should also reused in order to cancel a request.
 
-##### `m.secret.share`
+##### `m.secret.send`
 
 Sent by a client to share a secret with another device, in response to an
 `m.secret.request` event.  Typically it is encrypted as an `m.room.encrypted`
