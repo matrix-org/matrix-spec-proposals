@@ -63,7 +63,7 @@ Any request to any endpoint within `/_matrix/identity/v2`, with the exception
 of:
  * `/_matrix/identity/v2`
  * any `requestToken` endpoint
- * The new `/_matrix/identity/v2/account/register` 
+ * The new `$prefix/account/register` endpoint
  * The new `GET /_matrix/identity/v2/terms`
 
 ...may return an error with `M_UNAUTHORIZED` errcode with HTTP status code 401.
