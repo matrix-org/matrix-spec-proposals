@@ -47,7 +47,7 @@ This proposal introduces:
 This proposal relies on both Integration Managers and Identity Servers being
 able to identity users by their MXID and store the fact that a given MXID has
 indicated that they accept the terms given. Integration Managers already
-identity users in this way by authenticating them using the OpenID endpoint on
+identify users in this way by authenticating them using the OpenID endpoint on
 the Homeserver. This proposal introduces the same mechanism to Identity Servers
 and adds authentication to accross the Identity Service API.
 
