@@ -215,10 +215,11 @@ account data and presents to the user any documents that they have not already
 agreed to, along with UI for them to indicate their agreement. If there are no
 such documents (ie. if the `policies` dict is empty or the user has already
 agreed to all documents) the client proceeds to perform the OpenID
-registration. Once the user has indicated their agreement, it adds these URLs
-to `m.accepted_terms` account data. Once this has succeeded, then, and only
-then, must the client perform OpenID authentication, getting a token from the
-Homeserver and submitting this to the service using the `register` endpoint.
+registration. If there are new terms documents, the client prompts the user for
+agreement, then once the user has indicated their agreement, it adds these URLs
+to `m.accepted_terms` account data and then proceeds with OpenID
+authentication, getting a token from the Homeserver and submitting this to the
+service using the `register` endpoint.
 
 Having done this, if the user agreed to any new documents, it performs a `POST
 $prefix/terms` request to signal to the server the set of documents that the
