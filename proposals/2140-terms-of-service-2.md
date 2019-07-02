@@ -232,7 +232,7 @@ may return:
  * `M_TERMS_NOT_SIGNED` errcode. This indicates that the user must agree to
    (new) terms in order to use or continue to use the service.
 
-The `_matrix/identity/v2/3pid/unbind` must not return either of these
+The `/_matrix/identity/v2/3pid/unbind` endpoint must not return either of these
 errors if the request has a valid signature from a Homeserver, and is being authenticated as such.
 
 In summary, the process for using a service that has not previously been used
