@@ -49,7 +49,7 @@ able to identity users by their MXID and store the fact that a given MXID has
 indicated that they accept the terms given. Integration Managers already
 identify users in this way by authenticating them using the OpenID endpoint on
 the Homeserver. This proposal introduces the same mechanism to Identity Servers
-and adds authentication to accross the Identity Service API.
+and adds authentication across the Identity Service API.
 
 ### IS API Authentication
 
