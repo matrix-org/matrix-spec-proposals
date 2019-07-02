@@ -223,7 +223,7 @@ Having done this, if the user agreed to any new documents, it performs a `POST
 $prefix/terms` request to signal to the server the set of documents that the
 user has agreed to.
 
-Any request to any endpoint in the IM API, and the `_matrix/identity/v2/`
+Any request to any endpoint in the IM API, and the `/_matrix/identity/v2/`
 namespace of the IS API, with the exception of `/_matrix/identity/v2` itself,
 may return:
 
