@@ -240,7 +240,7 @@ in the current login sessions is:
 
  * `GET $prefix/terms`
  * Compare result with `m.accepted_terms` account data, get set of documents
-   pending agreement
+   pending agreement.
  * If non-empty, show this set of documents to the user and wait for the user
    to indicate their agreement.
  * Add the newly agreed documents to `m.accepted_terms`
