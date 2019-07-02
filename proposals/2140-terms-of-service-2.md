@@ -170,12 +170,9 @@ the user has agreed to:
 This endpoint requires authentication.
 
 The clients MUST include the correct URL for the language of the document that
-was presented to the user and they agreed to. How servers store or serialise
-acceptance into the `acceptance_token` is not defined, eg. they may internally
-transform all URLs to the URL of the English-language version of each document
-if the server deems it appropriate to do so. Servers should accept agreement of
-any one language of each document as sufficient, regardless of what language a
-client is operating in: users should not have to re-consent to documents if
+was presented to the user and they agreed to. Servers should accept agreement
+of any one language of each document as sufficient, regardless of what language
+a client is operating in: users should not have to re-consent to documents if
 they change their client to a different language.
 
 The server responds with an empty JSON object. The server must not assume that
