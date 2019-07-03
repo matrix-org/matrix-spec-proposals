@@ -107,8 +107,13 @@
           ],
           "conditions": [
             {
-              "is": "2",
-              "kind": "room_member_count"
+              "kind": "room_member_count",
+              "is": "2"
+            },
+            {
+              "kind": "event_match",
+              "key": "type",
+              "pattern": "m.room.message"
             }
           ],
           "default": true,

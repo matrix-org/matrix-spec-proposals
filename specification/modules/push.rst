@@ -563,6 +563,11 @@ Definition:
             {
                 "kind": "room_member_count",
                 "is": "2"
+            },
+            {
+                "kind": "event_match",
+                "key": "type",
+                "pattern": "m.room.message"
             }
         ],
         "actions": [
