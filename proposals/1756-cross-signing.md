@@ -57,17 +57,36 @@ store it at all.  Clients will need to balance the security of the keys with
 the usability of signing users and devices when performing key verification.
 
 The private halves of a user's cross-signing keys be stored encrypted on the
-server so that they may be retrieved by new devices. FIXME: explain how to do
-this via MSC 1946
+server so that they may be retrieved by new devices, or shared between devices
+using [MSC 1946](https://github.com/matrix-org/matrix-doc/pull/1946).  When
+handled in this way, the keys must be base64-encoded, and use the names
+`m.cross_signing.master`, `m.cross_signing.self_signing`, and
+`m.cross_signing.user_signing` for the master, self-signing, and user-signing
+keys, respectively.
 
 ### Signature distribution
 
-Currently, users will only be allowed to see signatures made by her own master,
-self-signing or user-signing keys, or signatures made by other users' master or
-self-signing keys about their own devices.  This is done in order to preserve
-the privacy of social connections.  Future proposals may define mechanisms for
+Currently, users will only be allowed to see signatures made by their own
+master, self-signing or user-signing keys, signatures of their own master key
+made by their own devices, signatures made by other users' master or
+self-signing keys about their own devices, or signatures made of other users'
+master keys by their own devices.  This is done in order to preserve the
+privacy of social connections.  Future proposals may define mechanisms for
 distributing signatures to other users in order to allow for other web-of-trust
 use cases.
+
+### Migrating from device verifications
+
+Users who have verified individual devices may wish to migrate these
+verifications to use cross-signing instead.  In order to aid with this,
+signatures of a user's master key, made by their own devices, may be uploaded
+to the server.  If another client sees that the user's master key has a valid
+signature from a device that was previously verified, then the client MAY
+choose to trust and sign the master key.  The client SHOULD take precautions to
+ensure that a stolen device cannot be used to cause it to trust a malicious
+master key.  For example, a client could prompt the user before signing the
+master key, or it could only do this migration on the first master key that it
+sees from a user.
 
 ### API description
 
@@ -126,7 +145,8 @@ properties:
   "`ed25519:`" followed by the unpadded base64 encoding of the public key, and
   whose value is the unpadded base64 encoding of the public key.
 * `signatures` ({string: {string: string}}): signatures of the key. A
-  self-signing or user-signing key must be signed by the master key.
+  self-signing or user-signing key MUST be signed by the master key. A master
+  key MAY be signed by a device.
 
 In order to ensure that there will be no collisions in the `signatures`
 property, the server must respond with an error (FIXME: what error?) if any of
@@ -136,7 +156,8 @@ keys, the server must respond with an error (FIXME: what error?).
 
 If a self-signing or user-signing key is uploaded, it must be signed by the
 master key that is included in the request, or the current master key if no
-master key is included.
+master key is included.  If the signature from the master key is incorrect, the
+server should respond with an error code of `M_INVALID_SIGNATURE`.
 
 After uploading cross-signing keys, they will be included under the
 `/keys/query` endpoint under the `master_keys`, `self_signing_keys` and
@@ -287,10 +308,11 @@ others users who share an encrypted room with that user.
 
 #### Uploading signatures
 
-Signatures of keys can be uploaded using `/keys/signatures/upload`.
+Signatures of device keys can be uploaded using `/keys/signatures/upload`.
 
 For example, Alice signs one of her devices (HIJKLMN) (using her self-signing
-key), and signs Bob's master key (using her user-signing key).
+key), her own master key (using her HIJKLMN device), Bob's master key (using
+her user-signing key).
 
 `POST /keys/signatures/upload`
 
@@ -313,6 +335,18 @@ key), and signs Bob's master key (using her user-signing key).
           "ed25519:base64+self+signing+public+key": "base64+signature+of+HIJKLMN"
         }
       }
+    },
+    "base64+master+public+key": {
+      "user_id": "@alice:example.com",
+      "usage": ["master"],
+      "keys": {
+        "ed25519:base64+master+public+key": "base64+master+public+key"
+      },
+      "signatures": {
+        "@alice:example.com": {
+          "ed25519:HIJKLMN": "base64+signature+of+master+key"
+        }
+      }
     }
   },
   "@bob:example.com": {
@@ -332,9 +366,23 @@ key), and signs Bob's master key (using her user-signing key).
 }
 ```
 
-After Alice uploads a signature for her own devices, her signature will be
-included in the results of the `/keys/query` request when *anyone* requests her
-keys:
+response:
+
+``` json
+{
+  "failures": {}
+}
+```
+
+The response contains a `failures` property, which is a map of user ID to
+device ID to failure reason, if any of the uploaded keys failed.  The
+homeserver should verify that the signature is correct.  If it is not, the
+homeserver should set the corresponding entry in `failures` to a JSON object
+with the `errcode` property set to `M_INVALID_SIGNATURE`.
+
+After Alice uploads a signature for her own devices or master key, her
+signature will be included in the results of the `/keys/query` request when
+*anyone* requests her keys:
 
 `POST /keys/query`
 
@@ -382,6 +430,11 @@ response:
     "usage": ["master"],
     "keys": {
       "ed25519:base64+master+public+key": "base64+master+public+key"
+    },
+    "signatures": {
+      "@alice:example.com": {
+        "ed25519:HIJKLMN": "base64+signature+of+master+key"
+      }
     }
   },
   "self_signing_key": {
@@ -483,6 +536,12 @@ This proposal relies on servers to communicate when cross-signing keys are
 deleted and replaced.  An attacker who is able to both steal a user's device
 and control their homeserver could prevent that device from being marked as
 untrusted.
+
+An attacker may be able to upload a large number of signatures in a DoS attack
+against clients or servers, similar to the [attack against the SKS keyserver
+network](https://gist.github.com/rjhansen/67ab921ffb4084c865b3618d6955275f).
+Since clients are only sent a subset of signatures, and the attestation graph
+is limited, a DoS attack is less likely to be successful in this case.
 
 ## Conclusion
 
