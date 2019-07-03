@@ -236,13 +236,14 @@ any non-Matrix 3PIDs that slipped in. Salts MUST match the regular expression
     "70b1b5637937ab99f6aad01f694b3665541a5b9cbdfe54880462b3f1ad35d1f4"
 
     The client should generate a salt. Let's say it generates "salt123". This
-    value is appended to the hash.
+    value is appended to the base64-representation of the hash digest of the
+    initial 3pid and pepper.
 
     "70b1b5637937ab99f6aad01f694b3665541a5b9cbdfe54880462b3f1ad35d1f4"
     becomes
     "70b1b5637937ab99f6aad01f694b3665541a5b9cbdfe54880462b3f1ad35d1f4salt123"
 
-    And then hashed:
+    Which is then hashed:
 
     "70b1b5637937ab99f6aad01f694b3665541a5b9cbdfe54880462b3f1ad35d1f4salt123"
     becomes
