@@ -36,7 +36,7 @@ A new default override rule is to be added that ignores reaction events:
 
 We could instead allow notifications for reactions in some cases (the current
 state) but then modify each client with complex heuristics to clear them by
-advancing the read receipt. This would more involved than for regular messages
+advancing the read receipt. This would be more involved than for regular messages
 because reaction events may target any event in the timeline, so there's no
 guarantee that a new reaction event targets something that's currently displayed
 to the user. By going with the push rule above, client developers won't have to
