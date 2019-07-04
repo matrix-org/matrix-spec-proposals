@@ -91,15 +91,16 @@ possible.
 OpenID authentication in the IS API will work the same as in the Integration Manager
 API, as specified in [MSC1961](https://github.com/matrix-org/matrix-doc/issues/1961).
 
-When clients supply an identity server to the Homeserver in order for the Homeserver
-to make calls to the IS on its behalf, it must also supply its access token for the
-Identity Server alongside in the `is_token` key of the same JSON object. That is,
-in the main request object for a `requestToken` request and in the `threepidCreds`
-object when supplying 3PID credentials (eg. in the `m.email.identity` UI auth stage).
-Exceptions to this are any requests where the only IS operation the Homeserver may
-perform is unbinding, ie. `/_matrix/client/r0/account/deactivate` and
-`/_matrix/client/r0/account/3pid/delete`, in which case the unbind is authenticated
-by a signed request from the Homeserver.
+When clients supply an identity server to the Homeserver in order for the
+Homeserver to make calls to the IS on its behalf, it must also supply its
+access token for the Identity Server alongside in the `is_token` key of the
+same JSON object. That is, in the main request object for a `requestToken`
+request and in the `threepidCreds` object when supplying 3PID credentials (eg.
+in the `m.email.identity` UI auth stage).  Exceptions to this are any requests
+where the only IS operation the Homeserver may perform is unbinding, ie.
+`/_matrix/client/r0/account/deactivate` and
+`/_matrix/client/r0/account/3pid/delete`, in which case the unbind will be
+authenticated by a signed request from the Homeserver.
 
 ### HS Register API
 
