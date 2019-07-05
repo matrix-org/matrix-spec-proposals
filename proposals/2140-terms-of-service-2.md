@@ -41,8 +41,14 @@ following convention from
 [MSC2134](https://github.com/matrix-org/matrix-doc/issues/2134).
 
 This proposal introduces:
+ * A v2 API prefix, with authentication, for the Identity Service
  * The `$prefix/terms` endpoint
  * The `m.accepted_terms` section in account data
+ * `POST /_matrix/client/r0/account/3pid/unbind` endpoints on the client/server
+   API
+
+This proposal removes:
+ * The `bind_email` and `bind_msisdn` on the Homeserver `/register` endpoint
 
 This proposal relies on both Integration Managers and Identity Servers being
 able to identity users by their MXID and store the fact that a given MXID has
@@ -251,6 +257,20 @@ in the current login sessions is:
    Store the resulting access token.
  * If the set of documents pending agreement was non-empty, Perform a
    `POST $prefix/terms` request to the servcie with these documents.
+
+### `POST /_matrix/client/r0/account/3pid/unbind`
+
+A client uses this client/server API endpoint to request that the Homeserver
+removes the given 3PID from the given Identity Server, or all Identity Servers.
+Takes parameters the same parameters as
+`POST /_matrix/client/r0/account/3pid/delete`, ie. `id_server`, `medium`,
+`address` and the newly added `is_token`.
+
+Returns the same as `POST /_matrix/client/r0/account/3pid/delete`.
+
+Clients may add IS bindings for 3PIDs that already exist on the user's
+Homeserver account by using the `POST /_matrix/client/r0/account/3pid`
+to re-add the 3PID.
 
 ## Tradeoffs
 
