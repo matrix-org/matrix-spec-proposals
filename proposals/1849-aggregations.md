@@ -277,7 +277,7 @@ reference.
 For the special case of a gappy incremental sync, many reaction events may
 have occurred during the gap.  It would be inefficient to send each one
 individually to the client, but it would also be inefficient to send all
-possible bundled aggregations to the client too.
+possible bundled aggregations to the client.
 
 The simplest thing a client can do is to just throw away its history for a
 room on seeing a gappy incremental sync, and then re-paginate the history of
@@ -291,8 +291,8 @@ predate the gap which received reactions during the gap.  This means that the
 client can invalidate its copy of those events (if any) and then requery them
 (including their bundled relations) from the server if/when needed.
 
-The server does this with the new `stale_relations` field of each room object
-in the sync response.  The `stale_relations` field lists all the event ids
+The server does this with the new `stale_events` field of each room object
+in the sync response.  The `stale_events` field lists all the event ids
 prior to the gap which had updated relations during the gap.  The event ids
 are grouped by relation type, and limited to N entries for efficiency.  N
 should be 100.  If the number of events with stale relations exceeds N, the
