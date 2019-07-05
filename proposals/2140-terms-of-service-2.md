@@ -68,7 +68,6 @@ be dropped from all endpoints.
 Any request to any endpoint within `/_matrix/identity/v2`, with the exception
 of:
  * `/_matrix/identity/v2`
- * any `requestToken` or `submitToken` endpoint
  * The new `$prefix/account/register` endpoint
  * The new `GET /_matrix/identity/v2/terms`
  * `$prefix/logout`
@@ -76,13 +75,6 @@ of:
 ...may return an error with `M_UNAUTHORIZED` errcode with HTTP status code 401.
 This indicates that the user must authenticate with OpenID and supply a valid
 `access_token`.
-
-`requestToken` and `submitToken` endpoints are excluded from the auth check
-because they are used in the registration process before the user has an MXID
-and therefore cannot log in with OpenID. It is up to the IS to manage its
-privacy obligations appropriately when fulfilling these requests, bearing in
-mind that the user has not explicitly indicated their agreement to any
-documents, and may abort the registration process without doing so.
 
 All other endpoints require authentication by the client supplying an access token
 either via an `Authorization` header with a `Bearer` token or an `access_token`
