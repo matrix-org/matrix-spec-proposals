@@ -10,11 +10,16 @@ not.
 
 If the 3PID is hashed, the identity server could not determine the address
 unless it has already seen that address in plain-text during a previous call of
-the /bind mechanism (without significant resources to reverse the hashes).
+the [/bind
+mechanism](https://matrix.org/docs/spec/identity_service/r0.2.1#post-matrix-identity-api-v1-3pid-bind)
+(without significant resources to reverse the hashes).
 
-This proposal thus calls for the Identity Service API's /lookup endpoint to use
-hashed 3PIDs instead of their plain-text counterparts, which will leak less
-data to identity servers.
+This proposal thus calls for the Identity Service API's
+[/lookup](https://matrix.org/docs/spec/identity_service/r0.2.1#get-matrix-identity-api-v1-lookup)
+endpoint to use hashed 3PIDs instead of their plain-text counterparts (and to
+deprecate both it and
+[/bulk_lookup](https://matrix.org/docs/spec/identity_service/r0.2.1#post-matrix-identity-api-v1-bulk-lookup)),
+which will leak less data to identity servers.
 
 ## Proposal
 
@@ -161,14 +166,16 @@ IDs of those that match:
 
 The client can now display which 3PIDs link to which Matrix IDs.
 
-No parameter changes will be made to /bind as part of this proposal.
+No parameter changes will be made to
+[/bind](https://matrix.org/docs/spec/identity_service/r0.2.1#post-matrix-identity-api-v1-3pid-bind)
+as part of this proposal.
 
 ## Fallback considerations
 
 `v1` versions of these endpoints may be disabled at the discretion of the
 implementation, and should return a 403 `M_FORBIDDEN` error if so.
 
-If an identity server is too old and a HTTP 404, 405 or 501 is received when
+If an identity server is too old and a HTTP 400 or 404 is received when
 accessing the `v2` endpoint, they should fallback to the `v1` endpoint instead.
 However, clients should be aware that plain-text 3PIDs are required for the
 `v1` endpoint, and SHOULD ask for user consent to send 3PIDs in plain-text, and
