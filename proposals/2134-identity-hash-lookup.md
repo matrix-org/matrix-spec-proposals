@@ -64,9 +64,12 @@ hashed). First the client must prepend the medium to the address:
 "denny@example.com" -> "email denny@example.com"
 ```
 
-Hashes must be peppered in order to reduce both the information a client gains
-during the process, and attacks the identity server can perform (namely sending
-a rainbow table of hashes back in the response to `/lookup`).
+Hashes must be peppered in order to reduce both the information an identity
+server gains during the process, and attacks the client can perform. Clients
+will have to generate a full rainbow table specific to the set pepper to
+obtain all registered MXIDs, while the server has to generate a full rainbow
+table with the specific pepper to get the plaintext 3pids for non-matrix
+users.
 
 In order for clients to know the pepper and hashing algorithm they should use,
 Identity servers must make the information available on the `/hash_details`
