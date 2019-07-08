@@ -9,10 +9,12 @@ that email address or phone number is already known by the identity server or
 not.
 
 If the 3PID is hashed, the identity server could not determine the address
-unless it has already seen that address in plain-text during a previous call of
-the [/bind
+unless it has already seen that address in plain-text during a previous call
+of the [/bind
 mechanism](https://matrix.org/docs/spec/identity_service/r0.2.1#post-matrix-identity-api-v1-3pid-bind)
-(without significant resources to reverse the hashes).
+(without significant resources to reverse the hashes). This helps prevent
+bulk collection of user's contact lists by the identity server and reduces
+its ability to build social graphs.
 
 This proposal thus calls for the Identity Service API's
 [/lookup](https://matrix.org/docs/spec/identity_service/r0.2.1#get-matrix-identity-api-v1-lookup)
@@ -25,7 +27,7 @@ which will leak less data to identity servers.
 
 This proposal suggests making changes to the Identity Service API's lookup
 endpoints. Instead, this proposal consolidates them into a single `/lookup`
-endpoint. Additionally, the endpoint should be on a `v2` path, to avoid
+endpoint. Additionally, the endpoint is to be on a `v2` path, to avoid
 confusion with the original `/lookup`. We also drop the `/api` in order to
 preserve consistency across other endpoints:
 
@@ -40,11 +42,13 @@ The following back-and-forth occurs between the client and server.
 
 Let's say the client wants to check the following 3PIDs:
 
-    alice@example.com
-    bob@example.com
-    carl@example.com
-    +1 234 567 8910
-    denny@example.com
+```
+alice@example.com
+bob@example.com
+carl@example.com
++1 234 567 8910
+denny@example.com
+```
 
 The client will hash each 3PID as a concatenation of the medium and address,
 separated by a space and a pepper appended to the end. Note that phone numbers
@@ -52,55 +56,59 @@ should be formatted as defined by
 https://matrix.org/docs/spec/appendices#pstn-phone-numbers, before being
 hashed). First the client must prepend the medium to the address:
 
-     "alice@example.com" -> "email alice@example.com"
-     "bob@example.com"   -> "email bob@example.com"  
-     "carl@example.com"  -> "email carl@example.com" 
-     "+1 234 567 8910"   -> "msisdn 12345678910"     
-     "denny@example.com" -> "email denny@example.com"
+```
+"alice@example.com" -> "email alice@example.com"
+"bob@example.com"   -> "email bob@example.com"  
+"carl@example.com"  -> "email carl@example.com" 
+"+1 234 567 8910"   -> "msisdn 12345678910"     
+"denny@example.com" -> "email denny@example.com"
+```
 
 Hashes must be peppered in order to reduce both the information a client gains
 during the process, and attacks the identity server can perform (namely sending
 a rainbow table of hashes back in the response to `/lookup`).
 
 In order for clients to know the pepper and hashing algorithm they should use,
-Identity Servers must make the information available on the `/hash_details`
+Identity servers must make the information available on the `/hash_details`
 endpoint:
 
-    GET /_matrix/identity/v2/hash_details
+```
+GET /_matrix/identity/v2/hash_details
 
-    {
-      "lookup_pepper": "matrixrocks",
-      "algorithms": ["sha256"]
-    }
+{
+  "lookup_pepper": "matrixrocks",
+  "algorithms": ["sha256"]
+}
+```
 
 The name `lookup_pepper` was chosen in order to account for pepper values being
 returned for other endpoints in the future. The contents of `lookup_pepper`
 MUST match the regular expression `[a-zA-Z0-9]*`.
 
-    The client should append the pepper to the end of the 3pid string before
-    hashing.
+```
+The client should append the pepper to the end of the 3PID string before
+hashing.
 
-    "email alice@example.com" -> "email alice@example.commatrixrocks"
-    "email bob@example.com"   -> "email bob@example.commatrixrocks"  
-    "email carl@example.com"  -> "email carl@example.commatrixrocks" 
-    "msisdn 12345678910"      -> "msisdn 12345678910matrixrocks"     
-    "email denny@example.com" -> "email denny@example.commatrixrocks"
+"email alice@example.com" -> "email alice@example.commatrixrocks"
+"email bob@example.com"   -> "email bob@example.commatrixrocks"  
+"email carl@example.com"  -> "email carl@example.commatrixrocks" 
+"msisdn 12345678910"      -> "msisdn 12345678910matrixrocks"     
+"email denny@example.com" -> "email denny@example.commatrixrocks"
+```
 
 Clients SHOULD request this endpoint each time before performing a lookup, to
 handle identity servers which may rotate their pepper values frequently.
 Clients MUST choose one of the given hash algorithms to encrypt the 3PID during
 lookup.
 
-Note that possible hashing algorithms will be defined in the Matrix
-specification, and an Identity Server can choose to implement one or all of
-them. Later versions of the specification may deprecate algorithms when
-necessary. Currently the only listed hashing algorithm is SHA-256 as defined by
-[RFC 4634](https://tools.ietf.org/html/rfc4634) and Identity Servers and
-clients MUST agree to its use with the string `sha256`. SHA-256 was chosen as
-it is currently used throughout the Matrix spec, as well as its properties of
-being quick to hash. While this reduces the resources necessary to generate a
-rainbow table for attackers, a fast hash is necessary if particularly slow
-mobile clients are going to be hashing thousands of contact details.
+At a minimum, clients and identity servers MUST support SHA-256 as defined by
+[RFC 4634](https://tools.ietf.org/html/rfc4634), identified by the
+`algorithm` value `"sha256"`. SHA-256 was chosen as it is currently used
+throughout the Matrix spec, as well as its properties of being quick to hash.
+While this reduces the resources necessary to generate a rainbow table for
+attackers, a fast hash is necessary if particularly slow mobile clients are
+going to be hashing thousands of contact details. Other algorithms can be
+negotiated by the client and server at their discretion.
 
 When performing a lookup, the pepper and hashing algorithm the client used must
 be part of the request body. If they do not match what the server has on file
@@ -112,20 +120,23 @@ server.
 
 If the algorithm does not match the server's, the server should return a `400
 M_INVALID_PARAM`. If the pepper does not match the server's, the server should
-return a new error code, 400 `M_INVALID_PEPPER`. A new error code is not
+return a new error code, `400 M_INVALID_PEPPER`. A new error code is not
 defined for an invalid algorithm as that is considered a client bug.
 
-Each of these error responses should contain the correct `algorithm` and
-`lookup_pepper` fields. This is to prevent the client from needing to query
-`/hash_details` again, thus saving a round-trip. An example response to an
-incorrect pepper would be:
+The `M_INVALID_PEPPER` error response should contain the correct `algorithm`
+and `lookup_pepper` fields. This is to prevent the client from needing to
+query `/hash_details` again, thus saving a round-trip. `M_INVALID_PARAM` does
+not include these fields. An example response to an incorrect pepper would
+be:
 
-    {    
-      "error": "Incorrect value for lookup_pepper",
-      "errcode": "M_INVALID_PEPPER",
-      "algorithm": "sha256",
-      "lookup_pepper": "matrixrocks"
-    }
+```
+{    
+  "error": "Incorrect value for lookup_pepper",
+  "errcode": "M_INVALID_PEPPER",
+  "algorithm": "sha256",
+  "lookup_pepper": "matrixrocks"
+}
+```
 
 Now comes time for the lookup. Note that the resulting hash digest MUST be
 encoded in URL-safe unpadded base64 (similar to [room version 4's event
@@ -133,36 +144,40 @@ IDs](https://matrix.org/docs/spec/rooms/v4#event-ids)). Once hashing has been
 performed using the defined hashing algorithm, the client sends each hash in an
 array.
 
-    "email alice@example.commatrixrocks" -> "y_TvXLKxFT9CURPXI1wvfjvfvsXe8FPgYj-mkQrnszs"
-    "email bob@example.commatrixrocks"   -> "r0-6x3rp9zIWS2suIque-wXTnlv9sc41fatbRMEOwQE"
-    "email carl@example.commatrixrocks"  -> "ryr10d1K8fcFVxALb3egiSquqvFAxQEwegXtlHoQFBw"
-    "msisdn 12345678910matrixrocks"      -> "c_30UaSZhl5tyanIjFoE1IXTmuU3vmptEwVOc3P2Ens"
-    "email denny@example.commatrixrocks" -> "bxt8rtRaOzMkSk49zIKE_NfqTndHvGbWHchZskW3xmY"
+```
+"email alice@example.commatrixrocks" -> "y_TvXLKxFT9CURPXI1wvfjvfvsXe8FPgYj-mkQrnszs"
+"email bob@example.commatrixrocks"   -> "r0-6x3rp9zIWS2suIque-wXTnlv9sc41fatbRMEOwQE"
+"email carl@example.commatrixrocks"  -> "ryr10d1K8fcFVxALb3egiSquqvFAxQEwegXtlHoQFBw"
+"msisdn 12345678910matrixrocks"      -> "c_30UaSZhl5tyanIjFoE1IXTmuU3vmptEwVOc3P2Ens"
+"email denny@example.commatrixrocks" -> "bxt8rtRaOzMkSk49zIKE_NfqTndHvGbWHchZskW3xmY"
 
-    POST /_matrix/identity/v2/lookup
+POST /_matrix/identity/v2/lookup
 
-    {
-      "hashes": [
-        "y_TvXLKxFT9CURPXI1wvfjvfvsXe8FPgYj-mkQrnszs",
-        "r0-6x3rp9zIWS2suIque-wXTnlv9sc41fatbRMEOwQE",
-        "ryr10d1K8fcFVxALb3egiSquqvFAxQEwegXtlHoQFBw",
-        "c_30UaSZhl5tyanIjFoE1IXTmuU3vmptEwVOc3P2Ens",
-        "bxt8rtRaOzMkSk49zIKE_NfqTndHvGbWHchZskW3xmY"
-      ],
-      "algorithm": "sha256",
-      "pepper": "matrixrocks"
-    }
+{
+  "hashes": [
+    "y_TvXLKxFT9CURPXI1wvfjvfvsXe8FPgYj-mkQrnszs",
+    "r0-6x3rp9zIWS2suIque-wXTnlv9sc41fatbRMEOwQE",
+    "ryr10d1K8fcFVxALb3egiSquqvFAxQEwegXtlHoQFBw",
+    "c_30UaSZhl5tyanIjFoE1IXTmuU3vmptEwVOc3P2Ens",
+    "bxt8rtRaOzMkSk49zIKE_NfqTndHvGbWHchZskW3xmY"
+  ],
+  "algorithm": "sha256",
+  "pepper": "matrixrocks"
+}
+```
 
 The identity server, upon receiving these hashes, can simply compare against
 the hashes of the 3PIDs it stores.  The server then responds with the Matrix
 IDs of those that match:
 
-    {
-      "mappings": {
-        "y_TvXLKxFT9CURPXI1wvfjvfvsXe8FPgYj-mkQrnszs": "@alice:example.com",
-        "c_30UaSZhl5tyanIjFoE1IXTmuU3vmptEwVOc3P2Ens": "@fred:example.com"
-      }
-    }
+```
+{
+  "mappings": {
+    "y_TvXLKxFT9CURPXI1wvfjvfvsXe8FPgYj-mkQrnszs": "@alice:example.com",
+    "c_30UaSZhl5tyanIjFoE1IXTmuU3vmptEwVOc3P2Ens": "@fred:example.com"
+  }
+}
+```
 
 The client can now display which 3PIDs link to which Matrix IDs.
 
@@ -173,7 +188,7 @@ as part of this proposal.
 ## Fallback considerations
 
 `v1` versions of these endpoints may be disabled at the discretion of the
-implementation, and should return a 403 `M_FORBIDDEN` error if so.
+implementation, and should return a `403 M_FORBIDDEN` error if so.
 
 If an identity server is too old and a HTTP 400 or 404 is received when
 accessing the `v2` endpoint, they should fallback to the `v1` endpoint instead.
@@ -186,11 +201,13 @@ be clear about where they are being sent to.
 * There is a small cost incurred by performing hashes before requests, but this
   is outweighed by the privacy implications of sending plain-text addresses.
 
-## Potential issues
+## Security Considerations
 
-Hashes are still reversible with a rainbow table, but hopefully the provided
-pepper, which can be rotated by identity servers at will, should help mitigate
-this to some extent.
+Hashes are still reversible with a rainbow table, but the provided pepper,
+which can be rotated by identity servers at will, should help mitigate this.
+Phone numbers (with their relatively short possible address space of 12
+numbers), short email addresses, and addresses of both type that have been
+leaked in database dumps are more susceptible to hash reversal.
 
 Additionally, this proposal does not stop an identity server from storing
 plain-text 3PIDs. There is a GDPR argument in keeping email addresses, such
