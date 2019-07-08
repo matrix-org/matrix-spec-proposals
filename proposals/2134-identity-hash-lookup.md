@@ -54,14 +54,14 @@ The client will hash each 3PID as a concatenation of the medium and address,
 separated by a space and a pepper appended to the end. Note that phone numbers
 should be formatted as defined by
 https://matrix.org/docs/spec/appendices#pstn-phone-numbers, before being
-hashed). First the client must prepend the medium to the address:
+hashed). First the client must append the medium to the address:
 
 ```
-"alice@example.com" -> "email alice@example.com"
-"bob@example.com"   -> "email bob@example.com"  
-"carl@example.com"  -> "email carl@example.com" 
-"+1 234 567 8910"   -> "msisdn 12345678910"     
-"denny@example.com" -> "email denny@example.com"
+"alice@example.com" -> "alice@example.com email"
+"bob@example.com"   -> "bob@example.com email"
+"carl@example.com"  -> "carl@example.com email"
+"+1 234 567 8910"   -> "12345678910 msisdn"
+"denny@example.com" -> "denny@example.com email"
 ```
 
 Hashes must be peppered in order to reduce both the information an identity
@@ -84,19 +84,20 @@ GET /_matrix/identity/v2/hash_details
 }
 ```
 
-The name `lookup_pepper` was chosen in order to account for pepper values being
-returned for other endpoints in the future. The contents of `lookup_pepper`
-MUST match the regular expression `[a-zA-Z0-9]*`.
+The name `lookup_pepper` was chosen in order to account for pepper values
+being returned for other endpoints in the future. The contents of
+`lookup_pepper` MUST match the regular expression `[a-zA-Z0-9]+`. If
+`lookup_pepper` is an empty string, clients MUST cease the lookup operation.
 
 ```
 The client should append the pepper to the end of the 3PID string before
 hashing.
 
-"email alice@example.com" -> "email alice@example.commatrixrocks"
-"email bob@example.com"   -> "email bob@example.commatrixrocks"  
-"email carl@example.com"  -> "email carl@example.commatrixrocks" 
-"msisdn 12345678910"      -> "msisdn 12345678910matrixrocks"     
-"email denny@example.com" -> "email denny@example.commatrixrocks"
+"alice@example.com email" -> "alice@example.com emailmatrixrocks"
+"bob@example.com email"   -> "bob@example.com emailmatrixrocks"
+"carl@example.com email"  -> "carl@example.com emailmatrixrocks"
+"12345678910 msdisn"      -> "12345678910 msisdnmatrixrocks"
+"denny@example.com email" -> "denny@example.com emailmatrixrocks"
 ```
 
 Clients SHOULD request this endpoint each time before performing a lookup, to
@@ -148,11 +149,13 @@ performed using the defined hashing algorithm, the client sends each hash in an
 array.
 
 ```
-"email alice@example.commatrixrocks" -> "y_TvXLKxFT9CURPXI1wvfjvfvsXe8FPgYj-mkQrnszs"
-"email bob@example.commatrixrocks"   -> "r0-6x3rp9zIWS2suIque-wXTnlv9sc41fatbRMEOwQE"
-"email carl@example.commatrixrocks"  -> "ryr10d1K8fcFVxALb3egiSquqvFAxQEwegXtlHoQFBw"
-"msisdn 12345678910matrixrocks"      -> "c_30UaSZhl5tyanIjFoE1IXTmuU3vmptEwVOc3P2Ens"
-"email denny@example.commatrixrocks" -> "bxt8rtRaOzMkSk49zIKE_NfqTndHvGbWHchZskW3xmY"
+NOTE: Hashes are not real values
+
+"alice@example.com emailmatrixrocks" -> "y_TvXLKxFT9CURPXI1wvfjvfvsXe8FPgYj-mkQrnszs"
+"bob@example.com emailmatrixrocks"   -> "r0-6x3rp9zIWS2suIque-wXTnlv9sc41fatbRMEOwQE"
+"carl@example.com emailmatrixrocks"  -> "ryr10d1K8fcFVxALb3egiSquqvFAxQEwegXtlHoQFBw"
+"12345678910 msisdnmatrixrocks"      -> "c_30UaSZhl5tyanIjFoE1IXTmuU3vmptEwVOc3P2Ens"
+"denny@example.com emailmatrixrocks" -> "bxt8rtRaOzMkSk49zIKE_NfqTndHvGbWHchZskW3xmY"
 
 POST /_matrix/identity/v2/lookup
 
@@ -211,6 +214,10 @@ which can be rotated by identity servers at will, should help mitigate this.
 Phone numbers (with their relatively short possible address space of 12
 numbers), short email addresses, and addresses of both type that have been
 leaked in database dumps are more susceptible to hash reversal.
+
+Mediums and peppers are appended to the address as to prevent a common prefix
+for each plain-text string, which prevents attackers from pre-computing bits
+of a stream cipher.
 
 Additionally, this proposal does not stop an identity server from storing
 plain-text 3PIDs. There is a GDPR argument in keeping email addresses, such
