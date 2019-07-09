@@ -213,14 +213,14 @@ should fall back to the older endpoints for the application service.
 The older endpoints have the exact same request body and response format, they
 just belong at a different path. The equivalent path for each is as follows:
 
-* ``/_matrix/app/v1/transactions/{txnId}`` should fallback to ``/transactions/{txnId}``
-* ``/_matrix/app/v1/users/{userId}`` should fallback to ``/users/{userId}``
-* ``/_matrix/app/v1/rooms/{roomAlias}`` should fallback to ``/rooms/{roomAlias}``
-* ``/_matrix/app/v1/thirdparty/protocol/{protocol}`` should fallback to ``/_matrix/app/unstable/thirdparty/protocol/{protocol}``
-* ``/_matrix/app/v1/thirdparty/user/{user}`` should fallback to ``/_matrix/app/unstable/thirdparty/user/{user}``
-* ``/_matrix/app/v1/thirdparty/location/{location}`` should fallback to ``/_matrix/app/unstable/thirdparty/location/{location}``
-* ``/_matrix/app/v1/thirdparty/user`` should fallback to ``/_matrix/app/unstable/thirdparty/user``
-* ``/_matrix/app/v1/thirdparty/location`` should fallback to ``/_matrix/app/unstable/thirdparty/location``
+* ``/_matrix/app/v1/transactions/{txnId}`` should fall back to ``/transactions/{txnId}``
+* ``/_matrix/app/v1/users/{userId}`` should fall back to ``/users/{userId}``
+* ``/_matrix/app/v1/rooms/{roomAlias}`` should fall back to ``/rooms/{roomAlias}``
+* ``/_matrix/app/v1/thirdparty/protocol/{protocol}`` should fall back to ``/_matrix/app/unstable/thirdparty/protocol/{protocol}``
+* ``/_matrix/app/v1/thirdparty/user/{user}`` should fall back to ``/_matrix/app/unstable/thirdparty/user/{user}``
+* ``/_matrix/app/v1/thirdparty/location/{location}`` should fall back to ``/_matrix/app/unstable/thirdparty/location/{location}``
+* ``/_matrix/app/v1/thirdparty/user`` should fall back to ``/_matrix/app/unstable/thirdparty/user``
+* ``/_matrix/app/v1/thirdparty/location`` should fall back to ``/_matrix/app/unstable/thirdparty/location``
 
 Homeservers should periodically try again for the newer endpoints because the
 application service may have been updated.
