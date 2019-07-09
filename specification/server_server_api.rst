@@ -1134,7 +1134,8 @@ Calculating the reference hash for an event
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The *reference hash* of an event covers the essential fields of an event,
-including content hashes. It is calculated as follows.
+including content hashes. It is used for event identifiers in room versions 3 and
+higher. It is calculated as follows.
 
 1. The event is put through the redaction algorithm.
 
