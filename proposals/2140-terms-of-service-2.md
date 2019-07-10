@@ -248,7 +248,7 @@ in the current login sessions is:
    token from the Homeserver and submit this token to the `register` endpoint.
    Store the resulting access token.
  * If the set of documents pending agreement was non-empty, Perform a
-   `POST $prefix/terms` request to the servcie with these documents.
+   `POST $prefix/terms` request to the service with these documents.
 
 ### `POST /_matrix/client/r0/account/3pid/unbind`
 
