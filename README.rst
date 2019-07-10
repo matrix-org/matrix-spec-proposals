@@ -1,4 +1,4 @@
-This repository contains the Matrix specification.
+This repository contains the Martix specification.
 
 If you want to ask more about the specification, join us on
 `#matrix-dev:matrix.org <http://matrix.to/#/#matrix-dev:matrix.org>`_.
