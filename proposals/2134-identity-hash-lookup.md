@@ -86,8 +86,9 @@ GET /_matrix/identity/v2/hash_details
 
 The name `lookup_pepper` was chosen in order to account for pepper values
 being returned for other endpoints in the future. The contents of
-`lookup_pepper` MUST match the regular expression `[a-zA-Z0-9]+`. If
-`lookup_pepper` is an empty string, clients MUST cease the lookup operation.
+`lookup_pepper` MUST match the regular expression `[a-zA-Z0-9]+` (unless no
+hashing is being performed, as described below). If `lookup_pepper` is an
+empty string, clients MUST cease the lookup operation.
 
 ```
 The client should append the pepper to the end of the 3PID string before
@@ -102,8 +103,8 @@ hashing.
 
 Clients SHOULD request this endpoint each time before performing a lookup, to
 handle identity servers which may rotate their pepper values frequently.
-Clients MUST choose one of the given hash algorithms to encrypt the 3PID during
-lookup.
+Clients MUST choose one of the given hash algorithms to encrypt the 3PID
+during lookup.
 
 At a minimum, clients and identity servers MUST support SHA-256 as defined by
 [RFC 4634](https://tools.ietf.org/html/rfc4634), identified by the
@@ -114,13 +115,21 @@ attackers, a fast hash is necessary if particularly slow mobile clients are
 going to be hashing thousands of contact details. Other algorithms can be
 negotiated by the client and server at their discretion.
 
-When performing a lookup, the pepper and hashing algorithm the client used must
-be part of the request body. If they do not match what the server has on file
-(which may be the case if the pepper was changed right after the client's
-request for it), then the server must inform the client that they need to query
-the hash details again, instead of just returning an empty response, which
-clients would assume to mean that no contacts are registered on that identity
-server.
+There are certain situations when an identity server cannot be expected to
+compare hashed 3PID values; When a server is connected to a backend provider
+such as LDAP, there is no way for the identity server to efficiently pull all
+of the addresses and hash them. For this case, the `algorithm` field of `GET
+/hash_details` may be set to `"none"`, and `lookup_pepper` will be an empty
+string. No hashing will be performed if the client and server decide on this,
+and 3PIDs will be sent in plain-text, similar to the v1 `/lookup` API.
+
+When performing a lookup, the pepper and hashing algorithm the client used
+must be part of the request body (even when using the `"none"` algorithm
+value). If they do not match what the server has on file (which may be the
+case if the pepper was changed right after the client's request for it), then
+the server must inform the client that they need to query the hash details
+again, instead of just returning an empty response, which clients would
+assume to mean that no contacts are registered on that identity server.
 
 If the algorithm does not match the server's, the server should return a `400
 M_INVALID_PARAM`. If the pepper does not match the server's, the server should
