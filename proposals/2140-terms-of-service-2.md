@@ -51,7 +51,7 @@ This proposal removes:
  * The `bind_email` and `bind_msisdn` on the Homeserver `/register` endpoint
 
 This proposal relies on both Integration Managers and Identity Servers being
-able to identity users by their MXID and store the fact that a given MXID has
+able to identify users by their MXID and store the fact that a given MXID has
 indicated that they accept the terms given. Integration Managers already
 identify users in this way by authenticating them using the OpenID endpoint on
 the Homeserver. This proposal introduces the same mechanism to Identity Servers
