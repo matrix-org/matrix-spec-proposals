@@ -268,7 +268,7 @@ to re-add the 3PID.
 
 The Identity Service API previously did not require authentication, and OpenID
 is reasonably complex, adding a significant burden to both clients and servers.
-A custom HTTP Header was also considered that could be added to assert that the
+A custom HTTP header was also considered that could be added to assert that the
 client agrees to a particular set of terms. We decided against this in favour
 of re-using existing primitives that already exist in the Matrix ecosystem.
 Custom HTTP Headers are not used anywhere else within Matrix. This also gives a
