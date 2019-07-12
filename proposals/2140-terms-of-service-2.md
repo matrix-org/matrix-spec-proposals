@@ -271,7 +271,7 @@ is reasonably complex, adding a significant burden to both clients and servers.
 A custom HTTP header was also considered that could be added to assert that the
 client agrees to a particular set of terms. We decided against this in favour
 of re-using existing primitives that already exist in the Matrix ecosystem.
-Custom HTTP Headers are not used anywhere else within Matrix. This also gives a
+Custom HTTP headers are not used anywhere else within Matrix. This also gives a
 very simple and natural way for ISes to enforce that users may only bind 3PIDs
 to their own MXIDs.
 
