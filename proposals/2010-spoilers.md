@@ -5,7 +5,7 @@ For example, when discussing a new movie or a TV series, not everyone might have
 In such cases it would make sense to add a spoiler so that only those who have seen the movie or
 don't mind spoilers read the content.  
 Another example would be e.g. in mental health communities where certain people have certain
-triggers. People could put talking about abuse or thelike into a spoiler, to not accidentally
+triggers. People could put talking about abuse or the like into a spoiler, to not accidentally
 trigger anyone just reading along the conversation.  
 Furthermore this is helpful for bridging to other networks that already have a spoiler feature.
 
@@ -20,7 +20,7 @@ It adds a new attribute, `data-mx-spoiler`, to the `<span>` tag. If the attribut
 contents of the span tag should be rendered as a spoiler. Optionally, you can specify a reason for
 the spoiler by setting the attribute string. It could be rendered, for example, similar to this:
 
-![Spoiler rendering idea](https://user-images.githubusercontent.com/2433620/59299700-95063480-8c8d-11e9-9348-3e2c8bc94bdc.gif)
+![Spoiler rendering idea](images/2010-spoiler-example.gif)
 
 To preserve the semantics of a spoiler in the plaintext fallback it is recommended to upload the contents of the spoiler
 as a text file and then link this: `[Spoiler](mxc://someserver/somefile)` and
