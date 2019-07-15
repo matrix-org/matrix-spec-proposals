@@ -76,9 +76,8 @@ of:
 This indicates that the user must authenticate with OpenID and supply a valid
 `access_token`.
 
-All other endpoints require authentication by the client supplying an access token
-either via an `Authorization` header with a `Bearer` token or an `access_token`
-query parameter.
+Clients authenticate either via an `Authorization` header with a `Bearer` token
+or an `access_token` query parameter.
 
 The existing endpoints under `/_matrix/identity/api/v1/` continue to be
 unauthenticated but will be deprecated.  ISes may support the old v1 API for as
@@ -141,6 +140,17 @@ to use the service. Its response is similar to the structure used in the
             "fr": {
                 "name": "Conditions d'utilisation",
                 "url": "https://example.org/somewhere/terms-2.0-fr.html"
+            }
+        },
+        "privacy_policy": {
+            "version": "1.2",
+            "en": {
+                "name": "Privacy Policy",
+                "url": "https://example.org/somewhere/privaacy-1.2-en.html"
+            },
+            "fr": {
+                "name": "Politique de confidentialité",
+                "url": "https://example.org/somewhere/privacy-1.2-fr.html"
             }
         }
     }
