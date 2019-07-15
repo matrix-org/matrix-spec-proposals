@@ -68,6 +68,7 @@ be dropped from all endpoints.
 Any request to any endpoint within `/_matrix/identity/v2`, with the exception
 of:
  * `/_matrix/identity/v2`
+ * `/_matrix/identity/v2/pubkey/*`
  * The new `$prefix/account/register` endpoint
  * The new `GET /_matrix/identity/v2/terms`
  * `$prefix/logout`
