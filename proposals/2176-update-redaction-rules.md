@@ -37,9 +37,16 @@ which should be preserved:
  * `m.room.create` should allow the `room_version` key. Currently, redacting an
    `m.room.create` event will make the room revert to a v1 room.
 
- * `m.room.power_levels` should allow the `notifications` key. Rationale:
-   symmetry with the other `power_levels` settings. (Maybe? See
-   https://github.com/matrix-org/matrix-doc/issues/1601#issuecomment-511237744.)
+ * `m.room.power_levels` should allow:
+
+   * the `invite` key. Rationale: this is required to authenticate
+     `m.room.member` events with the `invite` membership. Currently, redacting
+     a `power_levels` event will mean that such events cannot be authenticated,
+     potentially leading to a split-brain room.
+
+   * the `notifications` key. Rationale: symmetry with the other `power_levels`
+     settings. (Maybe? See
+     https://github.com/matrix-org/matrix-doc/issues/1601#issuecomment-511237744.)
 
 
 ## Potential issues
