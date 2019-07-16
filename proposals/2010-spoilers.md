@@ -53,6 +53,12 @@ however that wouldn't be HTML-compliant.
 Instead of limiting the proposed `data-mx-spoiler` attribute only to the `<span>`-tag it could be
 added to all tags, however it might make implementations for clients more complicated.
 
+Alternatively the [details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) tag could
+be used. This, however, is a block element, and the spoilers are span elements. Furthermore
+semantically there is a slight difference: with the details tag you hide something for a person
+as it uses up a lot of screen space, while with a spoiler you hide something as a person might not
+want to see it.
+
 ## Potential issues
 Depending on context it might make sense to put other events, such as `m.image`, into spoilers,
 too. This MSC doesn't address that at all. Using
@@ -60,7 +66,7 @@ too. This MSC doesn't address that at all. Using
 
 This MSC doesn't take HTML block elements into account.
 
-Clients would have to come up with a way how to input spoilers. This could be done, for example,
+Clients would have to come up with a way to input spoilers. This could be done, for example,
 by adding a custom markdown tag (like discord does), so that you do `Text ||spoiler||`, however
 that doesn't take a spoiler reason into account.
 
