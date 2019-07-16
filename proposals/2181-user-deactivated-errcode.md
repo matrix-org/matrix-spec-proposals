@@ -15,22 +15,6 @@ returned whenever an action is attempted that requires an activited user, but
 the authenticating user is deactivated. The recommended HTTP code to return
 alongside is `403`.
 
-The template should have the following sections:
-
-* **Introduction** - This should cover the primary problem and broad description of the solution.
-* **Proposal** - The gory details of the proposal.
-* **Tradeoffs** - Any items of the proposal that are less desirable should be listed here. Alternative
-  solutions to the same problem could also be listed here.
-* **Potential issues** - This is where problems with the proposal would be listed, such as changes
-  that are not backwards compatible.
-* **Security considerations** - Discussion of what steps were taken to avoid security issues in the
-  future and any potential risks in the proposal.
-* **Conclusion** - A repeat of the problem and solution.
-
-Furthermore, the template should not be required to be followed. However it is strongly recommended to
-maintain some sense of consistency between proposals.
-
-
 ## Tradeoffs
 
 The alternative is to continue returning an `M_FORBIDDEN`, but send back a
