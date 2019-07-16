@@ -237,6 +237,12 @@ The format of the aggregated value in the bundle depends on the relation type:
  * `m.reference` list the `event_id` and event `type` of the events which
    reference that event.
 
+  XXX: An alternative approach could be to (also?) use a filter to
+  specify/override how to aggregate custom relation types, which would then
+  also be used to inform /sync how we want to receive our bundled relations.
+  However, we really need to be better understand how to do custom relation
+  types first...
+
 For instance, the below example shows an event
 with four bundled relations; 3 thumbsup reaction annotations and one
 reference.
@@ -337,41 +343,16 @@ bulk, which the CS API doesn't currently provide.  We propose extending GET
 
 #### Paginating aggregations
 
-Bundles of relations for a given event are
-paginated to prevent overloading the client with relations, and may be traversed by
-via the new `/relations` API (which iterates over all relations for an event) or the
-new `/aggregations` API (which iterates over the groups of relations, or the relations
-within a group).
+A single event can have lots of associated relations, and we do not want to
+overload the client by including them all in a bundle. Instead, we provide two
+new APIs in order to paginate over the relations, which behave in a similar
+way to `/messages`, except using `next_batch` and `prev_batch` names (in line
+with `/sync` API). Clients can start paginating either from the earliest or
+latest events using the `dir` param.
 
-Our requirements that we need to paginate over:
- * The relations of a given event, via a new `/relations` API.
-  * For replacements (i.e. edits) we get a paginated list of all edits on the source event.
-  * For annotations (i.e. reactions) we get the full list of reactions for the source event.
- * Groups of annotations, via a new `/aggregations` API.
-  * Need to paginate across the different groups (i.e. how many different
-    reactions of different types did it get?)
-  * List all the reactions individually per group for this message
- * References (i.e. threads of replies)
-  * We don't bundle contents in the references (at least for now); instead we
-    just follow the event IDs to stitch the right events back together.
-  * We could include a count of the number of references to a given event.
-  * We just provide the event IDs (to keep it nice and normalised) in a dict; we
-    can denormalise it later for performance if needed by including the event
-    type or whatever.  We could include event_type if it was useful to say "5
-    replies to this message", except given event types are not just
-    m.room.message (in future), it wouldn't be very useful to say "3 image
-    replies and 2 msg replies".
-
-We provide two API endpoints, one to paginate relations based in normal
-topological order, the second to paginate aggregated annotations.
-
-Both APIs behave in a similar way to `/messages`, except using `next_batch` and
-`prev_batch` names (in line with `/sync` API). Clients can start paginating
-either from the earliest or latest events using the `dir` param.
-
-Standard pagination API looks like the following, where you can optionally
-specify relation and event type to filter by.  It lists all the relations
-in topological order.
+The `/relations` API lets you iterate over all the unbundled relations
+associated with an event in standard topological order.  You can optionally
+filter by a given type of relation and event type:
 
 ```
 GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{eventType}]]
@@ -391,23 +372,13 @@ GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{even
 }
 ```
 
-The aggregated pagination API operates in two modes, the first is to paginate
-the groups themselves, returning aggregated results:
+The `/aggregations` API lets you iterate over bundled relations, and within them.
+
+To iterate over the bundled relations for an event (optionally filtering by relation type and target event type):
 
 ```
 GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{eventType}][?filter=id]
 ```
-
-By default, the aggregation behaviour is defined by the relation type:
- * rel_type of `m.annotation` == group by count, and order by count desc
- * rel_type of `m.replace` == we just get the most recent message, no bundles.
- * rel_type of `m.reference` == we get the IDs of the events replying to us, and
-   the total count of replies to this msg
-
-In future, we could use a filter to specify/override how to aggregate the relations,
-which would then also be used to inform /sync how we want to receive our bundled
-relations.  (However, we really need to be better understand how to do custom
-relation types first...)
 
 ```json
 {
@@ -423,7 +394,10 @@ relation types first...)
 }
 ```
 
-The second mode of operation is to paginate within a group, in normal topological order:
+To iterate over the unbundled relations within a specific bundled relation, you
+use the following API form, identifying the bundle based on its `key`
+(therefore this only applies to `m.annotation`, as it is the only current
+`rel_type` which groups relations via `key`)
 
 ```
 GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}/${relationType}/{eventType}/{key}
@@ -451,26 +425,35 @@ GET /_matrix/client/r0/rooms/!asd:matrix.org/aggregations/$1cd23476/m.annotation
 
 ## End to end encryption
 
-FIXME
+Since the server has to be able to bundle related events, structural
+information about relations cannot be encrypted end-to-end, and so the
+`m.relates_to` field should not be included in the ciphertext.
 
-Since the server bundles related events, the relation information must not be
-encrypted end-to-end.
+For instance, an encrypted `m.replace` looks like this:
 
-For aggregations of annotations there are two options:
+```json
+{
+  "content": {
+    "algorithm": "m.megolm.v1.aes-sha2",
+    "ciphertext": "AwgBErA....",
+    "device_id": "NBHOQUBWME",
+    "m.relates_to": {
+      "event_id": "$15632219072753999gNDqf:matrix.org",
+      "rel_type": "m.replace"
+    },
+    "sender_key": "rt/7v+UV9cw9PzXEVk7gjLe8kLxuu/e3075PgPi9XVU",
+    "session_id": "q9Okpk4fK+SqSPvTBbhWPZt39LrTEj8vuQdcIK/iYa4"
+  },
+  "sender": "@matthew:matrix.org",
+  "type": "m.room.encrypted",
+}
+```
 
-1. Don't group together annotations, and have the aggregation `key` encrypted, so
-   as to not leak how someone reacted (though server would still see that they
-   did).
-2. In some way encrypt the aggregation `key`, with the properties that different
-   users and clients reacting in the same way to the same event produce the same
-   `key`, but isn't something the server can calculate and is
-   different between different events (to stop statistical analysis). Clients
-   also need to be able to go from encrypted `key` to the actual
-   reaction.
+For `m.annotation` relations, the annotation SHOULD be encrypted, encrypting the `key` field using the same message key as the original message.  However, while transition to this system, reactions may be sent entirely unencrypted in an E2E room.
 
-   One suggestion here is to use the message key of the parent event to encrypt the
-   aggregation `key`.
+  FIXME: spec how these look.
 
+## Redactions
 
 ## Edge cases
 
