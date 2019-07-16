@@ -29,8 +29,10 @@ None
 ## Security considerations
 
 While the existence of a user was already public knowledge (one can check if
-the User ID is available through `/register`, this proposal would allow any
-user to be able to detect if a registered account has been deactivated.
+the User ID is available through
+[/_matrix/client/r0/register/available](https://matrix.org/docs/spec/client_server/r0.5.0#get-matrix-client-r0-register-available),
+this proposal would allow any user to be able to detect if a registered
+account has been deactivated.
 
 ## Conclusion
 
