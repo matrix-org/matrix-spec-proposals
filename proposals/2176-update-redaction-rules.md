@@ -21,7 +21,7 @@ preserved by a redaction:
 (Note this refers to the *event-level* `membership` property, rather than the
 similarly-named sub-property under the `content` key.)
 
-Ratinale: neither of the above properties have defined meanings in the Matrix
+Rationale: neither of the above properties have defined meanings in the Matrix
 protocol, so there is no reason for them to be special-cased in this way.
 
 The following should be added to the list of subkeys of the content property
