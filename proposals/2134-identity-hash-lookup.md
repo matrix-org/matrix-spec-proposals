@@ -119,12 +119,12 @@ There are certain situations when an identity server cannot be expected to
 compare hashed 3PID values; When a server is connected to a backend provider
 such as LDAP, there is no way for the identity server to efficiently pull all
 of the addresses and hash them. For this case, the `algorithm` field of `GET
-/hash_details` may be set to `"none"`, and `lookup_pepper` will be an empty
+/hash_details` may be set to `"m.none"`, and `lookup_pepper` will be an empty
 string. No hashing will be performed if the client and server decide on this,
 and 3PIDs will be sent in plain-text, similar to the v1 `/lookup` API.
 
 When performing a lookup, the pepper and hashing algorithm the client used
-must be part of the request body (even when using the `"none"` algorithm
+must be part of the request body (even when using the `"m.none"` algorithm
 value). If they do not match what the server has on file (which may be the
 case if the pepper was changed right after the client's request for it), then
 the server must inform the client that they need to query the hash details
