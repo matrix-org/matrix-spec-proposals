@@ -243,14 +243,15 @@ The rules are as follows:
 
    #. If there is no previous ``m.room.power_levels`` event in the room, allow.
 
-   #. For each of the keys ``users_default``, ``events_default``,
-      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
-      each entry being changed under the ``events`` or ``users`` keys:
+   #. For the keys ``users_default``, ``events_default``,
+      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite`` check if they were changed. 
+      For each of the changed keys, as well as
+      each entry being added, changed or removed under the ``events`` or ``users`` keys:
 
-      i. If the current value is higher than the ``sender``'s current power level,
+      i. If the current value is present and higher than the ``sender``'s current power level,
          reject.
 
-      #. If the new value is higher than the ``sender``'s current power level,
+      #. If the new value is present and higher than the ``sender``'s current power level,
          reject.
 
    #. For each entry being changed under the ``users`` key, other than the
