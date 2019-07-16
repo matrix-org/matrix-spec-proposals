@@ -12,15 +12,15 @@ requests.
 
 This proposal asks to create a new errcode, `M_USER_DEACTIVATED`, that can be
 returned whenever an action is attempted that requires an activited user, but
-the authenticating user is deactivated. The recommended HTTP code to return
-alongside is `403`.
+the authenticating user is deactivated. The HTTP code to return alongside is
+`403`.
 
 ## Tradeoffs
 
 The alternative is to continue returning an `M_FORBIDDEN`, but send back a
-different errmsg. This is undesirable as it requires clients to pattern match
-on a long phrase that could be minutely changed at any time, breaking
-everything.
+different errmsg. This is undesirable as clients are supposed to treat the
+message as an opaque string, and should not be performing any
+pattern-matching on it.
 
 ## Potential issues
 
@@ -28,8 +28,9 @@ None
 
 ## Security considerations
 
-This would allow users to be able to detect if their account had been
-deactivated. This is probably something we'd like to allow though.
+While the existence of a user was already public knowledge (one can check if
+the User ID is available through `/register`, this proposal would allow any
+user to be able to detect if a registered account has been deactivated.
 
 ## Conclusion
 
