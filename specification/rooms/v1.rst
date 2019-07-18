@@ -244,8 +244,8 @@ The rules are as follows:
    #. If there is no previous ``m.room.power_levels`` event in the room, allow.
 
    #. For the keys ``users_default``, ``events_default``,
-      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite`` check if they were changed. 
-      For each of the changed keys:
+      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite`` check if they 
+      were added, changed or removed. For each found alteration:
 
       i. If the current value is higher than the ``sender``'s current power level,
          reject.
@@ -253,15 +253,14 @@ The rules are as follows:
       #. If the new value is higher than the ``sender``'s current power level,
          reject.
          
-   #. For each entry being added, changed or removed in both the ``events`` and ``users`` keys:
+   #. For each entry being added, changed or removed in both the ``events`` and 
+      ``users`` keys:
       
       i. If the current value is higher than the ``sender``'s current power level,
          reject.
          
       #. If the new value is higher than the ``sender``'s current power level,
          reject.
-         
-      #. (Note: current/new value can also denote the inferred value from either ``users_default``, ``events_default`` or  ``state_default``)
 
    #. For each entry being changed under the ``users`` key, other than the
       ``sender``'s own entry:
@@ -285,15 +284,19 @@ The rules are as follows:
 
 .. NOTE::
 
-  Some consequences of these rules:
+   * Some consequences of these rules:
 
-  * Unless you are a member of the room, the only permitted operations (apart
-    from the initial create/join) are: joining a public room; accepting or
-    rejecting an invitation to a room.
+       * Unless you are a member of the room, the only permitted operations (apart
+         from the initial create/join) are: joining a public room; accepting or
+         rejecting an invitation to a room.
 
-  * To unban somebody, you must have power level greater than or equal to both
-    the kick *and* ban levels, *and* greater than the target user's power
-    level.
+       * To unban somebody, you must have power level greater than or equal to both
+         the kick *and* ban levels, *and* greater than the target user's power
+         level.
+         
+   * Power levels may also be inferred from defaults. So, mentions of, for example,
+     the ``sender``'s power level might also refer to a default power level that is
+     applied. The same holds true for events.
 
 Event format
 ~~~~~~~~~~~~
