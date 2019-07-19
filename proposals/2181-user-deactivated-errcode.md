@@ -10,7 +10,7 @@ requests.
 
 ## Proposal
 
-This proposal asks to create a new errcode, `M_USER_DEACTIVATED`, that can be
+This proposal asks to create a new errcode, `M_USER_DEACTIVATED`, that MAY be
 returned whenever an action is attempted that requires an activited user, but
 the authenticating user is deactivated. The HTTP code to return alongside is
 `403`.
