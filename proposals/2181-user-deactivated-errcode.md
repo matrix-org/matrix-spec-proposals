@@ -15,6 +15,11 @@ returned whenever an action is attempted that requires an activited user, but
 the authenticating user is deactivated. The HTTP code to return alongside is
 `403`.
 
+This should initially be returned by `/login`, when an identifier of a
+deactivated user is sent in the request. The password does not have to be
+correct, as some homeserver implementations remove password information on
+deactivation.
+
 ## Tradeoffs
 
 The alternative is to continue returning an `M_FORBIDDEN`, but send back a
