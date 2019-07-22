@@ -17,7 +17,7 @@ the authenticating user is deactivated. The HTTP code to return alongside is
 
 This should initially be returned by `/login`, when an identifier of a
 deactivated user is sent in the request. The password does not have to be
-correct, as some homeserver implementations remove password information on
+correct, as homeserver implementations should remove password information on
 deactivation.
 
 ## Tradeoffs
