@@ -65,11 +65,7 @@ hashed). First the client must append the medium to the address:
 ```
 
 Hashes must be peppered in order to reduce both the information an identity
-server gains during the process, and attacks the client can perform. Clients
-will have to generate a full rainbow table specific to the set pepper to
-obtain all registered MXIDs, while the server has to generate a full rainbow
-table with the specific pepper to get the plaintext 3pids for non-matrix
-users.
+server gains during the process, and attacks the client can perform. [0]
 
 In order for clients to know the pepper and hashing algorithm they should use,
 Identity servers must make the information available on the `/hash_details`
@@ -87,13 +83,14 @@ GET /_matrix/identity/v2/hash_details
 The name `lookup_pepper` was chosen in order to account for pepper values
 being returned for other endpoints in the future. The contents of
 `lookup_pepper` MUST match the regular expression `[a-zA-Z0-9]+` (unless no
-hashing is being performed, as described below). If `lookup_pepper` is an
-empty string, clients MUST cease the lookup operation.
+hashing is being performed, as described below). If hashing is being
+performed, and `lookup_pepper` is an empty string, clients MUST cease the
+lookup operation.
 
-```
 The client should append the pepper to the end of the 3PID string before
 hashing.
 
+```
 "alice@example.com email" -> "alice@example.com emailmatrixrocks"
 "bob@example.com email"   -> "bob@example.com emailmatrixrocks"
 "carl@example.com email"  -> "carl@example.com emailmatrixrocks"
@@ -106,22 +103,26 @@ handle identity servers which may rotate their pepper values frequently.
 Clients MUST choose one of the given hash algorithms to encrypt the 3PID
 during lookup.
 
-At a minimum, clients and identity servers MUST support SHA-256 as defined by
-[RFC 4634](https://tools.ietf.org/html/rfc4634), identified by the
-`algorithm` value `"sha256"`. SHA-256 was chosen as it is currently used
-throughout the Matrix spec, as well as its properties of being quick to hash.
-While this reduces the resources necessary to generate a rainbow table for
-attackers, a fast hash is necessary if particularly slow mobile clients are
-going to be hashing thousands of contact details. Other algorithms can be
-negotiated by the client and server at their discretion.
+Clients and identity servers MUST support SHA-256 as defined by [RFC
+4634](https://tools.ietf.org/html/rfc4634), identified by the `algorithm`
+value `"sha256"`. SHA-256 was chosen as it is currently used throughout the
+Matrix spec, as well as its properties of being quick to hash. While this
+reduces the resources necessary to generate a rainbow table for attackers, a
+fast hash is necessary if particularly slow mobile clients are going to be
+hashing thousands of contact details. Other algorithms can be negotiated by
+the client and server at their discretion.
 
 There are certain situations when an identity server cannot be expected to
-compare hashed 3PID values; When a server is connected to a backend provider
-such as LDAP, there is no way for the identity server to efficiently pull all
-of the addresses and hash them. For this case, the `algorithm` field of `GET
-/hash_details` may be set to `"m.none"`, and `lookup_pepper` will be an empty
-string. No hashing will be performed if the client and server decide on this,
-and 3PIDs will be sent in plain-text, similar to the v1 `/lookup` API.
+compare hashed 3PID values; for example, when a server is connected to a
+backend provider such as LDAP, there is no way for the identity server to
+efficiently pull all of the addresses and hash them. For this case, clients
+and server MUST also support sending plain-text 3PID values. To agree upon
+this, the `algorithm` field of `GET /hash_details` MUST be set to `"m.none"`,
+whereas `lookup_pepper` will be an empty string. No hashing will be performed
+if the client and server decide on this, and 3PIDs will be sent in
+plain-text, similar to the v1 `/lookup` API. When this occurs, it is STRONGLY
+RECOMMENDED for the client to prompt the user before continuing, and receive
+consent for sending 3PID details in plain-text to the identity server.
 
 When performing a lookup, the pepper and hashing algorithm the client used
 must be part of the request body (even when using the `"m.none"` algorithm
@@ -277,3 +278,10 @@ This proposal outlines a simple method to stop bulk collection of user's
 contact lists and their social graphs without any disastrous side effects. All
 functionality which depends on the lookup service should continue to function
 unhindered by the use of hashes.
+
+## Footnotes
+
+[0] Clients would have to generate a full rainbow table specific to the set
+pepper to obtain all registered MXIDs, while the server would have to
+generate a full rainbow table with the specific pepper to get the plaintext
+3pids for non-matrix users.
