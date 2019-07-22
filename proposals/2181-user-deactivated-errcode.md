@@ -16,9 +16,9 @@ the authenticating user is deactivated. The HTTP code to return alongside is
 `403`.
 
 This should initially be returned by `/login`, when an identifier of a
-deactivated user is sent in the request. The password does not have to be
-correct, as homeserver implementations should remove password information on
-deactivation.
+deactivated user is sent in the request. Whether the password has to be
+correct depends on whether the Homeserver implementation removes login
+information on deactivation. This is an implementation detail.
 
 ## Tradeoffs
 
