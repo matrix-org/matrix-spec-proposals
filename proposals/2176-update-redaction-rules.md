@@ -27,15 +27,18 @@ protocol, so there is no reason for them to be special-cased in this way.
 The following should be added to the list of subkeys of the content property
 which should be preserved:
 
+ * `m.room.create` should preserve *all* content. Rationale: the values in a
+   `create` event are deliberately intented to last the lifetime of the room,
+   and if values are redacted, there is no way to add correct settings
+   afterwards. It therefore seems non-sensical to allow redaction of a `create`
+   event.
+
  * `m.room.redaction` should allow the `redacts` key (assuming
    [MSC2174](https://github.com/matrix-org/matrix-doc/pull/2174) is merged).
    Rationale: currently, redacting a redaction can lead to inconsistent results
    among homservers, depending on whether they receive the `m.room.redaction`
    result before or after it is redacted (and therefore may or may not redact
    the original event).
-
- * `m.room.create` should allow the `room_version` key. Currently, redacting an
-   `m.room.create` event will make the room revert to a v1 room.
 
  * `m.room.power_levels` should allow:
 
@@ -44,12 +47,50 @@ which should be preserved:
      a `power_levels` event will mean that such events cannot be authenticated,
      potentially leading to a split-brain room.
 
-   * the `notifications` key. Rationale: symmetry with the other `power_levels`
-     settings. (Maybe? See
-     https://github.com/matrix-org/matrix-doc/issues/1601#issuecomment-511237744.)
+## Other properties considered for preservation
 
+Currently it is *not* proposed to add these to the list of properties which are
+proposed for a redaction:
 
-## Potential issues
+ * The `notifications` key of `m.room.power_levels`. Unlike the other
+   properties in `power_levels`, `notifications` does not play a part in
+   authorising the events in the room graph. Once the `power_levels` are
+   replaced, historical values of the `notifications` property are
+   irrelevant. There is therefore no need for it to be protected from
+   redactions.
 
-What if there is spam in sub-properties of the `notifications` property of
-power-levels? Should we not be able to redact it?
+ * The `algorithm` key of `m.room.encryption`. Again, historical values of
+   `m.room.encryption` have no effect, and servers do not use the value of the
+   property to authenticate events.
+
+   The effect of redacting an `m.room.redaction` event is much the same as that
+   of sending a new `m.room.redaction` event with no `algorithm` key. It's
+   unlikely to be what was intended, but adding rules to the redaction
+   algorithm will not help this.
+
+### Background to things not included in the proposal
+
+The approach taken here has been to minimise the list of properties preserved
+by redaction; in general, the list is limited to those which are required by
+servers to authenticate events in the room. One reason for this is to simplify
+the implementation of servers and clients, but a more important philosophical
+reason is as follows.
+
+Changing the redaction algorithm requires changes to both servers and clients,
+so changes are difficult and will happen rarely. Adding additional keys now
+sets an awkward precedent.
+
+It is likely that in the future more properties will be defined which might be
+convenient to preserve under redaction. One of the two scenarios would then
+happen:
+
+ * We would be forced to issue yet more updates to the redaction algorithm,
+   with a new room versions and mandatory updates to all servers and clients, or:
+
+ * We would end up with an awkward asymmetry between properties which were
+   preserved under this MSC, and those which were introduced later so were not
+   preserved.
+
+In short, I consider it important for the elegance of the Matrix protocol that
+we do not add unnecessary properties to the list of those to be preserved by
+redaction.
