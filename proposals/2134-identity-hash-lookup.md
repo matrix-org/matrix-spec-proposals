@@ -117,7 +117,7 @@ compare hashed 3PID values; for example, when a server is connected to a
 backend provider such as LDAP, there is no way for the identity server to
 efficiently pull all of the addresses and hash them. For this case, clients
 and server MUST also support sending plain-text 3PID values. To agree upon
-this, the `algorithm` field of `GET /hash_details` MUST be set to `"m.none"`,
+this, the `algorithm` field of `GET /hash_details` MUST be set to `"none"`,
 whereas `lookup_pepper` will be an empty string. No hashing will be performed
 if the client and server decide on this, and 3PIDs will be sent in
 plain-text, similar to the v1 `/lookup` API. When this occurs, it is STRONGLY
@@ -125,7 +125,7 @@ RECOMMENDED for the client to prompt the user before continuing, and receive
 consent for sending 3PID details in plain-text to the identity server.
 
 When performing a lookup, the pepper and hashing algorithm the client used
-must be part of the request body (even when using the `"m.none"` algorithm
+must be part of the request body (even when using the `"none"` algorithm
 value). If they do not match what the server has on file (which may be the
 case if the pepper was changed right after the client's request for it), then
 the server must inform the client that they need to query the hash details
