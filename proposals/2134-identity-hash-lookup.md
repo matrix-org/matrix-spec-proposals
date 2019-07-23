@@ -1,8 +1,8 @@
 # MSC2134: Identity Hash Lookups
 
 [Issue #2130](https://github.com/matrix-org/matrix-doc/issues/2130) has been
-recently created in response to a security issue brought up by an independent
-party. To summarise the issue, lookups (of Matrix user IDs) are performed using
+created in response to a security issue brought up by an independent party.
+To summarise the issue, lookups (of Matrix user IDs) are performed using
 plain-text 3PIDs (third-party IDs) which means that the identity server can
 identify and record every 3PID that the user has in their contacts, whether
 that email address or phone number is already known by the identity server or
@@ -26,10 +26,10 @@ which will leak less data to identity servers.
 ## Proposal
 
 This proposal suggests making changes to the Identity Service API's lookup
-endpoints. Instead, this proposal consolidates them into a single `/lookup`
-endpoint. Additionally, the endpoint is to be on a `v2` path, to avoid
-confusion with the original `/lookup`. We also drop the `/api` in order to
-preserve consistency across other endpoints:
+endpoints, consolidating them into a single `/lookup` endpoint. The endpoint
+is to be on a `v2` path, to avoid confusion with the original `v1` `/lookup`.
+The `/api` part is also dropped in order to preserve consistency across other
+endpoints:
 
 - `/_matrix/identity/v2/lookup`
 
@@ -68,7 +68,7 @@ Hashes must be peppered in order to reduce both the information an identity
 server gains during the process, and attacks the client can perform. [0]
 
 In order for clients to know the pepper and hashing algorithm they should use,
-Identity servers must make the information available on the `/hash_details`
+identity servers must make the information available on the `/hash_details`
 endpoint:
 
 ```
@@ -104,25 +104,30 @@ Clients MUST choose one of the given hash algorithms to encrypt the 3PID
 during lookup.
 
 Clients and identity servers MUST support SHA-256 as defined by [RFC
-4634](https://tools.ietf.org/html/rfc4634), identified by the `algorithm`
-value `"sha256"`. SHA-256 was chosen as it is currently used throughout the
-Matrix spec, as well as its properties of being quick to hash. While this
-reduces the resources necessary to generate a rainbow table for attackers, a
-fast hash is necessary if particularly slow mobile clients are going to be
-hashing thousands of contact details. Other algorithms can be negotiated by
-the client and server at their discretion.
+4634](https://tools.ietf.org/html/rfc4634), identified by the value
+`"sha256"` in the `algorithms` array. SHA-256 was chosen as it is currently
+used throughout the Matrix spec, as well as its properties of being quick to
+hash. While this reduces the resources necessary to generate a rainbow table
+for attackers, a fast hash is necessary if particularly slow mobile clients
+are going to be hashing thousands of contact details. Other algorithms are
+negotiated by the client and server at their discretion.
 
 There are certain situations when an identity server cannot be expected to
 compare hashed 3PID values; for example, when a server is connected to a
 backend provider such as LDAP, there is no way for the identity server to
 efficiently pull all of the addresses and hash them. For this case, clients
 and server MUST also support sending plain-text 3PID values. To agree upon
-this, the `algorithm` field of `GET /hash_details` MUST be set to `"none"`,
-whereas `lookup_pepper` will be an empty string. No hashing will be performed
-if the client and server decide on this, and 3PIDs will be sent in
-plain-text, similar to the v1 `/lookup` API. When this occurs, it is STRONGLY
-RECOMMENDED for the client to prompt the user before continuing, and receive
-consent for sending 3PID details in plain-text to the identity server.
+this, the `"algorithms"` field of `GET /hash_details` MUST contain the value
+`"none"`, and `lookup_pepper` will be an empty string. For this case, the
+identity server could only send `"none"` as part of the `"algorithms"` array.
+The client can then decide whether it wants to accept this. The identity
+server could also send `["none", "sha256"]` and cease from looking up
+contacts in LDAP unless `"none"` is decided upon.
+
+No hashing will be performed if the client and server decide on `"none"`, and
+3PIDs will be sent in plain-text, similar to the v1 `/lookup` API. When this
+occurs, it is STRONGLY RECOMMENDED for the client to prompt the user before
+continuing.
 
 When performing a lookup, the pepper and hashing algorithm the client used
 must be part of the request body (even when using the `"none"` algorithm
@@ -132,16 +137,15 @@ the server must inform the client that they need to query the hash details
 again, instead of just returning an empty response, which clients would
 assume to mean that no contacts are registered on that identity server.
 
-If the algorithm does not match the server's, the server should return a `400
+If the algorithm is not supported by the server, the server should return a `400
 M_INVALID_PARAM`. If the pepper does not match the server's, the server should
 return a new error code, `400 M_INVALID_PEPPER`. A new error code is not
 defined for an invalid algorithm as that is considered a client bug.
 
-The `M_INVALID_PEPPER` error response should contain the correct `algorithm`
-and `lookup_pepper` fields. This is to prevent the client from needing to
-query `/hash_details` again, thus saving a round-trip. `M_INVALID_PARAM` does
-not include these fields. An example response to an incorrect pepper would
-be:
+The `M_INVALID_PEPPER` error response contain the correct `algorithm` and
+`lookup_pepper` fields. This is to prevent the client from needing to query
+`/hash_details` again, thus saving a request. `M_INVALID_PARAM` does not
+include these fields. An example response to an incorrect pepper would be:
 
 ```
 {    
@@ -207,10 +211,9 @@ as part of this proposal.
 implementation, and should return a `403 M_FORBIDDEN` error if so.
 
 If an identity server is too old and a HTTP 400 or 404 is received when
-accessing the `v2` endpoint, they should fallback to the `v1` endpoint instead.
-However, clients should be aware that plain-text 3PIDs are required for the
-`v1` endpoint, and SHOULD ask for user consent to send 3PIDs in plain-text, and
-be clear about where they are being sent to.
+accessing the `v2` endpoint, clients should fallback to the `v1` endpoint
+instead. However, clients should be aware that plain-text 3PIDs are required
+for the `v1` endpoints, and are strongly encouraged to warn the user of this.
 
 ## Tradeoffs
 
@@ -229,14 +232,6 @@ Mediums and peppers are appended to the address as to prevent a common prefix
 for each plain-text string, which prevents attackers from pre-computing bits
 of a stream cipher.
 
-Additionally, this proposal does not stop an identity server from storing
-plain-text 3PIDs. There is a GDPR argument in keeping email addresses, such
-that if a breach happens, users must be notified of such. Ideally this would be
-done over Matrix, but people may've stuck their email in an identity server and
-then left Matrix forever. Perhaps if only hashes were being stored on the
-identity server then that isn't considered personal information? In any case, a
-discussion for another MSC.
-
 ## Other considered solutions
 
 Ideally identity servers would never receive plain-text addresses, however it
@@ -251,16 +246,15 @@ eventual solution of using Software Guard Extensions (detailed in
 https://signal.org/blog/private-contact-discovery/) is considered impractical
 for a federated network, as it requires specialized hardware.
 
-k-anonymity was considered as an alternative, in which the identity server
-would never receive a full hash of a 3PID that it did not already know about.
-While this has been considered plausible, it comes with heightened resource
-requirements (much more hashing by the identity server). The conclusion was
-that it may not provide more privacy if an identity server decided to be evil,
-however it would significantly raise the resource requirements to run an evil
-identity server. 
-
-Discussion and a walk-through of what a client/identity-server interaction would
-look like are documented [in this Github
+k-anonymity was considered as an alternative approach, in which the identity
+server would never receive a full hash of a 3PID that it did not already know
+about. While this has been considered plausible, it comes with heightened
+resource requirements (much more hashing by the identity server). The
+conclusion was that it may not provide more privacy if an identity server
+decided to be evil, however it would significantly raise the resource
+requirements to run an evil identity server. Discussion and a walk-through of
+what a client/identity-server interaction would look like are documented [in
+this Github
 comment](https://github.com/matrix-org/matrix-doc/pull/2134#discussion_r298691748).
 
 Additionally, a radical model was also considered where the first portion of
