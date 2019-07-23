@@ -2,45 +2,46 @@
 
 [Issue #2130](https://github.com/matrix-org/matrix-doc/issues/2130) has been
 created in response to a security issue brought up by an independent party.
-To summarise the issue, lookups (of Matrix user IDs) are performed using
-plain-text 3PIDs (third-party IDs) which means that the identity server can
-identify and record every 3PID that the user has in their contacts, whether
-that email address or phone number is already known by the identity server or
-not. In the latter case, an identity server is able to collect email
-addresses and phone numbers that have a high probability of being connected
-to a real person. It could then use this data for marketing or other
-purposes.
+To summarise the issue, when a user wants to ask an identity server which of
+its contacts have registered a Matrix account, it performs a lookup against
+an identity server. The client currently sends all of its contact details in
+the form of plain-text addresses, meaning that the identity server can
+identify and record every third-party ID (3PID) of the user's contacts. This
+allows the identity server is able to collect email addresses and phone
+numbers that have a high probability of being connected to a real person.
+This data could then be used for marketing, political campaigns, etc.
 
-However, if the email addresses and phone numbers are hashed before they are
+However, if these email addresses and phone numbers are hashed before they are
 sent to the identity server, the server would have a more difficult time of
 being able to recover the original addresses. This prevents contact
-information of non-Matrix users being exposed by the lookup service.
+information of non-Matrix users being exposed to the lookup service.
 
-However, hashing is not perfect. While reversing a hash is not possible, it
-is possible to build a [rainbow
-table](https://en.wikipedia.org/wiki/Rainbow_table), which could map many
-known email addresses and phone numbers to their hash equivalents. When the
-identity server receives a hash, it would then be able to look it up in this
-table, and find the email address or phone number associated with it. In an
-ideal world, one would use a hashing algorithm such as
-[bcrypt](https://en.wikipedia.org/wiki/Bcrypt), with many rounds, which would
-make building such a rainbow table an extraordinarily expensive process.
-Unfortunately, this is impractical for our use case, as it would require
-clients to perform many, many rounds of hashing, linearly dependent on their
-address book size, which would likely result in lower-end mobile phones
-becoming overwhelmed. Thus, we must use a fast hashing algorithm, at the cost
-of making rainbow tables easy to build.
+Yet, hashing is not perfect. While reversing a hash is not possible, it is
+possible to build a [rainbow
+table](https://en.wikipedia.org/wiki/Rainbow_table), which maps known email
+addresses and phone numbers to their hash equivalents. When the identity
+server receives a hash, it is then be able to look it up in its rainbow table
+and find the corresponding 3PID. To prevent this, one would use a hashing
+algorithm such as [bcrypt](https://en.wikipedia.org/wiki/Bcrypt) with many
+rounds, making the construction of a large rainbow table an infeasibly
+expensive process. Unfortunately, this is impractical for our use case, as it
+would require clients to also perform many, many rounds of hashing, linearly
+dependent on the size of their address book, which would likely result in
+lower-end mobile phones becoming overwhelmed. We are then forced to use a
+fast hashing algorithm, at the cost of making rainbow tables easy to build.
 
-The rainbow table attack is not perfect. While there are only so many
-possible phone numbers, and thus it is simple to generate the hash value for
-each one, the address space of email addresses is much, much wider. Therefore
-if your email address is decently long and is not publicly known to
-attackers, it is unlikely that it would be included in a rainbow table.
+The rainbow table attack is not perfect, because one does need to know email
+addresses and phone numbers to build it. While there are only so many
+possible phone numbers, and thus it is relatively inexpensive to generate the
+hash value for each one, the address space of email addresses is much, much
+wider. If your email address is decently long and is not publicly
+known to attackers, it is unlikely that it would be included in a rainbow
+table.
 
 Thus the approach of hashing, while adding complexity to implementation and
-minor resource consumption of the client and identity server, does provide
-added difficultly for the identity server to carry out contact detail
-harvesting, which should be considered worthwhile.
+resource consumption of the client and identity server, does provide added
+difficulty for the identity server to carry out contact detail harvesting,
+which should be considered worthwhile.
 
 ## Proposal
 
@@ -106,8 +107,7 @@ hashing is being performed, as described below). If hashing is being
 performed, and `lookup_pepper` is an empty string, clients MUST cease the
 lookup operation.
 
-The client should append the pepper to the end of the 3PID string before
-hashing.
+If hashing, the client should append the pepper to the end of the 3PID string.
 
 ```
 "alice@example.com email" -> "alice@example.com emailmatrixrocks"
@@ -119,8 +119,8 @@ hashing.
 
 Clients SHOULD request this endpoint each time before performing a lookup, to
 handle identity servers which may rotate their pepper values frequently.
-Clients MUST choose one of the given hash algorithms to encrypt the 3PID
-during lookup.
+Clients MUST choose one of the given `algorithms` values to encrypt the
+3PID during lookup.
 
 Clients and identity servers MUST support SHA-256 as defined by [RFC
 4634](https://tools.ietf.org/html/rfc4634), identified by the value
@@ -133,15 +133,11 @@ negotiated by the client and server at their discretion.
 
 There are certain situations when an identity server cannot be expected to
 compare hashed 3PID values; for example, when a server is connected to a
-backend provider such as LDAP, there is no way for the identity server to
-efficiently pull all of the addresses and hash them. For this case, clients
+backend provider such as LDAP, it is not efficient for the identity server to
+pull all of the addresses and hash them on lookup. For this case, clients
 and server MUST also support sending plain-text 3PID values. To agree upon
 this, the `"algorithms"` field of `GET /hash_details` MUST contain the value
-`"none"`, and `lookup_pepper` will be an empty string. For this case, the
-identity server could only send `"none"` as part of the `"algorithms"` array.
-The client can then decide whether it wants to accept this. The identity
-server could also send `["none", "sha256"]` and cease from looking up
-contacts in LDAP unless `"none"` is decided upon.
+`"none"`. 
 
 No hashing will be performed if the client and server decide on `"none"`, and
 3PIDs will be sent in plain-text, similar to the v1 `/lookup` API. When this
@@ -153,7 +149,7 @@ must be part of the request body (even when using the `"none"` algorithm
 value). If they do not match what the server has on file (which may be the
 case if the pepper was changed right after the client's request for it), then
 the server must inform the client that they need to query the hash details
-again, instead of just returning an empty response, which clients would
+again, as opposed to just returning an empty response, which clients would
 assume to mean that no contacts are registered on that identity server.
 
 If the algorithm is not supported by the server, the server should return a `400
@@ -175,11 +171,11 @@ include these fields. An example response to an incorrect pepper would be:
 }
 ```
 
-Now comes time for the lookup. Note that the resulting hash digest MUST be
-encoded in URL-safe unpadded base64 (similar to [room version 4's event
+Now comes time for the lookup. We'll first cover an example of the client
+choosing the `"sha256"` algorithm. Note that the resulting hash digest MUST
+be encoded in URL-safe unpadded base64 (similar to [room version 4's event
 IDs](https://matrix.org/docs/spec/rooms/v4#event-ids)). Once hashing has been
-performed using the defined hashing algorithm, the client sends each hash in an
-array.
+performed, the client sends each hash in an array.
 
 ```
 NOTE: Hashes are not real values
@@ -193,7 +189,7 @@ NOTE: Hashes are not real values
 POST /_matrix/identity/v2/lookup
 
 {
-  "hashes": [
+  "addresses": [
     "y_TvXLKxFT9CURPXI1wvfjvfvsXe8FPgYj-mkQrnszs",
     "r0-6x3rp9zIWS2suIque-wXTnlv9sc41fatbRMEOwQE",
     "ryr10d1K8fcFVxALb3egiSquqvFAxQEwegXtlHoQFBw",
@@ -206,7 +202,7 @@ POST /_matrix/identity/v2/lookup
 ```
 
 The identity server, upon receiving these hashes, can simply compare against
-the hashes of the 3PIDs it stores.  The server then responds with the Matrix
+the hashes of the 3PIDs it stores. The server then responds with the Matrix
 IDs of those that match:
 
 ```
@@ -219,6 +215,67 @@ IDs of those that match:
 ```
 
 The client can now display which 3PIDs link to which Matrix IDs.
+
+For the case of the identity server sending, and the client choosing,
+`"none"` as the algorithm, we would do the following.
+
+The client would first make `GET` a request to `/hash_details`, perhaps
+receiving the response:
+
+```
+{
+  "lookup_pepper": "matrixrocks",
+  "algorithms": ["none", "sha256"]
+}
+```
+
+The client decides that it would like to use `"none"`, and thus ignores the
+lookup pepper, as no hashing will occur. Appending a space and the 3PID
+medium to each address is still necessary:
+
+```
+"alice@example.com" -> "alice@example.com email"
+"bob@example.com"   -> "bob@example.com email"
+"carl@example.com"  -> "carl@example.com email"
+"12345678910"       -> "12345678910 msisdn"
+"denny@example.com" -> "denny@example.com email"
+```
+
+The client then sends these off to the identity server in a `POST` request to
+`/lookup`:
+
+```
+POST /_matrix/identity/v2/lookup
+
+{
+  "addresses": [
+    "alice@example.com email",
+    "bob@example.com email",
+    "carl@example.com email",
+    "12345678910 msisdn",
+    "denny@example.com email"
+  ],
+  "algorithm": "none",
+  "pepper": "matrixrocks"
+}
+```
+
+Note that even though we haven't used the `lookup_pepper` value, we still
+include the same one sent to us by the identity server in `/hash_details`.
+The identity server should still return `400 M_INVALID_PEPPER` if the pepper
+is incorrect. This is intended to make implementation simpler.
+
+Finally, the identity server will check its database for the Matrix user IDs
+it has that correspond to these 3PID addresses, and returns them:
+
+```
+{
+  "mappings": {
+    "alice@example.com email": "@alice:example.com",
+    "12345678910 msisdn": "@fred:example.com"
+  }
+}
+```
 
 No parameter changes will be made to
 [/bind](https://matrix.org/docs/spec/identity_service/r0.2.1#post-matrix-identity-api-v1-3pid-bind)
