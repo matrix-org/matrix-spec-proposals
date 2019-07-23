@@ -1,30 +1,35 @@
 # Add an Error Code for Signaling a Deactivated User
 
 Currently, when a user attempts to log in, they will receive an `M_FORBIDDEN`
-errcode if their password is incorrect. However, if the user's account is
+error code if their password is incorrect. However, if the user's account is
 deactivated, they will also receive an `M_FORBIDDEN`, leaving clients in a
 state where they are unable to inform the user that the reason they cannot
 log in is that their account has been deactivated. This leads to confusion
-and password resetting with ultimately results in unnecessary support
-requests.
+and password resetting which ultimately results in frustration.
 
 ## Proposal
 
-This proposal asks to create a new errcode, `M_USER_DEACTIVATED`, that MAY be
-returned whenever an action is attempted that requires an activited user, but
-the authenticating user is deactivated. The HTTP code to return alongside is
-`403`.
+This proposal asks to create a new error code, `M_USER_DEACTIVATED`, that may
+be returned whenever an action is attempted that requires an activited user,
+but the authenticating user is deactivated. The HTTP code to return alongside
+is `403`.
 
-This should initially be returned by `/login`, when an identifier of a
-deactivated user is sent in the request. Whether the password has to be
-correct depends on whether the Homeserver implementation removes login
-information on deactivation. This is an implementation detail.
+An example of this could be returning `M_USER_DEACTIVED` on `/login`, when an
+identifier of a deactivated user is sent to the homeserver. Whether the
+password has to be correct depends on whether the Homeserver implementation
+removes login information on deactivation. This is an implementation detail.
+
+It should be noted that this proposal is not requiring implementations to
+return `M_USER_DEACTIVATED` on any endpoints when a request from a
+deactivated user appears. Instead it is simply defining the new error code,
+that it can be used by the homeserver when it chooses and that the client
+should understand what it means.
 
 ## Tradeoffs
 
 The alternative is to continue returning an `M_FORBIDDEN`, but send back a
-different errmsg. This is undesirable as clients are supposed to treat the
-message as an opaque string, and should not be performing any
+different error message. This is undesirable as clients are supposed to treat
+the message as an opaque string, and should not be performing any
 pattern-matching on it.
 
 ## Potential issues
@@ -37,7 +42,7 @@ While the existence of a user was already public knowledge (one can check if
 the User ID is available through
 [/_matrix/client/r0/register/available](https://matrix.org/docs/spec/client_server/r0.5.0#get-matrix-client-r0-register-available),
 this proposal would allow any user to be able to detect if a registered
-account has been deactivated.
+account has been deactivated, depending on the homeserver's implementation.
 
 ## Conclusion
 
