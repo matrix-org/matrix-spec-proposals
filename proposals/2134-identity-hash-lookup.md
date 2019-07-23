@@ -6,22 +6,41 @@ To summarise the issue, lookups (of Matrix user IDs) are performed using
 plain-text 3PIDs (third-party IDs) which means that the identity server can
 identify and record every 3PID that the user has in their contacts, whether
 that email address or phone number is already known by the identity server or
-not.
+not. In the latter case, an identity server is able to collect email
+addresses and phone numbers that have a high probability of being connected
+to a real person. It could then use this data for marketing or other
+purposes.
 
-If the 3PID is hashed, the identity server could not determine the address
-unless it has already seen that address in plain-text during a previous call
-of the [/bind
-mechanism](https://matrix.org/docs/spec/identity_service/r0.2.1#post-matrix-identity-api-v1-3pid-bind)
-(without significant resources to reverse the hashes). This helps prevent
-bulk collection of user's contact lists by the identity server and reduces
-its ability to build social graphs.
+However, if the email addresses and phone numbers are hashed before they are
+sent to the identity server, the server would have a more difficult time of
+being able to recover the original addresses. This prevents contact
+information of non-Matrix users being exposed by the lookup service.
 
-This proposal thus calls for the Identity Service API's
-[/lookup](https://matrix.org/docs/spec/identity_service/r0.2.1#get-matrix-identity-api-v1-lookup)
-endpoint to use hashed 3PIDs instead of their plain-text counterparts (and to
-deprecate both it and
-[/bulk_lookup](https://matrix.org/docs/spec/identity_service/r0.2.1#post-matrix-identity-api-v1-bulk-lookup)),
-which will leak less data to identity servers.
+However, hashing is not perfect. While reversing a hash is not possible, it
+is possible to build a [rainbow
+table](https://en.wikipedia.org/wiki/Rainbow_table), which could map many
+known email addresses and phone numbers to their hash equivalents. When the
+identity server receives a hash, it would then be able to look it up in this
+table, and find the email address or phone number associated with it. In an
+ideal world, one would use a hashing algorithm such as
+[bcrypt](https://en.wikipedia.org/wiki/Bcrypt), with many rounds, which would
+make building such a rainbow table an extraordinarily expensive process.
+Unfortunately, this is impractical for our use case, as it would require
+clients to perform many, many rounds of hashing, linearly dependent on their
+address book size, which would likely result in lower-end mobile phones
+becoming overwhelmed. Thus, we must use a fast hashing algorithm, at the cost
+of making rainbow tables easy to build.
+
+The rainbow table attack is not perfect. While there are only so many
+possible phone numbers, and thus it is simple to generate the hash value for
+each one, the address space of email addresses is much, much wider. Therefore
+if your email address is decently long and is not publicly known to
+attackers, it is unlikely that it would be included in a rainbow table.
+
+Thus the approach of hashing, while adding complexity to implementation and
+minor resource consumption of the client and identity server, does provide
+added difficultly for the identity server to carry out contact detail
+harvesting, which should be considered worthwhile.
 
 ## Proposal
 
