@@ -234,10 +234,6 @@ of a stream cipher.
 
 ## Other considered solutions
 
-Ideally identity servers would never receive plain-text addresses, however it
-is necessary for the identity server to send email/sms messages during a
-bind, as it cannot trust a homeserver to do so as the homeserver may be lying.
-
 Bloom filters are an alternative method of providing private contact discovery.
 However, they do not scale well due to requiring clients to download a large
 filter that needs updating every time a new bind is made. Further considered
@@ -257,14 +253,26 @@ what a client/identity-server interaction would look like are documented [in
 this Github
 comment](https://github.com/matrix-org/matrix-doc/pull/2134#discussion_r298691748).
 
-Additionally, a radical model was also considered where the first portion of
-the above scheme was done with an identity server, and the second would be done
-with various homeservers who originally reported the 3PID to the identity
-server. While interesting and a more decentralised model, some attacks are
-still possible if the identity server is running an evil homeserver which it
-can direct the client to send its hashes to. Discussion on this matter has
-taken place in the MSC-specific room [starting at this
+A radical model was also considered where the first portion of the
+k-anonyminity scheme was done with an identity server, and the second would
+be done with various homeservers who originally reported the 3PID to the
+identity server. While interesting and a more decentralised model, some
+attacks are still possible if the identity server is running an evil
+homeserver which it can direct the client to send its hashes to. Discussion
+on this matter has taken place in the MSC-specific room [starting at this
 message](https://matrix.to/#/!LlraCeVuFgMaxvRySN:amorgan.xyz/$4wzTSsspbLVa6Lx5cBq6toh6P3TY3YnoxALZuO8n9gk?via=amorgan.xyz&via=matrix.org&via=matrix.vgorcum.com).
+
+Ideally identity servers would never receive plain-text addresses, just
+storing and receiving hash values instead. However, it is necessary for the
+identity server to have plain-text addresses during a
+[bind](https://matrix.org/docs/spec/identity_service/r0.2.1#post-matrix-identity-api-v1-3pid-bind)
+call, in order to send a verification email or sms message. It is not
+feasible to defer this job to a homeserver, as the identity server cannot
+trust that the homeserver has actually performed verification. Thus it may
+not be possible to prevent plain-text 3PIDs of registered Matrix users from
+being sent to the identity server at least once. Yet, we can still do our
+best by coming up with creative ways to prevent non-matrix user 3PIDs from
+leaking to the identity server, when they're sent in a lookup.
 
 ## Conclusion
 
