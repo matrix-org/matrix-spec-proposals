@@ -109,6 +109,8 @@ The types of state events that affect authorization are:
 - ``m.room.power_levels``
 - ``m.room.third_party_invite``
 
+**Note:** Power levels are inferred from defaults when not explicitly supplied. For example, mentions of the ``sender``'s power level can also refer to the default power level for users in the room.
+
 The rules are as follows:
 
 1. If type is ``m.room.create``:
@@ -282,21 +284,17 @@ The rules are as follows:
 
 #. Otherwise, allow.
 
-.. NOTE::
 
-   * Some consequences of these rules:
 
-       * Unless you are a member of the room, the only permitted operations (apart
-         from the initial create/join) are: joining a public room; accepting or
-         rejecting an invitation to a room.
+  **Note:** Some consequences of these rules:
 
-       * To unban somebody, you must have power level greater than or equal to both
-         the kick *and* ban levels, *and* greater than the target user's power
-         level.
-         
-   * Power levels may also be inferred from defaults. So, mentions of, for example,
-     the ``sender``'s power level might also refer to a default power level that is
-     applied. The same holds true for events.
+  * Unless you are a member of the room, the only permitted operations (apart
+    from the initial create/join) are: joining a public room; accepting or
+    rejecting an invitation to a room.
+
+  * To unban somebody, you must have power level greater than or equal to both
+    the kick *and* ban levels, *and* greater than the target user's power
+    level.
 
 Event format
 ~~~~~~~~~~~~
