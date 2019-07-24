@@ -7,9 +7,9 @@ its contacts have registered a Matrix account, it performs a lookup against
 an identity server. The client currently sends all of its contact details in
 the form of plain-text addresses, meaning that the identity server can
 identify and record every third-party ID (3PID) of the user's contacts. This
-allows the identity server is able to collect email addresses and phone
-numbers that have a high probability of being connected to a real person.
-This data could then be used for marketing, political campaigns, etc.
+allows the identity server to collect email addresses and phone numbers that
+have a high probability of being connected to a real person. This data could
+then be used for marketing, political campaigns, etc.
 
 However, if these email addresses and phone numbers are hashed before they are
 sent to the identity server, the server would have a more difficult time of
@@ -71,10 +71,14 @@ denny@example.com
 ```
 
 The client will hash each 3PID as a concatenation of the medium and address,
-separated by a space and a pepper appended to the end. Note that phone numbers
-should be formatted as defined by
+separated by a space and a pepper appended to the end. Note that phone
+numbers should be formatted as defined by
 https://matrix.org/docs/spec/appendices#pstn-phone-numbers, before being
-hashed). First the client must append the medium to the address:
+hashed). Note that "pepper" in this proposal simply refers to a public,
+opaque string that is used to produce different hash results between identity
+servers. Its value is not secret.
+
+First the client must append the medium to the address:
 
 ```
 "alice@example.com" -> "alice@example.com email"
@@ -102,12 +106,11 @@ GET /_matrix/identity/v2/hash_details
 
 The name `lookup_pepper` was chosen in order to account for pepper values
 being returned for other endpoints in the future. The contents of
-`lookup_pepper` MUST match the regular expression `[a-zA-Z0-9]+` (unless no
-hashing is being performed, as described below). If hashing is being
-performed, and `lookup_pepper` is an empty string, clients MUST cease the
-lookup operation.
+`lookup_pepper` MUST match the regular expression `[a-zA-Z0-9]+`, whether
+hashing is being performed or not. When no hashing is occuring, a pepper
+value of at least length 1 is still required.
 
-If hashing, the client should append the pepper to the end of the 3PID string.
+If hashing, the client appends the pepper to the end of the 3PID string.
 
 ```
 "alice@example.com email" -> "alice@example.com emailmatrixrocks"
@@ -264,7 +267,8 @@ POST /_matrix/identity/v2/lookup
 Note that even though we haven't used the `lookup_pepper` value, we still
 include the same one sent to us by the identity server in `/hash_details`.
 The identity server should still return `400 M_INVALID_PEPPER` if the pepper
-is incorrect. This is intended to make implementation simpler.
+is incorrect. This simplifies things and can help ensure the client is
+requesting `/hash_details` properly before each lookup request.
 
 Finally, the identity server will check its database for the Matrix user IDs
 it has that correspond to these 3PID addresses, and returns them:
