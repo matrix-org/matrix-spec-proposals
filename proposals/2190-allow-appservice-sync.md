@@ -17,8 +17,12 @@ Currently, the application service spec states
 
 ## Proposal
 
-The limitation is unnecessary, so this proposal suggests removing the limitation
-and therefore allowing appservice bots use `/sync` like any other user.
+The limitation is unnecessary, so this proposal suggests removing the special
+casing. This would mean calling `/sync` with the appservice token and no
+identity assertion parameter would work the same way as any other user calling
+`/sync`, i.e. it only returns events for the appservice bot. Note that this
+behavior would be different from the original synapse behavior, where `/sync`
+returned events for all users in the appservice's namespace.
 
 ## Tradeoffs
 
