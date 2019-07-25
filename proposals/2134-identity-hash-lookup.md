@@ -137,11 +137,11 @@ negotiated by the client and server at their discretion.
 There are certain situations when an identity server cannot be expected to
 compare hashed 3PID values; for example, when a server is connected to a
 backend provider such as LDAP, it is not efficient for the identity server to
-pull all of the addresses and hash them upon lookup. For this case, can also
-support receiving plain-text 3PID addresses from clients. To agree upon this,
-the value `"none"` can be added to the `"algorithms"` array of `GET
-/hash_details`. The client can then choose to send plain-text values by
-setting the `"algorithm"` value in `POST /lookup` to `"none"`.
+pull all of the addresses and hash them upon lookup. For this case, identity
+servers can also support receiving plain-text 3PID addresses from clients. To
+agree upon this, the value `"none"` can be added to the `"algorithms"` array
+of `GET /hash_details`. The client can then choose to send plain-text values
+by setting the `"algorithm"` value in `POST /lookup` to `"none"`.
 
 No hashing will be performed if the client and server decide on `"none"`, and
 3PIDs will be sent in plain-text, similar to the v1 `/lookup` API. When this
