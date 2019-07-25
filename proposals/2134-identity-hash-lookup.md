@@ -120,10 +120,10 @@ If hashing, the client appends the pepper to the end of the 3PID string.
 "denny@example.com email" -> "denny@example.com emailmatrixrocks"
 ```
 
-Clients SHOULD request this endpoint each time before performing a lookup, to
-handle identity servers which may rotate their pepper values frequently.
-Clients MUST choose one of the given `algorithms` values to encrypt the
-3PID during lookup.
+Clients can cache the result of this endpoint, but should re-request it
+during an error on `/lookup`, to handle identity servers which may rotate
+their pepper values frequently. Clients MUST choose one of the given
+`algorithms` values to encrypt the 3PID during lookup.
 
 Clients and identity servers MUST support SHA-256 as defined by [RFC
 4634](https://tools.ietf.org/html/rfc4634), identified by the value
