@@ -143,10 +143,10 @@ agree upon this, the value `"none"` can be added to the `"algorithms"` array
 of `GET /hash_details`. The client can then choose to send plain-text values
 by setting the `"algorithm"` value in `POST /lookup` to `"none"`.
 
-No hashing will be performed if the client and server decide on `"none"`, and
-3PIDs will be sent in plain-text, similar to the v1 `/lookup` API. When this
-occurs, it is STRONGLY RECOMMENDED for the client to prompt the user before
-continuing.
+No hashing nor peppering will be performed if the client and server decide on
+`"none"`, and 3PIDs will be sent in plain-text, similar to the v1 `/lookup`
+API. When this occurs, it is STRONGLY RECOMMENDED for the client to prompt
+the user before continuing.
 
 When performing a lookup, the pepper and hashing algorithm the client used
 must be part of the request body (even when using the `"none"` algorithm
