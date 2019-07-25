@@ -34,9 +34,9 @@ The rainbow table attack is not perfect, because one does need to know email
 addresses and phone numbers to build it. While there are only so many
 possible phone numbers, and thus it is relatively inexpensive to generate the
 hash value for each one, the address space of email addresses is much, much
-wider. If your email address is decently long and is not publicly
-known to attackers, it is unlikely that it would be included in a rainbow
-table.
+wider. If your email address is not share a common mailserver, decently long
+or is not publicly known to attackers, it is unlikely that it would be
+included in a rainbow table.
 
 Thus the approach of hashing, while adding complexity to implementation and
 resource consumption of the client and identity server, does provide added
@@ -306,8 +306,9 @@ for the `v1` endpoints, and are strongly encouraged to warn the user of this.
 Hashes are still reversible with a rainbow table, but the provided pepper,
 which can be rotated by identity servers at will, should help mitigate this.
 Phone numbers (with their relatively short possible address space of 12
-numbers), short email addresses, and addresses of both type that have been
-leaked in database dumps are more susceptible to hash reversal.
+numbers), short email addresses at popular domains, and addresses of both
+type that have been leaked in database dumps are more susceptible to hash
+reversal.
 
 Mediums and peppers are appended to the address as to prevent a common prefix
 for each plain-text string, which prevents attackers from pre-computing bits
