@@ -161,7 +161,7 @@ M_INVALID_PARAM`. If the pepper does not match the server's, the server should
 return a new error code, `400 M_INVALID_PEPPER`. A new error code is not
 defined for an invalid algorithm as that is considered a client bug.
 
-The `M_INVALID_PEPPER` error response contain the correct `algorithm` and
+The `M_INVALID_PEPPER` error response contains the correct `algorithm` and
 `lookup_pepper` fields. This is to prevent the client from needing to query
 `/hash_details` again, thus saving a request. `M_INVALID_PARAM` does not
 include these fields. An example response to an incorrect pepper would be:
