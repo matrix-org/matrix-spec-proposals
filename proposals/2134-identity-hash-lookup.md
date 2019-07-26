@@ -130,10 +130,7 @@ Clients and identity servers MUST support SHA-256 as defined by [RFC
 4634](https://tools.ietf.org/html/rfc4634), identified by the value
 `"sha256"` in the `algorithms` array. SHA-256 was chosen as it is currently
 used throughout the Matrix spec, as well as its properties of being quick to
-hash. While this reduces the resources necessary to generate a rainbow table
-for attackers, a fast hash is necessary if particularly slow mobile clients
-are going to be hashing thousands of contact details. Other algorithms are
-negotiated by the client and server at their discretion.
+hash.
 
 There are certain situations when an identity server cannot be expected to
 compare hashed 3PID values; for example, when a server is connected to a
