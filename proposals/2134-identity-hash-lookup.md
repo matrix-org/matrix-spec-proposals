@@ -124,7 +124,7 @@ after a space.
 Clients can cache the result of this endpoint, but should re-request it
 during an error on `/lookup`, to handle identity servers which may rotate
 their pepper values frequently. Clients MUST choose one of the given
-`algorithms` values to encrypt the 3PID during lookup.
+`algorithms` values to hash the 3PID during lookup.
 
 Clients and identity servers MUST support SHA-256 as defined by [RFC
 4634](https://tools.ietf.org/html/rfc4634), identified by the value
@@ -157,7 +157,7 @@ assume to mean that no contacts are registered on that identity server.
 If the algorithm is not supported by the server, the server should return a `400
 M_INVALID_PARAM`. If the pepper does not match the server's, the server should
 return a new error code, `400 M_INVALID_PEPPER`. A new error code is not
-defined for an invalid algorithm as that is considered a client bug.
+defined for an unsupported algorithm as that is considered a client bug.
 
 The `M_INVALID_PEPPER` error response contains the correct `algorithm` and
 `lookup_pepper` fields. This is to prevent the client from needing to query
@@ -305,7 +305,7 @@ Hashes are still reversible with a rainbow table, but the provided pepper,
 which can be rotated by identity servers at will, should help mitigate this.
 Phone numbers (with their relatively short possible address space of 12
 numbers), short email addresses at popular domains, and addresses of both
-type that have been leaked in database dumps are more susceptible to hash
+types that have been leaked in database dumps are more susceptible to hash
 reversal.
 
 Mediums and peppers are appended to the address as to prevent a common prefix
