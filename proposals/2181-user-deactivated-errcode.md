@@ -14,8 +14,8 @@ be returned whenever an action is attempted that requires an activited user,
 but the authenticating user is deactivated. The HTTP code to return alongside
 is `403`.
 
-An example of this could be returning `M_USER_DEACTIVED` on `/login`, when an
-identifier of a deactivated user is sent to the homeserver. Whether the
+An example of this could be returning `M_USER_DEACTIVATED` on `/login`, when
+an identifier of a deactivated user is sent to the homeserver. Whether the
 password has to be correct depends on whether the Homeserver implementation
 removes login information on deactivation. This is an implementation detail.
 
