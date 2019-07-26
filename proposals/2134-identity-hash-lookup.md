@@ -34,7 +34,7 @@ The rainbow table attack is not perfect, because one does need to know email
 addresses and phone numbers to build it. While there are only so many
 possible phone numbers, and thus it is relatively inexpensive to generate the
 hash value for each one, the address space of email addresses is much, much
-wider. If your email address is not share a common mailserver, decently long
+wider. If your email address does not use a common mail server, is decently long
 or is not publicly known to attackers, it is unlikely that it would be
 included in a rainbow table.
 
