@@ -41,7 +41,7 @@ Example (with line breaks and indentation added to `formatted_body` for clarity)
     "msgtype": "m.text"
   },
   "event_id": "$eventid:example.com",
-  "origin_server_ts": 1234567890
+  "origin_server_ts": 1234567890,
   "sender": "@alice:example.com",
   "type": "m.room.message",
   "room_id": "!soomeroom:example.com"
