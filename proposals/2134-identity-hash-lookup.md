@@ -71,21 +71,21 @@ denny@example.com
 ```
 
 The client will hash each 3PID as a concatenation of the medium and address,
-separated by a space and a pepper appended to the end. Note that phone
-numbers should be formatted as defined by
+separated by a space and a pepper, also separated by a space, appended to the
+end. Note that phone numbers should be formatted as defined by
 https://matrix.org/docs/spec/appendices#pstn-phone-numbers, before being
 hashed). Note that "pepper" in this proposal simply refers to a public,
 opaque string that is used to produce different hash results between identity
 servers. Its value is not secret.
 
-First the client must append the medium to the address:
+First the client must prepend the medium (plus a space) to the address:
 
 ```
-"alice@example.com" -> "alice@example.com email"
-"bob@example.com"   -> "bob@example.com email"
-"carl@example.com"  -> "carl@example.com email"
-"+1 234 567 8910"   -> "12345678910 msisdn"
-"denny@example.com" -> "denny@example.com email"
+"alice@example.com" -> "email alice@example.com"
+"bob@example.com"   -> "email bob@example.com"
+"carl@example.com"  -> "email carl@example.com"
+"+1 234 567 8910"   -> "msisdn 12345678910"
+"denny@example.com" -> "email denny@example.com"
 ```
 
 Hashes must be peppered in order to reduce both the information an identity
@@ -110,14 +110,15 @@ being returned for other endpoints in the future. The contents of
 hashing is being performed or not. When no hashing is occuring, a pepper
 value of at least length 1 is still required.
 
-If hashing, the client appends the pepper to the end of the 3PID string.
+If hashing, the client appends the pepper to the end of the 3PID string,
+after a space.
 
 ```
-"alice@example.com email" -> "alice@example.com emailmatrixrocks"
-"bob@example.com email"   -> "bob@example.com emailmatrixrocks"
-"carl@example.com email"  -> "carl@example.com emailmatrixrocks"
-"12345678910 msdisn"      -> "12345678910 msisdnmatrixrocks"
-"denny@example.com email" -> "denny@example.com emailmatrixrocks"
+"alice@example.com email" -> "email alice@example.com matrixrocks"
+"bob@example.com email"   -> "email bob@example.com matrixrocks"
+"carl@example.com email"  -> "email carl@example.com matrixrocks"
+"12345678910 msdisn"      -> "msisdn 12345678910 matrixrocks"
+"denny@example.com email" -> "email denny@example.com matrixrocks"
 ```
 
 Clients can cache the result of this endpoint, but should re-request it
@@ -184,11 +185,11 @@ performed, the client sends each hash in an array.
 ```
 NOTE: Hashes are not real values
 
-"alice@example.com emailmatrixrocks" -> "y_TvXLKxFT9CURPXI1wvfjvfvsXe8FPgYj-mkQrnszs"
-"bob@example.com emailmatrixrocks"   -> "r0-6x3rp9zIWS2suIque-wXTnlv9sc41fatbRMEOwQE"
-"carl@example.com emailmatrixrocks"  -> "ryr10d1K8fcFVxALb3egiSquqvFAxQEwegXtlHoQFBw"
-"12345678910 msisdnmatrixrocks"      -> "c_30UaSZhl5tyanIjFoE1IXTmuU3vmptEwVOc3P2Ens"
-"denny@example.com emailmatrixrocks" -> "bxt8rtRaOzMkSk49zIKE_NfqTndHvGbWHchZskW3xmY"
+"email alice@example.com matrixrocks" -> "y_TvXLKxFT9CURPXI1wvfjvfvsXe8FPgYj-mkQrnszs"
+"email bob@example.com matrixrocks"   -> "r0-6x3rp9zIWS2suIque-wXTnlv9sc41fatbRMEOwQE"
+"email carl@example.com matrixrocks"  -> "ryr10d1K8fcFVxALb3egiSquqvFAxQEwegXtlHoQFBw"
+"msisdn 12345678910 matrixrocks"      -> "c_30UaSZhl5tyanIjFoE1IXTmuU3vmptEwVOc3P2Ens"
+"email denny@example.com matrixrocks" -> "bxt8rtRaOzMkSk49zIKE_NfqTndHvGbWHchZskW3xmY"
 
 POST /_matrix/identity/v2/lookup
 
@@ -238,11 +239,11 @@ lookup pepper, as no hashing will occur. Appending a space and the 3PID
 medium to each address is still necessary:
 
 ```
-"alice@example.com" -> "alice@example.com email"
-"bob@example.com"   -> "bob@example.com email"
-"carl@example.com"  -> "carl@example.com email"
-"12345678910"       -> "12345678910 msisdn"
-"denny@example.com" -> "denny@example.com email"
+"alice@example.com" -> "email alice@example.com"
+"bob@example.com"   -> "email bob@example.com"
+"carl@example.com"  -> "email carl@example.com"
+"+1 234 567 8910"   -> "msisdn 12345678910"
+"denny@example.com" -> "email denny@example.com"
 ```
 
 The client then sends these off to the identity server in a `POST` request to
@@ -253,11 +254,11 @@ POST /_matrix/identity/v2/lookup
 
 {
   "addresses": [
-    "alice@example.com email",
-    "bob@example.com email",
-    "carl@example.com email",
-    "12345678910 msisdn",
-    "denny@example.com email"
+    "email alice@example.com",
+    "email bob@example.com",
+    "email carl@example.com",
+    "msisdn 12345678910",
+    "email denny@example.com"
   ],
   "algorithm": "none",
   "pepper": "matrixrocks"
@@ -276,8 +277,8 @@ it has that correspond to these 3PID addresses, and returns them:
 ```
 {
   "mappings": {
-    "alice@example.com email": "@alice:example.com",
-    "12345678910 msisdn": "@fred:example.com"
+    "email alice@example.com": "@alice:example.com",
+    "msisdn 12345678910": "@fred:example.com"
   }
 }
 ```
