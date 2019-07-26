@@ -22,8 +22,8 @@ removes login information on deactivation. This is an implementation detail.
 It should be noted that this proposal is not requiring implementations to
 return `M_USER_DEACTIVATED` on any endpoints when a request from a
 deactivated user appears. Instead it is simply defining the new error code,
-that it can be used by the homeserver when it chooses and that the client
-should understand what it means.
+recommends that it should be used in situations as described above, and that
+the client should understand the meaning of it when it is received.
 
 ## Tradeoffs
 
