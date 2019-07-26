@@ -70,7 +70,7 @@ carl@example.com
 denny@example.com
 ```
 
-The client will hash each 3PID as a concatenation of the medium and address,
+The client will hash each 3PID as a concatenation of the address and medium,
 separated by a space and a pepper appended to the end. Note that phone
 numbers should be formatted as defined by
 https://matrix.org/docs/spec/appendices#pstn-phone-numbers, before being
