@@ -1,4 +1,4 @@
-# Immutable DMs
+# Immutable DMs (middle ground)
 
 In the messaging space it is common for apps to expose exactly 1 chat for a conversation
 between two users, and in some cases a specific set of users. Matrix currently does not
@@ -89,7 +89,7 @@ In order to make the rooms immutable, a new preset, `immutable_direct_chat`, is 
 preset has the following effects on the room state:
 
 * Join rules of `invite`.
-* History visibility of `shared`.
+* History visibility of `invited`.
 * Guest access of `can_join`.
 * Power levels with the following non-default structure:
   ```json
@@ -97,9 +97,9 @@ preset has the following effects on the room state:
       "events_default": 0,
       "state_default": 50,
       "users_default": 0,
-      "ban": 100,
+      "ban": 50,
       "invite": 50,
-      "kick": 100,
+      "kick": 50,
       "redact": 50,
       "notifications": {
           "room": 50
@@ -119,7 +119,7 @@ preset has the following effects on the room state:
       }
   }
   ```
-* Users invited to the room get power level 50.
+* Users invited to the room get power level 50, including the creator.
 * Encryption is enabled by default using the `m.megolm.v1.aes-sha2` algorithm.
 
 Clients which support the direct messaging module of the Client-Server API MUST use the new
@@ -170,6 +170,12 @@ who is performing the upgrade.
 Servers MUST create the new room by using the the room creation rules listed earlier in this
 proposal. This means inviting the other parties of the previous room to the new room automatically
 and ensuring the room state is as described above.
+
+Note: normally room upgrades modify the power levels in the old room in an attempt to mute all
+participants. However, no one will have power to modify the power levels in the old room.
+Therefore, servers MUST NOT fail to upgrade a room due to being unable to update the power levels
+in the old room. This is considered acceptable by this proposal because upgraded DM rooms will
+lose their DM status, making them at worst just another room for the user.
 
 #### Migrating existing DMs
 
@@ -262,7 +268,7 @@ good cause.
 
 ## Alternative solutions
 
-DMs could be enforced through atuh rule changes and server enforcement, however this feels
+DMs could be enforced through auth rule changes and server enforcement, however this feels
 far too complicated and over the top for the simplicity of just using a preset to fix rooms.
 An example of how this could look is described [here](https://gist.github.com/turt2live/ed0247531d07c666b19dd95f7471eff4).
 
