@@ -1,6 +1,6 @@
 # Proposal for aggregations via relations
 
-## Problem
+## Problem
 
 It's common to want to send events in Matrix which relate to existing events -
 for instance, reactions, edits and even replies/threads.
@@ -151,7 +151,7 @@ API.
 
 The server should postprocess relations if needed before sending
 them into a room, for instance, if we ever use a DAG to define the ordering of
-`m.replaces` relations, the server would be responsible for specifying the
+`m.replace` relations, the server would be responsible for specifying the
 parent pointers on the DAG.
 
 If the user tries to send the same annotation multiple times for the same
@@ -393,7 +393,7 @@ GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{even
 ```
 
   FIXME: we need to spell out that this API should return the original message
-  when paginating over m.replaces relations for a given message.  Synapse currently
+  when paginating over `m.replace` relations for a given message.  Synapse currently
   looks to include this as an `original_event` field alongside `chunk` on all relations,
   which feels very redundant when we only need it for edits.  Either we specialcase it
   for edits, or we just have the client go call /event to grab the contents of the original?
