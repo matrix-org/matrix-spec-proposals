@@ -1,209 +1,73 @@
-# Proposal for aggregations via m.relates_to
+# Proposal for aggregations via relations
 
-  - [Overview](#overview)
-  - [Context](#context)
-  - [Types of relations](#types-of-relations)
-  - [Aggregating and paginating relations](#aggregating-and-paginating-relations)
-  - [Event format](#event-format)
-  - [End to end encryption](#end-to-end-encryption)
-  - [CS API](#cs-api)
-  - [Pagination](#pagination)
-    - [API](#api)
-  - [Edge cases](#edge-cases)
-  - [Federation considerations](#federation-considerations)
-  - [Extended annotation use case](#extended-annotation-use-case)
-  - [Tradeoffs](#tradeoffs)
-    - [Event shape](#event-shape)
-  - [Historical context](#historical-context)
+## Problem
 
-## Overview
+It's common to want to send events in Matrix which relate to existing events -
+for instance, reactions, edits and even replies/threads.
 
-This proposal introduces the concept of relations, which can be used to associate
-new information with an existing event.  Relations are events which have an `m.relates_to`
-mixin in their contents, and the new information they convey is expressed in their
-usual event `type` and `content`.
+Clients typically need to track the related events alongside the original
+event they relate to, in order to correctly display them.  For instance,
+reaction events need to aggregated together by summing and be shown next to
+the event they react to; edits need to be aggregated together by replacing the
+original event and subsequent edits; replies need to be indented after the
+message they respond to, etc.
 
-Clients send relations using the new `/send_relation` API.
+It is possible to treat relations as normal events and aggregate them
+clientside, but to do so comprehensively could be very resource intensive, as
+the client would need to spider all possible events in a room to find
+relationships and maintain an correct view.
 
-Clients receive relations as normal events in /sync (aka 'unbundled relations'),
-or may also be aggregated together by the server, and presented as
-a 'bundle' attached to the original event.
+Instead, this proposal seeks to solve this problem by:
+ * Defining a standard shape for defining events which relate to other events
+ * Defining APIs to let the server calculate the aggregations on behalf of the
+   client, and so bundle the related events with the original event where
+   appropriate.
 
-Bundles of relations for a given event are
-paginated to prevent overloading the client with relations, and may be traversed by
-via the new `/relations` API (which iterates over all relations for an event) or the
-new `/aggregations` API (which iterates over the groups of relations, or the relations
-within a group).
+## Proposal
 
-Three types of relations are defined, each defining different behaviour when aggregated:
+This proposal introduces the concept of relations, which can be used to
+associate new information with an existing event.
 
- * `m.annotation` - lets you define an event which annotates an existing event.
-   When aggregated, groups events together based on `key` and returns a `count`. (aka SQL's COUNT)
-   These are primarily intended for handling reactions.
+Relations are any event which have an `m.relationship` field in their
+contents. The `m.relationship` field must include a `rel_type` field that
+gives the type of relationship being defined, and the `event_id` field that
+gives the event which is the target of the relation.  All the information about
+the relationship lives under the `m.relationship` key.
 
- * `m.replace` - lets you define an event which replaces an existing event.
-   When aggregated, returns the most recent replacement event. (aka SQL's MAX)
-   These are primarily intended for handling edits.
+  FIXME: in practice, clients have ended up using `m.relates_to` rather than
+  `m.relationship`, based on an earlier version of this MSC.  It's unclear
+  whether to migrate the clients to `m.relationship` or give up and stick with
+  `m.relates_to`.
 
- * `m.reference` - lets you define an event which references an existing event.
-   When aggregated, currently doesn't do anything special, but in future could bundle
-   chains of references (i.e. threads).
-   These are primarily intended for handling replies (and in future threads).
+If it helps, you can think of relations as a "subject verb object" triple,
+where the subject is the relation event itself; the verb is the `rel_type`
+field of the `m.relationship` and the object is the `event_id` field.
 
-This model has been designed for scenarios where the relationship is known between
-two events at the point that the 2nd event is sent.  Therefore, extensible info about
-the relationship is intended to be stored in the 2nd event, rather than the relation
-itself.  For instance, to distinguish different types of references (in_reply_to v. refers
-v. cites v. quotes) you would look at the fields of the 2nd event.  Alternatively, one
-could add fields to the `m.relates_to` object.
+We consciously do not support multiple different relations within a single event,
+in order to keep the API simple, and in the absence of identifiable use cases.
+Instead, one would send multiple events, each with its own `m.relationship`
+defined.
 
-    XXX: do we want to support multiple parents for a m.reference event, if a given event
-    references different parents in different ways?
+### Relation types
 
-In future, it may be desirable to send relationship events which link together two
-events retrospectively - e.g. an `m.duplicate` event with an `m.link` relation type
-might be a way to flag that existing 2 events are somehow duplicates of each other.
-However, this would be defined as an entirely different relation type of `m.link`,
-which might bundle together both referenced events when aggregated.
+This proposal defines three `rel_type`s, each of which provide different behaviour
+when aggregated:
 
-## Context
+ * `m.annotation` - Intended primarily for handling emoji reactions, these let
+   you define an event which annotates an existing event. The annotations are
+   typically presented alongside the event in the timeline. When aggregated,
+   it groups events together based on their `key` and returns a `count`.
+   Another usage of an annotation is e.g. for bots, who could use annotations
+   to report the success/failure or progress of a command.
 
-Today, replies looks like:
-
-```json
-"type": "m.room.message",
-"content": {
-    "m.relates_to": {
-        "m.in_reply_to": {
-            "event_id": "$another:event.com"
-        }
-    }
-}
-```
-
-`m.relates_to` is the signal to the server that the fields within describe
-an aggregation operation.
-
-We would like to add support for other types of relations, including message
-editing and reactions.
-
-We take the opportunity to simplify m.relates_to to avoid giving the impression
-that relation types are mixins and that you can send multiple different type of
-relations for a given event, and we define new relation types to describe the
-different classes of aggregations.
-
-```json
-"type": "m.room.message",
-"content": {
-    "m.relates_to": {
-        "rel_type": "m.reference",
-        "event_id": "$another:event.com"
-    }
-}
-```
-
-    TODO: given we're changing the shape, should we rename the new type as
-    `m.relation` or something, to distinguish from the old `m.relates_to`
-    type?
-
-    FIXME: Or should we jump straight to m.reference, m.annotation, m.replace
-    as top level mixin types?  Erik would prefer not to, as grouping them all
-    under `m.relates_to` makes it very clear that they should not be E2E encrypted
-    etc.  In fact, we could even move this outside of `contents`?
-
-Relation events are then aggregated together based on the behaviour implied by
-their `rel_type`, and bundled appropriately their target event when you /sync.
-Additional APIs are available to send relations and paginate them.
-
-## Types of relations
-
-This proposal defines three types of relations: annotations, replacements and
-references.
-
- * Annotations are things like reactions, which should be displayed alongside the
-original event. These should support being aggregated so that e.g. if twenty peoples
-"like" an event we can bundle the twenty events together when sending the
-original event to clients. Another usage of an annotation is e.g. for bots, who
-could use annotations to report the success/failure or progress of a command.
-
- * Replacements are essentially edits, and indicate that instead of giving clients
-the original event they should be handed the replacement event instead. Clients
-should be able to request all replacements of an event, i.e. the "edit history".
-
- * References are things like replies, where a later event refers to an earlier event
-in some way. The server should include references when sending an event to the
-client so they can display the number of replies, and navigate easily to them.
-
-These types effect how the server bundles the related events with the original,
-and so the type must be known to servers when handling relations. However, the
-exact semantics of a particular relation only needs to be known by clients. This
-means that if we include the relation type in the related event we can use the
-event type to easily add new types of e.g annotations without requiring server
-side support.
-
-## Aggregating and paginating relations
-
-In large rooms an event may end up having a large number of related events, and
-so we do not want to have to include all relations when sending the event to the
-client. How we limit depends on the relation type.
-
-Annotations are grouped by their event type and an "aggregation key", and the
-top N groups with the highest number is included in the event. For example,
-reactions would be implemented as a `m.reaction` with aggregation key of e.g.
-`👍`.
-
-    TODO: Should we include anything other than event type, aggregation key and
-    count?
-
-Replacements replace the original event, and so no aggregation is required.
-Care must be taken by the server to ensure that if there are multiple
-replacement events, the server must consistently choose the same one as all other servers.
-The replacement event should also include a reference to the original event ID
-so that clients can tell that the message has been edited.
-
-Permalinks to edited events should capture the event ID that the sender is viewing
-at that point (which might be an edit ID).  The client viewing the permalink
-should resolve this ID to the source event ID, and then display the most recent
-version of that event.
-
-For references, the original event should include the list of `type` and
-`event_id` of the earliest N references.
-
-    TODO: Do we need the type? Do we want to differentiate between replies and
-    other types of references? This assumes the type of the related event gives
-    some hint to clients.
-
-In each case where we limit what is included there should be a corresponding API
-to paginate the full sets of events. Annotations would need APIs for both
-fetching more groups and fetching events in a group.
-
-## Event format
-
-All the information about the relation is put under `m.relates_to` key.
-
-A reply would look something like:
-
-```json
-{
-    "type": "m.room.message",
-    "content": {
-        "body": "i <3 shelties",
-        "m.relates_to": {
-            "rel_type": "m.reference",
-            "event_id": "$some_event_id"
-        }
-    }
-}
-```
-
-And a reaction might look like the following, where we define for `m.reaction`
-that the aggregation `key` is the unicode reaction itself.
+For example, an `m.reaction` event which `annotates` an existing event with a 👍
+looks like:
 
 ```json
 {
     "type": "m.reaction",
     "content": {
-        "m.relates_to": {
+        "m.relationship": {
             "rel_type": "m.annotation",
             "event_id": "$some_event_id",
             "key": "👍"
@@ -212,10 +76,14 @@ that the aggregation `key` is the unicode reaction itself.
 }
 ```
 
-    TODO: This limits an event to only having one relation, on the assumption
-    that there are no use cases and that it will make life simpler.
+ * `m.replace` - Intended primarily for handling edits, these let you define
+   an event which replaces an existing event.  When aggregated, returns the
+   most recent replacement event (as determined by `origin_server_ts`). The
+   replacement event must contain an `m.new_content` which defines the
+   replacement content (allowing the normal `body` fields to be used for a
+   fallback for clients who do not understand replacement events).
 
-An edit would be:
+For instance, an `m.room.message` which `replaces` an existing event looks like:
 
 ```json
 {
@@ -227,7 +95,7 @@ An edit would be:
             "body": "Hello! My name is bar",
             "msgtype": "m.text",
         },
-        "m.relates_to": {
+        "m.relationship": {
             "rel_type": "m.replace",
             "event_id": "$some_event_id",
         }
@@ -235,7 +103,164 @@ An edit would be:
 }
 ```
 
-An event that has relations bundled alongside it then looks like:
+  Permalinks to edited events should capture the event ID that the sender is viewing
+  at that point (which might be an edit ID).  The client viewing the permalink
+  should resolve this ID to the source event ID, and then display the most recent
+  version of that event.
+
+  XXX: in future we may wish to consider ordering replacements (or relations
+  in general) via a DAG rather than using `origin_server_ts` to determine
+  ordering - particularly to mitigate potential abuse of edits applied by
+  moderators.  Whatever, Care must be taken by the server to ensure that if
+  there are multiple replacement events, the server must consistently choose
+  the same one as all other servers.
+
+ * `m.reference` - Intended in future for handling replies and threading,
+   these let you define an event which references an existing event. When
+   aggregated, currently doesn't do anything special, but in future could
+   bundle chains of references (i.e. threads). These do not yet replace
+   `m.relates_to`-style replies however.
+
+For instance, an `m.room.message` which `references` an existing event
+would look like:
+
+```json
+{
+    "type": "m.room.message",
+    "content": {
+        "body": "i <3 shelties",
+        "m.relationship": {
+            "rel_type": "m.reference",
+            "event_id": "$another_event_id"
+        }
+    }
+}
+```
+
+Different subtypes of references could be defined through additional fields on
+the `m.relationship` object, to distinguish between replies, threads, etc.
+This MSC doesn't attempt to define these subtypes.
+
+  XXX: do we want to support multiple parents for a m.reference event, if a
+  given event references different parents in different ways?
+
+### Sending relations
+
+Related events are normal Matrix events, and can be sent by the normal /send
+API.
+
+The server should postprocess relations if needed before sending
+them into a room, for instance, if we ever use a DAG to define the ordering of
+`m.replaces` relations, the server would be responsible for specifying the
+parent pointers on the DAG.
+
+If the user tries to send the same annotation multiple times for the same
+event `type` (e.g. `m.reaction`) and aggregation `key` (e.g. 👍) then the
+server should respond with 403 and error FIXME.
+
+Similar to membership events, a convenience API is also provided to highlight
+that the server may post-process the event, and whose URL structures the
+semantics of the relation being sent more clearly:
+
+```
+POST /_matrix/client/r0/rooms/{roomId}/send_relation/{parent_id}/{relation_type}/{event_type}
+{
+    // event contents
+}
+```
+
+The `parent_id` is:
+
+  * For annotations the event being displayed (which may be an edit)
+  * For replaces/edits the original event (not previous edits)
+  * For references should be the event being referenced
+
+An idempotent version is available as normal by using PUT as the HTTP method
+and appending a transaction ID to the URL.
+
+### Receiving relations
+
+#### Unbundled relation events
+
+Relations are received during non-gappy incremental syncs as normal discrete
+Matrix events.  These are called "unbundled relation events".
+
+There is one special case: `unsigned.count` is provided on annotation events,
+calculated by the server to provide the current absolute count of the given
+annotation key as of that point of the event, to avoid the client having to
+accurately track the absolute value itself.
+
+  XXX: this special case isn't implemented in Synapse yet
+
+For instance, an incremental sync might include the following:
+
+```json
+{
+    "type": "m.reaction",
+    "sender": "@matthew:matrix.org",
+    "content": {
+        "m.relationship": {
+            "rel_type": "m.annotation",
+            "event_id": "$some_event_id",
+            "key": "👍"
+        }
+    },
+    "unsigned": {
+        "count": 1234,
+    }
+}
+```
+
+...to indicate that Matthew just thumbsupped a given event, bringing the current
+total to 1234 thumbsups.
+
+#### Bundled relations
+
+Other than during non-gappy incremental syncs, an aggregate view of relation
+events should be bundled into the unsigned data of the event they relate to,
+rather than sending un-bundled individual relation events.  This is called a
+bundled relation (or bundled aggregation), and by sending a summary of the
+aggregations, avoids us having to always send lots of individual unbundled
+relation events individually to the client.
+
+Any API which receives events should bundle relations (apart from non-gappy
+incremental syncs), for instance: initial sync, gappy incremental sync,
+/messages and /context.
+
+The bundled relations are grouped according to their `rel_type`, and then
+paginated within each group using Matrix's normal pagination idiom of `count`,
+`limited` and `chunk` fields - respectively giving the total number of
+elements in the list, whether that list has been truncated, and an array of
+elements in the list.
+
+The format of the aggregated value in the bundle depends on the relation type:
+
+ * `m.annotation` aggregations provide the `type` of the relation event, the
+   aggregation `key`, the `origin_server_ts` of the first reaction to that event,
+   and the `count` of the number of annotations of that `type` and `key` which
+   reference that event.
+ * `m.replace` aggregations provide the most recent edited version of the event
+   in the main event body, and then in the bundle itself there are keys for 
+   `event_id` (the id of the original event at the root of the sequence of edits).
+   `origin_server_ts` (for when it was edited) and `sender` for who did the edit.
+   This allows the client to identify the message as an edit.
+ * `m.reference` list the `event_id` and event `type` of the events which
+   reference that event.
+
+  XXX: shouldn't the origin_server_ts and sender of an edit event already tell you
+  who sent it and when?  Why do we also have it on the bundle data?
+
+  XXX: Does synapse send the most recent version of an edited event when bundling?
+
+  XXX: An alternative approach could be to (also?) use a filter to
+  specify/override how to aggregate custom relation types, which would then
+  also be used to inform /sync how we want to receive our bundled relations.
+  However, we really need to be better understand how to do custom relation
+  types first...
+
+For instance, the below example shows an event
+with four bundled relations; 3 thumbsup reaction annotations and one
+reference.
 
 ```json
 {
@@ -247,6 +272,7 @@ An event that has relations bundled alongside it then looks like:
                   {
                       "type": "m.reaction",
                       "key": "👍",
+                      "origin_server_ts": 1564435280,
                       "count": 3
                   }
                 ],
@@ -268,84 +294,85 @@ An event that has relations bundled alongside it then looks like:
 }
 ```
 
-## End to end encryption
+  FIXME: the server needs to generate the `origin_server_ts` of the first
+  reaction in a given group, to allow clients which want to do chronological
+  ordering to do so.
 
-Since the server bundles related events, the relation information must not be
-encrypted end-to-end.
+#### Handling limited (gappy) syncs
 
-For aggregations of annotations there are two options:
+For the special case of a gappy incremental sync, many reaction events may
+have occurred during the gap.  It would be inefficient to send each one
+individually to the client, but it would also be inefficient to send all
+possible bundled aggregations to the client.
 
-1. Don't group together annotations, and have the aggregation `key` encrypted, so
-   as to not leak how someone reacted (though server would still see that they
-   did).
-2. In some way encrypt the aggregation `key`, with the properties that different
-   users and clients reacting in the same way to the same event produce the same
-   `key`, but isn't something the server can calculate and is
-   different between different events (to stop statistical analysis). Clients
-   also need to be able to go from encrypted `key` to the actual
-   reaction.
+The simplest thing a client can do is to just throw away its history for a
+room on seeing a gappy incremental sync, and then re-paginate the history of
+the room using /messages in order to get a consistent view of the relations
+which may have changed during the gap.  However, this is quite inefficient,
+and prohibits the client from persisting multiple sections of timeline for a
+given room.
 
-   One suggestion here is to use the message key of the parent event to encrypt the
-   aggregation `key`.
+Alternatively, the server tells the client the event IDs of events which
+predate the gap which received reactions during the gap.  This means that the
+client can invalidate its copy of those events (if any) and then requery them
+(including their bundled relations) from the server if/when needed.
 
+The server does this with the new `stale_events` field of each room object
+in the sync response.  The `stale_events` field lists all the event ids
+prior to the gap which had updated relations during the gap.  The event ids
+are grouped by relation type, and limited to N entries for efficiency.  N
+should be 100.  If the number of events with stale relations exceeds N, the
+list is marked as `limited` as per the normal Matrix pagination model.  We do
+not include events referenced by `m.reference` as stale, in favour of more
+sophisticated pagination techniques in future. For instance:
 
-## CS API
-
-Sending a related event uses an equivalent of the normal send API (with an
-equivalent `PUT` API):
-
-```
-POST /_matrix/client/r0/rooms/{roomId}/send_relation/{parent_id}/{relation_type}/{event_type}
-{
-    // event contents
+```json
+"!roomid:matrix.org": {
+  "account_data": {},
+  "ephemeral": {},
+  "state": {},
+  "summary": {},
+  "timeline": {},
+  "unread_notifications": {},
+  "stale_events": {
+    "m.annotations": {
+      "chunk": [
+        "$12345676321:matrix.org",
+        "$12345321432:matrix.org",
+      ],
+      "limited": false
+    }
+  }
 }
 ```
 
-Whenever an event that has relations is sent to the client, e.g. sync, pagination,
-event search etc, the server bundles the relations into the event as per above.
+This shows that in the gappy sync response, a given room has two events prior
+to the gap which received new annotations during the gap. Therefore if the
+client has cached a local copy of those events, it should invalidate them, and
+subsequently refresh them as needed.
 
-The `parent_id` is:
+To refresh events, we need an API to load arbitrary events from the room in
+bulk, which the CS API doesn't currently provide.  We propose extending GET
+`{roomId}/event/{eventId}` to accept a list of event IDs on the URL, e.g:
 
-  * For annotations the event being displayed (which may be an edit)
-  * For replaces/edits the original event (not previous edits)
-  * For references should be the event being referenced
+`GET /_matrix/client/r0/rooms/{roomId}/event/{eventId},{eventId},{eventId}`
 
-For the sync API, clients need to be aware of both bundled relations as well as
-incremental standalone relation events in the sync response.
+...which returns an array of events with the given IDs.
 
-## Pagination
+  XXX: Synapse hasn't implemented any of this section yet.
 
-Our requirements that we need to paginate over:
- * The relations of a given event, via a new `/relations` API.
-  * For replacements (i.e. edits) we get a paginated list of all edits on the source event.
-  * For annotations (i.e. reactions) we get the full list of reactions for the source event.
- * Groups of annotations, via a new `/aggregations` API.
-  * Need to paginate across the different groups (i.e. how many different
-    reactions of different types did it get?)
-  * List all the reactions individually per group for this message
- * References (i.e. threads of replies)
-  * We don't bundle contents in the references (at least for now); instead we
-    just follow the event IDs to stitch the right events back together.
-  * We could include a count of the number of references to a given event.
-  * We just provide the event IDs (to keep it nice and normalised) in a dict; we
-    can denormalise it later for performance if needed by including the event
-    type or whatever.  We could include event_type if it was useful to say "5
-    replies to this message", except given event types are not just
-    m.room.message (in future), it wouldn't be very useful to say "3 image
-    replies and 2 msg replies".
+#### Paginating aggregations
 
-### API
+A single event can have lots of associated relations, and we do not want to
+overload the client by including them all in a bundle. Instead, we provide two
+new APIs in order to paginate over the relations, which behave in a similar
+way to `/messages`, except using `next_batch` and `prev_batch` names (in line
+with `/sync` API). Clients can start paginating either from the earliest or
+latest events using the `dir` param.
 
-We provide two API endpoints, one to paginate relations based in normal
-topological order, the second to paginate aggregated annotations.
-
-Both APIs behave in a similar way to `/messages`, except using `next_batch` and
-`prev_batch` names (in line with `/sync` API). Clients can start paginating
-either from the earliest or latest events using the `dir` param.
-
-Standard pagination API looks like the following, where you can optionally
-specify relation and event type to filter by.  It lists all the relations
-in topological order.
+The `/relations` API lets you iterate over all the **unbundled** relations
+associated with an event in standard topological order.  You can optionally
+filter by a given type of relation and event type:
 
 ```
 GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{eventType}]]
@@ -365,23 +392,20 @@ GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{even
 }
 ```
 
-The aggregated pagination API operates in two modes, the first is to paginate
-the groups themselves, returning aggregated results:
+  FIXME: we need to spell out that this API should return the original message
+  when paginating over m.replaces relations for a given message.  Synapse currently
+  looks to include this as an `original_event` field alongside `chunk` on all relations,
+  which feels very redundant when we only need it for edits.  Either we specialcase it
+  for edits, or we just have the client go call /event to grab the contents of the original?
+
+The `/aggregations` API lets you iterate over **bundled** relations, and within them.
+
+To iterate over the bundled relations for an event (optionally filtering by
+relation type and target event type):
 
 ```
 GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{eventType}][?filter=id]
 ```
-
-By default, the aggregation behaviour is defined by the relation type:
- * rel_type of `m.annotation` == group by count, and order by count desc
- * rel_type of `m.replace` == we just get the most recent message, no bundles.
- * rel_type of `m.reference` == we get the IDs of the events replying to us, and
-   the total count of replies to this msg
-
-In future, we could use a filter to specify/override how to aggregate the relations,
-which would then also be used to inform /sync how we want to receive our bundled
-relations.  (However, we really need to be better understand how to do custom
-relation types first...)
 
 ```json
 {
@@ -389,6 +413,7 @@ relation types first...)
     {
       "type": "m.reaction",
       "key": "👍",
+      "origin_server_ts": 1564435280,
       "count": 5,
     }
   ],
@@ -397,7 +422,16 @@ relation types first...)
 }
 ```
 
-The second mode of operation is to paginate within a group, in normal topological order:
+  FIXME: what should we expect to see for bundled `m.replace` if anything?
+  Synapse currently returns an empty chunk for an event with subsequent edits,
+  while you might expect to receive the most recent edit.  Similarly, what do
+  you get for `m.reference`?  Should it be an array of event_ids for replies
+  to this msg?
+
+To iterate over the unbundled relations within a specific bundled relation, you
+use the following API form, identifying the bundle based on its `key`
+(therefore this only applies to `m.annotation`, as it is the only current
+`rel_type` which groups relations via `key`).
 
 ```
 GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}/${relationType}/{eventType}/{key}
@@ -423,13 +457,206 @@ GET /_matrix/client/r0/rooms/!asd:matrix.org/aggregations/$1cd23476/m.annotation
 }
 ```
 
+## End to end encryption
+
+Since the server has to be able to bundle related events, structural
+information about relations cannot be encrypted end-to-end, and so the
+`m.relationship` field should not be included in the ciphertext.
+
+For instance, an encrypted `m.replace` looks like this:
+
+```json
+{
+  "content": {
+    "algorithm": "m.megolm.v1.aes-sha2",
+    "ciphertext": "AwgBErA....",
+    "device_id": "NBHOQUBWME",
+    "m.relationship": {
+      "event_id": "$15632219072753999gNDqf:matrix.org",
+      "rel_type": "m.replace"
+    },
+    "sender_key": "rt/7v+UV9cw9PzXEVk7gjLe8kLxuu/e3075PgPi9XVU",
+    "session_id": "q9Okpk4fK+SqSPvTBbhWPZt39LrTEj8vuQdcIK/iYa4"
+  },
+  "sender": "@matthew:matrix.org",
+  "type": "m.room.encrypted",
+}
+```
+
+For `m.annotation` relations, the annotation SHOULD be encrypted, encrypting
+the `key` field using the same message key as the original message.  However,
+while transition to this system, reactions may be sent entirely unencrypted in
+an E2E room.
+
+### Thoughts on encrypting the aggregation key
+
+XXX: this hasn't been locked down yet, and at this rate will form a different
+MSC entirely, for E2E-safe reactions.  But until that point, let's gather it
+here:
+
+@jryans said:
+
+We have agreed IRL that encrypted aggregations should include additional
+metadata so that clients can clearly distinguish unencrypted and encrypted
+aggregation keys for presentation. In addition, the proposal might want to
+clarify that e2e rooms might have both unencrypted and encrypted aggregation
+keys (just like it's currently possible to send unencrypted regular messages
+to an e2e room).
+
+@ara4n said:
+
+How about "alg": "A256CTR" which then matches how we encrypt attachments for
+E2E. Given the aggregation keys are kindasorta mini encrypted attachments,
+this doesn't seem unreasonable. Someone needs to doublecheck whether CTR is
+the right mode, however, and if so what we do about IVs and hashes etc.
+
+@jryans said:
+
+The core idea is that the aggregation key will be encrypted with the same
+message key as the original message. Maybe copying encryption metadata from
+the original message is the right way to indicate that on the key? For
+example:
+
+```json
+{
+    "type": "m.reaction",
+    "content": {
+        "m.relationship": {
+            "algorithm": "m.megolm.v1.aes-sha2",
+            "session_id": "<id from original message>",
+            "rel_type": "m.annotation",
+            "event_id": "$some_event_id",
+            "key": "<encrypted key>"
+        }
+    }
+}
+```
+
+We likely also want to define that reaction should be left as `m.reaction` in
+an encrypted room (rather than becoming `m.room.encrypted` as least Riot Web
+does at the moment) because:
+
+* `m.room.encrypted` triggers default push rules for DM rooms
+* `m.room.encrypted` is a bit silly for reactions since the relation data (the
+  interesting bit of the event) is already lifted out to clear text anyhow
+* `m.room.encrypted` prevents server-side bundling for reactions which
+  currently checks for the `m.reaction` type
+
+@uhoreg said:
+
+I don't think the encryption mode matters too much.  Megolm encrypts using
+CBC, which is probably fine for short data like this.  The main advantage of
+CTR over CBC is that CTR can encrypt in parallel, which shouldn't be a huge
+deal in this case.  So I think the main question for whether we use CTR or CBC
+is whether we want to be consistent with Megolm or with encrypted attachments.
+ I'd suggest that it's better to be consistent with Megolm in this case,
+especially if the encryption/decryption will be handled in libolm (see below).
+
+As far as reusing the same encryption key from the original message for
+encrypting the reaction, I think it's going to be a bit complicated.
+
+First of all, the session ID is somewhat tied to the sending user.  At least
+in matrix-js-sdk, looking up an incoming session ID requires the sender's
+curve25519 key, which in this case would mean the sender of the original
+message, and not the sender of the reaction.  This can be figured out in one
+of two ways: either you add the original sender's key to the `m.relationship`
+data, or else get the client to look it up from the original event.  (And if
+you're looking up the sender's key from the original event, you could also
+look up the session ID as well.)
+
+Secondly, if we just follow the megolm format, the encrypted result includes a
+signature from the sender's ed25519 key.  Again, this would be the sender of
+the original event, and not the reaction, and obviously the sender of the
+reaction will not be able to form a correct signature (unless they're also the
+sender of the original event, or manage to crack the sender's key).  We could
+instead replace it with a signature from the reaction sender's ed25519 key,
+but then of course the reaction keys won't be the same between senders.  We
+could drop the signature entirely, but that means that ((unless I'm missing
+something) a homeserver admin who can read the original message could forge a
+reaction from one of their users.  So we may need to add a signature somewhere
+else.
+
+Third, using the exact same key for encrypting the reaction as the original
+message opens up a potential known-plaintext attack.  AES (and any other
+modern cipher) should be immune to known-plaintext, but if we can easily use a
+different key, then we may want to do that anyways.  One way that this can be
+done is by deriving the aes key/hmac key/aes IV using HKDF(0, R_i, rel_type,
+80), rather than HKDF(0, R_i, "MEGOLM_KEYS", 80).
+
+The main thing on the olm side is that, no matter what we do, we we'll need to
+add some functions to libolm in order to do this.  We could:
+
+1. add an olm function to get the decryption key for a particular message, and
+let the client author handle the encryption/decryption themselves.  This would
+also include
+[formatting](https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md#message-format)
+the encrypted reaction key themselves.  The advantage to this is that it would
+be a fairly generic function, not specific to reactions, but overall, I think
+this would probably be too annoying for a lot of client authors, and probably
+wouldn't be used outside of reaction anyways.
+
+2. add olm functions to handle the encryption and decryption entirely.  This
+would probably end up being functions that are very specific to reactions,
+which would be :( , but would probably result in client authors not hating us
+(more).
+
+This, of course, is all going to be a load of fun to spec. :P 
+
+## Redactions
+
+Relations may be redacted like any other event.  In the case of `m.reaction`
+this removes the reaction from the message.  In the case of `m.replace` it
+removes the edit version.  In the case of `m.reference` it removes the
+referencing event.
+
+In the UI, the act of redacting an edited message in the timeline should
+redact the *all* versions of that message.  It can do this by redacting the
+original msg, while ensuring that clients locally discard any edits to a
+redacted message on receiving a redaction.
+
+  XXX: does Riot actually do this?
+
+The `m.relationship`.`rel_type` field should be preserved over redactions, so
+that clients can distinguish redacted edits from normal redacted messages.
+
+  FIXME: synapse doesn't do this yet
+
+## Local echo
+
+XXX: do we need to spell out how to handle local echo considerations?
+
+Remember to let users edit unsent messages (as this is a common case for
+rapidly fixing a typo in a msg which is still in flight!)
+
 ## Edge cases
+
+How do you stop people reacting more than once with the same key?
+ 1. You error with 400 (M_UNKNOWN) if they try to react twice with the same key, locally
+ 2. You flatten duplicate reactions received over federation from the same user
+    when calculating your local aggregations
+ 3. You don't pass duplicate reactions received over federation to your local user.
+ 4. XXX: does synapse do 2 & 3 yet?
+
+Can you edit a reaction?
+ * It feels reasonable to say "if you want to edit a reaction, redact it and resend".
+   `rel_type` is immutable, much like `type`.
+
+Can you react to a reaction?
+ * Yes, at the protocol level.  But you shouldn't expect clients to do anything
+   useful with it.
+
+Can you reply (via m.references) to a reaction/edit?
+ * Yes, at the protocol level.  But you shouldn't expect clients to do anything
+   useful with it.
+ * Replying to a reaction should be treated like a normal message and have the
+   reply behaviour ignored.
+ * Replying to an edit should be treated in the UI as if you had replied to
+   the original message.
 
 What happens when you react to an edit?
  * You should be able to, but the reaction should be attributed to the edit (or
    its contents) rather than the message as a whole.
- * So how do you aggregate?
- * Suggestion: edits gather their own reactions, and the clients should display
+ * Edits gather their own reactions, and the clients should display
    the reactions on the most recent edit.
    * This provides a social pressure to get your edits in quickly before there
      are many reactions, otherwise the reactions will get lost.
@@ -457,46 +684,21 @@ How do you handle racing edits?
    affects the server implementation; the clients can trust the server to linearise
    correctly.
 
-How do you remove a reaction?
- * You redact it.
-
-Redactions
- * Redacting an edited event in the UI should redact the original; the client
-   will need to redact the original event to make this happen.
-   * Is this not problematic when trying to remove illegal content from servers?
- * Clients could also try to expand the relations and redact those too if they
-   wanted to, but in practice the server shouldn't send down relations to
-   redacted messages, so it's overkill.
- * You can also redact specific relations if needed (e.g. to remove a reaction
-   from ever happening)
- * If you redact an relation, we keep the relation DAG (and solve that metadata
-   leak alongside our others)
+Which message types are reactable?
+ * Any. But perhaps we should provide some UI best practice guidelines:
+  * `m.room.message` must be reactable
+  * `m.sticker` too
+  * ...but anything else may not be rendered.
 
 What does it mean to call /context on a relation?
  * We should probably just return the root event for now, and then refine it in
    future for threading?
-
-Should we enforce that each user can only send one of each type of reaction to a msg?
- * Yes. We can do that when sending at CS API as the first cut
-  * But what do we use as a response?  We can do a 400 with an error code that tells us
-    why - i.e. that it's because you can't react multiple times.
-  * We mandate txn IDs to provide idempotency.
-  * (Or can we rely on including our own reactions in bundles to tell whether
-    are doublecounting our own reactions or not?)
- * However, we need to be able to handle bad servers who send duplicate events anyway.
-   * The only way to do this will be at SS API, and refuse to accept duplicatee
-     events.
-
-Should we always include our own reactions in a bundle, to make it easier to redact them,
-or to show the UI in the right state?
- * Probably, but this can be a future refinement.
- * ...but might be needed for imposing one type of reaction per msg.
-
-Should we stop reactions being sent by the normal /send API?
+ * XXX: what does synapse do here?
 
 What can we edit?
  * Only non-state events for now.
  * We can't change event types, or anything else which is in an E2E payload
+ * We can't change relation types either.
 
 How do diffs work on edits if you are missing intermediary edits?
  * We just have to ensure that the UI for visualising diffs makes it clear
@@ -505,6 +707,13 @@ How do diffs work on edits if you are missing intermediary edits?
 What happens when we edit a reply?
  * We just send an m.replace which refers to the m.reference target; nothing
    special is needed.  i.e. you cannot change who the event is replying to.
+ * The edited reply should ditch the fallback representation of the reply itself
+   however from `m.new_content` (specifically the `<mx-reply>` tag in the
+   HTML,  and the unparseable chevron prefixed text in the plaintext), as we
+   can assume that any client which can handle edits can also display replies
+   natively.
+
+   XXX: make Riot do this
 
 Do we need to support retrospective references?
  * For something like "m.duplicate" to retrospectively declare that one event
@@ -515,6 +724,12 @@ Do we need to support retrospective references?
 What power level do you need to be able to edit other people's messages, and how
 does it fit in with fedeation event auth rules?
  * 50, by default?
+
+"Editing other people's messages is evil; we shouldn't allow it"
+ * Sorry, we have to bridge with systems which support cross-user edits.
+ * When it happens, we should make it super clear in the timeline that a message
+   was edited by a specific user.
+ * We do not recommend that native Matrix clients expose this as a feature.
 
 ## Federation considerations
 
@@ -582,7 +797,7 @@ One way to potentially support this is to include the events (or a subset of the
 event) when grouping, so that clients have enough information to render them.
 However this dramatically inceases the size of the parent event if we bundle the
 full events inside, even if limit the number we bundle in. To reduce the
-overhead the annotation event could include a `m.summary` field which gets
+overhead the annotation event could include a `m.result` field which gets
 included.
 
 This would look something like the following, where the annotation is:
@@ -591,10 +806,10 @@ This would look something like the following, where the annotation is:
 {
   "type": "m.bot_command_response",
   "content": {
-    "m.summary": {
+    "m.result": {
       "state": "success",
     },
-    "m.relates_to": {
+    "m.relationship": {
       "type": "m.annotation",
       "key": ""
     }
@@ -615,7 +830,7 @@ and gets bundled into an event like:
           "count": 1,
           "chunk": [
             {
-              "m.summary": {
+              "m.result": {
                 "state": "success",
               },
             }
@@ -630,7 +845,7 @@ and gets bundled into an event like:
 
 This is something that could be added later on. A few issues with this are:
 
-  * How does this work with E2EE? How do we encrypt the `m.summary`?
+  * How does this work with E2EE? How do we encrypt the `m.result`?
   * We would end up including old annotations that had been superceded, should
     these be done via edits instead?
 
@@ -642,7 +857,7 @@ Shape of
 
 ```json
 "content": {
-    "m.relates_to": {
+    "m.relationship": {
         "m.reference": {
             "event_id": "$another:event.com"
         }
@@ -653,7 +868,7 @@ versus
 
 ```json
 "content": {
-    "m.relates_to": {
+    "m.relationship": {
         "rel_type": "m.reference",
         "event_id": "$another:event.com"
     }
