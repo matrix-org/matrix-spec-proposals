@@ -28,11 +28,16 @@ Instead, this proposal seeks to solve this problem by:
 This proposal introduces the concept of relations, which can be used to
 associate new information with an existing event.
 
-Relations are any event which have an `m.relationship` mixin in their
+Relations are any event which have an `m.relationship` field in their
 contents. The `m.relationship` field must include a `rel_type` field that
 gives the type of relationship being defined, and the `event_id` field that
 gives the event which is the target of the relation.  All the information about
 the relationship lives under the `m.relationship` key.
+
+  FIXME: in practice, clients have ended up using `m.relates_to` rather than
+  `m.relationship`, based on an earlier version of this MSC.  It's unclear
+  whether to migrate the clients to `m.relationship` or give up and stick with
+  `m.relates_to`.
 
 If it helps, you can think of relations as a "subject verb object" triple,
 where the subject is the relation event itself; the verb is the `rel_type`
@@ -45,7 +50,7 @@ defined.
 
 ### Relation types
 
-This proposal defines three `rel_type`s, each which provide different behaviour
+This proposal defines three `rel_type`s, each of which provide different behaviour
 when aggregated:
 
  * `m.annotation` - Intended primarily for handling emoji reactions, these let
@@ -90,7 +95,7 @@ For instance, an `m.room.message` which `replaces` an existing event looks like:
             "body": "Hello! My name is bar",
             "msgtype": "m.text",
         },
-        "m.relates_to": {
+        "m.relationship": {
             "rel_type": "m.replace",
             "event_id": "$some_event_id",
         }
@@ -120,12 +125,14 @@ For instance, an `m.room.message` which `references` an existing event
 would look like:
 
 ```json
-"type": "m.room.message",
-"content": {
-    "body": "i <3 shelties",
-    "m.relationship": {
-        "rel_type": "m.reference",
-        "event_id": "$another_event_id"
+{
+    "type": "m.room.message",
+    "content": {
+        "body": "i <3 shelties",
+        "m.relationship": {
+            "rel_type": "m.reference",
+            "event_id": "$another_event_id"
+        }
     }
 }
 ```
@@ -229,13 +236,21 @@ elements in the list.
 The format of the aggregated value in the bundle depends on the relation type:
 
  * `m.annotation` aggregations provide the `type` of the relation event, the
-   aggregation `key`, and the `count` of the number of annotations of that
-   `type` and `key` which reference that event.
- * `m.replace` relations do not appear in bundled aggregations at all, as they
-   instead replace the original event returned to the client (returning the most
-   recent version of that event).
+   aggregation `key`, the `origin_server_ts` of the first reaction to that event,
+   and the `count` of the number of annotations of that `type` and `key` which
+   reference that event.
+ * `m.replace` aggregations provide the most recent edited version of the event
+   in the main event body, and then in the bundle itself there are keys for 
+   `event_id` (the id of the original event at the root of the sequence of edits).
+   `origin_server_ts` (for when it was edited) and `sender` for who did the edit.
+   This allows the client to identify the message as an edit.
  * `m.reference` list the `event_id` and event `type` of the events which
    reference that event.
+
+  XXX: shouldn't the origin_server_ts and sender of an edit event already tell you
+  who sent it and when?  Why do we also have it on the bundle data?
+
+  XXX: Does synapse send the most recent version of an edited event when bundling?
 
   XXX: An alternative approach could be to (also?) use a filter to
   specify/override how to aggregate custom relation types, which would then
@@ -257,6 +272,7 @@ reference.
                   {
                       "type": "m.reaction",
                       "key": "👍",
+                      "origin_server_ts": 1564435280,
                       "count": 3
                   }
                 ],
@@ -277,6 +293,10 @@ reference.
     }
 }
 ```
+
+  FIXME: the server needs to generate the `origin_server_ts` of the first
+  reaction in a given group, to allow clients which want to do chronological
+  ordering to do so.
 
 #### Handling limited (gappy) syncs
 
@@ -350,7 +370,7 @@ way to `/messages`, except using `next_batch` and `prev_batch` names (in line
 with `/sync` API). Clients can start paginating either from the earliest or
 latest events using the `dir` param.
 
-The `/relations` API lets you iterate over all the unbundled relations
+The `/relations` API lets you iterate over all the **unbundled** relations
 associated with an event in standard topological order.  You can optionally
 filter by a given type of relation and event type:
 
@@ -372,9 +392,16 @@ GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{even
 }
 ```
 
-The `/aggregations` API lets you iterate over bundled relations, and within them.
+  FIXME: we need to spell out that this API should return the original message
+  when paginating over m.replaces relations for a given message.  Synapse currently
+  looks to include this as an `original_event` field alongside `chunk` on all relations,
+  which feels very redundant when we only need it for edits.  Either we specialcase it
+  for edits, or we just have the client go call /event to grab the contents of the original?
 
-To iterate over the bundled relations for an event (optionally filtering by relation type and target event type):
+The `/aggregations` API lets you iterate over **bundled** relations, and within them.
+
+To iterate over the bundled relations for an event (optionally filtering by
+relation type and target event type):
 
 ```
 GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{eventType}][?filter=id]
@@ -386,6 +413,7 @@ GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{
     {
       "type": "m.reaction",
       "key": "👍",
+      "origin_server_ts": 1564435280,
       "count": 5,
     }
   ],
@@ -394,10 +422,16 @@ GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{
 }
 ```
 
+  FIXME: what should we expect to see for bundled `m.replace` if anything?
+  Synapse currently returns an empty chunk for an event with subsequent edits,
+  while you might expect to receive the most recent edit.  Similarly, what do
+  you get for `m.reference`?  Should it be an array of event_ids for replies
+  to this msg?
+
 To iterate over the unbundled relations within a specific bundled relation, you
 use the following API form, identifying the bundle based on its `key`
 (therefore this only applies to `m.annotation`, as it is the only current
-`rel_type` which groups relations via `key`)
+`rel_type` which groups relations via `key`).
 
 ```
 GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}/${relationType}/{eventType}/{key}
@@ -427,7 +461,7 @@ GET /_matrix/client/r0/rooms/!asd:matrix.org/aggregations/$1cd23476/m.annotation
 
 Since the server has to be able to bundle related events, structural
 information about relations cannot be encrypted end-to-end, and so the
-`m.relates_to` field should not be included in the ciphertext.
+`m.relationship` field should not be included in the ciphertext.
 
 For instance, an encrypted `m.replace` looks like this:
 
@@ -437,7 +471,7 @@ For instance, an encrypted `m.replace` looks like this:
     "algorithm": "m.megolm.v1.aes-sha2",
     "ciphertext": "AwgBErA....",
     "device_id": "NBHOQUBWME",
-    "m.relates_to": {
+    "m.relationship": {
       "event_id": "$15632219072753999gNDqf:matrix.org",
       "rel_type": "m.replace"
     },
@@ -449,19 +483,180 @@ For instance, an encrypted `m.replace` looks like this:
 }
 ```
 
-For `m.annotation` relations, the annotation SHOULD be encrypted, encrypting the `key` field using the same message key as the original message.  However, while transition to this system, reactions may be sent entirely unencrypted in an E2E room.
+For `m.annotation` relations, the annotation SHOULD be encrypted, encrypting
+the `key` field using the same message key as the original message.  However,
+while transition to this system, reactions may be sent entirely unencrypted in
+an E2E room.
 
-  FIXME: spec how these look.
+### Thoughts on encrypting the aggregation key
+
+XXX: this hasn't been locked down yet, and at this rate will form a different
+MSC entirely, for E2E-safe reactions.  But until that point, let's gather it
+here:
+
+@jryans said:
+
+We have agreed IRL that encrypted aggregations should include additional
+metadata so that clients can clearly distinguish unencrypted and encrypted
+aggregation keys for presentation. In addition, the proposal might want to
+clarify that e2e rooms might have both unencrypted and encrypted aggregation
+keys (just like it's currently possible to send unencrypted regular messages
+to an e2e room).
+
+@ara4n said:
+
+How about "alg": "A256CTR" which then matches how we encrypt attachments for
+E2E. Given the aggregation keys are kindasorta mini encrypted attachments,
+this doesn't seem unreasonable. Someone needs to doublecheck whether CTR is
+the right mode, however, and if so what we do about IVs and hashes etc.
+
+@jryans said:
+
+The core idea is that the aggregation key will be encrypted with the same
+message key as the original message. Maybe copying encryption metadata from
+the original message is the right way to indicate that on the key? For
+example:
+
+```json
+{
+    "type": "m.reaction",
+    "content": {
+        "m.relationship": {
+            "algorithm": "m.megolm.v1.aes-sha2",
+            "session_id": "<id from original message>",
+            "rel_type": "m.annotation",
+            "event_id": "$some_event_id",
+            "key": "<encrypted key>"
+        }
+    }
+}
+```
+
+We likely also want to define that reaction should be left as `m.reaction` in
+an encrypted room (rather than becoming `m.room.encrypted` as least Riot Web
+does at the moment) because:
+
+* `m.room.encrypted` triggers default push rules for DM rooms
+* `m.room.encrypted` is a bit silly for reactions since the relation data (the
+  interesting bit of the event) is already lifted out to clear text anyhow
+* `m.room.encrypted` prevents server-side bundling for reactions which
+  currently checks for the `m.reaction` type
+
+@uhoreg said:
+
+I don't think the encryption mode matters too much.  Megolm encrypts using
+CBC, which is probably fine for short data like this.  The main advantage of
+CTR over CBC is that CTR can encrypt in parallel, which shouldn't be a huge
+deal in this case.  So I think the main question for whether we use CTR or CBC
+is whether we want to be consistent with Megolm or with encrypted attachments.
+ I'd suggest that it's better to be consistent with Megolm in this case,
+especially if the encryption/decryption will be handled in libolm (see below).
+
+As far as reusing the same encryption key from the original message for
+encrypting the reaction, I think it's going to be a bit complicated.
+
+First of all, the session ID is somewhat tied to the sending user.  At least
+in matrix-js-sdk, looking up an incoming session ID requires the sender's
+curve25519 key, which in this case would mean the sender of the original
+message, and not the sender of the reaction.  This can be figured out in one
+of two ways: either you add the original sender's key to the `m.relationship`
+data, or else get the client to look it up from the original event.  (And if
+you're looking up the sender's key from the original event, you could also
+look up the session ID as well.)
+
+Secondly, if we just follow the megolm format, the encrypted result includes a
+signature from the sender's ed25519 key.  Again, this would be the sender of
+the original event, and not the reaction, and obviously the sender of the
+reaction will not be able to form a correct signature (unless they're also the
+sender of the original event, or manage to crack the sender's key).  We could
+instead replace it with a signature from the reaction sender's ed25519 key,
+but then of course the reaction keys won't be the same between senders.  We
+could drop the signature entirely, but that means that ((unless I'm missing
+something) a homeserver admin who can read the original message could forge a
+reaction from one of their users.  So we may need to add a signature somewhere
+else.
+
+Third, using the exact same key for encrypting the reaction as the original
+message opens up a potential known-plaintext attack.  AES (and any other
+modern cipher) should be immune to known-plaintext, but if we can easily use a
+different key, then we may want to do that anyways.  One way that this can be
+done is by deriving the aes key/hmac key/aes IV using HKDF(0, R_i, rel_type,
+80), rather than HKDF(0, R_i, "MEGOLM_KEYS", 80).
+
+The main thing on the olm side is that, no matter what we do, we we'll need to
+add some functions to libolm in order to do this.  We could:
+
+1. add an olm function to get the decryption key for a particular message, and
+let the client author handle the encryption/decryption themselves.  This would
+also include
+[formatting](https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md#message-format)
+the encrypted reaction key themselves.  The advantage to this is that it would
+be a fairly generic function, not specific to reactions, but overall, I think
+this would probably be too annoying for a lot of client authors, and probably
+wouldn't be used outside of reaction anyways.
+
+2. add olm functions to handle the encryption and decryption entirely.  This
+would probably end up being functions that are very specific to reactions,
+which would be :( , but would probably result in client authors not hating us
+(more).
+
+This, of course, is all going to be a load of fun to spec. :P 
 
 ## Redactions
 
+Relations may be redacted like any other event.  In the case of `m.reaction`
+this removes the reaction from the message.  In the case of `m.replace` it
+removes the edit version.  In the case of `m.reference` it removes the
+referencing event.
+
+In the UI, the act of redacting an edited message in the timeline should
+redact the *all* versions of that message.  It can do this by redacting the
+original msg, while ensuring that clients locally discard any edits to a
+redacted message on receiving a redaction.
+
+  XXX: does Riot actually do this?
+
+The `m.relationship`.`rel_type` field should be preserved over redactions, so
+that clients can distinguish redacted edits from normal redacted messages.
+
+  FIXME: synapse doesn't do this yet
+
+## Local echo
+
+XXX: do we need to spell out how to handle local echo considerations?
+
+Remember to let users edit unsent messages (as this is a common case for
+rapidly fixing a typo in a msg which is still in flight!)
+
 ## Edge cases
+
+How do you stop people reacting more than once with the same key?
+ 1. You error with 400 (M_UNKNOWN) if they try to react twice with the same key, locally
+ 2. You flatten duplicate reactions received over federation from the same user
+    when calculating your local aggregations
+ 3. You don't pass duplicate reactions received over federation to your local user.
+ 4. XXX: does synapse do 2 & 3 yet?
+
+Can you edit a reaction?
+ * It feels reasonable to say "if you want to edit a reaction, redact it and resend".
+   `rel_type` is immutable, much like `type`.
+
+Can you react to a reaction?
+ * Yes, at the protocol level.  But you shouldn't expect clients to do anything
+   useful with it.
+
+Can you reply (via m.references) to a reaction/edit?
+ * Yes, at the protocol level.  But you shouldn't expect clients to do anything
+   useful with it.
+ * Replying to a reaction should be treated like a normal message and have the
+   reply behaviour ignored.
+ * Replying to an edit should be treated in the UI as if you had replied to
+   the original message.
 
 What happens when you react to an edit?
  * You should be able to, but the reaction should be attributed to the edit (or
    its contents) rather than the message as a whole.
- * So how do you aggregate?
- * Suggestion: edits gather their own reactions, and the clients should display
+ * Edits gather their own reactions, and the clients should display
    the reactions on the most recent edit.
    * This provides a social pressure to get your edits in quickly before there
      are many reactions, otherwise the reactions will get lost.
@@ -489,46 +684,21 @@ How do you handle racing edits?
    affects the server implementation; the clients can trust the server to linearise
    correctly.
 
-How do you remove a reaction?
- * You redact it.
-
-Redactions
- * Redacting an edited event in the UI should redact the original; the client
-   will need to redact the original event to make this happen.
-   * Is this not problematic when trying to remove illegal content from servers?
- * Clients could also try to expand the relations and redact those too if they
-   wanted to, but in practice the server shouldn't send down relations to
-   redacted messages, so it's overkill.
- * You can also redact specific relations if needed (e.g. to remove a reaction
-   from ever happening)
- * If you redact an relation, we keep the relation DAG (and solve that metadata
-   leak alongside our others)
+Which message types are reactable?
+ * Any. But perhaps we should provide some UI best practice guidelines:
+  * `m.room.message` must be reactable
+  * `m.sticker` too
+  * ...but anything else may not be rendered.
 
 What does it mean to call /context on a relation?
  * We should probably just return the root event for now, and then refine it in
    future for threading?
-
-Should we enforce that each user can only send one of each type of reaction to a msg?
- * Yes. We can do that when sending at CS API as the first cut
-  * But what do we use as a response?  We can do a 400 with an error code that tells us
-    why - i.e. that it's because you can't react multiple times.
-  * We mandate txn IDs to provide idempotency.
-  * (Or can we rely on including our own reactions in bundles to tell whether
-    are doublecounting our own reactions or not?)
- * However, we need to be able to handle bad servers who send duplicate events anyway.
-   * The only way to do this will be at SS API, and refuse to accept duplicatee
-     events.
-
-Should we always include our own reactions in a bundle, to make it easier to redact them,
-or to show the UI in the right state?
- * Probably, but this can be a future refinement.
- * ...but might be needed for imposing one type of reaction per msg.
-
-Should we stop reactions being sent by the normal /send API?
+ * XXX: what does synapse do here?
 
 What can we edit?
  * Only non-state events for now.
  * We can't change event types, or anything else which is in an E2E payload
+ * We can't change relation types either.
 
 How do diffs work on edits if you are missing intermediary edits?
  * We just have to ensure that the UI for visualising diffs makes it clear
@@ -537,6 +707,13 @@ How do diffs work on edits if you are missing intermediary edits?
 What happens when we edit a reply?
  * We just send an m.replace which refers to the m.reference target; nothing
    special is needed.  i.e. you cannot change who the event is replying to.
+ * The edited reply should ditch the fallback representation of the reply itself
+   however from `m.new_content` (specifically the `<mx-reply>` tag in the
+   HTML,  and the unparseable chevron prefixed text in the plaintext), as we
+   can assume that any client which can handle edits can also display replies
+   natively.
+
+   XXX: make Riot do this
 
 Do we need to support retrospective references?
  * For something like "m.duplicate" to retrospectively declare that one event
@@ -547,6 +724,12 @@ Do we need to support retrospective references?
 What power level do you need to be able to edit other people's messages, and how
 does it fit in with fedeation event auth rules?
  * 50, by default?
+
+"Editing other people's messages is evil; we shouldn't allow it"
+ * Sorry, we have to bridge with systems which support cross-user edits.
+ * When it happens, we should make it super clear in the timeline that a message
+   was edited by a specific user.
+ * We do not recommend that native Matrix clients expose this as a feature.
 
 ## Federation considerations
 
@@ -614,7 +797,7 @@ One way to potentially support this is to include the events (or a subset of the
 event) when grouping, so that clients have enough information to render them.
 However this dramatically inceases the size of the parent event if we bundle the
 full events inside, even if limit the number we bundle in. To reduce the
-overhead the annotation event could include a `m.summary` field which gets
+overhead the annotation event could include a `m.result` field which gets
 included.
 
 This would look something like the following, where the annotation is:
@@ -623,10 +806,10 @@ This would look something like the following, where the annotation is:
 {
   "type": "m.bot_command_response",
   "content": {
-    "m.summary": {
+    "m.result": {
       "state": "success",
     },
-    "m.relates_to": {
+    "m.relationship": {
       "type": "m.annotation",
       "key": ""
     }
@@ -647,7 +830,7 @@ and gets bundled into an event like:
           "count": 1,
           "chunk": [
             {
-              "m.summary": {
+              "m.result": {
                 "state": "success",
               },
             }
@@ -662,7 +845,7 @@ and gets bundled into an event like:
 
 This is something that could be added later on. A few issues with this are:
 
-  * How does this work with E2EE? How do we encrypt the `m.summary`?
+  * How does this work with E2EE? How do we encrypt the `m.result`?
   * We would end up including old annotations that had been superceded, should
     these be done via edits instead?
 
@@ -674,7 +857,7 @@ Shape of
 
 ```json
 "content": {
-    "m.relates_to": {
+    "m.relationship": {
         "m.reference": {
             "event_id": "$another:event.com"
         }
@@ -685,7 +868,7 @@ versus
 
 ```json
 "content": {
-    "m.relates_to": {
+    "m.relationship": {
         "rel_type": "m.reference",
         "event_id": "$another:event.com"
     }
