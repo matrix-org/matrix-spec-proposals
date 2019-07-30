@@ -504,7 +504,7 @@ by the author and early reviewers of the proposal.
 This allows for bots and personal assistants to be residents of a room. There is an argument
 for restricting DMs to just important users (excluding any chance of unimportant users),
 namely to ensure that security is not sacrificed through leaky bots/assistants. The author
-believes there is a stronger argument for assistant-style bots in a DM, such as a reminder
+believes there is a stronger argument for assistant-style/audit bots in a DM, such as a reminder
 bot or Giphy bot. The rationale being that although bots pose a security risk to the conversation,
 the rooms are supposed to be encrypted therefore preventing past history from being exposed
 to the bot. Both parties additionally should have the power to remove the bot if they don't
