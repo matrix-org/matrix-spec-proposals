@@ -56,7 +56,7 @@ when aggregated:
  * `m.annotation` - Intended primarily for handling emoji reactions, these let
    you define an event which annotates an existing event. The annotations are
    typically presented alongside the event in the timeline. When aggregated,
-   it groups events together based on their `key` and returns a `count`.
+   it groups events together based on their `key`  and `type` and returns a `count`.
    Another usage of an annotation is e.g. for bots, who could use annotations
    to report the success/failure or progress of a command.
 
@@ -156,7 +156,9 @@ parent pointers on the DAG.
 
 If the user tries to send the same annotation multiple times for the same
 event `type` (e.g. `m.reaction`) and aggregation `key` (e.g. 👍) then the
-server should respond with 403 and error FIXME.
+server should respond with 400 and error M_INVALID_REL_TYPE.
+
+    XXX: currently synapse returns 400 and `{"errcode":"M_UNKNOWN","error":"Can't send same reaction twice"}`
 
 Similar to membership events, a convenience API is also provided to highlight
 that the server may post-process the event, and whose URL structures the
@@ -181,8 +183,7 @@ The `parent_id` is:
   * For replaces/edits the original event (not previous edits)
   * For references should be the event being referenced
 
-An idempotent version is available as normal by using PUT as the HTTP method
-and appending a transaction ID to the URL.
+Any trailing slashes on the endpoint should be ignored.
 
 ### Receiving relations
 
@@ -247,7 +248,7 @@ The format of the aggregated value in the bundle depends on the relation type:
    reference that event.
  * `m.replace` aggregations provide the most recent edited version of the event
    in the main event body, and then in the bundle itself there are keys for 
-   `event_id` (the id of the original event at the root of the sequence of edits).
+   `event_id` (the ID of the original event at the root of the sequence of edits).
    `origin_server_ts` (for when it was edited) and `sender` for who did the edit.
    This allows the client to identify the message as an edit.
  * `m.reference` list the `event_id` and event `type` of the events which
@@ -369,7 +370,7 @@ bulk, which the CS API doesn't currently provide.  We propose extending GET
 
   XXX: Synapse hasn't implemented any of this section yet.
 
-#### Paginating aggregations
+#### Paginating relations and aggregations
 
 A single event can have lots of associated relations, and we do not want to
 overload the client by including them all in a bundle. Instead, we provide two
@@ -400,6 +401,8 @@ GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{even
 }
 ```
 
+Any trailing slashes on the endpoint should be ignored.
+
   FIXME: we need to spell out that this API should return the original message
   when paginating over `m.replace` relations for a given message.  Synapse currently
   looks to include this as an `original_event` field alongside `chunk` on all relations,
@@ -429,6 +432,8 @@ GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{
   "prev_batch": "some_token"
 }
 ```
+
+Any trailing slashes on the endpoint should be ignored.
 
   FIXME: what should we expect to see for bundled `m.replace` if anything?
   Synapse currently returns an empty chunk for an event with subsequent edits,
@@ -492,9 +497,9 @@ For instance, an encrypted `m.replace` looks like this:
 ```
 
 For `m.annotation` relations, the annotation SHOULD be encrypted, encrypting
-the `key` field using the same message key as the original message.  However,
-while transition to this system, reactions may be sent entirely unencrypted in
-an E2E room.
+the `key` field using the same message key as the original message as per
+below.  However, while transitioning to this system, reactions may be sent
+entirely unencrypted in an E2E room.
 
 ### Thoughts on encrypting the aggregation key
 
@@ -624,8 +629,9 @@ redacted message on receiving a redaction.
 
   XXX: does Riot actually do this?
 
-The `m.relationship`.`rel_type` field should be preserved over redactions, so
-that clients can distinguish redacted edits from normal redacted messages.
+The `m.relationship`.`rel_type` and `m.relationship`.`event_id` fields should
+be preserved over redactions, so that clients can distinguish redacted edits
+from normal redacted messages, and maintain reply ordering.
 
   FIXME: synapse doesn't do this yet
 
@@ -639,7 +645,7 @@ rapidly fixing a typo in a msg which is still in flight!)
 ## Edge cases
 
 How do you stop people reacting more than once with the same key?
- 1. You error with 400 (M_UNKNOWN) if they try to react twice with the same key, locally
+ 1. You error with 400 (M_INVALID_REL_TYPE) if they try to react twice with the same key, locally
  2. You flatten duplicate reactions received over federation from the same user
     when calculating your local aggregations
  3. You don't pass duplicate reactions received over federation to your local user.
@@ -717,7 +723,8 @@ What happens when we edit a reply?
    special is needed.  i.e. you cannot change who the event is replying to.
  * The edited reply should ditch the fallback representation of the reply itself
    however from `m.new_content` (specifically the `<mx-reply>` tag in the
-   HTML,  and the unparseable chevron prefixed text in the plaintext), as we
+   HTML, and the chevron prefixed text in the plaintext which we don't know
+   whether to parse as we don't know whether this is a reply or not), as we
    can assume that any client which can handle edits can also display replies
    natively.
 
@@ -732,6 +739,9 @@ Do we need to support retrospective references?
 What power level do you need to be able to edit other people's messages, and how
 does it fit in with fedeation event auth rules?
  * 50, by default?
+
+    XXX: Synapse doesn't impose this currently - it lets anyone send an edit,
+    but then filters them out of bundled data.
 
 "Editing other people's messages is evil; we shouldn't allow it"
  * Sorry, we have to bridge with systems which support cross-user edits.
@@ -776,10 +786,12 @@ we already have.  So, we'll show inconsistent data until we backfill the gap.
 
 ## Security considerations
 
-When using reactions for voting purposes we might well want to anonymise the
+If using reactions for upvoting/downvoting purposes we would almost certainly want to anonymise the
 reactor, at least from other users if not server admins, to avoid retribution problems.
 This gives an unfair advantage to people who run their own servers however and
-can cheat and deanonymise (and publish) reactor details.
+can cheat and deanonymise (and publish) reactor details.  In practice, reactions may
+not be best used for upvote/downvote as at the unbundled level they are intrinsically
+private data.
 
 Or in a MSC1228 world... we could let users join the room under an anonymous
 persona from a big public server in order to vote?  However, such anonymous personae
