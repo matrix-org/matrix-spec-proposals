@@ -328,7 +328,8 @@ for it should invalidate its cache. Servers should make both of these endpoints 
 
 **`GET /_matrix/client/r0/user/:userId/dms`**
 
-Takes no parameters besides the obvious `:userId`. Example response:
+The only parameter, `:userId`, is the user ID requesting their DMs. The auth provided must be valid
+for this user. Example response:
 ```json
 {
     "direct_chats": {
@@ -349,9 +350,9 @@ The `important` array does not include the user themselves.
 
 **`GET /_matrix/client/r0/user/:userId/dm?involves=@alice:example.org&involves=@bob:example.org`**
 
-Takes a `:userId` in the route and `?involves` (specified multiple times) to search for a DM
-involving the given users. It should be considered a bad request if the user asks for a DM
-involving themselves.
+The `:userId` is the user ID requesting their DMs - the auth provided must be valid for this user.
+This additionall takes `?involves` (specified multiple times) to search for a DM involving the given
+users. It should be considered a bad request if the user asks for a DM involving themselves.
 
 Example response:
 ```json
