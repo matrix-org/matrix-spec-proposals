@@ -1,1 +1,1 @@
-Remove "required" designation from the ``url`` field of certain ``m`.room.message` msgtypes.
+Remove "required" designation from the ``url`` field of certain ``m.room.message`` msgtypes.
