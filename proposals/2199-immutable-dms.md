@@ -146,7 +146,7 @@ server must use these rules to determine if a room is a direct chat:
 * The room has at least 2 important users in it.
 * The user themselves is important in the room.
 * The room is not tombstoned.
-* The room is not soft-tombstoned by the server.
+* The room is not soft-tombstoned by the server (described later in this proposal).
 * No important users have left the room (through kick, ban, or other means).
 
 Assuming no other conflicts arise (duplicate chats, etc) the room is considered a DM between
