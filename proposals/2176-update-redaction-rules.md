@@ -12,7 +12,7 @@ redaction algorithm also change the way that [event
 hashes](https://matrix.org/docs/spec/server_server/r0.1.2#calculating-the-reference-hash-for-an-event)
 (and hence event IDs) are calculated.
 
-The following *event* keys should be *removed* from the list of those to be
+The following *event* keys are to be *removed* from the list of those to be
 preserved by a redaction:
 
  * `membership`
@@ -21,14 +21,14 @@ preserved by a redaction:
 (Note this refers to the *event-level* `membership` property, rather than the
 similarly-named sub-property under the `content` key.)
 
-Rationale: neither of the above properties have defined meanings in the Matrix
+Rationale: neither of the above properties have defined meanings any more in the Matrix
 protocol, so there is no reason for them to be special-cased in this way.
 
-The following should be added to the list of subkeys of the content property
-which should be preserved:
+The following are to be added to the list of subkeys of the content property
+which are preserved:
 
- * `m.room.create` should preserve *all* content. Rationale: the values in a
-   `create` event are deliberately intented to last the lifetime of the room,
+ * `m.room.create` preserves *all* content. Rationale: the values in a
+   `create` event are deliberately intended to last the lifetime of the room,
    and if values are redacted, there is no way to add correct settings
    afterwards. It therefore seems non-sensical to allow redaction of a `create`
    event.
@@ -63,8 +63,8 @@ proposed for a redaction:
    `m.room.encryption` have no effect, and servers do not use the value of the
    property to authenticate events.
 
-   The effect of redacting an `m.room.redaction` event is much the same as that
-   of sending a new `m.room.redaction` event with no `algorithm` key. It's
+   The effect of redacting an `m.room.encryption` event is much the same as that
+   of sending a new `m.room.encryption` event with no `algorithm` key. It's
    unlikely to be what was intended, but adding rules to the redaction
    algorithm will not help this.
 
