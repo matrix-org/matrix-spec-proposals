@@ -318,7 +318,7 @@ client can invalidate its copy of those events (if any) and then requery them
 (including their bundled relations) from the server if/when needed.
 
 The server does this with the new `stale_events` field of each room object
-in the sync response.  The `stale_events` field lists all the event ids
+in the sync response.  The `stale_events` field lists all the event IDs
 prior to the gap which had updated relations during the gap.  The event ids
 are grouped by relation type, and limited to N entries for efficiency.  N
 should be 100.  If the number of events with stale relations exceeds N, the
