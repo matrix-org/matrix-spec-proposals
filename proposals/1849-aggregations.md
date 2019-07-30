@@ -7,7 +7,7 @@ for instance, reactions, edits and even replies/threads.
 
 Clients typically need to track the related events alongside the original
 event they relate to, in order to correctly display them.  For instance,
-reaction events need to aggregated together by summing and be shown next to
+reaction events need to be aggregated together by summing and be shown next to
 the event they react to; edits need to be aggregated together by replacing the
 original event and subsequent edits; replies need to be indented after the
 message they respond to, etc.
@@ -163,11 +163,17 @@ that the server may post-process the event, and whose URL structures the
 semantics of the relation being sent more clearly:
 
 ```
-POST /_matrix/client/r0/rooms/{roomId}/send_relation/{parent_id}/{relation_type}/{event_type}
+PUT /_matrix/client/r0/rooms/{roomId}/send_relation/{parent_id}/{relation_type}/{event_type}/{txn_id}?key=%F0%9F%91%8D
 {
     // event contents
 }
 ```
+
+    XXX: Erik: why do we need the `key` as a querystring param here rather
+    than just fishing it out of the event contents when needed?
+
+    XXX: Erik: are you okay to kill the POST form of this, given we apparently
+    killed the POST form of /send back in 2015 in https://github.com/matrix-org/matrix-doc/commit/5e30b5b8d74cdfbd764175fd735b3c39d652453e
 
 The `parent_id` is:
 
@@ -185,7 +191,7 @@ and appending a transaction ID to the URL.
 Relations are received during non-gappy incremental syncs as normal discrete
 Matrix events.  These are called "unbundled relation events".
 
-There is one special case: `unsigned.count` is provided on annotation events,
+There is one special case: `unsigned.annotation_count` is provided on annotation events,
 calculated by the server to provide the current absolute count of the given
 annotation key as of that point of the event, to avoid the client having to
 accurately track the absolute value itself.
@@ -206,7 +212,7 @@ For instance, an incremental sync might include the following:
         }
     },
     "unsigned": {
-        "count": 1234,
+        "annotation_count": 1234,
     }
 }
 ```
@@ -250,17 +256,14 @@ The format of the aggregated value in the bundle depends on the relation type:
   XXX: shouldn't the origin_server_ts and sender of an edit event already tell you
   who sent it and when?  Why do we also have it on the bundle data?
 
-  XXX: Does synapse send the most recent version of an edited event when bundling?
-
   XXX: An alternative approach could be to (also?) use a filter to
   specify/override how to aggregate custom relation types, which would then
   also be used to inform /sync how we want to receive our bundled relations.
   However, we really need to be better understand how to do custom relation
   types first...
 
-For instance, the below example shows an event
-with four bundled relations; 3 thumbsup reaction annotations and one
-reference.
+For instance, the below example shows an event with five bundled relations;
+three thumbsup reaction annotations, one replace, and one reference.
 
 ```json
 {
@@ -272,7 +275,7 @@ reference.
                   {
                       "type": "m.reaction",
                       "key": "👍",
-                      "origin_server_ts": 1564435280,
+                      "origin_server_ts": 1562763768320,
                       "count": 3
                   }
                 ],
@@ -288,6 +291,11 @@ reference.
                 ],
                 "limited": false,
                 "count": 1
+            },
+            "m.replace": {
+                "event_id": "$original_event_id",
+                "origin_server_ts": 1562763768320, // why do we need this? it should be the same as the main event
+                "sender": "@bruno1:localhost"// why do we need this? it should be the same as the main event
             }
         }
     }
@@ -300,10 +308,10 @@ reference.
 
 #### Handling limited (gappy) syncs
 
-For the special case of a gappy incremental sync, many reaction events may
-have occurred during the gap.  It would be inefficient to send each one
-individually to the client, but it would also be inefficient to send all
-possible bundled aggregations to the client.
+For the special case of a gappy incremental sync, many relations (particularly
+reactions) may have occurred during the gap.  It would be inefficient to send
+each one individually to the client, but it would also be inefficient to send
+all possible bundled aggregations to the client.
 
 The simplest thing a client can do is to just throw away its history for a
 room on seeing a gappy incremental sync, and then re-paginate the history of
@@ -313,13 +321,13 @@ and prohibits the client from persisting multiple sections of timeline for a
 given room.
 
 Alternatively, the server tells the client the event IDs of events which
-predate the gap which received reactions during the gap.  This means that the
+predate the gap which received relations during the gap.  This means that the
 client can invalidate its copy of those events (if any) and then requery them
 (including their bundled relations) from the server if/when needed.
 
 The server does this with the new `stale_events` field of each room object
 in the sync response.  The `stale_events` field lists all the event IDs
-prior to the gap which had updated relations during the gap.  The event ids
+prior to the gap which had updated relations during the gap.  The event IDs
 are grouped by relation type, and limited to N entries for efficiency.  N
 should be 100.  If the number of events with stale relations exceeds N, the
 list is marked as `limited` as per the normal Matrix pagination model.  We do
@@ -413,7 +421,7 @@ GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{
     {
       "type": "m.reaction",
       "key": "👍",
-      "origin_server_ts": 1564435280,
+      "origin_server_ts": 1562763768320,
       "count": 5,
     }
   ],
