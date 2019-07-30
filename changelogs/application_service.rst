@@ -1,3 +1,12 @@
+r0.1.2
+======
+
+Spec Clarifications
+-------------------
+
+- Clearer wording for the legacy routes section. (`#2160 <https://github.com/matrix-org/matrix-doc/issues/2160>`_)
+
+
 r0.1.1
 ======
 
