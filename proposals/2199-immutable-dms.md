@@ -225,7 +225,7 @@ important users.
 The rationale for preventing either party from manipulating the room is to ensure that there is
 equal representation of the room from both parties (automatically named, automatic avatar, etc).
 Users generally expect that a DM will be predictably dressed for searching and scanning, meaning
-that the other parties cannot change the aesthetics of the room. For predicatble history and
+that the other parties cannot change the aesthetics of the room. For predictable history and
 privacy, the room's history & join rules are locked out from the users. The users can upgrade the
 room at any time to escape power level struggles, although this may not maintain the DM status.
 
@@ -376,7 +376,7 @@ flag that is transferred to the generated membership event.
 1. The auth rules get altered such that when a user claims a third party invite they can
    empower themselves one time only. They'd only be able to set themselves (no others) to
    the `state_default` power level. The disadvantage here is that one could not have 3rd
-   party invites for unimportant users (assitants, strange bots, etc) without a mix of some
+   party invites for unimportant users (assistants, strange bots, etc) without a mix of some
    of the other solutions here.
 
 2. The important users get tracked in an immutable state event (generated during room creation
@@ -390,7 +390,7 @@ flag that is transferred to the generated membership event.
    it behaves just like the user was in `users` with the power level. This also requires a
    change to the auth rules to make it work correctly.
 
-4. Declare bankrupcy and don't support DMs with non-Matrix users. This option includes the
+4. Declare bankruptcy and don't support DMs with non-Matrix users. This option includes the
    option of leaving it for another MSC to figure out, putting it out of scope here.
 
 There are potentially other solutions as well, and the author welcomes them. As of writing,
@@ -503,7 +503,7 @@ by the author and early reviewers of the proposal.
 
 This allows for bots and personal assistants to be residents of a room. There is an argument
 for restricting DMs to just important users (excluding any chance of unimportant users),
-namely to ensure that security is not sacrificed through leaky bots/assitants. The author
+namely to ensure that security is not sacrificed through leaky bots/assistants. The author
 believes there is a stronger argument for assistant-style bots in a DM, such as a reminder
 bot or Giphy bot. The rationale being that although bots pose a security risk to the conversation,
 the rooms are supposed to be encrypted therefore preventing past history from being exposed
@@ -515,7 +515,7 @@ moderately incomplete as of writing, making the move to enable encryption by def
 questionable. The author is predicting much of the future here and is expecting that key
 backup and cross-signing land in a released version of the spec at the same time or shortly
 after this proposal ends up in a released specification. Additionally, most clients which
-support encryption are targetting a stable release with better UX for around the same time
+support encryption are targeting a stable release with better UX for around the same time
 this feature would be released in a production build ("out of labs" as Riot calls it).
 
 This proposal is vague about which encryption algorithm to support. This is an intentional
@@ -569,7 +569,7 @@ in a floating dialog. To accomplish this in a safe and secure way it may be desi
 high levels of enforcement regarding immutable DMs. This may increase the user's comfort in
 knowing that none of the users in the room can manipulate it. Clients which need this level of
 confidence may wish to ignore insecure DMs and attempt to start new ones by upgrading the existing
-DM through a predefiend `preset` (ideally acquiring permission first).
+DM through a predefined `preset` (ideally acquiring permission first).
 
 
 ## Conclusion
