@@ -247,15 +247,15 @@ The format of the aggregated value in the bundle depends on the relation type:
    and the `count` of the number of annotations of that `type` and `key` which
    reference that event.
  * `m.replace` aggregations provide the most recent edited version of the event
-   in the main event body, and then in the bundle itself there are keys for 
-   `event_id` (the ID of the original event at the root of the sequence of edits).
-   `origin_server_ts` (for when it was edited) and `sender` for who did the edit.
-   This allows the client to identify the message as an edit.
+   in the main event contents, but with the metadata (sender & ts) of the
+   original event. Then in the bundle itself there are keys for  `event_id`
+   (the ID of the original event at the root of the sequence of edits).
+   `origin_server_ts` (for when it was edited) and `sender` for who did the
+   edit. This allows the client to identify the message as an edit, and easily
+   tell who authored the edit and when (given the event itself tracks the
+   original message's metadata).
  * `m.reference` list the `event_id` and event `type` of the events which
    reference that event.
-
-  XXX: shouldn't the origin_server_ts and sender of an edit event already tell you
-  who sent it and when?  Why do we also have it on the bundle data?
 
   XXX: An alternative approach could be to (also?) use a filter to
   specify/override how to aggregate custom relation types, which would then
@@ -295,8 +295,8 @@ three thumbsup reaction annotations, one replace, and one reference.
             },
             "m.replace": {
                 "event_id": "$original_event_id",
-                "origin_server_ts": 1562763768320, // why do we need this? it should be the same as the main event
-                "sender": "@bruno1:localhost"// why do we need this? it should be the same as the main event
+                "origin_server_ts": 1562763768320,
+                "sender": "@bruno1:localhost"
             }
         }
     }
@@ -437,9 +437,11 @@ Any trailing slashes on the endpoint should be ignored.
 
   FIXME: what should we expect to see for bundled `m.replace` if anything?
   Synapse currently returns an empty chunk for an event with subsequent edits,
-  while you might expect to receive the most recent edit.  Similarly, what do
-  you get for `m.reference`?  Should it be an array of event_ids for replies
-  to this msg?
+  while you might expect to receive the most recent bundled aggregation data
+  for an edit. Similarly, what do you get for `m.reference`?  Should it be an
+  array of event_ids for replies to this msg?  Alternatively, should we just
+  ignore anything other than annotations, given the API is only meaningful for
+  annotations?
 
 To iterate over the unbundled relations within a specific bundled relation, you
 use the following API form, identifying the bundle based on its `key`
