@@ -250,7 +250,7 @@ MUST apply the conflict resolution algorithm:
      room as "soft-tombstoned". A soft-tombstoned room is just a flag for preventing a room
      from being counted as a DM and has no further behaviour or implication in this proposal.
 
-The rational for picking the oldest creation event is it is likely the room with the most
+The rationale for picking the oldest creation event is it is likely the room with the most
 context for the user. It is possible that a malicious user intentionally creates a new room
 with an ancient creation event however there's very little gain in doing so. The algorithm
 is chosen such that any two servers come to the same conclusion on which room to use.
@@ -407,7 +407,7 @@ Deprecated things:
 * `is_direct` on `/createRoom` now does nothing (ignored field, like any other unrecognized
    field).
 * `is_direct` on membership events now means nothing (replaced by `m.direct`).
-* `m.direct` account data is deprecated (replaced with the bhevaiour described in this
+* `m.direct` account data is deprecated (replaced with the behaviour described in this
    proposal).
 
 After sufficient time has passed, the deprecated components should be removed from the
