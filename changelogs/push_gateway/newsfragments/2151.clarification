@@ -1,1 +1,0 @@
-Fix ``event_id`` field in push request body.
