@@ -1,4 +1,4 @@
-# Immutable DMs (middle ground)
+# Immutable DMs (server-side middle ground edition)
 
 In the messaging space it is common for apps to expose exactly 1 chat for a conversation
 between two users, and in some cases a specific set of users. Matrix currently does not
@@ -35,6 +35,8 @@ user, creating a new DM if needed.
 * Steam
 * WhatsApp
 * SMS
+* Skype
+* MSN Messenger
 * and probably many others...
 
 Platforms which allow/encourage users to have multiple DMs with a specific person are:
@@ -42,51 +44,128 @@ Platforms which allow/encourage users to have multiple DMs with a specific perso
 * Email
 * XMPP (technically speaking)
 
-This proposal covers how clients and servers can work together to encourage and have exactly
-one DM between users. These are known as immutable DMs as users are unable to alter the rooms
-to make them become regular rooms (they'll always be DMs).
+This proposal covers how servers enforce exactly one DM (ideally immutable) between a set
+of users. Clients have some responsibilities to render this appropriately, however the server
+is expected to do most of the heavy lifting here. Immutable DMs are direct chats between
+users where the participants can't change the room's aesthetics. For example, users can't
+change the name or topic of the room, and they'll always be DMs.
+
+This proposal supports "direct chats" or "DMs" in the sense of private conversations with
+a set of users. This means that a DM between 3 users is possible, however the common case
+is likely to be 1:1 (2 person) chats.
+
 
 ## Proposal
 
-The existing direct chat module in Matrix allow for multiple users in a direct chat and multiple
-rooms to act as a direct chat between users. Rooms are identified by the `m.direct` account data
-event and through invites using a similar property. More information about direct chats as they
-currently stand in Matrix can be read here: https://matrix.org/docs/spec/client_server/r0.5.0#id185
+In short, the entire direct chat module in Matrix is deprecated by this proposal. The direct
+chat module relies on clients behaving themselves and tracking all the information for themselves
+while somehow coming to the same conclusions as any other client the user happens to run. In
+practice this becomes very difficult to do and maintain, particularly given the direct chats
+are stored in an account data blob. If two clients were to update the account data at the same
+time (which happens *a lot*), the clients would end up overwriting each other.
 
-The `m.direct` account data event is to be deprecated and replaced with `m.direct_chats` (defined
-below). The reason for replacing rather than extending the existing event type is account data
-cannot be versioned, and `m.direct` was not created with extensibility in mind: one would have
-to encode information in the form of user IDs to be compatible with existing clients. Therefore,
-a new event type is introduced. Clients which support immutable DMs should ignore `m.direct`
-entirely.
+Direct chats consist of "important" and "unimportant" users to allow for bots and personal
+assistants in a chat. Unimportant users don't affect the DM-ness of the room and are essentially
+observers on the room (with speaking rights). How classification is done is defined later in
+this proposal.
 
-`m.direct_chats` looks as follows:
+Direct chats are now expected to be identified and labelled by the server through the `summary`
+response field on `/sync`. The `m.heroes` MUST contain the important users in a DM, regardless
+of the presence of a name, canonical alias, etc on the room. The heroes must never be truncated
+for a DM, and must not contain the syncing user's ID. A new field, `m.kind`, is mandatory for
+direct chats which can only be `m.dm`. Future values may be added in a future proposal. Like
+the other fields in the summary, `m.kind` may be omitted if there was no change in the field.
+
+For the purposes of demoting a DM from its DM status, `m.kind` can also be the literal `null`
+to identify it as "unknown or irrelevant kind".
+
+Implementation note: clients can identify whether a room is a 1:1 or multi-way chat by looking
+at the `m.kind` and `m.heroes`: if the kind is `m.dm` and there's only 1 user in `m.heroes`
+then the room is a 1:1 chat. If the kind is `m.dm` and there's 2+ users in the `m.heroes` then
+it is a multi-way/private group chat.
+
+With irrelevant fields not included, an example sync response would be:
 ```json
 {
-    "type": "m.direct_chats",
-    "content": {
-        "rooms": [
-            "!room_a:example.org",
-            "!room_b:example.org",
-            "!room_c:example.org"
-        ]
+    "rooms": {
+        "join": {
+            "!a:example.org": {
+                "summary": {
+                    "m.heroes": ["@alice:example.org"],
+                    "m.joined_member_count": 1,
+                    "m.invited_member_count": 1,
+                    "m.kind": "m.dm"
+                }
+            },
+            "!b:example.org": {
+                "summary": {
+                    "m.heroes": ["@bob:example.org"],
+                    "m.joined_member_count": 2,
+                    "m.invited_member_count": 0,
+                    "m.kind": "m.dm"
+                }
+            },
+            "!c:example.org": {
+                "summary": {
+                    "m.heroes": ["@alice:example.org", "@bob:example.org"],
+                    "m.joined_member_count": 2,
+                    "m.invited_member_count": 0,
+                    "m.kind": "m.dm"
+                }
+            },
+            "!d:example.org": {
+                "summary": {
+                    "m.joined_member_count": 5,
+                    "m.invited_member_count": 2,
+                }
+            }
+        }
     }
 }
 ```
 
-The event lists all the rooms which are considered DMs by other clients. Ideally, all the rooms
-in the list will have been created using the immutable DMs preset defined below. Mapping out
-which users are participating in DMs is difficult to represent through JSON, and the identification
-of important users is simple, therefore the event is not believed to need more metadata about
-the rooms. The event schema additionally supports future expansion in that the array is nested
-in a dedicated property, giving room for future changes to the event.
-
-Clients rendering the account data event above would result in something like so:
+Clients rendering the above should end up with something like the following:
 
 ![alice-bob-over-banquet](https://i.imgur.com/h4BHZSw.png)
 
-In order to make the rooms immutable, a new preset, `immutable_direct_chat`, is introduced. The
-preset has the following effects on the room state:
+
+Servers are expected to be able to identify direct chats for users and flag them appropriately
+in the room summary. How existing DMs are migrated is covered later in this proposal. The
+server must use these rules to determine if a room is a direct chat:
+* The join rules are `invite`.
+* The user's most recent membership event has `"m.direct": true` in the `content`.
+* The room has an explicit power level event (running a DM without a PL event is not supported).
+* The room has at least 2 important users in it.
+* The user themselves is important in the room.
+* The room is not tombstoned.
+* The room is not soft-tombstoned by the server.
+* No important users have left the room (through kick, ban, or other means).
+
+Assuming no other conflicts arise (duplicate chats, etc) the room is considered a DM between
+the important users in the room. Important users are identified simply by having a power level
+greater than or equal to the `state_default` power level requirement.
+
+The server MUST maintain the `m.direct` flag when updating or transitioning any user's membership
+event. The server SHOULD refuse to let the user manipulate the flag directly through `PUT /state`
+and similar APIs (such as inviting users to a room). Servers MUST consider a value of `false`
+the same as the field not being present.
+
+Servers are not expected to identify a room as a direct chat until the server resides in the
+room. Servers MUST populate the room summary for invites if the server is a resident of the
+room. Clients SHOULD use the room summary on invites and joined rooms to identify if a room
+is a direct chat or not. Where the summary is not available and an `m.direct` field is on the
+invite event, clients should be skeptical but otherwise trusting of the room's DM status.
+
+Servers SHOULD attempt to identify (or re-affirm) rooms as a DM whenever the relevant state
+events in the rules above change or are updated.
+
+
+#### Creating DMs
+
+The room creation presets `private_chat` and `trusted_private_chat` are deprecated and to be
+removed in a future specification version. Clients should stop using those presets and instead
+use `immutable_direct_chat` as defined here. The new preset has the following effects on the
+room state:
 
 * Join rules of `invite`.
 * History visibility of `invited`.
@@ -119,26 +198,21 @@ preset has the following effects on the room state:
       }
   }
   ```
-* Users invited to the room get power level 50, including the creator.
-* Encryption is enabled by default using the `m.megolm.v1.aes-sha2` algorithm.
+  The power level event is considered the `power_level_content_override` implicitly and
+  therefore applied at step 0 of the room creation process.
+* Users invited to the room get power level 50, including the creator. Important users
+  (those invited and the creator) MUST have `"m.direct": true` in their membership event
+  content.
+* Encryption is enabled by default using the most preferred megolm algorithm in the spec.
+  Currently this would be `m.megolm.v1.aes-sha2`.
 
-Clients which support the direct messaging module of the Client-Server API MUST use the new
-`m.direct_chats` account data to determine which DMs the user is in. Clients MUST use the power
-levels of users in those DMs to determine who they are with: users with power greater than or
-equal to `state_default` are considered "important". When a user attempts to start a new direct
-chat with an important user, the existing room should be re-used instead. Unimportant users are
-all other users in the room, such as bots and personal assistants. Unimportant users do not affect
-who the DM is considered to be with.
+The preset prevents the use of `visibility`, `room_alias_name`, `name`, `topic`, `initial_state`,
+and `power_level_content_override` during creation. Servers MUST reject the request with
+`400 M_BAD_STATE` when the request contains conflicting properties. Future extensions to
+`/createRoom` are expected to be included in the forbidden list where appropriate.
 
-For example, if Alice and Bob (both power level 50) are in a DM and invite Charlie, Charlie is
-not to be considered important for the DM. This means that when Alice or Bob starts a chat with
-Charlie, the existing room with all 3 of them will not be re-used. However, if Alice were to start
-a chat with Bob, the existing room containing Bob and Charlie would be re-used.
-
-A room must not be considered a DM if the join rules are anything other than `invite`.
-
-Servers SHOULD assist clients by reusing room IDs for known DMs on repeated calls to `/createRoom`
-using the same invited users and immutable DM preset.
+Servers MUST return an existing room ID if the server already knows about a DM between the
+important users.
 
 The rationale for preventing either party from manipulating the room is to ensure that there is
 equal representation of the room from both parties (automatically named, automatic avatar, etc).
@@ -147,14 +221,32 @@ that the other parties cannot change the aesthetics of the room. For predicatble
 privacy, the room's history & join rules are locked out from the users. The users can upgrade the
 room at any time to escape power level struggles, although this may not maintain the DM status.
 
-Unimportant users MUST NOT be used to name the room (cannot appear in heroes or in automatic naming
-for rooms).
 
-Tombstoned (previously upgraded) immutable DMs MUST be removed from the `m.direct_chats` account
-data event and cannot be considered an immutable DM. Tombstoned immutable DMs are dead rooms on
-the user's account, preserved for history retention.
+#### Glare and duplicated rooms
 
-DMs may involve multiple important users, and are entirely valid in the eyes of this proposal.
+There is a potential for two users to start a DM with each other at the same time, preventing
+either server from short-circuiting the `/createRoom` call. Servers MUST NOT prevent users
+from accepting or rejecting invites to known conflicting DM rooms. Servers SHOULD NOT retract
+the invite and SHOULD NOT automatically join the user to the room. The rationale is that the
+user is likely to have already received a notification about a room invite and would be
+confused if the room went missing or was automatically accepted. Clients are welcome to adjust
+their UX as desired to do something else instead (like automatically reject/accept the invite
+or hide it when it is an apparent duplicate).
+
+When the server joins a room it has identified as conflicting/duplicating an existing DM it
+MUST apply the conflict resolution algorithm:
+1. Order all the conflicting room's creation events by their `origin_server_ts`.
+2. Pick the room with the **oldest** creation event as the canonical DM.
+3. Send a tombstone state event to the non-canonical DM rooms pointing at the canonical room.
+   * If the tombstone cannot be sent by the server due to auth rules, it must consider the
+     room as "soft-tombstoned". A soft-tombstoned room is just a flag for preventing a room
+     from being counted as a DM and has no further behaviour or implication in this proposal.
+
+The rational for picking the oldest creation event is it is likely the room with the most
+context for the user. It is possible that a malicious user intentionally creates a new room
+with an ancient creation event however there's very little gain in doing so. The algorithm
+is chosen such that any two servers come to the same conclusion on which room to use.
+
 
 #### Upgrading DM rooms
 
@@ -162,14 +254,12 @@ There may come a time where DM rooms need to be upgraded. When DM rooms are upgr
 `/upgrade` endpoint, servers MUST preserve the `content` of the previous room's creation event and
 otherwise apply the `immutable_direct_chat` preset over the new room. If conflicts arise between
 the previous room's state and the state applied by the preset, the preset takes preference over
-the previous room's state. Servers can identify whether a room is a DM or not by peeking at the
-user's account data: if the room is listed under the upgrading user's `m.direct_chats`, it is
-considered a DM. The room does not have to be listed on all user's direct chats, just the user
-who is performing the upgrade.
+the previous room's state.
 
 Servers MUST create the new room by using the the room creation rules listed earlier in this
 proposal. This means inviting the other parties of the previous room to the new room automatically
-and ensuring the room state is as described above.
+and ensuring the room state is as described above. Auth errors with transferring state (such as
+the room name) must be considered non-fatal to the upgrade process: just skip that state event.
 
 Note: normally room upgrades modify the power levels in the old room in an attempt to mute all
 participants. However, no one will have power to modify the power levels in the old room.
@@ -177,101 +267,289 @@ Therefore, servers MUST NOT fail to upgrade a room due to being unable to update
 in the old room. This is considered acceptable by this proposal because upgraded DM rooms will
 lose their DM status, making them at worst just another room for the user.
 
-#### Migrating existing DMs
+Servers should do their best to follow tombstones to new DM rooms, however they should not assume
+that those new rooms are valid DM rooms nor should they automatically join/invite the important
+users to the room.
 
-Existing DMs can be automatically added to the `m.direct_chats` account data event provided they
-meet the power level requirements. Most DMs at this point in Matrix will have been created using
-the `trusted_private_chat` preset, giving both participants admin (power level 100) rights in the
-room, therefore making them eligible for inclusion in the new direct chats account data. Clients
-are encouraged to walk the user through the upgrade/migration process instead of automatically
-migrating data. This is to prevent potential collisions between clients while the process happens.
 
-Users are encouraged to upgrade their rooms to be immutable: this can be done in two ways. The
-first way is altering the power levels and other state events to match the preset defined above.
-The second is using the `/upgrade` endpoint with a new field: `preset`. This proposal encourages
-clients to use the first method when migrating existing DMs for users, however the second option
-is proposed as an addition to the protocol.
+#### Detecting server support
 
-The `preset` field on `/upgrade` acts similar to `/createRoom` and the behaviour described above
-regarding upgrading a room: the state implied by the `preset` takes precedence over existing state
-in the old room. This applies regardless of the preset being used. When not provided, no default
-preset is assumed (ie: all applicable state is transferred without any taking precedence over
-another).
+Servers which implement this MSC prior to it appearing in a spec release MUST advertise as such
+through the unstable feature flag `m.immutable_dms` on `/versions`. Clients which detect server
+support should not only check for the feature flag but also the presence of a supported spec version
+on the server (as the flag may disappear once the feature lands in a release). Currently this
+proposal is expected to land in r0.6.0 of the Client-Server API.
 
-An upgrade request body can now look like:
+Some servers have thousands and even millions of users which will need their DMs migrated. In
+order to allow those servers to advertise the feature (both as an unstable flag and as a released
+spec version) the client SHOULD assume that the server has not migrated its user's DMs until the
+server sends the `m.direct_merged` account data event.
+
+
+#### Migration
+
+Users already have DMs which need to be correctly mapped by the server. Servers MUST use the
+following process for migration for each user:
+1. Grab a list of room IDs from their `m.direct` account data (if present). Ignore the user IDs
+   that are associated with the room IDs.
+2. Identify each room as either a DM or some other room and flag appropriately. This may include
+   conflict resolution.
+3. Set `m.direct_merged` account data with `content` consisting of a single array, `rooms`, listing
+   all the room IDs the server iterated over, regardless of result.
+
+The server SHOULD support automatically migrating any additions to `m.direct` even after migrating
+the user. This is to allow for the user having an older client which does not yet support proper
+DMs. Removals from `m.direct` are recommended to be left unhandled to ensure consistency with the
+updated DMs.
+
+
+#### Sugar APIs (for appservices/thin bots)
+
+Appservice users and some bots are unlikely to see the room summary information. In an attempt to
+combat this, some APIs are provided for users and thin clients to call and poke into the server's
+view of their DM list.
+
+The expected use cases for not using `/sync` are:
+* When appservices want to contact a user in a DM fashion (IRC bridge sending NickServ info).
+* When thin bots aren't syncing and want to alert users (monitoring bots triggered by external event).
+* Clients which don't trust their local cache of DMs.
+
+Appservices in particular are expected to heavily use the DM-finding API below and should cache
+the result. When the appservice sees an event which the server might have reidentified the room
+for it should invalidate its cache. Servers should make both of these endpoints highly cached.
+
+**`GET /_matrix/client/r0/user/:userId/dms`**
+
+Takes no parameters besides the obvious `:userId`. Example response:
 ```json
 {
-    "new_version": "5",
-    "preset": "immutable_direct_chat"
+    "direct_chats": {
+        "!a:example.org": {
+            "important": ["@alice:example.org"]
+        },
+        "!b:example.org": {
+            "important": ["@bob:example.org"]
+        },
+        "!c:example.org": {
+            "important": ["@alice:example.org", "@bob:example.org"]
+        }
+    }
 }
 ```
 
-An immutable DM room can be upgraded to a mutable room (ie: a `preset` of `public_chat` will
-create a new public room, losing the DM status on the room and the users).
+The `important` array does not include the user themselves.
 
-After upgrading, the client MUST update the `m.direct_chats` account data event. Similar
-behaviour should apply when the other parties join the upgraded room (for the client which
-joined/accepted the invite).
+**`GET /_matrix/client/r0/user/:userId/dm?involves=@alice:example.org&involves=@bob:example.org`**
 
-The users of the previous room are the seed users for the new room, as described above in
-upgrading a DM room.
+Takes a `:userId` in the route and `?involves` (specified multiple times) to search for a DM
+involving the given users. It should be considered a bad request if the user asks for a DM
+involving themselves.
 
-#### Handling conflicting rooms
+Example response:
+```json
+{
+    "room_id": "!c:example.org"
+}
+```
 
-The federation invite API allows for a user to receive an invite to an unverified DM room
-with potentially conflicting participants with an existing DM room. Altering the invite API
-to include signed membership and creation events is one possibility for ensuring that the
-room is unique, however that becomes difficult and expansive to maintain (the target server
-would likely end up trying to rebuild the room's state by requesting the gaps in the DAG).
-Instead, it is proposed that clients check the power levels of the room to determine if the
-room should be considered a direct chat. This renders the `is_direct` flag on invites only
-useful for aesthetics for rendering invitations - the flag serves no other purpose if this
-proposal were to be accepted.
+If no DM exists involving those users, an empty object should be returned with 200 OK.
 
-Clients MUST always check the flag when they join a new room, not just when they are accepting
-an invite. If the room conflicts with an immutable DM the client already knows about, a tombstone
-state event must be sent to the older room with a reference to the newly joined room. If the
-tombstone event fails to send, the client MUST consider the room tombstoned anyways.
 
-#### Server assistance
+#### Third party invites
 
-As mentioned previously in this proposal, servers SHOULD already be re-using rooms for which
-the user has a direct chat with another set of users. Similar restrictions SHOULD be in place
-to ensure that clients do not accidentally add duplicate direct chats to the account data event.
+Third party invites (email invites) are hard to handle as the participants in the room are
+unlikely to be unable to modify the power levels in the room because the immutable DM preset
+forbids this by design. There's several solutions to this problem which are up for debate:
 
-#### Abandoning/leaving rooms
+*Note*: All solutions here assume that the third party invite gets flagged with an `m.direct`
+flag that is transferred to the generated membership event.
 
-When an important user leaves or gets kicked/banned from the room the room MUST NOT be counted
-as a DM anymore by any clients. For example, a 3 person DM where 1 person leaves would cause
-all 3 users to lose the DM status on the room. The room is not downgraded to a 2 person DM due
-to potential conflicts with existing DMs.
+1. The auth rules get altered such that when a user claims a third party invite they can
+   empower themselves one time only. They'd only be able to set themselves (no others) to
+   the `state_default` power level. The disadvantage here is that one could not have 3rd
+   party invites for unimportant users (assitants, strange bots, etc) without a mix of some
+   of the other solutions here.
+
+2. The important users get tracked in an immutable state event (generated during room creation
+   when using the preset). This sacrifices reusability of the power levels for additional
+   tracking, and is not enforceable in pre-existing DMs (although neither are power level
+   enforcements so does it matter?). The state event would list the user IDs and third party
+   IDs (which can then be traced to membership events) which are "important".
+
+3. Alter power levels to support a third party user listing, similar to the existing `users`
+   definition. Power in this map means nothing until the identifier is claimed, in which case
+   it behaves just like the user was in `users` with the power level. This also requires a
+   change to the auth rules to make it work correctly.
+
+4. Declare bankrupcy and don't support DMs with non-Matrix users. This option includes the
+   option of leaving it for another MSC to figure out, putting it out of scope here.
+
+There are potentially other solutions as well, and the author welcomes them. As of writing,
+the author is leaning towards option 4 due to the infrequent use of third party invites today.
+
+
+#### Complete list of deprecations
+
+Earlier in this proposal it was mentioned that the existing direct chats module is replaced
+by this proposal, however it didn't exactly explain the scope. The existing module is
+optionally supported by servers (which requires very little effort on their part), however
+this proposal recommends that servers drop support completely per the deprecations below.
+
+Deprecated things:
+* `is_direct` on `/createRoom` now does nothing (ignored field, like any other unrecognized
+   field).
+* `is_direct` on membership events now means nothing (replaced by `m.direct`).
+* `m.direct` account data is deprecated (replaced with the bhevaiour described in this
+   proposal).
+
+After sufficient time has passed, the deprecated components should be removed from the
+specification.
+
+
+#### Test cases for the server/proposal to consider
+
+**Disclaimer**: This section might add clarity but might also be confusing. Sorry.
+
+**Simple case**
+
+The happy path of DMs.
+
+1. Alice starts a DM with Bob. Alice and Bob end up with a single room.
+2. Bob then starts a DM with Alice and gets redirected to the existing room by their client
+   or server.
+3. Alice tries to start a new DM with Bob. Like Bob in the last step, Alice is redirected
+   to the existing room.
+4. Bob then starts a DM with Alice and Charlie. A new room is created. Similar redirection
+   semantics take place when the three parties attempt to duplicate the room.
+
+**Simple glare**
+
+The slightly less happy path of DMs: when servers collide.
+
+1. Alice and Bob reside on different homeservers.
+2. Alice starts a DM with Bob, who does not accept nor reject it.
+3. Bob starts a DM with Alice, who does not accept not reject it.
+4. Alice accepts Bob's invite. Alice's server realizes this is a duplicate room and sends
+   a tombstone to the room, pointing at the DM Alice created earlier.
+   * During this, Bob's server would have originally flagged the room as a DM for Bob and
+     Alice, but the tombstone signals to Bob's homeserver that something is up and assumes
+     that Bob has no DM with Alice (yet).
+5. Bob gets a tombstone in Alice's DM and realizes there's a pending invite. Bob accepts.
+6. Bob's homeserver sees that the room is a DM and flags it as the DM for Bob and Alice.
+
+Alice and Bob's homeserver have come to the same conclusion. In the worst case, both servers
+could accept the invites at the same time and conflict with each other on the tombstone. The
+worst case for this is a split DAG on the tombstone with two tombstone state events, resolved
+through state resolution. Both servers would have still come to the same conclusion on which
+room to use so either of the tombstone events sent could be considered a no-op.
+
+**De-duplication during migration / tombstone tree**
+
+1. Alice has 3 existing DMs with Bob, who resides in both rooms.
+2. The server updates (Alice and Bob happen to be on the same server in this example, however
+   the scenario works cross-server too).
+3. The server realizes that Alice and Bob share multiple DMs and pick the oldest DM. The
+   server tombstones the other 2 rooms.
+4. Alice and Bob now have exactly one DM with each other.
+
+The room map looks a bit complicated now, but there's a tree of rooms where two point to
+a single room. Clients aren't exactly expected to represent this nicely but can try if they
+want to. There will be no `predecessor` for them to work off of.
+
+If the canonical DM room was then upgraded or otherwise tombstoned itself, the tree starts
+to become more linear.
+
+**Tombstone tree with glare**
+
+Following the example of a "tombstone tree" then creating a conflicting room with glare
+the servers should resolve to use the canonical room identified by the tombstone tree. The
+conflicting room should be tombstoned to point at the canonical room.
+
+**Change in power levels, join rules, or membership**
+
+If the power levels or join rules change then the server needs to re-evaluate the room. If
+the room ends up being no longer a DM, the server must flag it as such to the relevant clients
+and *not* send a tombstone into the room. The parties are considered to not have a DM.
+
+If the membership changes such that someone ends up leaving the room (on their own or through
+a kick/ban) then the DM is no longer considered a DM, similar to the paragraph above.
+
+If the room starts to look like a DM again (members rejoin, join rules become acceptable again,
+etc) then the conflict resolution algorithm might take place depending on the user's DMs.
+
+**Malicious takeover of a DM**
+
+1. Alice and Bob are on different homeservers, but don't have to be for this scenario.
+2. Alice starts a DM with Bob. Bob accepts.
+3. Bob's homeserver sends a tombstone into the DM to point it at Matrix HQ.
+4. Both Alice and Bob no longer have a viable DM: both homeservers do not consider Matrix HQ
+   as the replacement room, and do not treat the tombstoned room as a DM.
+
 
 ## Tradeoffs / issues
 
-This proposal has a number of downsides which may or may not be acceptable to readers.
+This is really complicated for servers to implement. The alternative is that the client
+does all the work (see below in 'Alternative solutions') however this is deemed unreasonable
+by the author and early reviewers of the proposal.
 
-#### Clients do all the heavy lifting
+This allows for bots and personal assistants to be residents of a room. There is an argument
+for restricting DMs to just important users (excluding any chance of unimportant users),
+namely to ensure that security is not sacrificed through leaky bots/assitants. The author
+believes there is a stronger argument for assistant-style bots in a DM, such as a reminder
+bot or Giphy bot. The rationale being that although bots pose a security risk to the conversation,
+the rooms are supposed to be encrypted therefore preventing past history from being exposed
+to the bot. Both parties additionally should have the power to remove the bot if they don't
+agree.
 
-Instead of having clients track tombstones, room members, creation events, and account data they
-could instead rely on the server to track all this for them. This could take the shape of the
-client having read-only access to `m.direct_chats` account data and the server keeping it updated
-for the user.
+This proposal enables encryption by default for DMs. Encryption in the specification is
+moderately incomplete as of writing, making the move to enable encryption by default somewhat
+questionable. The author is predicting much of the future here and is expecting that key
+backup and cross-signing land in a released version of the spec at the same time or shortly
+after this proposal ends up in a released specification. Additionally, most clients which
+support encryption are targetting a stable release with better UX for around the same time
+this feature would be released in a production build ("out of labs" as Riot calls it).
 
-#### This is reliant on trust
-
-A user could remove a room from their direct chats without leaving the room, which the other
-users in the room would be unaware of. This could potentially lead to confusion when that user
-tries to initiate a new direct chat with the same users, however it is expected that "power users"
-(people who are experienced with the protocol) will be the only ones doing this and likely for
-good cause.
+This proposal is vague about which encryption algorithm to support. This is an intentional
+choice by the author to support the possibility of a given encryption algorithm being
+deemed unsuitable by Matrix in the future. For example, if a given algorithm was broken or
+found to have security flaws it would be difficult to update the specification if the preset
+had baked in a specific algorithm. Instead, the proposal asks the specification to make
+a recommendation and for servers to think critically of the available algorithms (of which
+only one is actually available at the moment) to make the best decision for their users.
 
 
 ## Alternative solutions
 
-DMs could be enforced through auth rule changes and server enforcement, however this feels
-far too complicated and over the top for the simplicity of just using a preset to fix rooms.
-An example of how this could look is described [here](https://gist.github.com/turt2live/ed0247531d07c666b19dd95f7471eff4).
+The sugar APIs are a bit awkward for the value they provide. Bridges are more commonly in
+need of direct chats and thin bots arguably can still sync their way through life. Bridges,
+and possibly clients, could receive changes to their DMs over a purpose-built room managed
+by the server. Similar to server notices, the server could maintain state events in a readonly
+immutable room for the user/client to sit in and receive updates. The author feels as though
+this is more complicated than it should be, requiring servers to maintain hundreds, thousands,
+or even millions of dedicated rooms for users which can easily overwhelm an appservice. For
+instance, the Freenode IRC bridge has millions of users which would equate to millions of
+rooms which all need to be synced down the appservice pipe which is already fairly congested.
 
+Servers could be less involved and all this work could be done by the client. Although
+easier for servers, clients are more likely to run into conflicts between themselves. The
+most common type of conflicts for clients to have is updating account data at the same time,
+which happens a lot more often than it should. When there's conflicts in updating account
+data, there's a strong possibility that data is lost due to overwrites. Sure, the client
+could be told to use room tagging instead however a similar problem occurs when one client
+wants to add a tag and another wants to remove it. An earlier draft of this proposal did
+cover what a mostly client-side implementation of immutable DMs could look like: it can
+be found [here](https://gist.github.com/turt2live/6a4e21437508bce76be89d6cbaf65723).
+
+Servers could be even more involved and require a whole new room version to change the
+event auth rules for DMs. The author strongly believes that this is far too complicated
+and way overkill for what Matrix needs/wants to achieve, despite having written an earlier
+draft of this proposal calling for exactly that. Many of the problems with this approach
+are described in that draft, found [here](https://gist.github.com/turt2live/ed0247531d07c666b19dd95f7471eff4).
+
+There is also an argument that the existing solution is fine and clients should just
+make it work for their purposes. The author believes this is an invalid argument given
+the introduction of this proposal and the problems highlighted regarding client-driven
+DMs.
 
 ## Security considerations
 
@@ -288,7 +566,8 @@ DM through a predefiend `preset` (ideally acquiring permission first).
 ## Conclusion
 
 Immutable DMs are a hard problem to solve and involve a bunch of tiny changes to multiple parts
-of the specification. Of the options described, this proposal focuses on making immutable DMs
-accessible to modern clients without needing complicated migration processes whereas prior drafts
-focused on enforcing immutability as much as possible. This proposal is targeted towards being
-a balance between complete enforcement and reasonable expectations of users.
+of the specification. Of all the iterations of this proposal, this proposal is targeted at being
+a safe balance of client complexity and user safety, sacrificing the server's complexity in favour
+of predictable results. Most clients are interested in implementing DMs in some capacity, and this
+proposal helps make it less painful and more reliable for them. Users should feel safer to use
+DMs with this proposal given the enabled encryption and permissions models imposed on the room.
