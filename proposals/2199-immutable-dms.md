@@ -35,8 +35,8 @@ user, creating a new DM if needed.
 * Steam
 * WhatsApp
 * SMS
-* Skype
-* MSN Messenger
+* Skype [for Business] (maybe?)
+* MSN Messenger (maybe?)
 * and probably many others...
 
 Platforms which allow/encourage users to have multiple DMs with a specific person are:
