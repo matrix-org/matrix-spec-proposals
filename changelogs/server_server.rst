@@ -1,3 +1,13 @@
+r0.1.3
+======
+
+Spec Clarifications
+-------------------
+
+- Clarify the encryption algorithms supported by the device of the user keys query example. (`#2157 <https://github.com/matrix-org/matrix-doc/issues/2157>`_)
+- Clarify the purpose of reference hashes. (`#2159 <https://github.com/matrix-org/matrix-doc/issues/2159>`_)
+
+
 r0.1.2
 ======
 
