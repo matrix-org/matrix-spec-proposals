@@ -228,7 +228,7 @@ incremental syncs), for instance: initial sync, gappy incremental sync,
 /messages and /context.
 
 The bundled relations are grouped according to their `rel_type`, and then
-paginated within each group using Matrix's normal pagination idiom of `count`,
+paginated within each group using Matrix's defined pagination idiom of `count`,
 `limited` and `chunk` fields - respectively giving the total number of
 elements in the list, whether that list has been truncated, and an array of
 elements in the list.
