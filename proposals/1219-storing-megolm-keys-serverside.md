@@ -102,8 +102,8 @@ settings.
 ### Recovery key
 
 The recovery key can be saved by the user directly, stored encrypted on the
-server (as proposed in
-[MSC1687](https://github.com/matrix-org/matrix-doc/issues/1687)), or both.  If
+server (using the method proposed in
+[MSC1946](https://github.com/matrix-org/matrix-doc/issues/1946)), or both.  If
 the key is saved directly by the user, then the code is constructed as follows:
 
 1. The 256-bit curve25519 private key is prepended by the bytes `0x8B` and
@@ -123,6 +123,29 @@ string are `0x8B` and `0x01`, ensure that XOR-ing all the bytes together
 results in 0, and ensure that the total length of the decoded string
 is 35 bytes.  Clients must then remove the first two bytes and the last byte,
 and use the resulting string as the private key to decrypt backups.
+
+If MSC1946 is used to store the key on the server, it must be stored using the
+`account_data` `type` `m.megolm_backup.v1`.
+
+As a special case, if the recovery key is the same as the curve25519 key used
+for storing the key, then the contents of the `m.megolm_backup.v1`
+`account_data` for that key will be the an object with a `passthrough` property
+whose value is `true`.  For example, if `m.megolm_backup.v1` is set to:
+
+```json
+{
+  "encrypted": {
+    "key_id": {
+      "passthrough": true
+    }
+  }
+}
+```
+
+means that the recovery key for the backup is the same as the private key for
+the key with ID `key_id`. (This is mostly intended to provide a migration path
+for for backups that were created using an earlier draft that stored the
+recovery information in the `auth_data`.)
 
 ### API
 
