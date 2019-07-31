@@ -493,7 +493,10 @@ key backup.  This proposal does not attempt to protect against that.
 An attacker who gains access to a user's account can create a new backup
 version using a key that they control.  For this reason, clients SHOULD confirm
 with users before sending keys to a new backup version or verify that it was
-created by a trusted device by checking the signature.
+created by a trusted device by checking the signature.  One way to confirm the
+new backup version if the signature cannot be checked is by asking the user to
+enter the recovery key, and confirming that the backup's public key matches
+what is expected.
 
 Other Issues
 ------------
