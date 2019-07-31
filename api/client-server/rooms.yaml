@@ -62,6 +62,13 @@ paths:
               - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
         404:
           description: The event was not found or you do not have permission to read this event.
+          examples:
+            application/json: {
+                "errcode": "M_NOT_FOUND",
+                "error": "Event not found."
+              }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Room participation
   "/rooms/{roomId}/state/{eventType}/{stateKey}":
