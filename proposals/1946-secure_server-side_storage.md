@@ -21,7 +21,7 @@ prevent homeserver administrators from being able to read it.  A user can have
 multiple keys used for encrypting data.  This allows the user to selectively
 decrypt data on clients.  For example, the user could have one key that can
 decrypt everything, and another key that can only decrypt their user-signing
-key for cross-signing.  Each key has an ID, and a discription of the key is
+key for cross-signing.  Each key has an ID, and a description of the key is
 stored in the user's `account_data` using the `type` `m.secret_storage.key.[key
 ID]`.  The contents of the account data for the key will include an `algorithm`
 property, which indicates the encryption algorithm used, as well as a `name`
@@ -35,12 +35,12 @@ decryption keys for key backups could be stored under the type
 `m.megolm_backup.v1.recovery_key`, or the self-signing key for cross-signing
 could be stored under the type `m.cross_signing.self_signing`.
 
-Data will be stored using using the following format:
+Data will be stored using the following format:
 
 ```json
 {
     "encrypted": {
-      [key ID]: {
+      "key_id": {
         "ciphertext": "base64+encoded+encrypted+data",
         "mac": "base64+encoded+mac"
       }
