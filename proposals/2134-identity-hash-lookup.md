@@ -309,8 +309,8 @@ types that have been leaked in database dumps are more susceptible to hash
 reversal.
 
 Mediums and peppers are appended to the address as to prevent a common prefix
-for each plain-text string, which prevents attackers from pre-computing bits
-of a stream cipher.
+for each plain-text string, which prevents attackers from pre-computing the
+internal state of the hash function
 
 ## Other considered solutions
 
