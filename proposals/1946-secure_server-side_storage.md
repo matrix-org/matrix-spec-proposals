@@ -29,6 +29,11 @@ property, which is a human-readable name.  The contents will be signed as
 signed JSON using the user's master cross-signing key.  Other properties depend
 on the encryption algorithm, and are described below.
 
+If a key has the `name` property set to `m.default`, then this key is marked as
+the default key for the account.  The default key is the one that all secrets
+will be encrypted with, and the clients will try to use to decrypt data with,
+unless the user specifies otherwise.  Only one key can be marked as the default.
+
 Encrypted data can be stored using the `account_data` API.  The `type` for the
 `account_data` is defined by the feature that uses the data.  For example,
 decryption keys for key backups could be stored under the type
@@ -80,7 +85,29 @@ The data is encrypted and MACed as follows:
 (The key HKDF, AES, and HMAC steps are the same as what are used for encryption
 in olm and megolm.)
 
-FIXME: add an example of `m.secret_storage.key.*`, and of encrypted data.
+For example, a key using this algorithm could look like:
+
+```json
+{
+  "name": "m.default",
+  "algorithm": "m.secret_storage.v1.curve25519-aes-sha2",
+  "pubkey": "base64+public+key"
+}
+```
+
+and data encrypted using this algorithm could look like this:
+
+```json
+{
+  "encrypted": {
+      "key_id": {
+        "ciphertext": "base64+encoded+encrypted+data",
+        "ephemeral": "base64+ephemeral+key",
+        "mac": "base64+encoded+mac"
+      }
+  }
+}
+```
 
 ###### Keys
 
@@ -181,7 +208,12 @@ data to indicate whether it should come down the `/sync` or not.
 
 ## Security considerations
 
-Yes.
+By storing information encrypted on the server, this allows the server operator
+to read the information if they manage to get hold of the decryption keys.
+In particular, if the key is based on a passphrase and the passphrase can be
+guessed, then the secrets could be compromised.  In order to help protect the
+secrets, clients should provide feedback to the user when their chosen
+passphrase is considered weak.
 
 ## Conclusion
 
