@@ -499,9 +499,9 @@ For instance, an encrypted `m.replace` looks like this:
 ```
 
 For `m.annotation` relations, the annotation SHOULD be encrypted, encrypting
-the `key` field using the same message key as the original message as per
-below.  However, while transitioning to this system, reactions may be sent
-entirely unencrypted in an E2E room.
+the `key` field using the same message key as the original message as per the
+following section.  However, while transitioning to this system, reactions may
+be sent entirely unencrypted in an E2E room.
 
 ### Thoughts on encrypting the aggregation key
 
@@ -619,9 +619,9 @@ This, of course, is all going to be a load of fun to spec. :P
 
 ## Redactions
 
-Relations may be redacted like any other event.  In the case of `m.reaction`
-this removes the reaction from the message.  In the case of `m.replace` it
-removes the edit version.  In the case of `m.reference` it removes the
+Relations may be redacted like any other event.  In the case of `m.annotation`
+this removes the annotation from the message.  In the case of `m.replace` it
+removes that edit revision.  In the case of `m.reference` it removes the
 referencing event.
 
 In the UI, the act of redacting an edited message in the timeline should
