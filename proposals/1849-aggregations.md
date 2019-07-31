@@ -60,7 +60,7 @@ when aggregated:
    Another usage of an annotation is e.g. for bots, who could use annotations
    to report the success/failure or progress of a command.
 
-For example, an `m.reaction` event which `annotates` an existing event with a 👍
+For example, an `m.reaction` event which annotates an existing event with a 👍
 looks like:
 
 ```json
@@ -83,7 +83,7 @@ looks like:
    replacement content (allowing the normal `body` fields to be used for a
    fallback for clients who do not understand replacement events).
 
-For instance, an `m.room.message` which `replaces` an existing event looks like:
+For instance, an `m.room.message` which replaces an existing event looks like:
 
 ```json
 {
@@ -121,7 +121,7 @@ For instance, an `m.room.message` which `replaces` an existing event looks like:
    bundle chains of references (i.e. threads). These do not yet replace
    `m.relates_to`-style replies however.
 
-For instance, an `m.room.message` which `references` an existing event
+For instance, an `m.room.message` which references an existing event
 would look like:
 
 ```json
