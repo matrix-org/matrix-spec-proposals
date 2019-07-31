@@ -351,7 +351,7 @@ The `important` array does not include the user themselves.
 **`GET /_matrix/client/r0/user/:userId/dm?involves=@alice:example.org&involves=@bob:example.org`**
 
 The `:userId` is the user ID requesting their DMs - the auth provided must be valid for this user.
-This additionall takes `?involves` (specified multiple times) to search for a DM involving the given
+This additionally takes `?involves` (specified multiple times) to search for a DM involving the given
 users. It should be considered a bad request if the user asks for a DM involving themselves.
 
 Example response:
@@ -367,7 +367,7 @@ If no DM exists involving those users, an empty object should be returned with 2
 #### Third party invites
 
 Third party invites (email invites) are hard to handle as the participants in the room are
-unlikely to be unable to modify the power levels in the room because the immutable DM preset
+unlikely to be able to modify the power levels in the room because the immutable DM preset
 forbids this by design. There's several solutions to this problem which are up for debate:
 
 *Note*: All solutions here assume that the third party invite gets flagged with an `m.direct`
