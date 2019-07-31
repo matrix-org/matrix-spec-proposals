@@ -54,13 +54,6 @@ expected that most encryption schemes would have `ciphertext` and `mac`
 properties, where the `ciphertext` property is the unpadded base64-encoded
 ciphertext, and the `mac` is used to ensure the integrity of the data.
 
-FIXME: the key format was chosen so that existing backups could be easily
-migrated by just copying the configuration from the backup config to the key
-description.  However, we need a way of signalling that the key for the backup
-is the same as the key for decrypting the other bits.  Maybe a special flag in
-the account data?  Or special case backups somehow, say, have clients inspect
-the backup's `auth_data` to see of the key config is the same?
-
 #### Encryption algorithms
 
 ##### `m.secret_storage.v1.curve25519-aes-sha2`
