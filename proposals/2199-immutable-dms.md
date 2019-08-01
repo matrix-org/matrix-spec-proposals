@@ -203,14 +203,23 @@ room state:
       },
       "users": {
           <see below>
+      },
+      "third_party_users": {
+          <see below>
       }
   }
   ```
-  The power level event is considered the `power_level_content_override` implicitly and
-  therefore applied at step 0 of the room creation process.
+  This power level event is not applied until after the invites have been sent as otherwise
+  it would be impossible to give third party users power. Servers should apply a default
+  power level event to the room and then apply the power level event described here after
+  the invites have been sent. Servers can optimize this process and use this power level
+  event at step 0 of the room creation process if there are no third party invites to send.
 * Users invited to the room get power level 50, including the creator. Important users
   (those invited and the creator) MUST have `"m.direct": true` in their membership event
   content.
+* Third party users invited to the room get power level 50, as described by MSC2212 (see
+  later on in this proposal for how this works). These users are considered important,
+  and get `"m.direct": true` on the `m.room.third_party_invite` event contents.
 * Encryption is enabled by default using the most preferred megolm algorithm in the spec.
   Currently this would be `m.megolm.v1.aes-sha2`.
 
@@ -368,34 +377,12 @@ If no DM exists involving those users, an empty object should be returned with 2
 
 Third party invites (email invites) are hard to handle as the participants in the room are
 unlikely to be able to modify the power levels in the room because the immutable DM preset
-forbids this by design. There's several solutions to this problem which are up for debate:
+forbids this by design. To remedy this, this proposal requires that third party users get
+their own power level, as described in [MSC2212](https://github.com/matrix-org/matrix-doc/pull/2212).
 
-*Note*: All solutions here assume that the third party invite gets flagged with an `m.direct`
-flag that is transferred to the generated membership event.
-
-1. The auth rules get altered such that when a user claims a third party invite they can
-   empower themselves one time only. They'd only be able to set themselves (no others) to
-   the `state_default` power level. The disadvantage here is that one could not have 3rd
-   party invites for unimportant users (assistants, strange bots, etc) without a mix of some
-   of the other solutions here.
-
-2. The important users get tracked in an immutable state event (generated during room creation
-   when using the preset). This sacrifices reusability of the power levels for additional
-   tracking, and is not enforceable in pre-existing DMs (although neither are power level
-   enforcements so does it matter?). The state event would list the user IDs and third party
-   IDs (which can then be traced to membership events) which are "important".
-
-3. Alter power levels to support a third party user listing, similar to the existing `users`
-   definition. Power in this map means nothing until the identifier is claimed, in which case
-   it behaves just like the user was in `users` with the power level. This also requires a
-   change to the auth rules to make it work correctly.
-
-4. Declare bankruptcy and don't support DMs with non-Matrix users. This option includes the
-   option of leaving it for another MSC to figure out, putting it out of scope here.
-
-There are potentially other solutions as well, and the author welcomes them. As of writing,
-the author is leaning towards option 4 due to the infrequent use of third party invites today.
-
+In addition to MSC2212, this proposal requires that a `m.direct` field be added to the
+`m.room.third_party_invite` event. When the invite is claimed, the `m.direct` field must
+be copied to the generated membership event.
 
 #### Complete list of deprecations
 
