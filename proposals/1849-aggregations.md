@@ -437,13 +437,9 @@ GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{
 
 Any trailing slashes on the endpoint should be ignored.
 
-  FIXME: what should we expect to see for bundled `m.replace` if anything?
-  Synapse currently returns an empty chunk for an event with subsequent edits,
-  while you might expect to receive the most recent bundled aggregation data
-  for an edit. Similarly, what do you get for `m.reference`?  Should it be an
-  array of event_ids for replies to this msg?  Alternatively, should we just
-  ignore anything other than annotations, given the API is only meaningful for
-  annotations?
+Trying to iterate over an relation type which does not use an aggregation key
+(i.e. `m.replace` and `m.reference`) should fail with 400 and error
+M_INVALID_REL_TYPE.
 
 To iterate over the unbundled relations within a specific bundled relation, you
 use the following API form, identifying the bundle based on its `key`
