@@ -1,4 +1,4 @@
-# Identity Servers Storing Threepids Hashed at Rest
+# Identity Servers Storing Threepid Hashes at Rest
 
 The purpose of an identity server is to store mappings between third-party
 identities (3PIDs) and Matrix User IDs. This allows users to associate an
