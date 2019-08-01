@@ -310,7 +310,7 @@ reversal.
 
 Mediums and peppers are appended to the address as to prevent a common prefix
 for each plain-text string, which prevents attackers from pre-computing the
-internal state of the hash function
+internal state of the hash function.
 
 ## Other considered solutions
 
