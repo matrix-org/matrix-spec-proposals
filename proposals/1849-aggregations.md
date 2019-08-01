@@ -177,7 +177,7 @@ The `parent_id` is:
   * For replaces/edits the original event (not previous edits)
   * For references should be the event being referenced
 
-Any trailing slashes on the endpoint should be ignored.
+The endpoint does not have any trailing slashes.
 
 ### Receiving relations
 
@@ -403,7 +403,7 @@ GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{even
 }
 ```
 
-Any trailing slashes on the endpoint should be ignored.
+The endpoint does not have any trailing slashes.
 
   FIXME: we need to spell out that this API should return the original message
   when paginating over `m.replace` relations for a given message.  Synapse currently
@@ -435,7 +435,7 @@ GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{
 }
 ```
 
-Any trailing slashes on the endpoint should be ignored.
+The endpoint does not have any trailing slashes.
 
 Trying to iterate over an relation type which does not use an aggregation key
 (i.e. `m.replace` and `m.reference`) should fail with 400 and error
