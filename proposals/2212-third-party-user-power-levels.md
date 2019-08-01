@@ -95,7 +95,6 @@ Keeping in mind this proposal is fully intended for MSC2199...
    not have third party invites for users which are not intended to receive power without
    some additional restrictions.
 
-
 2. The important users get tracked in an immutable state event (generated during room creation
    when using the preset). This sacrifices reusability of the power levels for additional
    tracking, and is not enforceable in pre-existing DMs (although neither are power level
