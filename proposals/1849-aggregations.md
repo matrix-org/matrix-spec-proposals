@@ -165,17 +165,11 @@ that the server may post-process the event, and whose URL structures the
 semantics of the relation being sent more clearly:
 
 ```
-PUT /_matrix/client/r0/rooms/{roomId}/send_relation/{parent_id}/{relation_type}/{event_type}/{txn_id}?key=%F0%9F%91%8D
+PUT /_matrix/client/r0/rooms/{roomId}/send_relation/{parent_id}/{relation_type}/{event_type}/{txn_id}[?key=%F0%9F%91%8D]
 {
     // event contents
 }
 ```
-
-    XXX: Erik: why do we need the `key` as a querystring param here rather
-    than just fishing it out of the event contents when needed?
-
-    XXX: Erik: are you okay to kill the POST form of this, given we apparently
-    killed the POST form of /send back in 2015 in https://github.com/matrix-org/matrix-doc/commit/5e30b5b8d74cdfbd764175fd735b3c39d652453e
 
 The `parent_id` is:
 
