@@ -331,7 +331,7 @@ interaction would look like are documented [in this Github
 comment](https://github.com/matrix-org/matrix-doc/pull/2134#discussion_r298691748).
 
 While this solution seems like a win for privacy, its actual benefits are a
-lot more naunced. Let's explore them by performing threat-model analysis:
+lot more nuanced. Let's explore them by performing a threat-model analysis:
 
 We consider three attackers:
 
