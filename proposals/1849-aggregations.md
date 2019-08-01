@@ -341,7 +341,7 @@ sophisticated pagination techniques in future. For instance:
     "m.annotations": {
       "chunk": [
         "$12345676321:matrix.org",
-        "$12345321432:matrix.org",
+        "$12345321432:matrix.org"
       ],
       "limited": false
     }
@@ -358,7 +358,15 @@ To refresh events, we need an API to load arbitrary events from the room in
 bulk, which the CS API doesn't currently provide.  We propose extending GET
 `{roomId}/event/{eventId}` to accept a list of event IDs on the URL, e.g:
 
-`GET /_matrix/client/r0/rooms/{roomId}/event/{eventId},{eventId},{eventId}`
+`POST /_matrix/client/r0/rooms/{roomId}/event`
+```json
+{
+    "event_ids": [
+        "$12345676321:matrix.org",
+        "$12345321432:matrix.org"
+    ]
+}
+```
 
 ...which returns an array of events with the given IDs.
 
