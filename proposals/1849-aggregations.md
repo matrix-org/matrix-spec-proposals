@@ -624,8 +624,11 @@ this removes the annotation from the message.  In the case of `m.replace` it
 removes that edit revision.  In the case of `m.reference` it removes the
 referencing event.
 
+Trying to call `/relations` or `/aggregations` on a redacted message must return
+a 404.
+
 In the UI, the act of redacting an edited message in the timeline should
-redact the *all* versions of that message.  It can do this by redacting the
+remove the message entirely from the timeline.  It can do this by redacting the
 original msg, while ensuring that clients locally discard any edits to a
 redacted message on receiving a redaction.
 
@@ -636,6 +639,10 @@ be preserved over redactions, so that clients can distinguish redacted edits
 from normal redacted messages, and maintain reply ordering.
 
   FIXME: synapse doesn't do this yet
+
+When a specific revision of an event is redacted, the client should manually
+refresh the parent event via `/events` to grab whatever the replacement
+revision is.
 
 ## Local echo
 
