@@ -316,43 +316,128 @@ of a stream cipher.
 
 Bloom filters are an alternative method of providing private contact discovery.
 However, they do not scale well due to requiring clients to download a large
-filter that needs updating every time a new bind is made. Further considered
-solutions are explored in https://signal.org/blog/contact-discovery/. Signal's
-eventual solution of using Software Guard Extensions (detailed in
+filter that needs updating every time a new bind is made.
+
+Further considered solutions are explored in
+https://signal.org/blog/contact-discovery/. Signal's eventual solution of
+using Software Guard Extensions (detailed in
 https://signal.org/blog/private-contact-discovery/) is considered impractical
 for a federated network, as it requires specialized hardware.
 
 k-anonymity was considered as an alternative approach, in which the identity
 server would never receive a full hash of a 3PID that it did not already know
-about. While this has been considered plausible, it comes with heightened
-resource requirements (much more hashing by the identity server). The
-conclusion was that it may not provide more privacy if an identity server
-decided to be evil, however it would significantly raise the resource
-requirements to run an evil identity server. Discussion and a walk-through of
-what a client/identity-server interaction would look like are documented [in
-this Github
+about. Discussion and a walk-through of what a client/identity-server
+interaction would look like are documented [in this Github
 comment](https://github.com/matrix-org/matrix-doc/pull/2134#discussion_r298691748).
+
+While this solution seems like a win for privacy, its actual benefits are a
+lot more naunced. Let's explore them by performing threat-model analysis:
+
+We consider three attackers:
+
+ 1. A malicious third party trying to discover the identity server mappings
+    in the homeserver.
+
+    The malicious third party scenario can only be protected against by rate
+    limiting lookups, given otherwise it looks identical to legitimate traffic.
+
+ 1. An attacker who has stolen an IS db
+ 
+    In theory the 3PIDs could be stored hashed with a static salt to protect
+    a stolen DB. This has been descoped from this MSC, and is largely an
+    orthogonal problem.
+
+ 1. A compromised or malicious identity server, who may be trying to
+    determine the contents of a user's addressbook (including non-Matrix users)
+
+Our approaches for protecting against a malicious identity server are:
+
+ * We resign ourselves to the IS knowing the 3PIDs at point of bind, as
+   otherwise it can't validate them.
+ 
+ * To protect the 3PIDs of non-Matrix users:
+
+   1. We could hash the uploaded 3PIDs with a static pepper; however, a
+      malicious IS could pre-generate a rainbow table to reverse these hashes.
+
+   1. We could hash the uploaded 3PIDs with a slowly rotating pepper; a
+      malicious IS could generate a rainbow table in retrospect to reverse these
+      hashes (but wouldn't be able to reuse the table)
+
+   1. We could send partial hashes of the uploaded 3PIDs (with full salted
+      hashes to disambiguate the 3PIDs), have the IS respond with anonymised
+      partial results, to allow the IS to avoid reversing the 3PIDs (a
+      k-anonymity approach). However, the IS could still claim to have mappings
+      for all 3PIDs, and so receive all the salted hashes, and be able to
+      reverse them via rainbow tables for that salt.
+
+So, in terms of computational complexity for the attacker, respectively:
+
+  1. The attacker has to generate a rainbow table over all possible IDs once,
+     which can then be reused for subsequent attacks.
+
+  1. The attacker has to generate a rainbow table over all possible IDs for a
+     given lookup timeframe, which cannot be reused for subsequent attacks.
+
+  1. The attacker has to generate multiple but partial rainbow tables, one
+     per group of 3PIDs that share similar hash prefixes, which cannot then be
+     reused for any other attack.
+  
+For making life hardest for an attacker, option 3 (k-anon) wins. However, it
+also makes things harder for the client and server:
+
+ * The client has to calculate new salted hashes for all 3PIDs every time it
+   uploads.
+
+ * The server has to calculate new salted hashes for all partially-matching
+   3PIDs hashes as it looks them up.
+
+It's worth noting that one could always just go and load up a malicious IS DB
+with a huge pre-image set of mappings and thus see what uploaded 3PIDs match,
+no matter what algorithm is used.
+
+For k-anon this would put the most computational onus on the server (as it
+would effectively be creating a partial rainbow table for every lookup), but
+this is probably not infeasible - so we've gone and added a lot of complexity
+and computational cost for not much benefit, given the system can still be
+trivially attacked.
+
+Finally, as more and more users come onto Matrix, their contact lists will
+get more and more exposed anyway given the IS server has to be able to
+identity Matrix-enabled 3PIDs to perform the lookup.
+
+Thus the conclusion is that while k-anon is harder to attack, it's unclear
+that this is actually enough of an obstacle to meaningfully stop a malicious
+IS. Therefore we should KISS and go for a simple hash lookup with a rotating
+pepper (which is not much harder than a static pepper, especially if our
+initial implementation doesn't bother rotating the pepper). Rather than trying
+to make the k-anon approach work, we'd be better off spending that time
+figuring out how to store 3pids as hashes in the DB (and in 3pid bindings
+etc), or how to decentralise ISes in general.
 
 A radical model was also considered where the first portion of the
 k-anonyminity scheme was done with an identity server, and the second would
 be done with various homeservers who originally reported the 3PID to the
-identity server. While interesting and a more decentralised model, some
-attacks are still possible if the identity server is running an evil
-homeserver which it can direct the client to send its hashes to. Discussion
-on this matter has taken place in the MSC-specific room [starting at this
+identity server. While interesting and more decentralised, some attacks are
+still possible if the identity server is running an evil homeserver which it
+can direct the client to send its hashes to. Discussion on this matter has
+taken place in the MSC-specific room [starting at this
 message](https://matrix.to/#/!LlraCeVuFgMaxvRySN:amorgan.xyz/$4wzTSsspbLVa6Lx5cBq6toh6P3TY3YnoxALZuO8n9gk?via=amorgan.xyz&via=matrix.org&via=matrix.vgorcum.com).
 
-Ideally identity servers would never receive plain-text addresses, just
-storing and receiving hash values instead. However, it is necessary for the
-identity server to have plain-text addresses during a
+Tangentially, identity servers would ideally just never receive plain-text
+addresses, just storing and receiving hash values instead. However, it is
+necessary for the identity server to have plain-text addresses during a
 [bind](https://matrix.org/docs/spec/identity_service/r0.2.1#post-matrix-identity-api-v1-3pid-bind)
 call, in order to send a verification email or sms message. It is not
 feasible to defer this job to a homeserver, as the identity server cannot
 trust that the homeserver has actually performed verification. Thus it may
 not be possible to prevent plain-text 3PIDs of registered Matrix users from
-being sent to the identity server at least once. Yet, we can still do our
-best by coming up with creative ways to prevent non-matrix user 3PIDs from
-leaking to the identity server, when they're sent in a lookup.
+being sent to the identity server at least once. Yet, it is possible that with
+a few changes to other Identity Service endpoints, as described in [this
+review
+comment](https://github.com/matrix-org/matrix-doc/pull/2134#discussion_r309617900),
+identity servers could refrain from storing any plaintext 3PIDs at rest. This
+however, is a topic for a future MSC.
 
 ## Conclusion
 
