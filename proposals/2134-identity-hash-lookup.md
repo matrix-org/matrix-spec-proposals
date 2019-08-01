@@ -322,7 +322,7 @@ Further considered solutions are explored in
 https://signal.org/blog/contact-discovery/. Signal's eventual solution of
 using Software Guard Extensions (detailed in
 https://signal.org/blog/private-contact-discovery/) is considered impractical
-for a federated network, as it requires specialized hardware.
+for a federated network, as it requires specialised hardware.
 
 k-anonymity was considered as an alternative approach, in which the identity
 server would never receive a full hash of a 3PID that it did not already know
@@ -410,10 +410,12 @@ Thus the conclusion is that while k-anon is harder to attack, it's unclear
 that this is actually enough of an obstacle to meaningfully stop a malicious
 IS. Therefore we should KISS and go for a simple hash lookup with a rotating
 pepper (which is not much harder than a static pepper, especially if our
-initial implementation doesn't bother rotating the pepper). Rather than trying
-to make the k-anon approach work, we'd be better off spending that time
-figuring out how to store 3pids as hashes in the DB (and in 3pid bindings
-etc), or how to decentralise ISes in general.
+initial implementation doesn't bother rotating the pepper). Rather than
+trying to make the k-anon approach work, we'd be better off spending that
+time figuring out how to store 3pids as hashes in the DB (and in 3pid
+bindings etc), or how to decentralise ISes in general. It's also worth noting
+that a malicious server may fail to rotate the pepper, making the rotation
+logic of questionable benefit.
 
 A radical model was also considered where the first portion of the
 k-anonyminity scheme was done with an identity server, and the second would
