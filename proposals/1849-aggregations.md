@@ -676,6 +676,12 @@ Can you reply (via m.references) to a reaction/edit?
  * Replying to an edit should be treated in the UI as if you had replied to
    the original message.
 
+How do you handle ignored users?
+ * Information about relations sent from ignored users must never be sent to
+   the client, either in bundled or unbundled form.  This is to let you block
+   someone from harassing you with emoji reactions (or using edits as a
+   side-channel to harass you).
+
 What happens when you react to an edit?
  * You should be able to, but the reaction should be attributed to the edit (or
    its contents) rather than the message as a whole.
