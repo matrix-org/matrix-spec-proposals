@@ -644,10 +644,46 @@ revision is.
 
 ## Local echo
 
-XXX: do we need to spell out how to handle local echo considerations?
+As clients only receive unbundled events through /sync, they need to locally
+aggregate these unbundled events for their parent event, on top of any
+server-side aggregation that might have already happened, to get a complete
+picture of the aggregated relations for a given parent event, as a client
+might not be aware of all relations for an event. Local aggregation should
+thus also take the `m.relation` data in the `unsigned` of the parent event
+into account if it has been sent already. The aggregation algorithm is the
+same as the one described here for the server.
 
-Remember to let users edit unsent messages (as this is a common case for
-rapidly fixing a typo in a msg which is still in flight!)
+For the best possible user experience, clients should also include unsent
+relations into the local aggregation. When adding a relation to the send
+queue, clients should locally aggregate it into the relations of the parent
+event, ideally regardless of the parent event having an `event_id` already or
+still being pending. If the client gives up on sending the relation for some
+reason, the relation should be de-aggregated from the relations of the parent
+event. If the client offers the user a possibility of manually retrying to
+send the relation, it should be re-aggregated when the user does so.
+
+De-aggregating a relation refers to rerunning the aggregation for a given
+parent event while not considering the de-aggregated event any more.
+
+Upon receiving the remote echo for any relations, a client is likely to remove
+the pending event from the send queue. Here, it should also de-aggregate the
+pending event from the parent event's relations, and re-aggregate the received
+remote event from `/sync` to make sure the local aggregation happens with the
+same event data as on the server.
+
+When adding a redaction for a relation to the send queue, the relation
+referred to should be de-aggregated from the relations of the target of the
+relation.  Similar to a relation, when the sending of the redaction fails or
+is cancelled, the relation should be aggregated again.
+
+To support creating relations for pending events, clients will need a way for
+events to relate to one another before the `event_id` of the parent event is
+known. When the parent event receives its remote echo, the target event id
+(`m.relationship`.`event_id`) of any relations in the send queue will need to be
+set the newly received `event_id`.
+
+Particularly, please remember to let users edit unsent messages (as this is a
+common case for rapidly fixing a typo in a msg which is still in flight!)
 
 ## Edge cases
 
