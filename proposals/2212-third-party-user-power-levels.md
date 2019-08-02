@@ -90,7 +90,7 @@ rules are to be updated to incorporate the important parts:
 Keeping in mind this proposal is fully intended for MSC2199...
 
 1. The auth rules could instead be altered to allow a user which claims a third party
-   invite to empower themselves on time only. They'd only be able to set themselves and
+   invite to empower themselves one time only. They'd only be able to set themselves and
    no others to the `state_default` power level. The disadvantage here is that one could
    not have third party invites for users which are not intended to receive power without
    some additional restrictions.
