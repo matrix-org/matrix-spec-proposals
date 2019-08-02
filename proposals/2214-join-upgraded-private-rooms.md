@@ -96,6 +96,11 @@ to lie about the previous membership of a user with no verification that it is a
 Clients should be skeptical of `m.room.previous_member` events and largely treat them as
 invites.
 
+Servers could additionally forget (intentionally or otherwise) to include valid members.
+This is treated similar to the semantics of not inviting someone to your private room,
+and should have the same social consequences (forever being disappointed in the person
+who didn't invite you to the party).
+
 
 ## Alternative solutions / known problems
 
@@ -108,3 +113,14 @@ joins users without them having been in a relevant previous room. This would be 
 This solution is not meant to be the silver bullet to the problem of automatically
 transferring membership to the new room. It is just meant to alleviate a pain point in
 upgrades while a better solution can be created.
+
+Another problem with this proposal is that users are not told they are invited to this
+new room. This is a designed feature of this proposal to prevent unnecessary notifications
+to target users (they already get one that a room was upgraded, so another that they are
+invited to a room would be confusing). Servers can of course ignore this proposal and
+just spam invites if they wanted to.
+
+To further clarify: because these events are treated very similar to invites, it is
+possible to "kick" or ban a user from a room to prevent them from joining. This proposal
+does not revoke an admin/moderator's ability to stop someone from joining/accepting
+their invite.
