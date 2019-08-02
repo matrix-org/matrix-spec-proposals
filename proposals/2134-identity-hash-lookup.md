@@ -180,23 +180,21 @@ IDs](https://matrix.org/docs/spec/rooms/v4#event-ids)). Once hashing has been
 performed, the client sends each hash in an array.
 
 ```
-NOTE: Hashes are not real values
-
-"alice@example.com email matrixrocks" -> "y_TvXLKxFT9CURPXI1wvfjvfvsXe8FPgYj-mkQrnszs"
-"bob@example.com email matrixrocks"   -> "r0-6x3rp9zIWS2suIque-wXTnlv9sc41fatbRMEOwQE"
-"carl@example.com email matrixrocks"  -> "ryr10d1K8fcFVxALb3egiSquqvFAxQEwegXtlHoQFBw"
-"12345678910 msisdn matrixrocks"      -> "c_30UaSZhl5tyanIjFoE1IXTmuU3vmptEwVOc3P2Ens"
-"denny@example.com email matrixrocks" -> "bxt8rtRaOzMkSk49zIKE_NfqTndHvGbWHchZskW3xmY"
+"alice@example.com email matrixrocks" -> "4kenr7N9drpCJ4AfalmlGQVsOn3o2RHjkADUpXJWZUc"
+"bob@example.com email matrixrocks"   -> "LJwSazmv46n0hlMlsb_iYxI0_HXEqy_yj6Jm636cdT8"
+"carl@example.com email matrixrocks"  -> "jDh2YLwYJg3vg9pEn3kaaXAP9jx-LlcotoH51Zgb9MA"
+"12345678910 msisdn matrixrocks"      -> "S11EvvwnUWBDZtI4MTRKgVuiRx76Z9HnkbyRlWkBqJs"
+"denny@example.com email matrixrocks" -> "2tZto1arl2fUYtF6tQPJND69il3xke9OBlgFgnUt2ww"
 
 POST /_matrix/identity/v2/lookup
 
 {
   "addresses": [
-    "y_TvXLKxFT9CURPXI1wvfjvfvsXe8FPgYj-mkQrnszs",
-    "r0-6x3rp9zIWS2suIque-wXTnlv9sc41fatbRMEOwQE",
-    "ryr10d1K8fcFVxALb3egiSquqvFAxQEwegXtlHoQFBw",
-    "c_30UaSZhl5tyanIjFoE1IXTmuU3vmptEwVOc3P2Ens",
-    "bxt8rtRaOzMkSk49zIKE_NfqTndHvGbWHchZskW3xmY"
+    "4kenr7N9drpCJ4AfalmlGQVsOn3o2RHjkADUpXJWZUc",
+    "LJwSazmv46n0hlMlsb_iYxI0_HXEqy_yj6Jm636cdT8",
+    "jDh2YLwYJg3vg9pEn3kaaXAP9jx-LlcotoH51Zgb9MA",
+    "S11EvvwnUWBDZtI4MTRKgVuiRx76Z9HnkbyRlWkBqJs",
+    "2tZto1arl2fUYtF6tQPJND69il3xke9OBlgFgnUt2ww"
   ],
   "algorithm": "sha256",
   "pepper": "matrixrocks"
@@ -210,8 +208,8 @@ IDs of those that match:
 ```
 {
   "mappings": {
-    "y_TvXLKxFT9CURPXI1wvfjvfvsXe8FPgYj-mkQrnszs": "@alice:example.com",
-    "c_30UaSZhl5tyanIjFoE1IXTmuU3vmptEwVOc3P2Ens": "@fred:example.com"
+    "4kenr7N9drpCJ4AfalmlGQVsOn3o2RHjkADUpXJWZUc": "@alice:example.com",
+    "S11EvvwnUWBDZtI4MTRKgVuiRx76Z9HnkbyRlWkBqJs": "@fred:example.com"
   }
 }
 ```
