@@ -46,6 +46,11 @@ There are some common reasons why an error occurred. These are encoded in the
 
 * `m.unknown_event` The bridge is not able to handle events of this type.
 
+* `m.bridge_unavailable` The homeserver couldn't reach the bridge.
+
+* `m.no_permission` The bridge wanted to react to an event, but didn't have
+  the permission to do so.
+
 Nothing prevents multiple bridge error events to relate to the same event. This
 should be pretty common as a room can be bridged to more than one network at a
 time.
