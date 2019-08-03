@@ -8,13 +8,16 @@ option to give feedback to their users.
 
 Bridges might come into a situation where there is nothing more they can do to
 successfully deliver an event to the foreign network they are connected to. Then
-they should be able to inform the originating group of the event about this
+they should be able to inform the originating room of the event about this
 delivery error.
 
-This document proposes the addition of a new PDU event with type
+### Bridge error event
+
+This document proposes the addition of a new room event with type
 `m.bridge_error`. It is sent by the bridge and references an event previously
-sent in a room, by that marking it as “failed to deliver” for all users of a
-bridge. The new event type utilizes reference aggregations ([MSC
+sent in the same room, by that marking the original event as “failed to deliver”
+for all users of a bridge. The new event type utilizes reference aggregations
+([MSC
 1849](https://github.com/matrix-org/matrix-doc/blob/matthew/msc1849/proposals/1849-aggregations.md))
 to establish the relation to the event its delivery it is marking as failed.
 There is no need for a new endpoint as the existing `/send` endpoint will be
@@ -34,10 +37,9 @@ There are some common reasons why an error occurred. These are encoded in the
   by the bridge. It is used as a fallback when there is no other more specific
   reason.
 
-* `m.event_too_old` When the foreign network does not support timestamp
-  massaging like Matrix does, a message will – with enough time passed – fall
-  out of its original context. In this case the bridge might decide that the
-  event is too old and emit this error.
+* `m.event_too_old` A message will – with enough time passed – fall out of its
+  original context. In this case the bridge might decide that the event is too
+  old and emit this error.
 
 * `m.foreign_network_error` The bridge was doing its job fine, but the foreign
   network permanently refused to handle the event.
@@ -60,11 +62,11 @@ Additionally there might be some operational restrictions of bridges which might
 make it necessary for them to refrain from handling an event, e.g. when hitting
 memory limits. In this case the new event type can be used as well.
 
-### Example
+This is an example of how the new bridge error might look:
 
 ```
 {
-    "type": "m.room.bridge_error",
+    "type": "m.bridge_error",
     "content": {
         "network: "Discord",
         "affected_users": "@discord_*:example.org",
