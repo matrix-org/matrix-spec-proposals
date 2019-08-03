@@ -16,7 +16,7 @@ title: Filter
 properties:
   event_fields:
     description: List of event fields to include. If this list is absent then all
-      fields are included. The entries may include '.' charaters to indicate sub-fields.
+      fields are included. The entries may include '.' characters to indicate sub-fields.
       So ['content.body'] will include the 'body' field of the 'content' object. A
       literal '.' character in a field name may be escaped using a '\\'. A server may
       include more fields than were requested.
@@ -25,7 +25,7 @@ properties:
     type: array
   event_format:
     description: The format to use for events. 'client' will return the events in
-      a format suitable for clients. 'federation' will return the raw event as receieved
+      a format suitable for clients. 'federation' will return the raw event as received
       over federation. The default is 'client'.
     enum:
     - client
