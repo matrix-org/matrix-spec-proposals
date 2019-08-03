@@ -51,6 +51,15 @@ There are some common reasons why an error occurred. These are encoded in the
 * `m.no_permission` The bridge wanted to react to an event, but didn't have
   the permission to do so.
 
+The bridge error can provide a `time_to_permanent` field. If this field is
+present it gives the time in seconds one has to wait before declaring the bridge
+error as permanent. As long as an error is younger than this time, the client
+can expect the possibility of the error being revoked. If a bridge error is
+permanent, it should not be revoked anymore. In addition, the field may also
+accept the string "never", which means that the error will never be considered
+permanent. In case this field is missing, its value is assumed to be 0 and the
+error becomes permanent instantly.
+
 Nothing prevents multiple bridge error events to relate to the same event. This
 should be pretty common as a room can be bridged to more than one network at a
 time.
@@ -75,7 +84,8 @@ This is an example of how the new bridge error might look:
     "content": {
         "network: "Discord",
         "affected_users": "@discord_*:example.org",
-        "reason": "m.event_too_old",
+        "reason": "m.bridge_unavailable",
+        "time_to_permanent": 900,
         "m.relates_to": {
             "rel_type": "m.reference",
             "event_id": "$some:event.id"
