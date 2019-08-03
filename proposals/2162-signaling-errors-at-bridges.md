@@ -2,14 +2,17 @@
 
 Sometimes bridges just silently swallow messages and other events. This proposal
 enables bridges to communicate that something went wrong and gives clients the
-option to give feedback to their users.
+option to give feedback to their users. Clients are given the possibility to
+retry a failed event and bridges can signal the success of the retry.
 
 ## Proposal
 
 Bridges might come into a situation where there is nothing more they can do to
 successfully deliver an event to the foreign network they are connected to. Then
 they should be able to inform the originating room of the event about this
-delivery error.
+delivery error. The user in turn should be able to instruct the bridge to retry
+sending the message that was presented him as failed; the bridge should have the
+ability to mark an error as being revoked.
 
 ### Bridge error event
 
@@ -107,6 +110,78 @@ This is an example of how the new bridge error might look:
 \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\
 ¹ Or similar – see *Security Considerations*
 
+### Retries and error revocation
+
+Providing a way to retry a failed message delivery gives the sender control over
+the importance of her message. An extra procedure for a retry is necessary as
+the message might have been delivered to some users (those not on the bridge)
+and this would produce duplicate messages for them.
+
+A retry request is posted by the client to the room for all bridges to see it,
+referencing the original event. By inspecting the sender of all related
+`m.bridge_error` events, under all bridges the correct one can find out that it
+is responsible. The responsible bridge re-fetches the original event and retries
+to deliver it.
+
+A successful retry should be communicated by revoking (not redacting) the
+original error that made the retry necessary. Revocation is done by an event
+with the type `m.bridge_error_revoke` which references the original event. The
+error(s) having a sender of the same bridge as the revocation event are
+considered revoked. Clients can show a revoke error e.g. as “Delivered to
+Discord at 14:52.” besides the original event.
+
+On an unsuccessful retry the bridge may edit the errors content to reflect the
+new state, e.g. because the type of error changed or to communicate the new
+time.
+
+Example of the new retry events:
+
+```
+{
+    "type": "m.bridge_retry",
+    "content": {
+        "m.relates_to": {
+            "rel_type": "m.reference",
+            "event_id": "$original:event.id"
+        }
+    }
+}
+```
+
+```
+{
+    "type": "m.bridge_error_revoke",
+    "content": {
+        "m.relates_to": {
+            "rel_type": "m.reference",
+            "event_id": "$original:event.id"
+        }
+    }
+}
+```
+
+Overview of the relations between the different event types:
+
+```
+ ________________     _____________________
+|                |   |                     |
+| Original Event |-+-|    Bridge Error     |
+|________________| | |_____________________|
+                   |  _____________________
+                   | |                     |
+                   +-|    Retry Request    |
+      m.references | |_____________________|
+                   |  _____________________
+                   | |                     |
+                   +-| Bridge Error Revoke |
+                     |_____________________|
+```
+
+A retry might not make much sense for every kind of error e.g. retrying
+`m.unknown_event` will probably result in the same error again. Clients may
+choose to disable retry options for those cases, but it is not restricted
+otherwise.
+
 ## Tradeoffs
 
 Without this proposal, bridges could still inform users in a room that a
@@ -119,6 +194,20 @@ condition. An alternative would be a free-form text for an error message. This
 brings the problems of less semantic meaning and a requirement for
 internationalization with it. In this proposal a generic error type is provided
 for error cases not considered in this MSC.
+
+The nature of a retry request from a client to the bridge lends it more to an
+ephemeral type of transport than something permanent like a PDU, but it was
+advised against it for The Spec doesn't make implementations of new EDU types
+easy. Applications Services in general don't allow listening to EDUs, so further
+changes to The Spec would be necessary before following the probably more
+appropriate route here.
+
+A new event type `m.bridge_error_revoke` is introduced for revoking a bridge
+error. Alternatively it could be considered to redact the bridge error event,
+which would eliminate the need for the revocation event and would make this
+proposal a little simpler. The disadvantage of this approach is the missing
+transparency and context of who had which information at which point in time.
+This additional information should make for a better user experience.
 
 ## Potential issues
 
@@ -137,8 +226,8 @@ maximal length or falling back to simple globbing.
 
 ## Conclusion
 
-In this document a new permanent event is proposed which a bridge can emit to
-signal an error on its side. The event informs the affected room about which
+In this document an event is proposed for bridges to signal errors and a way to
+retry and revoke those errors. The event informs the affected room about which
 message errored for which reason; it gives information about the affected users
 and the bridged network. By implementing the proposal Matrix users will get more
 insight into the state of their (un)delivered messages and thus they will become
