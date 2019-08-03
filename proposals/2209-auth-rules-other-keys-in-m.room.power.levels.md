@@ -19,7 +19,7 @@ The auth rules regarding `m.room.power_levels` have been established in room
 version 1. The general idea here was that creators of a new `m.room.power_levels`
 event are only able to make changes to something that is equal to or lower than
 their own power level.
-So, assuming a room with Alice (50), Bob(100), `m.room.power_levels` at 50,
+So, assuming a room with Alice (50), Bob (100), `m.room.power_levels` at 50,
 `m.room.name` at 75 and `m.room.topic` at 25 would mean the following:
 
 * Alice CAN alter `m.room.topic` to any power level up to her own, in this case 50
@@ -51,8 +51,8 @@ So the rule [10.d](https://matrix.org/docs/spec/rooms/v1.html) of the auth rules
 room version 1 would be updated in a new room version to:
 
 
-For each entry being added, changed or removed in events, users __and notifications__
-keys:
+> For each entry being added, changed or removed in events, users __and notifications__
+>keys:
 
 
 ## Tradeoffs
