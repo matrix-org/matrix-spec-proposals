@@ -44,7 +44,11 @@ There are some common reasons why an error occurred. These are encoded in the
 * `m.foreign_network_error` The bridge was doing its job fine, but the foreign
   network permanently refused to handle the event.
 
-* `m.unknown_event` The bridge is not able to handle events of this type.
+* `m.unknown_event` The bridge is not able to handle events of this type. It is
+  totally legitimate to “handle” an event by doing nothing and not throwing this
+  error. It is at the discretion of the bridge author to find a good balance
+  between informing the user and preventing unnecessary spam. Throwing this
+  error only for some subtypes of an event if fine.
 
 * `m.bridge_unavailable` The homeserver couldn't reach the bridge.
 
