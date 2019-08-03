@@ -60,9 +60,15 @@ accept the string "never", which means that the error will never be considered
 permanent. In case this field is missing, its value is assumed to be 0 and the
 error becomes permanent instantly.
 
-Nothing prevents multiple bridge error events to relate to the same event. This
-should be pretty common as a room can be bridged to more than one network at a
-time.
+Notes:
+
+- Nothing prevents multiple bridge error events to relate to the same event.
+  This should be pretty common as a room can be bridged to more than one network
+  at a time.
+
+- A bridge might choose to handle bridge error events, but this should never
+  result in emitting a new bridge error as this could lead to an endless
+  recursion.
 
 The need for this proposal arises from a gap between the Matrix network and
 other foreign networks it bridges to. Matrix with its eventual consistency is
