@@ -182,6 +182,28 @@ A retry might not make much sense for every kind of error e.g. retrying
 choose to disable retry options for those cases, but it is not restricted
 otherwise.
 
+### Special case: Unavailable bridge
+
+In the case the bridge is down or otherwise disconnected from the homeserver, it
+naturally has no way to inform its users about the unavailability. In this case
+the homeserver can stand in as an agent for the bridge and answer requests in
+its responsibility.
+
+For this to happen, the homeserver will send out a bridge error event in the
+moment a transaction delivery to the bridge failed. The clients at this point
+will start showing an error. When the bridge comes back online it will encounter
+a higher-than-normal load as all events accumulated over the downtime are
+flooding in. To handle this scenario well, the bridge will want to simply
+discard all messages older than a given threshold and not bother with sending
+any answer back.
+
+By including a timeout in the `time_to_permanent` field of the event, the client
+will know without further feedback from the homeserver or bridge when the
+message won't be delivered anymore.
+
+For those events still accepted by the bridge, the error must be revoked by a
+`m.bridge_error_revoke` as described in the previous chapter.
+
 ## Tradeoffs
 
 Without this proposal, bridges could still inform users in a room that a
