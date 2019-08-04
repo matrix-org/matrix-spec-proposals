@@ -51,12 +51,12 @@ There are some common reasons why an error occurred. These are encoded in the
   totally legitimate to “handle” an event by doing nothing and not throwing this
   error. It is at the discretion of the bridge author to find a good balance
   between informing the user and preventing unnecessary spam. Throwing this
-  error only for some subtypes of an event if fine.
+  error only for some subtypes of an event is fine.
 
 * `m.bridge_unavailable` The homeserver couldn't reach the bridge.
 
-* `m.no_permission` The bridge wanted to react to an event, but didn't have
-  the permission to do so.
+* `m.no_permission` The bridge wanted to handle an event, but didn't have the
+  permission to do so.
 
 The bridge error can provide a `time_to_permanent` field. If this field is
 present it gives the time in seconds one has to wait before declaring the bridge
@@ -127,10 +127,10 @@ A successful retry should be communicated by revoking (not redacting) the
 original error that made the retry necessary. Revocation is done by an event
 with the type `m.bridge_error_revoke` which references the original event. The
 error(s) having a sender of the same bridge as the revocation event are
-considered revoked. Clients can show a revoke error e.g. as “Delivered to
+considered revoked. Clients can show a revocation message e.g. as “Delivered to
 Discord at 14:52.” besides the original event.
 
-On an unsuccessful retry the bridge may edit the errors content to reflect the
+On an unsuccessful retry the bridge may edit the error's content to reflect the
 new state, e.g. because the type of error changed or to communicate the new
 time.
 
@@ -163,6 +163,7 @@ Example of the new retry events:
 Overview of the relations between the different event types:
 
 ```
+                           m.references
  ________________     _____________________
 |                |   |                     |
 | Original Event |-+-|    Bridge Error     |
@@ -170,7 +171,7 @@ Overview of the relations between the different event types:
                    |  _____________________
                    | |                     |
                    +-|    Retry Request    |
-      m.references | |_____________________|
+                   | |_____________________|
                    |  _____________________
                    | |                     |
                    +-| Bridge Error Revoke |
@@ -187,7 +188,7 @@ otherwise.
 In the case the bridge is down or otherwise disconnected from the homeserver, it
 naturally has no way to inform its users about the unavailability. In this case
 the homeserver can stand in as an agent for the bridge and answer requests in
-its responsibility.
+its absence.
 
 For this to happen, the homeserver will send out a bridge error event in the
 moment a transaction delivery to the bridge failed. The clients at this point
