@@ -219,6 +219,10 @@ message won't be delivered anymore.
 For those events still accepted by the bridge, the error must be revoked by a
 `m.bridge_error_revoke` as described in the previous chapter.
 
+**Note:** For this to work, the homeserver is required to impersonate a user of
+the bridge as it has no agent of its own. The impersonated user would be the
+bridge bot user or one of the virtual users in the bridge's namespace.
+
 ### Rights management
 
 Only bridges should be allowed to send bridge errors and revocations.
