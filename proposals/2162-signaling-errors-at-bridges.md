@@ -36,11 +36,11 @@ There is no need for a new endpoint as the existing `/send` endpoint will be
 utilized.
 
 Additional information contained in the event are the name of the bridged
-network (e.g. “Discord” or “Telegram”) and a regex¹ describing the affected
-users (e.g. `@discord_*:example.org`). This regex should be similar to the one
-any Application Service uses for marking its reserved user namespace. By
-providing this information clients can inform their users who in the room was
-affected by the error and for which network the error occurred.
+network (e.g. “Discord” or “Telegram”) and a regex array¹ describing the
+affected users (e.g. `@discord_.*:example.org`). This regex array should be
+similar to the one any Application Service uses for marking its reserved user
+namespace. By providing this information clients can inform their users who in
+the room was affected by the error and for which network the error occurred.
 
 *Those two fields will not be required if the variant with [MSC 1410: Rich
 Bridging](https://github.com/matrix-org/matrix-doc/issues/1410) is adopted. In
@@ -110,7 +110,7 @@ This is an example of how the new bridge error might look:
     "type": "m.bridge_error",
     "content": {
         "network: "Discord",
-        "affected_users": "@discord_*:example.org",
+        "affected_users": ["@discord_.*:example.org"],
         "reason": "m.bridge_unavailable",
         "time_to_permanent": 900,
         "m.relates_to": {
@@ -122,7 +122,7 @@ This is an example of how the new bridge error might look:
 ```
 
 \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\
-¹ Or similar – see *Security Considerations*
+¹ Or similar – see [Security Considerations](#security-considerations)
 
 ### Retries and error revocation
 
