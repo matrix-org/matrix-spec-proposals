@@ -119,8 +119,23 @@ up sharing the client's search terms with a remote homeserver, which may not be
 operated by the same party or even trusted. For example, users' search terms
 could be logged.
 
-It is uncertain, to the author of this MSC, what implications this has with
-regards to legislation, such as GDPR.
+The privacy implications of this proposal are not overly major, as the data
+that's being shared is [\[1\]][1]:
+
+- only covered by GDPR if:
+    - the search terms contain personal data, or
+    - the user's homeserver IP address is uniquely identifying (because it's a
+      single-person homeserver, perhaps)
+- likely to be *expected* to be shared with the remote homeserver
+
+[1]: https://github.com/matrix-org/matrix-doc/pull/2197#issuecomment-517641751
+
+For the sake of clarity, clients SHOULD display a warning that a remote search
+will take the user's data outside the jurisdiction of their own homeserver,
+before using the `server` parameter of the Client-Server API `/publicRooms`, as
+it can be assumed that this will lead to the server invoking the Federation
+API's `/publicRooms` – on the specified remote server – with the user's search
+terms.
 
 ## Conclusion
 
