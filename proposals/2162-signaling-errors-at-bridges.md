@@ -205,6 +205,30 @@ message won't be delivered anymore.
 For those events still accepted by the bridge, the error must be revoked by a
 `m.bridge_error_revoke` as described in the previous chapter.
 
+### Rights management
+
+Only bridges should be allowed to send bridge errors and revocations.
+
+Utilizing the rights system of the room provides a good approximation to this
+behavior. It is fine to use it under the assumptions that
+
+- `m.bridge_error` and `m.bridge_error_revoke` require admin power levels.
+- there is always the bridge bot user or a virtual user in the bridge's
+  namespace present in the room.
+- at least one of those users possesses admin power level.
+- all users with admin power levels are trusted.
+
+In short, this requires giving bridges admin power levels in a room and trusting
+them to restrict their actions to their own business. It is enough to have one
+privileged bridge user in the room. In public rooms this is most commonly the
+bridge bot user with admin power level available and in 1:1 conversations it is
+the puppeted conversation partner which does generally have admin power levels
+as well.
+
+As long as the above assumptions are met, it is fine to not explicitly denote
+bridges and bridge users as such and simply rely on the power levels for access
+control to the new events.
+
 ## Tradeoffs
 
 Without this proposal, bridges could still inform users in a room that a
