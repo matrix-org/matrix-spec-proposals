@@ -294,6 +294,12 @@ more vulnerable to DoS attacks. To mitigate these risks it might be sensible to
 only allow a more restricted subset of regular expressions by e.g. requiring a
 maximal length or falling back to simple globbing.
 
+When utilizing power levels instead of building on [MSC 1410: Rich
+Bridging](https://github.com/matrix-org/matrix-doc/issues/1410) a malicious user
+who has enough power to send `m.bridge_error` or `m.bridge_error_revoke` is able
+to impersonate a bridge. She will be able to wrongly mark messages as failed to
+deliver or revoke errors when they were not successfully retried.
+
 ## Conclusion
 
 In this document an event is proposed for bridges to signal errors and a way to
