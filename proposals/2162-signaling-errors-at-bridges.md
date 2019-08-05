@@ -14,6 +14,15 @@ delivery error. The user in turn should be able to instruct the bridge to retry
 sending the message that was presented him as failed; the bridge should have the
 ability to mark an error as being revoked.
 
+If [MSC 1410: Rich
+Bridging](https://github.com/matrix-org/matrix-doc/issues/1410) is utilized for
+this proposal it would additionally give the benefits of
+
+- trimming the number of properties required in each bridge error event by
+  separately providing these general infos about the bridge in the room state instead.
+- not requiring users representing the bridge to have admin power levels
+  (see [Rights management](#rights-management)).
+
 ### Bridge error event
 
 This document proposes the addition of a new room event with type
@@ -32,6 +41,11 @@ users (e.g. `@discord_*:example.org`). This regex should be similar to the one
 any Application Service uses for marking its reserved user namespace. By
 providing this information clients can inform their users who in the room was
 affected by the error and for which network the error occurred.
+
+*Those two fields will not be required if the variant with [MSC 1410: Rich
+Bridging](https://github.com/matrix-org/matrix-doc/issues/1410) is adopted. In
+this case the same information is stored alongside other bridge metadata in the
+room state*
 
 There are some common reasons why an error occurred. These are encoded in the
 `reason` attribute and can contain the following types:
@@ -228,6 +242,15 @@ as well.
 As long as the above assumptions are met, it is fine to not explicitly denote
 bridges and bridge users as such and simply rely on the power levels for access
 control to the new events.
+
+An alternative for the above solution is the adoption of [MSC 1410: Rich
+Bridging](https://github.com/matrix-org/matrix-doc/issues/1410). It stores
+information about users affiliation to a bridge in the room state. Instead of
+checking power levels of users, rich bridging can be utilized by checking the
+room state and only allow valid representatives of the bridge to send bridge
+errors and their revocations. This alternative has the advantage of not
+requiring agents of the bridge to be powerful. They would be verifiable and
+could be trusted without any restrictions regarding their power levels.
 
 ## Tradeoffs
 
