@@ -141,13 +141,15 @@ Servers are expected to be able to identify direct chats for users and flag them
 in the room summary. How existing DMs are migrated is covered later in this proposal. The
 server must use these rules to determine if a room is a direct chat:
 * The join rules are `invite`.
+* The rejoin rules are `invite` or `join` (as per [MSC2213](https://github.com/matrix-org/matrix-doc/pull/2213)).
 * The user's most recent membership event has `"m.direct": true` in the `content`.
 * The room has an explicit power level event (running a DM without a PL event is not supported).
-* The room has at least 2 important users in it.
+* The room has at least 2 possible important users (who may or may not be joined yet).
 * The user themselves is important in the room.
 * The room is not tombstoned.
 * The room is not soft-tombstoned by the server (described later in this proposal).
-* No important users have left the room (through kick, ban, or other means).
+* No important users have been banned. Kicking or leaving the room does not affect the DM-ness
+  of the room.
 
 Assuming no other conflicts arise (duplicate chats, etc) the room is considered a DM between
 the important users in the room. Important users are identified simply by having a power level
@@ -167,6 +169,37 @@ invite event, clients should be skeptical but otherwise trusting of the room's D
 Servers SHOULD attempt to identify (or re-affirm) rooms as a DM whenever the relevant state
 events in the rules above change or are updated.
 
+#### A note about leaving DMs
+
+Unless an important user is banned, the DM is still considered alive and should be able to
+be rejoined even if some important people were to leave. However, there's a good chance that
+when all important users leave that the room becomes unjoinable and therefore dead. To help
+combat this, servers should approach rooms where important users have left with caution.
+
+**Case 1: The DM resides on a single homeserver**: when all important users leave the DM,
+the DM should be considered soft-tombstoned for those users. This will cause a new DM to be
+created. The presences of unimportant users can be enough for a homeserver to consider the
+room not dead and therefore rejoinable.
+
+**Case 2: The DM resides on 2+ homeservers**: this gets a bit tricky. When the last important
+user leaves, that homeserver might be inclined to consider it soft-tombstoned. However, this
+is unlikely in practice: another server could rejoin thanks to unimportant users and invite
+the last homeserver back. Both homeservers would converge on the room being the active DM for
+those two users.
+
+**Case 3: A duplicate DM comes in for a room the server has left**: the server would normally
+be inclined to automatically tombstone the new DM in reference of the existing DM (which the
+server has left). It must not do this unless it is a resident of the room and can verify
+that the room is alive as otherwise its perspective of the room may be antiquated. Instead,
+the server must assume that the new DM means that the existing one is dead for one reason
+or another. If another server were to tombstone the new room and point to the existing room,
+the user could then try and join the existing room and the server's perspective of the state
+would be refreshed.
+
+*Note*: Originally case 3 had a step for the server to autojoin the user into the existing
+room to refresh its state, however this left a glaring hole for abuse to filter its way down
+to a given user.
+
 
 #### Creating DMs
 
@@ -176,6 +209,9 @@ use `immutable_direct_chat` as defined here. The new preset has the following ef
 room state:
 
 * Join rules of `invite`.
+* Rejoin rules of `join` (as per [MSC2213](https://github.com/matrix-org/matrix-doc/pull/2213)).
+  This is to allow DMs to be re-used (described later) without sacrificing security of the DM
+  by letting random people who were invited at some point into the room.
 * History visibility of `invited`.
 * Guest access of `can_join`.
 * Power levels with the following non-default structure:
@@ -229,7 +265,10 @@ and `power_level_content_override` during creation. Servers MUST reject the requ
 `/createRoom` are expected to be included in the forbidden list where appropriate.
 
 Servers MUST return an existing room ID if the server already knows about a DM between the
-important users.
+important users. The important users which have left the DM MUST be explicitly re-invited.
+If the user trying to create the room is not in the DM themselves, the server MUST try and
+re-join the user to the room. If the re-join fails, the server should create a new room
+for the DM and consider the existing one as soft-tombstoned.
 
 The rationale for preventing either party from manipulating the room is to ensure that there is
 equal representation of the room from both parties (automatically named, automatic avatar, etc).
@@ -309,8 +348,17 @@ Users already have DMs which need to be correctly mapped by the server. Servers 
 following process for migration for each user:
 1. Grab a list of room IDs from their `m.direct` account data (if present). Ignore the user IDs
    that are associated with the room IDs.
-2. Identify each room as either a DM or some other room and flag appropriately. This may include
-   conflict resolution.
+2. Identify each room as either a DM or some other room, flagging them as appropriate, using the
+   following steps:
+
+   * If the room does not have a `rejoin_rule`, consider the rejoin rule as `join` for the purposes
+     of identification.
+   * Identify the room using the rules specified earlier in this proposal.
+   * If the room did not have a `rejoin_rule`, attempt to set the rejoin rule to `join`. If that
+     fails, do not consider the room a DM.
+
+   Identification of DMs may involve conflict resolution, which should only happen after the steps
+   above have been executed.
 3. Set `m.direct_merged` account data with `content` consisting of a single array, `rooms`, listing
    all the room IDs the server iterated over, regardless of result.
 
@@ -482,6 +530,12 @@ etc) then the conflict resolution algorithm might take place depending on the us
    as the replacement room, and do not treat the tombstoned room as a DM.
 
 
+**The cases covered by leaving DMs above**
+
+This proposal covers a few cases that servers are supposed to consider when a user (or many
+users) leaves a room. Please reference that section for more detail.
+
+
 ## Tradeoffs / issues
 
 This is really complicated for servers to implement. The alternative is that the client
@@ -555,9 +609,21 @@ verification and cross-signing within the immutable DM (if such a concept existe
 in a floating dialog. To accomplish this in a safe and secure way it may be desirable to have
 high levels of enforcement regarding immutable DMs. This may increase the user's comfort in
 knowing that none of the users in the room can manipulate it. Clients which need this level of
-confidence may wish to ignore insecure DMs and attempt to start new ones by upgrading the existing
-DM through a predefined `preset` (ideally acquiring permission first).
+confidence may wish to ignore insecure DMs and attempt to start new ones by upgrading the
+existing DM through a predefined `preset` (ideally acquiring permission first).
 
+There is a theoretical scenario where a homeserver or user could maliciously prevent a user
+from opening a new DM with them. This is considered a feature given modules like ignoring users
+exists, however a homeserver/user could continously set up a scenario where an existing DM
+becomes unjoinable while sending tombstones for all new DM rooms which point to the unjoinable
+room. This has a largely social impact on the room that technology cannot resolve (if people
+are going to be mean, they're going to be mean). Attempts to alter the DM such that the user
+cannot join without being notified are possible (changing the rejoin rules) however in those
+cases both homeservers should be considering the room as no longer a DM, unless of course
+the homeserver was being the malicious actor. Because of how tombstones currently work in
+Matrix, users would have to perform an action to try and join the new DM and eventually the
+user may get frustrated with the other user and ignore them, breaking the cycle of new DMs
+being created.
 
 ## Conclusion
 
