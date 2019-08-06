@@ -166,7 +166,7 @@ room. Clients SHOULD use the room summary on invites and joined rooms to identif
 is a direct chat or not. Where the summary is not available and an `m.direct` field is on the
 invite event, clients should be skeptical but otherwise trusting of the room's DM status.
 
-Servers SHOULD attempt to identify (or re-affirm) rooms as a DM whenever the relevant state
+Servers MUST attempt to identify (or re-affirm) rooms as a DM whenever the relevant state
 events in the rules above change or are updated.
 
 #### A note about leaving DMs
@@ -213,7 +213,7 @@ room state:
   This is to allow DMs to be re-used (described later) without sacrificing security of the DM
   by letting random people who were invited at some point into the room.
 * History visibility of `invited`.
-* Guest access of `can_join`.
+* Guest access of `can_join` so that guests can be included in DMs where needed.
 * Power levels with the following non-default structure:
   ```json
   {
@@ -339,7 +339,8 @@ proposal is expected to land in r0.6.0 of the Client-Server API.
 Some servers have thousands and even millions of users which will need their DMs migrated. In
 order to allow those servers to advertise the feature (both as an unstable flag and as a released
 spec version) the client SHOULD assume that the server has not migrated its user's DMs until the
-server sends the `m.direct_merged` account data event.
+server sends the `m.direct_merged` account data event. More information about migration can be
+found in the next section.
 
 
 #### Migration
@@ -529,6 +530,8 @@ etc) then the conflict resolution algorithm might take place depending on the us
 4. Both Alice and Bob no longer have a viable DM: both homeservers do not consider Matrix HQ
    as the replacement room, and do not treat the tombstoned room as a DM.
 
+Ultimtely this is a wasted effort: both homeservers would start a new DM after the room was
+directed at HQ.
 
 **The cases covered by leaving DMs above**
 
