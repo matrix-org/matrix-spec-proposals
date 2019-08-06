@@ -88,9 +88,8 @@ Implementations should also be wary of semantics regarding what causes a room to
 a multi-way DM and a 1:1 DM. Users can be invited (and joined) to either kind of room without
 causing the room to jump to a different kind: for example, a 1:1 chat can have several unimportant
 users in it (bots, etc) which do not make it a multi-way DM. Similarly, if an important user
-were to leave a multi-way DM the room loses its DM status for all users and does not become
-a 1:1 DM. Unimportant users can leave and join either kind of DM at any time without consequence
-on the DM status or kind. This is all described in further detail later in this proposal.
+were to leave a multi-way DM the room does not become a 1:1 DM. This is all described in further
+detail later in this proposal.
 
 With irrelevant fields not included, an example sync response would be:
 ```json
