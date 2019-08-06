@@ -368,6 +368,12 @@ the user. This is to allow for the user having an older client which does not ye
 DMs. Removals from `m.direct` are recommended to be left unhandled to ensure consistency with the
 updated DMs.
 
+Clients SHOULD NOT assume that the server will migrate direct chats if the user's `m.direct`
+account data does not list any rooms. This is more important for new accounts created after the
+DMs feature has been introduced in Matrix: if the server had to set `m.direct_merged` for every
+user in the future, the server would be collecting largely useless data. Instead, the server is
+given the option to skip migrations for users that have no data to migrate (such as new users).
+
 
 #### Sugar APIs (for appservices/thin bots)
 
