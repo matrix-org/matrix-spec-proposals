@@ -30,7 +30,7 @@ This document proposes the addition of a new room event with type
 sent in the same room, by that marking the original event as “failed to deliver”
 for all users of a bridge. The new event type utilizes reference aggregations
 ([MSC
-1849](https://github.com/matrix-org/matrix-doc/blob/matthew/msc1849/proposals/1849-aggregations.md))
+1849](https://github.com/matrix-org/matrix-doc/blob/matthew/msc1849/proposals/1849-aggregations.md#relation-types))
 to establish the relation to the event its delivery it is marking as failed.
 There is no need for a new endpoint as the existing `/send` endpoint will be
 utilized.
@@ -111,7 +111,7 @@ This is an example of how the new bridge error might look:
         "affected_users": ["@discord_.*:example.org"],
         "reason": "m.bridge_unavailable",
         "time_to_permanent": 900,
-        "m.relates_to": {
+        "m.relationship": {
             "rel_type": "m.reference",
             "event_id": "$some:event.id"
         }
@@ -152,7 +152,7 @@ Example of the new retry events:
 {
     "type": "m.bridge_retry",
     "content": {
-        "m.relates_to": {
+        "m.relationship": {
             "rel_type": "m.reference",
             "event_id": "$original:event.id"
         }
@@ -164,7 +164,7 @@ Example of the new retry events:
 {
     "type": "m.bridge_error_revoke",
     "content": {
-        "m.relates_to": {
+        "m.relationship": {
             "rel_type": "m.reference",
             "event_id": "$original:event.id"
         }
