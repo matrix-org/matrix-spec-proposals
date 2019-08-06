@@ -116,7 +116,7 @@ With irrelevant fields not included, an example sync response would be:
             "!c:example.org": {
                 "summary": {
                     "m.heroes": ["@alice:example.org", "@bob:example.org"],
-                    "m.joined_member_count": 2,
+                    "m.joined_member_count": 3,
                     "m.invited_member_count": 0,
                     "m.kind": "m.dm"
                 }
