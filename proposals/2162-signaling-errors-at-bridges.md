@@ -73,13 +73,11 @@ There are some common reasons why an error occurred. These are encoded in the
   permission to do so.
 
 The bridge error can provide a `time_to_permanent` field. If this field is
-present it gives the time in seconds one has to wait before declaring the bridge
-error as permanent. As long as an error is younger than this time, the client
-can expect the possibility of the error being revoked. If a bridge error is
-permanent, it should not be revoked anymore. In addition, the field may also
-accept the string "never", which means that the error will never be considered
-permanent. In case this field is missing, its value is assumed to be 0 and the
-error becomes permanent instantly.
+present it gives the time in milliseconds one has to wait before declaring the
+bridge error as permanent. As long as an error is younger than this time, the
+client can expect the possibility of the error being revoked. If a bridge error
+is permanent, it should not be revoked anymore. In case this field is missing,
+the error will never be considered permanent.
 
 Notes:
 
