@@ -22,17 +22,15 @@ Having a filtered `/publicRooms` API endpoint means that irrelevant or
 uninteresting rooms can be excluded from a room directory query response.
 In turn, this means that these room directory query responses can be generated
 more quickly and then, due to their smaller size, transmitted over the network
-more quickly, owing to their smaller size.
+more quickly.
 
 These benefits have been exploited in the Client-Server API, which implements
 search filtering using the `filter` JSON body parameter in the `POST` method on
 the `/publicRooms` endpoint.
 
-It should be noted that the Client-Server and Federation APIs both currently
-possess `/publicRooms` endpoints which, whilst similar, are not equivalent.
-
 Ignoring the `server` parameter in the Client-Server API, the following specific
-differences are noticed:
+differences are noticed between the Client-Server and Federation API's
+`/publicRooms` endpoints:
 
 * the Federation API endpoint only accepts the `GET` method whereas the
   Client-Server API accepts the `POST` method as well.
@@ -42,7 +40,13 @@ differences are noticed:
 
 This MSC proposes to introduce support for the `POST` method in the Federation
 API's `/publicRooms` endpoint, with all but one of the parameters from that of
-the Client-Server API. The copied parameters shall have the same semantics as
+the Client-Server API.
+
+The parameter that is intentionally omitted is the `server` query parameter, as
+it does not make sense to include it – the requesting homeserver could make a
+direct request instead of requesting that a request be relayed.
+
+The parameters which are copied, however, shall have the same semantics as
 they do in the Client-Server API.
 
 In the interest of clarity, the proposed parameter set is listed below, along
@@ -103,7 +107,8 @@ would be quick to upgrade to support this feature once it is available.
 
 In addition, as the `POST` method was not previously accepted on the
 `/publicRooms` endpoint over federation, then it is not a difficult task to use
-a `405 Method Not Allowed` HTTP response as a signal that fallback is required.
+an `M_UNRECOGNIZED` standard error response `errcode` as a signal that fallback
+is required.
 
 ## Security considerations
 
