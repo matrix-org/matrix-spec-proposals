@@ -195,10 +195,10 @@ On success, returns a JSON object with keys:
 - `auth_data` (object): Required. Same as in the body parameters for
   `POST /room_keys/version`.
 - `version` (string): Required. The backup version.
-- `hash` (string): Required. The hash value which is an opaque string 
- representing stored keys in the backup. Client can compare it with the `hash`
- value they received in the response of their last key storage request.
- If not equal, another matrix client pushed new keys to the backup.
+- `hash` (string): Required. The hash value which is an opaque string
+  representing stored keys in the backup. Client can compare it with the `hash`
+  value they received in the response of their last key storage request.
+  If not equal, another matrix client pushed new keys to the backup.
 - `count` (number): Required. The number of keys stored in the backup.
 
 Error codes:
@@ -212,7 +212,7 @@ Update information about the given version. Only `auth_data` can be updated.
 Body parameters:
 
 - `algorithm` (string): Required. Must be the same as in the body parameters for `GET
- /room_keys/version`.
+  /room_keys/version`.
 - `auth_data` (object): Required. algorithm-dependent data.  For
   `m.megolm_backup.v1.curve25519-aes-sha2`, see below for the definition of
   this property.
@@ -270,7 +270,7 @@ Body parameters:
 On success, returns a JSON object with keys:
 
 - `hash` (string): Required. The new hash value representing stored keys. See
-`GET /room_keys/version/{version}` for more details.
+  `GET /room_keys/version/{version}` for more details.
 - `count` (number): Required. The new count of keys stored in the backup.
 
 Error codes:
@@ -470,11 +470,18 @@ On success, returns the empty JSON object.
 ##### `auth_data` for backup versions
 
 The `auth_data` property for the backup versions endpoints for
-`m.megolm_backup.v1.curve25519-aes-sha2` is a signedjson object with the
+`m.megolm_backup.v1.curve25519-aes-sha2` is a [signed
+json](https://matrix.org/docs/spec/appendices#signing-json) object with the
 following keys:
 
 - `public_key` (string): the curve25519 public key used to encrypt the backups
-- `signatures` (object): signatures of the public key
+- `signatures` (object): signatures of the `auth_data`.
+
+The `auth_data` should be signed by the user's [master cross-signing
+key](https://github.com/matrix-org/matrix-doc/pull/1756), and may also be
+signed by the user's device key.  The allows clients to ensure that the public
+key is valid, and prevents an attacker from being able to change the backup to
+use a public key that have the private key for.
 
 ##### `session_data` for key backups
 
@@ -516,10 +523,10 @@ key backup.  This proposal does not attempt to protect against that.
 An attacker who gains access to a user's account can create a new backup
 version using a key that they control.  For this reason, clients SHOULD confirm
 with users before sending keys to a new backup version or verify that it was
-created by a trusted device by checking the signature.  One way to confirm the
-new backup version if the signature cannot be checked is by asking the user to
-enter the recovery key, and confirming that the backup's public key matches
-what is expected.
+created by a trusted device by checking the signature.  Alternatively, if the
+signature cannot be verified, the backup can be validated by prompting the user
+to enter the recovery key, and confirming that the backup's public key
+corresponds to the recovery key.
 
 Other Issues
 ------------
