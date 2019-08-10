@@ -55,10 +55,10 @@ the time they are sent** in order to know how best to interact with them (i.e.
 whether they are knowingly participating in a ephemeral conversation or not).
 
 We would also like to set the expectation that rooms typically have a long
-message retention - allowing those who wish to use Matrix to archive their
-conversations to do so, and to allow Matrix to evolve as repository of
-knowledge... unless participants explicitly request for a conversation history
-to have limited lifetime.
+message retention - allowing those who wish to use Matrix to act as an archive
+of their conversations to do so.  If everyone starts defaulting their rooms to
+finite retention periods, then the value of Matrix as a knowledge repository is
+broken.
 
 This proposal does not try to solve the problems of:
  * GDPR erasure (as this involves retrospectively changing the lifetime of
