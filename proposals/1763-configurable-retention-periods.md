@@ -227,6 +227,9 @@ over remote generated events.
 Server/clients then set a maintenance task to remove ("purge") old events and
 references to their IDs from their DB and in-memory queues after the lifetime
 has expired (starting timing from the absolute origin_server_ts on the event).
+It's worth noting that this means events may sometimes disappear from event
+streams; calling the same `/sync` or `/messages` API twice may give different
+results if some of the events have disappeared in the interim.
 
 If possible, servers/clients should remove downstream notifications of a message
 once it has expired (e.g. by cancelling push notifications).
