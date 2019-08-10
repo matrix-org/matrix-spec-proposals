@@ -252,6 +252,12 @@ deletion API at last.)
 
 ## Tradeoffs
 
+This proposal tries to keep it simple by letting the room admin mandate the
+retention behaviour for a room.  However, we could alternatively have a negotiation
+between the client and its server to determine the viable retention for a room.
+Or we could have the servers negotiate together to decide the retention for a room.
+Both seem overengineered, however.
+
 This proposal deliberately doesn't address GDPR erasure or mega-redaction scenarios,
 as it attempts to build a coherent UX around the use case of users knowing their
 privacy requirements *at the point they send messages*.  Meanwhile GDPR erasure is
