@@ -250,6 +250,11 @@ manually delete media content from the server as it expires its own local
 copies of messages.  (This requires us to have actually implemented a media
 deletion API at last.)
 
+Clients and Servers should not default to setting a `max_lifetime` when
+creating rooms; instead users should only specify a `max_lifetime` when they
+need it for a specific conversation.  This avoids unintentionally stopping
+users from using Matrix as a way to archive their conversations if they want.
+
 ## Tradeoffs
 
 This proposal tries to keep it simple by letting the room admin mandate the
