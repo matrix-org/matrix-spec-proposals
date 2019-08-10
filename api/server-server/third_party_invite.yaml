@@ -85,6 +85,7 @@ paths:
                   third_party_invite:
                     type: object
                     description: The third party invite
+                    title: Third Party Invite
                     properties:
                       display_name:
                         type: string
@@ -97,6 +98,7 @@ paths:
                         description: |-
                           A block of content which has been signed, which servers can use to
                           verify the event.
+                        title: Invite Signatures
                         properties:
                           signatures:
                             type: object

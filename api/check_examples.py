@@ -75,6 +75,12 @@ def check_response(filepath, request, code, response):
                 filepath, request, code
             ))
             check_schema(filepath, example, schema)
+        except jsonschema.SchemaError as error:
+            for suberror in sorted(error.context, key=lambda e: e.schema_path):
+                print(list(suberror.schema_path), suberror.message, sep=", ")
+            raise ValueError("Error validating JSON schema for %r %r" % (
+                request, code
+            ), e)
         except Exception as e:
             raise ValueError("Error validating JSON schema for %r %r" % (
                 request, code

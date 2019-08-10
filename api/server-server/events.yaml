@@ -59,17 +59,35 @@ paths:
                 type: array
                 description: |-
                   The full set of authorization events that make up the state
-                  of the room, and their authorization events, recursively.
+                  of the room, and their authorization events, recursively. Note that
+                  events have a different format depending on the room version -
+                  check the `room version specification`_ for precise event formats.
                 items:
-                  $ref: "definitions/pdu.yaml"
-                example: [{"$ref": "examples/pdu.json"}]
+                  type: object
+                  title: PDU
+                  description: |-
+                    The `PDUs <#pdus>`_ contained in the auth chain. The event format
+                    varies depending on the room version - check the `room version specification`_
+                    for precise event formats.
+                  properties: []
+                  example:
+                    $ref: "examples/minimal_pdu.json"
               pdus:
                 type: array
                 description: |-
-                  The fully resolved state of the room at the given event.
+                  The fully resolved state of the room at the given event. Note that
+                  events have a different format depending on the room version -
+                  check the `room version specification`_ for precise event formats.
                 items:
-                  $ref: "definitions/pdu.yaml"
-                example: [{"$ref": "examples/pdu.json"}]
+                  type: object
+                  title: PDU
+                  description: |-
+                    The `PDUs <#pdus>`_ for the fully resolved state of the room. The event format
+                    varies depending on the room version - check the `room version specification`_
+                    for precise event formats.
+                  properties: []
+                  example:
+                    $ref: "examples/minimal_pdu.json"
             required: ['auth_chain', 'pdus']
   "/state_ids/{roomId}":
     get:
@@ -138,4 +156,4 @@ paths:
         200:
           description: A transaction containing a single PDU which is the event requested.
           schema:
-            $ref: "definitions/transaction.yaml"
+            $ref: "definitions/single_pdu_transaction.yaml"

@@ -25,9 +25,9 @@ properties:
   verify_keys:
     type: object
     description: |-
-      Public keys of the homeserver for verifying digital signatures. 
-      
-      The object's key is the algorithm and version combined (``ed25519`` being the 
+      Public keys of the homeserver for verifying digital signatures.
+
+      The object's key is the algorithm and version combined (``ed25519`` being the
       algorithm and ``abc123`` being the version in the example below). Together,
       this forms the Key ID. The version must have characters matching the regular
       expression ``[a-zA-Z0-9_]``.
@@ -49,9 +49,9 @@ properties:
   old_verify_keys:
     type: object
     description: |-
-      The public keys that the server used to use and when it stopped using them. 
-      
-      The object's key is the algorithm and version combined (``ed25519`` being the 
+      The public keys that the server used to use and when it stopped using them.
+
+      The object's key is the algorithm and version combined (``ed25519`` being the
       algorithm and ``0ldK3y`` being the version in the example below). Together,
       this forms the Key ID. The version must have characters matching the regular
       expression ``[a-zA-Z0-9_]``.
@@ -90,21 +90,16 @@ properties:
       additionalProperties:
         type: string
         name: Encoded Signature Verification Key
-  tls_fingerprints:
-    type: array
-    description: Hashes of X.509 TLS certificates used by this server.
-    items:
-      type: object
-      title: TLS Fingerprint
-      properties:
-        sha256:
-          type: string
-          description: The `Unpadded Base64`_ encoded fingerprint.
-          example: "VGhpcyBpcyBoYXNoIHdoaWNoIHNob3VsZCBiZSBieXRlcw"
   valid_until_ts:
     type: integer
     format: int64
     description: |-
-      POSIX timestamp when the list of valid keys should be refreshed. Keys used beyond this
-      timestamp are no longer valid.
+      POSIX timestamp when the list of valid keys should be refreshed. This field MUST
+      be ignored in room versions 1, 2, 3, and 4. Keys used beyond this timestamp MUST
+      be considered invalid, depending on the `room version specification`_.
+
+      Servers MUST use the lesser of this field and 7 days into the future when
+      determining if a key is valid. This is to avoid a situation where an attacker
+      publishes a key which is valid for a significant amount of time without a way
+      for the homeserver owner to revoke it.
     example: 1052262000000

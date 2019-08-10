@@ -56,25 +56,48 @@ paths:
                   One-time public keys for "pre-key" messages.  The names of
                   the properties should be in the format
                   ``<algorithm>:<key_id>``. The format of the key is determined
-                  by the key algorithm.
+                  by the `key algorithm <#key-algorithms>`_.
 
                   May be absent if no new one-time keys are required.
                 additionalProperties:
                   type:
                     - string
                     - object
-                example:
-                  "curve25519:AAAAAQ": "/qyvZvwjiTxGdGU0RCguDCLeR+nmsb3FfNG3/Ve4vU8"
-                  signed_curve25519:AAAAHg:
-                    key: "zKbLg+NrIjpnagy+pIY6uPL4ZwEG2v+8F9lmgsnlZzs"
-                    signatures:
-                      "@alice:example.com":
-                        ed25519:JLAFKJWSCS: "FLWxXqGbwrb8SM3Y795eB6OA8bwBcoMZFXBqnTn58AYWZSqiD45tlBVcDa2L7RwdKXebW/VzDlnfVJ+9jok1Bw"
-                  signed_curve25519:AAAAHQ:
-                    key: "j3fR3HemM16M7CWhoI4Sk5ZsdmdfQHsKL1xuSft6MSw"
-                    signatures:
-                      "@alice:example.com":
-                        ed25519:JLAFKJWSCS: "IQeCEPb9HFk217cU9kw9EOiusC6kMIkoIRnbnfOh5Oc63S1ghgyjShBGpu34blQomoalCyXWyhaaT3MrLZYQAA"
+                    # XXX: We can't define an actual object here, so we have to hope
+                    # that people will look at the swagger source or can figure it out
+                    # from the other endpoints/example.
+                    # - type: object
+                    #   title: KeyObject
+                    #   properties:
+                    #     key:
+                    #       type: string
+                    #       description: The key, encoded using unpadded base64.
+                    #     signatures:
+                    #       type: object
+                    #       description: |-
+                    #         Signature for the device. Mapped from user ID to signature object.
+                    #       additionalProperties:
+                    #         type: string
+                    #   required: ['key', 'signatures']
+                example: {
+                  "curve25519:AAAAAQ": "/qyvZvwjiTxGdGU0RCguDCLeR+nmsb3FfNG3/Ve4vU8",
+                  "signed_curve25519:AAAAHg": {
+                    "key": "zKbLg+NrIjpnagy+pIY6uPL4ZwEG2v+8F9lmgsnlZzs",
+                    "signatures": {
+                      "@alice:example.com": {
+                        "ed25519:JLAFKJWSCS": "FLWxXqGbwrb8SM3Y795eB6OA8bwBcoMZFXBqnTn58AYWZSqiD45tlBVcDa2L7RwdKXebW/VzDlnfVJ+9jok1Bw"
+                      }
+                    }
+                  },
+                  "signed_curve25519:AAAAHQ": {
+                    "key": "j3fR3HemM16M7CWhoI4Sk5ZsdmdfQHsKL1xuSft6MSw",
+                    "signatures": {
+                      "@alice:example.com": {
+                        "ed25519:JLAFKJWSCS": "IQeCEPb9HFk217cU9kw9EOiusC6kMIkoIRnbnfOh5Oc63S1ghgyjShBGpu34blQomoalCyXWyhaaT3MrLZYQAA"
+                      }
+                    }
+                  }
+                }
       responses:
         200:
           description:
@@ -194,8 +217,8 @@ paths:
                       "user_id": "@alice:example.com",
                       "device_id": "JLAFKJWSCS",
                       "algorithms": [
-                        "m.olm.v1.curve25519-aes-sha256",
-                        "m.megolm.v1.aes-sha"
+                        "m.olm.v1.curve25519-aes-sha2",
+                        "m.megolm.v1.aes-sha2"
                       ],
                       "keys": {
                         "curve25519:JLAFKJWSCS": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI",
@@ -205,12 +228,12 @@ paths:
                         "@alice:example.com": {
                           "ed25519:JLAFKJWSCS": "dSO80A01XiigH3uBiDVx/EjzaoycHcjq9lfQX0uWsqxl2giMIiSPR8a4d291W1ihKJL/a+myXS367WT6NAIcBA"
                         }
-                      },      
+                      },
                       "unsigned": {
                         "device_display_name": "Alice's mobile phone"
                       }
                     }
-         
+
       tags:
         - End-to-end encryption
   "/keys/claim":
@@ -246,14 +269,15 @@ paths:
                     type: string
                     description: algorithm
                     example: "signed_curve25519"
-                example:
+                example: {
                   "@alice:example.com": { "JLAFKJWSCS": "signed_curve25519" }
+                }
             required:
               - one_time_keys
       responses:
         200:
           description:
-            The claimed keys
+            The claimed keys.
           schema:
             type: object
             properties:
@@ -263,7 +287,7 @@ paths:
                   If any remote homeservers could not be reached, they are
                   recorded here. The names of the properties are the names of
                   the unreachable servers.
-                  
+
                   If the homeserver could be reached, but the user or device
                   was unknown, no failure is recorded. Instead, the corresponding
                   user or device is missing from the ``one_time_keys`` result.
@@ -275,20 +299,46 @@ paths:
                 description: |-
                   One-time keys for the queried devices. A map from user ID, to a
                   map from devices to a map from ``<algorithm>:<key_id>`` to the key object.
+
+                  See the `key algorithms <#key-algorithms>`_ section for information
+                  on the Key Object format.
                 additionalProperties:
                   type: object
                   additionalProperties:
                     type:
                       - string
                       - object
-                example:
-                  "@alice:example.com":
-                    JLAFKJWSCS:
-                      signed_curve25519:AAAAHg:
-                        key: "zKbLg+NrIjpnagy+pIY6uPL4ZwEG2v+8F9lmgsnlZzs"
-                        signatures:
-                          "@alice:example.com":
-                            ed25519:JLAFKJWSCS: "FLWxXqGbwrb8SM3Y795eB6OA8bwBcoMZFXBqnTn58AYWZSqiD45tlBVcDa2L7RwdKXebW/VzDlnfVJ+9jok1Bw"
+                      # XXX: We can't define an actual object here, so we have to hope
+                      # that people will look at the swagger source or can figure it out
+                      # from the other endpoints/example.
+                      # - type: object
+                      #   title: KeyObject
+                      #   properties:
+                      #     key:
+                      #       type: string
+                      #       description: The key, encoded using unpadded base64.
+                      #     signatures:
+                      #       type: object
+                      #       description: |-
+                      #         Signature for the device. Mapped from user ID to signature object.
+                      #       additionalProperties:
+                      #         type: string
+                      #   required: ['key', 'signatures']
+                example: {
+                  "@alice:example.com": {
+                    "JLAFKJWSCS": {
+                      "signed_curve25519:AAAAHg": {
+                        "key": "zKbLg+NrIjpnagy+pIY6uPL4ZwEG2v+8F9lmgsnlZzs",
+                        "signatures": {
+                          "@alice:example.com": {
+                            "ed25519:JLAFKJWSCS": "FLWxXqGbwrb8SM3Y795eB6OA8bwBcoMZFXBqnTn58AYWZSqiD45tlBVcDa2L7RwdKXebW/VzDlnfVJ+9jok1Bw"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+            required: ['one_time_keys']
       tags:
         - End-to-end encryption
   "/keys/changes":

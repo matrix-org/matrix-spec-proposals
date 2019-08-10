@@ -61,100 +61,80 @@ paths:
       responses:
         200:
           description: |-
-            A template to be used for the rest of the `Joining Rooms`_ handshake.
+            A template to be used for the rest of the `Joining Rooms`_ handshake. Note that
+            events have a different format depending on the  room version - check the
+            `room version specification`_ for precise event formats. **The response body
+            here describes the common event fields in more detail and may be missing other
+            required fields for a PDU.**
           schema:
             type: object
             properties:
+              room_version:
+                type: string
+                description: |-
+                  The version of the room where the server is trying to join. If not provided,
+                  the room version is assumed to be either "1" or "2".
+                example: "2"
               event:
-                allOf:
-                  - $ref: "definitions/unsigned_pdu.yaml"
-                  - description: |-
-                      An unsigned template event.
+                description: |-
+                  An unsigned template event. Note that events have a different format
+                  depending on the room version - check the `room version specification`_
+                  for precise event formats.
+                type: object
+                title: Event Template
+                properties:
+                  sender:
+                    type: string
+                    description: The user ID of the joining member.
+                    example: "@someone:example.org"
+                  origin:
+                    type: string
+                    description: The name of the resident homeserver.
+                    example: "matrix.org"
+                  origin_server_ts:
+                    type: integer
+                    format: int64
+                    description: A timestamp added by the resident homeserver.
+                    example: 1234567890
+                  type:
+                    type: string
+                    description: The value ``m.room.member``.
+                    example: "m.room.member"
+                  state_key:
+                    type: string
+                    description: The user ID of the joining member.
+                    example: "@someone:example.org"
+                  content:
                     type: object
+                    title: Membership Event Content
+                    description: The content of the event.
+                    example: {"membership": "join"}
                     properties:
-                      # Note: we override a bunch of parameters to change their descriptions
-                      sender:
+                      membership:
                         type: string
-                        description: The user ID of the joining member.
-                        example: "@someone:example.org"
-                      origin:
-                        type: string
-                        description: The name of the resident homeserver.
-                        example: "matrix.org"    
-                      origin_server_ts:
-                        type: integer
-                        format: int64
-                        description: A timestamp added by the resident homeserver.
-                        example: 1234567890
-                      type:
-                        type: string
-                        description: The value ``m.room.member``.
-                        example: "m.room.member"
-                      state_key:
-                        type: string
-                        description: The user ID of the joining member.
-                        example: "@someone:example.org"
-                      content:
-                        type: object
-                        title: Membership Event Content
-                        description: The content of the event.
-                        example: {"membership": "join"}
-                        properties:
-                          membership:
-                            type: string
-                            description: The value ``join``.
-                            example: "join"
-                        required: ['membership']
-                      depth:
-                        type: integer
-                        description: This field must be present but is ignored; it may be 0.
-                        example: 12
-                      auth_events:
-                        type: array
-                        description: |-
-                          An event reference list containing the authorization events that would
-                          allow the member to join the room. This should normally be the 
-                          ``m.room.create``, ``m.room.power_levels``, and ``m.room.join_rules``
-                          events.
-                        items:
-                          type: array
-                          maxItems: 2
-                          minItems: 2
-                          items:
-                            - type: string
-                              title: Event ID
-                              example: "$abc123:matrix.org"
-                            - type: object
-                              title: Event Hash
-                              example: {
-                                "sha256": "abase64encodedsha256hashshouldbe43byteslong"
-                              }
-                              properties:
-                                sha256:
-                                  type: string
-                                  description: The event hash.
-                                  example: abase64encodedsha256hashshouldbe43byteslong
-                              required: ['sha256']
-                      redacts:
-                        type: string
-                        description: Not used.
-                    required:
-                      # Every other field is already flagged as required by the $ref
-                      - state_key
+                        description: The value ``join``.
+                        example: "join"
+                    required: ['membership']
+                required:
+                  - state_key
+                  - origin
+                  - origin_server_ts
+                  - type
+                  - content
+                  - sender
           examples:
             application/json: {
-              event: {
-                "$ref": "examples/unsigned_pdu.json",
+              "room_version": "2",
+              "event": {
+                "$ref": "examples/minimal_pdu.json",
                 "type": "m.room.member",
                 "state_key": "@someone:example.org",
+                "origin": "example.org",
+                "origin_server_ts": 1549041175876,
+                "sender": "@someone:example.org",
                 "content": {
                   "membership": "join"
-                },
-                "auth_events": [
-                  ["$room_cre4te_3vent:matrix.org", {"sha256": "abase64encodedsha256hashshouldbe43byteslong"}],
-                  ["$room_j0in_rul3s_3vent:matrix.org", {"sha256": "abase64encodedsha256hashshouldbe43byteslong"}],
-                  ["$room_p0wer_l3vels_3vent:matrix.org", {"sha256": "abase64encodedsha256hashshouldbe43byteslong"}]
-                ]
+                }
               }
             }
         400:
@@ -186,7 +166,12 @@ paths:
       summary: Submit a signed join event to a resident server
       description: |-
         Submits a signed join event to the resident server for it
-        to accept it into the room's graph.
+        to accept it into the room's graph. Note that events have
+        a different format depending on the  room version - check
+        the `room version specification`_ for precise event formats.
+        **The request and response body here describes the common
+        event fields in more detail and may be missing other required
+        fields for a PDU.**
       operationId: sendJoin
       security:
         - signedRequest: []
@@ -208,81 +193,54 @@ paths:
           type: object
           required: true
           schema:
-            allOf:
-              - $ref: "definitions/pdu.yaml"
-              - type: object
+            type: object
+            properties:
+              sender:
+                type: string
+                description: The user ID of the joining member.
+                example: "@someone:example.org"
+              origin:
+                type: string
+                description: The name of the joining homeserver.
+                example: "matrix.org"
+              origin_server_ts:
+                type: integer
+                format: int64
+                description: A timestamp added by the joining homeserver.
+                example: 1234567890
+              type:
+                type: string
+                description: The value ``m.room.member``.
+                example: "m.room.member"
+              state_key:
+                type: string
+                description: The user ID of the joining member.
+                example: "@someone:example.org"
+              content:
+                type: object
+                title: Membership Event Content
+                description: The content of the event.
+                example: {"membership": "join"}
                 properties:
-                  # Note: we override a bunch of parameters to change their descriptions
-                  sender:
+                  membership:
                     type: string
-                    description: The user ID of the joining member.
-                    example: "@someone:example.org"
-                  origin:
-                    type: string
-                    description: The name of the joining homeserver.
-                    example: "matrix.org"    
-                  origin_server_ts:
-                    type: integer
-                    format: int64
-                    description: A timestamp added by the joining homeserver.
-                    example: 1234567890
-                  type:
-                    type: string
-                    description: The value ``m.room.member``.
-                    example: "m.room.member"
-                  state_key:
-                    type: string
-                    description: The user ID of the joining member.
-                    example: "@someone:example.org"
-                  content:
-                    type: object
-                    title: Membership Event Content
-                    description: The content of the event.
-                    example: {"membership": "join"}
-                    properties:
-                      membership:
-                        type: string
-                        description: The value ``join``.
-                        example: "join"
-                    required: ['membership']
-                  depth:
-                    type: integer
-                    description: This field must be present but is ignored; it may be 0.
-                    example: 12
-                  auth_events:
-                    type: array
-                    description: |-
-                      An event reference list containing the authorization events that would
-                      allow the member to join the room.
-                    items:
-                      type: array
-                      maxItems: 2
-                      minItems: 2
-                      items:
-                        - type: string
-                          title: Event ID
-                          example: "$abc123:matrix.org"
-                        - type: object
-                          title: Event Hash
-                          example: {
-                            "sha256": "abase64encodedsha256hashshouldbe43byteslong"
-                          }
-                          properties:
-                            sha256:
-                              type: string
-                              description: The event hash.
-                              example: abase64encodedsha256hashshouldbe43byteslong
-                          required: ['sha256']
-                  redacts:
-                    type: string
-                    description: Not used.
-                required:
-                  # Every other field is already flagged as required by the $ref
-                  - state_key
+                    description: The value ``join``.
+                    example: "join"
+                required: ['membership']
+            required:
+              - state_key
+              - sender
+              - origin
+              - origin_server_ts
+              - type
+              - content
           example: {
-            "$ref": "examples/pdu.json",
+            "$ref": "examples/minimal_pdu.json",
             "type": "m.room.member",
             "state_key": "@someone:example.org",
+            "origin": "example.org",
+            "origin_server_ts": 1549041175876,
+            "sender": "@someone:example.org",
             "content": {
                 "membership": "join"
             }
@@ -308,25 +266,44 @@ paths:
                     description: The resident server's DNS name.
                   auth_chain:
                     type: array
-                    description: The auth chain.
+                    description: |-
+                      The auth chain. Note that events have a different format depending on
+                      the room version - check the `room version specification`_ for precise
+                      event formats.
                     items:
                       type: object
+                      title: PDU
+                      description: |-
+                        The `PDUs <#pdus>`_ that make up the auth chain. The event format varies depending
+                        on the room version - check the `room version specification`_ for precise event formats.
                       schema:
-                        $ref: "definitions/pdu.yaml"
+                        type: object
+                        properties: []
+                      example:
+                        $ref: "examples/minimal_pdu.json"
                   state:
                     type: array
-                    description: The room state.
+                    description: |-
+                      The room state. The event format varies depending on the room version -
+                      check the `room version specification`_ for precise event formats.
                     items:
                       type: object
+                      title: PDU
+                      description: |-
+                        The `PDUs <#pdus>`_ for the fully resolved state of the room. The event format varies depending
+                        on the room version - check the `room version specification`_ for precise event formats.
                       schema:
-                        $ref: "definitions/pdu.yaml"
+                        type: object
+                        properties: []
+                      example:
+                        $ref: "examples/minimal_pdu.json"
                 required: ["auth_chain", "state", "origin"]
           examples:
             application/json: [
               200,
               {
                 "origin": "matrix.org",
-                "auth_chain": [{"$ref": "examples/pdu.json"}],
-                "state": [{"$ref": "examples/pdu.json"}]
+                "auth_chain": [{"$ref": "examples/minimal_pdu.json"}],
+                "state": [{"$ref": "examples/minimal_pdu.json"}]
               }
             ]

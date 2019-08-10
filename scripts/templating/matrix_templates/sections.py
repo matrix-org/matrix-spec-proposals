@@ -17,7 +17,11 @@ from batesian.sections import Sections
 import inspect
 import json
 import os
+import logging
+import re
 
+
+logger = logging.getLogger(__name__)
 
 class MatrixSections(Sections):
 
@@ -28,26 +32,14 @@ class MatrixSections(Sections):
     def render_git_rev(self):
         return self.units.get("git_version")["revision"]
 
-    def render_client_server_changelog(self):
+    def render_changelogs(self):
+        rendered = {}
         changelogs = self.units.get("changelogs")
-        return changelogs["client_server"]
-
-    # TODO: We should make this a generic variable instead of having to add functions all the time.
-    def render_push_gateway_changelog(self):
-        changelogs = self.units.get("changelogs")
-        return changelogs["push_gateway"]
-
-    def render_identity_service_changelog(self):
-        changelogs = self.units.get("changelogs")
-        return changelogs["identity_service"]
-
-    def render_server_server_changelog(self):
-        changelogs = self.units.get("changelogs")
-        return changelogs["server_server"]
-
-    def render_application_service_changelog(self):
-        changelogs = self.units.get("changelogs")
-        return changelogs["application_service"]
+        for spec, changelog_text in changelogs.items():
+            spec_var = "%s_changelog" % spec
+            logger.info("Rendering changelog for spec: %s" % spec)
+            rendered[spec_var] = changelog_text
+        return rendered
 
     def _render_events(self, filterFn, sortFn):
         template = self.env.get_template("events.tmpl")
@@ -119,12 +111,13 @@ class MatrixSections(Sections):
     # Special function: Returning a dict will specify multiple sections where
     # the key is the section name and the value is the value of the section
     def render_group_events(self):
-        # map all event schemata to the form $EVENTTYPE_event with s/./_/g
-        # e.g. m_room_topic_event
+        # map all event schemata to the form $EVENTTYPE_event with s/.#/_/g
+        # e.g. m_room_topic_event or m_room_message_m_text_event
         schemas = self.units.get("event_schemas")
         renders = {}
         for event_type in schemas:
-            renders[event_type.replace(".", "_") + "_event"] = self._render_events(
+            underscored_event_type = event_type.replace(".", "_").replace("$", "_")
+            renders[underscored_event_type + "_event"] = self._render_events(
                 lambda x: x == event_type, sorted
             )
         return renders
@@ -133,7 +126,7 @@ class MatrixSections(Sections):
         def filterFn(eventType):
             return (
                 eventType.startswith("m.room") and
-                not eventType.startswith("m.room.message#m.")
+                not eventType.startswith("m.room.message$m.")
             )
         return self._render_events(filterFn, sorted)
 
@@ -146,16 +139,22 @@ class MatrixSections(Sections):
         ]["subtitle"]
         sections = []
         msgtype_order = [
-            "m.room.message#m.text", "m.room.message#m.emote",
-            "m.room.message#m.notice", "m.room.message#m.image",
-            "m.room.message#m.file"
+            "m.room.message$m.text", "m.room.message$m.emote",
+            "m.room.message$m.notice", "m.room.message$m.image",
+            "m.room.message$m.file"
+        ]
+        excluded_types = [
+            # We exclude server notices from here because we handle them in a
+            # dedicated module. We do not want to confuse developers this early
+            # in the spec.
+            "m.room.message$m.server_notice",
         ]
         other_msgtypes = [
-            k for k in schemas.keys() if k.startswith("m.room.message#") and
-            k not in msgtype_order
+            k for k in schemas.keys() if k.startswith("m.room.message$") and
+            k not in msgtype_order and k not in excluded_types
         ]
         for event_name in (msgtype_order + other_msgtypes):
-            if not event_name.startswith("m.room.message#m."):
+            if not event_name.startswith("m.room.message$m."):
                 continue
             sections.append(template.render(
                 example=examples[event_name][0],
@@ -226,4 +225,20 @@ class MatrixSections(Sections):
                 definition=swagger_def['definition'],
                 examples=swagger_def['examples'],
                 title_kind=subtitle_title_char)
+        return rendered
+
+    def render_sas_emoji_table(self):
+        emoji = self.units.get("sas_emoji")
+        rendered = ".. csv-table::\n"
+        rendered += "  :header: \"Number\", \"Emoji\", \"Unicode\", \"Description\"\n"
+        rendered += "  :widths: 10, 10, 15, 20\n"
+        rendered += "\n"
+        for row in emoji:
+            rendered += "  %d, \"%s\", \"``%s``\", \"%s\"\n" % (
+                row['number'],
+                row['emoji'],
+                row['unicode'],
+                row['description'],
+            )
+        rendered += "\n"
         return rendered

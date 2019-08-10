@@ -52,6 +52,6 @@ Examples of strings encoded using unpadded Base64::
    UNPADDED_BASE64("foobar") = "Zm9vYmFy"
 
 When decoding Base64, implementations SHOULD accept input with or without
-padding characters whereever possible, to ensure maximum interoperability.
+padding characters wherever possible, to ensure maximum interoperability.
 
 .. _`RFC 4648`: https://tools.ietf.org/html/rfc4648

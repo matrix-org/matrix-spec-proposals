@@ -63,7 +63,7 @@ paths:
               - one_time_keys
       responses:
         200:
-          description: The claimed keys
+          description: The claimed keys.
           schema:
             type: object
             properties:
@@ -72,30 +72,42 @@ paths:
                 description: |-
                   One-time keys for the queried devices. A map from user ID, to a
                   map from devices to a map from ``<algorithm>:<key_id>`` to the key object.
+
+                  See the Client-Server Key Algorithms section for more information on
+                  the Key Object format.
                 additionalProperties:
                   type: object
                   additionalProperties:
                     type:
                       - string
-                      - object
-            required: ['one_time_keys']
-          examples:
-            application/json: {
-              "one_time_keys": {
-                "@alice:example.com": {
-                  "JLAFKJWSCS": {
-                    "signed_curve25518:AAAAHg": {
-                      "key": "zKbLg+NrIjpnagy+pIY6uPL4ZwEG2v+8F9lmgsnlZzs",
-                      "signatures": {
-                        "@alice:example.com": {
-                          "ed25519:JLAFKJWSCS": "FLWxXqGbwrb8SM3Y795eB6OA8bwBcoMZFXBqnTn58AYWZSqiD45tlBVcDa2L7RwdKXebW/VzDlnfVJ+9jok1Bw"
+                      - type: object
+                        title: KeyObject
+                        properties:
+                          key:
+                            type: string
+                            description: The key, encoded using unpadded base64.
+                          signatures:
+                            type: object
+                            description: |-
+                              Signature for the device. Mapped from user ID to signature object.
+                            additionalProperties:
+                              type: string
+                        required: ['key', 'signatures']
+                example: {
+                  "@alice:example.com": {
+                    "JLAFKJWSCS": {
+                      "signed_curve25519:AAAAHg": {
+                        "key": "zKbLg+NrIjpnagy+pIY6uPL4ZwEG2v+8F9lmgsnlZzs",
+                        "signatures": {
+                          "@alice:example.com": {
+                            "ed25519:JLAFKJWSCS": "FLWxXqGbwrb8SM3Y795eB6OA8bwBcoMZFXBqnTn58AYWZSqiD45tlBVcDa2L7RwdKXebW/VzDlnfVJ+9jok1Bw"
+                          }
                         }
                       }
                     }
                   }
                 }
-              }
-            }
+            required: ['one_time_keys']
   "/user/keys/query":
     post:
       summary: Download device identity keys.
@@ -168,8 +180,8 @@ paths:
                     "user_id": "@alice:example.com",
                     "device_id": "JLAFKJWSCS",
                     "algorithms": [
-                      "m.olm.v1.curve25519-aes-sha256",
-                      "m.megolm.v1.aes-sha"
+                      "m.olm.v1.curve25519-aes-sha2",
+                      "m.megolm.v1.aes-sha2"
                     ],
                     "keys": {
                       "curve25519:JLAFKJWSCS": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI",

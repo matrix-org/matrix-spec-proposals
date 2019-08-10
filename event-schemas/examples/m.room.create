@@ -5,6 +5,10 @@
   "content": {
     "creator": "@example:example.org",
     "room_version": "1",
-    "m.federate": true
+    "m.federate": true,
+    "predecessor": {
+      "event_id": "$something:example.org",
+      "room_id": "!oldroom:example.org"
+    }
   }
 }

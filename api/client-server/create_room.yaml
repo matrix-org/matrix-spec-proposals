@@ -244,6 +244,12 @@ paths:
               invalid: for example, the user's ``power_level`` is set below
               that necessary to set the room name (``errcode`` set to
               ``M_INVALID_ROOM_STATE``).
+
+            - The homeserver doesn't support the requested room version, or
+              one or more users being invited to the new room are residents
+              of a homeserver which does not support the requested room version.
+              The ``errcode`` will be ``M_UNSUPPORTED_ROOM_VERSION`` in these
+              cases.
           schema:
             "$ref": "definitions/errors/error.yaml"
       tags:

@@ -27,7 +27,7 @@ paths:
     get:
       summary: Get the homeserver's public key(s)
       description: |-
-        Gets the homeserver's published TLS fingerprints and signing keys.
+        Gets the homeserver's published signing keys.
         The homeserver may have any number of active keys and may have a
         number of old keys.
 
@@ -49,8 +49,10 @@ paths:
           type: string
           description: |-
             **Deprecated**. Servers should not use this parameter and instead
-            opt to return all keys, not just the requested one. The key ID to 
+            opt to return all keys, not just the requested one. The key ID to
             look up.
+
+            When excluded, the trailing slash on this endpoint is optional.
           required: false
           x-example: "ed25519:abc123"
           deprecated: true

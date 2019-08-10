@@ -22,10 +22,10 @@ Identity Service API
 
 The Matrix client-server and server-server APIs are largely expressed in Matrix
 user identifiers. From time to time, it is useful to refer to users by other
-("third-party") identifiers, or "3pid"s, e.g. their email address or phone
+("third-party") identifiers, or "3PID"s, e.g. their email address or phone
 number. This Identity Service Specification describes how mappings between
 third-party identifiers and Matrix user identifiers can be established,
-validated, and used. This description technically may apply to any 3pid, but in
+validated, and used. This description technically may apply to any 3PID, but in
 practice has only been applied specifically to email addresses and phone numbers.
 
 .. contents:: Table of Contents
@@ -51,6 +51,7 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/identity_service/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.2.0 <https://matrix.org/docs/spec/identity_service/r0.2.0.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/identity_service/r0.1.0.html>`_
 
 General principles
@@ -150,9 +151,9 @@ Identity is a privacy-sensitive issue. While the identity server exists to
 provide identity information, access should be restricted to avoid leaking
 potentially sensitive data. In particular, being able to construct large-scale
 connections between identities should be avoided. To this end, in general APIs
-should allow a 3pid to be mapped to a Matrix user identity, but not in the other
-direction (i.e. one should not be able to get all 3pids associated with a Matrix
-user ID, or get all 3pids associated with a 3pid).
+should allow a 3PID to be mapped to a Matrix user identity, but not in the other
+direction (i.e. one should not be able to get all 3PIDs associated with a Matrix
+user ID, or get all 3PIDs associated with a 3PID).
 
 Web browser clients
 -------------------
@@ -204,10 +205,10 @@ Establishing associations
 
 The flow for creating an association is session-based.
 
-Within a session, one may prove that one has ownership of a 3pid.
+Within a session, one may prove that one has ownership of a 3PID.
 Once this has been established, the user can form an association between that
-3pid and a Matrix user ID. Note that this association is only proved one way;
-a user can associate *any* Matrix user ID with a validated 3pid,
+3PID and a Matrix user ID. Note that this association is only proved one way;
+a user can associate *any* Matrix user ID with a validated 3PID,
 i.e. I can claim that any email address I own is associated with
 @billg:microsoft.com.
 
@@ -255,11 +256,11 @@ General
 Invitation storage
 ------------------
 
-An identity server can store pending invitations to a user's 3pid, which will
-be retrieved and can be either notified on or look up when the 3pid is
+An identity server can store pending invitations to a user's 3PID, which will
+be retrieved and can be either notified on or look up when the 3PID is
 associated with a Matrix user ID.
 
-At a later point, if the owner of that particular 3pid binds it with a Matrix user
+At a later point, if the owner of that particular 3PID binds it with a Matrix user
 ID, the identity server will attempt to make an HTTP POST to the Matrix user's
 homeserver via the `/3pid/onbind`_ endpoint. The request MUST be signed with a
 long-term private key for the identity server.
@@ -279,4 +280,4 @@ this isn't possible.
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
 .. _`3PID Types`:  ../appendices.html#pid-types
 .. _`Signing JSON`: ../appendices.html#signing-json
-.. _`/3pid/onbind`: ../server_server/unstable.html#put-matrix-federation-v1-3pid-onbind
+.. _`/3pid/onbind`: ../server_server/%SERVER_RELEASE_LABEL%.html#put-matrix-federation-v1-3pid-onbind

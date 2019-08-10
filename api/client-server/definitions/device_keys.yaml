@@ -33,7 +33,7 @@ properties:
       type: string
     description: |-
       The encryption algorithms supported by this device.
-    example: ["m.olm.curve25519-aes-sha256", "m.megolm.v1.aes-sha"]
+    example: ["m.olm.v1.curve25519-aes-sha2", "m.megolm.v1.aes-sha2"]
   keys:
     type: object
     description: |-

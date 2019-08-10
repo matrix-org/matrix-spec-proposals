@@ -1,0 +1,151 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+type: object
+title: Unsigned Persistent Data Unit
+description: An unsigned persistent data unit (event)
+example:
+  $ref: "../examples/unsigned_pdu_base.json"
+properties:
+  room_id:
+    type: string
+    description: Room identifier.
+    example: "!abc123:matrix.org"
+  sender:
+    type: string
+    description: The ID of the user sending the event.
+    example: "@someone:matrix.org"
+  origin:
+    type: string
+    description: The ``server_name`` of the homeserver that created this event.
+    example: "matrix.org"
+  origin_server_ts:
+    type: integer
+    format: int64
+    description: Timestamp in milliseconds on origin homeserver when this event was created.
+    example: 1234567890
+  type:
+    type: string
+    description: Event type
+    example: "m.room.message"
+  state_key:
+    type: string
+    description: |-
+      If this key is present, the event is a state event, and it will replace previous events
+      with the same ``type`` and ``state_key`` in the room state.
+    example: "my_key"
+  content:
+    type: object
+    description: The content of the event.
+    example: {"key": "value"}
+  prev_events:
+    type: array
+    description: |-
+      Event IDs and reference hashes for the most recent events in the room
+      that the homeserver was aware of when it made this event.
+    items:
+      type: array
+      maxItems: 2
+      minItems: 2
+      items:
+        - type: string
+          title: Event ID
+          example: "$abc123:matrix.org"
+        - type: object
+          title: Event Hash
+          example: {
+            "sha256": "Base64EncodedSha256HashesShouldBe43BytesLong"
+          }
+          properties:
+            sha256:
+              type: string
+              description: The event hash.
+              example: Base64EncodedSha256HashesShouldBe43BytesLong
+          required: ['sha256']
+  depth:
+    type: integer
+    description: |-
+      The maximum depth of the ``prev_events``, plus one. Must be less than the
+      maximum value for an integer (2^63 - 1). If the room's depth is already at
+      the limit, the depth must be set to the limit.
+    example: 12
+  auth_events:
+    type: array
+    description: |-
+      Event IDs and reference hashes for the authorization events that would
+      allow this event to be in the room.
+    items:
+      type: array
+      maxItems: 2
+      minItems: 2
+      items:
+        - type: string
+          title: Event ID
+          example: "$abc123:matrix.org"
+        - type: object
+          title: Event Hash
+          example: {
+            "sha256": "Base64EncodedSha256HashesShouldBe43BytesLong"
+          }
+          properties:
+            sha256:
+              type: string
+              description: The event hash.
+              example: Base64EncodedSha256HashesShouldBe43BytesLong
+          required: ['sha256']
+  redacts:
+    type: string
+    description: For redaction events, the ID of the event being redacted.
+    example: "$def456:matrix.org"
+  unsigned:
+    type: object
+    title: Example Unsigned Data
+    description: |-
+      Additional data added by the origin server but not covered by the ``signatures``. More
+      keys than those defined here may be used.
+    example: {"key": "value"}
+    properties:
+      age:
+        type: integer
+        description: The number of milliseconds that have passed since this message was sent.
+        example: 4612
+      replaces_state:
+        type: string
+        description: The event ID of the state event this event replaces.
+        example: "$state_event:example.org"
+      prev_sender:
+        type: string
+        description: The sender of the replaced state event.
+        example: "@someone:example.org"
+      prev_content:
+        type: object
+        description: The content of the replaced state event.
+        example: {
+          "membership": "join",
+          "displayname": "Bob"
+        }
+      redacted_because:
+        type: string
+        description: A reason for why the event was redacted.
+        example: "Inappropriate content"
+required:
+  - event_id
+  - room_id
+  - sender
+  - origin
+  - origin_server_ts
+  - type
+  - content
+  - prev_events
+  - depth
+  - auth_events

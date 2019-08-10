@@ -1,0 +1,77 @@
+# Copyright 2019 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+type: object
+title: Persistent Data Unit
+description: A persistent data unit (event) for room version 3 and beyond.
+example:
+  $ref: "../examples/pdu_v3.json"
+allOf:
+  - $ref: "unsigned_pdu_base.yaml"
+  - type: object
+    properties:
+      redacts:
+        type: string
+        description: For redaction events, the ID of the event being redacted.
+        example: "$def/456+oldevent"
+      auth_events:
+        type: array
+        items:
+          type: string
+          description: Event ID.
+        description: |-
+          Event IDs for the authorization events that would
+          allow this event to be in the room.
+        example: ["$base64EncodedHash", "$AnotherEvent"]
+      prev_events:
+        type: array
+        items:
+          type: string
+          description: Event ID.
+        description: |-
+          Event IDs for the most recent events in the room
+          that the homeserver was aware of when it made this event.
+        example: ["$base64EncodedHash", "$AnotherEvent"]
+      hashes:
+        type: object
+        title: Event Hash
+        description: |-
+          Content hashes of the PDU, following the algorithm specified in `Signing Events`_.
+        example: {
+          "sha256": "ThisHashCoversAllFieldsInCaseThisIsRedacted"
+        }
+        properties:
+          sha256:
+            type: string
+            description: The hash.
+            example: ThisHashCoversAllFieldsInCaseThisIsRedacted
+        required: ['sha256']
+      signatures:
+        type: object
+        description: |-
+          Signatures for the PDU, following the algorithm specified in `Signing Events`_.
+        example: {
+          "example.com": {
+            "ed25519:key_version:": "86BytesOfSignatureOfTheRedactedEvent"
+          }
+        }
+        additionalProperties:
+          type: object
+          title: Server Signatures
+          additionalProperties:
+            type: string
+    required:
+      - auth_events
+      - prev_events
+      - hashes
+      - signatures

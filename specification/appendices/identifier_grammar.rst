@@ -16,6 +16,12 @@
 Identifier Grammar
 ------------------
 
+Some identifiers are specific to given room versions, please refer to the
+`room versions specification`_ for more information.
+
+.. _`room versions specification`: index.html#room-versions
+
+
 Server Name
 ~~~~~~~~~~~
 
@@ -28,7 +34,7 @@ following grammar::
 
     server_name = hostname [ ":" port ]
 
-    port        = *DIGIT
+    port        = 1*5DIGIT
 
     hostname    = IPv4address / "[" IPv6address "]" / dns-name
 
@@ -78,38 +84,6 @@ Some recommendations for a choice of server name follow:
 * The length of the complete server name should not exceed 230 characters.
 * Server names should not use upper-case characters.
 
-
-Room Versions
-~~~~~~~~~~~~~
-
-Room versions are used to change properties of rooms that may not be compatible
-with other servers. For example, changing the rules for event authorization would
-cause older servers to potentially end up in a split-brain situation due to them
-not understanding the new rules.
-
-A room version is defined as a string of characters which MUST NOT exceed 32
-codepoints in length. Room versions MUST NOT be empty and SHOULD contain only
-the characters ``a-z``, ``0-9``, ``.``, and ``-``.
-
-Room versions are not intended to be parsed and should be treated as opaque
-identifiers. Room versions consisting only of the characters ``0-9`` and ``.``
-are reserved for future versions of the Matrix protocol.
-
-The complete grammar for a legal room version is::
-
-  room_version = 1*room_version_char
-  room_version_char = DIGIT
-                    / %x61-7A         ; a-z
-                    / "-" / "."
-
-Examples of valid room versions are:
-
-* ``1`` (would be reserved by the Matrix protocol)
-* ``1.2`` (would be reserved by the Matrix protocol)
-* ``1.2-beta``
-* ``com.example.version``
-
-
 Common Identifier Format
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -117,11 +91,10 @@ The Matrix protocol uses a common format to assign unique identifiers to a
 number of entities, including users, events and rooms. Each identifier takes
 the form::
 
-  &localpart:domain
+  &string
 
-where ``&`` represents a 'sigil' character; ``domain`` is the `server name`_ of
-the homeserver which allocated the identifier, and ``localpart`` is an
-identifier allocated by that homeserver.
+where ``&`` represents a 'sigil' character; ``string`` is the string which makes
+up the identifier.
 
 The sigil characters are as follows:
 
@@ -131,8 +104,17 @@ The sigil characters are as follows:
 * ``+``: Group ID
 * ``#``: Room alias
 
+User IDs, group IDs, room IDs, room aliases, and sometimes event IDs take the form::
+
+  &localpart:domain
+
+where ``domain`` is the `server name`_ of the homeserver which allocated the
+identifier, and ``localpart`` is an identifier allocated by that homeserver.
+
 The precise grammar defining the allowable format of an identifier depends on
-the type of identifier.
+the type of identifier. For example, event IDs can sometimes be represented with
+a ``domain`` component under some conditions - see the `Event IDs <#room-ids-and-event-ids>`_
+section below for more information.
 
 User Identifiers
 ++++++++++++++++
@@ -208,7 +190,7 @@ history includes events with a ``sender`` which does not conform. In order to
 handle these rooms successfully, clients and servers MUST accept user IDs with
 localparts from the expanded character set::
 
-  extended_user_id_char = %x21-39 / %x3B-7F  ; all ascii printing chars except :
+  extended_user_id_char = %x21-39 / %x3B-7E  ; all ascii printing chars except :
 
 Mapping from other character sets
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -229,7 +211,7 @@ a homeserver creating a user ID for a new user based on the username passed to
 
 Implementations are free to do this mapping however they choose. Since the user
 ID is opaque except to the implementation which created it, the only
-requirement is that the implemention can perform the mapping
+requirement is that the implementation can perform the mapping
 consistently. However, we suggest the following algorithm:
 
 1. Encode character strings as UTF-8.
@@ -260,18 +242,17 @@ A room has exactly one room ID. A room ID has the format::
 
   !opaque_id:domain
 
-An event has exactly one event ID. An event ID has the format::
+An event has exactly one event ID. The format of an event ID depends upon the
+`room version specification <index.html#room-versions>`_.
 
-  $opaque_id:domain
-
-The ``domain`` of a room/event ID is the `server name`_ of the homeserver which
+The ``domain`` of a room ID is the `server name`_ of the homeserver which
 created the room/event. The domain is used only for namespacing to avoid the
 risk of clashes of identifiers between different homeservers. There is no
 implication that the room or event in question is still available at the
 corresponding homeserver.
 
 Event IDs and Room IDs are case-sensitive. They are not meant to be human
-readable.
+readable. They are intended to be treated as fully opaque strings by clients.
 
 .. TODO-spec
   What is the grammar for the opaque part? https://matrix.org/jira/browse/SPEC-389
@@ -327,7 +308,7 @@ matrix.to navigation
 
 .. NOTE::
    This namespacing is in place pending a ``matrix://`` (or similar) URI scheme.
-   This is **not** meant to be interpreted as an available web service - see 
+   This is **not** meant to be interpreted as an available web service - see
    below for more details.
 
 Rooms, users, aliases, and groups may be represented as a "matrix.to" URI.
@@ -338,28 +319,90 @@ in the room's history (a permalink).
 A matrix.to URI has the following format, based upon the specification defined
 in RFC 3986:
 
-  https://matrix.to/#/<identifier>/<extra parameter>
+  https://matrix.to/#/<identifier>/<extra parameter>?<additional arguments>
 
 The identifier may be a room ID, room alias, user ID, or group ID. The extra
 parameter is only used in the case of permalinks where an event ID is referenced.
 The matrix.to URI, when referenced, must always start with ``https://matrix.to/#/``
-followed by the identifier. 
+followed by the identifier.
+
+The ``<additional arguments>`` and the preceeding question mark are optional and
+only apply in certain circumstances, documented below.
 
 Clients should not rely on matrix.to URIs falling back to a web server if accessed
 and instead should perform some sort of action within the client. For example, if
 the user were to click on a matrix.to URI for a room alias, the client may open
 a view for the user to participate in the room.
 
+The components of the matrix.to URI (``<identifier>`` and ``<extra parameter>``)
+are to be percent-encoded as per RFC 3986.
+
 Examples of matrix.to URIs are:
 
-* Room alias: ``https://matrix.to/#/#somewhere:example.org``
-* Room: ``https://matrix.to/#/!somewhere:example.org``
-* Permalink by room: ``https://matrix.to/#/!somewhere:example.org/$event:example.org``
-* Permalink by room alias: ``https://matrix.to/#/#somewhere:example.org/$event:example.org``
-* User: ``https://matrix.to/#/@alice:example.org``
-* Group: ``https://matrix.to/#/+example:example.org``
+* Room alias: ``https://matrix.to/#/%23somewhere%3Aexample.org``
+* Room: ``https://matrix.to/#/!somewhere%3Aexample.org``
+* Permalink by room: ``https://matrix.to/#/!somewhere%3Aexample.org/%24event%3Aexample.org``
+* Permalink by room alias: ``https://matrix.to/#/%23somewhere:example.org/%24event%3Aexample.org``
+* User: ``https://matrix.to/#/%40alice%3Aexample.org``
+* Group: ``https://matrix.to/#/%2Bexample%3Aexample.org``
 
 .. Note::
-   Room ID permalinks are unroutable as there is no reliable domain to send requests
-   to upon receipt of the permalink. Clients should do their best route Room IDs to
-   where they need to go, however they should also be aware of `issue #1579 <https://github.com/matrix-org/matrix-doc/issues/1579>`_.
+   Historically, clients have not produced URIs which are fully encoded. Clients should
+   try to interpret these cases to the best of their ability. For example, an unencoded
+   room alias should still work within the client if possible.
+
+.. Note::
+   Clients should be aware that decoding a matrix.to URI may result in extra slashes
+   appearing due to some `room versions <index.html#room-versions>`_. These slashes
+   should normally be encoded when producing matrix.to URIs, however.
+
+Routing
+<<<<<<<
+
+Room IDs are not routable on their own as there is no reliable domain to send requests
+to. This is partially mitigated with the addition of a ``via`` argument on a matrix.to
+URI, however the problem of routability is still present. Clients should do their best
+to route Room IDs to where they need to go, however they should also be aware of
+`issue #1579 <https://github.com/matrix-org/matrix-doc/issues/1579>`_.
+
+A room (or room permalink) which isn't using a room alias should supply at least one
+server using ``via`` in the ``<additional arguments>``, like so:
+``https://matrix.to/!somewhere%3Aexample.org?via=example.org&via=alt.example.org``. The
+parameter can be supplied multiple times to specify multiple servers to try.
+
+The values of ``via`` are intended to be passed along as the ``server_name`` parameters
+on the Client Server ``/join`` API.
+
+When generating room links and permalinks, the application should pick servers which
+have a high probability of being in the room in the distant future. How these servers
+are picked is left as an implementation detail, however the current recommendation is
+to pick 3 unique servers based on the following criteria:
+
+* The first server should be the server of the highest power level user in the room,
+  provided they are at least power level 50. If no user meets this criteria, pick the
+  most popular server in the room (most joined users). The rationale for not picking
+  users with power levels under 50 is that they are unlikely to be around into the
+  distant future while higher ranking users (and therefore servers) are less likely
+  to give up their power and move somewhere else. Most rooms in the public federation
+  have a power level 100 user and have not deviated from the default structure where
+  power level 50 users have moderator-style privileges.
+
+* The second server should be the next highest server by population, or the first
+  highest by population if the first server was based on a user's power level. The
+  rationale for picking popular servers is that the server is unlikely to be removed
+  as the room naturally grows in membership due to that server joining users. The
+  server could be refused participation in the future due to server ACLs or similar,
+  however the chance of that happening to a server which is organically joining the
+  room is unlikely.
+
+* The third server should be the next highest server by population.
+
+* Servers which are blocked due to server ACLs should never be chosen.
+
+* Servers which are IP addresses should never be chosen. Servers which use a domain
+  name are less likely to be unroutable in the future whereas IP addresses cannot be
+  pointed to a different location and therefore higher risk options.
+
+* All 3 servers should be unique from each other. If the room does not have enough users
+  to supply 3 servers, the application should only specify the servers it can. For example,
+  a room with only 2 users in it would result in maximum 2 ``via`` parameters.

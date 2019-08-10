@@ -26,10 +26,11 @@ For this to be effective, the APIs need to be present and working correctly in a
 server before they can be documented in the specification. This process can take
 some time to complete.
 
-For this reason, we have not found the github pull-request model effective for
-discussing changes to the specification. Instead, we have adopted the workflow
-as described at https://matrix.org/docs/spec/proposals - *please read this for
-details on how to contribute spec changes*.
+Changes to the protocol (new endpoints, ideas, etc) need to go through the
+`proposals process <https://matrix.org/docs/spec/proposals>`_. Other changes,
+such as fixing bugs, typos, or clarifying existing behaviour do not need a proposal.
+If you're not sure, visit us at `#matrix-spec:matrix.org`_
+and ask.
 
 
 Other changes
@@ -51,8 +52,7 @@ following:
   <https://github.com/matrix-org/matrix-doc/labels/spec-bug>`_ label.
 
   (If there is any doubt about whether it is the spec or the implementations
-  that need fixing, please discuss it with us first in `#matrix-dev:matrix.org
-  <http://matrix.to/#/#matrix-dev:matrix.org>`_.)
+  that need fixing, please discuss it with us first in `#matrix-spec:matrix.org`_.)
 
 * Clarifications to the specification which do not change the behaviour of
   Matrix servers or clients in a way which might introduce compatibility
@@ -60,27 +60,27 @@ following:
   `clarification <https://github.com/matrix-org/matrix-doc/labels/clarification>`_
   label.
 
-  For example, recommendations for UI behaviour do not require a proposal
-  document. On the other hand, changes to event contents would be best
-  discussed in a proposal document even though no changes would be necessary to
-  server implementations.
+  For example, areas where the specification is unclear do not require a proposal
+  to fix. On the other hand, introducing new behaviour is best represented by a
+  proposal.
 
-For such changes, please do just open a `pull request`_.
+For such changes, please do just open a `pull request`_. If you're not sure if
+your change is covered by the above, please visit `#matrix-spec:matrix.org` and
+ask.
 
-.. _pull request: https://help.github.com/articles/about-pull-requests
+.. _`pull request`: https://help.github.com/articles/about-pull-requests
+.. _`#matrix-spec:matrix.org`: https://matrix.to/#/#matrix-spec:matrix.org
 
 
 Adding to the changelog
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Currently only changes to the client-server API need to end up in a changelog. The
-other APIs are not yet stable and therefore do not have a changelog. Adding to the
-changelog can only be done after you've opened your pull request, so be sure to do
-that first. 
+All API specifications require a changelog entry. Adding to the changelog can only
+be done after you've opened your pull request, so be sure to do that first.
 
 The changelog is managed by Towncrier (https://github.com/hawkowl/towncrier) in the
 form of "news fragments". The news fragments for the client-server API are stored
-under ``changelogs/client_server/newsfragments``. 
+under ``changelogs/client_server/newsfragments``.
 
 To create a changelog entry, create a file named in the format ``prNumber.type`` in
 the ``newsfragments`` directory. The ``type`` can be one of the following:
@@ -96,10 +96,12 @@ the ``newsfragments`` directory. The ``type`` can be one of the following:
 
 * ``breaking`` - Used when the change is not backwards compatible.
 
-* ``deprecation`` - Used when deprecating something
+* ``deprecation`` - Used when deprecating something.
 
-All news fragments must have a brief summary explaining the change in the contents
-of the file.
+All news fragments must have a brief summary explaining the change in the
+contents of the file. The summary must end in a full stop to be in line with
+the style guide and and formatting must be done using `Restructured Text
+<http://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_.
 
 Changes that do not change the spec, such as changes to the build script, formatting,
 CSS, etc should not get a news fragment.

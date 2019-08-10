@@ -45,6 +45,7 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/client_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.5.0 <https://matrix.org/docs/spec/client_server/r0.5.0.html>`_
 - `r0.4.0 <https://matrix.org/docs/spec/client_server/r0.4.0.html>`_
 - `r0.3.0 <https://matrix.org/docs/spec/client_server/r0.3.0.html>`_
 - `r0.2.0 <https://matrix.org/docs/spec/client_server/r0.2.0.html>`_
@@ -56,6 +57,8 @@ The following other versions are also available, in reverse chronological order:
 
 API Standards
 -------------
+
+.. TODO: Move a lot of this to a common area for all specs.
 
 .. TODO
   Need to specify any HMAC or access_token lifetime/ratcheting tricks
@@ -73,7 +76,7 @@ MUST be encoded as UTF-8. Clients are authenticated using opaque
 ``access_token`` strings (see `Client Authentication`_ for details), passed as a
 query string parameter on all requests.
 
-The names of the API endponts for the HTTP transport follow a convention of
+The names of the API endpoints for the HTTP transport follow a convention of
 using underscores to separate words (for example ``/delete_devices``). The key
 names in JSON objects passed over the API also follow this convention.
 
@@ -81,7 +84,6 @@ names in JSON objects passed over the API also follow this convention.
    There are a few historical exceptions to this rule, such as
    ``/createRoom``. A future version of this specification will address the
    inconsistency.
-
 
 Any errors which occur at the Matrix API level MUST return a "standard error
 response". This is a JSON object which looks like:
@@ -158,7 +160,7 @@ Other error codes the client might encounter are:
   Sent when the room alias given to the ``createRoom`` API is already in use.
 
 :``M_INVALID_ROOM_STATE``:
-  Sent when the intial state given to the ``createRoom`` API is invalid.
+  Sent when the initial state given to the ``createRoom`` API is invalid.
 
 :``M_THREEPID_IN_USE``:
   Sent when a threepid given to an API cannot be used because the same threepid is already in use.
@@ -210,10 +212,21 @@ Other error codes the client might encounter are:
   The resource being requested is reserved by an application service, or the
   application service making the request has not created the resource.
 
+:``M_RESOURCE_LIMIT_EXCEEDED``:
+  The request cannot be completed because the homeserver has reached a resource
+  limit imposed on it. For example, a homeserver held in a shared hosting environment
+  may reach a resource limit if it starts using too much memory or disk space. The
+  error MUST have an ``admin_contact`` field to provide the user receiving the error
+  a place to reach out to. Typically, this error will appear on routes which attempt
+  to modify state (eg: sending messages, account data, etc) and not routes which only
+  read state (eg: ``/sync``, get account data, etc).
+
+:``M_CANNOT_LEAVE_SERVER_NOTICE_ROOM``:
+  The user is unable to reject an invite to join the server notices room. See the
+  `Server Notices <#server-notices>`_ module for more information.
+
 .. TODO: More error codes (covered by other issues)
 .. * M_CONSENT_NOT_GIVEN                - GDPR: https://github.com/matrix-org/matrix-doc/issues/1512
-.. * M_CANNOT_LEAVE_SERVER_NOTICE_ROOM  - GDPR: https://github.com/matrix-org/matrix-doc/issues/1254
-.. * M_RESOURCE_LIMIT_EXCEEDED          - Limits: https://github.com/matrix-org/matrix-doc/issues/1504
 
 .. _sect:txn_ids:
 
@@ -231,6 +244,9 @@ recommended.
 
 {{versions_cs_http_api}}
 
+
+.. _`CORS`:
+
 Web Browser Clients
 -------------------
 
@@ -239,9 +255,14 @@ web browser or similar environment. In these cases, the homeserver should respon
 to pre-flight requests and supply Cross-Origin Resource Sharing (CORS) headers on
 all requests.
 
-When a client approaches the server with a pre-flight (``OPTIONS``) request, the
-server should respond with the CORS headers for that route. The recommended CORS
-headers to be returned by servers on all requests are:
+Servers MUST expect that clients will approach them with ``OPTIONS`` requests,
+allowing clients to discover the CORS headers. All endpoints in this specification s
+upport the ``OPTIONS`` method, however the server MUST NOT perform any logic defined
+for the endpoints when approached with an ``OPTIONS`` request.
+
+When a client approaches the server with a request, the server should respond with
+the CORS headers for that route. The recommended CORS headers to be returned by
+servers on all requests are:
 
 .. code::
 
@@ -278,12 +299,16 @@ In this section, the following terms are used with specific meanings:
 ``FAIL_ERROR``
   Inform the user that auto-discovery did not return any usable URLs. Do not
   continue further with the current login process. At this point, valid data
-  was obtained, but no homeserver is available to serve the client. No further
+  was obtained, but no server is available to serve the client. No further
   guess should be attempted and the user should make a conscientious decision
   what to do next.
 
 Well-known URI
 ~~~~~~~~~~~~~~
+
+.. Note::
+  Servers hosting the ``.well-known`` JSON file SHOULD offer CORS headers, as
+  per the `CORS`_ section in this specification.
 
 The ``.well-known`` method uses a JSON file at a predetermined location to
 specify parameter values. The flow for this method is as follows:
@@ -395,8 +420,10 @@ an additional stage. This exchange continues until the final success.
 
 For each endpoint, a server offers one or more 'flows' that the client can use
 to authenticate itself. Each flow comprises a series of stages, as described
-above. The client is free to choose which flow it follows. When all stages in a
-flow are complete, authentication is complete and the API call succeeds.
+above. The client is free to choose which flow it follows, however the flow's
+stages must be completed in order. Failing to follow the flows in order must
+result in an HTTP 401 response, as defined below. When all stages in a flow
+are complete, authentication is complete and the API call succeeds.
 
 User-interactive API in the REST API
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -440,11 +467,10 @@ params
   presented, that type may be present as a key in this dictionary. For example,
   the public part of an OAuth client ID could be given here.
 session
-  This is a session identifier that the client must pass back to the home
-  server, if one is provided, in subsequent attempts to authenticate in the same
-  API call.
+  This is a session identifier that the client must pass back to the homeserver,
+  if one is provided, in subsequent attempts to authenticate in the same API call.
 
-The client then chooses a flow and attempts to complete one of the stages. It
+The client then chooses a flow and attempts to complete the first stage. It
 does this by resubmitting the same request with the addition of an ``auth``
 key in the object that it submits. This dictionary contains a ``type`` key whose
 value is the name of the authentication type that the client is attempting to complete.
@@ -545,7 +571,10 @@ message in the standard format. For example:
   }
 
 If the client has completed all stages of a flow, the homeserver performs the
-API call and returns the result as normal.
+API call and returns the result as normal. Completed stages cannot be retried
+by clients, therefore servers must return either a 401 response with the completed
+stages, or the result of the API call if all stages were completed when a client
+retries a stage.
 
 Some authentication types may be completed by means other than through the
 Matrix client, for example, an email confirmation may be completed when the user
@@ -610,6 +639,7 @@ This specification defines the following auth types:
  - ``m.login.recaptcha``
  - ``m.login.oauth2``
  - ``m.login.email.identity``
+ - ``m.login.msisdn``
  - ``m.login.token``
  - ``m.login.dummy``
 
@@ -636,7 +666,7 @@ To use this authentication type, clients should submit an auth dict as follows:
 where the ``identifier`` property is a user identifier object, as described in
 `Identifier types`_.
 
-For example, to authenticate using the user's Matrix ID, clients whould submit:
+For example, to authenticate using the user's Matrix ID, clients would submit:
 
 .. code:: json
 
@@ -650,7 +680,7 @@ For example, to authenticate using the user's Matrix ID, clients whould submit:
     "session": "<session ID>"
   }
 
-Alternatively reply using a 3pid bound to the user's account on the homeserver
+Alternatively reply using a 3PID bound to the user's account on the homeserver
 using the |/account/3pid|_ API rather then giving the ``user`` explicitly as
 follows:
 
@@ -667,7 +697,7 @@ follows:
     "session": "<session ID>"
   }
 
-In the case that the homeserver does not know about the supplied 3pid, the
+In the case that the homeserver does not know about the supplied 3PID, the
 homeserver must respond with 403 Forbidden.
 
 Google ReCaptcha
@@ -746,17 +776,17 @@ the auth code. Homeservers can choose any path for the ``redirect URI``. Once
 the OAuth flow has completed, the client retries the request with the session
 only, as above.
 
-Email-based (identity server)
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Email-based (identity / homeserver)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 :Type:
   ``m.login.email.identity``
 :Description:
   Authentication is supported by authorising an email address with an identity
-  server.
+  server, or homeserver if supported.
 
 Prior to submitting this, the client should authenticate with an identity
-server. After authenticating, the session information should be submitted to
-the homeserver.
+server (or homeserver). After authenticating, the session information should
+be submitted to the homeserver.
 
 To use this authentication type, clients should submit an auth dict as follows:
 
@@ -774,6 +804,34 @@ To use this authentication type, clients should submit an auth dict as follows:
     "session": "<session ID>"
   }
 
+Phone number/MSISDN-based (identity / homeserver)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+:Type:
+  ``m.login.msisdn``
+:Description:
+  Authentication is supported by authorising a phone number with an identity
+  server, or homeserver if supported.
+
+Prior to submitting this, the client should authenticate with an identity
+server (or homeserver). After authenticating, the session information should
+be submitted to the homeserver.
+
+To use this authentication type, clients should submit an auth dict as follows:
+
+.. code:: json
+
+  {
+    "type": "m.login.msisdn",
+    "threepidCreds": [
+      {
+        "sid": "<identity server session id>",
+        "client_secret": "<identity server client secret>",
+        "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>"
+      }
+    ],
+    "session": "<session ID>"
+  }
+
 Dummy Auth
 <<<<<<<<<<
 :Type:
@@ -781,7 +839,14 @@ Dummy Auth
 :Description:
   Dummy authentication always succeeds and requires no extra parameters. Its
   purpose is to allow servers to not require any form of User-Interactive
-  Authentication to perform a request.
+  Authentication to perform a request. It can also be used to differentiate
+  flows where otherwise one flow would be a subset of another flow. eg. if
+  a server offers flows ``m.login.recaptcha`` and ``m.login.recaptcha,
+  m.login.email.identity`` and the client completes the recaptcha stage first,
+  the auth would succeed with the former flow, even if the client was intending
+  to then complete the email auth stage. A server can instead send flows
+  ``m.login.recaptcha, m.login.dummy`` and ``m.login.recaptcha,
+  m.login.email.identity`` to fix the ambiguity.
 
 To use this authentication type, clients should submit an auth dict with just
 the type and session, if provided:
@@ -928,10 +993,10 @@ Third-party ID
 :Type:
   ``m.id.thirdparty``
 :Description:
-  The user is identified by a third-party identifer in canonicalised form.
+  The user is identified by a third-party identifier in canonicalised form.
 
-A client can identify a user using a 3pid associated with the user's account on
-the homeserver, where the 3pid was previously associated using the
+A client can identify a user using a 3PID associated with the user's account on
+the homeserver, where the 3PID was previously associated using the
 |/account/3pid|_ API.  See the `3PID Types`_ Appendix for a list of Third-party
 ID media.
 
@@ -987,7 +1052,7 @@ request as follows:
     "password": "<password>"
   }
 
-Alternatively, a client can use a 3pid bound to the user's account on the
+Alternatively, a client can use a 3PID bound to the user's account on the
 homeserver using the |/account/3pid|_ API rather then giving the ``user``
 explicitly, as follows:
 
@@ -1002,7 +1067,7 @@ explicitly, as follows:
     "password": "<password>"
   }
 
-In the case that the homeserver does not know about the supplied 3pid, the
+In the case that the homeserver does not know about the supplied 3PID, the
 homeserver must respond with ``403 Forbidden``.
 
 To log in using a login token, clients should submit a ``/login`` request as
@@ -1016,8 +1081,13 @@ follows:
   }
 
 As with `token-based`_ interactive login, the ``token`` must encode the
-user id. In the case that the token is not valid, the homeserver must respond
+user ID. In the case that the token is not valid, the homeserver must respond
 with ``403 Forbidden`` and an error code of ``M_FORBIDDEN``.
+
+If the homeserver advertises ``m.login.sso`` as a viable flow, and the client
+supports it, the client should redirect the user to the ``/redirect`` endpoint
+for `Single Sign-On <#sso-client-login>`_. After authentication is complete, the
+client will need to submit a ``/login`` request matching ``m.login.token``.
 
 {{login_cs_http_api}}
 
@@ -1064,6 +1134,107 @@ Current account information
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {{whoami_cs_http_api}}
+
+Capabilities negotiation
+------------------------
+
+A homeserver may not support certain operations and clients must be able to
+query for what the homeserver can and can't offer. For example, a homeserver
+may not support users changing their password as it is configured to perform
+authentication against an external system.
+
+The capabilities advertised through this system are intended to advertise
+functionality which is optional in the API, or which depend in some way on
+the state of the user or server. This system should not be used to advertise
+unstable or experimental features - this is better done by the ``/versions``
+endpoint.
+
+Some examples of what a reasonable capability could be are:
+
+* Whether the server supports user presence.
+
+* Whether the server supports optional features, such as the user or room
+  directories.
+
+* The rate limits or file type restrictions imposed on clients by the server.
+
+Some examples of what should **not** be a capability are:
+
+* Whether the server supports a feature in the ``unstable`` specification.
+
+* Media size limits - these are handled by the ``/media/%CLIENT_MAJOR_VERSION%/config``
+  API.
+
+* Optional encodings or alternative transports for communicating with the
+  server.
+
+Capabilities prefixed with ``m.`` are reserved for definition in the Matrix
+specification while other values may be used by servers using the Java package
+naming convention. The capabilities supported by the Matrix specification are
+defined later in this section.
+
+{{capabilities_cs_http_api}}
+
+
+``m.change_password`` capability
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This capability has a single flag, ``enabled``, which indicates whether or not
+the user can use the ``/account/password`` API to change their password. If not
+present, the client should assume that password changes are possible via the
+API. When present, clients SHOULD respect the capability's ``enabled`` flag
+and indicate to the user if they are unable to change their password.
+
+An example of the capability API's response for this capability is::
+
+  {
+    "capabilities": {
+      "m.change_password": {
+        "enabled": false
+      }
+    }
+  }
+
+
+``m.room_versions`` capability
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This capability describes the default and available room versions a server
+supports, and at what level of stability. Clients should make use of this
+capability to determine if users need to be encouraged to upgrade their rooms.
+
+An example of the capability API's response for this capability is::
+
+  {
+    "capabilities": {
+      "m.room_versions": {
+        "default": "1",
+        "available": {
+          "1": "stable",
+          "2": "stable",
+          "3": "unstable",
+          "custom-version": "unstable"
+        }
+      }
+    }
+  }
+
+This capability mirrors the same restrictions of `room versions`_ to describe
+which versions are stable and unstable. Clients should assume that the ``default``
+version is ``stable``. Any version not explicitly labelled as ``stable`` in the
+``available`` versions is to be treated as ``unstable``. For example, a version
+listed as ``future-stable`` should be treated as ``unstable``.
+
+The ``default`` version is the version the server is using to create new rooms.
+Clients should encourage users with sufficient permissions in a room to upgrade
+their room to the ``default`` version when the room is using an ``unstable``
+version.
+
+When this capability is not listed, clients should use ``"1"`` as the default
+and only stable ``available`` room version.
+
+.. _`room versions`: ../index.html#room-versions
+
 
 Pagination
 ----------
@@ -1143,9 +1314,69 @@ to keep moving forwards.
 Filtering
 ---------
 
-Filters can be created on the server and can be passed as as a parameter to APIs
+Filters can be created on the server and can be passed as a parameter to APIs
 which return events. These filters alter the data returned from those APIs.
 Not all APIs accept filters.
+
+Lazy-loading room members
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Membership events often take significant resources for clients to track. In an
+effort to reduce the number of resources used, clients can enable "lazy-loading"
+for room members. By doing this, servers will attempt to only send membership events
+which are relevant to the client.
+
+It is important to understand that lazy-loading is not intended to be a
+perfect optimisation, and that it may not be practical for the server to
+calculate precisely which membership events are relevant to the client.  As a
+result, it is valid for the server to send redundant membership events to the
+client to ease implementation, although such redundancy should be minimised
+where possible to conserve bandwidth.
+
+In terms of filters, lazy-loading is enabled by enabling ``lazy_load_members``
+on a ``RoomEventFilter`` (or a ``StateFilter`` in the case of ``/sync`` only).
+When enabled, lazy-loading aware endpoints (see below) will only include
+membership events for the ``sender`` of events being included in the response.
+For example, if a client makes a ``/sync`` request with lazy-loading enabled,
+the server will only return membership events for the ``sender`` of events in
+the timeline, not all members of a room.
+
+When processing a sequence of events (e.g. by looping on ``/sync`` or
+paginating ``/messages``), it is common for blocks of events in the sequence
+to share a similar set of senders.  Rather than responses in the sequence
+sending duplicate membership events for these senders to the client, the
+server MAY assume that clients will remember membership events they have
+already been sent, and choose to skip sending membership events for members
+whose membership has not changed.  These are called 'redundant membership
+events'. Clients may request that redundant membership events are always
+included in responses by setting ``include_redundant_members`` to true in the
+filter.
+
+The expected pattern for using lazy-loading is currently:
+
+* Client performs an initial /sync with lazy-loading enabled, and receives
+  only the membership events which relate to the senders of the events it
+  receives.
+* Clients which support display-name tab-completion or other operations which
+  require rapid access to all members in a room should call /members for the
+  currently selected room, with an ``?at`` parameter set to the /sync
+  response's from token. The member list for the room is then maintained by
+  the state in subsequent incremental /sync responses.
+* Clients which do not support tab-completion may instead pull in profiles for
+  arbitrary users (e.g. read receipts, typing notifications) on demand by
+  querying the room state or ``/profile``.
+
+.. TODO-spec
+  This implies that GET /state should also take an ``?at`` param
+
+The current endpoints which support lazy-loading room members are:
+
+* |/sync|_
+* |/rooms/<room_id>/messages|_
+* |/rooms/{roomId}/context/{eventId}|_
+
+API endpoints
+~~~~~~~~~~~~~
 
 {{filter_cs_http_api}}
 
@@ -1161,7 +1392,21 @@ point in time::
 
   [E0]->[E1]->[E2]->[E3]->[E4]->[E5]
 
+.. WARNING::
 
+   The format of events can change depending on room version. Check the
+   `room version specification`_ for specific details on what to expect for
+   event formats. Examples contained within the client-server specification
+   are expected to be compatible with all specified room versions, however
+   some differences may still apply.
+
+   For this version of the specification, clients only need to worry about
+   the event ID format being different depending on room version. Clients
+   should not be parsing the event ID, and instead be treating it as an
+   opaque string. No changes should be required to support the currently
+   available room versions.
+
+.. _`room version specification`: ../index.html#room-versions
 
 Types of room events
 ~~~~~~~~~~~~~~~~~~~~
@@ -1185,6 +1430,90 @@ using the REST API detailed in the following sections. If new events are added,
 the event ``type`` key SHOULD follow the Java package naming convention,
 e.g. ``com.example.myapp.event``.  This ensures event types are suitably
 namespaced for each application and reduces the risk of clashes.
+
+.. Note::
+  Events are not limited to the types defined in this specification. New or custom
+  event types can be created on a whim using the Java package naming convention.
+  For example, a ``com.example.game.score`` event can be sent by clients and other
+  clients would receive it through Matrix, assuming the client has access to the
+  ``com.example`` namespace.
+
+Note that the structure of these events may be different than those in the
+server-server API.
+
+{{common_event_fields}}
+
+{{common_room_event_fields}}
+
+.. This is normally where we'd put the common_state_event_fields variable for the
+.. magic table of what makes up a state event, however the table is verbose in our
+.. custom rendering of swagger. To combat this, we just hardcode this particular
+.. table.
+
+State Event Fields
+++++++++++++++++++
+
+In addition to the fields of a Room Event, State Events have the following fields.
+
++--------------+--------------+-------------------------------------------------------------+
+| Key          | Type         | Description                                                 |
++==============+==============+=============================================================+
+| state_key    | string       | **Required.** A unique key which defines the overwriting    |
+|              |              | semantics for this piece of room state. This value is often |
+|              |              | a zero-length string. The presence of this key makes this   |
+|              |              | event a State Event. State keys starting with an ``@`` are  |
+|              |              | reserved for referencing user IDs, such as room members.    |
+|              |              | With the exception of a few events, state events set with   |
+|              |              | a given user's ID as the state key MUST only be set by that |
+|              |              | user.                                                       |
++--------------+--------------+-------------------------------------------------------------+
+| prev_content | EventContent | Optional. The previous ``content`` for this event. If there |
+|              |              | is no previous content, this key will be missing.           |
++--------------+--------------+-------------------------------------------------------------+
+
+
+Size limits
+~~~~~~~~~~~
+
+The complete event MUST NOT be larger than 65535 bytes, when formatted as a
+`PDU for the Server-Server protocol <../server_server/%SERVER_RELEASE_LABEL%#pdus>`_,
+including any signatures, and encoded as `Canonical JSON`_.
+
+There are additional restrictions on sizes per key:
+
+- ``sender`` MUST NOT exceed 255 bytes (including domain).
+- ``room_id`` MUST NOT exceed 255 bytes.
+- ``state_key`` MUST NOT exceed 255 bytes.
+- ``type`` MUST NOT exceed 255 bytes.
+- ``event_id`` MUST NOT exceed 255 bytes.
+
+Some event types have additional size restrictions which are specified in
+the description of the event. Additional keys have no limit other than that
+implied by the total 65 KB limit on events.
+
+.. _`Canonical JSON`: ../appendices.html#canonical-json
+
+Room Events
+~~~~~~~~~~~
+.. NOTE::
+  This section is a work in progress.
+
+This specification outlines several standard event types, all of which are
+prefixed with ``m.``
+
+{{m_room_aliases_event}}
+
+{{m_room_canonical_alias_event}}
+
+{{m_room_create_event}}
+
+{{m_room_join_rules_event}}
+
+{{m_room_member_event}}
+
+{{m_room_power_levels_event}}
+
+{{m_room_redaction_event}}
 
 
 Syncing
@@ -1365,7 +1694,6 @@ the following list:
 - ``room_id``
 - ``sender``
 - ``state_key``
-- ``prev_content``
 - ``content``
 - ``hashes``
 - ``signatures``
@@ -1396,6 +1724,16 @@ The server should add the event causing the redaction to the ``unsigned``
 property of the redacted event, under the ``redacted_because`` key. When a
 client receives a redaction event it should change the redacted event in the
 same way a server does.
+
+.. NOTE::
+
+    Redacted events can still affect the state of the room. When redacted,
+    state events behave as though their properties were simply not specified,
+    except those protected by the redaction algorithm. For example,
+    a redacted ``join`` event will still result in the user being considered joined.
+    Similarly, a redacted topic does not necessarily cause the topic to revert to
+    what is was prior to the event - it causes the topic to be removed from the room.
+
 
 Events
 ++++++

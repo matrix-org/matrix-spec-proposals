@@ -1,0 +1,312 @@
+.. Copyright 2017,2019 New Vector Ltd
+..
+.. Licensed under the Apache License, Version 2.0 (the "License");
+.. you may not use this file except in compliance with the License.
+.. You may obtain a copy of the License at
+..
+..     http://www.apache.org/licenses/LICENSE-2.0
+..
+.. Unless required by applicable law or agreed to in writing, software
+.. distributed under the License is distributed on an "AS IS" BASIS,
+.. WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+.. See the License for the specific language governing permissions and
+.. limitations under the License.
+
+Room Version 1
+==============
+
+This room version is the first ever version for rooms, and contains the building
+blocks for other room versions.
+
+.. contents:: Table of Contents
+.. sectnum::
+
+Server implementation components
+--------------------------------
+
+.. WARNING::
+   The information contained in this section is strictly for server implementors.
+   Applications which use the Client-Server API are generally unaffected by the
+   details contained here, and can safely ignore their presence.
+
+
+The algorithms defined here should only apply to version 1 rooms. Other algorithms
+may be used by other room versions, and as such servers should be aware of which
+version room they are dealing with prior to executing a given algorithm.
+
+.. WARNING::
+   Although room version 1 is the most popular room version, it is known to have
+   undesirable effects. Servers implementing support for room version 1 should be
+   aware that restrictions should be generally relaxed and that inconsistencies
+   may occur until room version 2 (or later) is ready and adopted.
+
+State resolution
+~~~~~~~~~~~~~~~~
+
+.. WARNING::
+  This section documents the state resolution algorithm as implemented by
+  Synapse as of December 2017 (and therefore the de-facto Matrix protocol).
+  However, this algorithm is known to have some problems.
+
+The room state :math:`S'(E)` after an event :math:`E` is defined in terms of
+the room state :math:`S(E)` before :math:`E`, and depends on whether
+:math:`E` is a state event or a message event:
+
+* If :math:`E` is a message event, then :math:`S'(E) = S(E)`.
+
+* If :math:`E` is a state event, then :math:`S'(E)` is :math:`S(E)`, except
+  that its entry corresponding to :math:`E`'s ``event_type`` and ``state_key``
+  is replaced by :math:`E`'s ``event_id``.
+
+The room state :math:`S(E)` before :math:`E` is the *resolution* of the set of
+states :math:`\{ S'(E'), S'(E''), … \}` consisting of the states after each of
+:math:`E`'s ``prev_event``\s :math:`\{ E', E'', … \}`.
+
+The *resolution* of a set of states is defined as follows.  The resolved state
+is built up in a number of passes; here we use :math:`R` to refer to the
+results of the resolution so far.
+
+* Start by setting :math:`R` to the union of the states to be resolved,
+  excluding any *conflicting* events.
+
+* First we resolve conflicts between ``m.room.power_levels`` events. If there
+  is no conflict, this step is skipped, otherwise:
+
+  * Assemble all the ``m.room.power_levels`` events from the states to
+    be resolved into a list.
+
+  * Sort the list by ascending ``depth`` then descending ``sha1(event_id)``.
+
+  * Add the first event in the list to :math:`R`.
+
+  * For each subsequent event in the list, check that the event would be
+    allowed by the authorization rules for a room in state :math:`R`. If the
+    event would be allowed, then update :math:`R` with the event and continue
+    with the next event in the list. If it would not be allowed, stop and
+    continue below with ``m.room.join_rules`` events.
+
+* Repeat the above process for conflicts between ``m.room.join_rules`` events.
+
+* Repeat the above process for conflicts between ``m.room.member`` events.
+
+* No other events affect the authorization rules, so for all other conflicts,
+  just pick the event with the highest depth and lowest ``sha1(event_id)`` that
+  passes authentication in :math:`R` and add it to :math:`R`.
+
+A *conflict* occurs between states where those states have different
+``event_ids`` for the same ``(state_type, state_key)``. The events thus
+affected are said to be *conflicting* events.
+
+
+Authorization rules
+~~~~~~~~~~~~~~~~~~~
+
+The types of state events that affect authorization are:
+
+- ``m.room.create``
+- ``m.room.member``
+- ``m.room.join_rules``
+- ``m.room.power_levels``
+- ``m.room.third_party_invite``
+
+.. NOTE::
+
+  Power levels are inferred from defaults when not explicitly supplied.
+  For example, mentions of the ``sender``'s power level can also refer 
+  to the default power level for users in the room.
+
+The rules are as follows:
+
+1. If type is ``m.room.create``:
+
+   a. If it has any previous events, reject.
+   b. If the domain of the ``room_id`` does not match the domain of the
+      ``sender``, reject.
+   c. If ``content.room_version`` is present and is not a recognised version,
+      reject.
+   d. If ``content`` has no ``creator`` field, reject.
+   e. Otherwise, allow.
+
+#. Reject if event has ``auth_events`` that:
+
+   a. have duplicate entries for a given ``type`` and ``state_key`` pair
+   #. have entries whose ``type`` and ``state_key`` don't match those
+      specified by the `auth events selection`_ algorithm described in the
+      server specification.
+
+#. If event does not have a ``m.room.create`` in its ``auth_events``, reject.
+
+#. If type is ``m.room.aliases``:
+
+   a. If event has no ``state_key``, reject.
+   b. If sender's domain doesn't matches ``state_key``, reject.
+   c. Otherwise, allow.
+
+#. If type is ``m.room.member``:
+
+   a. If no ``state_key`` key or ``membership`` key in ``content``, reject.
+
+   #. If ``membership`` is ``join``:
+
+      i. If the only previous event is an ``m.room.create``
+         and the ``state_key`` is the creator, allow.
+
+      #. If the ``sender`` does not match ``state_key``, reject.
+
+      #. If the ``sender`` is banned, reject.
+
+      #. If the ``join_rule`` is ``invite`` then allow if membership state
+         is ``invite`` or ``join``.
+
+      #. If the ``join_rule`` is ``public``, allow.
+
+      #. Otherwise, reject.
+
+   #. If ``membership`` is ``invite``:
+
+      i. If ``content`` has ``third_party_invite`` key:
+
+         #. If *target user* is banned, reject.
+
+         #. If ``content.third_party_invite`` does not have a
+            ``signed`` key, reject.
+
+         #. If ``signed`` does not have ``mxid`` and ``token`` keys, reject.
+
+         #. If ``mxid`` does not match ``state_key``, reject.
+
+         #. If there is no ``m.room.third_party_invite`` event in the
+            current room state with ``state_key`` matching ``token``, reject.
+
+         #. If ``sender`` does not match ``sender`` of the
+            ``m.room.third_party_invite``, reject.
+
+         #. If any signature in ``signed`` matches any public key in the
+            ``m.room.third_party_invite`` event, allow. The public keys are
+            in ``content`` of ``m.room.third_party_invite`` as:
+
+            #. A single public key in the ``public_key`` field.
+            #. A list of public keys in the ``public_keys`` field.
+
+         #. Otherwise, reject.
+
+      #. If the ``sender``'s current membership state is not ``join``, reject.
+
+      #. If *target user*'s current membership state is ``join`` or ``ban``,
+         reject.
+
+      #. If the ``sender``'s power level is greater than or equal to the *invite
+         level*, allow.
+
+      #. Otherwise, reject.
+
+   #. If ``membership`` is ``leave``:
+
+      i. If the ``sender`` matches ``state_key``, allow if and only if that user's
+         current membership state is ``invite`` or ``join``.
+
+      #. If the ``sender``'s current membership state is not ``join``, reject.
+
+      #. If the *target user*'s current membership state is ``ban``, and the
+         ``sender``'s power level is less than the *ban level*, reject.
+
+      #. If the ``sender``'s power level is greater than or equal to the *kick
+         level*, and the *target user*'s power level is less than the
+         ``sender``'s power level, allow.
+
+      #. Otherwise, reject.
+
+   #. If ``membership`` is ``ban``:
+
+      i. If the ``sender``'s current membership state is not ``join``, reject.
+
+      #. If the ``sender``'s power level is greater than or equal to the *ban
+         level*, and the *target user*'s power level is less than the
+         ``sender``'s power level, allow.
+
+      #. Otherwise, reject.
+
+   #. Otherwise, the membership is unknown. Reject.
+
+#. If the ``sender``'s current membership state is not ``join``, reject.
+
+#. If type is ``m.room.third_party_invite``:
+
+   a. Allow if and only if ``sender``'s current power level is greater than
+      or equal to the *invite level*.
+
+#. If the event type's *required power level* is greater than the ``sender``'s power
+   level, reject.
+
+#. If the event has a ``state_key`` that starts with an ``@`` and does not match
+   the ``sender``, reject.
+
+#. If type is ``m.room.power_levels``:
+
+   a. If ``users`` key in ``content`` is not a dictionary with keys that are
+      valid user IDs with values that are integers (or a string that is an
+      integer), reject.
+
+   #. If there is no previous ``m.room.power_levels`` event in the room, allow.
+
+   #. For the keys ``users_default``, ``events_default``,
+      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite`` check if they 
+      were added, changed or removed. For each found alteration:
+
+      i. If the current value is higher than the ``sender``'s current power level,
+         reject.
+
+      #. If the new value is higher than the ``sender``'s current power level,
+         reject.
+         
+   #. For each entry being added, changed or removed in both the ``events`` and 
+      ``users`` keys:
+      
+      i. If the current value is higher than the ``sender``'s current power level,
+         reject.
+         
+      #. If the new value is higher than the ``sender``'s current power level,
+         reject.
+
+   #. For each entry being changed under the ``users`` key, other than the
+      ``sender``'s own entry:
+
+      i. If the current value is equal to the ``sender``'s current power level,
+         reject.
+
+   #. Otherwise, allow.
+
+#. If type is ``m.room.redaction``:
+
+   a. If the ``sender``'s power level is greater than or equal to the *redact
+      level*, allow.
+
+   #. If the domain of the ``event_id`` of the event being redacted is the same
+      as the domain of the ``event_id`` of the ``m.room.redaction``, allow.
+
+   #. Otherwise, reject.
+
+#. Otherwise, allow.
+
+.. NOTE::
+
+  Some consequences of these rules:
+
+  * Unless you are a member of the room, the only permitted operations (apart
+    from the initial create/join) are: joining a public room; accepting or
+    rejecting an invitation to a room.
+
+  * To unban somebody, you must have power level greater than or equal to both
+    the kick *and* ban levels, *and* greater than the target user's power
+    level.
+
+Event format
+~~~~~~~~~~~~
+
+Events in version 1 rooms have the following structure:
+
+{{definition_ss_pdu}}
+
+
+.. _`auth events selection`: ../server_server/%SERVER_RELEASE_LABEL%.html#auth-events-selection
+.. _`Signing Events`: ../server_server/%SERVER_RELEASE_LABEL%.html#signing-events
