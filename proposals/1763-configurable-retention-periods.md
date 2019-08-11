@@ -134,7 +134,7 @@ For instance:
 
 The above example means that servers receiving messages in this room should
 store the event for only 86400 seconds (1 day), as measured from that
-event's origin_server_ts, after which they MUST purge all references to that
+event's `origin_server_ts`, after which they MUST purge all references to that
 event (e.g. from their db and any in-memory queues).
 
 We consciously do not redact the event, as we are trying to eliminate metadata
@@ -148,7 +148,7 @@ the DAG.
 ```
 
 The above example means that servers receiving this message SHOULD store the
-event forever, but MAY choose to purge their copy after 28 days (or longer) in
+event forever, but can choose to purge their copy after 28 days (or longer) in
 order to reclaim diskspace.
 
 ### Server Admin-specified per-room retention
@@ -217,13 +217,13 @@ The minimum lifetime of an event is calculated as:
   * for clients, `min_lifetime` should be considered to be 0 (as there is no
     requirement for clients to persist events).
 
-If the calculated max_lifetime is less than the min_lifetime then the max_lifetime
-is set to be equal to the min_lifetime.
+If the calculated `max_lifetime` is less than the `min_lifetime` then the `max_lifetime`
+is set to be equal to the `min_lifetime`.
 
 The server/client then selects a lifetime of the event to lie between the
 calculated values of minimum and maximum lifetime, based on their implementation
-and configuration requirements.  The selected lifetime MUST not exceed the
-calculated maximum lifetime. The selected lifetime SHOULD not be less than the
+and configuration requirements.  The selected lifetime MUST NOT exceed the
+calculated maximum lifetime. The selected lifetime SHOULD NOT be less than the
 calculated minimum lifetime, but may be less in case of constrained resources,
 in which case the server should prioritise retaining locally generated events
 over remote generated events.
