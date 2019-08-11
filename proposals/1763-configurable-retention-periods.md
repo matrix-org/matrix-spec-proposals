@@ -88,19 +88,22 @@ set).
 The following fields are defined in the `m.room.retention` contents:  
 
 `max_lifetime`:
-  the maximum duration in seconds for which a server must store
-  this event.  Must be null or in range [0, 2<sup>31</sup>-1]. If absent, or null,
-        should be interpreted as 'forever'.
+  the maximum duration in seconds for which a server must store this event. 
+  Must be null or an integer in range [0, 2<sup>31</sup>-1]. If absent, or
+  null, should be interpreted as 'forever'.
 
 `min_lifetime`:
-  the minimum duration for which a server should store this event.
-  Must be null or in range [0, 2<sup>31</sup>-1]. If absent, or null, should be
-        interpreted as 'forever'.
+  the minimum duration for which a server should store this event. Must be
+  null or an integer in range [0, 2<sup>31</sup>-1]. If absent, or null,
+  should be interpreted as 'forever'.
   
 `expire_on_clients`:
-  a boolean for whether clients must expire messages clientside
-  to match the min/max lifetime and/or self_destruct semantics fields. If absent,
-  or null, should be interpreted as false.
+  a boolean for whether clients must expire messages clientside to match the
+  min/max lifetime fields. If absent, or null, should be interpreted as false.
+  The intention of this is to distinguish between rules intended to impose a
+  data retention policy on the server - versus rules intended to provide a
+  degree of privacy by requesting all data is purged from all clients after a
+  given time.
 
 Retention is only considered for non-state events.
 
@@ -115,10 +118,10 @@ invariant that `max_lifetime >= min_lifetime` must be maintained by clamping
 max_lifetime to be equal to `min_lifetime`.
 
 If the user's retention settings conflicts with those in the room, then the
-user's clients MUST warn the user when participating in the room.  A conflict
-exists if the user has configured their client to create rooms with retention
-settings which differing from the values on the `m.room.retention` state
-event.  This is particularly important to warn the user if the room's
+user's clients are expected to warn the user when participating in the room. 
+A conflict exists if the user has configured their client to create rooms with
+retention settings which differing from the values on the `m.room.retention`
+state event.  This is particularly important to warn the user if the room's
 retention is longer than their default requested retention period.
 
 For instance:
@@ -132,7 +135,7 @@ For instance:
 The above example means that servers receiving messages in this room should
 store the event for only 86400 seconds (1 day), as measured from that
 event's origin_server_ts, after which they MUST purge all references to that
-event ID (e.g. from their db and any in-memory queues).
+event (e.g. from their db and any in-memory queues).
 
 We consciously do not redact the event, as we are trying to eliminate metadata
 and save disk space at the cost of deliberately discarding older messages from
@@ -154,11 +157,12 @@ Server admins have two ways of influencing message retention on their server:
 
 1) Specifying a default `m.room.retention` for rooms created on the server, as
 defined as a per-server implementation configuration option which inserts the
-state events after creating the room (effectively augmenting the presets used
-when creating a room).  If a server admin is trying to conserve diskspace, they
-may do so by specifying and enforcing a relatively low min_lifetime (e.g. 1
-month), but not specify a max_lifetime, in the hope that other servers will
-retain the data for longer.
+state events after creating the room, and before `initial_state` is applied on
+`/createRoom` (effectively augmenting the presets used when creating a room). 
+If a server admin is trying to conserve diskspace, they may do so by
+specifying and enforcing a relatively low min_lifetime (e.g. 1 month), but not
+specify a max_lifetime, in the hope that other servers will retain the data
+for longer.
 
   XXX: is this the correct approach to take? It's how we force E2E encryption
   on, but it feels very fragmentory to have magical presets which do different
@@ -199,7 +203,7 @@ history being irrevocably lost against the senders' wishes.
 To summarise, servers and clients must implement the pruning algorithm as
 follows:
 
-If we're a client, apply the algorithm if:
+If we're a client (including bots and bridges), apply the algorithm:
   * if specified, the `expire_on_clients` field in the `m.room.retention` event for the room is true.
   * otherwise, don't apply the algorithm.
 
@@ -230,6 +234,16 @@ has expired (starting timing from the absolute origin_server_ts on the event).
 It's worth noting that this means events may sometimes disappear from event
 streams; calling the same `/sync` or `/messages` API twice may give different
 results if some of the events have disappeared in the interim.
+
+In order to retain the integrity of the DAG for the room on the server, events
+which form forward extremities for a room should not be purged but redacted.
+
+  XXX: is this sufficient? Should we keep a heuristic of the number of
+  redacted events which hang around, just in case some lost server reappears
+  from a netsplit and tries referencing older events?  Perhaps we can check
+  the other servers in the room to ensure that we don't purge events their
+  forward extremities refer to (except this won't work if the other servers
+  have netsplit)
 
 If possible, servers/clients should remove downstream notifications of a message
 once it has expired (e.g. by cancelling push notifications).
