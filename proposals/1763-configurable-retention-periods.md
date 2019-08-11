@@ -14,9 +14,10 @@ As well as enforcing privacy requirements, these rules provide a way for server
 administrators to better manage disk space (e.g. to enforce rules such as "don't
 store remote events for public rooms for more than a month").
 
-This proposal originally tried to also define semantics for per-message retention
-as well as per-room; this has been split out into MSCxxxx in order to get the
-easier per-room semantics landed.
+This proposal originally tried to also define semantics for per-message
+retention as well as per-room; this has been split out into
+[MSC2228](https://github.com/matrix-org/matrix-doc/pull/2228) in order to get
+the easier per-room semantics landed.
 
 ## Problem:
 
