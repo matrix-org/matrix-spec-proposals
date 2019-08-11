@@ -43,10 +43,14 @@ it.
 
 When a client sends a message with `m.self_destruct` true, the servers
 participating in a room should start monitoring the room for read receipts for
-the event in question. Once a given server has received read receipts for this
-message from all members in the room (other than the sender), then the server
-should redact the event, and send a synthetic `m.redaction` event to the
-clients in the room on behalf of the sender.
+the event in question.
+
+Once a given server has received a read receipt for this message from a member
+in the room (other than the sender), then the message's self-destruct timer
+should be started for that user.  Once the timer is complete, the server
+should redact the event from that member's perspective, and send the user a
+synthetic `m.redaction` event in the room to the reader's clients on behalf of
+the sender.
 
 ## Client-side behaviour
 
@@ -68,9 +72,10 @@ would fragment the DAG so we don't do that.
 We could have the sending server send an explicit redaction event on behalf of
 the sender rather than synthesise a redaction on the various participating
 servers.  However, this would clog up the DAG with a redundant event, and also
-introduce unreliability if the sending server is unavailable or delayed. 
-Therefore synthetic redaction events (which are only for backwards compatibility
-anyway) feel like the lesser evil.
+introduce unreliability if the sending server is unavailable or delayed.  It
+would  also result in all users redacting the message the same time. Therefore
+synthetic per-user redaction events (which are only for backwards
+compatibility anyway) feel like the lesser evil.
 
 We could let the user specify an expiry time for messages relative to when
 they were sent rather than when they were read.  However, I can't think of a
@@ -80,11 +85,14 @@ We can extend if/when that use case emerges.
 ## Issues
 
 We should probably ignore missing read receipts from bots when deciding
-whether to self_destruct.  This is blocked on having a good way to identify
+whether to self-destruct.  This is blocked on having a good way to identify
 bots.
 
-Should we even bother sending a redaction, versus just having all the servers
-behave as if a redaction has been received?
+The behaviour for rooms with more than 2 participants ends up being a bit
+strange. The client (and server) starts the expiry countdown on the message as
+soon as the participant has read it.  This means that someone can look over
+the shoulder of another user to see the content again.  This is probably a
+feature rather than a bug(?)
 
 ## Security considerations
 
