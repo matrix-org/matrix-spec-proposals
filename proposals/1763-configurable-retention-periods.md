@@ -94,9 +94,9 @@ The following fields are defined in the `m.room.retention` contents:
   null, should be interpreted as 'forever'.
 
 `min_lifetime`:
-  the minimum duration for which a server should store this event. Must be
-  null or an integer in range [0, 2<sup>31</sup>-1]. If absent, or null,
-  should be interpreted as 'forever'.
+  the minimum duration in seconds for which a server should store this event.
+  Must be null or an integer in range [0, 2<sup>31</sup>-1]. If absent, or
+  null, should be interpreted as 'forever'.
   
 `expire_on_clients`:
   a boolean for whether clients must expire messages clientside to match the
