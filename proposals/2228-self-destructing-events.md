@@ -21,11 +21,11 @@ Users can specify that a message should self-destruct by adding the following
 field to any event's content:
 
 `m.self_destruct`:
-  the duration in seconds after which the participating servers should redact
-  this event on behalf of the sender, after seeing an explicit read receipt
-  delivered for the message from all users in the room. Must be null or in range
-  [0, 2<sup>31</sup>-1]. If absent, or null, this behaviour does not take
-  effect.
+  the duration in milliseconds after which the participating servers should
+  redact this event on behalf of the sender, after seeing an explicit read
+  receipt delivered for the message from all users in the room. Must be null
+  or an integer in range [0, 2<sup>31</sup>-1]. If absent, or null, this
+  behaviour does not take effect.
 
 Clients and servers MUST send explicit read receipts per-message for
 self-destructing messages (rather than for the most recently read message,
@@ -55,7 +55,7 @@ manner in the timeline.  Details of the lifespan can be shown on demand
 however, although a visible countdown is recommended.
 
 Clients should locally remove self-destructing events as if they have been
-redacted N seconds after first attempting to send the read receipt for the
+redacted N milliseconds after first attempting to send the read receipt for the
 message in question.  The synthetic redaction event sent by the local server
 then acts as a fallback for clients which fail to implement special UI for
 self-destructing messages.
