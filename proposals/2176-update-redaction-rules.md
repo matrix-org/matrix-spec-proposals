@@ -40,7 +40,8 @@ which are preserved:
    result before or after it is redacted (and therefore may or may not redact
    the original event).
 
- * `m.room.power_levels` should allow:
+ * `m.room.power_levels` should allow (in addition to the keys already listed
+   in the spec):
 
    * the `invite` key. Rationale: this is required to authenticate
      `m.room.member` events with the `invite` membership. Currently, redacting
