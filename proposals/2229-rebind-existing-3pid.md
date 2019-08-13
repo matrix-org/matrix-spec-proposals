@@ -12,6 +12,12 @@ Identity server
     noun
 
     A queryable server that holds mappings between 3PIDs and Matrix IDs.
+
+Bind
+    verb
+
+    Create a mapping between a 3PID and a Matrix ID. Useful for people to
+    find a user based on their existing third-party contact information.
 ```
 
 As part of the on-going privacy work, Matrix client applications are
