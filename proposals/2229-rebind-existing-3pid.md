@@ -43,7 +43,7 @@ choose to bind that email to an identity server at the same time. This is
 specified through a `bind` boolean. If the user first adds the 3PID with
 `bind: false`, then decides they want to bind that 3PID to an identity server
 to make themselves discoverable by it, by making another request with `bind:
-true`. The homeserver will reject the second request, because this 3PID is
+true`, the homeserver will reject the second request, because this 3PID is
 already tied to the user's account.
 
 Similarly, when a user initially sends their 3PID with `bind: true` through a
