@@ -1,4 +1,4 @@
-# Store Identity Server in Account Data
+# MSC2230: Store Identity Server in Account Data
 
 The URL of the Identity Sever to use is currently specified at registration and
 login time and then used for the lifetime of a login session. If users wish to
