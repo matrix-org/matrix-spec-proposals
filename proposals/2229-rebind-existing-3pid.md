@@ -55,9 +55,10 @@ request as this address has already been bound.
 ## Proposal
 
 This proposal calls for allowing 3PID owners to rebind their 3PIDs using the
-[POST
-/_matrix/client/r0/account/3pid/email/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-email-requesttoken) and [POST
-/_matrix/client/r0/account/3pid/msisdn/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-msisdn-requesttoken)
+[`POST
+/_matrix/client/r0/account/3pid/email/requestToken`](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-email-requesttoken)
+and [`POST
+/_matrix/client/r0/account/3pid/msisdn/requestToken`](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-msisdn-requesttoken)
 endpoints by extending the definition of what homeservers should check before
 rejecting a bind.
 
