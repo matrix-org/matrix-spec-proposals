@@ -61,7 +61,7 @@ This proposal calls for allowing 3PID owners to rebind their 3PIDs using the
 endpoints by extending the definition of what homeservers should check before
 rejecting a bind.
 
-Homeservers should reject the binding of a 3PID if it already been bound,
+Homeservers should reject the binding of a 3PID if it has already been bound,
 **unless** the requesting user is the one who originally bound that 3PID. If
 so, then they should be able to bind it again and again if they so choose.
 
