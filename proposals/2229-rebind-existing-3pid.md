@@ -86,10 +86,6 @@ Clients should be prepared to understand that this may just mean they are
 dealing with an old homeserver, versus the 3PID already being bound on this
 homeserver by another user.
 
-Homeservers will need to keep track of each identity server that an address
-has been bound with, and upon user account deactivation, should attempt to
-unbind all of them.
-
 ## Security considerations
 
 None.
