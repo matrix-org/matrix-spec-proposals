@@ -52,6 +52,11 @@ should redact the event from that member's perspective, and send the user a
 synthetic `m.redaction` event in the room to the reader's clients on behalf of
 the sender.
 
+The synthetic redaction event should contain some flag to show the client
+that it is synthetic and used for implementing self-destruction rather than
+actually sent from the claimed client.  Perhaps `m.synthetic: true` on the
+redaction's contents?
+
 ## Client-side behaviour
 
 Clients should display self-destructing events in a clearly distinguished
