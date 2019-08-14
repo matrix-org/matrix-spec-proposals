@@ -28,7 +28,7 @@ logged-in users the ability to pick an identity server, see what 3PIDs they
 currently have bound to their Matrix ID, and bind/unbind addresses as they
 desire.
 
-When implementating this functionality, a technicality in the spec was found
+When implementing this functionality, a technicality in the spec was found
 to prevent certain abilities for a user. A user could not add a 3PID to their
 homeserver before binding it to an identity server. It also prevents users
 from binding the same 3PID to multiple identity servers. The line "The
