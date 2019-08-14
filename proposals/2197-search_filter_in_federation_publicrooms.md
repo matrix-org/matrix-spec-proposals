@@ -106,9 +106,14 @@ any worse than the current one, and it is expected that large homeservers
 would be quick to upgrade to support this feature once it is available.
 
 In addition, as the `POST` method was not previously accepted on the
-`/publicRooms` endpoint over federation, then it is not a difficult task to use
-an `M_UNRECOGNIZED` standard error response `errcode` as a signal that fallback
-is required.
+`/publicRooms` endpoint over federation, then it is possible to fall back to the
+old behaviour, if one of the following errors is encountered:
+
+- an `M_UNRECOGNIZED` standard error response `errcode` (this is what would be
+  typically expected in this situation)
+- an `M_NOT_FOUND` standard error response
+- a `404 Not Found` HTTP error response
+- a `405 Method Not Allowed` HTTP error response
 
 ## Security considerations
 
