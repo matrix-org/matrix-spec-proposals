@@ -15,21 +15,21 @@ shall be stored in the same format as in a .well-known file under the key,
 `m.identity_server` and shall comprise a single key, `base_url` which is the
 base URL of the ID Server to use (that is, the part before `/_matrix`).
 
-Upon registration or login, a client MUST refrain from performing any requests
+Upon registration or login, a client SHOULD refrain from performing any requests
 to the Identity Server until the account data has been fetched from the server.
-Once it has the account data, it MUST check for the presence of the
-`m.identity_server` key. If present, the `base_url` in this key MUST be used
+Once it has the account data, it SHOULD check for the presence of the
+`m.identity_server` key. If present, the `base_url` in this key SHOULD be used
 as the Identity Server base URL for the duration of the login session. If this
 key is not present, the client SHOULD populate it with the ID Server URL
-that was or would have been used in the login/registration process. This may
+that was or would have been used in the login/registration process. This could
 be either from user input, a .well-known lookup, or a default in the client.
 
-Client MUST listen for changes in the `m.identity_server` account data value
-and update the URL that they use for ID Server requests accordingly UNLESS
+Client SHOULD listen for changes in the `m.identity_server` account data value
+and update the URL that they use for ID Server requests accordingly unless
 the login session and choice of ID Server base URL predates this change, in
 which case they SHOULD continue to use the value they are currently using.
 
-Clients MAY offer a way for users to change the ID server being used. If they
+Clients can offer a way for users to change the ID server being used. If they
 do, the client MUST update the value of `m.identity_server` accordingly.
 
 The `m.identity_server` may be present with a value of `null`. In this case,
