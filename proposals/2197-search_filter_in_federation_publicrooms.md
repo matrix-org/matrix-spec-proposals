@@ -140,12 +140,12 @@ that's being shared is [\[1\]][1]:
 
 [1]: https://github.com/matrix-org/matrix-doc/pull/2197#issuecomment-517641751
 
-For the sake of clarity, clients SHOULD display a warning that a remote search
-will take the user's data outside the jurisdiction of their own homeserver,
-before using the `server` parameter of the Client-Server API `/publicRooms`, as
-it can be assumed that this will lead to the server invoking the Federation
-API's `/publicRooms` – on the specified remote server – with the user's search
-terms.
+For the sake of clarity, clients are strongly encouraged to display a warning
+that a remote search will take the user's data outside the jurisdiction of their
+own homeserver, before using the `server` parameter of the Client-Server API
+`/publicRooms`, as it can be assumed that this will lead to the server invoking
+the Federation API's `/publicRooms` – on the specified remote server – with the
+user's search terms.
 
 ## Conclusion
 
