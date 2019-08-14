@@ -129,8 +129,8 @@ that's being shared is [\[1\]][1]:
 
 - only covered by GDPR if:
     - the search terms contain personal data, or
-    - the user's homeserver IP address is uniquely identifying (because it's a
-      single-person homeserver, perhaps)
+    - the user's homeserver IP address or domain name is uniquely identifying
+      (because it's a single-person homeserver, perhaps)
 - likely to be *expected* to be shared with the remote homeserver
 
 [1]: https://github.com/matrix-org/matrix-doc/pull/2197#issuecomment-517641751
