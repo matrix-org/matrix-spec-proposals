@@ -13,7 +13,8 @@ make this easier.
 The base URL of the Identity Server is to be stored in user account data. It
 shall be stored in the same format as in a .well-known file under the key,
 `m.identity_server` and shall comprise a single key, `base_url` which is the
-base URL of the ID Server to use (that is, the part before `/_matrix`).
+base URL of the ID Server to use (that is, the part before `/_matrix`, including
+`https://`).
 
 Upon registration or login, a client SHOULD refrain from performing any requests
 to the Identity Server until the account data has been fetched from the server.
