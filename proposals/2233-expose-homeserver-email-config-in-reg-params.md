@@ -1,6 +1,31 @@
 # Expose Homeserver Email Configuration in Registration Parameters
 
+## Definitions
 
+```
+3PID
+    noun
+
+    A "third-party identifier" such as an email address or phone number, that
+    can be tied to your Matrix ID in order for your contacts outside of
+    Matrix to find you, typically with the help of an identity server.
+
+Identity server
+    noun
+
+    A queryable server that holds mappings between 3PIDs and Matrix IDs.
+
+Bind
+    verb
+
+    Create a mapping between a 3PID and a Matrix ID. Useful for people to
+    find a user based on their existing contact information.
+```
+
+
+## Introductions
+
+Traditionally when a user registered with their homeserver using a 3PID, the verification step (that is - sending an email or a SMS message) would always happen via the help of an identity server. However, these days we're trying to separate the homeserver's reliance on identity servers for anything other than mapping 3PIDs to Matrix IDs. 
 
 ## Proposal
 
