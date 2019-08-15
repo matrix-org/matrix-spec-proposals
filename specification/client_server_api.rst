@@ -151,7 +151,8 @@ Other error codes the client might encounter are:
   The request was not correctly authorized. Usually due to login failures.
 
 :``M_USER_DEACTIVATED``:
-  The user ID associated with the request has been deactivated.
+  The user ID associated with the request has been deactivated. Typically for
+  endpoints that prove authentication, such as `/login`.
 
 :``M_USER_IN_USE``:
   Encountered when trying to register a user ID which has been taken.

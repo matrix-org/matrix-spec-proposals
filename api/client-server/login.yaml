@@ -197,7 +197,12 @@ paths:
             The login attempt failed. For example, the password may have been incorrect.
           examples:
             application/json: {
-              "errcode": "M_FORBIDDEN"}
+              "errcode": "M_FORBIDDEN"
+              }
+            application/json: {
+                "errcode": "M_USER_DEACTIVATED",
+                "error": "This account has been deactivated."
+              }
           schema:
             "$ref": "definitions/errors/error.yaml"
         429:
