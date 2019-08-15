@@ -194,15 +194,13 @@ paths:
             "$ref": "definitions/errors/error.yaml"
         403:
           description: |-
-            The login attempt failed. For example, the password may have been incorrect.
+            The login attempt failed. This may include one of the following error codes:
+              * ``M_FORBIDDEN``: The provided authentication data was incorrect.
+              * ``M_USER_DEACTIVATED``: The user has been deactivated.
           examples:
             application/json: {
               "errcode": "M_FORBIDDEN"
-              }
-            application/json: {
-                "errcode": "M_USER_DEACTIVATED",
-                "error": "This account has been deactivated."
-              }
+            }
           schema:
             "$ref": "definitions/errors/error.yaml"
         429:
