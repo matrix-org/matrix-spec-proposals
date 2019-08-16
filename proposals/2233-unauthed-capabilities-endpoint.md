@@ -51,6 +51,14 @@ The various features could have their own unauthenticated endpoints to check
 whether or not the server supports them, but consolidating them into a single
 API potentially reduces our API surface significantly.
 
+Another solution to this problem is to have the existing `/capabilities`
+endpoint return public information when no authentication is attempted, and
+user-specific information when authentication is provided. This is certainly
+functionally valid, however conceptually it's a little complicated to have an
+API return different success states based on whether you've authenticated
+yourself or not. In addition, none of the rest of the Matrix API currently
+does this, so it may not be the best idea to introduce here.
+
 ## Conclusion
 
 Adding an unauthenticated version of the `/capabilities` API gives servers
