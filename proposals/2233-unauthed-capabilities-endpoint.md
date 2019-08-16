@@ -13,7 +13,7 @@ querying this endpoint, and then an application service doing the same).
 While the ability to scope the capabilities to the requesting user is very
 useful, there are use cases that could benefit from this API being called
 from an unauthenticated user as well. For instance, information that a user
-would like to know about a server before they sign up. Such as whether the
+would like to know about a server before they sign up, such as whether the
 server sends message content through a media-scanner, or whether the server
 allows E2EE session key backup. A client could query this information before
 they sign up. Another usecase is websites that lists public Matrix servers
