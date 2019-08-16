@@ -89,13 +89,13 @@ set).
 The following fields are defined in the `m.room.retention` contents:  
 
 `max_lifetime`:
-  the maximum duration in seconds for which a server must store this event. 
-  Must be null or an integer in range [0, 2<sup>31</sup>-1]. If absent, or
+  the maximum duration in milliseconds for which a server must store this event. 
+  Must be null or an integer in range [0, 2<sup>63</sup>-1]. If absent, or
   null, should be interpreted as 'forever'.
 
 `min_lifetime`:
-  the minimum duration in seconds for which a server should store this event.
-  Must be null or an integer in range [0, 2<sup>31</sup>-1]. If absent, or
+  the minimum duration in milliseconds for which a server should store this event.
+  Must be null or an integer in range [0, 2<sup>63</sup>-1]. If absent, or
   null, should be interpreted as 'forever'.
   
 `expire_on_clients`:
@@ -129,7 +129,7 @@ For instance:
 
 ```json
 {
-	"max_lifetime": 86400,
+	"max_lifetime": 86400000,
 }
 ```
 
@@ -144,7 +144,7 @@ the DAG.
 
 ```json
 {
-	"min_lifetime": 2419200,
+	"min_lifetime": 2419200000,
 }
 ```
 
