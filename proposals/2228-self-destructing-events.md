@@ -24,7 +24,7 @@ field to any event's content:
   the duration in milliseconds after which the participating servers should
   redact this event on behalf of the sender, after seeing an explicit read
   receipt delivered for the message from all users in the room. Must be null
-  or an integer in range [0, 2<sup>31</sup>-1]. If absent, or null, this
+  or an integer in range [0, 2<sup>63</sup>-1]. If absent, or null, this
   behaviour does not take effect.
 
 Clients and servers MUST send explicit read receipts per-message for
