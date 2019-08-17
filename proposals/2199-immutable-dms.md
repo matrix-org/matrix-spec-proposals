@@ -162,6 +162,9 @@ room. Servers MUST populate the room summary for invites if the server is a resi
 room. Clients SHOULD use the room summary on invites and joined rooms to identify if a room
 is a direct chat or not. Where the summary is not available and an `m.direct` field is on the
 invite event, clients should be skeptical but otherwise trusting of the room's DM status.
+For example, a skeptical client might list the room with a warning stating that the room
+is flagged as a DM without being appropriately decorated, but not prevent the user from
+accepting the invite.
 
 Servers MUST attempt to identify (or re-affirm) rooms as a DM whenever the relevant state
 events in the rules above change or are updated.
