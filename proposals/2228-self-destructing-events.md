@@ -41,7 +41,7 @@ it.
 
 ## Server-side behaviour
 
-When a client sends a message with `m.self_destruct` true, the servers
+When a client sends a message with `m.self_destruct` information, the servers
 participating in a room should start monitoring the room for read receipts for
 the event in question.
 
