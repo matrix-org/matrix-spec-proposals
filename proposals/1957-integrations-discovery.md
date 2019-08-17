@@ -1,6 +1,7 @@
 # MSC1957: Integration manager discovery
 
-*Note*: This is a required component of [MSC1956 - Integrations API](https://github.com/matrix-org/matrix-doc/pull/1956)
+**Note**: this proposal is part of a larger "Integrations API" which has not yet been defined.
+See [MSC1956](https://github.com/matrix-org/matrix-doc/pull/1956) for details.
 
 Users should have the freedom to choose which integration manager they want to use in their client, while
 also accepting suggestions from their homeserver and client. Clients need to know where to find the different
