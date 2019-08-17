@@ -220,9 +220,9 @@ to a given user.
 
 #### Creating DMs
 
-The room creation presets `private_chat` and `trusted_private_chat` are deprecated and to be
-removed in a future specification version. Clients should stop using those presets and instead
-use `immutable_direct_chat` as defined here. The new preset has the following effects on the
+The room creation preset `trusted_private_chat` is deprecated and to be removed in a future
+specification version. Clients should stop using those presets and instead use the new preset
+`immutable_direct_chat`, as defined here. The new preset has the following effects on the
 room state:
 
 * Join rules of `invite`.
@@ -293,6 +293,9 @@ Users generally expect that a DM will be predictably dressed for searching and s
 that the other parties cannot change the aesthetics of the room. For predictable history and
 privacy, the room's history & join rules are locked out from the users. The users can upgrade the
 room at any time to escape power level struggles, although this may not maintain the DM status.
+
+*Note*: The `private_chat` preset is untouched as it does not affect DMs. `trusted_private_chat`
+was intended for DMs despite its name and is deprecated as a result.
 
 
 #### Glare and duplicated rooms
