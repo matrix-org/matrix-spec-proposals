@@ -579,9 +579,9 @@ for restricting DMs to just important users (excluding any chance of unimportant
 namely to ensure that security is not sacrificed through leaky bots/assistants. The author
 believes there is a stronger argument for assistant-style/audit bots in a DM, such as a reminder
 bot or Giphy bot. The rationale being that although bots pose a security risk to the conversation,
-the rooms are supposed to be encrypted therefore preventing past history from being exposed
-to the bot. Both parties additionally should have the power to remove the bot if they don't
-agree.
+the rooms are supposed to have a history visibility setting which prevents the history from
+being exposed to the new parties. Important parties additionally should have the power to remove
+the new user account from the room if they don't agree.
 
 This proposal enables encryption by default for DMs. Encryption in the specification is
 moderately incomplete as of writing, making the move to enable encryption by default somewhat
