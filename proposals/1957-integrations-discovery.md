@@ -79,15 +79,16 @@ The user is able to have multiple integration managers through use of multiple w
 
 #### Display order of integration managers
 
-Clients which have support for integration managers should display at least 1 manager, but may decide
-to display multiple via something like tabs. Clients must prefer to display the user's configured
+Clients which have support for integration managers should display at least 1 manager, but should
+display multiple via something like tabs. Clients must prefer to display the user's configured
 integration managers over any defaults, and if only displaying one manager must pick the first
-manager after sorting the `state_key`s in lexicographical order. Clients may additionally display
-default managers if they so wish, and should preserve the order defined in the various defaults.
-If the user has no configured integration managers, the client must prefer to display one or more
-of the managers suggested by the homeserver over the managers recommended by the client.
+manager after sorting the `state_key`s of the applicable widgets in lexicographical order. Clients
+can additionally display default managers if they so wish, and should preserve the order defined in
+the various defaults. If the user has no configured integration managers, the client must prefer
+to display one or more of the managers suggested by the homeserver over the managers recommended
+by the client.
 
-The client may optionally support a way to entirely disable integration manager support, even if the
+The client can optionally support a way to entirely disable integration manager support, even if the
 user and homeserver have managers defined.
 
 The rationale for having the client prefer to use the user's integration managers first is so that
@@ -157,7 +158,10 @@ Some things which may be desirable in the future are:
 
 ## Security considerations
 
-When displaying integration managers, clients should not trust that the input is sanitary. Integration
-managers may only be at HTTP(S) endpoints and may still have malicious intent. Ensure any sandboxing
-on the manager is appropriate such that it can communicate with the client, but cannot perform unauthorized
-actions.
+When displaying integration managers, clients should not trust that the input is sanitary. Per the
+proposal above, an intergration manager is only permitted to be served from HTTP(S) URIs. A given
+integration manager can still have malicious intent however, and clients should ensure any sandboxing
+on the manager is appropriate such that it can communicate with the client, but cannot perform
+unauthorized actions. Other URI schemes are just as dangerous and could potentially be allowed by
+this proposal - use cases are less defined and desirable for schemes like `file://` and are excluded
+by this proposal. They can be added in a future proposal if a use case arises.
