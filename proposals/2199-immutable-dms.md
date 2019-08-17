@@ -353,9 +353,9 @@ users to the room.
 
 Servers which implement this MSC prior to it appearing in a spec release MUST advertise as such
 through the unstable feature flag `m.immutable_dms` on `/versions`. Clients which detect server
-support should not only check for the feature flag but also the presence of a supported spec version
-on the server (as the flag may disappear once the feature lands in a release). Currently this
-proposal is expected to land in r0.6.0 of the Client-Server API.
+support should not only check for the feature flag but also the presence of a supported spec
+version on the server (as the flag may disappear once the feature lands in a release). Currently
+this proposal is expected to land in r0.6.0 of the Client-Server API.
 
 Some servers have thousands and even millions of users which will need their DMs migrated. In
 order to allow those servers to advertise the feature (both as an unstable flag and as a released
