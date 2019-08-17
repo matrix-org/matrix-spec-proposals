@@ -169,6 +169,10 @@ accepting the invite.
 Servers MUST attempt to identify (or re-affirm) rooms as a DM whenever the relevant state
 events in the rules above change or are updated.
 
+Soft tombstoned rooms are rooms which are considered tombstoned without an actual tombstone
+state event being present. This is typically used to flag rooms where tombstone events cannot
+be sent as tombstoned. This proposal goes into more detail on this a bit later.
+
 #### A note about leaving DMs
 
 Unless an important user is banned, the DM is still considered alive and should be able to
