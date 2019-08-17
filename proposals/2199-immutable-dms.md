@@ -267,12 +267,13 @@ room state:
   power level event to the room and then apply the power level event described here after
   the invites have been sent. Servers can optimize this process and use this power level
   event at step 0 of the room creation process if there are no third party invites to send.
-* Users invited to the room get power level 50, including the creator. Important users
-  (those invited and the creator) MUST have `"m.direct": true` in their membership event
-  content.
+  Users invited to the room get power level 50, including the creator.
 * Third party users invited to the room get power level 50, as described by MSC2212 (see
-  later on in this proposal for how this works). These users are considered important,
-  and get `"m.direct": true` on the `m.room.third_party_invite` event contents.
+  later on in this proposal for how this works). Like the invited users, all third party
+  users invited as a result of the `/createRoom` call are considered important.
+* Important users (those invited and the creator) MUST have `"m.direct": true` in their
+  membership event content. Third party important users get the same `m.direct` flag on
+  their `m.room.third_party_invite` event contents.
 * Encryption is enabled by default using the most preferred megolm algorithm in the spec.
   Currently this would be `m.megolm.v1.aes-sha2`.
 
