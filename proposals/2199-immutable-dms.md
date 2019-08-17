@@ -178,27 +178,34 @@ be sent as tombstoned. This proposal goes into more detail on this a bit later.
 Unless an important user is banned, the DM is still considered alive and should be able to
 be rejoined even if some important people were to leave. However, there's a good chance that
 when all important users leave that the room becomes unjoinable and therefore dead. To help
-combat this, servers should approach rooms where important users have left with caution.
+combat this, servers should approach rooms where important users have left with caution by
+assuming the room cannot be brought back to life.
+
+The following cases are reinforcement reading for the conditions mentioned so far. They
+describe how the server is expected to behave given a common scenario - not all scenarios
+are covered here.
 
 **Case 1: The DM resides on a single homeserver**: when all important users leave the DM,
-the DM should be considered soft-tombstoned for those users. This will cause a new DM to be
-created. The presences of unimportant users can be enough for a homeserver to consider the
+the DM is to be considered soft-tombstoned for those users. This will cause a new DM to be
+created. The presence of unimportant users can be enough for a homeserver to consider the
 room not dead and therefore rejoinable.
 
 **Case 2: The DM resides on 2+ homeservers**: this gets a bit tricky. When the last important
-user leaves, that homeserver might be inclined to consider it soft-tombstoned. However, this
-is unlikely in practice: another server could rejoin thanks to unimportant users and invite
-the last homeserver back. Both homeservers would converge on the room being the active DM for
-those two users.
+user leaves, that homeserver would not have visibility on the room anymore but does not have
+enough information for it to be tombstoned (soft or otherwise). Another server can still rejoin
+the room due to unimportant users being left behind, or keep the room alive without the other
+homeserver continuing participation. The homeservers involved will still converge on the room
+when other conversations start.
 
-**Case 3: A duplicate DM comes in for a room the server has left**: the server would normally
-be inclined to automatically tombstone the new DM in reference of the existing DM (which the
-server has left). It must not do this unless it is a resident of the room and can verify
-that the room is alive as otherwise its perspective of the room may be antiquated. Instead,
-the server must assume that the new DM means that the existing one is dead for one reason
-or another. If another server were to tombstone the new room and point to the existing room,
-the user could then try and join the existing room and the server's perspective of the state
-would be refreshed.
+**Case 3: A duplicate DM comes in for a room the server has left**: when the server does not
+have visibility on the members of a room anymore it cannot tombstone newly created rooms and
+point to the room it can't see. If the server happens to be a resident of the room, it can
+absolutely tombstone the new room in favour of the old room, even if the server's membership
+is just unimportant users and the important users having left. When the server does encounter
+an invite for a DM which duplicates a room it has left, it must assume that its perspective
+of the older room is antiquated and that something happened to cause a new invite to come
+in. After joining, if a server happened to tombstone the room to point to the older room
+then the user could then try and join the room and refresh the server's perspective.
 
 *Note*: Originally case 3 had a step for the server to autojoin the user into the existing
 room to refresh its state, however this left a glaring hole for abuse to filter its way down
