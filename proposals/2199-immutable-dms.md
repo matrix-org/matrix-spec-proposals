@@ -585,11 +585,20 @@ the new user account from the room if they don't agree.
 
 This proposal enables encryption by default for DMs. Encryption in the specification is
 moderately incomplete as of writing, making the move to enable encryption by default somewhat
-questionable. The author is predicting much of the future here and is expecting that key
-backup and cross-signing land in a released version of the spec at the same time or shortly
-after this proposal ends up in a released specification. Additionally, most clients which
-support encryption are targeting a stable release with better UX for around the same time
-this feature would be released in a production build ("out of labs" as Riot calls it).
+questionable. For instance, a large number of bots and bridges in the ecosystem do not currently
+support encryption and generally fall silent in encrypted rooms. Bots in today's ecosystem
+can use [Pantalaimon](https://github.com/matrix-org/pantalaimon) or add dedicated support
+if they so choose, however bridges are still unable to decrypt messages even with Pantalaimon.
+Bridges being able to support encryption (they'll need EDUs and a device ID) is a problem
+for a different MSC, and likely a different spec version. In the meantime, this proposal
+specifically does not prohibit DMs which are unencrypted and bridges can start DMs as such,
+or refuse to participate in DMs which are encrypted. Generally speaking, bridges in the
+current ecosystem start the DMs with users instead of the users contacting the bridge,
+however there are some prominent examples of this being reversed (IRC, most puppet bridges,
+etc). Clients can combat this by identifying bridge namespaces (also a future spec problem)
+and offering users the option to not encrypt the room, or by just having that checkbox
+always present. Ideally, this proposal and cross-signing, better encryption for bridges,
+etc all land concurrently in the next specification version.
 
 This proposal is vague about which encryption algorithm to support. This is an intentional
 choice by the author to support the possibility of a given encryption algorithm being
