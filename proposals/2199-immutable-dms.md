@@ -181,6 +181,12 @@ when all important users leave that the room becomes unjoinable and therefore de
 combat this, servers should approach rooms where important users have left with caution by
 assuming the room cannot be brought back to life.
 
+If [MSC1777](https://github.com/matrix-org/matrix-doc/pull/1777) or similar were to land,
+the server should abuse the capability to determine how alive the room is. By refreshing
+its perspective, it can avoid scenarios where it has to make assumptions about the state
+of the room it is no longer in. The server should never autojoin the user to the room,
+regardless of MSC1777 support or not.
+
 The following cases are reinforcement reading for the conditions mentioned so far. They
 describe how the server is expected to behave given a common scenario - not all scenarios
 are covered here.
