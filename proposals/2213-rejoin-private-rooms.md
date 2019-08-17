@@ -35,7 +35,8 @@ preserved by the redaction algorithm. The `rejoin_rule` must be one of:
   explicitly invited back into the room). This is the default.
 
 The `rejoin_rule` only takes effect if the `join_rule` for the room is `invite`,
-given users can already rejoin the room if the room is public.
+given users can already rejoin the room if the room is public. When the `join_rule`
+is any other value, the `rejoin_rule` does not affect the auth for an event.
 
 When a join or invite is being processed, the server must first determine if that
 user has a prior membership event. If the user does not have a prior membership event,
@@ -62,7 +63,8 @@ of the proposal to prevent servers from having to traverse the entire room state
 to find a previous membership event. For example, if a server had to traverse the state
 history for Matrix HQ (if it were private) every time someone wanted to join the server
 could end up exhausting resources. For simplicity, the server is only expected to look
-at the last 2 memberships maximum. This limitation can be resolved with a regular invite.
+at the most recent 2 memberships maximum, as per above. This limitation can be resolved
+with a regular invite.
 
 
 ## Security considerations
