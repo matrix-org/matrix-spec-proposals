@@ -3,6 +3,9 @@
 A set of common APIs needs to be defined for clients to be able to interact with an integration
 manager. This proposal covers the authentication portion of that API.
 
+**Note**: this proposal is part of a larger "Integrations API" which has not yet been defined.
+See [MSC1956](https://github.com/matrix-org/matrix-doc/pull/1956) for details.
+
 
 ## Proposal
 
