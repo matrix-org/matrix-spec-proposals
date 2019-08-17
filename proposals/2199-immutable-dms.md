@@ -373,11 +373,13 @@ following process for migration for each user:
 2. Identify each room as either a DM or some other room, flagging them as appropriate, using the
    following steps:
 
-   * If the room does not have a `rejoin_rule`, consider the rejoin rule as `join` for the purposes
-     of identification.
+   * If the room does not have a `rejoin_rule`, consider the rejoin rule as `join` for the
+     purposes of identification.
    * Identify the room using the rules specified earlier in this proposal.
    * If the room did not have a `rejoin_rule`, attempt to set the rejoin rule to `join`. If that
-     fails, do not consider the room a DM.
+     fails, do not consider the room a DM. Note that this will not cause the rule to magically
+     work on prior room versions: it is just set to ensure that the DM flagging conditions
+     are met as they don't care for the behaviour, just the value being present.
 
    Identification of DMs may involve conflict resolution, which should only happen after the steps
    above have been executed.
