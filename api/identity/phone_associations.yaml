@@ -166,11 +166,11 @@ paths:
       responses:
         "200":
           description: Phone number is validated.
-        "3xx":
+        "300":
           description: |-
             Phone number address is validated, and the ``next_link`` parameter
             was provided to the ``requestToken`` call. The user must be
             redirected to the URL provided by the ``next_link`` parameter.
-        "4xx":
+        "400":
           description:
             Validation failed.
