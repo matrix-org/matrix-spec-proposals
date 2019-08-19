@@ -94,7 +94,8 @@ Homeserver to make calls to the IS on its behalf, it must also supply its
 access token for the Identity Server alongside in the `is_token` key of the
 same JSON object. That is, in the main request object for a `requestToken`
 request and in the `threepidCreds` object when supplying 3PID credentials (eg.
-in the `m.email.identity` UI auth stage).  Exceptions to this are any requests
+in the `m.email.identity` UI auth stage). The server must also relay
+`M_TERMS_NOT_SIGNED` errors back to the client. Exceptions to this are any requests
 where the only IS operation the Homeserver may perform is unbinding, ie.
 `/_matrix/client/r0/account/deactivate` and
 `/_matrix/client/r0/account/3pid/delete`, in which case the unbind will be
