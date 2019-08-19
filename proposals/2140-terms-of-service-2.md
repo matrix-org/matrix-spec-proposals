@@ -71,7 +71,7 @@ of:
  * `/_matrix/identity/v2/pubkey/*`
  * The new `$prefix/account/register` endpoint
  * The new `GET /_matrix/identity/v2/terms`
- * `$prefix/logout`
+ * `$prefix/account/logout`
 
 ...may return an error with `M_UNAUTHORIZED` errcode with HTTP status code 401.
 This indicates that the user must authenticate with OpenID and supply a valid
