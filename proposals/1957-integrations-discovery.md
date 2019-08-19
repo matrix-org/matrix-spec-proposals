@@ -100,7 +100,7 @@ user so they don't get left out.
 #### Displaying integration managers
 
 Clients simply open the `ui_url` (or equivalent) in an `iframe` or similar. In the current ecosystem,
-integration managers would receive a `scalar_token` to idenitify the user - this is no longer the case
+integration managers would receive a `scalar_token` to identify the user - this is no longer the case
 and instead integration managers must seek other avenues for determining the user ID. Other proposals
 cover how to do this in the context of the integrations API.
 
@@ -159,7 +159,7 @@ Some things which may be desirable in the future are:
 ## Security considerations
 
 When displaying integration managers, clients should not trust that the input is sanitary. Per the
-proposal above, an intergration manager is only permitted to be served from HTTP(S) URIs. A given
+proposal above, an integration manager is only permitted to be served from HTTP(S) URIs. A given
 integration manager can still have malicious intent however, and clients should ensure any sandboxing
 on the manager is appropriate such that it can communicate with the client, but cannot perform
 unauthorized actions. Other URI schemes are just as dangerous and could potentially be allowed by
