@@ -7,7 +7,7 @@ corresponding method that can be used with Identity Servers and Integration
 Managers.
 
 Requirements for this proposal are:
- * ISs and IMs should be able to give multiple documents a user must agree to
+ * ISes and IMs should be able to give multiple documents a user must agree to
    abide by
  * Each document shoud be versioned
  * ISes and IMs must, for each request that they handle, know that the user
@@ -15,7 +15,7 @@ Requirements for this proposal are:
    absolute proof (we will always have to trust that the client actually
    showed the document to the user) but it must be reasonably demonstrable that
    the user has given informed consent for the client to use that service.
- * ISs and IMs must be able to prevent users from using the service if they
+ * ISes and IMs must be able to prevent users from using the service if they
    have not provided agreement.
  * A user should only have to agree to each version of each document once for
    their Matrix ID, ie. having agreed to a set of terms in one client, they
@@ -265,7 +265,7 @@ in the current login sessions is:
 
 A client uses this client/server API endpoint to request that the Homeserver
 removes the given 3PID from the given Identity Server, or all Identity Servers.
-Takes parameters the same parameters as
+Takes the same parameters as
 `POST /_matrix/client/r0/account/3pid/delete`, ie. `id_server`, `medium`,
 `address` and the newly added `is_token`.
 
