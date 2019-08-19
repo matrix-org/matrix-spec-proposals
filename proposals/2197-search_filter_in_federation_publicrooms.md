@@ -24,7 +24,7 @@ In turn, this means that these room directory query responses can be generated
 more quickly and then, due to their smaller size, transmitted over the network
 more quickly.
 
-These benefits have been exploited in the Client-Server API, which implements
+These benefits have been utilised in the Client-Server API, which implements
 search filtering using the `filter` JSON body parameter in the `POST` method on
 the `/publicRooms` endpoint.
 
@@ -105,15 +105,14 @@ any worse than the current one, and it is expected that large homeservers
 – which cause the most work with the current search implementations –
 would be quick to upgrade to support this feature once it is available.
 
-In addition, as the `POST` method was not previously accepted on the
-`/publicRooms` endpoint over federation, then it is possible to fall back to the
-old behaviour, if one of the following errors is encountered:
+As the `POST` method was not previously accepted on the `/publicRooms` endpoint
+over federation, then requesting servers should fall back to the old behaviour,
+if one of the following errors is encountered:
 
-- an `M_UNRECOGNIZED` standard error response `errcode` (this is what would be
-  typically expected in this situation)
-- an `M_NOT_FOUND` standard error response
-- a `404 Not Found` HTTP error response
-- a `405 Method Not Allowed` HTTP error response
+- an HTTP `400` response with an `M_UNRECOGNIZED` standard error response
+  `errcode` (this is what would be typically expected in this situation)
+- a `404` (Not Found) HTTP error response
+- a `405` (Method Not Allowed) HTTP error response
 
 ## Security considerations
 
@@ -121,7 +120,7 @@ There are no known security considerations.
 
 ## Privacy considerations
 
-At current, remote homeservers do not learn about what a user has searched for.
+At present, remote homeservers do not learn about what a user has searched for.
 
 However, under this proposal, in the context of using the Federation API to
 forward on queries from the Client-Server API, a client's homeserver would end
