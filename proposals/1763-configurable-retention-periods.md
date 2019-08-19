@@ -199,7 +199,7 @@ Server admins could also override the requested retention limits (e.g. if
 resource constrained), but this isn't recommended given it may result in
 history being irrevocably lost against the senders' wishes.
 
-## Pruning algorithm
+## Pruning algorithm
 
 To summarise, servers and clients must implement the pruning algorithm as
 follows:
