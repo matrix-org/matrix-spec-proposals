@@ -1,6 +1,6 @@
 # MSC2230: Store Identity Server in Account Data
 
-The URL of the Identity Sever to use is currently specified at registration and
+The URL of the Identity Server to use is currently specified at registration and
 login time and then used for the lifetime of a login session. If users wish to
 specify a custom one, they must do so each time they log in on every client.
 Once they have chosen an Identity Server to advertise their 3PIDs on, it would
@@ -11,7 +11,7 @@ make this easier.
 ## Proposal
 
 The base URL of the Identity Server is to be stored in user account data. It
-shall be stored in the same format as in a .well-known file under the key,
+shall be stored in the same format as in a .well-known file under the event type
 `m.identity_server` and shall comprise a single key, `base_url` which is the
 base URL of the ID Server to use (that is, the part before `/_matrix`, including
 `https://`).
@@ -33,7 +33,7 @@ which case they SHOULD continue to use the value they are currently using.
 Clients can offer a way for users to change the ID server being used. If they
 do, the client MUST update the value of `m.identity_server` accordingly.
 
-The `m.identity_server` may be present with a value of `null`. In this case,
+The `m.identity_server` may be present with a `base_url` of `null`. In this case,
 clients MUST treat this as no ID Server URL being set and not perform ID
 Server requests, disabling any functionality that requires such requests.
 
