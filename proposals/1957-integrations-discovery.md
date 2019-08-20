@@ -45,10 +45,10 @@ As shown, the homeserver is able to suggest multiple integration managers throug
 must have an `api_url` which must be an `http` or `https` URL. The `ui_url` is optional and if not provided
 is the same as the `api_url`. Like the `api_url`, the `ui_url` must be `http` or `https` if supplied.
 
-The `ui_url` is ultimately treated the same as a widget, except that the custom `data` is not present and
-must not be templated here. Variables like `$matrix_display_name` are able to function, however. Integration
-managers should never use the `$matrix_user_id` as authoritative and instead seek other ways to determine the
-user ID. This is covered by other proposals.
+The `ui_url` is ultimately treated the same as a widget, except that the `data` object from the widget is not
+present and must not be templated here. Variables like `$matrix_display_name` are able to function, however.
+Integration managers should never use the `$matrix_user_id` as authoritative and instead seek other ways to
+determine the user ID. This is covered by other proposals.
 
 The `api_url` is the URL clients will use when *not* embedding the integration manager, and instead showing
 its own purpose-built interface.
@@ -56,7 +56,8 @@ its own purpose-built interface.
 Clients should query the `.well-known` information for the homeserver periodically to update the integration
 manager settings for that homeserver. The client is not expected to validate or use any other information
 contained in the response. Current recommendations are to query the configuration when the client starts up
-and every 8 hours after that.
+and every 8 hours after that. Clients can additionally refresh the configuration whenever they feel is
+necessary (such as every time the user opens the integration manager).
 
 #### User-configured integration managers
 
@@ -111,10 +112,15 @@ as an account widget rather than a room widget.
 #### Discovering a manager by only the domain name
 
 Clients may wish to ask users for a single canonical domain name so they can find the manager to add
-to the user's account transparently. Similar to the .well-known discovery done by servers (and clients
-during login), clients which have an integrations domain (eg: "example.org") make a regular HTTPS
-request to `https://example.org/.well-known/matrix/integrations` which returns an object which looks
-like the following:
+to the user's account transparently. This differs from the .well-known discovery which allows homeservers
+to recommend their own integration manager: the homeserver is not recommending a default here. The
+user has instead opted to pick an integration manager (identified only by domain name) and the client
+is expected to resolve that to a set of URLs it can use for the manager.
+
+Similar to the .well-known discovery done by servers (and clients during login), clients which have an
+integrations domain (eg: "example.org") make a regular HTTPS request to
+`https://example.org/.well-known/matrix/integrations` which returns an object which looks like the
+following:
 ```json
 {
     "m.integrations_widget": {
@@ -132,6 +138,13 @@ property, the client should assume there is no integrations manager running on t
 an integration manager, described above. The client should wrap the object verbatim into the appropriate
 account data location.
 
+Because the .well-known file would be accessed by web browsers, among other platforms, the server
+should be using appropriate CORS headers for the request. The recommended headers are the same as those
+which are already recommended for homeserver discovery in the Client-Server API.
+
+*Note*: this could reuse the client-server mechanic for discovery and just omit the homeserver information
+however that conflates many concerns together on the one endpoint. A new endpoint is instead proposed
+to keep the concerns isolated.
 
 ## Tradeoffs
 
@@ -144,8 +157,8 @@ support this use case, even if it is moderately rare.
 
 We could also define the integration managers in a custom account data event rather than defining them
 as a widget. Doing so just adds clutter to the account data and risks duplicating code in clients as
-using widgets gets us URL templating for free (see the section later on in this proposal about account
-widgets for more information).
+using widgets gets us URL templating for free (see the section earlier on in this proposal about account
+widgets for more information: "User-configured integration managers").
 
 
 ## Future extensions
