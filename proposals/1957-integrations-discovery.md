@@ -3,6 +3,9 @@
 **Note**: this proposal is part of a larger "Integrations API" which has not yet been defined.
 See [MSC1956](https://github.com/matrix-org/matrix-doc/pull/1956) for details.
 
+**Note**: this proposal makes use of the existing Widget API proposed by
+[MSC1236](https://github.com/matrix-org/matrix-doc/issues/1236).
+
 Users should have the freedom to choose which integration manager they want to use in their client, while
 also accepting suggestions from their homeserver and client. Clients need to know where to find the different
 integration managers and how to contact them.
