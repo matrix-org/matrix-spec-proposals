@@ -148,7 +148,7 @@ to use the service. Its response is similar to the structure used in the
             "version": "1.2",
             "en": {
                 "name": "Privacy Policy",
-                "url": "https://example.org/somewhere/privaacy-1.2-en.html"
+                "url": "https://example.org/somewhere/privacy-1.2-en.html"
             },
             "fr": {
                 "name": "Politique de confidentialité",
