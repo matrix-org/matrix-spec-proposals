@@ -81,6 +81,9 @@ widget rules apply here.
 
 The user is able to have multiple integration managers through use of multiple widgets.
 
+The query string shown in the example is to demonstrate that integration managers are widgets and can
+make use of the template options provided to widgets.
+
 #### Display order of integration managers
 
 Clients which have support for integration managers should display at least 1 manager, but should
@@ -148,6 +151,9 @@ which are already recommended for homeserver discovery in the Client-Server API.
 *Note*: this could reuse the client-server mechanic for discovery and just omit the homeserver information
 however that conflates many concerns together on the one endpoint. A new endpoint is instead proposed
 to keep the concerns isolated.
+
+The query string shown in the example is to demonstrate that integration managers are widgets and can
+make use of the template options provided to widgets.
 
 ## Tradeoffs
 
