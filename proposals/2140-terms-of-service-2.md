@@ -255,7 +255,7 @@ in the current login session is:
    pending agreement.
  * If non-empty, show this set of documents to the user and wait for the user
    to indicate their agreement.
- * Add the newly agreed documents to `m.accepted_terms`
+ * Add the newly agreed documents to `m.accepted_terms`.
  * On success, or if there were no documents pending agreement, get an OpenID
    token from the Homeserver and submit this token to the `register` endpoint.
    Store the resulting access token.
