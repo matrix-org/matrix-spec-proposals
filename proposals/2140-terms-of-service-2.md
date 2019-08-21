@@ -248,7 +248,7 @@ The `/_matrix/identity/v2/3pid/unbind` endpoint must not return either of these
 errors if the request has a valid signature from a Homeserver, and is being authenticated as such.
 
 In summary, the process for using a service that has not previously been used
-in the current login sessions is:
+in the current login session is:
 
  * `GET $prefix/terms`
  * Compare result with `m.accepted_terms` account data, get set of documents
