@@ -21,14 +21,11 @@ to the Identity Server until the account data has been fetched from the server.
 Once it has the account data, it SHOULD check for the presence of the
 `m.identity_server` key. If present, the `base_url` in this key SHOULD be used
 as the Identity Server base URL for the duration of the login session. If this
-key is not present, the client SHOULD populate it with the ID Server URL
-that was or would have been used in the login/registration process. This could
-be either from user input, a .well-known lookup, or a default in the client.
+key is not present, the client SHOULD use whatever value it would have used prior
+to this MSC. It should not update the account data in this situation.
 
 Client SHOULD listen for changes in the `m.identity_server` account data value
-and update the URL that they use for ID Server requests accordingly unless
-the login session and choice of ID Server base URL predates this change, in
-which case they SHOULD continue to use the value they are currently using.
+and update the URL that they use for ID Server requests accordingly.
 
 Clients can offer a way for users to change the ID server being used. If they
 do, the client MUST update the value of `m.identity_server` accordingly.
@@ -43,10 +40,9 @@ account data entry to `null`.
 
 ### Transition Period
 
-Clients currently logged in with a value configured for the ID Server base
-URL SHOULD use the value from `m.identity_server` if it exists or is created,
-but otherwise continue to use the URL they had previously. They MUST NOT
-populate the `m.identity_server` with their current ID Server base URL.
+Clients will continue to use whatever IS URLs they currently use until the
+user sets one explicitly, at which point it will be written to account data
+and all clients will start using this value.
 
 ## Tradeoffs
 
