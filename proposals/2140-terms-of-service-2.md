@@ -91,13 +91,14 @@ API, as specified in [MSC1961](https://github.com/matrix-org/matrix-doc/issues/1
 
 When clients supply an identity server to the Homeserver in order for the
 Homeserver to make calls to the IS on its behalf, it must also supply its
-access token for the Identity Server alongside in the `is_token` key of the
-same JSON object. That is, in the main request object for a `requestToken`
-request and in the `threepidCreds` object when supplying 3PID credentials (eg.
-in the `m.email.identity` UI auth stage). The server must also relay
-`M_TERMS_NOT_SIGNED` errors back to the client. Exceptions to this are any requests
-where the only IS operation the Homeserver may perform is unbinding, ie.
-`/_matrix/client/r0/account/deactivate` and
+access token for the Identity Server alongside in the `id_access_token` key of
+the same JSON object. That is, in the main request object for `requestToken`
+and `/_matrix/client/r0/rooms/{roomId}/invite` requests and in the
+`threepidCreds` object when supplying 3PID credentials (eg.  in the
+`m.email.identity` UI auth stage). The server must also relay
+`M_TERMS_NOT_SIGNED` errors back to the client. Exceptions to this are any
+requests where the only IS operation the Homeserver may perform is unbinding,
+ie.  `/_matrix/client/r0/account/deactivate` and
 `/_matrix/client/r0/account/3pid/delete`, in which case the unbind will be
 authenticated by a signed request from the Homeserver.
 
