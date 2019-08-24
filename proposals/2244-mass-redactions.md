@@ -23,17 +23,21 @@ limit would cap a single redaction event at a bit less than 1500 targets.
 Redactions are not intrinsically heavy, so a separate limit should not be
 necessary.
 
-### Auth rules
+### Client behavior
+Clients shall apply existing `m.room.redaction` target behavior over an array
+of event ID strings.
+
+### Server behavior
 The redaction auth rules should change to iterate the array and check if the
 sender has the privileges to redact each event.
 
 There are at least two potential ways to handle targets that are not found or
-rejected: soft failing until all targets are found and handling each target
+rejected: soft failing until all targets are found or handling each target
 separately.
 
 #### Soft fail
-Soft fail the event until all targets are found, then accept only if the sender
-has the privileges to redact every listed event. This is how redactions
+[Soft fail] the event until all targets are found, then accept only if the
+sender has the privileges to redact every listed event. This is how redactions
 currently work.
 
 This has the downside of requiring servers to fetch all the target events (and
@@ -41,19 +45,27 @@ possibly forward them to clients) before being able to process and forward the
 redaction event.
 
 #### Handle each target separately
-Handle each target separately: if some targets are not found, remember the
-redaction and check auth rules when the target is received. This option brings
-some complexities, but might be more optimal in situations such as a spam
-attack.
+The target events of an `m.room.redaction` shall no longer be considered when
+deciding the authenticity of an `m.room.redaction` event. Any other existing
+rules remain unchanged.
 
-When receiving a redaction event:
-* Ignore illegal targets
-* "Remember" targets that can't be found
-* Send legal target event IDs to clients in the redaction event.
+When a server accepts an `m.room.redaction` using the modified auth rules, it
+evaluates targets individually for authenticity under the existing auth rules.
+Servers MUST NOT include failing and unknown entries to clients.
 
-When receiving an event that is "remembered" to be possibly redacted by an
-earlier redaction, check if the redaction was legal, and if it was, do not
-send the event to clients.
+> Servers do not know whether redaction targets are authorized at the time they
+  receive the `m.room.redaction` unless they are in possession of the target
+  event. Implementations retain entries in the original list which were not
+  shared with clients to later evaluate the target's redaction status.
+
+When the implementation receives a belated target from an earlier
+`m.room.redaction`, it evaluates at that point whether the redaction is
+authorized.
+
+> Servers should not send belated target events to clients if their redaction
+  was found to be authentic, as clients were not made aware of the redaction.
+  That fact is also used to simply ignore unauthorized targets and send the
+  events to clients normally.
 
 ## Tradeoffs
 
@@ -64,3 +76,4 @@ send the event to clients.
 
 [1]: https://img.mau.lu/hEqqt.png
 [MSC2174]: https://github.com/matrix-org/matrix-doc/pull/2174
+[Soft fail]: https://matrix.org/docs/spec/server_server/r0.1.3#soft-failure
