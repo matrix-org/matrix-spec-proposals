@@ -22,6 +22,12 @@ Create a new MXC URI without content. Like `/upload`, this endpoint returns the
 contain a `media_id` field with the media ID part of the MXC URI for
 convenience (see [MXC format] in the spec).
 
+This endpoint could have a JSON body that contains metadata, such as the mime
+type of the media that's going to be uploaded. In the future, the body could
+also contain access control settings (related: [MSC701]).
+
+TODO: decide if body is needed already and if yes, spec body schema
+
 #### `PUT /_matrix/media/r0/upload/{mediaId}`
 Upload content to a MXC URI that was created earlier. If the endpoint is called
 with a media ID that already has content, the request should be rejected with
@@ -40,7 +46,9 @@ Other clients may time out the download if the sender takes too long to upload
 media.
 
 ## Security considerations
+There may be DoS risks in creating lots of media IDs.
 
 
 [#1885]: https://github.com/matrix-org/matrix-doc/issues/1885
 [MXC format]: https://matrix.org/docs/spec/client_server/latest#matrix-content-mxc-uris
+[MSC701]: https://github.com/matrix-org/matrix-doc/issues/701
