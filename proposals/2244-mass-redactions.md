@@ -46,12 +46,12 @@ redaction event.
 
 #### Handle each target separately
 The target events of an `m.room.redaction` shall no longer be considered when
-deciding the authenticity of an `m.room.redaction` event. Any other existing
-rules remain unchanged.
+authorizing of an `m.room.redaction` event. Any other existing rules remain
+unchanged.
 
 When a server accepts an `m.room.redaction` using the modified auth rules, it
-evaluates targets individually for authenticity under the existing auth rules.
-Servers MUST NOT include failing and unknown entries to clients.
+evaluates individually whether each target can be redacted under the existing
+auth rules. Servers MUST NOT include failing and unknown entries to clients.
 
 > Servers do not know whether redaction targets are authorized at the time they
   receive the `m.room.redaction` unless they are in possession of the target
@@ -63,7 +63,7 @@ When the implementation receives a belated target from an earlier
 authorized.
 
 > Servers should not send belated target events to clients if their redaction
-  was found to be authentic, as clients were not made aware of the redaction.
+  was found to be in effect, as clients were not made aware of the redaction.
   That fact is also used to simply ignore unauthorized targets and send the
   events to clients normally.
 
