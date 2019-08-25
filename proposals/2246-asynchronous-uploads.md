@@ -46,8 +46,9 @@ Other clients may time out the download if the sender takes too long to upload
 media.
 
 ## Security considerations
-There may be DoS risks in creating lots of media IDs.
-
+There may be DoS risks in creating lots of media IDs. Especially if those media
+IDs are then sent to rooms, but not given any content, the proposed stalling
+method could cause a lot of open HTTP connections.
 
 [#1885]: https://github.com/matrix-org/matrix-doc/issues/1885
 [MXC format]: https://matrix.org/docs/spec/client_server/latest#matrix-content-mxc-uris
