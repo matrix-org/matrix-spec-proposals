@@ -70,6 +70,10 @@ authorized.
 ## Tradeoffs
 
 ## Potential issues
+A redaction with a thousand targets could mean a thousand events get `unsiged`
+-> `redacted_because` containing that redaction event. One potential solution
+to this is omitting the list of redacted event IDs from the data in the
+`redacted_because` field.
 
 ## Security considerations
 
