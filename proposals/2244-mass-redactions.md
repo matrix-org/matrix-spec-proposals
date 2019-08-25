@@ -1,17 +1,17 @@
 # Mass redactions
 Matrix, like any platform with public chat rooms, has spammers. Currently,
 redacting spam essentially requires spamming redaction events in a 1:1 ratio,
-which is not optimal<sup>[1]</sup>. Most clients do not even have any mass
-redaction tools, likely in part due to the lack of a mass redaction API. A mass
-redaction API on the other hand has not been implemented as it would require
-sending lots of events at once. However, this problem could be solved by
-allowing a single redaction event to redact many events instead of sending many
-redaction events.
+which is not optimal<sup>[1](images/2244-redaction-spam.png)</sup>. Most
+clients do not even have any mass redaction tools, likely in part due to the
+lack of a mass redaction API. A mass redaction API on the other hand has not
+been implemented as it would require sending lots of events at once. However,
+this problem could be solved by allowing a single redaction event to redact
+many events instead of sending many redaction events.
 
 ## Proposal
-This proposal builds upon [MSC2174] and suggests making the `redacts` field
-in the content of `m.room.redaction` events an array of event ID strings
-instead of a single event ID string.
+This proposal builds upon [MSC2174](https://github.com/matrix-org/matrix-doc/pull/2174)
+and suggests making the `redacts` field in the content of `m.room.redaction`
+events an array of event ID strings instead of a single event ID string.
 
 It would be easiest to do this before MSC2174 is written into the spec, as then
 only one migration would be needed: from an event-level redacts string to a
@@ -36,9 +36,9 @@ rejected: soft failing until all targets are found or handling each target
 separately.
 
 #### Soft fail
-[Soft fail] the event until all targets are found, then accept only if the
-sender has the privileges to redact every listed event. This is how redactions
-currently work.
+[Soft fail](https://matrix.org/docs/spec/server_server/r0.1.3#soft-failure) the
+event until all targets are found, then accept only if the sender has the
+privileges to redact every listed event. This is how redactions currently work.
 
 This has the downside of requiring servers to fetch all the target events (and
 possibly forward them to clients) before being able to process and forward the
@@ -46,7 +46,7 @@ redaction event.
 
 #### Handle each target separately
 The target events of an `m.room.redaction` shall no longer be considered when
-authorizing of an `m.room.redaction` event. Any other existing rules remain
+authorizing an `m.room.redaction` event. Any other existing rules remain
 unchanged.
 
 When a server accepts an `m.room.redaction` using the modified auth rules, it
@@ -76,8 +76,3 @@ to this is omitting the list of redacted event IDs from the data in the
 `redacted_because` field.
 
 ## Security considerations
-
-
-[1]: https://img.mau.lu/hEqqt.png
-[MSC2174]: https://github.com/matrix-org/matrix-doc/pull/2174
-[Soft fail]: https://matrix.org/docs/spec/server_server/r0.1.3#soft-failure
