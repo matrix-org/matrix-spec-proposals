@@ -31,7 +31,7 @@ TODO: decide if body is needed already and if yes, spec body schema
 #### `PUT /_matrix/media/r0/upload/{mediaId}`
 Upload content to a MXC URI that was created earlier. If the endpoint is called
 with a media ID that already has content, the request should be rejected with
-the error code `M_CANNOT_OVERRIDE_MEDIA`.
+the error code `M_CANNOT_OVERWRITE_MEDIA`.
 
 #### Behavior change in `/download`
 When another client tries to download media that has not yet been uploaded, the
