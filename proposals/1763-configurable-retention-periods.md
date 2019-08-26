@@ -122,8 +122,8 @@ If the user's retention settings conflicts with those in the room, then the
 user's clients are expected to warn the user when participating in the room. 
 A conflict exists if the user has configured their client to create rooms with
 retention settings which differing from the values on the `m.room.retention`
-state event.  This is particularly important to warn the user if the room's
-retention is longer than their default requested retention period.
+state event.  This is particularly important in order to warn the user if the
+room's retention is longer than their default requested retention period.
 
 For instance:
 
@@ -202,18 +202,18 @@ history being irrevocably lost against the senders' wishes.
 ## Pruning algorithm
 
 To summarise, servers and clients must implement the pruning algorithm as
-follows:
+follows. For each event `E` in the room:
 
 If we're a client (including bots and bridges), apply the algorithm:
-  * if specified, the `expire_on_clients` field in the `m.room.retention` event for the room is true.
+  * if specified, the `expire_on_clients` field in the `m.room.retention` event for the room (as of `E`) is true.
   * otherwise, don't apply the algorithm.
 
 The maximum lifetime of an event is calculated as:
-  * if specified, the `max_lifetime` field in the `m.room.retention` event for the room.
+  * if specified, the `max_lifetime` field in the `m.room.retention` event (as of `E`) for the room.
   * otherwise, the message's maximum lifetime is considered 'forever'.
 
 The minimum lifetime of an event is calculated as:
-  * if specified, the `min_lifetime` field in the `m.room.retention` event for the room.
+  * if specified, the `min_lifetime` field in the `m.room.retention` event (as of `E`) for the room.
   * otherwise, the message's minimum lifetime is considered 'forever'.
   * for clients, `min_lifetime` should be considered to be 0 (as there is no
     requirement for clients to persist events).
@@ -262,8 +262,8 @@ retention-limited rooms for things like stickers).
 
 For encrypted rooms, there is (currently) no alternative than have the client
 manually delete media content from the server as it expires its own local
-copies of messages.  (This requires us to have actually implemented a media
-deletion API at last.)
+copies of messages.  (This requires us to have actually implemented a [media
+deletion API](https://github.com/matrix-org/matrix-doc/issues/790) at last.)
 
 Clients and Servers should not default to setting a `max_lifetime` when
 creating rooms; instead users should only specify a `max_lifetime` when they
@@ -278,12 +278,6 @@ between the client and its server to determine the viable retention for a room.
 Or we could have the servers negotiate together to decide the retention for a room.
 Both seem overengineered, however.
 
-This proposal deliberately doesn't address GDPR erasure or mega-redaction scenarios,
-as it attempts to build a coherent UX around the use case of users knowing their
-privacy requirements *at the point they send messages*.  Meanwhile GDPR erasure is
-handled elsewhere (and involves hiding rather than purging messages, in order to
-avoid annhilating conversation history), and mega-redaction is yet to be defined.
-
 It also doesn't solve specifying storage quotas per room (i.e. "store the last
 500 messages in this room"), to avoid scope creep.  This can be handled by an
 MSC for configuring resource quotas per room (or per user) in general.
@@ -291,14 +285,13 @@ MSC for configuring resource quotas per room (or per user) in general.
 It also doesn't solve per-message retention behaviour - this has been split out
 into a seperate MSC.
 
-## Issues
-
-Should room retention be announced in a room per-server?  The advantage is full
-flexibility in terms of servers announcing their different policies for a room
-(and possibly letting users know how likely history is to be retained, or conversely
-letting servers know if they need to step up to retain history).  The disadvantage
-is that it could make for very complex UX for end-users: "Warning, some servers in
-this room have overridden history retention to conflict with your preferences" etc.
+We don't announce room retention settings within a room per-server.  The
+advantage would be full flexibility in terms of servers announcing their
+different policies for a room (and possibly letting users know how likely
+history is to be retained, or conversely letting servers know if they need to
+step up to retain history).  The disadvantage is that it could make for very
+complex UX for end-users: "Warning, some servers in this room have overridden
+history retention to conflict with your preferences" etc.
 
 ## Security considerations
 
