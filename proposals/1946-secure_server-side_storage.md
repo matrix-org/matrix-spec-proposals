@@ -11,8 +11,8 @@ way of storing such data.
 
 Secrets are data that clients need to use and that are sent through or stored
 on the server, but should not be visible to server operators.  Secrets are
-plain strings -- if clients need to use more complicated data, it must be
-encoded as a string.
+plain strings -- if clients need to use more complicated data, they must be
+encoded as a string, such as by encoding as JSON.
 
 ### Storage
 
@@ -29,10 +29,11 @@ property, which is a human-readable name.  The contents will be signed as
 signed JSON using the user's master cross-signing key.  Other properties depend
 on the encryption algorithm, and are described below.
 
-If a key has the `name` property set to `m.default`, then this key is marked as
+If a key has the `name` property set to `m.default`, then this key is treated as
 the default key for the account.  The default key is the one that all secrets
-will be encrypted with, and the clients will try to use to decrypt data with,
-unless the user specifies otherwise.  Only one key can be marked as the default.
+will be encrypted with, and that clients will try to use to decrypt data with,
+unless the user specifies otherwise.  Only one key can be marked as the default
+at a time.
 
 Encrypted data can be stored using the `account_data` API.  The `type` for the
 `account_data` is defined by the feature that uses the data.  For example,
@@ -85,7 +86,8 @@ The data is encrypted and MACed as follows:
 (The key HKDF, AES, and HMAC steps are the same as what are used for encryption
 in olm and megolm.)
 
-For example, a key using this algorithm could look like:
+For example, the `m.secret_storage.key.[key ID]` for a key using this algorithm
+could look like:
 
 ```json
 {
@@ -159,7 +161,8 @@ that it wishes to retrieve.  A device that wishes to share the secret will
 reply with a `m.secret.send` event, encrypted using olm.  When the original
 client obtains the secret, it sends a `m.secret.request` event with `action`
 set to `cancel_request` to all devices other than the one that it received the
-secret from.
+secret from.  Clients should ignore `m.secret.send` events received from
+devices that it did not send an `m.secret.request` event to.
 
 Clients SHOULD ensure that they only share secrets with other devices that are
 allowed to see them.  For example, clients SHOULD only share secrets with devices
@@ -213,7 +216,8 @@ to read the information if they manage to get hold of the decryption keys.
 In particular, if the key is based on a passphrase and the passphrase can be
 guessed, then the secrets could be compromised.  In order to help protect the
 secrets, clients should provide feedback to the user when their chosen
-passphrase is considered weak.
+passphrase is considered weak, and may also wish to prevent the user from
+reusing their login password.
 
 ## Conclusion
 
