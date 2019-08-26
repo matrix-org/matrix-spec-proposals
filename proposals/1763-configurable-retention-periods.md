@@ -89,12 +89,12 @@ set).
 The following fields are defined in the `m.room.retention` contents:  
 
 `max_lifetime`:
-  the maximum duration in milliseconds for which a server must store this event. 
+  the maximum duration in milliseconds for which a server must store events in this room. 
   Must be null or an integer in range [0, 2<sup>53</sup>-1]. If absent, or
   null, should be interpreted as 'forever'.
 
 `min_lifetime`:
-  the minimum duration in milliseconds for which a server should store this event.
+  the minimum duration in milliseconds for which a server should store events in this room.
   Must be null or an integer in range [0, 2<sup>53</sup>-1]. If absent, or
   null, should be interpreted as 'forever'.
   
