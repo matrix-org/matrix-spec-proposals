@@ -125,6 +125,9 @@ retention settings which differing from the values on the `m.room.retention`
 state event.  This is particularly important in order to warn the user if the
 room's retention is longer than their default requested retention period.
 
+The UI for this could be a warning banner in the room to remind the user that
+that room's retention setting doesn't match their preferred default.
+
 For instance:
 
 ```json
