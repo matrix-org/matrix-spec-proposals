@@ -756,8 +756,8 @@ sending `m.room_key_request`_ to-device messages to other devices with
 device, it can forward the keys to the first device by sending an encrypted
 `m.forwarded_room_key`_ to-device message. The first device should then send an
 `m.room_key_request`_ to-device message with ``action`` set to
-``cancel_request`` to the other devices that it had originally sent the key
-request to; a device that receives a ``cancel_request`` should disregard any
+``request_cancellation`` to the other devices that it had originally sent the key
+request to; a device that receives a ``request_cancellation`` should disregard any
 previously-received ``request`` message with the same ``request_id`` and
 ``requesting_device_id``.
 
