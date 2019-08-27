@@ -185,7 +185,7 @@ set to `request` to other devices, and `name` set to the name of the secret
 that it wishes to retrieve.  A device that wishes to share the secret will
 reply with a `m.secret.send` event, encrypted using olm.  When the original
 client obtains the secret, it sends a `m.secret.request` event with `action`
-set to `cancel_request` to all devices other than the one that it received the
+set to `request_cancellation` to all devices other than the one that it received the
 secret from.  Clients should ignore `m.secret.send` events received from
 devices that it did not send an `m.secret.request` event to.
 
