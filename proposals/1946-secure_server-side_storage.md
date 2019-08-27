@@ -2,10 +2,11 @@
 
 Some features may require clients to store encrypted data on the server so that
 it can be shared securely between clients.  Clients may also wish to securely
-send such data directly to each other.  For example, key backups (MSC-1219)
-can store the decryption key for the backups on the server, or cross-signing
-(MSC-1756) can store the signing keys.  This proposal presents a standardized
-way of storing such data.
+send such data directly to each other.  For example, key backups
+([MSC1219](https://github.com/matrix-org/matrix-doc/issues/1219)) can store the
+decryption key for the backups on the server, or cross-signing
+([MSC1756](https://github.com/matrix-org/matrix-doc/pull/1756)) can store the
+signing keys.  This proposal presents a standardized way of storing such data.
 
 ## Proposal
 
@@ -21,13 +22,29 @@ prevent homeserver administrators from being able to read it.  A user can have
 multiple keys used for encrypting data.  This allows the user to selectively
 decrypt data on clients.  For example, the user could have one key that can
 decrypt everything, and another key that can only decrypt their user-signing
-key for cross-signing.  Each key has an ID, and a description of the key is
-stored in the user's `account_data` using the `type` `m.secret_storage.key.[key
-ID]`.  The contents of the account data for the key will include an `algorithm`
-property, which indicates the encryption algorithm used, as well as a `name`
-property, which is a human-readable name.  The contents will be signed as
-signed JSON using the user's master cross-signing key.  Other properties depend
-on the encryption algorithm, and are described below.
+key for cross-signing.
+
+Key descriptions and secret data are both stored in the user's `account_data`.
+
+Each key has an ID, and the description of the key is stored in the
+`account_data` using the `type` `m.secret_storage.key.[key ID]`.  The contents
+of the account data for the key will include an `algorithm` property, which
+indicates the encryption algorithm used, as well as a `name` property, which is
+a human-readable name.  The contents will be signed as signed JSON using the
+user's master cross-signing key.  Other properties depend on the encryption
+algorithm, and are described below.
+
+Example:
+
+A key with ID `abcdefg` is stored in `m.secret_storage.key.abcdefg`
+
+```json
+{
+  "name": "Some key",
+  "algorihm": "m.secret_storage.v1.curve25519-aes-sha2",
+  // ... other properties according to algorithm
+}
+```
 
 If a key has the `name` property set to `m.default`, then this key is treated as
 the default key for the account.  The default key is the one that all secrets
@@ -35,30 +52,38 @@ will be encrypted with, and that clients will try to use to decrypt data with,
 unless the user specifies otherwise.  Only one key can be marked as the default
 at a time.
 
-Encrypted data can be stored using the `account_data` API.  The `type` for the
-`account_data` is defined by the feature that uses the data.  For example,
-decryption keys for key backups could be stored under the type
-`m.megolm_backup.v1.recovery_key`, or the self-signing key for cross-signing
-could be stored under the type `m.cross_signing.self_signing`.
+Encrypted data is stored in the `account_data` using the `type` defined by the
+feature that uses the data.  For example, decryption keys for key backups could
+be stored under the type `m.megolm_backup.v1.recovery_key`, or the self-signing
+key for cross-signing could be stored under the type
+`m.cross_signing.self_signing`.
 
-Data will be stored using the following format:
-
-```json
-{
-    "encrypted": {
-      "key_id": {
-        "ciphertext": "base64+encoded+encrypted+data",
-        "mac": "base64+encoded+mac"
-      }
-    }
-}
-```
-
-The `encrypted` property is map from key ID to an object.  The algorithm for
+The `account_data` will have an `encrypted` property that is a map from key ID
+to an object.  The algorithm from the `m.secret_storage.key.[key ID]` data for
 the given key defines how the other properties are interpreted, though it's
 expected that most encryption schemes would have `ciphertext` and `mac`
 properties, where the `ciphertext` property is the unpadded base64-encoded
 ciphertext, and the `mac` is used to ensure the integrity of the data.
+
+Example:
+
+Some secret is encrypted using keys with ID `key_id_1` and `key_id_2`:
+
+```json
+{
+    "encrypted": {
+      "key_id_1": {
+        "ciphertext": "base64+encoded+encrypted+data",
+        "mac": "base64+encoded+mac",
+        // ... other properties according to algorithm property in
+        // m.secret_storage.key.key_id_1
+      },
+      "key_id_2": {
+        // ...
+      }
+    }
+}
+```
 
 #### Encryption algorithms
 
@@ -181,7 +206,7 @@ unencrypted to-device event.
 
 - `name`: (string) Required if `action` is `request`. The name of the secret
   that is being requested.
-- `action`: (enum) Required. One of ["request", "cancel_request"].
+- `action`: (enum) Required. One of ["request", "request_cancellation"].
 - `requesting_device_id`: (string) Required. ID of the device requesting the
   secret.
 - `request_id`: (string) Required. A random string uniquely identifying the
