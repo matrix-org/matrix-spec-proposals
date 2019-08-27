@@ -126,7 +126,7 @@ With irrelevant fields not included, an example sync response would be:
 
 Clients rendering the above should end up with something like the following:
 
-![alice-bob-over-banquet](https://i.imgur.com/h4BHZSw.png)
+![alice-bob-over-banquet](./images/2199-dms-client.png)
 
 
 Servers are expected to be able to identify direct chats for users and flag them appropriately
