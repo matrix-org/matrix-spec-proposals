@@ -6,17 +6,11 @@ adequately support this as it allows for multiple rooms to represent a DM betwee
 Although supporting multiple chats with individuals is potentially useful for some use cases,
 clients are increasingly wanting to be able to support exactly one DM for a user.
 
-The Fractal team has previously published a blog post for the Banquets versus Barbecues use
-cases (available [here](https://blogs.gnome.org/tbernard/2018/05/16/banquets-and-barbecues/)).
-In short, Banquets are public rooms and Barbecues are DMs and small private chats (family,
-friends, colleagues, etc). This proposal aims to address the lacking Barbecue support in
-Matrix.
-
-Any messaging app is likely to have a similar desire as Fractal to differentiate DMs from
-all the noise, and Riot in particular is looking at using the DM between users for a more
-personal experience within the app (such as key verification between users). This proposal
-focuses on immutable DMs between users to assist in identifying the "One True DM" between
-users and prevent the room's scope from increasing.
+Any messaging app is likely to want to differentiate DMs from all the noise, and Riot in
+particular is looking at using the DM between users for a more personal experience within
+the app (such as key verification between users). This proposal focuses on immutable DMs
+between users to assist in identifying the "One True DM" between users and prevent the
+room's scope from increasing.
 
 For comparison to Matrix, the following chat apps/platforms all support and encourage a
 single DM between users. They all redirect the user to an existing chat with the target
@@ -38,6 +32,7 @@ user, creating a new DM if needed.
 * and probably many others...
 
 Platforms which allow/encourage users to have multiple DMs with a specific person are:
+
 * Matrix (currently)
 * Email
 * XMPP (technically speaking)
