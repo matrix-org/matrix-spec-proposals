@@ -134,7 +134,7 @@ in the room summary. How existing DMs are migrated is covered later in this prop
 server must use these rules to determine if a room is a direct chat:
 * The join rules are `invite`.
 * The rejoin rules are `invite` or `join` (as per [MSC2213](https://github.com/matrix-org/matrix-doc/pull/2213)).
-* The user's most recent membership event has `"m.direct": true` in the `content`.
+* The user's most recent membership event has `"m.dm": true` in the `content`.
 * The room has an explicit power level event (running a DM without a PL event is not supported).
 * The room has at least 2 possible important users (who may or may not be joined yet).
 * The user themselves is important in the room.
@@ -147,7 +147,7 @@ Assuming no other conflicts arise (duplicate chats, etc) the room is considered 
 the important users in the room. Important users are identified simply by having a power level
 greater than or equal to the `state_default` power level requirement.
 
-The server MUST maintain the `m.direct` flag when updating or transitioning any user's membership
+The server MUST maintain the `m.dm` flag when updating or transitioning any user's membership
 event. The server SHOULD refuse to let the user manipulate the flag directly through `PUT /state`
 and similar APIs (such as inviting users to a room). Servers MUST consider a value of `false`
 the same as the field not being present.
@@ -155,7 +155,7 @@ the same as the field not being present.
 Servers are not expected to identify a room as a direct chat until the server resides in the
 room. Servers MUST populate the room summary for invites if the server is a resident of the
 room. Clients SHOULD use the room summary on invites and joined rooms to identify if a room
-is a direct chat or not. Where the summary is not available and an `m.direct` field is on the
+is a direct chat or not. Where the summary is not available and an `m.dm` field is on the
 invite event, clients should be skeptical but otherwise trusting of the room's DM status.
 For example, a skeptical client might list the room with a warning stating that the room
 is flagged as a DM without being appropriately decorated, but not prevent the user from
@@ -217,7 +217,7 @@ to a given user.
 
 The room creation preset `trusted_private_chat` is deprecated and to be removed in a future
 specification version. Clients should stop using those presets and instead use the new preset
-`immutable_direct_chat`, as defined here. The new preset has the following effects on the
+`immutable_dm`, as defined here. The new preset has the following effects on the
 room state:
 
 * Join rules of `invite`.
@@ -266,8 +266,8 @@ room state:
 * Third party users invited to the room get power level 50, as described by MSC2212 (see
   later on in this proposal for how this works). Like the invited users, all third party
   users invited as a result of the `/createRoom` call are considered important.
-* Important users (those invited and the creator) MUST have `"m.direct": true` in their
-  membership event content. Third party important users get the same `m.direct` flag on
+* Important users (those invited and the creator) MUST have `"m.dm": true` in their
+  membership event content. Third party important users get the same `m.dm` flag on
   their `m.room.third_party_invite` event contents.
 * Encryption is enabled by default using the most preferred megolm algorithm in the spec.
   Currently this would be `m.megolm.v1.aes-sha2`.
@@ -324,7 +324,7 @@ is chosen such that any two servers come to the same conclusion on which room to
 
 There may come a time where DM rooms need to be upgraded. When DM rooms are upgraded through the
 `/upgrade` endpoint, servers MUST preserve the `content` of the previous room's creation event and
-otherwise apply the `immutable_direct_chat` preset over the new room. If conflicts arise between
+otherwise apply the `immutable_dm` preset over the new room. If conflicts arise between
 the previous room's state and the state applied by the preset, the preset takes preference over
 the previous room's state.
 
@@ -414,7 +414,7 @@ The only parameter, `:userId`, is the user ID requesting their DMs. The auth pro
 for this user. Example response:
 ```json
 {
-    "direct_chats": {
+    "dms": {
         "!a:example.org": {
             "important": ["@alice:example.org"]
         },
@@ -453,8 +453,8 @@ unlikely to be able to modify the power levels in the room because the immutable
 forbids this by design. To remedy this, this proposal requires that third party users get
 their own power level, as described in [MSC2212](https://github.com/matrix-org/matrix-doc/pull/2212).
 
-In addition to MSC2212, this proposal requires that a `m.direct` field be added to the
-`m.room.third_party_invite` event. When the invite is claimed, the `m.direct` field must
+In addition to MSC2212, this proposal requires that a `m.dm` field be added to the
+`m.room.third_party_invite` event. When the invite is claimed, the `m.dm` field must
 be copied to the generated membership event.
 
 #### Complete list of deprecations
@@ -467,7 +467,7 @@ this proposal recommends that servers drop support completely per the deprecatio
 Deprecated things:
 * `is_direct` on `/createRoom` now does nothing (ignored field, like any other unrecognized
    field).
-* `is_direct` on membership events now means nothing (replaced by `m.direct`).
+* `is_direct` on membership events now means nothing (replaced by `m.dm`).
 * `m.direct` account data is deprecated (replaced with the behaviour described in this
    proposal).
 
@@ -636,6 +636,7 @@ There is also an argument that the existing solution is fine and clients should 
 make it work for their purposes. The author believes this is an invalid argument given
 the introduction of this proposal and the problems highlighted regarding client-driven
 DMs.
+
 
 ## Security considerations
 
