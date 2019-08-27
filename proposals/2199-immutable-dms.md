@@ -662,6 +662,28 @@ Matrix, users would have to perform an action to try and join the new DM and eve
 user may get frustrated with the other user and ignore them, breaking the cycle of new DMs
 being created.
 
+
+## Pitfalls with the current system
+
+The existing DM system in Matrix support multiple DMs with a user, however that system is
+not necsarily more complex than this proposal (in fact, it's probably simpler than what
+is proposed here). The existing system has the disadvantage of being non-deterministic where
+two users in the same room cna have a different view of that room in their clients: Alice
+can see it as a DM whereas Bob sees it as just another room. Having non-deterministic DMs
+can lead to conversational confusion ("hey Bob, let's go to our DM" and Bob asking where that
+is) or uncertainty about where to send sensitive information.
+
+Using the example of clients wanting to use DMs as a channel for exchanging key information,
+knowing that all parties in the conversation perceive it as a DM is important. If the
+verification were to land in a random room, the other party may miss it or be concerned it is
+not a real verification request.
+
+Further, the existing system is managed completely client-side and every client is expected
+to clone the same logic. By pushing the DM calculations to the server, all the client has to
+do is render them. Most messenger Matrix clients want or have a concept of DMs, and instead of
+duplicating the same code over and over the server could just inform the client of its DMs.
+
+
 ## Conclusion
 
 Immutable DMs are a hard problem to solve and involve a bunch of tiny changes to multiple parts
