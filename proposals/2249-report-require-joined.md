@@ -1,4 +1,4 @@
-# MSC2247: Require users to have visibility on an event when submitting reports
+# MSC2249: Require users to have visibility on an event when submitting reports
 
 The [report API](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-rooms-roomid-report-eventid)
 currently does not require users to be joined to the room in order to report that an
