@@ -166,14 +166,8 @@ state events after creating the room, and before `initial_state` is applied on
 If a server admin is trying to conserve diskspace, they may do so by
 specifying and enforcing a relatively low min_lifetime (e.g. 1 month), but not
 specify a max_lifetime, in the hope that other servers will retain the data
-for longer.
-
-  XXX: is this the correct approach to take? It's how we force E2E encryption
-  on, but it feels very fragmentory to have magical presets which do different
-  things depending on which server you're on.  The alternative would be some
-  kind of federation-aware negotiation where a server refuses to participate in
-  a room unless it gets its way on retention settings, however this feels
-  unnecessarily draconian.
+for longer.  This is not recommended however, as it harms users who want to
+use Matrix like e-mail, as a permenant archive of their conversations.
 
 2) By adjusting how aggressively their server enforces the the `min_lifetime`
 value for message retention within a room.  For instance, a server admin could
@@ -243,15 +237,16 @@ A room must have at least one forward extremity in order to allow new events
 to be sent within it. Therefore servers must redact rather than purge obsolete
 events which are forward extremities in order to avoid wedging the room.
 
-It's impossible to back-paginate past a hole in the DAG, such as one caused by
-pruning events. This is considered a feature for this MSC, given the point of
-pruning is to discard prior history. However, it's important that
-implementations handle this failure mode gracefully. This is left up to the
-implementation; one approach could be to discard the backwards extremities
+Server implementations must ensure that clients cannot back-paginate into a
+region of the event graph which has been purged (bearing in mind that other
+servers may or may not give a successful response to requests to backfill such
+events). One approach to this could be to discard the backwards extremities
 caused by a purge, or otherwise mark them as unpaginatable. There is a
-[separate related bug](https://github.com/matrix-org/matrix-doc/issues/2251)
-that the CS API does not currently provide a well-defined way to say when
-/messages has hit a hole in the DAG and cannot paginate further.
+separate related [spec
+bug](https://github.com/matrix-org/matrix-doc/issues/2251) and [impl
+bug](https://github.com/matrix-org/synapse/issues/1623) that the CS API does
+not currently provide a well-defined way to say when /messages has hit a hole
+in the DAG or the start of the room and cannot paginate further.
 
 If possible, servers/clients should remove downstream notifications of a message
 once it has expired (e.g. by cancelling push notifications).
@@ -272,10 +267,11 @@ manually delete media content from the server as it expires its own local
 copies of messages.  (This requires us to have actually implemented a [media
 deletion API](https://github.com/matrix-org/matrix-doc/issues/790) at last.)
 
-Clients and Servers should not default to setting a `max_lifetime` when
-creating rooms; instead users should only specify a `max_lifetime` when they
-need it for a specific conversation.  This avoids unintentionally stopping
-users from using Matrix as a way to archive their conversations if they want.
+Clients and Servers are recommended to not default to setting a `max_lifetime`
+when creating rooms; instead users should only specify a `max_lifetime` when
+they need it for a specific conversation.  This avoids unintentionally
+stopping users from using Matrix as a way to archive their conversations if
+they so desire.
 
 ## Tradeoffs
 
@@ -299,6 +295,15 @@ history is to be retained, or conversely letting servers know if they need to
 step up to retain history).  The disadvantage is that it could make for very
 complex UX for end-users: "Warning, some servers in this room have overridden
 history retention to conflict with your preferences" etc.
+
+We let servers specify a default `m.room.retention` for rooms created on their
+servers as a coarse way to encourage users to not suck up disk space (although
+it's not recommended).  This is also how we force E2E encryption on, but it
+feels quite fragmentory to have magical presets which do different things
+depending on which server you're on.  The alternative would be some kind of
+federation-aware negotiation where a server refuses to participate in a room
+unless it gets its way on retention settings, however this feels unnecessarily
+draconian and complex.
 
 ## Security considerations
 
