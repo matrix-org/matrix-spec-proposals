@@ -239,15 +239,19 @@ It's worth noting that this means events may sometimes disappear from event
 streams; calling the same `/sync` or `/messages` API twice may give different
 results if some of the events have disappeared in the interim.
 
-In order to retain the integrity of the DAG for the room on the server, events
-which form forward extremities for a room should not be purged but redacted.
+A room must have at least one forward extremity in order to allow new events
+to be sent within it. Therefore servers must redact rather than purge obsolete
+events which are forward extremities in order to avoid wedging the room.
 
-  XXX: is this sufficient? Should we keep a heuristic of the number of
-  redacted events which hang around, just in case some lost server reappears
-  from a netsplit and tries referencing older events?  Perhaps we can check
-  the other servers in the room to ensure that we don't purge events their
-  forward extremities refer to (except this won't work if the other servers
-  have netsplit)
+It's impossible to back-paginate past a hole in the DAG, such as one caused by
+pruning events. This is considered a feature for this MSC, given the point of
+pruning is to discard prior history. However, it's important that
+implementations handle this failure mode gracefully. This is left up to the
+implementation; one approach could be to discard the backwards extremities
+caused by a purge, or otherwise mark them as unpaginatable. There is a
+[separate related bug](https://github.com/matrix-org/matrix-doc/issues/2251)
+that the CS API does not currently provide a well-defined way to say when
+/messages has hit a hole in the DAG and cannot paginate further.
 
 If possible, servers/clients should remove downstream notifications of a message
 once it has expired (e.g. by cancelling push notifications).
