@@ -1,4 +1,4 @@
-# Immutable DMs (server-side middle ground edition)
+# Canonical DMs (server-side middle ground edition)
 
 In the messaging space it is common for apps to expose exactly 1 chat for a conversation
 between two users, and in some cases a specific set of users. Matrix currently does not
@@ -46,6 +46,9 @@ change the name or topic of the room, and they'll always be DMs.
 This proposal supports "direct chats" or "DMs" in the sense of private conversations with
 a set of users. This means that a DM between 3 users is possible, however the common case
 is likely to be 1:1 (2 person) chats.
+
+Immutability of DMs is also proposed in this MSC, however as an optional feature of DMs and
+not a requirement.
 
 
 ## Proposal
