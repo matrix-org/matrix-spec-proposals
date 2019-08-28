@@ -1,11 +1,15 @@
 {% import 'tables.tmpl' as tables -%}
 
-``{{endpoint.method}} {{endpoint.path}}``
-{{(5 + (endpoint.path | length) + (endpoint.method | length)) * title_kind}}
 {% if "deprecated" in endpoint and endpoint.deprecated -%}
+Deprecated: ``{{endpoint.method}} {{endpoint.path}}``
+{{(17 + (endpoint.path | length) + (endpoint.method | length)) * title_kind}}
+
 .. WARNING::
   This API is deprecated and will be removed from a future release.
 
+{% else %}
+``{{endpoint.method}} {{endpoint.path}}``
+{{(5 + (endpoint.path | length) + (endpoint.method | length)) * title_kind}}
 {% endif -%}
 
 {{endpoint.desc}}
