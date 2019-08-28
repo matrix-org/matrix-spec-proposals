@@ -15,15 +15,17 @@
 swagger: '2.0'
 info:
   title: "Matrix Identity Service Ephemeral Invitation Signing API"
-  version: "1.0.0"
+  version: "2.0.0"
 host: localhost:8090
 schemes:
   - https
-basePath: /_matrix/identity/api/v1
+basePath: /_matrix/identity/v2
 consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/sign-ed25519":
     post:
@@ -33,7 +35,9 @@ paths:
 
         The identity server will look up ``token`` which was stored in a call
         to ``store-invite``, and fetch the sender of the invite.
-      operationId: blindlySignStuff
+      operationId: blindlySignStuffV2
+      security:
+        - accessToken: []
       parameters:
         - in: body
           name: body

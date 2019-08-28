@@ -15,15 +15,17 @@
 swagger: '2.0'
 info:
   title: "Matrix Identity Service Store Invitations API"
-  version: "1.0.0"
+  version: "2.0.0"
 host: localhost:8090
 schemes:
   - https
-basePath: /_matrix/identity/api/v1
+basePath: /_matrix/identity/v2
 consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/store-invite":
     post:
@@ -48,14 +50,16 @@ paths:
         ``address`` parameter, notifying them of the invitation.
 
         Also, the generated ephemeral public key will be listed as valid on
-        requests to ``/_matrix/identity/api/v1/pubkey/ephemeral/isvalid``.
+        requests to ``/_matrix/identity/v2/pubkey/ephemeral/isvalid``.
 
         Currently, invites may only be issued for 3pids of the ``email`` medium.
 
         Optional fields in the request should be populated to the best of the
         server's ability. Identity servers may use these variables when notifying
         the ``address`` of the pending invite for display purposes.
-      operationId: storeInvite
+      operationId: storeInviteV2
+      security:
+        - accessToken: []
       parameters:
         - in: body
           name: body

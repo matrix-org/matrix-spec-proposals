@@ -15,11 +15,11 @@
 swagger: '2.0'
 info:
   title: "Matrix Identity Service Public Key API"
-  version: "1.0.0"
+  version: "2.0.0"
 host: localhost:8090
 schemes:
   - https
-basePath: /_matrix/identity/api/v1
+basePath: /_matrix/identity/v2
 consumes:
   - application/json
 produces:
@@ -30,7 +30,7 @@ paths:
       summary: Get a public key.
       description: |-
         Get the public key for the passed key ID.
-      operationId: getPubKey
+      operationId: getPubKeyV2
       parameters:
         - in: path
           type: string
@@ -72,7 +72,7 @@ paths:
       description: |-
         Check whether a long-term public key is valid. The response should always
         be the same, provided the key exists.
-      operationId: isPubKeyValid
+      operationId: isPubKeyValidV2
       parameters:
         - in: query
           type: string
@@ -101,7 +101,7 @@ paths:
       summary: Check whether a short-term public key is valid.
       description: |-
         Check whether a short-term public key is valid.
-      operationId: isEphemeralPubKeyValid
+      operationId: isEphemeralPubKeyValidV2
       parameters:
         - in: query
           type: string

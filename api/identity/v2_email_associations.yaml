@@ -15,15 +15,17 @@
 swagger: '2.0'
 info:
   title: "Matrix Identity Service Email Associations API"
-  version: "1.0.0"
+  version: "2.0.0"
 host: localhost:8090
 schemes:
   - https
-basePath: /_matrix/identity/api/v1
+basePath: /_matrix/identity/v2
 consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/validate/email/requestToken":
     post:
@@ -46,7 +48,9 @@ paths:
         specification, the parameters may also be specified as
         ``application/x-form-www-urlencoded`` data.  However, this usage is
         deprecated.
-      operationId: emailRequestToken
+      operationId: emailRequestTokenV2
+      security:
+        - accessToken: []
       parameters:
         - in: body
           name: body
@@ -92,7 +96,9 @@ paths:
         specification, the parameters may also be specified as
         ``application/x-form-www-urlencoded`` data.  However, this usage is
         deprecated.
-      operationId: emailSubmitTokenPost
+      operationId: emailSubmitTokenPostV2
+      security:
+        - accessToken: []
       parameters:
         - in: body
           name: body
@@ -142,7 +148,9 @@ paths:
 
         Note that, in contrast with the POST version, this endpoint will be
         used by end-users, and so the response should be human-readable.
-      operationId: emailSubmitTokenGet
+      operationId: emailSubmitTokenGetV2
+      security:
+        - accessToken: []
       parameters:
         - in: query
           type: string

@@ -15,22 +15,26 @@
 swagger: '2.0'
 info:
   title: "Matrix Identity Service Establishing Associations API"
-  version: "1.0.0"
+  version: "2.0.0"
 host: localhost:8090
 schemes:
   - https
-basePath: /_matrix/identity/api/v1
+basePath: /_matrix/identity/v2
 consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/3pid/getValidated3pid":
     get:
       summary: Check whether ownership of a 3pid was validated.
       description: |-
         Determines if a given 3pid has been validated by a user.
-      operationId: getValidated3pid
+      operationId: getValidated3pidV2
+      security:
+        - accessToken: []
       parameters:
         - in: query
           type: string
@@ -104,7 +108,9 @@ paths:
         specification, the parameters may also be specified as
         ``application/x-form-www-urlencoded`` data.  However, this usage is
         deprecated.
-      operationId: bind
+      operationId: bindV2
+      security:
+        - accessToken: []
       parameters:
         - in: body
           name: body
@@ -221,7 +227,9 @@ paths:
         If this endpoint returns a JSON Matrix error, that error should be passed
         through to the client requesting an unbind through a homeserver, if the
         homeserver is acting on behalf of a client.
-      operationId: unbind
+      operationId: unbindV2
+      security:
+        - accessToken: []
       parameters:
         - in: body
           name: body
