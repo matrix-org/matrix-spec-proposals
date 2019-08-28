@@ -1,5 +1,6 @@
 # Copyright 2018 Kamax Sàrl
 # Copyright 2018 New Vector Ltd
+# Copyright 2019 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +17,7 @@
 swagger: "2.0"
 info:
   title: "Matrix Identity Service Ping API"
-  version: "1.0.0"
+  version: "2.0.0"
 host: localhost:8090
 schemes:
   - https
@@ -24,7 +25,7 @@ basePath: /_matrix/identity
 produces:
   - application/json
 paths:
-  "/api/v1":
+  "/v2":
     get:
       summary: Checks that an identity server is available at this API endpoint.
       description: |-
@@ -35,8 +36,7 @@ paths:
 
         This is primarly used for auto-discovery and health check purposes
         by entities acting as a client for the identity server.
-      operationId: ping
-      deprecated: true
+      operationId: pingV2
       responses:
         200:
           description: An identity server is ready to serve requests.
