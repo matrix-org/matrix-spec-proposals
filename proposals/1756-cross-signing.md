@@ -58,7 +58,7 @@ the usability of signing users and devices when performing key verification.
 
 The private halves of a user's cross-signing keys be stored encrypted on the
 server so that they may be retrieved by new devices, or shared between devices
-using [MSC 1946](https://github.com/matrix-org/matrix-doc/pull/1946).  When
+using [MSC1946](https://github.com/matrix-org/matrix-doc/pull/1946).  When
 handled in this way, the keys must be base64-encoded, and use the names
 `m.cross_signing.master`, `m.cross_signing.self_signing`, and
 `m.cross_signing.user_signing` for the master, self-signing, and user-signing
