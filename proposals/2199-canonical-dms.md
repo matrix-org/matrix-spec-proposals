@@ -219,66 +219,87 @@ to a given user.
 #### Creating DMs
 
 The room creation preset `trusted_private_chat` is deprecated and to be removed in a future
-specification version. Clients should stop using those presets and instead use the new preset
-`immutable_dm`, as defined here. The new preset has the following effects on the
-room state:
+specification version. Clients should stop using that preset and instead use the new endpoint
+for creating DMs, as defined here.
 
-* Join rules of `invite`.
-* Rejoin rules of `join` (as per [MSC2213](https://github.com/matrix-org/matrix-doc/pull/2213)).
-  This is to allow DMs to be re-used (described later) without sacrificing security of the DM
-  by letting random people who were invited at some point into the room.
-* History visibility of `invited`.
-* Guest access of `can_join` so that guests can be included in DMs where needed.
-* Power levels with the following non-default structure:
-  ```json
-  {
-      "events_default": 0,
-      "state_default": 50,
-      "users_default": 0,
-      "ban": 50,
-      "invite": 50,
-      "kick": 50,
-      "redact": 50,
-      "notifications": {
-          "room": 50
-      },
-      "events": {
-          "m.room.name": 100,
-          "m.room.avatar": 100,
-          "m.room.topic": 100,
-          "m.room.history_visibility": 100,
-          "m.room.power_levels": 100,
-          "m.room.join_rules": 100,
-          "m.room.encryption": 100,
-          "m.room.canonical_alias": 100
-      },
-      "users": {
-          <see below>
-      },
-      "third_party_users": {
-          <see below>
-      }
-  }
-  ```
-  This power level event is not applied until after the invites have been sent as otherwise
-  it would be impossible to give third party users power. Servers should apply a default
-  power level event to the room and then apply the power level event described here after
-  the invites have been sent. Servers can optimize this process and use this power level
-  event at step 0 of the room creation process if there are no third party invites to send.
-  Users invited to the room get power level 50, including the creator.
-* Third party users invited to the room get power level 50, as described by MSC2212 (see
-  later on in this proposal for how this works). Like the invited users, all third party
-  users invited as a result of the `/createRoom` call are considered important.
-* Important users (those invited and the creator) MUST have `"m.dm": true` in their
-  membership event content. Third party important users get the same `m.dm` flag on
-  their `m.room.third_party_invite` event contents.
-* Encryption is enabled by default using the most preferred megolm algorithm in the spec.
-  Currently this would be `m.megolm.v1.aes-sha2`.
+**`POST /_matrix/client/r0/createDm`**:
 
-The preset prevents the use of `visibility`, `room_alias_name`, `name`, `topic`, `initial_state`,
-and `power_level_content_override` during creation. Servers MUST reject the request with
-`400 M_BAD_STATE` when the request contains conflicting properties. Future extensions to
-`/createRoom` are expected to be included in the forbidden list where appropriate.
+This is mostly a clone of `/createRoom` with the unnecessary parts left behind. This does not
+replace `/createRoom`. This requires authentication and can be rate-limited.
+
+Request parameters (JSON body):
+* `room_version` (`string`) - The version to create the room with. Same as `room_version` from
+  `/createRoom`.
+* `invite` (`[string]`) - The list of user IDs to invite to the room. Same as `invite` from
+  `/createRoom` with the added behaviour described below.
+* `invite_3pid` (`[3pid invite]`) - The list of 3rd party users to invite to the room. Same as
+  `invite_3pid` from `/createRoom` with the added behaviour described below.
+* `creation_content` (`object`) - Additional content for the creation event. This is also the
+  same as `creation_content` from `/createRoom`.
+
+Note: `name`, `topic`, `visibility`, `room_alias_name`, `initial_state`, `preset`, `is_direct`,
+and `power_level_content_override` are all intentionally excluded from the clone. There is no
+preset support, aesthetic characteristics of the room (name, topic, etc) are not supported for
+immutable DMs under this MSC, and the remaining fields do not have strong use cases for DMs -
+clients can always send state event updates after creating the room, for instance.
+
+Response (JSON):
+The server creates the room similar to how `/createRoom` operates:
+
+1. An `m.room.create` event is created as is `m.room.power_levels` using the defaults.
+2. Join rules of `invite` are set with a rejoin rule of `join`, as per
+   [MSC2213](https://github.com/matrix-org/matrix-doc/pull/2213)). This is to allow DMs to be
+   re-used (described later) without sacrificing security of the DM by letting random people
+   who were invited at some point into the room.
+3. History visibility of `invited` is set.
+4. Guest access of `can_join` is set so that guests can be included in DMs where needed.
+5. Encryption is enabled by default using the most preferred megolm algorithm in the spec.
+   Currently this would be `m.megolm.v1.aes-sha2`.
+6. Power levels with the following non-default structure are set:
+
+   ```json
+   {
+       "events_default": 0,
+       "state_default": 50,
+       "users_default": 0,
+       "ban": 50,
+       "invite": 50,
+       "kick": 50,
+       "redact": 50,
+       "notifications": {
+           "room": 50
+       },
+       "events": {
+           "m.room.name": 100,
+           "m.room.avatar": 100,
+           "m.room.topic": 100,
+           "m.room.history_visibility": 100,
+           "m.room.power_levels": 100,
+           "m.room.join_rules": 100,
+           "m.room.encryption": 100,
+           "m.room.canonical_alias": 100
+       },
+       "users": {
+           <see below>
+       },
+       "third_party_users": {
+           <see below>
+       }
+   }
+   ```
+
+   This power level event is not applied until after the invites have been sent as otherwise
+   it would be impossible to give third party users power. Servers should apply a default
+   power level event to the room and then apply the power level event described here after
+   the invites have been sent. Servers can optimize this process and use this power level
+   event at step 0 of the room creation process if there are no third party invites to send.
+   Users invited to the room get power level 50, including the creator.
+    * Third party users invited to the room get power level 50, as described by MSC2212 (see
+      later on in this proposal for how this works). Like the invited users, all third party
+      users invited as a result of the `/createDm` call are considered important.
+7. Users (3rd party and otherwise) are invited. Important users (those invited and the creator)
+   MUST have `"m.dm": true` in their membership event content. Third party important users get
+   the same `m.dm` flag on their `m.room.third_party_invite` event contents.
 
 Servers MUST return an existing room ID if the server already knows about a DM between the
 important users. The important users which have left the DM MUST be explicitly re-invited.
@@ -296,6 +317,10 @@ room at any time to escape power level struggles, although this may not maintain
 *Note*: The `private_chat` preset is untouched as it does not affect DMs. `trusted_private_chat`
 was intended for DMs despite its name and is deprecated as a result.
 
+*Note*: Servers are still expected to be able to identify DMs from `/createRoom`, and clients
+are able to craft DMs using `/createRoom`. When this happens, servers MUST return an existing
+room ID for a DM if one exists and it looks like the user is trying to create a DM through the
+`/createRoom` endpoint.
 
 #### Glare and duplicated rooms
 
