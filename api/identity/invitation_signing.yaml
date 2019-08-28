@@ -33,6 +33,7 @@ paths:
         The identity server will look up ``token`` which was stored in a call
         to ``store-invite``, and fetch the sender of the invite.
       operationId: blindlySignStuff
+      deprecated: true
       parameters:
         - in: body
           name: body
