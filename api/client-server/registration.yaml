@@ -542,6 +542,11 @@ paths:
                   it must return an ``id_server_unbind_result`` of
                   ``no-support``.
                 example: "example.org"
+              id_access_token:
+                type: string
+                description: |-
+                  An access token previously registered with the identity server. Required if an
+                  ``id_server`` is supplied.
       responses:
         200:
           description: The account has been deactivated.

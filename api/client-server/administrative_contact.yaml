@@ -110,10 +110,13 @@ paths:
                   id_server:
                     type: string
                     description: The identity server to use.
+                  id_access_token:
+                    type: string
+                    description: An access token previously registered with the identity server.
                   sid:
                     type: string
                     description: The session identifier given by the identity server.
-                required: ["client_secret", "id_server", "sid"]
+                required: ["client_secret", "id_server", "id_access_token", "sid"]
               bind:
                 type: boolean
                 description: |-
@@ -125,6 +128,7 @@ paths:
             example: {
                 "three_pid_creds": {
                   "id_server": "matrix.org",
+                  "id_access_token": "abc123_OpaqueString",
                   "sid": "abc123987",
                   "client_secret": "d0n'tT3ll"
                 },
@@ -189,6 +193,11 @@ paths:
                     homeserver does not know the original ``id_server``, it MUST return
                     a ``id_server_unbind_result`` of ``no-support``.
                 example: "example.org"
+              id_access_token:
+                type: string
+                description: |-
+                  An access token previously registered with the identity server. Required
+                  if an ``id_server`` is specified.
               medium:
                 type: string
                 description: The medium of the third party identifier being removed.

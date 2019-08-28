@@ -802,7 +802,8 @@ To use this authentication type, clients should submit an auth dict as follows:
       {
         "sid": "<identity server session id>",
         "client_secret": "<identity server client secret>",
-        "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>"
+        "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
+        "id_access_token": "<access token previously registered with the identity server>"
       }
     ],
     "session": "<session ID>"
@@ -830,7 +831,8 @@ To use this authentication type, clients should submit an auth dict as follows:
       {
         "sid": "<identity server session id>",
         "client_secret": "<identity server client secret>",
-        "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>"
+        "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
+        "id_access_token": "<access token previously registered with the identity server>"
       }
     ],
     "session": "<session ID>"
