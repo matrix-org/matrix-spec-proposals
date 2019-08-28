@@ -222,7 +222,7 @@ The room creation preset `trusted_private_chat` is deprecated and to be removed 
 specification version. Clients should stop using that preset and instead use the new endpoint
 for creating DMs, as defined here.
 
-**`POST /_matrix/client/r0/createDm`**:
+**`POST /_matrix/client/r0/create_dm`**:
 
 This is mostly a clone of `/createRoom` with the unnecessary parts left behind. This does not
 replace `/createRoom`. This requires authentication and can be rate-limited.
@@ -296,7 +296,7 @@ The server creates the room similar to how `/createRoom` operates:
    Users invited to the room get power level 50, including the creator.
     * Third party users invited to the room get power level 50, as described by MSC2212 (see
       later on in this proposal for how this works). Like the invited users, all third party
-      users invited as a result of the `/createDm` call are considered important.
+      users invited as a result of the `/create_dm` call are considered important.
 7. Users (3rd party and otherwise) are invited. Important users (those invited and the creator)
    MUST have `"m.dm": true` in their membership event content. Third party important users get
    the same `m.dm` flag on their `m.room.third_party_invite` event contents.
