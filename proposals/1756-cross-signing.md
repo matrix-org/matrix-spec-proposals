@@ -27,8 +27,8 @@ Each user has three sets of key pairs:
 - a user-signing key pair that is used to sign other users' master keys.
 
 When one user (e.g. Alice) verifies another user's (Bob's) identity, Alice will
-sign Bob's self-signing key with her user-signing key. (This will mean that
-verification methods will need to be modified to pass along the self-signing
+sign Bob's master key with her user-signing key. (This will mean that
+verification methods will need to be modified to pass along the master
 identity key.) Alice's device will trust Bob's device if:
 
 - Alice's device is using a master key that has signed her user-signing key,
@@ -66,14 +66,18 @@ keys, respectively.
 
 ### Signature distribution
 
-Currently, users will only be allowed to see signatures made by their own
-master, self-signing or user-signing keys, signatures of their own master key
-made by their own devices, signatures made by other users' master or
-self-signing keys about their own devices, or signatures made of other users'
-master keys by their own devices.  This is done in order to preserve the
-privacy of social connections.  Future proposals may define mechanisms for
-distributing signatures to other users in order to allow for other web-of-trust
-use cases.
+Currently, users will only be allowed to see
+* signatures made by their own master, self-signing or user-signing keys,
+* signatures made by their own devices of their own master key,
+* signatures made by other users' self-signing keys about the other users' own
+  devices,
+* signatures made by other users' master keys about the other users'
+  self-signing key, or
+* signatures made by other users' devices about the other users' master keys.
+
+This is done in order to preserve the privacy of social connections.  Future
+proposals may define mechanisms for distributing signatures to other users in
+order to allow for other web-of-trust use cases.
 
 ### Migrating from device verifications
 
@@ -134,8 +138,7 @@ Auth](https://matrix.org/docs/spec/client_server/r0.4.0.html#user-interactive-au
 }
 ```
 
-Cross-signing keys are JSON objects with the following
-properties:
+Cross-signing keys are JSON objects with the following properties:
 
 * `user_id` (string): The user who owns the key
 * `usage` ([string]): Allowed uses for the key.  Must contain `"master"` for
@@ -149,10 +152,10 @@ properties:
   key MAY be signed by a device.
 
 In order to ensure that there will be no collisions in the `signatures`
-property, the server must respond with an error (FIXME: what error?) if any of
+property, the server must respond with an `M_FORBIDDEN` error if any of
 the uploaded public keys match an existing device ID for the user.  Similarly,
 if a user attempts to log in specifying a device ID matching one of the signing
-keys, the server must respond with an error (FIXME: what error?).
+keys, the server must respond with an `M_FORBIDDEN` error.
 
 If a self-signing or user-signing key is uploaded, it must be signed by the
 master key that is included in the request, or the current master key if no
@@ -211,10 +214,10 @@ response:
 }
 ```
 
-Similarly, the federation endpoints `GET /user/keys/query` and
-`POST /user/devices/{userId}` will include the master and self-signing keys.
-(It will not include the user-signing key because it is not intended to be
-visible to other users.)
+Similarly, the federation endpoints `GET /user/keys/query` and `POST
+/user/devices/{userId}` will include the master and self-signing keys.  (It
+will not include the user-signing key because it is not intended to be visible
+to other users.)
 
 `POST /keys/query`
 
