@@ -80,6 +80,17 @@ paths:
                 type: string
                 description: The user ID which registered the token.
             required: ['user_id']
+        403:
+          description: |
+            The user must do something in order to use this endpoint. One example
+            is an ``M_TERMS_NOT_SIGNED`` error where the user must `agree to more terms`_.
+          examples:
+            application/json: {
+              "errcode": "M_TERMS_NOT_SIGNED",
+              "error": "Please accept our updated terms of service before continuing"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
   "/account/logout":
     post:
       summary: Logs out an access token, rendering it unusable.
@@ -104,6 +115,17 @@ paths:
             application/json: {
               "errcode": "M_UNKNOWN_TOKEN",
               "error": "Unrecognised access token"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
+        403:
+          description: |
+            The user must do something in order to use this endpoint. One example
+            is an ``M_TERMS_NOT_SIGNED`` error where the user must `agree to more terms`_.
+          examples:
+            application/json: {
+              "errcode": "M_TERMS_NOT_SIGNED",
+              "error": "Please accept our updated terms of service before continuing"
             }
           schema:
             $ref: "../client-server/definitions/errors/error.yaml"
