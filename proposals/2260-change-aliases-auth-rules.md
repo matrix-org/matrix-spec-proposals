@@ -7,8 +7,7 @@ rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules). When these
 rules were introduced, the intention was that `m.room.aliases` would be
 maintained as an up-to-date list of the aliases for the room. However, this has
 not been successful, and in practice the `m.room.aliases` event tends to drift
-out of sync with the aliases. FIXME: why is this, apart from
-https://github.com/matrix-org/synapse/issues/1477, which could be fixed?
+out of sync with the aliases (https://github.com/matrix-org/matrix-doc/issues/2262).
 
 Meanwhile, `m.room.aliases` is open to abuse by remote servers who can add spam
 or offensive aliases (https://github.com/matrix-org/matrix-doc/issues/625).
@@ -29,6 +28,9 @@ As a corollary, only users with the power level necessary to send the
 directory. Server admins will continue to be able to remove entries from the
 directory even if they do not have the right to send the `aliases` event (in
 which case the `m.room.aliases` event will become outdated).
+
+It also be logical to allow the contents of `m.room.aliases` events to be
+redacted, as per [MSC2261](https://github.com/matrix-org/matrix-doc/issues/2261).
 
 ## Tradeoffs
 
