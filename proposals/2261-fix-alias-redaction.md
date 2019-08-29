@@ -16,13 +16,15 @@ also change the way that event hashes (and hence event IDs) are calculated.
 
 TODO: should the room directory be updated to match the new room state, where
 possible? It kinda makes sense when the redaction is used to undo an accidental
-addition, but in general it might not be a great plan. Also, bear in mind that
-redacting the removal of an alias would mean re-adding the alias.
+addition, but in general it might not be a great plan, particularly if we are
+switching to a world in which `m.room.aliases` is very much advisory. Also,
+bear in mind that redacting the removal of an alias would mean re-adding the
+alias.
 
 ## Potential issues
 
 This could increase the number of cases in which `m.room.aliases` events
-differ from reality.
+differ from reality (see https://github.com/matrix-org/matrix-doc/issues/2262).
 
 ## See also
 
