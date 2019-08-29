@@ -194,7 +194,7 @@ the access token being leaked in access/HTTP logs. The query string should only 
 in cases where the ``Authorization`` header is inaccessible for the client.
 
 When credentials are required but missing or invalid, the HTTP call will return with a
-status of 401 and the error code ``M_MISSING_TOKEN`` or ``M_UNKNOWN_TOKEN`` respectively.
+status of 401 and the error code ``M_UNAUTHORIZED``.
 
 {{v2_auth_is_http_api}}
 
