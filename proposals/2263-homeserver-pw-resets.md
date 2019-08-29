@@ -40,7 +40,7 @@ endpoints listed above if they do not trust the identity server the user is supp
 
 In order to allow client implementations to determine if the homeserver they are developed
 against supports `id_server` being optional, an unstable feature flag of `m.require_identity_server`
-is to be added to `/versions`. When the flag is `false` or not present, clients must assume
+is to be added to `/versions`. When the flag is `true` or not present, clients must assume
 that the homeserver requires an `id_server` (ie: it has not yet considered it optional).
 If this proposal is accepted, clients are expected to use the supported specification versions
 the homeserver advertises instead of the feature flag's presence.
