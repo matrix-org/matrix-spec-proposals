@@ -23,11 +23,18 @@ limit would cap a single redaction event at a bit less than 1500 targets.
 Redactions are not intrinsically heavy, so a separate limit should not be
 necessary.
 
+Due to the possible large number of redaction targets per redaction event,
+servers should omit the list of redaction targets from the `unsigned` ->
+`redacted_because` field of redacted events. If clients want to get the list
+of targets of a redaction event in `redacted_because`, they should read the
+`event_id` field of the `redacted_because` event and use the
+`/rooms/{roomId}/event/{eventId}` endpoint to fetch the content.
+
 ### Client behavior
 Clients shall apply existing `m.room.redaction` target behavior over an array
 of event ID strings.
 
-### Server behavior
+### Server behavior (auth rules)
 The redaction auth rules should change to iterate the array and check if the
 sender has the privileges to redact each event.
 
@@ -70,9 +77,7 @@ authorized.
 ## Tradeoffs
 
 ## Potential issues
-A redaction with a thousand targets could mean a thousand events get `unsiged`
--> `redacted_because` containing that redaction event. One potential solution
-to this is omitting the list of redacted event IDs from the data in the
-`redacted_because` field.
 
 ## Security considerations
+Server implementations should ensure that large redaction events do not become
+a DoS vector, e.g. by processing redactions in the background.
