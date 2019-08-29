@@ -29,7 +29,7 @@ directory. Server admins will continue to be able to remove entries from the
 directory even if they do not have the right to send the `aliases` event (in
 which case the `m.room.aliases` event will become outdated).
 
-It also be logical to allow the contents of `m.room.aliases` events to be
+It would also be logical to allow the contents of `m.room.aliases` events to be
 redacted, as per [MSC2261](https://github.com/matrix-org/matrix-doc/issues/2261).
 
 ## Tradeoffs
