@@ -1,6 +1,6 @@
 # MSC2263: Give homeservers the ability to handle their own 3PID registrations/password resets
 
-In order to better protect the privacy of of a user, Matrix is wanting to shift to
+In order to better protect the privacy of a user, Matrix is wanting to shift to
 a model where identity servers have less control over the affairs of the homeserver.
 Identity servers are currently used to reset the passwords of users on a given homeserver
 as an identity verification technique, however there is no reason why the homeserver
@@ -15,7 +15,7 @@ The `id_server` parameter is to become optional on the following endpoints:
 * `/_matrix/client/:version/register/:medium/requestToken`
 * `/_matrix/client/:version/account/password/:medium/requestToken`
 
-The `id_server` parameter is additionally deprecated with intentions of being removed
+The `id_server` parameter is additionally deprecated with intention of being removed
 in a future specification release on the `/register/:medium` and `/account/password/:medium`
 endpoints. Once appropriate adoption has been achieved, the specification can safely
 remove the parameter as supported. The reason for this deprecation is to completely
@@ -23,7 +23,7 @@ remove the identity server's ability to be involved in password resets/registrat
 Users wishing to bind their 3rd party identifiers can do so after registration, and
 clients can automate this if they so desire.
 
-Similarly, `bind_email` and `bind_msisdn` are deprecated with intentions to be removed
+Similarly, `bind_email` and `bind_msisdn` are deprecated with intention to be removed
 in a future specification version on `/register`. The flags have no effect if no `id_server`
 is being used.
 
