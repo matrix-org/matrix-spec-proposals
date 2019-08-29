@@ -23,19 +23,36 @@ Therefore, the special-case for `m.room.aliases` is to be removed from the
 rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules). `m.room.aliases`
 would instead be authorised following the normal rules for state events.
 
-As a corollary, only users with the power level necessary to send the
-`m.room.aliases` state event will be allowed to add entries to the room
-directory. Server admins will continue to be able to remove entries from the
-directory even if they do not have the right to send the `aliases` event (in
-which case the `m.room.aliases` event will become outdated).
+TBD: are you still allowed to add rooms to the directory when you don't have
+the necessary power level? If so, presumably this happens without updating the
+`m.room.aliases` event. So:
+
+ * Is there any mechanism for syncing the alias list if you are later given
+   ops?
+
+ * What if another user on your server has ops? What if Eve lacks ops and
+   secretly adds `#offensive_alias:example.com`, and then Bob (who has ops)
+   adds `#nice_alias:example.com`? How do we make sure that the offensive alias
+   isn't published by Bob?
+
+Server admins will continue to be able to remove entries from the directory
+even if they do not have the right to send the `aliases` event (in which case
+the `m.room.aliases` event will become outdated).
 
 It would also be logical to allow the contents of `m.room.aliases` events to be
 redacted, as per [MSC2261](https://github.com/matrix-org/matrix-doc/issues/2261).
 
 ## Tradeoffs
 
-Perhaps we could instead allow room admins the ability to redact malicious
-`aliases` events? Or to issue new ones?
+Perhaps allowing room admins the ability to redact malicious `aliases` events
+is sufficient? Given that a malicious user could immediately publish a new
+`aliases` event (even if they have been banned from the room), it seems like
+that would be ineffective.
+
+Or we could just allow room admins to issue new `m.room.aliases` events
+(possibly restricting them to removing aliases, though it's TBD if state res
+would work reliably in this case). However, that seems to suffer the same
+problem as above.
 
 ## Potential issues
 
