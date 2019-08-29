@@ -1,4 +1,4 @@
-# Proposal to make the `id_server` parameter on client-server APIs optional
+# MSC2263: Give homeservers the ability to handle their own 3PID registrations/password resets
 
 In order to better protect the privacy of of a user, Matrix is wanting to shift to
 a model where identity servers have less control over the affairs of the homeserver.
