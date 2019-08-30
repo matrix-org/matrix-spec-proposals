@@ -58,7 +58,8 @@ unchanged.
 
 When a server accepts an `m.room.redaction` using the modified auth rules, it
 evaluates individually whether each target can be redacted under the existing
-auth rules. Servers MUST NOT include failing and unknown entries to clients.
+room v5 auth rules. Servers MUST NOT include failing and unknown entries to
+clients.
 
 > Servers do not know whether redaction targets are authorized at the time they
   receive the `m.room.redaction` unless they are in possession of the target
