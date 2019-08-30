@@ -2,26 +2,41 @@
 
 ## Background
 
-Currently, `m.room.aliases` is subject to specific [authorization
-rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules). When these
-rules were introduced, the intention was that `m.room.aliases` would be
-maintained as an up-to-date list of the aliases for the room. However, this has
-not been successful, and in practice the `m.room.aliases` event tends to drift
-out of sync with the aliases (https://github.com/matrix-org/matrix-doc/issues/2262).
+The [`m.room.aliases`](https://matrix.org/docs/spec/client_server/r0.5.0#m-room-aliases)
+state event exists to list the available aliases for a given room. This serves
+two purposes:
 
-Meanwhile, `m.room.aliases` is open to abuse by remote servers who can add spam
-or offensive aliases (https://github.com/matrix-org/matrix-doc/issues/625).
+  * It allows existing members of the room to discover alternative aliases,
+    which may be useful for them to pass this knowledge on to others trying to
+    join.
+
+  * Secondarily, it helps to educate users about how Matrix works by
+    illustrating multiple aliases per room and giving a perception of the size
+    of the network.
+
+However, it has problems:
+
+  * Any user in the entire ecosystem can create aliases for rooms, which are
+    then unilaterally added to `m.room.aliases`, and room admins are unable to
+    remove them. This is an abuse
+    vector (https://github.com/matrix-org/matrix-doc/issues/625).
+
+  * For various reasons, the `m.room.aliases` event tends to get out of sync
+    with the actual aliases (https://github.com/matrix-org/matrix-doc/issues/2262).
+
+Note that `m.room.aliases` is subject to specific [authorization
+rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules).
 
 ## Proposal
 
-`m.room.aliases` exists to advertise the aliases available for a given
-room. This is an ability which should be restricted to privileged users in the
-room.
-
-Therefore, the special-case for `m.room.aliases` is to be removed from the
-[authorization
+We remove the special-case for `m.room.aliases` from the [authorization
 rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules). `m.room.aliases`
 would instead be authorised following the normal rules for state events.
+
+This would mean that only room moderators could add entries to the
+`m.room.aliases` event, and would therefore solve the abuse issue. However, it
+would increase the likelihood of `m.room.aliases` being out of sync with the
+real aliases.
 
 TBD: are you still allowed to add rooms to the directory when you don't have
 the necessary power level? If so, presumably this happens without updating the
@@ -56,11 +71,17 @@ problem as above.
 
 ## Potential issues
 
-1. This will bake in https://github.com/matrix-org/synapse/issues/1477 in a way
-   that cannot be fixed in the case that the server admin doesn't have ops in
-   the room.
+1. This will increase the number of ways that `m.room.aliases` differs from
+   reality, particularly if we allow people to add entries to directories when
+   they lack ops in the room, but also when server admins remove entries from
+   the directory (currently https://github.com/matrix-org/synapse/issues/1477
+   could be fixed, but under this MSC it would be unfixable.)
 
-2. This would allow room operators to add 'fake' aliases: for example, I could
+2. Often, all moderators of a room will be on one server, so much of the point of
+   `m.room.aliases` (that of advertising alternative aliases on other servers)
+   would be lost.
+
+3. This would allow room operators to add 'fake' aliases: for example, I could
    create a room and declare one of its aliases to be
    `#matrix:matrix.org`. It's not obvious that this will cause any problems in
    practice, but it might lead to some confusion.
