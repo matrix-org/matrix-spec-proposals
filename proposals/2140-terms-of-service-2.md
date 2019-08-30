@@ -1,5 +1,7 @@
 # MSC2140: Terms of Service API for Identity Servers and Integration Managers
 
+*Note*: This MSC was added to in [MSC2264](https://github.com/matrix-org/matrix-doc/pull/2264)
+
 [MSC1692](https://github.com/matrix-org/matrix-doc/issues/1692) introduces a
 method for homeservers to require that users read and agree to certain
 documents before being permitted to use the service. This proposal introduces a
