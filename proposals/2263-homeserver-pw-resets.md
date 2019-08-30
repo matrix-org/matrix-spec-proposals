@@ -23,9 +23,8 @@ remove the identity server's ability to be involved in password resets/registrat
 Users wishing to bind their 3rd party identifiers can do so after registration, and
 clients can automate this if they so desire.
 
-Similarly, `bind_email` and `bind_msisdn` are deprecated with intention to be removed
-in a future specification version on `/register`. The flags have no effect if no `id_server`
-is being used.
+Note that `bind_email` and `bind_msisdn` on `/register` have already been removed
+by [MSC2140](https://github.com/matrix-org/matrix-doc/pull/2140).
 
 As per [MSC2140](https://github.com/matrix-org/matrix-doc/pull/2140), an `id_access_token`
 is required only if an `id_server` is supplied.
