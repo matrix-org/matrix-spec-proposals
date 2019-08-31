@@ -1,4 +1,5 @@
 # Copyright 2018 New Vector Ltd
+# Copyright 2019 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +15,17 @@
 swagger: '2.0'
 info:
   title: "Matrix Identity Service Phone Number Associations API"
-  version: "1.0.0"
+  version: "2.0.0"
 host: localhost:8090
 schemes:
   - https
-basePath: /_matrix/identity/api/v1
+basePath: /_matrix/identity/v2
 consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/validate/msisdn/requestToken":
     post:
@@ -45,8 +48,9 @@ paths:
         specification, the parameters may also be specified as
         ``application/x-form-www-urlencoded`` data. However, this usage is
         deprecated.
-      operationId: msisdnRequestToken
-      deprecated: true
+      operationId: msisdnRequestTokenV2
+      security:
+        - accessToken: []
       parameters:
         - in: body
           name: body
@@ -94,8 +98,9 @@ paths:
         specification, the parameters may also be specified as
         ``application/x-form-www-urlencoded`` data. However, this usage is
         deprecated.
-      operationId: msisdnSubmitTokenPost
-      deprecated: true
+      operationId: msisdnSubmitTokenPostV2
+      security:
+        - accessToken: []
       parameters:
         - in: body
           name: body
@@ -145,8 +150,9 @@ paths:
 
         Note that, in contrast with the POST version, this endpoint will be
         used by end-users, and so the response should be human-readable.
-      operationId: msisdnSubmitTokenGet
-      deprecated: true
+      operationId: msisdnSubmitTokenGetV2
+      security:
+        - accessToken: []
       parameters:
         - in: query
           type: string
