@@ -1,6 +1,6 @@
-# Proposal for ignoring invites
+# Proposal for ignoring invites
 
-## Problem
+## Problem
 
 There is currently no way to ignore an invite in Matrix without explicitly
 rejecting it and informing the inviter of the rejection. There are many social
