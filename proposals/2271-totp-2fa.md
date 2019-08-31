@@ -48,5 +48,5 @@ Auth dict:
 
 ![](images/2271-totp1.png)
 ![](images/2271-totp2.png)
-![](images/2271-totp3.png)
 ![](images/2271-totp4.png)
+![](images/2271-totp3.png)
