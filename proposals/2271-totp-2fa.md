@@ -46,7 +46,7 @@ Auth dict:
 
 ## Example UIs
 
-![](images/totp1.png)
-![](images/totp2.png)
-![](images/totp3.png)
-![](images/totp4.png)
+![](images/2271-totp1.png)
+![](images/2271-totp2.png)
+![](images/2271-totp3.png)
+![](images/2271-totp4.png)
