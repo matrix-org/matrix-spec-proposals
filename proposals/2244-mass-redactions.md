@@ -35,28 +35,11 @@ Clients shall apply existing `m.room.redaction` target behavior over an array
 of event ID strings.
 
 ### Server behavior (auth rules)
-The redaction auth rules should change to iterate the array and check if the
-sender has the privileges to redact each event.
-
-There are at least two potential ways to handle targets that are not found or
-rejected: soft failing until all targets are found or handling each target
-separately.
-
-#### Soft fail
-[Soft fail](https://matrix.org/docs/spec/server_server/r0.1.3#soft-failure) the
-event until all targets are found, then accept only if the sender has the
-privileges to redact every listed event. This is how redactions currently work.
-
-This has the downside of requiring servers to fetch all the target events (and
-possibly forward them to clients) before being able to process and forward the
-redaction event.
-
-#### Handle each target separately
 The target events of an `m.room.redaction` shall no longer be considered when
 authorizing an `m.room.redaction` event. Any other existing rules remain
 unchanged.
 
-When a server accepts an `m.room.redaction` using the modified auth rules, it
+After a server accepts an `m.room.redaction` using the modified auth rules, it
 evaluates individually whether each target can be redacted under the existing
 room v5 auth rules. Servers MUST NOT include failing and unknown entries to
 clients.
