@@ -46,7 +46,7 @@ trouble.
 
 Some users might already have two different accounts associated with the same
 e-mail address but with different cases. This appears to happen in a small
-number of cases, however, and can be dealt by the identity server's maintainer.
+number of cases, however, and can be dealt with by the identity server's maintainer.
 
 For example, with Sydent, the process of dealing with such cases could look
 like:
