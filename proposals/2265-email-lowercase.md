@@ -35,18 +35,19 @@ identity servers to follow the same policy regarding case sensitivity.
 
 ## Tradeoffs
 
-Implementing this MSC in identity servers would require the databases of
-existing identity servers to be updated in a large part to convert the email
-addresses of existing associations to lowercase, in order to avoid conflicts.
-However, most of this update can usually be done by a single database query (or
-a background job running at startup), so the UX improvement outweighs this
-trouble.
+Implementing this MSC in identity servers and homeservers might require the
+databases of existing instances to be updated in a large part to convert the
+email addresses of existing associations to lowercase, in order to avoid
+conflicts. However, most of this update can usually be done by a single database
+query (or a background job running at startup), so the UX improvement outweighs
+this trouble.
 
 ## Potential issues
 
 Some users might already have two different accounts associated with the same
 e-mail address but with different cases. This appears to happen in a small
-number of cases, however, and can be dealt with by the identity server's maintainer.
+number of cases, however, and can be dealt with by the identity server's or the
+homeserver's maintainer.
 
 For example, with Sydent, the process of dealing with such cases could look
 like:
