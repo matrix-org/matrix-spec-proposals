@@ -12,7 +12,7 @@ of e-mail addresses as case insensitive. Therefore, most users expect localparts
 to be treated case insensitively, and get confused when it's not. Some users,
 for example, get confused over the fact that registering a 3PID association for
 `john.doe@example.com` doesn't mean that the association is valid for
-`John.Doe@example.com`, and don't expect to be expected to remember the exact
+`John.Doe@example.com`, and don't expect to have to remember the exact
 case they used to initially register the association (and sometimes get locked
 out of their account because of that). So far we've seen that confusion occur
 and lead to troubles of various degrees over several deployments of Synapse and
