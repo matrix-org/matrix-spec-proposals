@@ -39,7 +39,7 @@ Implementing this MSC in identity servers would require the databases of
 existing identity servers to be updated in a large part to convert the email
 addresses of existing associations to lowercase, in order to avoid conflicts.
 However, most of this update can usually be done by a single database query (or
-a background job running at startup), so the UX improvement outweights this
+a background job running at startup), so the UX improvement outweighs this
 trouble.
 
 ## Potential issues
