@@ -28,7 +28,7 @@ before any processing, instead of only its domain.
 ## Other considered solutions
 
 A first look at this issue concluded that there was no need to add such a
-mention to the spec, and that it can be considered as an implementation detail.
+mention to the spec, and that it can be considered an implementation detail.
 However, [MSC2134](https://github.com/matrix-org/matrix-doc/pull/2134) changes
 this: because hashing functions are case sensitive, we need both clients and
 identity servers to follow the same policy regarding case sensitivity.
