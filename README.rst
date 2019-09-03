@@ -138,4 +138,4 @@ Issue tracking
 Issues with the Matrix specification are tracked in `GitHub
 <https://github.com/matrix-org/matrix-doc/issues>`_.
 
-See `meta/labels.rst <meta/labels.rst>`_ for notes on what the labels mean.
+See `meta/github-labels.rst <meta/github-labels.rst>`_ for notes on what the labels mean.
