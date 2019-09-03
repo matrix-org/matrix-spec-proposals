@@ -170,7 +170,7 @@ This endpoint does *not* require authentication.
 
 #### `POST $prefix/terms`:
 Requests to this endpoint have a single key, `user_accepts` whose value is
-a list of URLs (given by the `url` field in the GET response) of documents that 
+a list of URLs (given by the `url` field in the GET response) of documents that
 the user has agreed to:
 
 ```json
@@ -269,7 +269,7 @@ A client uses this client/server API endpoint to request that the Homeserver
 removes the given 3PID from the given Identity Server, or all Identity Servers.
 Takes the same parameters as
 `POST /_matrix/client/r0/account/3pid/delete`, ie. `id_server`, `medium`,
-`address` and the newly added `is_token`.
+`address` and the newly added `id_access_token`.
 
 Returns the same as `POST /_matrix/client/r0/account/3pid/delete`.
 

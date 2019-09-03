@@ -139,6 +139,9 @@ paths:
                     id_server:
                       type: string
                       description: The hostname+port of the identity server which should be used for third party identifier lookups.
+                    id_access_token:
+                      type: string
+                      description: An access token previously registered with the identity server.
                     medium:
                       type: string
                       # TODO: Link to Identity Service spec when it eixsts
@@ -146,7 +149,7 @@ paths:
                     address:
                       type: string
                       description: The invitee's third party identifier.
-                  required: ["id_server", "medium", "address"]
+                  required: ["id_server", "id_access_token", "medium", "address"]
               room_version:
                 type: string
                 description: |-
