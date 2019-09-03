@@ -95,18 +95,6 @@ paths:
                   should be authenticated, but is instead used to
                   authenticate the ``register`` call itself.
                 "$ref": "definitions/auth_data.yaml"
-              bind_email:
-                type: boolean
-                description: |-
-                  If true, the server binds the email used for authentication to
-                  the Matrix ID with the identity server.
-                example: false
-              bind_msisdn:
-                type: boolean
-                description: |-
-                  If true, the server binds the phone number used for authentication
-                  to the Matrix ID with the identity server.
-                example: false
               username:
                 type: string
                 description: |-
