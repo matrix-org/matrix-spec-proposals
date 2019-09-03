@@ -79,7 +79,7 @@ their proposed changes to the Matrix protocol:
 * Pragmatism rather than perfection
 * Proof rather than conjecture
 
-Please see `MSC1779 <https://github.com/matrix-org/matrix-doc/blob/matthew/msc1779/proposals/1779-open-governance.md>`_
+Please `see MSC1779 <https://github.com/matrix-org/matrix-doc/blob/matthew/msc1779/proposals/1779-open-governance.md>`_
 for full details of the project's Guiding Principles.
 
 Technical notes
