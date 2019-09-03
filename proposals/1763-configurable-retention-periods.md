@@ -256,16 +256,8 @@ up to the server implementation's configuration on whether to allow it or not,
 and if allowed, configure how long the backfill should persist before being
 purged again.
 
-Media uploads must also be expired in line with the retention policy of the
-room. For unencrypted rooms this is easy; when the event that references a
-piece of content is expired, the content must be expired too - assuming the
-content was first uploaded in that room.  (This allows for content reuse in
-retention-limited rooms for things like stickers).
-
-For encrypted rooms, there is (currently) no alternative than have the client
-manually delete media content from the server as it expires its own local
-copies of messages.  (This requires us to have actually implemented a [media
-deletion API](https://github.com/matrix-org/matrix-doc/issues/790) at last.)
+Cleaning up the media attachments of expired or redacted events has been
+split out into https://github.com/matrix-org/matrix-doc/issues/2278.
 
 Clients and Servers are recommended to not default to setting a `max_lifetime`
 when creating rooms; instead users should only specify a `max_lifetime` when
