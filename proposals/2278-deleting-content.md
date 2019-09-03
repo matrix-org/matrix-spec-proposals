@@ -31,7 +31,7 @@ actually purging it from storage, in order to mitigate abuse.
 
 	XXX: We might want to provide an undelete API too to let users rescue
 	their content that they accidentally deleted, as you would get on a
-	typical desktop OS file manager.  Perhaps `DELETE` with `{ undelete: true }`?
+	typical desktop OS file manager.  Perhaps `DELETE` with `{ undo: true }`?
 
 	XXX: We might also want to let admins quarantine rather than delete attachments
 	without a timelimit by passing `{ quarantine: true }` or similar.
