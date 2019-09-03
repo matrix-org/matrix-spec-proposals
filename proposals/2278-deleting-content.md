@@ -77,8 +77,9 @@ external media repository, by calling the DELETE api upon it.
 If a new event is received over federation which refers to a deleted
 attachment, then the server should operate as if it has never heard of that
 attachment; pulling it in over federation from whatever the source server is.
-(This will break if the remote server sends an event referring to the local
-MXC URL, so don't do that.)
+This will break if a remote server sends an event referring to a local
+MXC URL which may have been deleted, so don't do that - clients on servers
+should send MXC URLs which refer to their local server, not remote ones.
 
 In the scenario of (say) a redacted membership event, it's possible that the
 refcount of an unwanted avatar might be greater than zero (due to the avatar
