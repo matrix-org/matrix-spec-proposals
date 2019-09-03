@@ -81,6 +81,12 @@ This will break if a remote server sends an event referring to a local
 MXC URL which may have been deleted, so don't do that - clients on servers
 should send MXC URLs which refer to their local server, not remote ones.
 
+This means that if the local server chooses to expire the source event sooner
+than a remote server does, the remote server might end up not being able to
+sync the media from the local server and so display a broken attachment.
+This feels fairly reasonable; if you don't want people to end up with 404s
+on attachments, you shouldn't go deleting things.
+
 In the scenario of (say) a redacted membership event, it's possible that the
 refcount of an unwanted avatar might be greater than zero (due to the avatar
 being referenced in multiple rooms), but the room admin may want to still
