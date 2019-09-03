@@ -20,8 +20,13 @@ propose:
 
 ```
 DELETE /_matrix/media/r0/download/{serverName}/{mediaId}
-{}
 ```
+with a JSON dict as a request body.
+
+The API would returns:
+ * `200 OK {}` on success
+ * `403` if invalid access_token or not authorised to delete.
+ * `404` if the content described in the URL does not exist on the local server.
 
 The user must be authenticated via access_token or Authorization header as the
 original uploader, or however the server sees fit in order to delete the content.
