@@ -228,7 +228,7 @@ over remote generated events.
 
 Server/clients then set a maintenance task to remove ("purge") old events and
 references to their IDs from their DB and in-memory queues after the lifetime
-has expired (starting timing from the absolute origin_server_ts on the event).
+has expired (starting timing from the absolute `origin_server_ts` on the event).
 It's worth noting that this means events may sometimes disappear from event
 streams; calling the same `/sync` or `/messages` API twice may give different
 results if some of the events have disappeared in the interim.
@@ -245,7 +245,7 @@ caused by a purge, or otherwise mark them as unpaginatable. There is a
 separate related [spec
 bug](https://github.com/matrix-org/matrix-doc/issues/2251) and [impl
 bug](https://github.com/matrix-org/synapse/issues/1623) that the CS API does
-not currently provide a well-defined way to say when /messages has hit a hole
+not currently provide a well-defined way to say when `/messages` has hit a hole
 in the DAG or the start of the room and cannot paginate further.
 
 If possible, servers/clients should remove downstream notifications of a message
