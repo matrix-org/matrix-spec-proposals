@@ -176,6 +176,10 @@ paths:
       description: |-
         Removes a third party identifier from the user's account. This might not
         cause an unbind of the identifier from the identity server.
+
+        Unlike other endpoints, this endpoint does not take an ``id_access_token``
+        parameter because the homeserver is expected to sign the request to the
+        identity server instead.
       operationId: delete3pidFromAccount
       security:
         - accessToken: []
@@ -193,11 +197,6 @@ paths:
                     homeserver does not know the original ``id_server``, it MUST return
                     a ``id_server_unbind_result`` of ``no-support``.
                 example: "example.org"
-              id_access_token:
-                type: string
-                description: |-
-                  An access token previously registered with the identity server. Required
-                  if an ``id_server`` is specified.
               medium:
                 type: string
                 description: The medium of the third party identifier being removed.
