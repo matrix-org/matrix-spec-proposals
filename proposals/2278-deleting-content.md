@@ -24,7 +24,7 @@ DELETE /_matrix/media/r0/download/{serverName}/{mediaId}
 ```
 
 The user must be authenticated via access_token or Authorization header as the
-original uploader or as a server admin in order to delete the content.
+original uploader, or however the server sees fit in order to delete the content.
 
 Servers may wish to quarantine the deleted content for some timeframe before
 actually purging it from storage, in order to mitigate abuse.
