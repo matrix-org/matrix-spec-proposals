@@ -17,8 +17,8 @@ split out into this independent proposal.
 
 ## Proposal
 
-Users can specify that a message should self-destruct by adding the following
-field to any event's content:
+Users can specify that a message should self-destruct by adding one or more of
+the following fields to any event's content:
 
 `m.self_destruct`:
   the duration in milliseconds after which the participating servers should
@@ -27,22 +27,28 @@ field to any event's content:
   or an integer in range [0, 2<sup>53</sup>-1]. If absent, or null, this
   behaviour does not take effect.
 
+ m.self_destruct_after:
+  the timestamp in milliseconds since the epoch after which participating
+  servers should redact this event on behalf of the sender. Must be null
+  or an integer in range [0, 2<sup>53</sup>-1]. If absent, or null, this
+  behaviour does not take effect.
+
 Clients and servers MUST send explicit read receipts per-message for
 self-destructing messages (rather than for the most recently read message,
 as is the normal operation), so that messages can be destructed as requested.
 
-The `m.self_destruct` field is not preserved over redaction (and
+The `m.self_destruct` fields are not preserved over redaction (and
 self-destructing messages may be redacted to speed up the self-destruct
 process if desired).
 
-The `m.self_destruct` field must be ignored on `m.redaction` events, given it
+The `m.self_destruct` fields must be ignored on `m.redaction`events, given it
 should be impossible to revert a redaction.
 
-E2E encrypted messages must store the `m.self_destruct` field outside of the
+E2E encrypted messages must store the `m.self_destruct` fields outside of the
 encrypted contents of the message, given the server needs to be able to act on
 it.
 
-Senders may edit the `m.self_destruct` field in order to retrospectively
+Senders may edit the `m.self_destruct` fields in order to retrospectively
 change the intended lifetime of a message.  Each new `m.replaces` event should
 be considered to replace the self-destruction information (if any) on the
 original, and restart the destruction timer.  On destruction, the original
@@ -66,17 +72,25 @@ the reaction's content to show the client that it is synthetic and used for
 implementing self-destruction rather than actually sent from the claimed
 client.
 
+For `m.self_destruct_after`, the server should redact the event and send a
+synthetic redaction once the server's localtime overtakes the timestamp given
+by `m.self_destruct_after`. The server should only perform the redaction once.
+
 ## Client-side behaviour
 
 Clients should display self-destructing events in a clearly distinguished
 manner in the timeline.  Details of the lifespan can be shown on demand
 however, although a visible countdown is recommended.
 
-Clients should locally remove self-destructing events as if they have been
+Clients should locally remove `m.self_destruct` events as if they have been
 redacted N milliseconds after first attempting to send the read receipt for the
 message in question.  The synthetic redaction event sent by the local server
 then acts as a fallback for clients which fail to implement special UI for
 self-destructing messages.
+
+Clients should locally remove `m.self_destruct_after` events when the local
+timestamp exceeds the timestamp indicated in the `m.self_destruct_after`
+field.
 
 Clients should warn the sender that self-destruction is based entirely on good
 faith, and other servers and clients cannot be guaranteed to uphold it.
