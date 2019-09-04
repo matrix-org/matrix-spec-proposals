@@ -151,7 +151,10 @@ We can extend if/when that use case emerges.
 
 We should probably ignore missing read receipts from bots when deciding
 whether to self-destruct.  This is blocked on having a good way to identify
-bots.
+bots.  [MSC1206](https://github.com/matrix-org/matrix-doc/pull/1206) provides
+one possible way, as does
+[MSC2199](https://github.com/matrix-org/matrix-doc/pull/2199) (important v.
+unimportant users in immutable DMs).
 
 The behaviour for rooms with more than 2 participants ends up being a bit
 strange. The client (and server) starts the expiry countdown on the message as
