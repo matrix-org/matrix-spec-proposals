@@ -234,6 +234,70 @@ paths:
               - id_server_unbind_result
       tags:
         - User data
+  "/account/3pid/unbind":
+    post:
+      summary: Removes a user's third party identifier from an identity server.
+      description: |-
+        Removes a user's third party identifier from the provided identity server.
+        This should not cause an unbind from the homeserver (as ``/3pid/delete``
+        would) and should only affect the identity server.
+
+        Unlike other endpoints, this endpoint does not take an ``id_access_token``
+        parameter because the homeserver is expected to sign the request to the
+        identity server instead.
+      operationId: unbind3pidFromAccount
+      security:
+        - accessToken: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              id_server:
+                type: string
+                description: |-
+                    The identity server to unbind from. If not provided, the homeserver
+                    MUST use the ``id_server`` the identifier was added through. If the
+                    homeserver does not know the original ``id_server``, it MUST return
+                    a ``id_server_unbind_result`` of ``no-support``.
+                example: "example.org"
+              medium:
+                type: string
+                description: The medium of the third party identifier being removed.
+                enum: ["email", "msisdn"]
+                example: "email"
+              address:
+                type: string
+                description: The third party address being removed.
+                example: "example@example.org"
+            required: ['medium', 'address']
+      responses:
+        200:
+          description: |-
+            The identity server has disassociated the third party identifier from the
+            user.
+          schema:
+            type: object
+            properties:
+              id_server_unbind_result:
+                type: string
+                enum:
+                  # XXX: I don't know why, but the order matters here so that "no-support"
+                  # doesn't become "no- support" by the renderer.
+                  - "no-support"
+                  - "success"
+                description: |-
+                  An indicator as to whether or not the identity server was able to unbind
+                  the 3PID. ``success`` indicates that the identity server has unbound the
+                  identifier whereas ``no-support`` indicates that the identity server
+                  refuses to support the request or the homeserver was not able to determine
+                  an identity server to unbind from.
+                example: "success"
+            required:
+              - id_server_unbind_result
+      tags:
+        - User data
   "/account/3pid/email/requestToken":
     post:
       summary: Begins the validation process for an email address for association with the user's account.
