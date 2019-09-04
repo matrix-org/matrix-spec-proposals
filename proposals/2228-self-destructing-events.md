@@ -156,11 +156,6 @@ would  also result in all users redacting the message the same time. Therefore
 synthetic per-user redaction events (which are only for backwards
 compatibility anyway) feel like the lesser evil.
 
-We could let the user specify an expiry time for messages relative to when
-they were sent rather than when they were read.  However, I can't think of a
-good enough use case to justify complicating the proposal with that feature.
-We can extend if/when that use case emerges.
-
 ## Issues
 
 We should probably ignore missing read receipts from bots when deciding
