@@ -100,6 +100,14 @@ hopefully acceptable.  It does mean that stickers in encrypted rooms will end
 up getting re-encrypted/decrypted every time, but is hopefully be acceptable
 given the resulting improvement in privacy.
 
+An alternative approach to solving the problem of attachment reuse could be to
+expect clients to somehow 'touch' uploaded local attachments whenever they
+send an event which refers to them - effectively renewing their retention
+lifetime. However, in E2EE rooms this ends up leaking which events refer to
+which attachments (or at least claim to), and also gives a vector for abuse
+where malicious client could bypass the retention schedule by repeatedly
+retouching a file to keep it alive.
+
 ## Security considerations
 
 Media repo implementations might want to use `srm` or a similar secure
