@@ -39,6 +39,12 @@ E2E encrypted messages must store the `m.self_destruct` field outside of the
 encrypted contents of the message, given the server needs to be able to act on
 it.
 
+Senders may edit the `m.self_destruct` field in order to retrospectively
+change the intended lifetime of a message.  Each new `m.replaces` event should
+be considered to replace the self-destruction information (if any) on the
+original, and restart the destruction timer.  On destruction, the original
+event (and all `m.replaces` variants of it) should be redacted.
+
 ## Server-side behaviour
 
 When a client sends a message with `m.self_destruct` information, the servers
@@ -52,10 +58,10 @@ should redact the event from that member's perspective, and send the user a
 synthetic `m.redaction` event in the room to the reader's clients on behalf of
 the sender.
 
-The synthetic redaction event should contain some flag to show the client
-that it is synthetic and used for implementing self-destruction rather than
-actually sent from the claimed client.  Perhaps `m.synthetic: true` on the
-redaction's contents?
+The synthetic redaction event should contain an `m.synthetic: true` flag on
+the reaction's content to show the client that it is synthetic and used for
+implementing self-destruction rather than actually sent from the claimed
+client.
 
 ## Client-side behaviour
 
