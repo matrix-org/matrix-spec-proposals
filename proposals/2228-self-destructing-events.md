@@ -35,6 +35,9 @@ The `m.self_destruct` field is not preserved over redaction (and
 self-destructing messages may be redacted to speed up the self-destruct
 process if desired).
 
+The `m.self_destruct` field must be ignored on `m.redaction` events, given it
+should be impossible to revert a redaction.
+
 E2E encrypted messages must store the `m.self_destruct` field outside of the
 encrypted contents of the message, given the server needs to be able to act on
 it.
