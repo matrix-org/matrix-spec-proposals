@@ -12,7 +12,7 @@ and purging expired messages from the server; in practice this approach is
 flawed because purging messages fragments the DAG, breaking back-pagination
 and potentially causing performance problems.  Also, the ability to set an
 expiration timestamp relative to the send (rather than read) time is not of
-obvious value.  Therefore the concept of self-destructing messsages was 
+obvious value.  Therefore the concept of self-destructing messsages was
 split out into this independent proposal.
 
 ## Proposal
@@ -68,6 +68,57 @@ redacted N milliseconds after first attempting to send the read receipt for the
 message in question.  The synthetic redaction event sent by the local server
 then acts as a fallback for clients which fail to implement special UI for
 self-destructing messages.
+
+Clients should warn the sender that self-destruction is based entirely on good
+faith, and other servers and clients cannot be guaranteed to uphold it.
+Typical text could be:
+
+	"Warning: recipients may not honour disappearing messages".
+
+We recommend exposing the feature in UX as "disappearing messages" rather than
+"self-destructing messages", as self-destruction implies a reliability and
+permenance that the feature does not in practice provide.
+
+Other possible user-friendly wording might include:
+ * Ephemeral messages (which feels even less reliably destructive than
+   'disappearing', but may be too obscure a word for a wide audience)
+ * Vanishing messages (which implies they reliably vanish)
+ * Vanishable messages (which is clunky, but more implies that it's an intent
+   rather than a guarantee)
+ * Evanescent messages (which is too obscure, but implies that it's a message
+   which /can/ vanish, rather than that it /will/)
+ * Fleeting messages (which is again quite an obscure word)
+ * Transient messages (too techie)
+ * Temporary messages (could work)
+ * Short-term messages
+
+## Threat model
+
+Any proposals around coordinating deletion of data (e.g. this,
+[MSC1763](https://github.com/matrix-org/matrix-doc/issues/1763),
+[MSC2278](https://github.com/matrix-org/matrix-doc/issues/2278)) are sensitive
+because there is of course no way to stop a malicious server or client or user
+ignoring the deletion and somehow retaining the data. (We consider any attempt
+at trying to use DRM to do so as futile).
+
+This MSC is intended to:
+
+ * Give a strong commitment to users on trusted clients and servers that
+   message data will not be persisted on Matrix servers and clients beyond the
+   requested timeframe.  This is useful for legal purposes in rooms which span
+   only trusted (e.g. private federated) servers, to enforce data retention
+   behaviour.
+
+ * Give a weak commitment to users on untrusted clients and servers (e.g.
+   arbitary users on the public Matrix network) that message data may not be
+   persisted beyond the requested timeframe.  This should be adequate for
+   unimportant disappearing messages (e.g. a casual fleeting message which is so
+   unimportant or of such shortlived relevance that it is not worthy of being put
+   in the timeline).  It is **not** adequate for attempting to ensure that
+   sensitive content is deleted after reading for legal or security purposes.
+
+ * Help server admins manage diskspace by letting users dictate retention
+   lifetime per message.
 
 ## Tradeoffs
 
