@@ -507,6 +507,10 @@ paths:
 
         The homeserver may change the flows available depending on whether a
         valid access token is provided.
+
+        Unlike other endpoints, this endpoint does not take an ``id_access_token``
+        parameter because the homeserver is expected to sign the request to the
+        identity server instead.
       security:
         - accessToken: []
       operationId: deactivateAccount

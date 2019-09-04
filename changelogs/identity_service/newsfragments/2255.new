@@ -1,0 +1,1 @@
+Add ``/account``, ``/account/register``, and ``/account/logout`` to authenticate with the identity server.
