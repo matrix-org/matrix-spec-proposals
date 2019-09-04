@@ -1,5 +1,7 @@
 # MSC2140: Terms of Service API for Identity Servers and Integration Managers
 
+*Note*: This MSC was added to in [MSC2264](https://github.com/matrix-org/matrix-doc/pull/2264)
+
 [MSC1692](https://github.com/matrix-org/matrix-doc/issues/1692) introduces a
 method for homeservers to require that users read and agree to certain
 documents before being permitted to use the service. This proposal introduces a
@@ -170,7 +172,7 @@ This endpoint does *not* require authentication.
 
 #### `POST $prefix/terms`:
 Requests to this endpoint have a single key, `user_accepts` whose value is
-a list of URLs (given by the `url` field in the GET response) of documents that 
+a list of URLs (given by the `url` field in the GET response) of documents that
 the user has agreed to:
 
 ```json
@@ -276,6 +278,16 @@ Returns the same as `POST /_matrix/client/r0/account/3pid/delete`.
 Clients may add IS bindings for 3PIDs that already exist on the user's
 Homeserver account by using the `POST /_matrix/client/r0/account/3pid`
 to re-add the 3PID.
+
+### Unstable feature flag for transition
+
+In order to allow client implementations to determine if the homeserver they are developed
+against supports `id_access_token`, an unstable feature flag of `m.id_access_token`
+is to be added to `/versions`. When the flag is `false` or not present, clients must assume
+that the homeserver does not support being given `id_access_token` and may receive an error
+for doing so. Clients are expected to use the supported specification versions the homeserver
+advertises instead of the feature flag's presence once this proposal is included in a release
+of the specification.
 
 ## Tradeoffs
 
