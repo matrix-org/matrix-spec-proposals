@@ -112,7 +112,10 @@ paths:
                     description: The identity server to use.
                   id_access_token:
                     type: string
-                    description: An access token previously registered with the identity server.
+                    description: |-
+                      An access token previously registered with the identity server. Servers
+                      can treat this as optional to distinguish between r0.5-compatible clients
+                      and this specification version.
                   sid:
                     type: string
                     description: The session identifier given by the identity server.
