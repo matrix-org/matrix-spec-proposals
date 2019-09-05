@@ -46,5 +46,5 @@ code), then the sending server should retry the request with the `v1` API.
 
 ## Alternative solutions
 
-An alternative solution would be to make the change in the `v1` fedration API,
+An alternative solution would be to make the change in the `v1` federation API,
 but would break backward compatibility, thus would be harder to manage.
