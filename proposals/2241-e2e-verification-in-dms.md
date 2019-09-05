@@ -116,9 +116,6 @@ The messages used in SAS verification are the same as those currently defined,
 except that instead of the `transaction_id` property, an `m.relates_to`
 property, as defined above, is used instead.
 
-## Tradeoffs
-
-
 ## Potential issues
 
 If a user wants to verify their own device, this will require the creation of a
