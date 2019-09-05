@@ -1,4 +1,4 @@
-# Standardised federation response formats
+# Remove the '200' value from some federation responses
 
 Some responses formats in the federation API specifications use the form `[200,
 res]` in which `res` is the JSON object containing the actual response for the
@@ -13,7 +13,6 @@ This proposal proposes a backward compatible alternative
 Add a new version of the following endpoints under the prefix
 `/_matrix/federation/v2`:
 
-* `PUT /_matrix/federation/v2/send/{txnId}`
 * `PUT /_matrix/federation/v2/send_join/{roomId}/{eventId}`
 * `PUT /_matrix/federation/v2/send_leave/{roomId}/{eventId}`
 
