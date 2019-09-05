@@ -27,7 +27,9 @@ known by the homeserver).
 The 200 response is a JSON object with an `id_server_unbind_result` field whose
 value is either `success` or `no-support`, where the latter indicates that the
 identity server (IS) does not support unbinding 3PIDs directly. If the identity
-server returns an error then that should be returned to the client.
+server returns an error then that should be returned to the client. If the homeserver
+is unable to determine an `id_server` to use, it should return `no-support` for
+the `id_server_unbind_result`.
 
 Example:
 

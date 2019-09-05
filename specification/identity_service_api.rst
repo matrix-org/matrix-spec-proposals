@@ -51,10 +51,13 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/identity_service/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.2.0 <https://matrix.org/docs/spec/identity_service/r0.2.0.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/identity_service/r0.1.0.html>`_
 
 General principles
 ------------------
+
+.. TODO: TravisR - Define auth for IS v2 API in a future PR
 
 The purpose of an identity server is to validate, store, and answer questions
 about the identities of users. In particular, it stores associations of the form
@@ -175,6 +178,8 @@ Status check
 
 {{ping_is_http_api}}
 
+{{v2_ping_is_http_api}}
+
 Key management
 --------------
 
@@ -194,10 +199,14 @@ service's long-term keys.
 
 {{pubkey_is_http_api}}
 
+{{v2_pubkey_is_http_api}}
+
 Association lookup
 ------------------
 
 {{lookup_is_http_api}}
+
+.. TODO: TravisR - Add v2 lookup API in future PR
 
 Establishing associations
 -------------------------
@@ -242,15 +251,21 @@ Email associations
 
 {{email_associations_is_http_api}}
 
+{{v2_email_associations_is_http_api}}
+
 Phone number associations
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {{phone_associations_is_http_api}}
 
+{{v2_phone_associations_is_http_api}}
+
 General
 ~~~~~~~
 
 {{associations_is_http_api}}
+
+{{v2_associations_is_http_api}}
 
 Invitation storage
 ------------------
@@ -266,6 +281,8 @@ long-term private key for the identity server.
 
 {{store_invite_is_http_api}}
 
+{{v2_store_invite_is_http_api}}
+
 Ephemeral invitation signing
 ----------------------------
 
@@ -276,7 +293,9 @@ this isn't possible.
 
 {{invitation_signing_is_http_api}}
 
+{{v2_invitation_signing_is_http_api}}
+
 .. _`Unpadded Base64`:  ../appendices.html#unpadded-base64
 .. _`3PID Types`:  ../appendices.html#pid-types
 .. _`Signing JSON`: ../appendices.html#signing-json
-.. _`/3pid/onbind`: ../server_server/r0.1.1.html#put-matrix-federation-v1-3pid-onbind
+.. _`/3pid/onbind`: ../server_server/%SERVER_RELEASE_LABEL%.html#put-matrix-federation-v1-3pid-onbind

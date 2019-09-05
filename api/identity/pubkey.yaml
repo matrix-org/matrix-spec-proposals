@@ -30,6 +30,7 @@ paths:
       description: |-
         Get the public key for the passed key ID.
       operationId: getPubKey
+      deprecated: true
       parameters:
         - in: path
           type: string
@@ -72,6 +73,7 @@ paths:
         Check whether a long-term public key is valid. The response should always
         be the same, provided the key exists.
       operationId: isPubKeyValid
+      deprecated: true
       parameters:
         - in: query
           type: string
@@ -101,6 +103,7 @@ paths:
       description: |-
         Check whether a short-term public key is valid.
       operationId: isEphemeralPubKeyValid
+      deprecated: true
       parameters:
         - in: query
           type: string

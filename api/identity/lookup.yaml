@@ -32,6 +32,7 @@ paths:
       summary: Look up the Matrix user ID for a 3pid.
       description: Look up the Matrix user ID for a 3pid.
       operationId: lookupUser
+      deprecated: true
       parameters:
         - in: query
           type: string
@@ -101,6 +102,7 @@ paths:
       summary: Lookup Matrix user IDs for a list of 3pids.
       description: Lookup Matrix user IDs for a list of 3pids.
       operationId: lookupUsers
+      deprecated: true
       parameters:
         - in: body
           name: body

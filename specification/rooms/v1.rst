@@ -109,6 +109,12 @@ The types of state events that affect authorization are:
 - ``m.room.power_levels``
 - ``m.room.third_party_invite``
 
+.. NOTE::
+
+  Power levels are inferred from defaults when not explicitly supplied.
+  For example, mentions of the ``sender``'s power level can also refer 
+  to the default power level for users in the room.
+
 The rules are as follows:
 
 1. If type is ``m.room.create``:
@@ -243,13 +249,22 @@ The rules are as follows:
 
    #. If there is no previous ``m.room.power_levels`` event in the room, allow.
 
-   #. For each of the keys ``users_default``, ``events_default``,
-      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
-      each entry being changed under the ``events`` or ``users`` keys:
+   #. For the keys ``users_default``, ``events_default``,
+      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite`` check if they 
+      were added, changed or removed. For each found alteration:
 
       i. If the current value is higher than the ``sender``'s current power level,
          reject.
 
+      #. If the new value is higher than the ``sender``'s current power level,
+         reject.
+         
+   #. For each entry being added, changed or removed in both the ``events`` and 
+      ``users`` keys:
+      
+      i. If the current value is higher than the ``sender``'s current power level,
+         reject.
+         
       #. If the new value is higher than the ``sender``'s current power level,
          reject.
 
@@ -293,5 +308,5 @@ Events in version 1 rooms have the following structure:
 {{definition_ss_pdu}}
 
 
-.. _`auth events selection`: ../../server_server/r0.1.1.html#auth-events-selection
-.. _`Signing Events`: ../../server_server/r0.1.1.html#signing-events
+.. _`auth events selection`: ../server_server/%SERVER_RELEASE_LABEL%.html#auth-events-selection
+.. _`Signing Events`: ../server_server/%SERVER_RELEASE_LABEL%.html#signing-events

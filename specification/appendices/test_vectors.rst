@@ -91,11 +91,17 @@ Given the following minimally-sized event:
 .. code:: json
 
     {
-        "event_id": "$0:domain",
+        "room_id": "!x:domain",
+        "sender": "@a:domain",
         "origin": "domain",
         "origin_server_ts": 1000000,
         "signatures": {},
+        "hashes": {},
         "type": "X",
+        "content": {},
+        "prev_events": [],
+        "auth_events": [],
+        "depth": 3,
         "unsigned": {
             "age_ts": 1000000
         }
@@ -106,15 +112,20 @@ The event signing algorithm should emit the following signed event:
 .. code:: json
 
     {
-        "event_id": "$0:domain",
+        "auth_events": [],
+        "content": {},
+        "depth": 3,
         "hashes": {
-            "sha256": "6tJjLpXtggfke8UxFhAKg82QVkJzvKOVOOSjUDK4ZSI"
+            "sha256": "5jM4wQpv6lnBo7CLIghJuHdW+s2CMBJPUOGOC89ncos"
         },
         "origin": "domain",
         "origin_server_ts": 1000000,
+        "prev_events": [],
+        "room_id": "!x:domain",
+        "sender": "@a:domain",
         "signatures": {
             "domain": {
-                "ed25519:1": "2Wptgo4CwmLo/Y8B8qinxApKaCkBG2fjTWB7AbP5Uy+aIbygsSdLOFzvdDjww8zUVKCmI02eP9xtyJxc/cLiBA"
+                "ed25519:1": "KxwGjPSDEtvnFgU00fwFz+l6d2pJM6XBIaMEn81SXPTRl16AqLAYqfIReFGZlHi5KLjAWbOoMszkwsQma+lYAg"
             }
         },
         "type": "X",
@@ -129,7 +140,7 @@ Given the following event containing redactable content:
 
     {
         "content": {
-            "body": "Here is the message content",
+            "body": "Here is the message content"
         },
         "event_id": "$0:domain",
         "origin": "domain",
@@ -149,7 +160,7 @@ The event signing algorithm should emit the following signed event:
 
     {
         "content": {
-            "body": "Here is the message content",
+            "body": "Here is the message content"
         },
         "event_id": "$0:domain",
         "hashes": {

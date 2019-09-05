@@ -134,9 +134,27 @@ paths:
         200:
           description: The addition was successful.
           examples:
-            application/json: {}
+            application/json: {
+              "submit_url": "https://example.org/path/to/submitToken"
+            }
             schema:
               type: object
+              properties:
+                submit_url:
+                  type: string
+                  description: |-
+                    An optional field containing a URL where the client must
+                    submit the validation token to, with identical parameters
+                    to the Identity Service API's ``POST
+                    /validate/email/submitToken`` endpoint. The homeserver must
+                    send this token to the user (if applicable), who should
+                    then be prompted to provide it to the client.
+
+                    If this field is not present, the client can assume that
+                    verification will happen without the client's involvement
+                    provided the homeserver advertises this specification version
+                    in the ``/versions`` response (ie: r0.5.0).
+                  example: "https://example.org/path/to/submitToken"
         403:
           description: The credentials could not be verified with the identity server.
           examples:
@@ -163,6 +181,14 @@ paths:
           schema:
             type: object
             properties:
+              id_server:
+                type: string
+                description: |-
+                    The identity server to unbind from. If not provided, the homeserver
+                    MUST use the ``id_server`` the identifier was added through. If the
+                    homeserver does not know the original ``id_server``, it MUST return
+                    a ``id_server_unbind_result`` of ``no-support``.
+                example: "example.org"
               medium:
                 type: string
                 description: The medium of the third party identifier being removed.
@@ -180,41 +206,55 @@ paths:
             user.
           schema:
             type: object
-            properties: {}
+            properties:
+              id_server_unbind_result:
+                type: string
+                enum:
+                  # XXX: I don't know why, but the order matters here so that "no-support"
+                  # doesn't become "no- support" by the renderer.
+                  - "no-support"
+                  - "success"
+                description: |-
+                  An indicator as to whether or not the homeserver was able to unbind
+                  the 3PID from the identity server. ``success`` indicates that the
+                  indentity server has unbound the identifier whereas ``no-support``
+                  indicates that the identity server refuses to support the request
+                  or the homeserver was not able to determine an identity server to
+                  unbind from.
+                example: "success"
+            required:
+              - id_server_unbind_result
       tags:
         - User data
   "/account/3pid/email/requestToken":
     post:
       summary: Begins the validation process for an email address for association with the user's account.
       description: |-
-        Proxies the Identity Service API ``validate/email/requestToken``, but
-        first checks that the given email address is **not** already associated
-        with an account on this homeserver. This API should be used to request
-        validation tokens when adding an email address to an account. This API's
-        parameters and response are identical to that of the |/register/email/requestToken|_
-        endpoint.
+        The homeserver must check that the given email address is **not**
+        already associated with an account on this homeserver. This API should
+        be used to request validation tokens when adding an email address to an
+        account. This API's parameters and response are identical to that of
+        the |/register/email/requestToken|_ endpoint. The homeserver has the
+        choice of validating the email address itself, or proxying the request
+        to the ``/validate/email/requestToken`` Identity Service API as
+        identified by ``id_server``. It is imperative that the
+        homeserver keep a list of trusted Identity Servers and only proxies to
+        those that it trusts.
       operationId: requestTokenTo3PIDEmail
       parameters:
         - in: body
           name: body
           required: true
           schema:
-            allOf:
-              - $ref: "../identity/definitions/request_email_validation.yaml"
-              - type: object
-                properties:
-                  id_server:
-                    type: string
-                    description: |-
-                      The hostname of the identity server to communicate with. May
-                      optionally include a port.
-                    example: "id.example.com"
-                required: ['id_server']
+            $ref: "./definitions/request_email_validation.yaml"
       responses:
         200:
-          description: An email was sent to the given address.
+          description: |-
+            An email was sent to the given address. Note that this may be an
+            email containing the validation token or it may be informing the
+            user of an error.
           schema:
-            $ref: "../identity/definitions/sid.yaml"
+            $ref: "definitions/request_token_response.yaml"
         403:
           description: |-
             The homeserver does not allow the third party identifier as a
@@ -241,34 +281,28 @@ paths:
     post:
       summary: Begins the validation process for a phone number for association with the user's account.
       description: |-
-        Proxies the Identity Service API ``validate/msisdn/requestToken``, but
-        first checks that the given phone number is **not** already associated
-        with an account on this homeserver. This API should be used to request
-        validation tokens when adding a phone number to an account. This API's
-        parameters and response are identical to that of the |/register/msisdn/requestToken|_
-        endpoint.
+        The homeserver must check that the given phone number is **not**
+        already associated with an account on this homeserver. This API should
+        be used to request validation tokens when adding a phone number to an
+        account. This API's parameters and response are identical to that of
+        the |/register/msisdn/requestToken|_ endpoint. The homeserver has the
+        choice of validating the phone number itself, or proxying the request
+        to the ``/validate/msisdn/requestToken`` Identity Service API as
+        identified by ``id_server``. It is imperative that the
+        homeserver keep a list of trusted Identity Servers and only proxies to
+        those that it trusts.
       operationId: requestTokenTo3PIDMSISDN
       parameters:
         - in: body
           name: body
           required: true
           schema:
-            allOf:
-              - $ref: "../identity/definitions/request_msisdn_validation.yaml"
-              - type: object
-                properties:
-                  id_server:
-                    type: string
-                    description: |-
-                      The hostname of the identity server to communicate with. May
-                      optionally include a port.
-                    example: "id.example.com"
-                required: ['id_server']
+            $ref: "./definitions/request_msisdn_validation.yaml"
       responses:
         200:
           description: An SMS message was sent to the given phone number.
           schema:
-            $ref: "../identity/definitions/sid.yaml"
+            $ref: "definitions/request_token_response.yaml"
         403:
           description: |-
             The homeserver does not allow the third party identifier as a

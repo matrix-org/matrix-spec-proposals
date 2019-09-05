@@ -39,12 +39,14 @@ properties:
       avoid repeatedly sending the same email in the case of request
       retries between the POSTing user and the identity server.
       The client should increment this value if they desire a new
-      email (e.g. a reminder) to be sent.
+      email (e.g. a reminder) to be sent. If they do not, the server
+      should respond with success but not resend the email.
     example: 1
   next_link:
     type: string
     description: |-
-      Optional. When the validation is completed, the identity
-      server will redirect the user to this URL.
+      Optional. When the validation is completed, the identity server will
+      redirect the user to this URL. This option is ignored when submitting
+      3PID validation information through a POST request.
     example: "https://example.org/congratulations.html"
 required: ["client_secret", "email", "send_attempt"]

@@ -52,7 +52,7 @@ func main() {
 
 	walker := makeWalker(dir, w)
 	paths := []string{"api", "changelogs", "event-schemas", "scripts",
-		"specification"}
+		"specification", "schemas", "data-definitions"}
 
 	for _, p := range paths {
 		filepath.Walk(path.Join(dir, p), walker)

@@ -80,8 +80,20 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/server_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.1.2 <https://matrix.org/docs/spec/server_server/r0.1.2.html>`_
 - `r0.1.1 <https://matrix.org/docs/spec/server_server/r0.1.1.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/server_server/r0.1.0.html>`_
+
+
+API standards
+-------------
+
+The mandatory baseline for client-server communication in Matrix is exchanging
+JSON objects over HTTP APIs. More efficient optional transports will in future
+be supported as optional extensions - e.g. a packed binary encoding over
+stream-cipher encrypted TCP socket for low-bandwidth/low-roundtrip mobile usage.
+For the default HTTP transport, all API calls use a Content-Type of
+``application/json``.  In addition, all strings MUST be encoded as UTF-8.
 
 Server discovery
 ----------------
@@ -421,9 +433,8 @@ must ensure that the event:
 Further details of these checks, and how to handle failures, are described
 below.
 
-.. TODO:
-  Flesh this out a bit more, and probably change the doc to group the various
-  checks in one place, rather than have them spread out.
+The `Signing Events <#signing-events>`_ section has more information on which hashes
+and signatures are expected on events, and how to calculate them.
 
 
 Definitions
@@ -1099,6 +1110,15 @@ originating server, following the algorithm described in `Checking for a signatu
 Note that this step should succeed whether we have been sent the full event or
 a redacted copy.
 
+The signatures expected on an event are:
+
+* The ``sender``'s server, unless the invite was created as a result of 3rd party invite.
+  The sender must already match the 3rd party invite, and the server which actually
+  sends the event may be a different server.
+* For room versions 1 and 2, the server which created the ``event_id``. Other room
+  versions do not track the ``event_id`` over federation and therefore do not need
+  a signature from those servers.
+
 If the signature is found to be valid, the expected content hash is calculated
 as described below. The content hash in the ``hashes`` property of the received
 event is base64-decoded, and the two are compared for equality.
@@ -1114,7 +1134,9 @@ Calculating the reference hash for an event
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The *reference hash* of an event covers the essential fields of an event,
-including content hashes. It is calculated as follows.
+including content hashes. It is used for event identifiers in some room versions.
+See the `room version specification`_ for more information. It is calculated as
+follows.
 
 1. The event is put through the redaction algorithm.
 
