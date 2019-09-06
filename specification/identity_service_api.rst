@@ -57,8 +57,6 @@ The following other versions are also available, in reverse chronological order:
 General principles
 ------------------
 
-.. TODO: TravisR - Define auth for IS v2 API in a future PR
-
 The purpose of an identity server is to validate, store, and answer questions
 about the identities of users. In particular, it stores associations of the form
 "identifier X represents the same user as identifier Y", where identities may
@@ -172,6 +170,33 @@ to be returned by servers on all requests are::
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
   Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization
+
+Authentication
+--------------
+
+Most ``v2`` endpoints in the Identity Service API require authentication in order
+to ensure that the requesting user has accepted all relevant policies and is otherwise
+permitted to make the request. The ``v1`` API (currently deprecated) does not require
+this authentication, however using ``v1`` is strongly discouraged as it will be removed
+in a future release.
+
+Identity Servers use a scheme similar to the Client-Server API's concept of access
+tokens to authenticate users. The access tokens provided by an Identity Server cannot
+be used to authenticate Client-Server API requests.
+
+An access token is provided to an endpoint in one of two ways:
+
+1. Via a query string parameter, ``access_token=TheTokenHere``.
+2. Via a request header, ``Authorization: Bearer TheTokenHere``.
+
+Clients are encouraged to the use the ``Authorization`` header where possible to prevent
+the access token being leaked in access/HTTP logs. The query string should only be used
+in cases where the ``Authorization`` header is inaccessible for the client.
+
+When credentials are required but missing or invalid, the HTTP call will return with a
+status of 401 and the error code ``M_UNAUTHORIZED``.
+
+{{v2_auth_is_http_api}}
 
 Status check
 ------------
