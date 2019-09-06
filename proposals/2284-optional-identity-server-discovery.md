@@ -1,4 +1,4 @@
-# Proposal to make the identity server optional during discovery
+# MSC2284: Making the identity server optional during discovery
 
 Currently the specification requires that clients `FAIL_ERROR` (hard failure - do not continue)
 when the `.well-known` file for `m.identity_server` points to somewhere invalid or is invalid
