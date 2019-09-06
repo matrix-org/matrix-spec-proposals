@@ -95,6 +95,17 @@ paths:
             }
           schema:
             $ref: "../client-server/definitions/errors/error.yaml"
+        403:
+          description: |
+            The user must do something in order to use this endpoint. One example
+            is an ``M_TERMS_NOT_SIGNED`` error where the user must `agree to more terms`_.
+          examples:
+            application/json: {
+              "errcode": "M_TERMS_NOT_SIGNED",
+              "error": "Please accept our updated terms of service before continuing"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
   "/3pid/bind":
     post:
       summary: Publish an association between a session and a Matrix user ID.
@@ -208,6 +219,17 @@ paths:
             }
           schema:
             $ref: "../client-server/definitions/errors/error.yaml"
+        403:
+          description: |
+            The user must do something in order to use this endpoint. One example
+            is an ``M_TERMS_NOT_SIGNED`` error where the user must `agree to more terms`_.
+          examples:
+            application/json: {
+              "errcode": "M_TERMS_NOT_SIGNED",
+              "error": "Please accept our updated terms of service before continuing"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
   "/3pid/unbind":
     post:
       summary: Remove an association between a session and a Matrix user ID.
@@ -294,6 +316,9 @@ paths:
             This may also be returned if the identity server does not support
             the chosen authentication method (such as blocking homeservers from
             unbinding identifiers).
+
+            Another common error code is ``M_TERMS_NOT_SIGNED`` where the user
+            needs to `agree to more terms`_ in order to continue.
           examples:
             application/json: {
               "errcode": "M_FORBIDDEN",

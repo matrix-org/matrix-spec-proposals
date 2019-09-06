@@ -198,6 +198,33 @@ status of 401 and the error code ``M_UNAUTHORIZED``.
 
 {{v2_auth_is_http_api}}
 
+
+.. _`agree to more terms`:
+
+Terms of service
+----------------
+
+Identity Servers are encouraged to have terms of service (or similar policies) to
+ensure that users have agreed to their data being processed by the server. To facilitate
+this, an identity server can respond to almost any authenticated API endpoint with a
+HTTP 403 and the error code ``M_TERMS_NOT_SIGNED``. The error code is used to indicate
+that the user must accept new terms of service before being able to continue.
+
+All endpoints which support authentication can return the ``M_TERMS_NOT_SIGNED`` error.
+When clients receive the error, they are expected to make a call to ``GET /terms`` to
+find out what terms the server offers. The client compares this to the ``m.accepted_terms``
+account data for the user (described later) and presents the user with option to accept
+the still-missing terms of service. After the user has made their selection, if applicable,
+the client sends a request to ``POST /terms`` to indicate the user's acceptance. The
+server cannot expect that the client will send acceptance for all pending terms, and the
+client should not expect that the server will not respond with another ``M_TERMS_NOT_SIGNED``
+on their next request. The terms the user has just accepted are appended to ``m.accepted_terms``.
+
+{{m_accepted_terms_event}}
+
+{{v2_terms_is_http_api}}
+
+
 Status check
 ------------
 
