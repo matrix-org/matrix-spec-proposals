@@ -241,9 +241,8 @@ paths:
     post:
       summary: Removes a user's third party identifier from an identity server.
       description: |-
-        Removes a user's third party identifier from the provided identity server.
-        This should not cause an unbind from the homeserver (as ``/3pid/delete``
-        would) and should only affect the identity server.
+        Removes a user's third party identifier from the provided identity server
+        without removing it from the homeserver.
 
         Unlike other endpoints, this endpoint does not take an ``id_access_token``
         parameter because the homeserver is expected to sign the request to the
