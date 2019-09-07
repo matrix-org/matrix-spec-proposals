@@ -2,9 +2,9 @@
 
 ## Background
 
-A user with multiple devices will have a different key for end-to-end
-encryption for each device.  Other users who want to communicate securely with
-this user must then verify each key on each of their devices.  If Alice has *n*
+If a user has multiple devices, each device will have a different key for
+end-to-end encryption.  Other users who want to communicate securely with this
+user must then verify each key on each of their own devices.  If Alice has *n*
 devices, and Bob has *m* devices, then for Alice to be able to communicate with
 Bob on any of their devices, this involves *n×m* key verifications.
 
@@ -21,15 +21,15 @@ MSC1680 is presented below.
 
 Each user has three sets of key pairs:
 
-- a master cross-signing key pair that is used to identify themselves and to
+- a *master* cross-signing key pair that is used to identify themselves and to
   sign their other cross-signing keys,
-- a self-signing key pair that is used to sign their own devices, and
-- a user-signing key pair that is used to sign other users' master keys.
+- a *self-signing* key pair that is used to sign their own devices, and
+- a *user-signing* key pair that is used to sign other users' master keys.
 
 When one user (e.g. Alice) verifies another user's (Bob's) identity, Alice will
 sign Bob's master key with her user-signing key. (This will mean that
-verification methods will need to be modified to pass along the master
-identity key.) Alice's device will trust Bob's device if:
+verification methods will need to be modified to pass along the public part of
+the master key.) Alice's device will trust Bob's device if:
 
 - Alice's device is using a master key that has signed her user-signing key,
 - Alice's user-signing key has signed Bob's master key,
@@ -41,7 +41,7 @@ identity key.) Alice's device will trust Bob's device if:
 A user's master key could allow an attacker to impersonate that user to other
 users, or other users to that user.  Thus clients must ensure that the private
 part of the master key is treated securely.  If clients do not have a secure
-means of storing the master key (such as an secret storage system provided by
+means of storing the master key (such as a secret storage system provided by
 the operating system), then clients must not store the private part.  If a user
 changes their master key, clients of users that they communicate with must
 notify their users about the change.
@@ -68,7 +68,7 @@ keys, respectively.
 
 Currently, users will only be allowed to see
 * signatures made by their own master, self-signing or user-signing keys,
-* signatures made by their own devices of their own master key,
+* signatures made by their own devices about their own master key,
 * signatures made by other users' self-signing keys about the other users' own
   devices,
 * signatures made by other users' master keys about the other users'
@@ -85,8 +85,8 @@ Users who have verified individual devices may wish to migrate these
 verifications to use cross-signing instead.  In order to aid with this,
 signatures of a user's master key, made by their own devices, may be uploaded
 to the server.  If another client sees that the user's master key has a valid
-signature from a device that was previously verified, then the client MAY
-choose to trust and sign the master key.  The client SHOULD take precautions to
+signature from a device that was previously verified, then the client may
+choose to trust and sign the master key.  The client should take precautions to
 ensure that a stolen device cannot be used to cause it to trust a malicious
 master key.  For example, a client could prompt the user before signing the
 master key, or it could only do this migration on the first master key that it
@@ -379,13 +379,15 @@ response:
 
 The response contains a `failures` property, which is a map of user ID to
 device ID to failure reason, if any of the uploaded keys failed.  The
-homeserver should verify that the signature is correct.  If it is not, the
-homeserver should set the corresponding entry in `failures` to a JSON object
-with the `errcode` property set to `M_INVALID_SIGNATURE`.
+homeserver should verify that the signatures on the uploaded keys are valid.
+If a signature is not valid, the homeserver should set the corresponding entry
+in `failures` to a JSON object with the `errcode` property set to
+`M_INVALID_SIGNATURE`.
 
 After Alice uploads a signature for her own devices or master key, her
 signature will be included in the results of the `/keys/query` request when
-*anyone* requests her keys:
+*anyone* requests her keys.  However, signatures made for other users' keys,
+made by her user-signing key, will not be included.
 
 `POST /keys/query`
 
@@ -455,12 +457,16 @@ response:
 }
 ```
 
-Similarly, the federation endpoints `GET /user/keys/query` and
-`POST /user/devices/{userId}` will include the new signature.
+Similarly, the federation endpoints `GET /user/keys/query` and `POST
+/user/devices/{userId}` will include the new signatures for her own devices or
+master key, but not signatures made by her user-signing key.
 
-In addition, Alice's server will send an `m.device_list_update` EDU to servers
-that have users who share encrypted rooms with Alice, updating her device to
-include her new signature.
+In addition, when Alice uploads signatures for her own device, Alice's server
+will send an `m.device_list_update` EDU to servers that have users who share
+encrypted rooms with Alice, updating her device to include her new signature.
+And when a signature of a master key is uploaded, Alice's server will send an
+`m.signing_key_update` EDU, updating her master key to include her new
+signature.
 
 After Alice uploads a signature for Bob's user-signing key, her signature will
 be included in the results of the `/keys/query` request when Alice requests
