@@ -148,8 +148,8 @@ Cross-signing keys are JSON objects with the following properties:
   "`ed25519:`" followed by the unpadded base64 encoding of the public key, and
   whose value is the unpadded base64 encoding of the public key.
 * `signatures` ({string: {string: string}}): signatures of the key. A
-  self-signing or user-signing key MUST be signed by the master key. A master
-  key MAY be signed by a device.
+  self-signing or user-signing key must be signed by the master key. A master
+  key may be signed by a device.
 
 In order to ensure that there will be no collisions in the `signatures`
 property, the server must respond with an `M_FORBIDDEN` error if any of
