@@ -38,20 +38,26 @@ Proposal
 --------
 
 This proposal creates new APIs to allow clients to back up room decryption keys
-on the server.  Decryption keys are encrypted (using public key crypto) before
-being sent to the server along with some unencrypted metadata to allow the
-server to manage the backups, overwriting backups with "better" versions of the
-keys.  The user is given a private recovery key to save for recovering the keys
-from the backup.
+on the server.  Room decryption keys are encrypted (using public key crypto)
+before being sent to the server along with some unencrypted metadata to allow
+the server to manage the backups.  If a key for a new megolm session is
+uploaded, it is added to the current backup.  If a key is uploaded for a megolm
+session is that is already present in the backup, the server will use the
+metadata to determine which version of the key is "better".  The way in which
+the server determines which key is "better" is described in the [Storing
+Keys](#storing-keys) section.  The user is given a private recovery key in
+order to recover the keys from the backup in the future.
 
-Clients can create new versions of backups.  Aside from the initial backup
-creation, a client might start a new version of a backup when, for example, a
-user loses a device, and wants to ensure that that device does not get any new
-decryption keys.
+Clients can create new key backups (sometimes also referred to in the API as
+backup versions) to replace the current backup.  Aside from the initial backup
+creation, a client might start a new a backup when, for example, a user loses a
+device and wants to ensure that that device does not get any new decryption
+keys.  In this case, the client will then create a new backup using a new key
+that the device does not have access to.
 
-Once one client has created a backup version, other clients can fetch the
-public key for the backup from the server and add keys to the backup, if they
-trust that the backup was not created by a malicious device.
+Once one client has created a backup, other clients can fetch the public part
+of the recovery key from the server and add keys to the backup, if they trust
+that the backup was not created by a malicious device.
 
 ### Possible UX for interactive clients
 
@@ -63,31 +69,30 @@ On receipt of encryption keys (1st time):
 1. client checks if there is an existing backup: `GET /room_keys/version`
    1. if not, ask if the user wants to back up keys
       1. if yes:
-         1. generate new curve25519 key pair
-         2. create new backup version: `POST /room_keys/version`
-         3. display private key for user to save (see below for the format)
+         1. generate new curve25519 key pair, which will be the recovery key
+         2. create new backup: `POST /room_keys/version`
+         3. display private key for user to save (see below for the
+            [format of the recovery key](#recovery-key))
       2. if no, exit and remember decision (user can change their mind later)
       3. while prompting, continue to poll `GET /room_keys/versions`, as
          another device may have created a backup.  If so, go to 1.2.
-   2. if yes, get public key, prompt user to verify a device that signed the
-      key¹, or enter recovery key (which can derive the backup key).
+   2. if yes, either get the public part of the recovery key and check that it
+      is signed by the master cross-signing key, or prompt user to enter the
+      private part of the recovery key (which can derive the public part).
       1. User can also decide to create a new backup, in which case, go to 1.1.
 2. send key to backup: `PUT /room_keys/keys/${roomId}/${sessionId}?version=$v`
 3. continue backing up keys as we receive them (may receive a
-   `M_WRONG_ROOM_KEYS_VERSION` error if a new backup version has been created:
+   `M_WRONG_ROOM_KEYS_VERSION` error if a new backup has been created:
    see below)
 
 On `M_WRONG_ROOM_KEYS_VERSION` error when trying to `PUT` keys:
 
 1. get the current version
-2. notify the user that there is a new backup version, and display relevant
-   information
+2. notify the user that there is a new backup, and display relevant information
 3. confirm with user that they want to use the backup (user may want use the
    backup, to stop backing up keys, or to create a new backup)
-4. verify the device that signed the backup key¹, or enter recovery key
-
-¹: cross-signing (when that is completed) can be used to verify the device
-that signed the key.
+4. ensure the backup key is signed by the user's master key, or prompt the user
+   to enter the recovery key
 
 On receipt of undecryptable message:
 
@@ -125,7 +130,7 @@ is 35 bytes.  Clients must then remove the first two bytes and the last byte,
 and use the resulting string as the private key to decrypt backups.
 
 If MSC1946 is used to store the key on the server, it must be stored using the
-`account_data` `type` `m.megolm_backup.v1`.
+`account_data` type `m.megolm_backup.v1`.
 
 As a special case, if the recovery key is the same as the curve25519 key used
 for storing the key, then the contents of the `m.megolm_backup.v1`
@@ -160,8 +165,8 @@ Body parameters:
 - `algorithm` (string): Required. The algorithm used for storing backups.
   Currently, only `m.megolm_backup.v1.curve25519-aes-sha2` is defined.
 - `auth_data` (object): Required. algorithm-dependent data.  For
-  `m.megolm_backup.v1.curve25519-aes-sha2`, see below for the definition of
-  this property.
+  `m.megolm_backup.v1.curve25519-aes-sha2`, see below for the [definition of
+  this property](#auth_data-backup-versions).
 
 Example:
 
@@ -195,10 +200,10 @@ On success, returns a JSON object with keys:
 - `auth_data` (object): Required. Same as in the body parameters for
   `POST /room_keys/version`.
 - `version` (string): Required. The backup version.
-- `hash` (string): Required. The hash value which is an opaque string
-  representing stored keys in the backup. Client can compare it with the `hash`
-  value they received in the response of their last key storage request.
-  If not equal, another matrix client pushed new keys to the backup.
+- `etag` (string): Required. The etag value which is an opaque string
+  representing stored keys in the backup. Clients can compare it with the
+  `etag` value they received in the response of their last key storage request.
+  If not equal, another client has pushed new keys to the backup.
 - `count` (number): Required. The number of keys stored in the backup.
 
 Error codes:
@@ -214,8 +219,8 @@ Body parameters:
 - `algorithm` (string): Required. Must be the same as in the body parameters for `GET
   /room_keys/version`.
 - `auth_data` (object): Required. algorithm-dependent data.  For
-  `m.megolm_backup.v1.curve25519-aes-sha2`, see below for the definition of
-  this property.
+  `m.megolm_backup.v1.curve25519-aes-sha2`, see below for the [definition of
+  this property](#auth_data-backup-versions).
 - `version` (string): Required. The backup version. Must be the same as the query parameter or must be the current version.
 
 Example:
@@ -251,9 +256,15 @@ version.
 
 If the server already has a backup in the backup version for the given session
 and room, then it will keep the "better" one.  To determine which one is
-"better", key backups are compared first by the `is_verified` flag (`true` is
-better than `false`), then by the `first_message_index` (a lower number is better),
-and finally by `forwarded_count` (a lower number is better).
+"better", keys are compared:
+
+- first by the `is_verified` flag (`true` is better than `false`),
+- then, if `is_verified` is equal, by the `first_message_index` (a lower number is better),
+- and finally, is `is_verified` and `first_message_index` are equal, by
+  `forwarded_count` (a lower number is better).
+
+If neither key is better than the other (that is, if all three fields are
+equal), then the server should keep the existing key.
 
 Body parameters:
 
@@ -264,12 +275,12 @@ Body parameters:
 - `is_verified` (boolean): Required. Whether the device backing up the key has
   verified the device that the key is from.
 - `session_data` (object): Required. Algorithm-dependent data.  For
-  `m.megolm_backup.v1.curve25519-aes-sha2`, see below for the definition of
-  this property.
+  `m.megolm_backup.v1.curve25519-aes-sha2`, see below for the [definition of
+  this property](#auth_data-backup-versions).
 
 On success, returns a JSON object with keys:
 
-- `hash` (string): Required. The new hash value representing stored keys. See
+- `etag` (string): Required. The new etag value representing stored keys. See
   `GET /room_keys/version/{version}` for more details.
 - `count` (number): Required. The new count of keys stored in the backup.
 
@@ -299,7 +310,7 @@ Result:
 
 ```javascript
 {
-  "hash": "abcdefghi",
+  "etag": "abcdefghi",
   "count": 10
 }
 ```
@@ -344,7 +355,7 @@ Result:
 
 ```javascript
 {
-  "hash": "abcdefghi",
+  "etag": "abcdefghi",
   "count": 10
 }
 ```
@@ -393,7 +404,7 @@ Result:
 
 ```javascript
 {
-  "hash": "abcdefghi",
+  "etag": "abcdefghi",
   "count": 10
 }
 ```
@@ -401,7 +412,7 @@ Result:
 #### Retrieving keys
 
 When retrieving keys, the `version` parameter is optional, and defaults to
-retrieving the latest backup version.
+retrieving keys from the latest backup version.
 
 ##### `GET /room_keys/keys/${roomId}/${sessionId}?version=$v`
 
@@ -463,7 +474,8 @@ Error codes:
 
 Deletes keys from the backup.
 
-On success, returns the empty JSON object.
+Returns the same as `PUT
+/room_keys/keys/${roomId}/${sessionId}?version=$v`.
 
 #### `m.megolm_backup.v1.curve25519-aes-sha2` definitions
 
@@ -479,9 +491,9 @@ following keys:
 
 The `auth_data` should be signed by the user's [master cross-signing
 key](https://github.com/matrix-org/matrix-doc/pull/1756), and may also be
-signed by the user's device key.  The allows clients to ensure that the public
+signed by the user's device key.  This allows clients to ensure that the public
 key is valid, and prevents an attacker from being able to change the backup to
-use a public key that have the private key for.
+use a public key that they have the private key for.
 
 ##### `session_data` for key backups
 
@@ -489,7 +501,9 @@ The `session_data` field in the backups is constructed as follows:
 
 1. Encode the session key to be backed up as a JSON object with the properties:
    - `algorithm` (string): `m.megolm.v1.aes-sha2`
-   - `sender_key` (string): base64-encoded device curve25519 key
+   - `sender_key` (string): base64-encoded device curve25519 key in
+     [session-sharing
+     format](https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md#session-sharing-format)
    - `sender_claimed_keys` (object): object containing the identity keys for the
      sending device
    - `forwarding_curve25519_key_chain` (array): zero or more curve25519 keys
