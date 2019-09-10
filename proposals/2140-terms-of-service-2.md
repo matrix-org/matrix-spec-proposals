@@ -271,7 +271,8 @@ A client uses this client/server API endpoint to request that the Homeserver
 removes the given 3PID from the given Identity Server, or all Identity Servers.
 Takes the same parameters as
 `POST /_matrix/client/r0/account/3pid/delete`, ie. `id_server`, `medium`,
-`address` and the newly added `id_access_token`.
+`address`. Similar to the other unbind endpoints, this endpoint does not
+require an `id_access_token` because the homeserver can only unbind.
 
 Returns the same as `POST /_matrix/client/r0/account/3pid/delete`.
 
