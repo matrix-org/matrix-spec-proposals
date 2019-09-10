@@ -136,6 +136,9 @@ paths:
             presented with the ``M_INVALID_PEPPER`` error code. Clients SHOULD make
             a call to ``/hash_details`` to get a new pepper in this scenario, being
             careful to avoid retry loops.
+
+            ``M_INVALID_PARAM`` can also be returned to indicate the client supplied
+            an ``algorithm`` that is unknown to the server.
           examples:
             application/json: {
               "errcode": "M_INVALID_PEPPER",
