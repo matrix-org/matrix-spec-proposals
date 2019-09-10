@@ -91,8 +91,8 @@ On `M_WRONG_ROOM_KEYS_VERSION` error when trying to `PUT` keys:
 2. notify the user that there is a new backup, and display relevant information
 3. confirm with user that they want to use the backup (user may want use the
    backup, to stop backing up keys, or to create a new backup)
-4. ensure the backup key is signed by the user's master key, or prompt the user
-   to enter the recovery key
+4. ensure the public part of the recovery key is signed by the user's master
+   key, or prompt the user to enter the private part of the recovery key
 
 On receipt of undecryptable message:
 
