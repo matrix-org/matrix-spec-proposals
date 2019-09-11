@@ -696,7 +696,7 @@ being created.
 The existing DM system in Matrix support multiple DMs with a user, however that system is
 not necsarily more complex than this proposal (in fact, it's probably simpler than what
 is proposed here). The existing system has the disadvantage of being non-deterministic where
-two users in the same room cna have a different view of that room in their clients: Alice
+two users in the same room can have a different view of that room in their clients: Alice
 can see it as a DM whereas Bob sees it as just another room. Having non-deterministic DMs
 can lead to conversational confusion ("hey Bob, let's go to our DM" and Bob asking where that
 is) or uncertainty about where to send sensitive information.
