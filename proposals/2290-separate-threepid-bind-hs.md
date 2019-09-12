@@ -1,22 +1,22 @@
 # Separate Endpoints for Binding Threepids
 
-On the Client Server API there is currently a single API for binding a
+On the Client Server API there is currently a single endpoint for binding a
 threepid (an email or a phone number): [POST
 /_matrix/client/r0/account/3pid](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid).
 Depending on whether the `bind` flag is `true` or `false`, the threepid will
 be bound to either a user's account on the homeserver, or both the homeserver
 and an identity server.
 
-A threepid can be bound to an identity server to allow other users to find
+For context a threepid can be bound to an identity server to allow other users to find
 their Matrix ID using their email address or phone number. A threepid can
-also be bound to a user's account on the homeserver. This allows that
+also be bound to a user's account on the homeserver. This allows the 
 threepid to be used for message notifications, login, password reset, and
 other important functions.
 
 Typically, when using the `POST /_matrix/client/r0/account/3pid` endpoint,
 the identity server handles the verification -- either by sending an email to
-the email address, or a SMS message to the phone number. Once completed, the
-homeserver would check with the identity server that verification had indeed
+an email address, or a SMS message to a phone number. Once completed, the
+homeserver will check with the identity server that verification had indeed
 happened, and if so, the threepid would be bound (again, either to the
 homeserver, or the homeserver and identity server simultaneously).
 
@@ -28,7 +28,7 @@ account on the homeserver (which is likely not something homeserver admins want)
 
 To solve this problem, we propose adding a second endpoint that is only used
 for binding to an identity server of the user's choice. This endpoint will
-not bind the threepid to the user's account on the homeserver, only on the
+not bind the threepid to the user's account on the homeserver, only the
 identity server.
 
 In addition, the existing binding endpoint will lose the ability to bind
@@ -67,12 +67,12 @@ the MSC is no longer relevant.
 
 ## Proposal
 
-A new endpoint will be added to the Client Server API: `POST /_matrix/client/r0/account/3pid/identity/bind`, and requires authentication.
-
-The endpoint definition is the same as `POST
+A new endpoint will be added to the Client Server API: `POST
+/_matrix/client/r0/account/3pid/identity/bind`, and will require
+authentication. The endpoint definition is the same as `POST
 /_matrix/client/r0/account/3pid`, minus the `bind` flag.
 
-An example of binding a threepid to an identity server with this new endpoint:
+An example of binding a threepid to **an identity server only** with this new endpoint is as follows:
 
 First the client must request the threepid be validated by its chosen identity server.
 
@@ -104,11 +104,15 @@ POST https://home.server/_matrix/client/r0/account/3pid/identity/bind
 }
 ```
 
-The homeserver will then make a bind request on behalf of the user to the
-specified identity server. The homeserver will record if the bind was
-successful and notify the user.
+The homeserver will then make a bind request to the specified identity server
+on behalf of the user. The homeserver will record if the bind was successful
+and notify the user.
 
-And for completeness, here is an example of binding a threepid to the
+The threepid has now been binded on the user's identity server without
+causing that threepid to be used for password resets or any other
+homeserver-related functions.
+
+For completeness, here is an example of binding a threepid to the
 homeserver only, using the old endpoint:
 
 The homeserver is validating the threepid in this instance, so the client
@@ -125,10 +129,10 @@ POST https://home.server/_matrix/client/r0/account/3pid/email/requestToken
 ```
 
 Once an email has been sent, the user clicks the link in the email, which
-notifies the homeserver that the email has been verified.
+notifies the homeserver that the threepid has been verified.
 
-The client then sends a request to the old endpoint to bind the threepid to
-user's account.
+The client then sends a request to the old endpoint on the homeserver to bind
+the threepid to user's account.
 
 ```
 POST /_matrix/client/r0/account/3pid
@@ -143,15 +147,16 @@ POST /_matrix/client/r0/account/3pid
 
 The threepid will then be bound to the user's account.
 
-Users will be able to perform binds to an identity server for a threepid even if that threepid has not been bound to the user's account on the homeserver before.
-
-The achieve the above flow, some changes need to be made to existing
-endpoints as well. This MSC requests that the `id_server` and
-`id_access_token` parameters be removed from the Client-Server API's [POST
+The achieve the above flows, some changes need to be made to existing
+endpoints. This MSC requests that the `id_server` and `id_access_token`
+parameters be removed from the Client-Server API's [POST
 /_matrix/client/r0/account/3pid/email/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-email-requesttoken)
-endpoint, as this endpoint is now only intended for the homeserver to send
-emails from. Additionally, the same parameters will be removed from the [POST
-/_matrix/client/r0/account/3pid](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid)endpoint's
+and [POST
+/_matrix/client/r0/account/3pid/msisdn/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-msisdn-requesttoken)
+endpoints, as these endpoints are now only intended for the homeserver to
+send validation requests from. Additionally, the same parameters will be
+removed from the [POST
+/_matrix/client/r0/account/3pid](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid) endpoint's
 `three_pid_creds` parameter as an identity server is no longer required to
 perform verification.
 
@@ -173,18 +178,19 @@ TODO
 
 ## Security considerations
 
-Reducing the homeserver's trust in identity servers should be a boost to security and improve decentralisation in the Matrix ecosystem to boot.
+Reducing the homeserver's trust in identity servers should be a boost to
+security and improve decentralisation in the Matrix ecosystem to boot.
 
 Caution should be taken for homeserver developers to be sure not to continue
 to use user-provided identity servers for any sensitive tasks once it removes
-the concept of a trusted identity server.
+the concept of a trusted identity server list.
 
 ## Conclusion
 
-This MSC helps reduce the homeserver's trust in an identity server even
+This MSC helps to minimize the homeserver's trust in an identity server even
 further to the point where it is only used for binding addresses for lookup -
-which was the original intention of the Identity Service API.
+which was the original intention of identity servers to begin with.
 
 Additionally, by clearly separating the threepid bind endpoint into two
-endpoints that each have a clear intention, the concept of threepid binding
-becomes a lot easier to reason about.
+endpoints that each have a clear intention, the concept of attaching
+threepids to a Matrix user becomes a lot easier to reason about.
