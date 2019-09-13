@@ -2,7 +2,7 @@
 
 On the Client Server API there is currently a single endpoint for binding a
 threepid (an email or a phone number): [POST
-/_matrix/client/r0/account/3pid](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid).
+/account/3pid](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid).
 Depending on whether the `bind` flag is `true` or `false`, the threepid will
 be bound to either a user's account on the homeserver, or both the homeserver
 and an identity server.
@@ -13,7 +13,7 @@ also be bound to a user's account on the homeserver. This allows the
 threepid to be used for message notifications, login, password reset, and
 other important functions.
 
-Typically, when using the `POST /_matrix/client/r0/account/3pid` endpoint,
+Typically, when using the `/account/3pid` endpoint,
 the identity server handles the verification -- either by sending an email to
 an email address, or a SMS message to a phone number. Once completed, the
 homeserver will check with the identity server that verification had indeed
@@ -68,9 +68,10 @@ the MSC is no longer relevant.
 ## Proposal
 
 A new endpoint will be added to the Client Server API: `POST
-/_matrix/client/r0/account/3pid/identity/bind`, and will require
-authentication. The endpoint definition is the same as `POST
-/_matrix/client/r0/account/3pid`, minus the `bind` flag.
+/account/3pid/identity/bind`, and will require authentication. The endpoint
+definition is the same as [POST
+/account/3pid](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid),
+minus the `bind` flag.
 
 An example of binding a threepid to **an identity server only** with this new endpoint is as follows:
 
@@ -150,13 +151,13 @@ The threepid will then be bound to the user's account.
 The achieve the above flows, some changes need to be made to existing
 endpoints. This MSC requests that the `id_server` and `id_access_token`
 parameters be removed from the Client-Server API's [POST
-/_matrix/client/r0/account/3pid/email/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-email-requesttoken)
+/account/3pid/email/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-email-requesttoken)
 and [POST
-/_matrix/client/r0/account/3pid/msisdn/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-msisdn-requesttoken)
+/account/3pid/msisdn/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-msisdn-requesttoken)
 endpoints, as these endpoints are now only intended for the homeserver to
 send validation requests from. Additionally, the same parameters will be
 removed from the [POST
-/_matrix/client/r0/account/3pid](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid) endpoint's
+/account/3pid](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid) endpoint's
 `three_pid_creds` parameter as an identity server is no longer required to
 perform verification.
 
