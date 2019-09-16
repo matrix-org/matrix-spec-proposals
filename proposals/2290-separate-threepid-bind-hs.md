@@ -131,8 +131,8 @@ POST https://home.server/_matrix/client/r0/account/3pid/email/requestToken
 Once an email has been sent, the user clicks the link in the email, which
 notifies the homeserver that the threepid has been verified.
 
-The client then sends a request to the old endpoint on the homeserver to bind
-the threepid to user's account.
+The client then sends a request to the endpoint on the homeserver to bind
+the threepid to a user's account.
 
 ```
 POST https://home.server/_matrix/client/r0/account/3pid/add
