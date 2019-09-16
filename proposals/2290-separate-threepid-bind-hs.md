@@ -2,7 +2,7 @@
 
 On the Client Server API there is currently a single endpoint for binding a
 threepid (an email or a phone number): [POST
-/account/3pid](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid).
+/account/3pid](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid).
 Depending on whether the `bind` flag is `true` or `false`, the threepid will
 be bound to either a user's account on the homeserver, or both the homeserver
 and an identity server.
@@ -26,26 +26,23 @@ to supply a malicious identity server that would immediately answer "yes" to
 any threepid validation, then the user could add any threepid to their
 account on the homeserver (which is likely not something homeserver admins want).
 
-To solve this problem, we propose adding a second endpoint that is only used
-for binding to an identity server of the user's choice. This endpoint will
-not bind the threepid to the user's account on the homeserver, only the
-identity server.
+To be clear, this is not a long-standing security issue. It is not a problem
+in any released version of Synapse, as Synapse keeps a list of "trusted
+identity servers" that acts a whitelist for what identity servers a user can
+specify.
 
-In addition, the existing binding endpoint will lose the ability to bind
-threepids to an identity server, by removing its `bind` flag. Instead, it
-will solely be used to bind to the user's account on the homeserver.
+The requirement for homeservers to keep this whitelist is soon to be lost
+however, as part of lessening the reliance of homeservers on identity
+servers. This cannot be done while the homeserver is still trusting an
+identity server for validation of threepids. If the endpoints are split, the
+homeserver will handle the validation of threepids being added to user
+accounts, and identity servers will validate threepids being added to their
+own database.
 
-To be clear, the above issue is not a long-standing security issue. Indeed it
-is not a problem in any released version of Synapse, as Synapse keeps a list
-of "trusted identity servers" that acts a whitelist for what identity servers
-a user can specify.
-
-Synapse is soon to lose this whitelist however, as part of lessening the
-reliance of homeservers on identity servers. This cannot be done while the
-homeserver is still trusting an identity server for validation of threepids.
-If the endpoints are split, the homeserver will handle the validation of
-threepids being added to user accounts, and identity servers will validate
-threepids being added to their own database.
+To solve this problem, we propose adding two new endpoints. One that is only
+used for binding to user's account, and another that is only for binding to
+an identity server of the user's choice. The existing binding endpoint will
+be deprecated.
 
 One may question why clients don't just contact an identity server directly
 to bind a threepid, bypassing the implications of binding through a
@@ -62,18 +59,21 @@ about hundreds of fake binds to a user's account).
 
 This MSC obseletes
 [MSC2229](https://github.com/matrix-org/matrix-doc/pull/2229), which dealt
-with changing the rules of the `bind` flag. Since this flag is being removed,
-the MSC is no longer relevant.
+with changing the rules of the `bind` flag on the original endpoint. Since
+that endpoint is being deprecated, the MSC is no longer relevant.
 
 ## Proposal
 
-A new endpoint will be added to the Client Server API: `POST
-/account/3pid/identity/bind`, and will require authentication. The endpoint
-definition is the same as [POST
-/account/3pid](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid),
-minus the `bind` flag.
+Two new endpoints will be added to the Client Server API: `POST
+/account/3pid/bind` and `POST /account/3pid/add`. Both will require
+authentication. The request parameters of `POST /account/3pid/bind` are the
+same as [POST
+/account/3pid](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid),
+minus the `bind` flag. The request parameters of `POST /account/3pid/add`
+will simply consist of a JSON body containing `client_secret` and `sid`.
 
-An example of binding a threepid to **an identity server only** with this new endpoint is as follows:
+An example of binding a threepid to **an identity server only** with this new
+endpoint is as follows:
 
 First the client must request the threepid be validated by its chosen identity server.
 
@@ -93,7 +93,7 @@ notifies the identity server that the email has been verified.
 Next, the client completes the bind by calling the new endpoint on the homeserver:
 
 ```
-POST https://home.server/_matrix/client/r0/account/3pid/identity/bind
+POST https://home.server/_matrix/client/r0/account/3pid/bind
 
 {
     "three_pid_creds": {
@@ -109,8 +109,8 @@ The homeserver will then make a bind request to the specified identity server
 on behalf of the user. The homeserver will record if the bind was successful
 and notify the user.
 
-The threepid has now been binded on the user's identity server without
-causing that threepid to be used for password resets or any other
+The threepid has now been binded on the user's requested identity server
+without causing that threepid to be used for password resets or any other
 homeserver-related functions.
 
 For completeness, here is an example of binding a threepid to the
@@ -136,7 +136,7 @@ The client then sends a request to the old endpoint on the homeserver to bind
 the threepid to user's account.
 
 ```
-POST /_matrix/client/r0/account/3pid
+POST /_matrix/client/r0/account/3pid/bind
 
 {
     "three_pid_creds": {
@@ -151,15 +151,20 @@ The threepid will then be bound to the user's account.
 The achieve the above flows, some changes need to be made to existing
 endpoints. This MSC requests that the `id_server` and `id_access_token`
 parameters be removed from the Client-Server API's [POST
-/account/3pid/email/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-email-requesttoken)
+/account/3pid/email/requestToken](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid-email-requesttoken)
 and [POST
-/account/3pid/msisdn/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-msisdn-requesttoken)
+/account/3pid/msisdn/requestToken](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid-msisdn-requesttoken)
 endpoints, as these endpoints are now only intended for the homeserver to
-send validation requests from. Additionally, the same parameters will be
-removed from the [POST
-/account/3pid](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid) endpoint's
-`three_pid_creds` parameter as an identity server is no longer required to
-perform verification.
+send validation requests from.
+
+Additionally, the [POST
+/account/3pid](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid)
+endpoint is deprecated as the two new endpoints replace its functionality.
+The `bind` endpoint will also be removed, with the endpoint functioning as if
+`bind` was `false`. Allowing an endpoint to add a threepid to both the
+identity server and homeserver at the same time requires one to trust the
+other, which is the exact behaviour we're trying to eliminate. Doing this
+also helps backward compatibility, as explained below.
 
 This MSC also requests that the text "It is imperative that the homeserver
 keep a list of trusted Identity Servers and only proxies to those that it
@@ -175,7 +180,16 @@ again to finalize the validation afterwards.
 
 ## Backwards compatibility
 
-TODO
+Old matrix clients will continue to use the `/account/3pid` endpoint. As this
+MSC removes the `bind` parameter and forces `/account/3pid` calls to act as
+if `bind` was set to `false`, old clients will still be able to add 3pids,
+but they will only be added to the homeserver, not the identity server. New
+homeservers will ignore any `id_server` information passed to this endpoint.
+
+New matrix clients running with old homeservers should try their desired
+endpoint (either `/account/3pid/add` or `/account/3pid/bind`) and on
+receiving a HTTP `404` error code, should either attempt to use
+`/account/3pid` with the `bind` parameter or give up, at their discretion.
 
 ## Security considerations
 

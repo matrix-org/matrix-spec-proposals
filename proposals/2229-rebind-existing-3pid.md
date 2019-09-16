@@ -1,5 +1,7 @@
 # Allowing 3PID Owners to Rebind
 
+## Note: This MSC has been made obselete by MSC2290.
+
 ```
 3PID
     noun
