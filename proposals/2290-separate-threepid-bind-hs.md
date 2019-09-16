@@ -145,7 +145,7 @@ POST https://home.server/_matrix/client/r0/account/3pid/add
 
 The threepid will then be bound to the user's account.
 
-The achieve the above flows, some changes need to be made to existing
+To achieve the above flows, some changes need to be made to existing
 endpoints. This MSC requests that the `id_server` and `id_access_token`
 parameters be removed from the Client-Server API's [POST
 /account/3pid/email/requestToken](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid-email-requesttoken)
