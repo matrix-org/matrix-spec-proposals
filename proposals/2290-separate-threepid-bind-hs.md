@@ -135,7 +135,7 @@ The client then sends a request to the old endpoint on the homeserver to bind
 the threepid to user's account.
 
 ```
-POST /_matrix/client/r0/account/3pid/bind
+POST https://home.server/_matrix/client/r0/account/3pid/add
 
 {
     "sid": "abc123987",
@@ -177,11 +177,11 @@ again to finalize the validation afterwards.
 
 ## Backwards compatibility
 
-Old matrix clients will continue to use the `/account/3pid` endpoint. As this
+Old matrix clients will continue to use the `/account/3pid` endpoint. This
 MSC removes the `bind` parameter and forces `/account/3pid` calls to act as
-if `bind` was set to `false`, old clients will still be able to add 3pids,
-but they will only be added to the homeserver, not the identity server. New
-homeservers will ignore any `id_server` information passed to this endpoint.
+if `bind` was set to `false`. Old clients will still be able to add 3pids to
+the homeserver, but not the identity server. New homeservers must ignore any
+`id_server` information passed to this endpoint.
 
 New matrix clients running with old homeservers should try their desired
 endpoint (either `/account/3pid/add` or `/account/3pid/bind`) and on
