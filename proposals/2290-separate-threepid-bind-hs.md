@@ -31,13 +31,12 @@ in any released version of Synapse, as Synapse keeps a list of "trusted
 identity servers" that acts a whitelist for what identity servers a user can
 specify.
 
-The requirement for homeservers to keep this whitelist is soon to be lost
-however, as part of lessening the reliance of homeservers on identity
-servers. This cannot be done while the homeserver is still trusting an
-identity server for validation of threepids. If the endpoints are split, the
-homeserver will handle the validation of threepids being added to user
-accounts, and identity servers will validate threepids being added to their
-own database.
+Synapse is soon to lose this whitelist however, as part of lessening the
+reliance of homeservers on identity servers. This cannot be done while the
+homeserver is still trusting an identity server for validation of threepids.
+If the endpoints are split, the homeserver will handle the validation of
+threepids being added to user accounts, and identity servers will validate
+threepids being added to their own database.
 
 To solve this problem, we propose adding two new endpoints. One that is only
 used for binding to user's account, and another that is only for binding to
@@ -139,10 +138,8 @@ the threepid to user's account.
 POST /_matrix/client/r0/account/3pid/bind
 
 {
-    "three_pid_creds": {
-        "sid": "abc123987",
-        "client_secret": "don'tT3ll"
-    }
+    "sid": "abc123987",
+    "client_secret": "don'tT3ll"
 }
 ```
 
