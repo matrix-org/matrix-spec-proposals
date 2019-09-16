@@ -16,7 +16,7 @@
 # limitations under the License.
 swagger: '2.0'
 info:
-  title: "Matrix Identity Service Lookup  API"
+  title: "Matrix Identity Service Lookup API"
   version: "1.0.0"
 host: localhost:8090
 schemes:
