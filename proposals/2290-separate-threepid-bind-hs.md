@@ -108,7 +108,7 @@ The homeserver will then make a bind request to the specified identity server
 on behalf of the user. The homeserver will record if the bind was successful
 and notify the user.
 
-The threepid has now been binded on the user's requested identity server
+The threepid has now been bound on the user's requested identity server
 without causing that threepid to be used for password resets or any other
 homeserver-related functions.
 
