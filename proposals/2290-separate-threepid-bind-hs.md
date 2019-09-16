@@ -7,18 +7,20 @@ Depending on whether the `bind` flag is `true` or `false`, the threepid will
 be bound to either a user's account on the homeserver, or both the homeserver
 and an identity server.
 
-For context a threepid can be bound to an identity server to allow other users to find
-their Matrix ID using their email address or phone number. A threepid can
-also be bound to a user's account on the homeserver. This allows the 
-threepid to be used for message notifications, login, password reset, and
-other important functions.
+For context a threepid can be bound to an identity server to allow other
+users to find their Matrix ID using their email address or phone number. A
+threepid can also be added to a user's account on the homeserver. This allows
+the threepid to be used for message notifications, login, password reset, and
+other important functions. We use the term `add` when talking about adding a
+threepid to a homeserver, and `bind` when binding a threepid to an identity
+server. This terminology will be used throughout the rest of this proposal.
 
-Typically, when using the `/account/3pid` endpoint,
-the identity server handles the verification -- either by sending an email to
-an email address, or a SMS message to a phone number. Once completed, the
-homeserver will check with the identity server that verification had indeed
-happened, and if so, the threepid would be bound (again, either to the
-homeserver, or the homeserver and identity server simultaneously).
+Typically, when using the `/account/3pid` endpoint, the identity server
+handles the verification -- either by sending an email to an email address,
+or a SMS message to a phone number. Once completed, the homeserver will check
+with the identity server that verification had indeed happened, and if so,
+the threepid would be either added to the homeserver, or added to the
+homeserver and bound to the identity server simultaneously.
 
 Now, consider the fact that the identity server used in this process is
 provided by the user, using the endpoint's `id_server` parameter. If the user were
@@ -36,12 +38,13 @@ reliance of homeservers on identity servers. This cannot be done while the
 homeserver is still trusting an identity server for validation of threepids.
 If the endpoints are split, the homeserver will handle the validation of
 threepids being added to user accounts, and identity servers will validate
-threepids being added to their own database.
+threepids being bound to themselves.
 
-To solve this problem, we propose adding two new endpoints. One that is only
-used for binding to user's account, and another that is only for binding to
-an identity server of the user's choice. The existing binding endpoint will
-be deprecated.
+To solve this problem, we propose adding two new endpoints. `POST
+/account/3pid/add` that is only used for adding to user's account on a
+homeserver, and `POST /account/3pid/bind` that is only for binding to an
+identity server of the user's choice. The existing binding endpoint (`POST
+/account/3pid`) will be deprecated.
 
 One may question why clients don't just contact an identity server directly
 to bind a threepid, bypassing the implications of binding through a
@@ -50,11 +53,11 @@ homeserver such that the homeserver can keep track of which binds were made,
 which is important when a user wishes to deactivate their account (and remove
 all of their bindings made on different identity servers).
 
-A bind could be made on an identity server, which could then tell the
-homeserver that a validation occured, but then there are security
+A verification could occur on an identity server, which could then tell the
+homeserver that a validation happened, but then there are security
 considerations about how to authenticate an identity server in that instance
 (and prevent people pretending to be identity servers and telling homeservers
-about hundreds of fake binds to a user's account).
+about hundreds of fake threepid additions to a user's account).
 
 This MSC obseletes
 [MSC2229](https://github.com/matrix-org/matrix-doc/pull/2229), which dealt
@@ -71,8 +74,8 @@ same as [POST
 minus the `bind` flag. The request parameters of `POST /account/3pid/add`
 will simply consist of a JSON body containing `client_secret` and `sid`.
 
-An example of binding a threepid to **an identity server only** with this new
-endpoint is as follows:
+An example of binding a threepid to an identity server with this new endpoint
+is as follows:
 
 First the client must request the threepid be validated by its chosen identity server.
 
@@ -112,8 +115,8 @@ The threepid has now been bound on the user's requested identity server
 without causing that threepid to be used for password resets or any other
 homeserver-related functions.
 
-For completeness, here is an example of binding a threepid to the
-homeserver only, using the old endpoint:
+For completeness, here is an example of adding a threepid to the homeserver
+only, using the `/account/3pid/add` endpoint:
 
 The homeserver is validating the threepid in this instance, so the client
 must use the `/requestToken` endpoint of the homeserver:
@@ -131,7 +134,7 @@ POST https://home.server/_matrix/client/r0/account/3pid/email/requestToken
 Once an email has been sent, the user clicks the link in the email, which
 notifies the homeserver that the threepid has been verified.
 
-The client then sends a request to the endpoint on the homeserver to bind
+The client then sends a request to the endpoint on the homeserver to add 
 the threepid to a user's account.
 
 ```
@@ -143,7 +146,7 @@ POST https://home.server/_matrix/client/r0/account/3pid/add
 }
 ```
 
-The threepid will then be bound to the user's account.
+The threepid has now been added to the user's account.
 
 To achieve the above flows, some changes need to be made to existing
 endpoints. This MSC requests that the `id_server` and `id_access_token`
@@ -180,8 +183,8 @@ again to finalize the validation afterwards.
 Old matrix clients will continue to use the `/account/3pid` endpoint. This
 MSC removes the `bind` parameter and forces `/account/3pid` calls to act as
 if `bind` was set to `false`. Old clients will still be able to add 3pids to
-the homeserver, but not the identity server. New homeservers must ignore any
-`id_server` information passed to this endpoint.
+the homeserver, but not bind to the identity server. New homeservers must
+ignore any `id_server` information passed to this endpoint.
 
 New matrix clients running with old homeservers should try their desired
 endpoint (either `/account/3pid/add` or `/account/3pid/bind`) and on
@@ -203,6 +206,6 @@ This MSC helps to minimize the homeserver's trust in an identity server even
 further to the point where it is only used for binding addresses for lookup -
 which was the original intention of identity servers to begin with.
 
-Additionally, by clearly separating the threepid bind endpoint into two
+Additionally, by clearly separating the original threepid endpoint into two
 endpoints that each have a clear intention, the concept of attaching
 threepids to a Matrix user becomes a lot easier to reason about.
