@@ -5,15 +5,10 @@ threepid (an email or a phone number): [POST
 /account/3pid](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid).
 Depending on whether the `bind` flag is `true` or `false`, the threepid will
 be bound to either a user's account on the homeserver, or both the homeserver
-and an identity server.
-
-For context a threepid can be bound to an identity server to allow other
-users to find their Matrix ID using their email address or phone number. A
-threepid can also be added to a user's account on the homeserver. This allows
-the threepid to be used for message notifications, login, password reset, and
-other important functions. We use the term `add` when talking about adding a
-threepid to a homeserver, and `bind` when binding a threepid to an identity
-server. This terminology will be used throughout the rest of this proposal.
+and an identity server. Note that we use the term `add` when talking about
+adding a threepid to a homeserver, and `bind` when binding a threepid to an
+identity server. This terminology will be used throughout the rest of this
+proposal.
 
 Typically, when using the `/account/3pid` endpoint, the identity server
 handles the verification -- either by sending an email to an email address,
