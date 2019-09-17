@@ -144,7 +144,7 @@ send validation requests from.
 Additionally, the [POST
 /account/3pid](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid)
 endpoint is deprecated as the two new endpoints replace its functionality.
-The `bind` parameter will also be removed, with the endpoint functioning as if
+The `bind` parameter is to be removed, with the endpoint functioning as if
 `bind` was `false`. Allowing an endpoint to add a threepid to both the
 identity server and homeserver at the same time requires one to trust the
 other, which is the exact behaviour we're trying to eliminate. Doing this
