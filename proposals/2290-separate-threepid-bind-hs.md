@@ -172,16 +172,18 @@ about hundreds of fake threepid additions to a user's account).
 
 ## Backwards compatibility
 
+A new flag will be added to `/versions`' unstable_features section,
+`m.separate_add_and_bind`. If this flag is present and set to `true`, then
+clients should use the new API endpoints to carry out threepid adds and
+binds. If this flag is not present or set to `false`, clients should use
+`/account/3pid`, being aware that they can only bind threepids to the
+homeserver, not the identity server.
+
 Old matrix clients will continue to use the `/account/3pid` endpoint. This
 MSC removes the `bind` parameter and forces `/account/3pid` calls to act as
 if `bind` was set to `false`. Old clients will still be able to add 3pids to
 the homeserver, but not bind to the identity server. New homeservers must
 ignore any `id_server` information passed to this endpoint.
-
-New matrix clients running with old homeservers should try their desired
-endpoint (either `/account/3pid/add` or `/account/3pid/bind`) and on
-receiving a HTTP `404` error code, should either attempt to use
-`/account/3pid` with the `bind` parameter or give up, at their discretion.
 
 ## Security considerations
 
