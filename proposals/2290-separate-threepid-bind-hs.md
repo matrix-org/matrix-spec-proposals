@@ -48,7 +48,7 @@ To solve this problem, two new endpoints will be added to the Client Server
 API: `POST /account/3pid/bind` and `POST /account/3pid/add`. Both will
 require authentication and be rate-limited. The request parameters of `POST
 /account/3pid/bind` are the same as [POST
-/account/3pid](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid),
+/account/3pid](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid),
 minus the `bind` flag, and the contents of `three_pid_creds` have been
 brought to the top level of the request body. The request parameters of `POST
 /account/3pid/add` will simply consist of a JSON body containing
@@ -135,14 +135,14 @@ The threepid has now been added to the user's account.
 To achieve the above flows, some changes need to be made to existing
 endpoints. The `id_server` and `id_access_token` parameters are to be removed
 from the Client-Server API's [POST
-/account/3pid/email/requestToken](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid-email-requesttoken)
+/account/3pid/email/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-email-requesttoken)
 and [POST
-/account/3pid/msisdn/requestToken](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid-msisdn-requesttoken)
+/account/3pid/msisdn/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-msisdn-requesttoken)
 endpoints, as these endpoints are now only intended for the homeserver to
 send validation requests from.
 
 Additionally, the [POST
-/account/3pid](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid)
+/account/3pid](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid)
 endpoint is deprecated as the two new endpoints replace its functionality.
 The `bind` parameter is to be removed, with the endpoint functioning as if
 `bind` was `false`. Allowing an endpoint to add a threepid to both the
