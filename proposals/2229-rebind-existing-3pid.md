@@ -2,6 +2,15 @@
 
 ## Note: This MSC has been made obselete by MSC2290.
 
+MSC2290 provides two separate API endpoints, one for adding a 3PID to the
+homeserver, and another for binding to an identity server. These new
+endpoints will allow the homeserver to enforce rules on emails that already
+exist on the homeserver, only when modifying homeserver email, while only
+needing to forward requests when binding to an identity server. This removes
+the problem MSC2229 is trying to solve, and it is thus made obselete.
+
+---
+
 ```
 3PID
     noun
