@@ -75,6 +75,10 @@ POST https://identity.server/_matrix/identity/v2/validate/email/requestToken
 }
 ```
 
+The identity server must send an email to the specified address, including a
+link to a URL on the identity server which will accept the validation session
+ID, the given client_secret, and a randomly-generated token.
+
 Once an email has been sent, the user clicks the link in the email, which
 notifies the identity server that the email has been verified.
 
@@ -117,6 +121,10 @@ POST https://home.server/_matrix/client/r0/account/3pid/email/requestToken
 }
 ```
 
+Here the homeserver must send an email to the specified address, including a
+link to a URL on the homeserver which will accept the validation session ID,
+the given client_secret, and a randomly-generated token.
+
 Once an email has been sent, the user clicks the link in the email, which
 notifies the homeserver that the threepid has been verified.
 
@@ -132,7 +140,9 @@ POST https://home.server/_matrix/client/r0/account/3pid/add
 }
 ```
 
-The threepid has now been added to the user's account.
+The homeserver checks the threepid validation session referred to by the
+given ID and client_secret was validated, and if so adds the threepid to the
+user's account.
 
 To achieve the above flows, some changes need to be made to existing
 endpoints. The `id_server` and `id_access_token` parameters are to be removed
