@@ -35,7 +35,7 @@ If the endpoints are split, the homeserver will handle the validation of
 threepids being added to user accounts, and identity servers will validate
 threepids being bound to themselves.
 
-To solve this problem, we propose adding two new endpoints. `POST
+To solve this problem, it is proposed to add two new endpoints. `POST
 /account/3pid/add` that is only used for adding to user's account on a
 homeserver, and `POST /account/3pid/bind` that is only for binding to an
 identity server of the user's choice. The existing binding endpoint (`POST
@@ -155,7 +155,7 @@ send validation requests from.
 Additionally, the [POST
 /account/3pid](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid)
 endpoint is deprecated as the two new endpoints replace its functionality.
-The `bind` parameter will also be removed, with the endpoint functioning as if
+The `bind` parameter is to be removed, with the endpoint functioning as if
 `bind` was `false`. Allowing an endpoint to add a threepid to both the
 identity server and homeserver at the same time requires one to trust the
 other, which is the exact behaviour we're trying to eliminate. Doing this
