@@ -93,7 +93,9 @@ POST https://home.server/_matrix/client/r0/account/3pid/bind
 
 The homeserver will then make a bind request to the specified identity server
 on behalf of the user. The homeserver will record if the bind was successful
-and notify the user.
+and notify the user. The homeserver will remember this bind and the identity
+server it occurred on so that it can perform an unbind later if the user
+requests it or their account is deactivated.
 
 The threepid has now been bound on the user's requested identity server
 without causing that threepid to be used for password resets or any other
