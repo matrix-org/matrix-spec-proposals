@@ -1,8 +1,15 @@
 # Separate Endpoints for Binding Threepids
 
+*Note: This MSC obseletes
+[MSC2229](https://github.com/matrix-org/matrix-doc/pull/2229), which dealt
+with changing the rules of the `bind` flag on [POST
+/account/3pid](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid).
+That endpoint is being deprecated as part of this MSC, thus MSC2229 is no
+longer relevant.*
+
 On the Client Server API there is currently a single endpoint for binding a
 threepid (an email or a phone number): [POST
-/account/3pid](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid).
+/account/3pid](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid).
 Depending on whether the `bind` flag is `true` or `false`, the threepid will
 be bound to either a user's account on the homeserver, or both the homeserver
 and an identity server. Note that we use the term `add` when talking about
@@ -28,46 +35,30 @@ in any released version of Synapse, as Synapse keeps a list of "trusted
 identity servers" that acts a whitelist for what identity servers a user can
 specify.
 
-Synapse is soon to lose this whitelist however, as part of lessening the
-reliance of homeservers on identity servers. This cannot be done while the
-homeserver is still trusting an identity server for validation of threepids.
-If the endpoints are split, the homeserver will handle the validation of
-threepids being added to user accounts, and identity servers will validate
-threepids being bound to themselves.
-
-To solve this problem, we propose adding two new endpoints. `POST
-/account/3pid/add` that is only used for adding to user's account on a
-homeserver, and `POST /account/3pid/bind` that is only for binding to an
-identity server of the user's choice. The existing binding endpoint (`POST
-/account/3pid`) will be deprecated.
-
-One may question why clients don't just contact an identity server directly
-to bind a threepid, bypassing the implications of binding through a
-homeserver. While this will work, binds should still occur through a
-homeserver such that the homeserver can keep track of which binds were made,
-which is important when a user wishes to deactivate their account (and remove
-all of their bindings made on different identity servers).
-
-A verification could occur on an identity server, which could then tell the
-homeserver that a validation happened, but then there are security
-considerations about how to authenticate an identity server in that instance
-(and prevent people pretending to be identity servers and telling homeservers
-about hundreds of fake threepid additions to a user's account).
-
-This MSC obseletes
-[MSC2229](https://github.com/matrix-org/matrix-doc/pull/2229), which dealt
-with changing the rules of the `bind` flag on the original endpoint. Since
-that endpoint is being deprecated, the MSC is no longer relevant.
+The concept of this whitelist is being removed in this MSC however, as part
+of lessening the reliance of homeservers on identity servers. This cannot be
+done while the homeserver is still trusting an identity server for validation
+of threepids. If the endpoints are split, the homeserver will handle the
+validation of threepids being added to user accounts, and identity servers
+will validate threepids being bound to themselves.
 
 ## Proposal
 
-Two new endpoints will be added to the Client Server API: `POST
-/account/3pid/bind` and `POST /account/3pid/add`. Both will require
-authentication. The request parameters of `POST /account/3pid/bind` are the
-same as [POST
+To solve this problem, two new endpoints will be added to the Client Server
+API: `POST /account/3pid/bind` and `POST /account/3pid/add`. Both will
+require authentication and be rate-limited. The request parameters of `POST
+/account/3pid/bind` are the same as [POST
 /account/3pid](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-3pid),
-minus the `bind` flag. The request parameters of `POST /account/3pid/add`
-will simply consist of a JSON body containing `client_secret` and `sid`.
+minus the `bind` flag, and the contents of `three_pid_creds` have been
+brought to the top level of the request body. The request parameters of `POST
+/account/3pid/add` will simply consist of a JSON body containing
+`client_secret` and `sid`.
+
+The homeserver should prevent a threepid being added to a user's account if
+it already part of another user's account. However, the homeserver should not
+check for existing threepids when binding to an identity server. Identity
+servers do not enforce this requirement and neither should the proxying
+homeserver.
 
 An example of binding a threepid to an identity server with this new endpoint
 is as follows:
@@ -93,12 +84,10 @@ Next, the client completes the bind by calling the new endpoint on the homeserve
 POST https://home.server/_matrix/client/r0/account/3pid/bind
 
 {
-    "three_pid_creds": {
-        "id_server": "example.org",
-        "id_access_token": "abc123_OpaqueString",
-        "sid": "abc123987",
-        "client_secret": "don'tT3ll"
-    }
+    "id_server": "example.org",
+    "id_access_token": "abc123_OpaqueString",
+    "sid": "abc123987",
+    "client_secret": "don'tT3ll"
 }
 ```
 
@@ -161,17 +150,25 @@ identity server and homeserver at the same time requires one to trust the
 other, which is the exact behaviour we're trying to eliminate. Doing this
 also helps backward compatibility, as explained below.
 
-This MSC also requests that the text "It is imperative that the homeserver
-keep a list of trusted Identity Servers and only proxies to those that it
-trusts." be removed from all parts of the spec, as the homeserver should no
-longer need to trust any identity servers.
+The text "It is imperative that the homeserver keep a list of trusted
+Identity Servers and only proxies to those that it trusts." is to be removed
+from all parts of the spec, as the homeserver should no longer need to trust
+any identity servers.
 
 ## Tradeoffs
 
-It may be possible to reduce the two calls per flow into a single endpoint,
-but the current asynchronous approach makes it easy for a client to send a
-request, go offline, have the threepid be validated, and then come online
-again to finalize the validation afterwards.
+One may question why clients don't just contact an identity server directly
+to bind a threepid, bypassing the implications of binding through a
+homeserver. While this will work, binds should still occur through a
+homeserver such that the homeserver can keep track of which binds were made,
+which is important when a user wishes to deactivate their account (and remove
+all of their bindings made on different identity servers).
+
+A verification could occur on an identity server, which could then tell the
+homeserver that a validation happened, but then there are security
+considerations about how to authenticate an identity server in that instance
+(and prevent people pretending to be identity servers and telling homeservers
+about hundreds of fake threepid additions to a user's account).
 
 ## Backwards compatibility
 
@@ -191,16 +188,8 @@ receiving a HTTP `404` error code, should either attempt to use
 Reducing the homeserver's trust in identity servers should be a boost to
 security and improve decentralisation in the Matrix ecosystem to boot.
 
-Caution should be taken for homeserver developers to be sure not to continue
-to use user-provided identity servers for any sensitive tasks once it removes
-the concept of a trusted identity server list.
-
-## Conclusion
-
-This MSC helps to minimize the homeserver's trust in an identity server even
-further to the point where it is only used for binding addresses for lookup -
-which was the original intention of identity servers to begin with.
-
-Additionally, by clearly separating the original threepid endpoint into two
-endpoints that each have a clear intention, the concept of attaching
-threepids to a Matrix user becomes a lot easier to reason about.
+Some endpoints of the Client Server API allow a user to provide an
+`id_server` parameter. Caution should be taken for homeserver developers to
+stop using these user-provided identity servers for any sensitive tasks, such
+as password reset or account registration, if it removes the concept of a
+trusted identity server list.
