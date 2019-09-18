@@ -145,27 +145,33 @@ given ID and client_secret was validated, and if so adds the threepid to the
 user's account.
 
 To achieve the above flows, some changes need to be made to existing
-endpoints. The `id_server` and `id_access_token` parameters are to be removed
-from the Client-Server API's [POST
-/account/3pid/email/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-email-requesttoken)
-and [POST
-/account/3pid/msisdn/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-msisdn-requesttoken)
-endpoints, as these endpoints are now only intended for the homeserver to
-send validation requests from.
-
-Additionally, the [POST
+endpoints. The [POST
 /account/3pid](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid)
 endpoint is deprecated as the two new endpoints replace its functionality.
 The `bind` parameter is to be removed, with the endpoint functioning as if
 `bind` was `false`. Allowing an endpoint to add a threepid to both the
 identity server and homeserver at the same time requires one to trust the
 other, which is the exact behaviour we're trying to eliminate. Doing this
-also helps backward compatibility, as explained below.
+also helps backward compatibility, as explained in [Backwards
+compatibility](#backwards-compatibility).
 
-The text "It is imperative that the homeserver keep a list of trusted
-Identity Servers and only proxies to those that it trusts." is to be removed
-from all parts of the spec, as the homeserver should no longer need to trust
-any identity servers.
+The `id_server` and `id_access_token` parameters are to be removed
+from all of the Client-Server API's `requestToken` endpoints. That is:
+
+* [POST /account/3pid/email/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-email-requesttoken)
+* [POST /account/3pid/msisdn/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-msisdn-requesttoken)
+* [POST /register/email/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-register-email-requesttoken)
+* [POST /register/msisdn/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-register-msisdn-requesttoken)
+* [POST /account/password/email/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-password-email-requesttoken)
+* [POST /account/password/msisdn/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-password-msisdn-requesttoken)
+
+Either the homeserver itself or a service that the homeserver delegates to
+should be handling the sending of validation messages, not a user-provided
+server. Any mention of the homeserver being able to proxy to an identity
+server in the above endpoint descriptions, as well as the text "It is
+imperative that the homeserver keep a list of trusted Identity Servers and
+only proxies to those that it trusts." is to be removed from all parts of the
+spec, as the homeserver should no longer need to trust any identity servers.
 
 ## Tradeoffs
 
@@ -204,6 +210,6 @@ security and improve decentralisation in the Matrix ecosystem to boot.
 
 Some endpoints of the Client Server API allow a user to provide an
 `id_server` parameter. Caution should be taken for homeserver developers to
-stop using these user-provided identity servers for any sensitive tasks, such
-as password reset or account registration, if it removes the concept of a
-trusted identity server list.
+stop using these user-provided identity servers for any sensitive tasks where
+possible, such as password reset or account registration, if it removes the
+concept of a trusted identity server list.
