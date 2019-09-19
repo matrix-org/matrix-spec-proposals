@@ -1,4 +1,4 @@
-# Proposal for mandating lowercasing when processing e-mail address localparts
+# Proposal for mandating case folding when processing e-mail address localparts
 
 [RFC822](https://tools.ietf.org/html/rfc822#section-3.4.7) mandates that
 localparts in e-mail addresses must be processed with the original case
@@ -22,8 +22,13 @@ Sydent.
 
 This proposal suggests changing the specification of the e-mail 3PID type in
 [the Matrix spec appendices](https://matrix.org/docs/spec/appendices#pid-types)
-to mandate that any e-mail address must be entirely converted to lowercase
-before any processing, instead of only its domain.
+to mandate that, before any processing, e-mail address localparts must go
+through a full case folding based on [the unicode mapping
+file](https://www.unicode.org/Public/8.0.0/ucd/CaseFolding.txt), on top of
+having their domain lowercased.
+
+This means that `Strauß@Example.com` must be considered as being the same e-mail
+address as `strauss@example.com`.
 
 ## Other considered solutions
 
@@ -33,16 +38,23 @@ However, [MSC2134](https://github.com/matrix-org/matrix-doc/pull/2134) changes
 this: because hashing functions are case sensitive, we need both clients and
 identity servers to follow the same policy regarding case sensitivity.
 
+An initial version of this proposal proposed to mandate lowercasing e-mail
+addresses instead of case folding them, however it was pointed out that this
+solution might not be the best and most future-proof one.
+
+Unicode normalisation was also looked at but judged unnecessary.
+
 ## Tradeoffs
 
 Implementing this MSC in identity servers and homeservers might require the
-databases of existing instances to be updated in a large part to convert the
-email addresses of existing associations to lowercase, in order to avoid
-conflicts. However, most of this update can usually be done by a single database
-query (or a background job running at startup), so the UX improvement outweighs
-this trouble.
+databases of existing instances to be updated in a large part to case fold the
+email addresses of existing associations, in order to avoid conflicts. However,
+most of this update can usually be done by a background job running at startup,
+so the UX improvement outweighs this trouble.
 
 ## Potential issues
+
+### Conflicts with existing associations
 
 Some users might already have two different accounts associated with the same
 e-mail address but with different cases. This appears to happen in a small
@@ -57,6 +69,29 @@ like:
 2. delete all associations except for the most recent one [0]
 3. inform the user of the deletion by sending them an email notice to the email
    address
+
+### Storing and querying
+
+Most database engines don't support case folding, therefore querying all
+e-mail addresses matching a case folded e-mail address might not be trivial,
+e.g. an identity server querying all associations for `strauss@example.com` when
+processing a `/lookup` request would be expected to also get associations for
+`Strauß@Example.com`.
+
+To address this issue, implementation maintainers are strongly encouraged to
+make e-mail addresses go through a full case folding before storing them.
+
+### Implementing case folding
+
+The need for case folding in services on the Internet doesn't seem to be very
+large currently (probably due to its young age), therefore there seem to be only
+a few third-party implementation librairies out there. However, both
+[Go](https://godoc.org/golang.org/x/text/cases#Fold), [Python
+2](https://docs.python.org/2/library/stringprep.html#stringprep.map_table_b3)
+and [Python 3](https://docs.python.org/3/library/stdtypes.html#str.casefold)
+support it natively, and [a third-party JavaScript
+implementation](https://github.com/ar-nelson/foldcase) exists which, although
+young, seems to be working.
 
 ## Footnotes
 
