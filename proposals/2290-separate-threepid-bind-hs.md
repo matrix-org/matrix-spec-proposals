@@ -55,7 +55,7 @@ brought to the top level of the request body. The request parameters of `POST
 `client_secret` and `sid`.
 
 The homeserver should prevent a threepid being added to a user's account if
-it already part of another user's account. However, the homeserver should not
+it's already part of another user's account. However, the homeserver should not
 check for existing threepids when binding to an identity server. Identity
 servers do not enforce this requirement and neither should the proxying
 homeserver.
