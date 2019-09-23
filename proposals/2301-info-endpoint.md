@@ -31,6 +31,7 @@ Proposed fields (alongside the existing `versions` and `unstable_features` field
 {
 	"m.brand.server_name": "Matthew's Server",
 	"m.brand.server_info": "Where all the cool kids hang out",
+	"m.motd": "This server will be upgraded on Oct 1st",
 	"m.server_admin": "@admin:example.com",
 	"m.brand.theme": {
 		"im.vector.brand.client_name": "Matthew's Riot",
