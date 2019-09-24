@@ -255,4 +255,4 @@ these is left to the implementer's discretion.
 
 
 
-.. _`identity server /isvalid`: ../identity_service/%IDENTITY_RELEASE_LABEL%.html#get-matrix-identity-api-v1-pubkey-isvalid
+.. _`identity server /isvalid`: ../identity_service/%IDENTITY_RELEASE_LABEL%.html#get-matrix-identity-v2-pubkey-isvalid
