@@ -67,7 +67,7 @@ To accept a key verification, Bob will send an `m.key.verification.start` event
 with the following properties in its contents:
 
 - `m.relates_to`: an object with the properties:
-  - `rel_type`: `m.key.verification`
+  - `rel_type`: `m.reference`
   - `event_id`: the event ID of the key verification request that is being
     accepted
 - `method`: the key verification method that is being used
@@ -85,7 +85,7 @@ To reject a key verification, Bob will send an `m.key.verification.cancel`
 event with the following properties in its contents:
 
 - `m.relates_to`: an object with the properties:
-  - `rel_type`: `m.key.verification`
+  - `rel_type`: `m.reference`
   - `event_id`: the event ID of the key verification that is being cancelled
 - `body`: A human readable description of the `code`. The client should only
   rely on this string if it does not understand the `code`.
@@ -98,6 +98,20 @@ event with the following properties in its contents:
 This message may be sent at any point in the key verification process.  Any
 subsequent key verification messages relating to the same request are ignored.
 However, this does not undo any verifications that have already been done.
+
+#### Concluding a key verification
+
+When the other user's key is verified and no more messages are expected, each
+party will send an `m.key.verification.done` event with the following
+properties in its contents:
+
+- `m.relates_to`: an object with the properties:
+  - `rel_type`: `m.reference`
+  - `event_id`: the event ID of the key verification that is being cancelled
+
+This provides a record within the room of the result of the verification.
+
+Any subsequent key verification messages relating to the same request are ignored.
 
 #### Other events
 
@@ -115,6 +129,17 @@ nor the accepter.
 The messages used in SAS verification are the same as those currently defined,
 except that instead of the `transaction_id` property, an `m.relates_to`
 property, as defined above, is used instead.
+
+## Alternatives
+
+Messages sent by the verification methods, after the initial key verification
+request message, could be sent as to-device messages.  The
+`m.key.verification.start`, `m.key.verification.cancel`, and
+`m.key.verification.done` messages must be still be sent in the room, as the
+`m.key.verification.start` notifies the sender's other devices that the request
+has been acknowledged, and the `m.key.verification.cancel` and
+`m.key.verification.done` provide a record of the status of the key
+verification.
 
 ## Potential issues
 
