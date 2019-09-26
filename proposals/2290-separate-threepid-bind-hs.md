@@ -1,6 +1,6 @@
 # Separate Endpoints for Binding Threepids
 
-*Note: This MSC obseletes
+*Note: This MSC obsoletes
 [MSC2229](https://github.com/matrix-org/matrix-doc/pull/2229), which dealt
 with changing the rules of the `bind` flag on [POST
 /account/3pid](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid).
