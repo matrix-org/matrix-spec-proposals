@@ -164,8 +164,10 @@ other, which is the exact behaviour we're trying to eliminate. Doing this
 also helps backward compatibility, as explained in [Backwards
 compatibility](#backwards-compatibility).
 
-The `id_server` and `id_access_token` parameters are to be removed
-from all of the Client-Server API's `requestToken` endpoints. That is:
+Either the homeserver itself or a service that the homeserver delegates to
+should be handling the sending of validation messages, not a user-provided
+server. Any mention of the homeserver being able to proxy to an identity
+server in the below endpoint descriptions: 
 
 * [POST /account/3pid/email/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-email-requesttoken)
 * [POST /account/3pid/msisdn/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid-msisdn-requesttoken)
@@ -174,13 +176,10 @@ from all of the Client-Server API's `requestToken` endpoints. That is:
 * [POST /account/password/email/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-password-email-requesttoken)
 * [POST /account/password/msisdn/requestToken](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-password-msisdn-requesttoken)
 
-Either the homeserver itself or a service that the homeserver delegates to
-should be handling the sending of validation messages, not a user-provided
-server. Any mention of the homeserver being able to proxy to an identity
-server in the above endpoint descriptions, as well as the text "It is
-imperative that the homeserver keep a list of trusted Identity Servers and
-only proxies to those that it trusts." is to be removed from all parts of the
-spec, as the homeserver should no longer need to trust any identity servers.
+As well as the text "It is imperative that the homeserver keep a list of
+trusted Identity Servers and only proxies to those that it trusts." is to be
+removed from all parts of the spec, as the homeserver should no longer need
+to trust any identity servers.
 
 ## Tradeoffs
 
