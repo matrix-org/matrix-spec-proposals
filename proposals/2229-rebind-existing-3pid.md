@@ -1,6 +1,6 @@
 # Allowing 3PID Owners to Rebind
 
-## Note: This MSC has been made obselete by MSC2290.
+## Note: This MSC has been made obsolete by MSC2290.
 
 MSC2290 provides two separate API endpoints, one for adding a 3PID to the
 homeserver, and another for binding to an identity server. These new
