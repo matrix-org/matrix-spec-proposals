@@ -45,8 +45,15 @@ will validate threepids being bound to themselves.
 ## Proposal
 
 To solve this problem, two new endpoints will be added to the Client Server
-API: `POST /account/3pid/bind` and `POST /account/3pid/add`. Both will
-require authentication and be rate-limited. The request parameters of `POST
+API: `POST /account/3pid/bind` and `POST /account/3pid/add`. Binding to an
+identity server will require standard authentication, whereas adding a 3pid
+to a user account will require [User-Interactive
+Authentication](https://matrix.org/docs/spec/client_server/r0.5.0#user-interactive-authentication-api).
+The latter is to prevent someone from adding a 3pid (which can be used to
+reset passwords) to someone who's left their account open on a public
+computer, without needing their password to do so.
+
+Both endpoints will be rate-limited. The request parameters of `POST
 /account/3pid/bind` are the same as [POST
 /account/3pid](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-account-3pid),
 minus the `bind` flag, and the contents of `three_pid_creds` have been
