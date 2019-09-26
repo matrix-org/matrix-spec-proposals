@@ -70,7 +70,8 @@ homeserver.
 An example of binding a threepid to an identity server with this new endpoint
 is as follows:
 
-First the client must request the threepid be validated by its chosen identity server.
+First the client must request the threepid be validated by its chosen
+identity server.
 
 ```
 POST https://identity.server/_matrix/identity/v2/validate/email/requestToken
@@ -89,7 +90,8 @@ ID, the given client_secret, and a randomly-generated token.
 Once an email has been sent, the user clicks the link in the email, which
 notifies the identity server that the email has been verified.
 
-Next, the client completes the bind by calling the new endpoint on the homeserver:
+Next, the client completes the bind by calling the new endpoint on the
+homeserver:
 
 ```
 POST https://home.server/_matrix/client/r0/account/3pid/bind
