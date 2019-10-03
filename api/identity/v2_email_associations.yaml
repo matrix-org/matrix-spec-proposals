@@ -1,4 +1,5 @@
 # Copyright 2018 New Vector Ltd
+# Copyright 2019 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +15,17 @@
 swagger: '2.0'
 info:
   title: "Matrix Identity Service Email Associations API"
-  version: "1.0.0"
+  version: "2.0.0"
 host: localhost:8090
 schemes:
   - https
-basePath: /_matrix/identity/api/v1
+basePath: /_matrix/identity/v2
 consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/validate/email/requestToken":
     post:
@@ -45,8 +48,9 @@ paths:
         specification, the parameters may also be specified as
         ``application/x-form-www-urlencoded`` data.  However, this usage is
         deprecated.
-      operationId: emailRequestToken
-      deprecated: true
+      operationId: emailRequestTokenV2
+      security:
+        - accessToken: []
       parameters:
         - in: body
           name: body
@@ -67,6 +71,17 @@ paths:
             application/json: {
               "errcode": "M_INVALID_EMAIL",
               "error": "The email address is not valid"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
+        403:
+          description: |
+            The user must do something in order to use this endpoint. One example
+            is an ``M_TERMS_NOT_SIGNED`` error where the user must `agree to more terms`_.
+          examples:
+            application/json: {
+              "errcode": "M_TERMS_NOT_SIGNED",
+              "error": "Please accept our updated terms of service before continuing"
             }
           schema:
             $ref: "../client-server/definitions/errors/error.yaml"
@@ -92,8 +107,9 @@ paths:
         specification, the parameters may also be specified as
         ``application/x-form-www-urlencoded`` data.  However, this usage is
         deprecated.
-      operationId: emailSubmitTokenPost
-      deprecated: true
+      operationId: emailSubmitTokenPostV2
+      security:
+        - accessToken: []
       parameters:
         - in: body
           name: body
@@ -130,6 +146,17 @@ paths:
                 type: boolean
                 description: Whether the validation was successful or not.
             required: ['success']
+        403:
+          description: |
+            The user must do something in order to use this endpoint. One example
+            is an ``M_TERMS_NOT_SIGNED`` error where the user must `agree to more terms`_.
+          examples:
+            application/json: {
+              "errcode": "M_TERMS_NOT_SIGNED",
+              "error": "Please accept our updated terms of service before continuing"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
     get:
       summary: Validate ownership of an email address.
       description: |-
@@ -143,8 +170,9 @@ paths:
 
         Note that, in contrast with the POST version, this endpoint will be
         used by end-users, and so the response should be human-readable.
-      operationId: emailSubmitTokenGet
-      deprecated: true
+      operationId: emailSubmitTokenGetV2
+      security:
+        - accessToken: []
       parameters:
         - in: query
           type: string
@@ -175,3 +203,14 @@ paths:
         "4xx":
           description:
             Validation failed.
+        403:
+          description: |
+            The user must do something in order to use this endpoint. One example
+            is an ``M_TERMS_NOT_SIGNED`` error where the user must `agree to more terms`_.
+          examples:
+            application/json: {
+              "errcode": "M_TERMS_NOT_SIGNED",
+              "error": "Please accept our updated terms of service before continuing"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"

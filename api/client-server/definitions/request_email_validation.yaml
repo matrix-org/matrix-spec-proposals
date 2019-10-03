@@ -23,4 +23,10 @@ allOf:
         include a port. This parameter is ignored when the homeserver handles
         3PID verification.
       example: "id.example.com"
-  required: ["id_server"]
+    id_access_token:
+      type: string
+      description: |-
+        An access token previously registered with the identity server. Servers
+        can treat this as optional to distinguish between r0.5-compatible clients
+        and this specification version.
+  required: ["id_server", "id_access_token"]

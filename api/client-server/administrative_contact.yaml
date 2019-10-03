@@ -110,10 +110,16 @@ paths:
                   id_server:
                     type: string
                     description: The identity server to use.
+                  id_access_token:
+                    type: string
+                    description: |-
+                      An access token previously registered with the identity server. Servers
+                      can treat this as optional to distinguish between r0.5-compatible clients
+                      and this specification version.
                   sid:
                     type: string
                     description: The session identifier given by the identity server.
-                required: ["client_secret", "id_server", "sid"]
+                required: ["client_secret", "id_server", "id_access_token", "sid"]
               bind:
                 type: boolean
                 description: |-
@@ -125,6 +131,7 @@ paths:
             example: {
                 "three_pid_creds": {
                   "id_server": "matrix.org",
+                  "id_access_token": "abc123_OpaqueString",
                   "sid": "abc123987",
                   "client_secret": "d0n'tT3ll"
                 },
@@ -172,6 +179,10 @@ paths:
       description: |-
         Removes a third party identifier from the user's account. This might not
         cause an unbind of the identifier from the identity server.
+
+        Unlike other endpoints, this endpoint does not take an ``id_access_token``
+        parameter because the homeserver is expected to sign the request to the
+        identity server instead.
       operationId: delete3pidFromAccount
       security:
         - accessToken: []
@@ -221,6 +232,69 @@ paths:
                   indicates that the identity server refuses to support the request
                   or the homeserver was not able to determine an identity server to
                   unbind from.
+                example: "success"
+            required:
+              - id_server_unbind_result
+      tags:
+        - User data
+  "/account/3pid/unbind":
+    post:
+      summary: Removes a user's third party identifier from an identity server.
+      description: |-
+        Removes a user's third party identifier from the provided identity server
+        without removing it from the homeserver.
+
+        Unlike other endpoints, this endpoint does not take an ``id_access_token``
+        parameter because the homeserver is expected to sign the request to the
+        identity server instead.
+      operationId: unbind3pidFromAccount
+      security:
+        - accessToken: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              id_server:
+                type: string
+                description: |-
+                    The identity server to unbind from. If not provided, the homeserver
+                    MUST use the ``id_server`` the identifier was added through. If the
+                    homeserver does not know the original ``id_server``, it MUST return
+                    a ``id_server_unbind_result`` of ``no-support``.
+                example: "example.org"
+              medium:
+                type: string
+                description: The medium of the third party identifier being removed.
+                enum: ["email", "msisdn"]
+                example: "email"
+              address:
+                type: string
+                description: The third party address being removed.
+                example: "example@example.org"
+            required: ['medium', 'address']
+      responses:
+        200:
+          description: |-
+            The identity server has disassociated the third party identifier from the
+            user.
+          schema:
+            type: object
+            properties:
+              id_server_unbind_result:
+                type: string
+                enum:
+                  # XXX: I don't know why, but the order matters here so that "no-support"
+                  # doesn't become "no- support" by the renderer.
+                  - "no-support"
+                  - "success"
+                description: |-
+                  An indicator as to whether or not the identity server was able to unbind
+                  the 3PID. ``success`` indicates that the identity server has unbound the
+                  identifier whereas ``no-support`` indicates that the identity server
+                  refuses to support the request or the homeserver was not able to determine
+                  an identity server to unbind from.
                 example: "success"
             required:
               - id_server_unbind_result

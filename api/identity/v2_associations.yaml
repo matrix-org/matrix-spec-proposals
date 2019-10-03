@@ -1,4 +1,5 @@
 # Copyright 2018 New Vector Ltd
+# Copyright 2019 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,23 +15,26 @@
 swagger: '2.0'
 info:
   title: "Matrix Identity Service Establishing Associations API"
-  version: "1.0.0"
+  version: "2.0.0"
 host: localhost:8090
 schemes:
   - https
-basePath: /_matrix/identity/api/v1
+basePath: /_matrix/identity/v2
 consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/3pid/getValidated3pid":
     get:
       summary: Check whether ownership of a 3pid was validated.
       description: |-
         Determines if a given 3pid has been validated by a user.
-      operationId: getValidated3pid
-      deprecated: true
+      operationId: getValidated3pidV2
+      security:
+        - accessToken: []
       parameters:
         - in: query
           type: string
@@ -91,6 +95,17 @@ paths:
             }
           schema:
             $ref: "../client-server/definitions/errors/error.yaml"
+        403:
+          description: |
+            The user must do something in order to use this endpoint. One example
+            is an ``M_TERMS_NOT_SIGNED`` error where the user must `agree to more terms`_.
+          examples:
+            application/json: {
+              "errcode": "M_TERMS_NOT_SIGNED",
+              "error": "Please accept our updated terms of service before continuing"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
   "/3pid/bind":
     post:
       summary: Publish an association between a session and a Matrix user ID.
@@ -104,8 +119,9 @@ paths:
         specification, the parameters may also be specified as
         ``application/x-form-www-urlencoded`` data.  However, this usage is
         deprecated.
-      operationId: bind
-      deprecated: true
+      operationId: bindV2
+      security:
+        - accessToken: []
       parameters:
         - in: body
           name: body
@@ -203,6 +219,17 @@ paths:
             }
           schema:
             $ref: "../client-server/definitions/errors/error.yaml"
+        403:
+          description: |
+            The user must do something in order to use this endpoint. One example
+            is an ``M_TERMS_NOT_SIGNED`` error where the user must `agree to more terms`_.
+          examples:
+            application/json: {
+              "errcode": "M_TERMS_NOT_SIGNED",
+              "error": "Please accept our updated terms of service before continuing"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
   "/3pid/unbind":
     post:
       summary: Remove an association between a session and a Matrix user ID.
@@ -222,8 +249,9 @@ paths:
         If this endpoint returns a JSON Matrix error, that error should be passed
         through to the client requesting an unbind through a homeserver, if the
         homeserver is acting on behalf of a client.
-      operationId: unbind
-      deprecated: true
+      operationId: unbindV2
+      security:
+        - accessToken: []
       parameters:
         - in: body
           name: body
@@ -288,6 +316,9 @@ paths:
             This may also be returned if the identity server does not support
             the chosen authentication method (such as blocking homeservers from
             unbinding identifiers).
+
+            Another common error code is ``M_TERMS_NOT_SIGNED`` where the user
+            needs to `agree to more terms`_ in order to continue.
           examples:
             application/json: {
               "errcode": "M_FORBIDDEN",

@@ -1,4 +1,5 @@
 # Copyright 2018 New Vector Ltd
+# Copyright 2019 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +15,17 @@
 swagger: '2.0'
 info:
   title: "Matrix Identity Service Ephemeral Invitation Signing API"
-  version: "1.0.0"
+  version: "2.0.0"
 host: localhost:8090
 schemes:
   - https
-basePath: /_matrix/identity/api/v1
+basePath: /_matrix/identity/v2
 consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/sign-ed25519":
     post:
@@ -32,8 +35,9 @@ paths:
 
         The identity server will look up ``token`` which was stored in a call
         to ``store-invite``, and fetch the sender of the invite.
-      operationId: blindlySignStuff
-      deprecated: true
+      operationId: blindlySignStuffV2
+      security:
+        - accessToken: []
       parameters:
         - in: body
           name: body
@@ -92,6 +96,17 @@ paths:
             application/json: {
               "errcode": "M_UNRECOGNIZED",
               "error": "Didn't recognize token"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
+        403:
+          description: |
+            The user must do something in order to use this endpoint. One example
+            is an ``M_TERMS_NOT_SIGNED`` error where the user must `agree to more terms`_.
+          examples:
+            application/json: {
+              "errcode": "M_TERMS_NOT_SIGNED",
+              "error": "Please accept our updated terms of service before continuing"
             }
           schema:
             $ref: "../client-server/definitions/errors/error.yaml"

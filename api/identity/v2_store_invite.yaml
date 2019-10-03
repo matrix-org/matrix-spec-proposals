@@ -1,4 +1,5 @@
 # Copyright 2018 New Vector Ltd
+# Copyright 2019 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +15,17 @@
 swagger: '2.0'
 info:
   title: "Matrix Identity Service Store Invitations API"
-  version: "1.0.0"
+  version: "2.0.0"
 host: localhost:8090
 schemes:
   - https
-basePath: /_matrix/identity/api/v1
+basePath: /_matrix/identity/v2
 consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
 paths:
   "/store-invite":
     post:
@@ -47,15 +50,16 @@ paths:
         ``address`` parameter, notifying them of the invitation.
 
         Also, the generated ephemeral public key will be listed as valid on
-        requests to ``/_matrix/identity/api/v1/pubkey/ephemeral/isvalid``.
+        requests to ``/_matrix/identity/v2/pubkey/ephemeral/isvalid``.
 
         Currently, invites may only be issued for 3pids of the ``email`` medium.
 
         Optional fields in the request should be populated to the best of the
         server's ability. Identity servers may use these variables when notifying
         the ``address`` of the pending invite for display purposes.
-      operationId: storeInvite
-      deprecated: true
+      operationId: storeInviteV2
+      security:
+        - accessToken: []
       parameters:
         - in: body
           name: body
@@ -156,6 +160,17 @@ paths:
               "errcode": "M_THREEPID_IN_USE",
               "error": "Binding already known",
               "mxid": "@alice:example.com"
+            }
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
+        403:
+          description: |
+            The user must do something in order to use this endpoint. One example
+            is an ``M_TERMS_NOT_SIGNED`` error where the user must `agree to more terms`_.
+          examples:
+            application/json: {
+              "errcode": "M_TERMS_NOT_SIGNED",
+              "error": "Please accept our updated terms of service before continuing"
             }
           schema:
             $ref: "../client-server/definitions/errors/error.yaml"

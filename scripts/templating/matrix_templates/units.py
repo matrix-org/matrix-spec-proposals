@@ -594,7 +594,21 @@ class MatrixUnits(Units):
                 raise Exception("Error handling parameter %s" % param_name, e)
         # endfor[param]
         good_response = None
-        for code in sorted(endpoint_swagger.get("responses", {}).keys()):
+        endpoint_status_codes = endpoint_swagger.get("responses", {}).keys()
+        # Check to see if any of the status codes are strings ("4xx") and if
+        # so convert everything to a string to avoid comparing ints and strings.
+        has_string_status = False
+        for code in endpoint_status_codes:
+            if isinstance(code, str):
+                has_string_status = True
+                break
+        if has_string_status:
+            endpoint_status_codes = [str(i) for i in endpoint_status_codes]
+        for code in sorted(endpoint_status_codes):
+            # Convert numeric responses to ints, assuming they got converted
+            # above.
+            if isinstance(code, str) and code.isdigit():
+                code = int(code)
             res = endpoint_swagger["responses"][code]
             if not good_response and code == 200:
                 good_response = res
