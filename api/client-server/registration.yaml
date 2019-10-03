@@ -425,7 +425,9 @@ paths:
         400:
           description: |-
             The referenced third party identifier is not recognised by the
-            homeserver, or the request was invalid
+            homeserver, or the request was invalid. The error code ``M_SERVER_NOT_TRUSTED``
+            can be returned if the server does not trust/support the identity server
+            provided in the request.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
@@ -485,7 +487,9 @@ paths:
         400:
           description: |-
             The referenced third party identifier is not recognised by the
-            homeserver, or the request was invalid
+            homeserver, or the request was invalid. The error code ``M_SERVER_NOT_TRUSTED``
+            can be returned if the server does not trust/support the identity server
+            provided in the request.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
