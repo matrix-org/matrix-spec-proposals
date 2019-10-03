@@ -211,9 +211,17 @@ def get_json_schema_object_fields(obj, enforce_title=False):
 
         key_type = additionalProps.get("x-pattern", "string")
         res = process_data_type(additionalProps)
+        tables = res["tables"]
+        val_title = res["title"]
+        if res.get("enum_desc") and val_title != "enum":
+            # A map to enum needs another table with enum description
+            tables.append(TypeTable(
+                title=val_title,
+                rows=[TypeTableRow(key="(mapped value)", title="enum", desc=res["desc"])]
+            ))
         return {
-            "title": "{%s: %s}" % (key_type, res["title"]),
-            "tables": res["tables"],
+            "title": "{%s: %s}" % (key_type, val_title),
+            "tables": tables,
         }
 
     if not props:
@@ -338,8 +346,8 @@ def process_data_type(prop, required=False, enforce_title=True):
         prop_title = prop_type
 
     if prop.get("enum"):
+        prop_title = prop.get("title", "enum")
         if len(prop["enum"]) > 1:
-            prop_title = "enum"
             enum_desc = (
                 "One of: %s" % json.dumps(prop["enum"])
             )
