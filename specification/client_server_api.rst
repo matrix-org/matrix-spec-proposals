@@ -809,6 +809,9 @@ To use this authentication type, clients should submit an auth dict as follows:
     "session": "<session ID>"
   }
 
+Note that ``id_server`` (and therefore ``id_access_token``) is optional if the
+``/requestToken`` request did not include them.
+
 Phone number/MSISDN-based (identity / homeserver)
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 :Type:
@@ -837,6 +840,9 @@ To use this authentication type, clients should submit an auth dict as follows:
     ],
     "session": "<session ID>"
   }
+
+Note that ``id_server`` (and therefore ``id_access_token``) is optional if the
+``/requestToken`` request did not include them.
 
 Dummy Auth
 <<<<<<<<<<

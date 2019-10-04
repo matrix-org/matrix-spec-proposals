@@ -22,6 +22,9 @@ allOf:
         The hostname of the identity server to communicate with. May optionally
         include a port. This parameter is ignored when the homeserver handles
         3PID verification.
+
+        This parameter is deprected with a plan to be removed in a future specification
+        version for ``/account/password`` and ``/register`` requests.
       example: "id.example.com"
     id_access_token:
       type: string
@@ -29,4 +32,5 @@ allOf:
         An access token previously registered with the identity server. Servers
         can treat this as optional to distinguish between r0.5-compatible clients
         and this specification version.
-  required: ["id_server", "id_access_token"]
+
+        Required if an ``id_server`` is supplied.

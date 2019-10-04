@@ -343,7 +343,9 @@ paths:
         400:
           description: |-
             The third party identifier is already in use on the homeserver, or
-            the request was invalid.
+            the request was invalid. The error code ``M_SERVER_NOT_TRUSTED``
+            can be returned if the server does not trust/support the identity server
+            provided in the request.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
@@ -391,7 +393,9 @@ paths:
         400:
           description: |-
             The third party identifier is already in use on the homeserver, or
-            the request was invalid.
+            the request was invalid. The error code ``M_SERVER_NOT_TRUSTED``
+            can be returned if the server does not trust/support the identity server
+            provided in the request.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
