@@ -113,7 +113,7 @@ the key is saved directly by the user, then the code is constructed as follows:
 
 1. The 256-bit curve25519 private key is prepended by the bytes `0x8B` and
    `0x01`
-2. All the bytes in the string are above are XORed together to form a parity
+2. All the bytes in the string above, including the two header bytes, are XORed together to form a parity
    byte. This parity byte is appended to the byte string.
 3. The byte string is encoded using base58, using the same mapping as is used
    for Bitcoin addresses.
@@ -129,12 +129,14 @@ results in 0, and ensure that the total length of the decoded string
 is 35 bytes.  Clients must then remove the first two bytes and the last byte,
 and use the resulting string as the private key to decrypt backups.
 
+#### Enconding the recovery key for server-side storage via MSC1946
+
 If MSC1946 is used to store the key on the server, it must be stored using the
 `account_data` type `m.megolm_backup.v1`.
 
 As a special case, if the recovery key is the same as the curve25519 key used
 for storing the key, then the contents of the `m.megolm_backup.v1`
-`account_data` for that key will be the an object with a `passthrough` property
+`account_data` for that key will be an object with a `passthrough` property
 whose value is `true`.  For example, if `m.megolm_backup.v1` is set to:
 
 ```json
@@ -245,7 +247,7 @@ On success, returns the empty JSON object.
 
 Error codes:
 
-- `M_NOT_FOUND`: No backup version found.
+- `M_NOT_FOUND`: This backup version was not found.
 
 #### Storing keys
 
