@@ -231,7 +231,7 @@ restricts the path component of a Matrix URI to a simple
 pattern that allows to easily reconstruct a Matrix identifier or
 a chain of identifiers:
 ```text
-path = type “/” id-without-sigil “/” path
+path = type “/” id-without-sigil [“/” path]
 type = “user” / “roomid” / “room” / “event” / “group”
 id-without-sigil = string ; see below
 ```
