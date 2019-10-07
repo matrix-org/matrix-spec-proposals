@@ -1,4 +1,4 @@
-# MSC-XXXX: Backfilling Current State
+# MSC2314: Backfilling Current State
 
 If a server experiences data loss, it is difficult for it to recover membership in federation without having a user be reinvited, as backfill alone can not easily retrieve the data that is required to operate in a room (namely the current state and auth chain).
 
@@ -53,4 +53,4 @@ Excessively large rooms may cause performance problems for servers implementing 
 
 ## Security considerations
 
-In the case of a domain-name hijack, this may make recovering rooms that the domain name was in easier. However, since a domain name hijack will lead to other servers potentially sending PDUs with the required event IDs to allow backfill and state querying, this does not constitute a meaningful increase in attack surface. Proposals such as MSC-1228 are expected to mitigate.
+In the case of a domain-name hijack, this may make recovering rooms that the domain name was in easier. However, since a domain name hijack will lead to other servers potentially sending PDUs with the required event IDs to allow backfill and state querying, this does not constitute a meaningful increase in attack surface. Proposals such as MSC1228 are expected to mitigate.
