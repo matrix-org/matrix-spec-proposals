@@ -1138,7 +1138,15 @@ Adding Account Administrative Contact Information
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A homeserver may keep some contact information for administrative use.
-This is independent of any information kept by any identity servers.
+This is independent of any information kept by any identity servers, though
+can be proxied (bound) to the identity server in many cases.
+
+.. Note::
+  This section deals with two terms: "add" and "bind". Where "add" (or "remove")
+  is used, it is speaking about an identifier that was not bound to an identity
+  server. As a result, "bind" (or "unbind") references an identifier that is found
+  in an identity server. Note that an identifer can be added and bound at the same
+  time, depending on context.
 
 {{administrative_contact_cs_http_api}}
 
