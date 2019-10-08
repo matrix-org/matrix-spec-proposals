@@ -22,7 +22,8 @@ of events is gathered from every room the responding server has persisted.
 * A query string parameter `pdus` can be used to alter the response from event
   IDs to full event objects.
 * A query string parameter `limit_per_room=` specifies the maximum number of
-  membership events to return per room. The 
+  membership events to return per room. The responding server may enforce its
+  own upper limit on the number of events per room as well.
 
 ### Response
 200: An array of membership event IDs or events (depending on request) from the
