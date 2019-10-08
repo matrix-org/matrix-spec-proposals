@@ -52,7 +52,7 @@ following properties in its contents:
 - `to`: Bob's Matrix ID.  Users should only respond to verification requests if
   they are named in this field.  Users who are not named in this field and who
   did not send this event should ignore all other events that have a
-  `m.key.verification` relationship with this event.
+  `m.reference` relationship with this event.
 - `from_device`: Alice's device ID.  This is required since some verification
   methods may use the device IDs as part of the verification process.
 
@@ -126,7 +126,7 @@ should have an `m.relates_to` property as defined for
 `m.key.verification.accept` or `m.key.verification.cancel` events.
 
 Clients should ignore events with an `m.relates_to` that have a `rel_type` of
-`m.key.verification` that refer to a verification where it is not the requester
+`m.reference` that refer to a verification where it is not the requester
 nor the accepter.
 
 ### SAS  verification
