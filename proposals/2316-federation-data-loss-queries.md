@@ -30,6 +30,15 @@ of events is gathered from every room the responding server has persisted.
 current state of any rooms where this origin has any members that this server
 is aware of.
 
+### Finding servers
+How server implementations should find other servers to ask for shared rooms is
+not specified in this proposal and is up to the implementations. Some potential
+methods are:
+
+* Listening for incoming events
+* Asking the server admin to input server names
+* Finding other servers in existing rooms found using the previous two methods.
+
 ## Tradeoffs
 
 ## Potential issues
