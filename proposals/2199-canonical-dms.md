@@ -246,7 +246,7 @@ clients can always send state event updates after creating the room, for instanc
 Response (JSON):
 The server creates the room similar to how `/createRoom` operates:
 
-1. An `m.room.create` event is created as is `m.room.power_levels` using the defaults.
+1. An `m.room.create` event is created, as is `m.room.power_levels` using the defaults.
 2. Join rules of `invite` are set with a rejoin rule of `join`, as per
    [MSC2213](https://github.com/matrix-org/matrix-doc/pull/2213)). This is to allow DMs to be
    re-used (described later) without sacrificing security of the DM by letting random people
