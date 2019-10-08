@@ -55,6 +55,8 @@ following properties in its contents:
   they are named in this field.  Users who are not named in this field and who
   did not send this event should ignore all other events that have a
   `m.key.verification` relationship with this event.
+- `from_device`: Alice's device ID.  This is required since some verification
+  methods may use the device IDs as part of the verification process.
 
 Key verifications will be identified by the event ID of the key verification
 request event.
@@ -66,11 +68,16 @@ Clients should ignore verification requests that have been accepted or cancelled
 To accept a key verification, Bob will send an `m.key.verification.start` event
 with the following properties in its contents:
 
+TODO: MSC1849 may use `m.relationship` rather than `m.relates_to`, in which
+case this proposal should follow suit.
+
 - `m.relates_to`: an object with the properties:
   - `rel_type`: `m.reference`
   - `event_id`: the event ID of the key verification request that is being
     accepted
 - `method`: the key verification method that is being used
+- `from_device`: Bob's device ID.  This is required since some verification
+  methods may use the device IDs as part of the verification process.
 
 Clients should ignore `m.key.verification.start` events that correspond to
 verification requests that it did not send.
