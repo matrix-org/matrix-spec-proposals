@@ -34,11 +34,9 @@ following properties in its contents:
 
 - `body`: a fallback message to alert users that their client does not support
   the key verification framework, and that they should use a different method
-  to verify keys.  The message should contain Bob's Matrix ID in order to
-  trigger a notification so that Bob's client will highlight the room for him,
-  making it easier for him to find it.  For example, "@bob:example.com: Alice
-  is requesting to verify keys with you.  However, your client does not support
-  this method, so you will need to use the legacy method of key verification."
+  to verify keys.  For example, "Alice is requesting to verify keys with you.
+  However, your client does not support this method, so you will need to use
+  the legacy method of key verification."
 
   Clients that do support the key verification framework should hide the body
   and instead present the user with an interface to accept or reject the key
