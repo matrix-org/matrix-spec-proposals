@@ -43,6 +43,7 @@ A recovering server requests `GET /_matrix/federation/v1/query/members`.
 
   > Note that if a limit is imposed, the selection for *which* member events
     are included in the response is implementation dependent.
+
   > This parameter is intended to enhance the efficiency of this endpoint in
     practice. For example, when a server bridges thousands of users we avoid
     receiving thousands of results for just one room in the response. It is
