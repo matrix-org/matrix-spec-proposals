@@ -223,7 +223,7 @@ Body parameters:
 - `auth_data` (object): Required. algorithm-dependent data.  For
   `m.megolm_backup.v1.curve25519-aes-sha2`, see below for the [definition of
   this property](#auth_data-backup-versions).
-- `version` (string): Required. The backup version. Must be the same as the query parameter or must be the current version.
+- `version` (string): Optional. The backup version. If present, must be the same as the path parameter.
 
 Example:
 
