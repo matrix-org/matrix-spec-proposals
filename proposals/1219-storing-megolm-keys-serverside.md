@@ -210,7 +210,7 @@ On success, returns a JSON object with keys:
 
 Error codes:
 
-- `M_NOT_FOUND`: No backup version has been created.
+- `M_NOT_FOUND`: No backup version has been created. (with HTTP status code 404)
 
 ##### `PUT /room_keys/version/{version}`
 
@@ -247,7 +247,7 @@ On success, returns the empty JSON object.
 
 Error codes:
 
-- `M_NOT_FOUND`: This backup version was not found.
+- `M_NOT_FOUND`: This backup version was not found. (with HTTP status code 404)
 
 #### Storing keys
 
@@ -289,7 +289,8 @@ On success, returns a JSON object with keys:
 Error codes:
 
 - `M_WRONG_ROOM_KEYS_VERSION`: the version specified does not match the current
-  backup version
+  backup version (with HTTP status code 403).  The current backup version will
+  be included in the `current_version` field of the HTTP result.
 
 Example:
 
@@ -426,7 +427,7 @@ On success, returns a JSON object in the same form as the request body of `PUT
 Error codes:
 
 - M_NOT_FOUND: The session is not present in the backup, or the requested
-  backup version does not exist.
+  backup version does not exist. (with HTTP status code 404)
 
 ##### `GET /room_keys/keys/${roomId}?version=$v`
 
@@ -446,7 +447,7 @@ a successful response with body:
 
 Error codes:
 
-- `M_NOT_FOUND`: The requested backup version does not exist.
+- `M_NOT_FOUND`: The requested backup version does not exist. (with HTTP status code 404)
 
 ##### `GET /room_keys/keys?version=$v`
 
@@ -466,7 +467,7 @@ a successful response with body:
 
 Error codes:
 
-- `M_NOT_FOUND`: The requested backup version does not exist.
+- `M_NOT_FOUND`: The requested backup version does not exist. (with HTTP status code 404)
 
 #### Deleting keys
 
@@ -503,14 +504,14 @@ The `session_data` field in the backups is constructed as follows:
 
 1. Encode the session key to be backed up as a JSON object with the properties:
    - `algorithm` (string): `m.megolm.v1.aes-sha2`
-   - `sender_key` (string): base64-encoded device curve25519 key in
-     [session-sharing
-     format](https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md#session-sharing-format)
+   - `sender_key` (string): base64-encoded device curve25519 key
    - `sender_claimed_keys` (object): object containing the identity keys for the
      sending device
    - `forwarding_curve25519_key_chain` (array): zero or more curve25519 keys
      for devices who forwarded the session key
-   - `session_key` (string): base64-encoded (unpadded) session key
+   - `session_key` (string): base64-encoded (unpadded) session key in
+     [session-sharing
+     format](https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md#session-sharing-format)
 2. Generate an ephemeral curve25519 key, and perform an ECDH with the ephemeral
    key and the backup's public key to generate a shared secret.  The public
    half of the ephemeral key, encoded using base64, becomes the `ephemeral`
