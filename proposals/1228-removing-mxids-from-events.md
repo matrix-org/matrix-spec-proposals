@@ -287,7 +287,7 @@ redact their join, we'll redact their identity assertion too :/
 
 ## Other things that might fall out nicely
 
- * Fixes broken backfill due to changed signing keys (#3121)
+ * Fixes broken backfill due to changed signing keys (matrix-org/synapse#3121)
  * Case sensitive mxid comparison problems?
  * Opens a path to killing off perspectives in favour of just asking servers
    what their keys are (via TLS, with trust coming from X.509 certificates).
