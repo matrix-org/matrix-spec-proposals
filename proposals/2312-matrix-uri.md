@@ -295,6 +295,19 @@ Client applications SHOULD ask for user confirmation before joining if the user
 is not a joined member in the room nor in its immediate
 [successor or predecessor](https://matrix.org/docs/spec/client_server/latest#module-room-upgrades).
 
+Client applications SHOULD NOT append `action=join` to room URIs and generally
+SHOULD NOT push consumers into joining rooms unless the user's intention
+to join the room can be assumed from the context of the URI. A link
+`<a href="matrix:room/us:example.org?action=join">Join our room</a>` is
+a poorer choice for a webpage compared to
+`<a href="matrix:room/us:example.org">Our room</a>`; on the other hand,
+a message in an obsolete, especially private, room saying
+"We have moved our room elsewhere,
+`<a href="matrix:room/us:example.org?action=join">click to join</a>`"
+is safe to assume that, being in the current room, a user would want to join
+the new room and that there's not much sense in exploring the new room
+without joining it anyway.
+
 The routing query is only allowed with URIs that have path starting with
 `roomid/` to indicate servers that are likely involved in the room (cf.
 [the feature of matrix.to](https://matrix.org/docs/spec/appendices#routing)).
@@ -322,7 +335,7 @@ CS API calls) are collected as follows:
     `GET /profile/@me_in_matrix/...`)
 * Room ID:
   - URI example: `matrix:roomid/rid:example.org` or
-    (decentralised id, future) `!lol823y4bcp3qo4`
+    (decentralised id, future) `matrix:roomid/lol823y4bcp3qo4`
   - Default action: attempt to "open" the room (usually means the client
     at least displays the room timeline at the latest or
     the last remembered position - `GET /rooms/!rid:example.org/...`,
