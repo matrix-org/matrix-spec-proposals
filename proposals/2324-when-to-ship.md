@@ -64,3 +64,11 @@ To reiterate:
   MSC has been merged to the spec, provided they follow the process above.
 * Implementations SHOULD be wary of the technical debt they are incuring by moving
   faster than the spec.
+
+To clarify:
+
+* The vendor prefix is chosen by the developer of the feature, using the Java package
+  naming convention. For example, `org.matrix` is the foundation's vendor prefix.
+* The vendor prefixes, unstable feature flags, and unstable endpoints should be included
+  in the MSC so other developers can benefit. The MSC MUST still say what the stable
+  endpoints are to look like.
