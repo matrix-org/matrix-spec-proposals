@@ -1,4 +1,4 @@
-# MSC0000: Facilitating early releases of software dependent on spec
+# MSC2324: Facilitating early releases of software dependent on spec
 
 *Note*: This is a process change MSC, not a change to the spec itself.
 
