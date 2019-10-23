@@ -24,10 +24,12 @@ decrypt data on clients.  For example, the user could have one key that can
 decrypt everything, and another key that can only decrypt their user-signing
 key for cross-signing.
 
-Key descriptions and secret data are both stored in the user's `account_data`.
+Key descriptions and secret data are both stored in the user's account_data.
 
-Each key has an ID, and the description of the key is stored in the
-`account_data` using the `type` `m.secret_storage.key.[key ID]`.  The contents
+#### Key storage
+
+Each key has an ID, and the description of the key is stored in the user's
+account_data using the event type `m.secret_storage.key.[key ID]`.  The contents
 of the account data for the key will include an `algorithm` property, which
 indicates the encryption algorithm used, as well as a `name` property, which is
 a human-readable name.  The contents will be signed as signed JSON using the
@@ -52,13 +54,15 @@ will be encrypted with, and that clients will try to use to decrypt data with,
 unless the user specifies otherwise.  Only one key can be marked as the default
 at a time.
 
-Encrypted data is stored in `account_data` using the `type` defined by the
-feature that uses the data.  For example, decryption keys for key backups could
-be stored under the type `m.megolm_backup.v1.recovery_key`, or the self-signing
-key for cross-signing could be stored under the type
+#### Secret storage
+
+Encrypted data is stored in the user's account_data using the event type
+defined by the feature that uses the data.  For example, decryption keys for
+key backups could be stored under the type `m.megolm_backup.v1.recovery_key`,
+or the self-signing key for cross-signing could be stored under the type
 `m.cross_signing.self_signing`.
 
-The `account_data` will have an `encrypted` property that is a map from key ID
+The account_data will have an `encrypted` property that is a map from key ID
 to an object.  The algorithm from the `m.secret_storage.key.[key ID]` data for
 the given key defines how the other properties are interpreted, though it's
 expected that most encryption schemes would have `ciphertext` and `mac`
@@ -71,17 +75,17 @@ Some secret is encrypted using keys with ID `key_id_1` and `key_id_2`:
 
 ```json
 {
-    "encrypted": {
-      "key_id_1": {
-        "ciphertext": "base64+encoded+encrypted+data",
-        "mac": "base64+encoded+mac",
-        // ... other properties according to algorithm property in
-        // m.secret_storage.key.key_id_1
-      },
-      "key_id_2": {
-        // ...
-      }
+  "encrypted": {
+    "key_id_1": {
+      "ciphertext": "base64+encoded+encrypted+data",
+      "mac": "base64+encoded+mac",
+      // ... other properties according to algorithm property in
+      // m.secret_storage.key.key_id_1
+    },
+    "key_id_2": {
+      // ...
     }
+  }
 }
 ```
 
@@ -90,7 +94,7 @@ Some secret is encrypted using keys with ID `key_id_1` and `key_id_2`:
 ##### `m.secret_storage.v1.curve25519-aes-sha2`
 
 The public key is stored in the `pubkey` property of the `m.secret_storage.key.[key
-ID]` `account_data` as a base64-encoded string.
+ID]` account_data as a base64-encoded string.
 
 The data is encrypted and MACed as follows:
 
@@ -189,12 +193,13 @@ set to `request_cancellation` to all devices other than the one that it received
 secret from.  Clients should ignore `m.secret.send` events received from
 devices that it did not send an `m.secret.request` event to.
 
-Clients SHOULD ensure that they only share secrets with other devices that are
-allowed to see them.  For example, clients SHOULD only share secrets with devices
-that are verified and MAY prompt the user to confirm sharing the secret.
+Clients MUST ensure that they only share secrets with other devices that are
+allowed to see them.  For example, clients SHOULD only share secrets with
+devices that are verified and MAY prompt the user to confirm sharing the
+secret.
 
 If a feature allows secrets to be stored or shared, then for consistency it
-SHOULD use the same name for both the `account_data` `type` and the `name` in
+SHOULD use the same name for both the account_data event type and the `name` in
 the `m.secret.request`.
 
 #### Event definitions
@@ -216,8 +221,8 @@ unencrypted to-device event.
 ##### `m.secret.send`
 
 Sent by a client to share a secret with another device, in response to an
-`m.secret.request` event.  Typically it is encrypted as an `m.room.encrypted`
-event, then sent as a to-device event.
+`m.secret.request` event.  It MUST be encrypted as an `m.room.encrypted` event,
+then sent as a to-device event.
 
 - `request_id`: (string) Required. The ID of the request that this a response to.
 - `secret`: (string) Required. The contents of the secret.
