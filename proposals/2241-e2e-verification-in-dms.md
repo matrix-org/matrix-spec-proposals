@@ -59,7 +59,26 @@ following properties in its contents:
 Key verifications will be identified by the event ID of the key verification
 request event.
 
-Clients should ignore verification requests that have been accepted or cancelled.
+Clients should ignore verification requests that have been accepted or
+cancelled, or if they do not belong to the sending or target users.
+
+The way that clients display this event can depend on which user and device the
+client belongs to, and what state the verification is in.  For example:
+
+- If the verification has been completed (there is an `m.key.verification.done`
+  or `m.key.verification.cancel` event), the client can indicate that the
+  verification was successful or had an error.
+- If the verification has been accepted (there is an `m.key.verification.start`
+  event) but has not been completed, the two devices involved can indicate that
+  the verification is in progress and can use this event as a place in the
+  room's timeline to display progress of the key verification and to interact
+  with the user as necessary.  Other devices can indicate that the verification
+  is in progress on other devices.
+- If the verification has not been accepted, clients for the target user can
+  indicate that a verification has been requested and allow the user to accept
+  the verification on that device.  The sending client can indicate that it is
+  waiting for the request to be accepted, and the sending user's other clients
+  can indicate the that a request was initiated on a different device.
 
 #### Accepting a key verification
 
@@ -79,10 +98,6 @@ case this proposal should follow suit.
 
 Clients should ignore `m.key.verification.start` events that correspond to
 verification requests that it did not send.
-
-Clients may use this event as a place in the room's timeline do display
-progress of the key verification process and to interact with the user as
-necessary.
 
 #### Rejecting a key verification
 
