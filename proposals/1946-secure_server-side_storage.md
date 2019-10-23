@@ -41,7 +41,7 @@ A key with ID `abcdefg` is stored in `m.secret_storage.key.abcdefg`
 ```json
 {
   "name": "Some key",
-  "algorihm": "m.secret_storage.v1.curve25519-aes-sha2",
+  "algorithm": "m.secret_storage.v1.curve25519-aes-sha2",
   // ... other properties according to algorithm
 }
 ```
@@ -52,7 +52,7 @@ will be encrypted with, and that clients will try to use to decrypt data with,
 unless the user specifies otherwise.  Only one key can be marked as the default
 at a time.
 
-Encrypted data is stored in the `account_data` using the `type` defined by the
+Encrypted data is stored in `account_data` using the `type` defined by the
 feature that uses the data.  For example, decryption keys for key backups could
 be stored under the type `m.megolm_backup.v1.recovery_key`, or the self-signing
 key for cross-signing could be stored under the type
@@ -180,7 +180,7 @@ and the number of iterations given in the `iterations` parameter.
 Rather than (or in addition to) storing secrets on the server encrypted by a
 shared key, devices can send secrets to each other, encrypted using olm.
 
-To request a secret, a client sends a `m.secret.request` event with `action`
+To request a secret, a client sends a `m.secret.request` device event with `action`
 set to `request` to other devices, and `name` set to the name of the secret
 that it wishes to retrieve.  A device that wishes to share the secret will
 reply with a `m.secret.send` event, encrypted using olm.  When the original
@@ -229,8 +229,8 @@ also define a secret key mechanism.
 
 ## Potential issues
 
-Keeping all the data and keys in account data means that it may clutter up the
-`/sync`.  However, clients can filter out the data that they are not interested
+Keeping all the data and keys in account data means that it may clutter up
+`/sync` requests.  However, clients can filter out the data that they are not interested
 in.  One possibility for addressing this would be to add a flag to the account
 data to indicate whether it should come down the `/sync` or not.
 
