@@ -19,7 +19,7 @@ We have many different APIs for querying server capabilities and configuration:
  users know that they're trying to log into the right server, and see useful
  information 'from the outside' about that server.
 
-## Proposal
+## Proposal
 
 Rather than creating yet another unauthenticated capabilities/config endpoint,
 we rename `/versions` into `/info` and support adding additional namespaced
