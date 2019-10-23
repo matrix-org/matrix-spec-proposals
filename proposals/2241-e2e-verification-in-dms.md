@@ -78,9 +78,9 @@ case this proposal should follow suit.
   methods may use the device IDs as part of the verification process.
 
 Clients should ignore `m.key.verification.start` events that correspond to
-verification requests that it did not send.
+verification requests that they did not send.
 
-Clients may use this event as a place in the room's timeline do display
+Clients may use this event as a place in the room's timeline to display
 progress of the key verification process and to interact with the user as
 necessary.
 
@@ -129,7 +129,7 @@ Clients should ignore events with an `m.relates_to` that have a `rel_type` of
 `m.reference` that refer to a verification where it is not the requester
 nor the accepter.
 
-### SAS  verification
+### SAS verification
 
 The messages used in SAS verification are the same as those currently defined,
 except that instead of the `transaction_id` property, an `m.relates_to`
