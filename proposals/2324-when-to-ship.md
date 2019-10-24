@@ -18,7 +18,11 @@ The new process, from start to finish, is proposed as:
    * When using unstable endpoints, they MUST include a vendor prefix. For
      example: `/_matrix/client/unstable/com.example/login`. Vendor prefixes
      throughout this proposal always use the Java package naming convention.
-   * Unstable endpoints **do not** inherit from stable (`/r0`) APIs.
+   * Unstable endpoints **do not** inherit from stable (`/r0`) APIs. Previously,
+     one could access the entirety of the Matrix API through `/unstable` however
+     this is generally considered a bad practice. Therefore an implementation
+     can no longer assume that because its feature-specific endpoint exists that
+     any other endpoint will exist in the same unstable namespace.
    * When using an unstable feature flag, they MUST include a vendor prefix.
      This kind of flag shows up in `/versions`. Eg: `com.example.new_login`.
    * You can ship the feature at *any* time, so long as you are able to accept
