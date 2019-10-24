@@ -121,8 +121,140 @@ Each proposal which branches off this proposal has its own set of security consi
 expected to make decisions on which integration managers are trusted, and integration managers are encouraged to do
 the same with clients and integrations.
 
+----
 
-## Conclusion / TLDR
+## How all of this is meant to work (versus before)
 
-Add a new API specification for interactions between integrations and clients. APIs for interactions between the
-integrations and managers is undefined and left as an implementation detail.
+This portion of the proposal is not required reading - it is supplemental information to help explain how integration
+managers work in a world with this API and prior. This is also meant to be moderately high level and doesn't go into
+the specific API endpoints one would call.
+
+### Integration managers today (pre-API)
+
+Integration managers are very much a Riot concept that has lead to enough utility to make it worth putting the idea
+in the spec. An integration manager is typically just a UI for interacting with bridges/bots/widgets instead of having
+to do all the bits manually or through a command line-like interface. Riot defines an integration manager as a set
+of URLs: one for the UI (`ui_url`) and one for its API (`rest_url`). There are other URLs that also take place, but
+they're covered in more detail later on in this text.
+
+Before an integration manager can even be shown to the user, an authentication dance must take place. This is to
+acquire an authentication token (wrongly named a `scalar_token` in Riot) - this token is then provided to the integration
+manager where applicable via a `scalar_token` query string parameter. The auth dance involves getting an OpenID token
+from the homeserver for the user, passing that to the integration manager via its API URL, and getting back a token
+it can then use for future requests. The integration manager internally takes the OpenID token and verifies it by
+doing a federated request to the homeserver - this is how it claims the token and gets a user ID back. This is also
+why homeservers generally need working federation in order to use integrations, at least until recently when Synapse
+could support exposing the OpenID claim endpoint without the rest of federation (Modular and similar deployments use
+this).
+
+The entire auth dance is done in the background, so the user doesn't see this happening. If any of the steps go wrong,
+the user is warned that the integration manager is offline/inaccessible. After the auth dance, Riot does a terms of
+service check to ensure the user has accepted all applicable policies. It does this by using the API URL to get the
+authentication token owner's information (`/account`) which can return an error if there are unaccepted policies. If
+there are policies to accept, Riot prompts before continuing. Provided the user accepts all the policies, Riot moves
+on to rendering the integration manager window using the UI URL as a base. Depending on what the user clicked depends
+on how the URL is constructed. Typically users would click the 4/9 squares in the context of the room, so a generic
+URL referencing the "homepage" of the manager and the room ID is supplied to the manager. The user's authentication
+token for the manager is also included in the URL.
+
+The integration manager then takes all the information from the URL and starts to render the UI. In this case, it would
+be rendering the homepage so it asks its backend for information about integrations it supports and starts trying to
+figure out which ones are feasible. In the process, it queries Riot itself for some information (bot membership, room
+publicity, room member count, etc) - this is done over a special `postMessage` API named `ScalarMessaging` (which is
+not really Scalar-specific). Note that this API is different from the Widget `postMessage` API - more on that in a bit.
+
+The ScalarMessaging API acts in the background and allows the integration manager to check the state of things as well
+as perform actions. For example, when the user wants to add a bot to the room the manager will use the ScalarMessaging
+API to determine if the bot is already in the room, and if it isn't it will use ScalarMessaging to cause the user to
+invite the bot to the room. The expectation is generally that the bot will auto-accept invites without needing the
+integration manager or Riot to interfere. When the bot is being removed from the room, it is not kicked through the API.
+Instead, the integration manager calls its backend which impersonates the bot to leave the room.
+
+The ScalarMessaging API is locked down enough to ensure only the integration manager can interact with it.
+
+When the user finally wants to close the integration manager, they can click outside of it to have Riot dismiss the dialog
+or they can click a close button within the integration manager which uses the ScalarMessaging API to close itself.
+
+The other thing the ScalarMessaging class lets integration managers do is add widgets into the room and onto the user's
+account. Widgets added by an integration manager are almost always wrapped by the integration manager itself. Widgets
+are simply URLs that are rendered in iframes, so when the integration manager wraps a widget it means there's the top
+level iframe supplied by Riot and another iframe supplied by the integration manager's wrapper. The wrapper usually
+provides some features like being able to talk the Widget `postMessage` API (here on out known as the Widget API)
+and a fullscreen button. Dimension, Scalar's opensource "competitor", doesn't require any authentication in order to
+load this widget wrapper however Scalar does. Riot solves this by having a "widget URL whitelist" in the configuration
+for when to provide an authentication token to the widget through its URL.
+
+Scalar has two methods of checking for an authentication token, both of which are used to try and avoid the dreaded
+"Forbidden" error page. The first is simply using the authentication token it was provided by the client. The second
+involves cookies that are scoped to the Scalar domain. Typically the cookie is set after a token has been successfully
+used (as provided by the client). The cookies helps avoid the forbidden error page when Riot decides it can't send
+the authentication token to the widget/manager (typically when people change to Dimension or another integration manager).
+
+Dimension uses a similar scheme for ensuring it has a token available, though it uses localstorage in place of cookies.
+When both the provided and stored token fail, Dimension uses Riot's OpenID exchange API to acquire a new token by asking
+the user for permission to share their identity. This is supposed to be used as a last resort, given Dimension only needs
+a token to determine the user's stickerpacks and nothing more (for widgets).
+
+It is worth noting that widgets are designed such that the integration manager gets no special treatment, however in
+practice integration manager widgets are very difficult to manage from a client perspective, primarily for authentication
+reasons. Widgets are simply supposed to be iframes with no dealing of tokens from a spec perspective.
+
+The sticker picker is a particularly interesting widget in that it's at the user's account level and not in a room. By
+nature of being a widget, it is supposed to be independent of the integration manager however in practice users find it
+confusing when their integration manager changes and their sticker picker is the "old" one. This is something that can
+usually be mitigated by the client (removing/replacing the sticker picker widget when the user asks to change their
+integration manager), but so far no client has opted to do so.
+
+The sticker picker widget uses a capabilities subsystem in the Widget API to get permission to send events (stickers)
+on behalf of the user. Sticker pickers are one of the widgets which require authentication so the widget can show the
+user the sticker packs they have enabled. Riot currently has the capabilities exchange happen in the background, though
+it could expose it as a dialog to the user.
+
+The final aspect of integration managers in the current ecosystem is conference calls: Riot uses a Jitsi widget to make
+a conference call. Because different integration managers have different opinions on how the Jitsi widget should be declared,
+Riot supports a configuration option to change the base URL of the Jitsi widget before it gets added to the room state.
+The Jitsi URL in the config almost always points to an integration manager which wraps the widget.
+
+### Integration managers in a post-API world
+
+This proposal defines an API for how integration managers are supposed to work, taking into consideration user expectations,
+technical limitations, and other issues with the current state of affairs. Most critically, this new API brings forth a
+new authentication scheme for integration managers (and therefore widgets) by making somewhat radical changes to the way
+things work.
+
+The first major change is that integration managers become widgets. This is confusing at first, but if we run the thought
+experiment for a bit it starts to make some sense. Widgets already have a well-specified API they can use to talk to the
+client, and with some modifications (proposed here) the same API can be used to run an integration manager. This proposal
+builds on the capabilities system to add additional actions needed by integration managers, such as adding readonly views
+of the room membership and ability to invite users. This does away with the existing API which is not as well specified.
+
+Widgets under this proposal also lose their authentication tokens, which means integration managers also lose an authentication
+token. Authentication tokens are not completely gone though: the APIs to get them still exist for reasons described a bit
+later on, and widgets can use the now-specified OpenID exchange API to acquire a token if it needs one. There's additionally
+a provision within the proposal to allow clients to skip the prompt under some circumstances, such as when dealing with a
+sticker picker or integration manager - these kinds of widgets are likely to need/request OpenID information for good reason
+so the client can do so quietly in the background without nagging the user. Other widgets, like custom widgets, are expected
+to prompt for confirmation from the user.
+
+With this new authentication system, clients no longer need to track a whitelist of widget URLs to append tokens to and
+generally don't need to track the tokens for themselves. Terms of service acceptance is also expected to be done by the
+widgets (including integration manager) themselves, though smarter clients like Riot can try and optimize for it by still
+doing the auth&check dance.
+
+This proposal also defines a set of APIs for clients to interact with the integration manager directly, avoiding the use
+of iframes where applicable. The theory is that clients wanting to control the integrations experience can do so by invoking
+the integration manager's API on top of the client's native UI/UX. An example of where this might be worthwhile for Riot is
+the sticker picker: instead of rendering an iframe and having to deal with a lot of complicated APIs, Riot could instead
+just do the auth dance and get all the information it needs from the widget. A similar approach could be taken for adding
+an IRC bridge to a room: if the client were driving the manager's API, it could offer a button instead of rendering a whole
+iframe.
+
+To handle the Jitsi use case, this proposal introduces a "make me a widget" API. The API exists on integration managers to
+construct a widget for the client, doing away with Riot's Jitsi URL in the config.
+
+Integration managers like Scalar can still require an authentication token to render the actual widget by having a small
+wrapper which uses the OpenID exchange API. The wrapper should also persist the token somewhere (cookies/localstorage) so
+it can load the next time unobtrusively.
+
+Fundamentally the power an integration manager has is unchanged by this proposal, though how they perform actions is vastly
+different, hopefully for the better.
