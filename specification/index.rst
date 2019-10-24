@@ -106,7 +106,7 @@ The principles that Matrix attempts to follow are:
 - Empowering the end-user
 
   + The user should be able to choose the server and clients they use
-  + The user should be control how private their communication is
+  + The user should be able to control how private their communication is
   + The user should know precisely where their data is stored
 
 - Fully decentralised - no single points of control over conversations or the

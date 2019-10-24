@@ -150,6 +150,10 @@ Other error codes the client might encounter are:
 :``M_UNAUTHORIZED``:
   The request was not correctly authorized. Usually due to login failures.
 
+:``M_USER_DEACTIVATED``:
+  The user ID associated with the request has been deactivated. Typically for
+  endpoints that prove authentication, such as ``/login``.
+
 :``M_USER_IN_USE``:
   Encountered when trying to register a user ID which has been taken.
 
@@ -798,11 +802,15 @@ To use this authentication type, clients should submit an auth dict as follows:
       {
         "sid": "<identity server session id>",
         "client_secret": "<identity server client secret>",
-        "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>"
+        "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
+        "id_access_token": "<access token previously registered with the identity server>"
       }
     ],
     "session": "<session ID>"
   }
+
+Note that ``id_server`` (and therefore ``id_access_token``) is optional if the
+``/requestToken`` request did not include them.
 
 Phone number/MSISDN-based (identity / homeserver)
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -826,11 +834,15 @@ To use this authentication type, clients should submit an auth dict as follows:
       {
         "sid": "<identity server session id>",
         "client_secret": "<identity server client secret>",
-        "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>"
+        "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
+        "id_access_token": "<access token previously registered with the identity server>"
       }
     ],
     "session": "<session ID>"
   }
+
+Note that ``id_server`` (and therefore ``id_access_token``) is optional if the
+``/requestToken`` request did not include them.
 
 Dummy Auth
 <<<<<<<<<<
@@ -1134,6 +1146,41 @@ Current account information
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {{whoami_cs_http_api}}
+
+Notes on identity servers
++++++++++++++++++++++++++
+
+Identity servers in Matrix store bindings (relationships) between a user's third
+party identifier, typically email or phone number, and their user ID. Once a user
+has chosen an identity server, that identity server should be used by all clients.
+
+Clients can see which identity server the user has chosen through the ``m.identity_server``
+account data event, as described below. Clients SHOULD refrain from making requests
+to any identity server until the presence of ``m.identity_server`` is confirmed as
+(not) present. If present, the client SHOULD check for the presence of the ``base_url``
+property in the event's content. If the ``base_url`` is present, the client SHOULD
+use the identity server in that property as the identity server for the user. If the
+``base_url`` is missing, or the account data event is not present, the client SHOULD
+use whichever default value it normally would for an identity server, if applicable.
+Clients SHOULD NOT update the account data with the default identity server when the
+user is missing an identity server in their account data.
+
+Clients SHOULD listen for changes to the ``m.identity_server`` account data event
+and update the identity server they are contacting as a result.
+
+If the client offers a way to set the identity server to use, it MUST update the
+value of ``m.identity_server`` accordingly. A ``base_url`` of ``null`` MUST be
+treated as though the user does not want to use an identity server, disabling all
+related functionality as a result.
+
+Clients SHOULD refrain from populating the account data as a migration step for users
+who are lacking the account data, unless the user sets the identity server within
+the client to a value. For example, a user which has no ``m.identity_server`` account
+data event should not end up with the client's default identity server in their
+account data, unless the user first visits their account settings to set the identity
+server.
+
+{{m_identity_server_event}}
 
 Capabilities negotiation
 ------------------------

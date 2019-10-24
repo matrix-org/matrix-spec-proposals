@@ -95,18 +95,6 @@ paths:
                   should be authenticated, but is instead used to
                   authenticate the ``register`` call itself.
                 "$ref": "definitions/auth_data.yaml"
-              bind_email:
-                type: boolean
-                description: |-
-                  If true, the server binds the email used for authentication to
-                  the Matrix ID with the identity server.
-                example: false
-              bind_msisdn:
-                type: boolean
-                description: |-
-                  If true, the server binds the phone number used for authentication
-                  to the Matrix ID with the identity server.
-                example: false
               username:
                 type: string
                 description: |-
@@ -437,7 +425,9 @@ paths:
         400:
           description: |-
             The referenced third party identifier is not recognised by the
-            homeserver, or the request was invalid
+            homeserver, or the request was invalid. The error code ``M_SERVER_NOT_TRUSTED``
+            can be returned if the server does not trust/support the identity server
+            provided in the request.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
@@ -497,7 +487,9 @@ paths:
         400:
           description: |-
             The referenced third party identifier is not recognised by the
-            homeserver, or the request was invalid
+            homeserver, or the request was invalid. The error code ``M_SERVER_NOT_TRUSTED``
+            can be returned if the server does not trust/support the identity server
+            provided in the request.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
@@ -519,6 +511,10 @@ paths:
 
         The homeserver may change the flows available depending on whether a
         valid access token is provided.
+
+        Unlike other endpoints, this endpoint does not take an ``id_access_token``
+        parameter because the homeserver is expected to sign the request to the
+        identity server instead.
       security:
         - accessToken: []
       operationId: deactivateAccount

@@ -1,6 +1,6 @@
 {
   "content": {
-    "action": "cancel_request",
+    "action": "request_cancellation",
     "requesting_device_id": "RJYKSTBOIE",
     "request_id": "1495474790150.19"
   },

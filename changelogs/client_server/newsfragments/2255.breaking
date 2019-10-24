@@ -1,0 +1,1 @@
+Add a required ``id_access_token`` to many places which require an ``id_server`` parameter.

@@ -382,7 +382,7 @@ Definition:
 
 ``.m.rule.tombstone``
 `````````````````````
-Matches any event whose type is ``m.room.tombstone``. This is intended
+Matches any state event whose type is ``m.room.tombstone``. This is intended
 to notify users of a room when it is upgraded, similar to what an
 ``@room`` notification would accomplish.
 
@@ -399,6 +399,11 @@ Definition:
                 "kind": "event_match",
                 "key": "type",
                 "pattern": "m.room.tombstone"
+            },
+            {
+                "kind": "event_match",
+                "key": "state_key",
+                "pattern": ""
             }
         ],
         "actions": [
@@ -563,6 +568,11 @@ Definition:
             {
                 "kind": "room_member_count",
                 "is": "2"
+            },
+            {
+                "kind": "event_match",
+                "key": "type",
+                "pattern": "m.room.message"
             }
         ],
         "actions": [

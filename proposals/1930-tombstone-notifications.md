@@ -19,6 +19,11 @@ A new default override rule is to be added which is similar to `@room` notificat
             "kind": "event_match",
             "key": "type",
             "pattern": "m.room.tombstone"
+        },
+        {
+            "kind": "event_match",
+            "key": "state_key",
+            "pattern": ""
         }
     ],
     "actions": [
