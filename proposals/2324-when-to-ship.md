@@ -22,12 +22,16 @@ The new process, from start to finish, is proposed as:
    * When using an unstable feature flag, they MUST include a vendor prefix.
      This kind of flag shows up in `/versions`. Eg: `com.example.new_login`.
    * You can ship the feature at *any* time, so long as you are able to accept
-     the technical debt that results from needing to provide adequate backwards and forwards compatibility for the vendor prefixed implementation. The implementation MUST support the flag disappearing
-     and be generally safe for users. Note that implementations early in the MSC
-     review process may also be required to provide backwards compatibility with
-     earlier editions of the proposal.
-   * If you don't want to support the technical debt (or if it's impossible to provide adequate backwards/forwards compatibility - e.g. a user authentication change which can't be safely rolled back), do not implement the feature
-     and wait for Step 7.
+     the technical debt that results from needing to provide adequate backwards
+     and forwards compatibility for the vendor prefixed implementation. The
+     implementation MUST support the flag disappearing and be generally safe for
+     users. Note that implementations early in the MSC review process may also be
+     required to provide backwards compatibility with earlier editions of the
+     proposal.
+   * If you don't want to support the technical debt (or if it's impossible to
+     provide adequate backwards/forwards compatibility - e.g. a user authentication
+     change which can't be safely rolled back), do not implement the feature and
+     wait for Step 7.
    * If at any point the idea changes, the feature flag should also change so
      that implementations can adapt as needed.
 3. In parallel, or ahead of implementation, open an MSC and solicit review.
@@ -44,7 +48,8 @@ The new process, from start to finish, is proposed as:
 9. A transition period of about 2 months starts immediately after the spec release, before
    implementations start to loudly encourage other implementations to switch to stable
    endpoints. For example, the Synapse team should start asking the Riot team to
-   support the stable endpoints (as per Step 8) 2 months after the spec release if they haven't already.
+   support the stable endpoints (as per Step 8) 2 months after the spec release if they
+   haven't already.
 
 It's worth repeating that this process generally only applies if the implementation
 wants to ship the feature ahead of the spec being available. By doing so, it takes
