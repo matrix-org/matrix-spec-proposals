@@ -24,7 +24,9 @@ The new process, from start to finish, is proposed as:
      can no longer assume that because its feature-specific endpoint exists that
      any other endpoint will exist in the same unstable namespace.
    * When using an unstable feature flag, they MUST include a vendor prefix.
-     This kind of flag shows up in `/versions`. Eg: `com.example.new_login`.
+     This kind of flag shows up in `/versions` as, for example, `com.example.new_login`.
+     This flag should only be created if the client needs to be sure that the
+     server supports the feature.
    * You can ship the feature at *any* time, so long as you are able to accept
      the technical debt that results from needing to provide adequate backwards
      and forwards compatibility for the vendor prefixed implementation. The
