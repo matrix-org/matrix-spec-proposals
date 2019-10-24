@@ -22,35 +22,35 @@ The new process, from start to finish, is proposed as:
    * When using an unstable feature flag, they MUST include a vendor prefix.
      This kind of flag shows up in `/versions`. Eg: `com.example.new_login`.
    * You can ship the feature at *any* time, so long as you are able to accept
-     the technical debt. The implementation MUST support the flag disappearing
+     the technical debt that results from needing to provide adequate backwards and forwards compatibility for the vendor prefixed implementation. The implementation MUST support the flag disappearing
      and be generally safe for users. Note that implementations early in the MSC
      review process may also be required to provide backwards compatibility with
      earlier editions of the proposal.
-   * If you don't/can't support the technical debt, do not implement the feature
+   * If you don't want to support the technical debt (or if it's impossible to provide adequate backwards/forwards compatibility - e.g. a user authentication change which can't be safely rolled back), do not implement the feature
      and wait for Step 7.
    * If at any point the idea changes, the feature flag should also change so
      that implementations can adapt as needed.
 3. In parallel, or ahead of implementation, open an MSC and solicit review.
-4. Before an FCP (Final Comment Period) can be called, the Spec Core Team will
+4. Before a FCP (Final Comment Period) can be called, the Spec Core Team will
    require that evidence to prove the MSC works be presented. A typical example
    of this is an implementation of the MSC (ie: Step 2).
 5. FCP is gone through, and assuming nothing is flagged the MSC lands.
 6. A spec PR is written to incorporate the changes into Matrix.
 7. A spec release happens.
-8. Implementations switch to using stable prefixes (ie: `/r0`) if the server
+8. Implementations switch to using stable prefixes (e.g.: `/r0`) if the server
    supports the specification version released. If the server doesn't advertise
    the specification version, but does have the feature flag, unstable prefixes
    should still be used.
-9. A transition period of about 2 months since the spec release happens before
-   implementations start to encourage other implementations to switch to stable
+9. A transition period of about 2 months starts immediately after the spec release, before
+   implementations start to loudly encourage other implementations to switch to stable
    endpoints. For example, the Synapse team should start asking the Riot team to
-   support the stable endpoints (as per Step 8) 2 months after the spec release.
+   support the stable endpoints (as per Step 8) 2 months after the spec release if they haven't already.
 
 It's worth repeating that this process generally only applies if the implementation
 wants to ship the feature ahead of the spec being available. By doing so, it takes
 on the risk that the spec/MSC may change and it must adapt. If the implementation
 is unable to take on that risk, or simply doesn't mind waiting, it should go through
-the normal spec process.
+the spec process without shipping an unstable implementation.
 
 To help MSCs get incorporated by implementations as stable features, the spec core
 team plans to release the specification more often. How often is undefined and is
@@ -62,7 +62,7 @@ To reiterate:
   includes NOT using stable endpoints post-FCP.
 * Implementations CAN ship features that are exposed by default to users before an
   MSC has been merged to the spec, provided they follow the process above.
-* Implementations SHOULD be wary of the technical debt they are incuring by moving
+* Implementations SHOULD be wary of the technical debt they are incurring by moving
   faster than the spec.
 
 To clarify:
