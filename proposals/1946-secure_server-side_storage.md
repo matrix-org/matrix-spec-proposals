@@ -50,7 +50,7 @@ A key with ID `abcdefg` is stored in `m.secret_storage.key.abcdefg`
 
 A key can be marked as the "default" key by setting the user's account_data
 with event type `m.secret_storage.default_key` to the ID of the key.  The
-default key will be used to encrypet all secrets that the user would expect to
+default key will be used to encrypt all secrets that the user would expect to
 be available on all their clients.  Unless the user specifies otherwise,
 clients will try to use the default key to decrypt secrets.
 
