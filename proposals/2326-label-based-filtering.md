@@ -8,11 +8,12 @@ navigate.
 ## Context
 
 We already have the concept of 'Replies' to define which messages are
-responses to which, which MSC1849 proposes extending into a generic mechanism
-for defining threads which could (in future) be paginated both depth-wise and
-breadth-wise.  Meanwhile, MSC1198 is an alternate proposal for threading,
-which separates conversations into high-level "swim lanes" with a new `POST
-/rooms/{roomId}/thread` API.
+responses to which, which [MSC1849](https://github.com/matrix-org/matrix-doc/pull/1849)
+proposes extending into a generic mechanism for defining threads which could
+(in future) be paginated both depth-wise and breadth-wise.  Meanwhile,
+[MSC1198](https://github.com/matrix-org/matrix-doc/issues/1198) is an alternate
+proposal for threading, which separates conversations into high-level "swim
+lanes" with a new `POST /rooms/{roomId}/thread` API.
 
 However, fully generic threading (which could be used to implement forum or
 email style semantics) runs a risk of being overly complicated to specify and
