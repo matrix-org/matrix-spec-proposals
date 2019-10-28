@@ -129,7 +129,7 @@ results in 0, and ensure that the total length of the decoded string
 is 35 bytes.  Clients must then remove the first two bytes and the last byte,
 and use the resulting string as the private key to decrypt backups.
 
-#### Enconding the recovery key for server-side storage via MSC1946
+#### Encoding the recovery key for server-side storage via MSC1946
 
 If MSC1946 is used to store the key on the server, it must be stored using the
 `account_data` type `m.megolm_backup.v1`.
