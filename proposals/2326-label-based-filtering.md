@@ -67,7 +67,17 @@ labels to include or exclude in the given filter.
 
 In encrypted events, the string used as the key in the map is a SHA256 hash of a
 contatenation of the text label and the ID of the room the event is being sent
-to. Once encrypted by the client, the resulting `m.room.encrypted` event's
+to, i.e. `label_key = SHA256(label_text + room_id)`.
+
+The reason behind using a hash built from the text label and the ID of the room
+here instead of e.g. a random opaque string or a peppered hash is to maintain
+consistency of the key without having access to the entire history of the room
+or exposing the actual text of the label to the server, so that e.g. a new
+client joining the room would be able to use the same key for the same label as
+any other client. See the ["Alternative solutions"](#alternate-solutions) for
+more information on this point.
+
+Once encrypted by the client, the resulting `m.room.encrypted` event's
 content contains a `m.labels_hashes` property which is an array of these hashes.
 
 When filtering events based on their label(s), clients are expected to use the
@@ -92,7 +102,15 @@ Consider a label `#fun` on a message sent to a room which ID is
 ```
 
 `3204de89c747346393ea5645608d79b8127f96c70943ae55730c3f13aa72f20a` is the SHA256
-hash of the string `#fun!someroom:example.com`.
+hash of the string `#fun!someroom:example.com`. Here's an example code
+(JavaScript) to compute it:
+
+```javascript
+label_key_unhashed = "#fun" + "!someroom:example.com"
+hash = crypto.createHash('sha256');
+hash.write(label_key_unhashed);
+label_key = hash.digest("hex"); // 3204de89c747346393ea5645608d79b8127f96c70943ae55730c3f13aa72f20a
+```
 
 Once encrypted, the event would become:
 
