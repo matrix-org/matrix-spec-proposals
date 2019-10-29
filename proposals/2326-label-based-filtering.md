@@ -178,7 +178,8 @@ downsides as described above.
 ## Unstable prefix
 
 Unstable implementations should hook up `org.matrix.labels` rather than
-`m.labels`. When defining filters, they should also use `org.matrix.labels` and
+`m.labels`, and `org.matrix.labels_hashes` rather than `m.labels_hashes`. When
+defining filters, they should also use `org.matrix.labels` and
 `org.matrix.not_labels` in the `EventFilter` object.
 
 Additionally, servers implementing this feature should advertise that they do so
