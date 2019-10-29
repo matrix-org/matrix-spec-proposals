@@ -219,11 +219,8 @@ paths:
       description: |-
         The homeserver must check that the given email address is **not**
         already associated with an account on this homeserver. The homeserver
-        has the choice of validating the email address itself, or proxying the
-        request to the ``/validate/email/requestToken`` Identity Service API. The
-        request should be proxied to the domain that is sent by the client in
-        the ``id_server``. It is imperative that the homeserver keep a list of
-        trusted Identity Servers and only proxies to those it trusts.
+        should validate the email itself, either by sending a validation email
+        itself or by using a service it has control over.
       operationId: requestTokenToRegisterEmail
       parameters:
         - in: body
@@ -272,11 +269,8 @@ paths:
       description: |-
         The homeserver must check that the given phone number is **not**
         already associated with an account on this homeserver. The homeserver
-        has the choice of validating the phone number itself, or proxying the
-        request to the ``/validate/msisdn/requestToken`` Identity Service API. The
-        request should be proxied to the domain that is sent by the client in
-        the ``id_server``. It is imperative that the homeserver keep a list of
-        trusted Identity Servers and only proxies to those it trusts.
+        should validate the phone number itself, either by sending a validation
+        message itself or by using a service it has control over.
       operationId: requestTokenToRegisterMSISDN
       parameters:
         - in: body
@@ -388,12 +382,8 @@ paths:
         email to the given address prompting the user to create an account.
         ``M_THREEPID_IN_USE`` may not be returned.
 
-        The homeserver has the choice of validating the email address itself,
-        or proxying the request to the ``/validate/email/requestToken``
-        Identity Service API. The request should be proxied to the domain that
-        is sent by the client in the ``id_server``. It is imperative that the
-        homeserver keep a list of trusted Identity Servers and only proxies to
-        those that it trusts.
+        The homeserver should validate the email itself, either by sending a
+        validation email itself or by using a service it has control over.
 
 
         .. |/register/email/requestToken| replace:: ``/register/email/requestToken``
@@ -451,12 +441,8 @@ paths:
         to the given phone number prompting the user to create an account.
         ``M_THREEPID_IN_USE`` may not be returned.
 
-        The homeserver has the choice of validating the phone number itself, or
-        proxying the request to the ``/validate/msisdn/requestToken`` Identity
-        Service API. The request should be proxied to the domain that is sent
-        by the client in the ``id_server``. It is imperative that the
-        homeserver keep a list of trusted Identity Servers and only proxies to
-        those that it trusts.
+        The homeserver should validate the phone number itself, either by sending a
+        validation message itself or by using a service it has control over.
 
         .. |/register/msisdn/requestToken| replace:: ``/register/msisdn/requestToken``
 
