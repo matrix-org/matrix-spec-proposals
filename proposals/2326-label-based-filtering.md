@@ -149,6 +149,32 @@ some kind of hash, it makes it much more expensive to do because it would mean
 maintaining one rainbow table for each encrypted room it's in, which would
 probably make it not worth the trouble.
 
+## Alternative solutions
+
+Instead of using hashes to identify labels in encrypted messages, using random
+opaque strings was also considered. Bearing in mind that we need to be able to
+use the label identifiers to filter the history of the room server-side (because
+we're not expecting clients to know about the whole history of the room, see my
+first point above), this solution had the following downsides, all originating
+from the fact that nothing would prevent 1000 clients from using each a
+different identifier:
+
+* filtering would have serious performances issues in E2EE rooms, as the server
+  would need to return all events it knows about which label identifier is any
+  of the 1000 identifiers provided by the client, which is quite expensive to
+  do.
+
+* it would be impossible for a filtered `/message` (or `/sync`) request to
+  include every event matching the desired label because we can't expect a
+  client to know about every identifier that has been used in the whole history
+  of the room, or about the fact that another client might suddenly decide to
+  use another identifier for the same label text, and include those identifiers
+  in its filtered request.
+
+Another proposed solution would be to use peppered hashes, and to store the
+pepper in the encrypted event. However, this solution would have the same
+downsides as described above.
+
 ## Unstable prefix
 
 Unstable implementations should hook up `org.matrix.labels` rather than
