@@ -74,7 +74,7 @@ here instead of e.g. a random opaque string or a peppered hash is to maintain
 consistency of the key without having access to the entire history of the room
 or exposing the actual text of the label to the server, so that e.g. a new
 client joining the room would be able to use the same key for the same label as
-any other client. See the ["Alternative solutions"](#alternate-solutions) for
+any other client. See the ["Alternative solutions"](#alternative-solutions) for
 more information on this point.
 
 Once encrypted by the client, the resulting `m.room.encrypted` event's
