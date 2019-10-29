@@ -172,10 +172,9 @@ probably make it not worth the trouble.
 Instead of using hashes to identify labels in encrypted messages, using random
 opaque strings was also considered. Bearing in mind that we need to be able to
 use the label identifiers to filter the history of the room server-side (because
-we're not expecting clients to know about the whole history of the room, see my
-first point above), this solution had the following downsides, all originating
-from the fact that nothing would prevent 1000 clients from using each a
-different identifier:
+we're not expecting clients to know about the whole history of the room), this
+solution had the following downsides, all originating from the fact that nothing
+would prevent 1000 clients from using each a different identifier:
 
 * filtering would have serious performances issues in E2EE rooms, as the server
   would need to return all events it knows about which label identifier is any
