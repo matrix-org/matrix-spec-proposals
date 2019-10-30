@@ -29,14 +29,12 @@ functionality.
 ## Proposal
 
 We let users specify an optional `m.labels` field onto the events. This field
-maps key strings to freeform text labels:
+lists freeform text labels:
 
 ```json
 {
   // ...
-  "m.labels": {
-    "somekey": "somelabel"
-  }
+  "m.labels": [ "somelabel" ]
 }
 ```
 
@@ -65,9 +63,10 @@ labels to include or exclude in the given filter.
 
 ### Encrypted rooms
 
-In encrypted events, the string used as the key in the map is a SHA256 hash of a
+In encrypted rooms, the `m.label` field of `m.room.encrypted` events contains,
+for each label of the event that's being encrypted, a SHA256 hash of a
 contatenation of the text label and the ID of the room the event is being sent
-to, i.e. `label_key = SHA256(label_text + room_id)`.
+to, i.e. `hash = SHA256(label_text + room_id)`.
 
 The reason behind using a hash built from the text label and the ID of the room
 here instead of e.g. a random opaque string or a peppered hash is to maintain
@@ -76,9 +75,6 @@ or exposing the actual text of the label to the server, so that e.g. a new
 client joining the room would be able to use the same key for the same label as
 any other client. See the ["Alternative solutions"](#alternative-solutions) for
 more information on this point.
-
-Once encrypted by the client, the resulting `m.room.encrypted` event's
-content contains a `m.labels_hashes` property which is an array of these hashes.
 
 When filtering events based on their label(s), clients are expected to use the
 hash of the label(s) to filter in or out instead of the actual label text.
@@ -94,9 +90,7 @@ Consider a label `#fun` on a message sent to a room which ID is
   "content": {
     "body": "who wants to go down the pub?",
     "msgtype": "m.text",
-    "m.labels": {
-      "3204de89c747346393ea5645608d79b8127f96c70943ae55730c3f13aa72f20a": "#fun"
-    }
+    "m.labels": [ "#fun" ]
   }
 }
 ```
@@ -123,34 +117,9 @@ Once encrypted, the event would become:
     "device_id": "SOLZHNGTZT",
     "sender_key": "FRlkQA1enABuOH4xipzJJ/oD8fxiQHj6jrAyyrvzSTY",
     "session_id": "JPWczbhnAivenK3qRwqLLBQu4W13fz1lqQpXDlpZzCg",
-    "m.labels_hashes": [
+    "m.labels": [
       "3204de89c747346393ea5645608d79b8127f96c70943ae55730c3f13aa72f20a"
     ]
-  }
-}
-```
-
-### Unencrypted rooms
-
-In unencrypted rooms, the string to use as a key does not matter (as this format
-is only kept for consistency with events sent in encrypted rooms) and clients
-are free to use any non-empty string they wish (as long as it's unique per label
-in the event).
-
-When filtering events based on their label(s), clients are expected to use the
-actual label text instead of the string key.
-
-#### Example
-
-```json
-{
-  "type": "m.room.message",
-  "content": {
-    "body": "who wants to go down the pub?",
-    "msgtype": "m.text",
-    "m.labels": {
-      "somekey": "#fun"
-    }
   }
 }
 ```
@@ -195,8 +164,7 @@ downsides as described above.
 ## Unstable prefix
 
 Unstable implementations should hook up `org.matrix.labels` rather than
-`m.labels`, and `org.matrix.labels_hashes` rather than `m.labels_hashes`. When
-defining filters, they should also use `org.matrix.labels` and
+`m.labels`. When defining filters, they should also use `org.matrix.labels` and
 `org.matrix.not_labels` in the `EventFilter` object.
 
 Additionally, servers implementing this feature should advertise that they do so
