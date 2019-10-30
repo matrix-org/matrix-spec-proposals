@@ -38,6 +38,9 @@ lists freeform text labels:
 }
 ```
 
+The labels are expected to be insensitive to case, therefore clients are
+expected to lowercase them before sending them to servers.
+
 Labels which are prefixed with # are expected to be user-visible and exposed to
 the user by clients as a hashtag, letting the user filter their current room by
 the various hashtags present within it. Labels which are not prefixed with # are
