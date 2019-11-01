@@ -10,10 +10,10 @@ If one knows the room ID and an event ID, `/_matrix/federation/v1/state/{roomId}
 
 ## Proposal
 
-Add a new v2 state API that returns the server's present auth chain and state PDUs if an event ID is not provided, as well as specifying the room version to ease the parsing of the given events.
+Make the `eventId` flag to `/v1/state/{roomId}` optional, and additionally return the room version to ease the parsing of the given events.
 
 ```
-GET /_matrix/federation/v2/state/{roomId}
+GET /_matrix/federation/v1/state/{roomId}
 
 {
   "room_version": "3",
@@ -41,7 +41,7 @@ GET /_matrix/federation/v2/state/{roomId}
 This requires the following changes to the existing API:
 
 - The "event_id" query parameter's definition changes to "Optional. An event ID in the room to retrieve the state at. If this is not provided, the results are the receiving server's latest current state."
-- "room_version" is added to the response, defined as "Type: string. Required. The version of the room that the state was queried of."
+- "room_version" is added to the response, defined as "Type: string. Optional, but required if event_id was not given. The version of the room that the state was queried of."
 
 ## Potential issues
 
