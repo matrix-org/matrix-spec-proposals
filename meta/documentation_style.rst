@@ -8,10 +8,7 @@ in.
 Format
 ------
 
-We use restructured text throughout all the documentation. You should NOT use
-markdown (github-flavored or otherwise). This format was chosen partly because
-Sphinx only supports RST.
-
+Documentation is written either in github-flavored markdown or RST.
 
 Sections
 --------
