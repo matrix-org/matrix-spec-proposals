@@ -164,7 +164,8 @@ verification.
 ## Potential issues
 
 If a user wants to verify their own device, this will require the creation of a
-Direct Messaging room with themselves.
+Direct Messaging room with themselves.  Instead, clients may use the current
+`to_device` messages for verifying the user's other devices.
 
 Direct Messaging rooms could have end-to-end encryption enabled, and some
 clients can be configured to only send decryption keys to verified devices.
