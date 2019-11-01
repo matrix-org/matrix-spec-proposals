@@ -19,7 +19,7 @@ MSC1680 is presented below.
 
 ## Proposal
 
-Each user has three sets of key pairs:
+Each user has three key pairs:
 
 - a *master* cross-signing key pair that is used to identify themselves and to
   sign their other cross-signing keys,
@@ -29,7 +29,7 @@ Each user has three sets of key pairs:
 When one user (e.g. Alice) verifies another user's (Bob's) identity, Alice will
 sign Bob's master key with her user-signing key. (This will mean that
 verification methods will need to be modified to pass along the public part of
-the master key.) Alice's device will trust Bob's device if:
+Bob's master key.) Alice's device will trust Bob's device if:
 
 - Alice's device is using a master key that has signed her user-signing key,
 - Alice's user-signing key has signed Bob's master key,
@@ -56,7 +56,7 @@ clients should still make efforts to store the private part securely, or not
 store it at all.  Clients will need to balance the security of the keys with
 the usability of signing users and devices when performing key verification.
 
-The private halves of a user's cross-signing keys be stored encrypted on the
+The private halves of a user's cross-signing keys may be stored encrypted on the
 server so that they may be retrieved by new devices, or shared between devices
 using [MSC1946](https://github.com/matrix-org/matrix-doc/pull/1946).  When
 handled in this way, the keys must be base64-encoded, and use the names
