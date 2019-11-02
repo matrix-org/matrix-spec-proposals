@@ -1,8 +1,8 @@
 # MSC2313: Ban lists
 
-Matrix is an open network and anyone can participate in it.  As a result, a
+Matrix is an open network and anyone can participate in it. As a result, a
 very wide range of content exists, and it is important to empower users to be
-able to select which content they wish to see, and wish they to block.  By
+able to select which content they wish to see, and which they wish to block. By
 extension, room moderators and server admins should also be able to select
 which content they do not wish to host in their rooms and servers.
 
@@ -11,7 +11,7 @@ should not be deciding what content is undesirable for any particular entity and
 should instead be empowering those entities to make their own decisions. This
 proposal introduces ban lists as a basic mechanism to help users manage this
 process, by providing a way of modelling sets of servers, rooms and users
-which can then be used to make filtering decisions.  This proposal makes no
+which can then be used to make filtering decisions. This proposal makes no
 attempt at interpreting the model and actually making those decisions however.
 
 To reaffirm: where this proposal says that some content is undesirable it does not intend to
@@ -22,9 +22,9 @@ use a ban list which prevents birthday cake from coming across their field of vi
 
 ## Proposal
 
-Ban lists are represented in rooms, allowing for structures and concepts to be reused without
+Ban lists are stored as room state events, allowing for structures and concepts to be reused without
 defining a new room version. This proposal does not make any restrictions on how the rooms
-are configured, just that the state events described here are represented in the room. For
+are configured, just that the state events described here are represented in a room. For
 example, a room which is invite only is just as valid as a room that is not: the important
 details are specific state events and not the accessibility, retention, or other aspects
 of the room.
@@ -33,7 +33,7 @@ Ban lists are stored as `m.room.rule.<kind>` state events, with state keys being
 assigned by the sender. The `<kind>` is currently one of `user`, `room`, and `server`. Three
 fields are defined in `content`:
 
-* `entity` (`string`) - **Required.** The entity/entities affected. Simple globs are supported
+* `entity` (`string`) - **Required.** The entity/entities the recommendation applies to. Simple globs are supported
   for defining entities (`*` and `?` as wildcards, just like `m.room.server_acl`).
 * `recommendation` (`enum`) - **Required.** The action subscribed entities should take against
   the described entity. Currently only `m.ban` is defined (see below).
@@ -103,7 +103,8 @@ a simple implementation is as follows:
   * Applied to a room: The user should be banned from the room (either on sight or immediately).
   * Applied to a server: The user should not be allowed to send invites to users on the server.
 * Is a room...
-  * Applied to a user: The user should leave the room and not join it (MSC2270-style ignore).
+  * Applied to a user: The user should leave the room and not join it
+    ([MSC2270](https://github.com/matrix-org/matrix-doc/pull/2270)-style ignore).
   * Applied to a room: No-op because a room cannot ban itself.
   * Applied to a server: The server should prevent users from joining the room and from receiving
     invites to it (similar to the `shutdown_room` API in Synapse).
