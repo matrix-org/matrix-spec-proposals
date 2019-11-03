@@ -345,9 +345,9 @@ An example request would be::
  GET /_matrix/client/%CLIENT_MAJOR_VERSION%/account/whoami?user_id=@_irc_user:example.org
  Authorization: Bearer YourApplicationServiceTokenHere
 
-.. TODO-TravisR: Temporarily take out timestamp massaging while we're releasing r0.
+.. TODO-TravisR: Temporarily take out timestamp messaging while we're releasing r0.
    See https://github.com/matrix-org/matrix-doc/issues/1585
-.. Timestamp massaging
+.. Timestamp messaging
    +++++++++++++++++++
    The application service may want to inject events at a certain time (reflecting
    the time on the network they are tracking e.g. irc, xmpp). Application services
@@ -367,7 +367,7 @@ An example request would be::
 
     Content: The event to send, as per the Client-Server API.
 
-Timestamp massaging
+Timestamp messaging
 +++++++++++++++++++
 
 Previous drafts of the Application Service API permitted application services
