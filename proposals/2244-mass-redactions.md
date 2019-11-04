@@ -17,6 +17,17 @@ It would be easiest to do this before MSC2174 is written into the spec, as then
 only one migration would be needed: from an event-level redacts string to a
 content-level redacts array.
 
+### Backwards compatibility
+There is no easy way to stay fully compatible with *older* clients, so the
+proposed solution is to not support them. In order to not break old clients
+completely, servers should still add a `redacts` string containing one of the
+redacted event IDs to the top level of `m.room.redaction` events in *newer*
+room versions when serving such events over the Client-Server API.
+
+Like MSC2174, for improved compatibility with *newer* clients, servers should
+add a `redacts` array to the `content` of `m.room.redaction` events in *older*
+room versions when serving such events over the Client-Server API.
+
 ### Number of redactions
 Room v4+ event IDs are 44 bytes long, which means the federation event size
 limit would cap a single redaction event at a bit less than 1500 targets.
