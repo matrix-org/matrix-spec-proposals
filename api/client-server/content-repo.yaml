@@ -340,6 +340,14 @@ paths:
   "/preview_url":
     get:
       summary: "Get information about a URL for a client"
+      description: |-
+        Get information about a URL for the client. Typically this is called when a
+        client sees a URL in a message and wants to render a preview for the user.
+
+        .. Note::
+          Clients should consider avoiding this endpoint for URLs posted in encrypted
+          rooms.
+
       operationId: getUrlPreview
       produces: ["application/json"]
       security:
