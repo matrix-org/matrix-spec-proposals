@@ -27,7 +27,7 @@ the following fields to any event's content:
   or an integer in range [0, 2<sup>53</sup>-1]. If absent, or null, this
   behaviour does not take effect.
 
- m.self_destruct_after:
+`m.self_destruct_after`:
   the timestamp in milliseconds since the epoch after which participating
   servers should redact this event on behalf of the sender. Must be null
   or an integer in range [0, 2<sup>53</sup>-1]. If absent, or null, this
