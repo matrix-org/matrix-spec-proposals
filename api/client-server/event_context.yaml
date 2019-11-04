@@ -59,6 +59,17 @@ paths:
           description: |-
             The maximum number of events to return. Default: 10.
           x-example: 3
+        - in: query
+          name: filter
+          type: string
+          description: |-
+            The ID of a filter created using the filter API or a filter JSON
+            object encoded as a string. The server will detect whether it is
+            an ID or a JSON object by whether the first character is a ``"{"``
+            open brace.
+
+            See `Filtering <#filtering>`_ for more information.
+          x-example: "66696p746572"
       responses:
         200:
           description: The events and state surrounding the requested event.
