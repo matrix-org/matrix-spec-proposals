@@ -80,6 +80,10 @@ client belongs to, and what state the verification is in.  For example:
   waiting for the request to be accepted, and the sending user's other clients
   can indicate the that a request was initiated on a different device.
 
+Clients may choose to display or not to display events of any other type that
+reference the original request event; but it must not have any effect on the
+verification itself.
+
 #### Accepting a key verification
 
 To accept a key verification, Bob will send an `m.key.verification.start` event
