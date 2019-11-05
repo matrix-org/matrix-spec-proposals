@@ -346,7 +346,9 @@ paths:
 
         .. Note::
           Clients should consider avoiding this endpoint for URLs posted in encrypted
-          rooms.
+          rooms. Encrypted rooms often contain more sensitive information the users
+          do not want to share with the homeserver, and this can mean that the URLs
+          being shared should also not be shared with the homeserver.
 
       operationId: getUrlPreview
       produces: ["application/json"]
