@@ -540,7 +540,7 @@ some other reason. Versions can switch between stable and unstable periodically
 for a variety of reasons, including discovered security vulnerabilities and age.
 
 Clients should not ask room administrators to upgrade their rooms if the room is
-running a stable version. Servers SHOULD use room version 4 as the default room
+running a stable version. Servers SHOULD use room version 5 as the default room
 version when creating new rooms.
 
 The available room versions are:
