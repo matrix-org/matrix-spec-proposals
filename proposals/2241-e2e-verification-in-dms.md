@@ -144,6 +144,11 @@ Clients should ignore events with an `m.relates_to` that have a `rel_type` of
 `m.reference` that refer to a verification where it is not the requester
 nor the accepter.
 
+Clients should not redact or edit verification messages.  A client may ignore
+redactions or edits of key verification messages, or may cancel the
+verification with a `code` of `m.unexpected_message` when it receives a
+redaction or edit.
+
 ### SAS verification
 
 The messages used in SAS verification are the same as those currently defined,
