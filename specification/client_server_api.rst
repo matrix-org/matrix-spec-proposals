@@ -1042,6 +1042,9 @@ wishes to canonicalise the phone number, then it can use the
     "phone": "<The phone number>"
   }
 
+The ``country`` is the two-letter uppercase ISO-3166-1 alpha-2 country code
+that the number in ``phone`` should be parsed as if it were dialled from.
+
 Login
 ~~~~~
 
