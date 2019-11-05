@@ -136,7 +136,8 @@ paths:
                     title: Joined Rooms
                     type: object
                     description: |-
-                      The rooms that the user has joined.
+                      The rooms that the user has joined, mapped as room ID to
+                      room information.
                     additionalProperties:
                       title: Joined Room
                       type: object
@@ -249,7 +250,8 @@ paths:
                     title: Invited Rooms
                     type: object
                     description: |-
-                      The rooms that the user has been invited to.
+                      The rooms that the user has been invited to, mapped as room ID to
+                      room information.
                     additionalProperties:
                       title: Invited Room
                       type: object
@@ -280,7 +282,8 @@ paths:
                     title: Left rooms
                     type: object
                     description: |-
-                      The rooms that the user has left or been banned from.
+                      The rooms that the user has left or been banned from, mapped as room ID to
+                      room information.
                     additionalProperties:
                       title: Left Room
                       type: object
