@@ -1,4 +1,4 @@
-### MSC XXXX: Bridge information state event
+### MSC 2346: Bridge information state event
 
 Many rooms across the matrix network are currently bridged into other networks, using our bridging API.
 However the specification does not contain a method to determine which networks are bridged into a given
