@@ -1,1 +1,0 @@
-Add ``/hash_details`` and a new ``/lookup`` endpoint for performing hashed association lookups.
