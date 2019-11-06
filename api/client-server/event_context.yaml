@@ -64,8 +64,10 @@ paths:
           type: string
           description: |-
             A JSON ``RoomEventFilter`` to filter the returned events with. The
-            filter may be applied before or/and after the ``limit`` parameter -
-            whichever the homeserver prefers.
+            filter is only applied to ``events_before``, ``events_after``, and
+            ``state``. It is not applied to the ``event`` itself. The filter may 
+            be applied before or/and after the ``limit`` parameter - whichever the 
+            homeserver prefers.
 
             See `Filtering <#filtering>`_ for more information.
           x-example: "66696p746572"
