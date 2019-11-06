@@ -1,3 +1,47 @@
+r0.6.0
+======
+
+Breaking Changes
+----------------
+
+- Add a required ``id_access_token`` to many places which require an ``id_server`` parameter. (`#2255 <https://github.com/matrix-org/matrix-doc/issues/2255>`_)
+
+
+New Endpoints
+-------------
+
+- Add ``POST /account/3pid/unbind`` for removing a 3PID from an identity server. (`#2282 <https://github.com/matrix-org/matrix-doc/issues/2282>`_)
+
+
+Backwards Compatible Changes
+----------------------------
+
+- Add ``M_USER_DEACTIVATED`` error code. (`#2234 <https://github.com/matrix-org/matrix-doc/issues/2234>`_)
+- Remove ``bind_msisdn`` and ``bind_email`` from ``/register`` now that the identity server's bind endpoint requires authentication. (`#2279 <https://github.com/matrix-org/matrix-doc/issues/2279>`_)
+- Add ``m.identity_server`` account data for tracking the user's preferred identity server. (`#2281 <https://github.com/matrix-org/matrix-doc/issues/2281>`_)
+- Deprecate ``id_server`` and make it optional in several places. (`#2310 <https://github.com/matrix-org/matrix-doc/issues/2310>`_)
+
+
+Spec Clarifications
+-------------------
+
+- Add missing format fields to ``m.room.message$m.notice`` schema. (`#2125 <https://github.com/matrix-org/matrix-doc/issues/2125>`_)
+- Remove "required" designation from the ``url`` field of certain ``m.room.message`` msgtypes. (`#2129 <https://github.com/matrix-org/matrix-doc/issues/2129>`_)
+- Fix various typos throughout the specification. (`#2131 <https://github.com/matrix-org/matrix-doc/issues/2131>`_, `#2136 <https://github.com/matrix-org/matrix-doc/issues/2136>`_, `#2148 <https://github.com/matrix-org/matrix-doc/issues/2148>`_, `#2215 <https://github.com/matrix-org/matrix-doc/issues/2215>`_)
+- Clarify the distinction between ``m.key.verification.start`` and its ``m.sas.v1`` variant. (`#2132 <https://github.com/matrix-org/matrix-doc/issues/2132>`_)
+- Fix link to Olm signing specification. (`#2133 <https://github.com/matrix-org/matrix-doc/issues/2133>`_)
+- Clarify the conditions for the ``.m.rule.room_one_to_one`` push rule. (`#2152 <https://github.com/matrix-org/matrix-doc/issues/2152>`_)
+- Clarify the encryption algorithms supported by the device of the device keys example. (`#2157 <https://github.com/matrix-org/matrix-doc/issues/2157>`_)
+- Clarify that ``/rooms/:roomId/event/:eventId`` returns a Matrix error. (`#2204 <https://github.com/matrix-org/matrix-doc/issues/2204>`_)
+- Add a missing ``state_key`` check on ``.m.rule.tombstone``. (`#2223 <https://github.com/matrix-org/matrix-doc/issues/2223>`_)
+- Fix the ``m.room_key_request`` ``action`` value, setting it from ``cancel_request`` to ``request_cancellation``. (`#2247 <https://github.com/matrix-org/matrix-doc/issues/2247>`_)
+- Clarify that the ``submit_url`` field is without authentication. (`#2341 <https://github.com/matrix-org/matrix-doc/issues/2341>`_)
+- Clarify the expected phone number format. (`#2342 <https://github.com/matrix-org/matrix-doc/issues/2342>`_)
+- Clarify that clients should consider not requesting URL previews in encrypted rooms. (`#2343 <https://github.com/matrix-org/matrix-doc/issues/2343>`_)
+- Add missing information on how filters are meant to work with ``/context``. (`#2344 <https://github.com/matrix-org/matrix-doc/issues/2344>`_)
+- Clarify what the keys are for rooms in ``/sync``. (`#2345 <https://github.com/matrix-org/matrix-doc/issues/2345>`_)
+
+
 r0.5.0
 ======
 
