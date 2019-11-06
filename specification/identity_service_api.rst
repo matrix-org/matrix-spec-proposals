@@ -51,6 +51,8 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/identity_service/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.3.0 <https://matrix.org/docs/spec/identity_service/r0.3.0.html>`_
+- `r0.2.1 <https://matrix.org/docs/spec/identity_service/r0.2.1.html>`_
 - `r0.2.0 <https://matrix.org/docs/spec/identity_service/r0.2.0.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/identity_service/r0.1.0.html>`_
 
