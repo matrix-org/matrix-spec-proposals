@@ -201,7 +201,7 @@ devices that it did not send an `m.secret.request` event to.
 
 Clients MUST ensure that they only share secrets with other devices that are
 allowed to see them.  For example, clients SHOULD only share secrets with
-devices that are verified and MAY prompt the user to confirm sharing the
+the user’s own devices that are verified and MAY prompt the user to confirm sharing the
 secret.
 
 If a feature allows secrets to be stored or shared, then for consistency it
