@@ -186,5 +186,5 @@ Unstable implementations should hook up `org.matrix.labels` rather than
 `org.matrix.not_labels` in the `EventFilter` object.
 
 Additionally, servers implementing this feature should advertise that they do so
-by exposing a `label_based_filtering` flag in the `unstable_features` part of
-the `/versions` response.
+by exposing a `org.matrix.label_based_filtering` flag in the `unstable_features`
+part of the `/versions` response.
