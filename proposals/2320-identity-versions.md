@@ -12,17 +12,15 @@ implemented by the identity server it's using (if there is one).
 
 ## Proposal
 
-This proposal extends the [`/_matrix/identity/v2`](https://matrix.org/docs/spec/identity_service/r0.2.1#get-matrix-identity-api-v1)
-endpoint's response by adding information about the supported versions of the
-identity server API and unstable features implemented by the server
-to it. Because the current response for this endpoint is an empty object
-(which is discarded by the client), the new response would look like:
+This proposal adds two endpoints to the identity server API.
+
+### `GET /_matrix/identity/versions`
+
+This endpoint serves information about the versions of the identity server API
+this identity server supports. Its response uses the following format:
 
 ```json
 {
-    "unstable_features": {
-        "casefold_email_addresses": true
-    },
     "versions": [
         "r0.1.0",
         "r0.2.0",
@@ -31,12 +29,26 @@ to it. Because the current response for this endpoint is an empty object
 }
 ```
 
-This response would follow the format of the [`/_matrix/client/versions`](https://matrix.org/docs/spec/client_server/r0.5.0#get-matrix-client-versions) endpoint.
+### `GET /_matrix/identity/unstable_features`
+
+This endpoint serves information about the unstable features, i.e. features
+specified in a MSC or an unstable version of the Matrix specification but not in
+a stable one, supported by the server. Its response uses the following format:
+
+```json
+{
+    "unstable_features": {
+        "org.matrix.casefold_email_addresses": true
+    }
+}
+```
 
 ## Alternative solutions
 
-An alternative solution to this issue would be to add a
-`/_matrix/identity/versions` endpoint to the identity server API.
-This would however add more complexity by adding a new endpoint whereas there's
-already an existing endpoint which seems relevant for handling this kind of
-information.
+Another solution which was considered was using the status check endpoint ([`GET
+/_matrix/api/v1`](https://matrix.org/docs/spec/identity_service/latest#get-matrix-identity-api-v1))
+to serve this information. This solution was discarded because it's using a
+versioned endpoint, which doesn't make sense to advertise the supported versions
+of the API to use, and this endpoint was serving both the supported versions and
+the supported unstable features, whereas it makes more sense to have each of
+these pieces of information served on a different endpoint.
