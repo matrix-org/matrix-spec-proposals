@@ -67,8 +67,8 @@ labels to include or exclude in the given filter.
 ### Encrypted rooms
 
 In encrypted rooms, the `m.label` field of `m.room.encrypted` events contains,
-for each label of the event that's being encrypted, a SHA256 hash of a
-contatenation of the text label and the ID of the room the event is being sent
+for each label of the event that's being encrypted, a SHA256 hash of the
+concatenation of the text label and the ID of the room the event is being sent
 to, i.e. `hash = SHA256(label_text + room_id)`.
 
 The reason behind using a hash built from the text label and the ID of the room
