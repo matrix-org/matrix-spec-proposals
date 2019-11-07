@@ -1,1 +1,0 @@
-Add ``POST /account/3pid/unbind`` for removing a 3PID from an identity server.
