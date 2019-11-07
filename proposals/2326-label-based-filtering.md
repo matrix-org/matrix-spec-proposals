@@ -164,6 +164,21 @@ Another proposed solution would be to use peppered hashes, and to store the
 pepper in the encrypted event. However, this solution would have the same
 downsides as described above.
 
+## Security considerations
+
+The proposed solution for encrypted rooms, despite being the only one we could
+think of when writing this proposal that would make filtering possible while
+obscuring the labels to some level, isn't ideal as it still allows servers to
+figure out labels by computing [rainbow
+tables](https://en.wikipedia.org/wiki/Rainbow_table).
+
+Because of this, clients might want to limit the use of this feature in
+encrypted rooms, for example by enabling it with an opt-in option in the
+settings, or showing a warning message to the users.
+
+It is likely that this solution will be replaced as part of a future proposal
+once a more fitting solution is found.
+
 ## Unstable prefix
 
 Unstable implementations should hook up `org.matrix.labels` rather than
