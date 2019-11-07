@@ -4,7 +4,7 @@ r0.6.0
 Breaking Changes
 ----------------
 
-- Add a required ``id_access_token`` to many places which require an ``id_server`` parameter. (`#2255 <https://github.com/matrix-org/matrix-doc/issues/2255>`_)
+- Add ``id_access_token`` as a required request parameter to a few endpoints which require an ``id_server`` parameter as part of `MSC2140 <https://github.com/matrix-org/matrix-doc/pull/2140>`_. (`#2255 <https://github.com/matrix-org/matrix-doc/issues/2255>`_)
 
 
 New Endpoints
