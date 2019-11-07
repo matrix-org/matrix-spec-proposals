@@ -1,3 +1,20 @@
+r0.3.0
+======
+
+New Endpoints
+-------------
+
+- Add ``/account``, ``/account/register``, and ``/account/logout`` to authenticate with the identity server. (`#2255 <https://github.com/matrix-org/matrix-doc/issues/2255>`_)
+- Add endpoints for accepting and handling terms of service. (`#2258 <https://github.com/matrix-org/matrix-doc/issues/2258>`_)
+- Add ``/hash_details`` and a new ``/lookup`` endpoint for performing hashed association lookups. (`#2287 <https://github.com/matrix-org/matrix-doc/issues/2287>`_)
+
+
+Backwards Compatible Changes
+----------------------------
+
+- Deprecate the v1 API in favour of an authenticated v2 API. (`#2254 <https://github.com/matrix-org/matrix-doc/issues/2254>`_)
+
+
 r0.2.1
 ======
 
