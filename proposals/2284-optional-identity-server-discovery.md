@@ -2,7 +2,9 @@
 
 Currently the specification requires that clients `FAIL_ERROR` (hard failure - do not continue)
 when the `.well-known` file for `m.identity_server` points to somewhere invalid or is invalid
-itself.
+itself. This can cause problems for clients if they either don't need an identity server to
+function (and are forced to validate it anyways) or the client ends up having to disable all
+their login UX because the identity server is misconfigured/down.
 
 This proposal aims to change that by allowing clients to make a conscious decision to continue
 with the invalid identity server configuration, provided the homeserver configuration is valid.
