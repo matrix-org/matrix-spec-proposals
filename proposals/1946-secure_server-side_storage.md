@@ -57,8 +57,9 @@ clients will try to use the default key to decrypt secrets.
 Clients MUST ensure that the key is trusted before using it to encrypt secrets.
 One way to do that is to have the client that creates the key sign the key
 description (as signed JSON) using the user's master cross-signing key.
-Another way to do that is to prompt the user to enter the passphrase and ensure
-that the generated private key correponds to the public key.
+Another way to do that is to prompt the user to enter the passphrase used to
+generate the encryption key and ensure that the generated private key
+corresponds to the public key.
 
 #### Secret storage
 
@@ -79,6 +80,8 @@ Example:
 
 Some secret is encrypted using keys with ID `key_id_1` and `key_id_2`:
 
+`org.example.some.secret`:
+
 ```json
 {
   "encrypted": {
@@ -92,6 +95,28 @@ Some secret is encrypted using keys with ID `key_id_1` and `key_id_2`:
       // ...
     }
   }
+}
+```
+
+and the key descriptions for the keys would be:
+
+`m.secret_storage.key.key_id_1`:
+
+```json
+{
+  "name": "Some key",
+  "algorithm": "m.secret_storage.v1.curve25519-aes-sha2",
+  // ... other properties according to algorithm
+}
+```
+
+`m.secret_storage.key.key_id_2`:
+
+```json
+{
+  "name": "Some other key",
+  "algorithm": "m.secret_storage.v1.curve25519-aes-sha2",
+  // ... other properties according to algorithm
 }
 ```
 
