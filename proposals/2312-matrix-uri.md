@@ -104,7 +104,7 @@ around MUST/SHOULD/MAY):
    1. User IDs (`@user:example.org`)
    1. Room IDs (`!roomid:example.org`)
    1. Room aliases (`#roomalias:example.org`)
-   1. Event IDs (`$eventid:example.org`)
+   1. Event IDs (`$arbitrary_eventid_with_or_without_serverpart`)
 1. The mapping MUST take into account that some identifiers
    (e.g. aliases) can have non-ASCII characters - reusing
    [RFC 3987](https://tools.ietf.org/html/rfc3987) is RECOMMENDED
@@ -194,36 +194,9 @@ Here's an example of a Matrix URI with an authority part
 (the authority part is `example.org:682` here):
 `matrix://example.org:682/roomid/Internal_Room_Id:example2.org`.
 
-The main purpose of the authority part,
-[as per RFC 3986](https://tools.ietf.org/html/rfc3986#section-3.2),
-is to identify the authority governing the namespace for the rest
-of the URI. This MSC reuses the RFC definitions for
-[`host`](https://tools.ietf.org/html/rfc3986#section-3.2.2) and
-[`port`](https://tools.ietf.org/html/rfc3986#section-3.2.3).
-RFC 3986 also includes provisions for user information -
-this MSC explicitly omits them. If providing a user identity
-in the authority part is found to be of value in some case,
-this can be addressed in a separate MSC.
-
-When a Matrix client needs to obtain the resource specified by a URI
-with an authority part, the client MUST,
-_instead of engaging the current user's homeserver connection_:
-1. resolve the homeserver (further referred to as authority server) using
-   [the standard process for server discovery](https://matrix.org/docs/spec/client_server/latest#server-discovery)
-   from the authority part;
-1. interrogate the resolved authority server using Matrix APIs in order
-   to get or interact with the resource encoded in the URI.
-
-Importantly, the authority part is _not_ intended for usage in routing
-over federation; rather, it is for cases when a given Matrix
-entity is not expected to be reachable through federation (such as
-unfederated rooms or non-public Matrix networks). Sending requests
-to the server resolved from the authority part means that the client
-should be, as the name implies, _authorised_ by the authority server
-to access the requested resource. That implies that the resource
-is either available to guests on the authority server, or the end user
-must be authenticated (and their access rights checked)
-on that server in order to access the resource.
+The authority part, as defined above, is reserved for future MSCs.
+Clients SHOULD NOT use data from the authority part other than for
+experimental or further research purposes.
 
 #### Path
 Unlike the very wide definition of path in RFC 3986, this MSC
@@ -241,7 +214,7 @@ of the URIs considered in this MSC do not need any sort of hierarchy,
 one case is standing out: as of now, events require rooms to be
 resolved so an event URI for `$eventid` in the room
 `!roomid:example2.org` would be
-`matrix:room/roomid:example2.org/event/eventid`.
+`matrix:roomid/roomid:example2.org/event/eventid`.
 
 This MSC defines the following type specifiers:
 `user` (user id, sigil `@`), `roomid` (room id, sigil `!`),
@@ -249,31 +222,16 @@ This MSC defines the following type specifiers:
 The type `group` (group/community id, sigil `+`) is reserved for future use.
 
 `id-without-sigil` is defined as the `string` part of Matrix
-[Common identifier format](https://matrix.org/docs/spec/appendices#common-identifier-format) with percent-encoded characters that are NEITHER
-unreserved, sub-delimiters, `:` nor `@`,
+[Common identifier format](https://matrix.org/docs/spec/appendices#common-identifier-format)
+with percent-encoded characters that are NEITHER unreserved, sub-delimiters, `:` nor `@`,
 [as per RFC 3986 rule for pchar](https://tools.ietf.org/html/rfc3986#appendix-A).
 This notably exempts `:` from percent-encoding but includes `/`.
 
-See subsections of the same section for details on each type of
-identifier.
-
-The rationale behind dropping sigils is two-fold:
-* (most important) Semantic and grammatic clashes with RFC.
-  `#` delimits a fragment; `@` delimits user information. Percent-encoding
-  these is not a reasonable option, given that the two are the most used sigils.
-* The namespace for sigils is extremely limited. Not that Matrix showed
-  any tendency to produce plenty of various classes of objects but
-  that cannot be ruled out; so rather then hit the wall together
-  with the institute of sigils, this MSC proposes
-  a more extensible solution from the outset.
+See the rationale behind dropping sigils and the respective up/downsides in
+"Discussion points and tradeoffs" below.
   
-Clients MUST resolve all Matrix entities that they support.
-
 Further MSCs may introduce navigation to more top-level as well as
-non-top-level objects; e.g., one could conceive a URI mapping of avatars
-in the form of
-`matrix:user/uid:matrix.org/avatar/room:matrix.org`
-(a user’s avatar for a given room).
+non-top-level objects; see "Further evolution" for some ideas.
 
 #### Query
 
@@ -284,40 +242,43 @@ may add to this as long as RFC 3986 is followed.
 ```text
 query = query-element *( “&” query-element )
 query-element = action / routing
-action = “action=join”
+action = “action=" ( "join" / "chat" )
 routing = “via=” authority
 ```
-The join action can only be used with a URI resolving to a room; applications
-MUST ignore it if found and MUST NOT generate it for other Matrix resources.
-This action means that rather than just navigate to the room
-client applications SHOULD attempt to join it using the standard CS API means.
-Client applications SHOULD ask for user confirmation before joining if the user
-is not a joined member in the room nor in its immediate
-[successor or predecessor](https://matrix.org/docs/spec/client_server/latest#module-room-upgrades).
 
-Client applications SHOULD NOT append `action=join` to room URIs and generally
-SHOULD NOT push consumers into joining rooms unless the user's intention
-to join the room can be assumed from the context of the URI. A link
-`<a href="matrix:room/us:example.org?action=join">Join our room</a>` is
-a poorer choice for a webpage compared to
-`<a href="matrix:room/us:example.org">Our room</a>`; on the other hand,
-a message in an obsolete, especially private, room saying
-"We have moved our room elsewhere,
-`<a href="matrix:room/us:example.org?action=join">click to join</a>`"
-is safe to assume that, being in the current room, a user would want to join
-the new room and that there's not much sense in exploring the new room
-without joining it anyway.
+The `action` query item is used in contexts where, on top of identifying
+the Matrix entity, a certain action is requested on it. This proposal
+describes two possible actions:
+* `action=join` is only valid in a URI resolving to a Matrix room;
+  applications MUST ignore it if found in other contexts and MUST NOT generate
+  it for other Matrix resources. This action means that client applications
+  SHOULD attempt to join it using the standard CS API means. Client
+  applications SHOULD ask for user confirmation before joining if the user
+  is neither a joined member of the room nor of its immediate
+  [successor or predecessor](https://matrix.org/docs/spec/client_server/latest#module-room-upgrades).
+* `action=chat` is only valid in a URI resolving to a Matrix user;
+  applications MUST ignore it if found in other contexts and MUST NOT generate
+  it for other Matrix resources. A URI with this action that a client application
+  SHOULD open a direct chat window with the user; clients supporting
+  [canonical direct chats](https://github.com/matrix-org/matrix-doc/pull/2199)
+  SHOULD open the canonical direct chat.
+  
+For both actions, where applicable, client applications SHOULD ask for user
+confirmation or at least make the user aware if the action leads
+to joining or creating a new room rather than switching to a prior one.
 
-The routing query is only allowed with URIs that have path starting with
-`roomid/` to indicate servers that are likely involved in the room (cf.
+The routing query (`via=`) indicates servers that are likely involved in
+the room (see also
 [the feature of matrix.to](https://matrix.org/docs/spec/appendices#routing)).
-For other URIs it SHOULD be ignored and clients SHOULD NOT generate it. Note
-that `authority` here only represents the server grammar as defined in
-the respective section above; it doesn't need to coincide with the actual
-authority server if it's also supplied in the URI.
+It is proposed to use the routing query to be used not only for resolving
+room ids in a public federation but also when a URI refers to a resource in
+a non-public Matrix network (see the question about closed federations in
+"Discussion points and tradeoffs"). Note that `authority` in the definition
+above is only a part of the grammar as defined in the respective section;
+it is not proposed here to generate or read the authority part of the URI.
 
 
-### URI semantics
+### URI semantics and parsing algorithm
 
 The main purpose of a Matrix URI is accessing the resource specified by the
 identifier, and the primary action is loading the contents of a document
@@ -325,14 +286,79 @@ corresponding to a given resource. This MSC defines the "default" action
 that a client application SHOULD perform when the user activates
 (e.g. clicks on) a URI; further MSCs may introduce additional actions enabled
 either by passing an `action` value in the query part, or by other means.
+
+The reference algorithm of parsing a Matrix URI follows. Note that, although
+clients are encouraged to use lower-case strings in their URIs, all string
+comparisons are case-INsensitive. 
+
+1. Parse the URI into main components (`scheme name`, `authority`, `path`,
+   `query`, and `fragment`), decoding special or international characters
+   as directed by [RFC 3986](https://tools.ietf.org/html/rfc3986) and
+   (for IRIs) [RFC 3987](https://tools.ietf.org/html/rfc3987). Authors are
+   strongly RECOMMENDED to find an existing implementation of that step for
+   their language and SDK, rather than implement it from scratch based on RFCs.
+
+1. Check that `scheme name` is exactly `matrix`, case-insensitive. If
+   the scheme name doesn't match, exit parsing: this is not Matrix URI.
+
+1. Split the `path` into segments separated by `/` character; several
+   subsequent `/` characters delimit empty segments, as advised by RFC 3986.
+
+1. Check that the URI contains either 2 or 4 segments; if it's not the case,
+   fail parsing; the Matrix URI is invalid.
+
+1. To construct the top-level (primary) Matrix identifier:
+   
+   a. Pick the leftmost segment of `path` until `/` (path segment) and match
+      it against the following list to produce `sigil-1`:
+      - `user` -> `@`
+      - `roomid` -> `!`
+      - `room` -> `#`
+      - `group` -> `+`
+      - any other string, including an empty one -> fail parsing:
+        the Matrix URI is invalid.
+
+   b. Pick the next (2nd) leftmost path segment:
+      - if the segment is empty, fail parsing;
+      - otherwise, percent-decode the segment and make `mxid-1` by
+        concatenating `sigil-1` and the result of percent-decoding.
+
+1. If `sigil-1` is `!` or `#` and the URI path has exactly 4 segments,
+   it may be possible to construct the 2nd-level Matrix identifier to
+   point to an event inside the room identified by `mxid-1`:
+
+   a. Pick the next (3rd) path segment:
+      - if the segment is exactly `event`, proceed;
+      - otherwise, including the case of an empty segment, fail parsing.
+    
+   b. Pick the next (4th) leftmost path segment:
+      - if the segment is empty, fail parsing;
+      - otherwise, percent-decode the segment and make `mxid-2` by
+        prepending `$` to the result of percent-decoding.
+      
+1. Split the `query` into items separated by `&` character; several subsequent
+   `&` characters delimit empty items, ignored by this algorithm.
+   
+   a. If `query` contains one or more items starting with `via=` - treat
+      the rest of each this item after `via=` as a percent-encoded homeserver
+      name to be used in
+      [routing](https://matrix.org/docs/spec/appendices#routing).
+      
+   b. If `query` contains one or more items starting with `action=` - treat
+      _the last_ such item as an instruction for joining or opening a direct
+      chat, as per this proposal.
+
 The classes of URIs and corresponding default actions (along with relevant
-CS API calls) are collected as follows:
+CS API calls) are collected as follows. This is non-normative and just provides
+a reference and examples of handling various kinds of URIs.
 
 * User ID:
   - URI example: `matrix:user/me:example.org` or
     (decentralised user id, future) `matrix:user/me_in_matrix`
-  - Default action: Show user profile (`GET /profile/@me:example.org/...`,
-    `GET /profile/@me_in_matrix/...`)
+  - Possible default actions:
+    - Show user profile
+    (`GET /profile/@me:example.org/...`, `GET /profile/@me_in_matrix/...`);
+    - Mention the user in the current room (client-local operation)
 * Room ID:
   - URI example: `matrix:roomid/rid:example.org` or
     (decentralised id, future) `matrix:roomid/lol823y4bcp3qo4`
@@ -396,45 +422,87 @@ further discussion should happen in GitHub comments.
    different sets of rooms are available to any user at any time
    (e.g., all rooms known to the user; or all routable rooms; or
    public rooms known to the user's homeserver).
-1. (still open)
-   _Should we advise using the query part for collections then?_
-1. (still open)
-   _Why not Reddit-style single-letter type specifiers? That's almost
+1. _Should we advise using the query part for collections then?_
+   Not in this MSC but that can be considered in the future.
+1. _Why not Reddit-style single-letter type specifiers? That's almost
    as compact as a sigil, still pretty clearly conveys the type,
    and nicely avoids the confusion described in the previous question._
-   Readability?
+   Reddit-style prefixes would eventually produce bigger ambiguity as
+   primary notation; but they can be handy as shortcuts. As discussed
+   further below, the current proposal provides enough space to define
+   synonyms; this may need some canonicalisation service from homeservers
+   so that we don't have to enable synonyms at each client individually.
 1. _Why event URI cannot use the fragment part for the event id?_
    Because fragment is a part processed exclusively by the client
    in order to navigate within a larger document, and room cannot
    be considered a "document". Each event can be retrieved from the server
    individually, so each event can be viewed as a self-contained document.
-   When URI processing is shifted to the server-side, servers are not even
+   When/if URI processing is shifted to the server-side, servers are not even
    going to receive fragments (as per RFC 3986).
 1. _Interoperability with
    [Linked Data](https://en.wikipedia.org/wiki/Linked_data)_ is out of
    scope of this MSC but worth being considered separately.
-1. _How does this MSC work with closed federations?_ If you need to
+1. _How does this MSC work with closed federations?_ ~~If you need to
    communicate a URI to the bigger world where you cannot expect
    the consumer to know in advance which federation they should use -
    supply any server of the closed federation in the authority part.
    Users inside the closed federation can omit the authority part if
    they know the URI is not going to be used outside this federation.
    Clients can facilitate that by having an option to always add or omit
-   the authority part in generated URIs for a given user account.
+   the authority part in generated URIs for a given user account.~~
+   Use `via=` in order to point to a homeserver in the closed federation.
+   The authority part may eventually be used for that but further discussion
+   is needed on how clients should support without compromising privacy
+   (see https://github.com/matrix-org/matrix-doc/pull/2312#discussion_r348960282
+   for the original concern).
 
 
 ## Further evolution
 
-This MSC is obviously just the first step, opening the door for a range of
-extensions, especially to the query part. Possible actions may include
-opening the
-[canonical direct chat](https://github.com/matrix-org/matrix-doc/pull/2199)
-(`action=chat`, following the existing convention in Riot),
-leaving a room (`action=leave`); bounds for a segment of the room timeline
-(`from=$evtid1&to=$evtid2`) also look worthwhile.
+This section is non-normative.
+
+This MSC is obviously just the first step, keeping the door open for
+extensions. Here are a few ideas:
+
+* Add new actions; e.g. leaving a room (`action=leave`).
+* Add specifying a segment of the room timeline (`from=$evtid1&to=$evtid2`).
+* Unlock bare event ids (`matrix:event/$event_id`) - subject to changes in
+  other areas of the specification.
+* One area of possible evolution is bringing tangible semantics to
+  the authority part. The main purpose of the authority part,
+  [as per RFC 3986](https://tools.ietf.org/html/rfc3986#section-3.2),
+  is to identify the authority governing the namespace for the rest
+  of the URI. This MSC reuses the RFC definitions for
+  [`host`](https://tools.ietf.org/html/rfc3986#section-3.2.2) and
+  [`port`](https://tools.ietf.org/html/rfc3986#section-3.2.3).
+  RFC 3986 also includes provisions for user information -
+  this MSC explicitly excludes them. If providing a user identity
+  in the authority part is found to be of value in some case,
+  this should be addressed in a separate MSC.
+
+  Importantly, the authority part is _not_ intended for usage in routing
+  over federation; rather, it is for cases when a given Matrix
+  entity is not expected to be reachable through federation (such as
+  unfederated rooms or non-public Matrix networks). Sending requests
+  to the server resolved from the authority part means that the client
+  should be, as the name implies, _authorised_ by the authority server
+  to access the requested resource. That, in turn, implies that the resource
+  is either available to guests on the authority server, or the end user
+  must be authenticated (and their access rights checked)
+  on that server in order to access the resource. While being a part
+  of the original proposal, the semantics for the authority part have
+  been dropped from the normative part as a result of MSC discussion.
+* One could conceive a URI mapping of avatars in the form of
+  `matrix:user/uid:matrix.org/avatar/room:matrix.org`
+  (a user’s avatar for a given room).
+* As described below in "Alternatives", one can introduce a synonymous
+  system that uses Matrix identifiers with sigils by adding another path
+  prefix (`matrix:id/%23matrix:matrix.org`).
 
 
 ## Alternatives
+
+### URNs
 
 The discussion in
 [MSC455](https://github.com/matrix-org/matrix-doc/issues/455)
@@ -452,44 +520,97 @@ a delimiter of id parts and, as can be seen above, reversing the parts
 to meet the URN's hierarchical order would look confusing for Matrix
 users.
 
+
+### "Full REST" 
+
 Yet another alternative considered was to go "full REST" and build
-a more traditional looking URL structure with serverparts coming first
+a more traditionally looking URL structure with serverparts coming first
 followed by type grouping (sic - not specifiers) and then by localparts,
 i.e. `matrix://example.org/rooms/roomalias`. This is even more
 difficult to comprehend for a Matrix user than the previous alternative
 and besides it conflates the notion of an authority server with
 that of a namespace (`example.org` above is a server part of an alias,
-not the name of a homeserver that should be used to resolve the URI).
+not the name of a hypothetical homeserver that should be used to resolve
+the URI).
+
+
+### Minimal syntax
+
+One early but still viable proposal was to simply prepend `matrix:` to
+a Matrix identifier (without encoding it), assuming that it will only be
+processed on the client side. The massive downside of this option is that
+such strings are not actual URIs even though they look like ones: most
+URI parsers won't handle them correctly. Bare Matrix identifiers have
+the same applicable range without deceptive looks.
+
+
+### Minimal syntax based on path and percent-encoding
+
+A simple modification of the previous option is much more viable:
+proper percent-encoding of the Matrix identifier allows to use it as
+a URI path part. A single identifier packed in a URI could look like
+`matrix:/encoded_id_with_sigil`; an event-in-a-room URI would be something
+like `matrix:/roomid_or_alias/$event_id` (NB: RFC3986 doesn't require `$`
+to be encoded). This is considerably more concise and encoding is only
+needed for `#` - quite unfortunately, this is one of the most used sigils
+in Matrix. E.g., `matrix:/%23matrix:matrix.org` would be a URI for
+Matrix HQ chat room.
+
+Putting the whole id to the URI fragment (`matrix:#id_with_sigil` or,
+following on the `matrix.to` tradition, `matrix:#/id_with_sigil` for
+readability) allows to use `#` without encoding on many URI parsers. It is
+still not fully RFC3986-compliant but the bigger problem is that putting
+the identifying part to the fragment rules out using URIs in client-server
+communication. Effectively all clients will have to implement full URI
+processing with no chance to offload that to the server.
+
+Regardless of the placement (the fragment or the path), one more consideration
+is that the character space for sigils is extremely limited and
+Matrix identifiers are generally less expressive than full-blown URI paths.
+Not that Matrix showed a tendency to produce many classes of objects that would
+warrant a dedicated sigil but that cannot be ruled out. Rather than rely
+on the institute of sigils, this proposal gives an alternative more
+extensible syntax that can be used for more advanced cases - as a uniform way
+to represent arbitrary sub-objects (with or without Matrix identifier) such as
+user profiles or a notifications feed for the room - and also, if ever needed,
+as an escape hatch to a bigger namespace if we hit shortage of sigils.
+
+The current proposal is also flexible enough to even incorporate the minimal
+syntax of this option as an alternative to its own notation - e.g., a further
+MSC could enable `matrix:id/%23matrix:matrix.org` as a synonym for
+`matrix:room/matrix:matrix.org`.
 
 
 ## Potential issues
 
 Despite the limited functionality of URIs as proposed in this MSC,
 Matrix authors are advised to use tools that would process URIs just
-like an http(s) URI instead of making a quick home-baked
-parsers/emitters. Even with that in mind, not all tools normalise and
-sanitise all cases in a fully RFC-compliant way. This MSC tries to keep
-the required transformations to the minimum and will likely not bring
-much grief even with naive implementations; however, as functionality
-of Matrix URI grows, the number of corner cases will increase.
+like an http(s) URI instead of making home-baked parsers/emitters.
+Even with that in mind, not all tools normalise and sanitise all cases
+in a fully RFC-compliant way. This MSC tries to keep the required
+transformations to the minimum and will likely not bring much grief even
+with naive implementations; however, as functionality of Matrix URI grows,
+the number of corner cases will increase.
 
 
-## Security considerations
+## Security/privacy considerations
 
 This MSC mostly builds on RFC 3986 but tries to reduce the scope
 as much as possible. Notably, it avoids introducing complex traversable
-structures and defines the URI grammar quite strictly. Notably,
-dot path segments (`.` and `..`), while potentially useful when URIs
-become richer, would come too much ahead of time for now. Care is taken
-to not make essential parts of the URI omittable to avoid
+structures and further restricts the URI grammar to the necessary subset.
+In particular, dot path segments (`.` and `..`), while potentially useful
+when URIs become richer, would come too much ahead of time for now. Care
+is taken to not make essential parts of the URI omittable to avoid
 even accidental misrepresentation of a local resource for a remote one
-in Matrix and vice versa. One part still omittable - authority - can
-result in leaks if a non-fully-qualified URI from one closed federation
-is sent to another closed federation; this is considered an extremely
-corner case.
+in Matrix and vice versa.
 
 The MSC intentionally doesn't support conveying any kind of user
 information in URIs.
+
+The MSC strives to not be prescriptive in treating URIs except the `action`
+query parameter. Actions without user confirmation may lead to unintended
+leaks of certain metadata so this MSC recommends to ask for a user consent -
+recognising that not all clients are in position for that.
 
 
 ## Conclusion
@@ -503,7 +624,7 @@ opening a browser while clicking a `tg:` link dumped to the terminal
 application will open the correct application for Telegram without
 user intervention or can even offer to install one, if needed).
 The proposed syntax makes conversion between Matrix URIs
-and Matrix identifiers as easy as a bunch of regular expressions; so
-even though client-side processing of URIs might not be optimal
-longer-term, it's a very simple and quick way that allows plenty
-of experimentation early on.
+and Matrix identifiers as easy as a bunch of string comparisons or
+regular expressions; so even though client-side processing of URIs
+might not be optimal longer-term, it's a very simple and quick way
+that allows plenty of experimentation early on.
