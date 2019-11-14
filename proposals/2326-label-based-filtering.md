@@ -39,7 +39,8 @@ lists freeform text labels:
 ```
 
 The labels are expected to be insensitive to case, therefore clients are
-expected to lowercase them before sending them to servers.
+expected to lowercase them before sending them to servers. A label's length is
+limited to a maximum of 100 characters.
 
 Labels which are prefixed with # are expected to be user-visible and exposed to
 the user by clients as a hashtag, letting the user filter their current room by
