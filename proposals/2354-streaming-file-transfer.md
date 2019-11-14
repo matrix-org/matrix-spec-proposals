@@ -141,8 +141,17 @@ If such application is wanted, the d2dfile event type may be a poorly chosen nam
 For this proposal other uses for a webrtc datachannel is deemed out of scope.
 
 ## Alternatives
-The current way of sending files is a valid alternative, the biggest upside of adding this proposal is that this allows for streaming file transfer outside of matrix and is thus not limited in filesize and negates the need for the matrix server to host any of the files.  
-Since filetransfer over matrix isn't unique with the device to device transfer, and implementation of filetransfers over webrtc is probably not trivial, this feature could be marked as optional.
+The current way of sending files is a valid alternative, 
+the biggest upside of adding this proposal is that this allows for 
+streaming file transfer outside of matrix and is thus not limited in filesize 
+and negates the need for the matrix server to host any of the files.  
+Since filetransfer over matrix isn't unique with the device to device transfer,
+and implementation of filetransfers over webrtc is probably not trivial, 
+this feature could be marked as optional.
 
 ## Security considerations
-Using RTCDataChannel to transfer files could be abused to send malware without having the possibility of checking for this in between on the serverside. This could be mitigated similarly to how dinsinc does this, by sending the file to a virus scanning server first, but that negates (some of) the advantage of streaming filetransfers.
+Using RTCDataChannel to transfer files could be abused to send malware 
+without having the possibility of checking for this in between on the serverside.
+This could be mitigated similarly to how dinsinc does this,
+by sending the file to a virus scanning server first, 
+but that negates (some of) the advantage of streaming filetransfers.
