@@ -60,9 +60,10 @@ a given message, that reply should typically use the same labels as the message
 being replied to.
 
 When a user wants to filter a room to given label(s), it defines a filter for
-use with /sync or /messages to limit appropriately. This is done by new `labels`
-and `not_labels` fields to the `EventFilter` object, which specifies a list of
-labels to include or exclude in the given filter.
+use with `/sync`, `/context`, `/search` or `/messages` to limit appropriately.
+This is done by new `labels` and `not_labels` fields to the `EventFilter`
+object, which specifies a list of labels to include or exclude in the given
+filter.
 
 ### Encrypted rooms
 
