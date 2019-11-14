@@ -47,7 +47,13 @@ sends an `m.d2dfile.invite` event with:
 
 This triggers other devices in the room to alert the user about the offered transfer, displaying the filename, filetype and filesize.
 
-In order to establish an RTCDataChannel, the sending device can gather candidates. This is done following the spec detailing how to find a turnserver by sending an authenticated get request to `https://example.org/_matrix/client/r0/voip/turnServer`. Following the same course as used for setting up a VoIP call, this returns the address of the turnserver and a username and password. This turnserver can then be used to find the peer to peer candidates and/or a relay. Otherwise the external (possibly local) ip address can be used to create a candidate.
+In order to establish an RTCDataChannel, the sending device can gather candidates. 
+This is done following the spec detailing how to find a turnserver by sending an 
+authenticated get request to `https://example.org/_matrix/client/r0/voip/turnServer`.
+Following the same course as used for setting up a VoIP call, this returns 
+the address of the turnserver and a username and password. This turnserver can then be used 
+to find the peer to peer candidates and/or a relay. Otherwise the external (possibly local) 
+ip address can be used to create a candidate.
 
 These candidates are then sent using: 
 `m.d2dfile.candidates` with:
@@ -120,10 +126,19 @@ To cancel a filetransfer or reject an offer the `m.d2dfile.cancel` event is sent
 ```
 
 ## Potential issues
-It's tempting to want to use this for device to device transfer in public rooms, but an evil homeserver could hijack the webrtc session by pretending to be a device for the intended recipient (if that user has an account on the evil server). As such this should be limited to private rooms.  
-Otherwise the matrix logic is quite simple here, basically following the same flow as 1:1 VoIP calls, however: most guides (including the synapse github how-to) advice to disable TCP relays in the turnserver, which may be unwanted for file transfers.
+It's tempting to want to use this for device to device transfer in public rooms, 
+but an evil homeserver could hijack the webrtc session by pretending to be a device 
+for the intended recipient (if that user has an account on the evil server). As such this 
+should be limited to private rooms.  
+Otherwise the matrix logic is quite simple here, basically following the same flow as 1:1 VoIP calls,
+however: most guides (including the synapse github how-to) advice to disable TCP relays in the turnserver,
+which may be unwanted for file transfers.
 
-While this proposal focusses on streaming file transfer, a webrtc datachannel could be used for any generic data transfer, for the use of any other application, such as games for instance. If such application is wanted, the d2dfile event type may be a poorly chosen name. For this proposal other uses for a webrtc datachannel is deemed out of scope.
+While this proposal focusses on streaming file transfer, 
+a webrtc datachannel could be used for any generic data transfer, 
+for the use of any other application, such as games for instance. 
+If such application is wanted, the d2dfile event type may be a poorly chosen name.
+For this proposal other uses for a webrtc datachannel is deemed out of scope.
 
 ## Alternatives
 The current way of sending files is a valid alternative, the biggest upside of adding this proposal is that this allows for streaming file transfer outside of matrix and is thus not limited in filesize and negates the need for the matrix server to host any of the files.  
