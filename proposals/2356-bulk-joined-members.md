@@ -3,7 +3,7 @@
 [`/rooms/{roomId}/joined_members`](https://matrix.org/docs/spec/client_server/r0.6.0#get-matrix-client-r0-rooms-roomid-joined-members)
 is an endpoint designed for bots and bridges that want to get the list of members
 in a room, and their profile information. Because it does not try to return the full event format, 
-an equivalent call in [`/rooms/!room:id/members`](https://matrix.org/docs/spec/client_server/r0.6.0#get-matrix-client-r0-rooms-roomid-members)
+an equivalent call in [`/rooms/{roomId}/members`](https://matrix.org/docs/spec/client_server/r0.6.0#get-matrix-client-r0-rooms-roomid-members)
 will take longer to complete. 
 
 However, bridges often need to get membership information about rooms on startup to do things like
@@ -25,7 +25,7 @@ user is interested in. A JSON body is used rather than a query parameter because
 above, the number of rooms may spill into the 10000s range which may cause issues with URI parsers,
 or any intemedary load balancers. 
 
-[RFC7230 states](https://tools.ietf.org/html/rfc7230#section-3.1.1) that the minimum reccomended
+[RFC7230 states](https://tools.ietf.org/html/rfc7230#section-3.1.1) that the minimum recommended
 length of a URL is 8000 octets, but this means that we cannot rely on support beyond that number.
 
 #### Example request body
@@ -102,4 +102,4 @@ introduction, this is not ideal.
 
 ## Security considerations
 
-None. The endpoint should follow the same authoirsation checks that the `/joined_members` endpoint makes.
+None. The endpoint should follow the same authorisation checks that the `/joined_members` endpoint makes.
