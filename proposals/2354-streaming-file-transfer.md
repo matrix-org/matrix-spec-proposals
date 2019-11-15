@@ -4,7 +4,8 @@ File transfer in matrix currently works by uploading a file to the server, which
 the participating servers in the room, and is available through an HTTP get request to everyone who knows
 the URL. By nescesity this has a maximum filesize and also results in a more or less permanent availablity
 of said file. For larger files, and/or files that should only be sent point to point it may be desirable
-to be able to send from device to device. As matrix already implements WebRTC signalling for voip, this 
+to be able to send from device to device. As matrix already implements
+[WebRTC signalling for voip](https://matrix.org/docs/spec/client_server/r0.6.0#voice-over-ip), this 
 functionality can be replicated for streaming file transfers from device to device. It can even be possible
 to send files not between devices of two matrix users, but two matrix devices owned by the same user. For 
 this we can use the webrtc datachannel.
@@ -13,7 +14,8 @@ this we can use the webrtc datachannel.
 ## Proposal
 
 To allow the device to device streaming data tranfser we propose to add events mirroring setting up a
-WebRTC VoIP session. 
+WebRTC VoIP session.
+
 To start a file transfer a user first selects the file to be transferred, after which the sending client 
 sends an `m.d2dfile.invite` event with:
 
@@ -134,6 +136,11 @@ Otherwise the matrix logic is quite simple here, basically following the same fl
 however: most guides (including the synapse github how-to) advice to disable TCP relays in the turnserver,
 which may be unwanted for file transfers.
 
+Both sender and reciever need to be online simultaniously for this mode of file transfer
+to work, which is unexpected in the context of the existing matrix file transfer.
+
+This file transfer will only send the file once, from one device to another.
+
 While this proposal focusses on streaming file transfer, 
 a webrtc datachannel could be used for any generic data transfer, 
 for the use of any other application, such as games for instance. 
@@ -152,6 +159,6 @@ this feature could be marked as optional.
 ## Security considerations
 Using RTCDataChannel to transfer files could be abused to send malware 
 without having the possibility of checking for this in between on the serverside.
-This could be mitigated similarly to how dinsinc does this,
+This could be mitigated similarly to how DINUM does this,
 by sending the file to a virus scanning server first, 
 but that negates (some of) the advantage of streaming filetransfers.
