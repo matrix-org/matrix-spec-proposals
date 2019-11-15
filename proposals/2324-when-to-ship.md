@@ -23,10 +23,10 @@ The new process, from start to finish, is proposed as:
      this is generally considered a bad practice. Therefore an implementation
      can no longer assume that because its feature-specific endpoint exists that
      any other endpoint will exist in the same unstable namespace.
-   * When using an unstable feature flag, they MUST include a vendor prefix.
-     This kind of flag shows up in `/versions` as, for example, `com.example.new_login`.
-     This flag should only be created if the client needs to be sure that the
-     server supports the feature.
+   * If the client needs to be sure the server supports the feature, an unstable
+     feature flag that MUST be vendor prefixed is to be used. This kind of flag
+     shows up in the `unstable_features` field of `/versions` as, for example,
+     `com.example.new_login`.
    * You can ship the feature at *any* time, so long as you are able to accept
      the technical debt that results from needing to provide adequate backwards
      and forwards compatibility for the vendor prefixed implementation. The
@@ -83,3 +83,42 @@ To clarify:
 * The vendor prefixes, unstable feature flags, and unstable endpoints should be included
   in the MSC so other developers can benefit. The MSC MUST still say what the stable
   endpoints are to look like.
+
+### Specific examples outside of the client-server API
+
+There are some instances where a change might be made outside of the client-server API,
+which is where much of this proposal is targetted. The general spirit of the process
+should be followed where possible, if implementations decide to work ahead of spec releases.
+
+#### Room versions
+
+When a new room version is needed, implementations MUST use vendor-prefixed versions
+before using the namespace reserved for Matrix (see https://matrix.org/docs/spec/#room-versions).
+A room version is considered released once it is listed as an "available room version" in
+the spec. Often a new room version is accompanied with a server-server API release, but
+doesn't have to be.
+
+#### Server-server / Identity / Push / Appservice API
+
+These APIs don't yet have a `/versions` endpoint or similar. Typically behaviour changes in
+these APIs are introduced with backwards compatibility in mind (try X and if that fails fall
+back to Y) and therefore don't always need a flag to indicate support. If a flag were to
+be required, an `unstable_features` or similar array would need to be exposed somewhere.
+
+#### Changes to request/response parameters
+
+Parameters being added to request/response bodies and query strings MUST be vendor-prefixed
+per the proposed process. For example, a new JSON field might be `{"org.matrix.example": true}`
+with the proposal being for `example` being added. A query string parameter would be prefixed
+the same way: `?org.matrix.example=true`.
+
+If the MSC is simply adding fields to already-versioned endpoints, it does not need to put
+the whole endpoint into the `/unstable` namespace provided the new parameters are prefixed
+appropriately.
+
+#### .well-known and other APIs that can't be versioned
+
+Best effort is appreciated. Typically these endpoints will be receiving minor behavioural
+changes or new fields. New fields should be appropriately prefixed, and behaviour changes
+should be rolled out cautiously by implementations (waiting until after FCP has concluded
+is probably best to ensure there's no major problems with the new behaviour).
