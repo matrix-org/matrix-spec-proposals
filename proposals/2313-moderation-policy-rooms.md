@@ -1,4 +1,4 @@
-# MSC2313: Ban lists
+# MSC2313: Moderation policies as rooms (ban lists)
 
 Matrix is an open network and anyone can participate in it. As a result, a
 very wide range of content exists, and it is important to empower users to be
@@ -9,8 +9,8 @@ which content they do not wish to host in their rooms and servers.
 The protocol's position in this solution should be one of neutrality: it
 should not be deciding what content is undesirable for any particular entity and
 should instead be empowering those entities to make their own decisions. This
-proposal introduces ban lists as a basic mechanism to help users manage this
-process, by providing a way of modelling sets of servers, rooms and users
+proposal introduces "moderation policy rooms" as a basic mechanism to help users
+manage this process, by providing a way of modelling sets of servers, rooms and users
 which can then be used to make filtering decisions. This proposal makes no
 attempt at interpreting the model and actually making those decisions however.
 
@@ -18,18 +18,18 @@ To reaffirm: where this proposal says that some content is undesirable it does n
 bias the reader into what that could entail. Undesirability is purely in the hands of the
 entity perceiving the content. For example, someone who believes birthday cake is undesirable
 is perfectly valid in taking that position and is encouraged by this proposal to set up or
-use a ban list which prevents birthday cake from coming across their field of view.
+use a policy room which prevents birthday cake from coming across their field of view.
 
 ## Proposal
 
-Ban lists are stored as room state events, allowing for structures and concepts to be reused without
-defining a new room version. This proposal does not make any restrictions on how the rooms
-are configured, just that the state events described here are represented in a room. For
-example, a room which is invite only is just as valid as a room that is not: the important
-details are specific state events and not the accessibility, retention, or other aspects
-of the room.
+Moderation policy lists, also known as ban lists in this proposal, are stored as room state events,
+allowing for structures and concepts to be reused without defining a new room version. This
+proposal does not make any restrictions on how the rooms are configured, just that the state
+events described here are represented in a room. For example, a room which is invite only is
+just as valid as a room that is not: the important details are specific state events and not
+the accessibility, retention, or other aspects of the room.
 
-Ban lists are stored as `m.room.rule.<kind>` state events, with state keys being arbitrary IDs
+Ban lists are stored as `m.moderation.rule.<kind>` state events, with state keys being arbitrary IDs
 assigned by the sender. The `<kind>` is currently one of `user`, `room`, and `server`. Three
 fields are defined in `content`:
 
@@ -48,7 +48,7 @@ An example set of minimal state events for banning `@alice:example.org`, `!matri
 ```json
 [
     {
-        "type": "m.room.rule.user",
+        "type": "m.moderation.rule.user",
         "state_key": "rule_1",
         "content": {
             "entity": "@alice:example.org",
@@ -57,7 +57,7 @@ An example set of minimal state events for banning `@alice:example.org`, `!matri
         }
     },
     {
-        "type": "m.room.rule.room",
+        "type": "m.moderation.rule.room",
         "state_key": "rule_2",
         "content": {
             "entity": "!matrix:example.org",
@@ -66,7 +66,7 @@ An example set of minimal state events for banning `@alice:example.org`, `!matri
         }
     },
     {
-        "type": "m.room.rule.server",
+        "type": "m.moderation.rule.server",
         "state_key": "rule_3",
         "content": {
             "entity": "evil.example.org",
@@ -75,7 +75,7 @@ An example set of minimal state events for banning `@alice:example.org`, `!matri
         }
     },
     {
-        "type": "m.room.rule.server",
+        "type": "m.moderation.rule.server",
         "state_key": "rule_4",
         "content": {
             "entity": "*.evil.example.org",
@@ -193,7 +193,7 @@ This proposal is partially implemented by [mjolnir](https://github.com/matrix-or
 using the `org.matrix.mjolnir.*` namespace until this becomes stable. This results in
 the following mappings:
 
-* `m.room.rule.user` => `org.matrix.mjolnir.rule.user`
-* `m.room.rule.room` => `org.matrix.mjolnir.rule.room`
-* `m.room.rule.server` => `org.matrix.mjolnir.rule.server`
+* `m.moderation.rule.user` => `org.matrix.mjolnir.rule.user`
+* `m.moderation.rule.room` => `org.matrix.mjolnir.rule.room`
+* `m.moderation.rule.server` => `org.matrix.mjolnir.rule.server`
 * `m.ban` => `org.matrix.mjolnir.ban`
