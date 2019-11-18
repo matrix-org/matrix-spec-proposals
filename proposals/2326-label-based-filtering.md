@@ -66,11 +66,17 @@ This is done by new `labels` and `not_labels` fields to the `EventFilter`
 object, which specifies a list of labels to include or exclude in the given
 filter.
 
-Senders may edit the `m.label` fields in order to change the field associated
+Senders may edit the `m.label` fields in order to change the labels associated
 with an event. If an edit removes a label that was previously associated with
 the original event or a past edit of it, neither the original event nor an edit
 of it should be returned by the server when filtering for events with that
 label.
+
+When editing the list of labels associated with an encrypted event, clients must
+set the updated list of labels in the `content` field of the encrypted event in
+addition with the `m.new_content` field of the decrypted event's `content`
+field, so that servers can update the list of labels associated with the
+original event accordingly.
 
 ### Encrypted rooms
 
