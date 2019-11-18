@@ -159,6 +159,85 @@ The messages used in SAS verification are the same as those currently defined,
 except that instead of the `transaction_id` property, an `m.relates_to`
 property, as defined above, is used instead.
 
+If the key verification messages are encrypted, the hash commitment sent in the
+`m.key.verification.accept` message MUST be based on the decrypted
+`m.key.verification.start` message contents, and include the `m.relates_to`
+field, even if the decrypted message contents do not include that field.  For
+example, if Alice sends a message to start the SAS verification:
+
+```json
+{
+  "content": {
+    "algorithm": "m.megolm.v1.aes-sha2",
+    "ciphertext": "ABCDEFG...",
+    "device_id": "Dynabook",
+    "sender_key": "alice+sender+key",
+    "session_id": "session+id",
+    "m.relates_to": {
+      "rel_type": "m.reference",
+      "event_id": "$verification_request_event"
+    }
+  },
+  "event_id": "$event_id",
+  "origin_server_ts": 1234567890,
+  "sender": "@alice:example.org",
+  "type": "m.room.encrypted",
+  "room_id": "!room_id:example.org"
+}
+```
+
+which, when decrypted, yields:
+
+```json
+{
+  "room_id": "!room_id:example.org",
+  "type": "m.key.verification.start",
+  "content": {
+    "from_device": "Dynabook",
+    "hashes": [
+      "sha256"
+    ],
+    "key_agreement_protocols": [
+        "curve25519"
+    ],
+    "message_authentication_codes": [
+        "hkdf-hmac-sha256"
+    ],
+    "method": "m.sas.v1",
+    "short_authentication_string": [
+        "decimal",
+        "emoji"
+    ]
+  }
+}
+```
+
+then the hash commitment will be based on the message contents:
+
+```json
+{
+  "from_device": "Dynabook",
+  "hashes": [
+    "sha256"
+  ],
+  "key_agreement_protocols": [
+      "curve25519"
+  ],
+  "message_authentication_codes": [
+      "hkdf-hmac-sha256"
+  ],
+  "method": "m.sas.v1",
+  "short_authentication_string": [
+      "decimal",
+      "emoji"
+  ],
+  "m.relates_to": {
+    "rel_type": "m.reference",
+    "event_id": "$verification_request_event"
+  }
+}
+```
+
 ## Alternatives
 
 Messages sent by the verification methods, after the initial key verification
