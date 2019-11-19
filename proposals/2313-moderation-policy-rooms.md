@@ -29,7 +29,7 @@ events described here are represented in a room. For example, a room which is in
 just as valid as a room that is not: the important details are specific state events and not
 the accessibility, retention, or other aspects of the room.
 
-Ban lists are stored as `m.moderation.rule.<kind>` state events, with state keys being arbitrary IDs
+Ban lists are stored as `m.policy.rule.<kind>` state events, with state keys being arbitrary IDs
 assigned by the sender. The `<kind>` is currently one of `user`, `room`, and `server`. Three
 fields are defined in `content`:
 
@@ -48,7 +48,7 @@ An example set of minimal state events for banning `@alice:example.org`, `!matri
 ```json
 [
     {
-        "type": "m.moderation.rule.user",
+        "type": "m.policy.rule.user",
         "state_key": "rule_1",
         "content": {
             "entity": "@alice:example.org",
@@ -57,7 +57,7 @@ An example set of minimal state events for banning `@alice:example.org`, `!matri
         }
     },
     {
-        "type": "m.moderation.rule.room",
+        "type": "m.policy.rule.room",
         "state_key": "rule_2",
         "content": {
             "entity": "!matrix:example.org",
@@ -66,7 +66,7 @@ An example set of minimal state events for banning `@alice:example.org`, `!matri
         }
     },
     {
-        "type": "m.moderation.rule.server",
+        "type": "m.policy.rule.server",
         "state_key": "rule_3",
         "content": {
             "entity": "evil.example.org",
@@ -75,7 +75,7 @@ An example set of minimal state events for banning `@alice:example.org`, `!matri
         }
     },
     {
-        "type": "m.moderation.rule.server",
+        "type": "m.policy.rule.server",
         "state_key": "rule_4",
         "content": {
             "entity": "*.evil.example.org",
@@ -193,7 +193,7 @@ This proposal is partially implemented by [mjolnir](https://github.com/matrix-or
 using the `org.matrix.mjolnir.*` namespace until this becomes stable. This results in
 the following mappings:
 
-* `m.moderation.rule.user` => `org.matrix.mjolnir.rule.user`
-* `m.moderation.rule.room` => `org.matrix.mjolnir.rule.room`
-* `m.moderation.rule.server` => `org.matrix.mjolnir.rule.server`
+* `m.policy.rule.user` => `org.matrix.mjolnir.rule.user`
+* `m.policy.rule.room` => `org.matrix.mjolnir.rule.room`
+* `m.policy.rule.server` => `org.matrix.mjolnir.rule.server`
 * `m.ban` => `org.matrix.mjolnir.ban`
