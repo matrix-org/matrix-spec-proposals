@@ -73,7 +73,9 @@ Currently, users will only be allowed to see
   devices,
 * signatures made by other users' master keys about their respective
   self-signing key, or
-* signatures made by other users' devices about their respective master keys.
+* signatures made by other users' devices about their respective master keys
+  (these signatures are used for [migrating from device
+  verifications](#migrating-from-device-verifications)).
 
 This is done in order to preserve the privacy of social connections.  Future
 proposals may define mechanisms for distributing signatures to other users in
