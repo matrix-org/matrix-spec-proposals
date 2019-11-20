@@ -69,11 +69,11 @@ keys, respectively.
 Currently, users will only be allowed to see
 * signatures made by their own master, self-signing or user-signing keys,
 * signatures made by their own devices about their own master key,
-* signatures made by other users' self-signing keys about the other users' own
+* signatures made by other users' self-signing keys about their own respective
   devices,
-* signatures made by other users' master keys about the other users'
+* signatures made by other users' master keys about their respective
   self-signing key, or
-* signatures made by other users' devices about the other users' master keys.
+* signatures made by other users' devices about their respective master keys.
 
 This is done in order to preserve the privacy of social connections.  Future
 proposals may define mechanisms for distributing signatures to other users in
@@ -84,7 +84,7 @@ order to allow for other web-of-trust use cases.
 Users who have verified individual devices may wish to migrate these
 verifications to use cross-signing instead.  In order to aid with this,
 signatures of a user's master key, made by their own devices, may be uploaded
-to the server.  If another client sees that the user's master key has a valid
+to the server.  If another user's client sees that that a given user's master key has a valid
 signature from a device that was previously verified, then the client may
 choose to trust and sign the master key.  The client should take precautions to
 ensure that a stolen device cannot be used to cause it to trust a malicious
