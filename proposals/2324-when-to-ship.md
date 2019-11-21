@@ -43,7 +43,7 @@ The new process, from start to finish, is proposed as:
 3. In parallel, or ahead of implementation, open an MSC and solicit review.
 4. Before a FCP (Final Comment Period) can be called, the Spec Core Team will
    require that evidence to prove the MSC works be presented. A typical example
-   of this is an implementation of the MSC (ie: Step 2).
+   of this is an implementation of the MSC (which does not necessarily need to have been shipped anywhere).
 5. FCP is gone through, and assuming nothing is flagged the MSC lands.
 6. A spec PR is written to incorporate the changes into Matrix.
 7. A spec release happens.
