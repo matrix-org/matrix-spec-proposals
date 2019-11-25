@@ -58,8 +58,12 @@ different topics. The labels could also be used when bridging as a hashtag to
 help manage the disconnect which can happen when bridging a threaded room to an
 unthreaded one.
 
+Clients are expected to let users add hashtag-like labels to a message before
+sending it, and to display hashtag-like labels on messages to help user easily
+identify the labels they can make their client filter on.
+
 Clients are expected to explicitly set the label on a message if the user's
-intention is to respond as part of a given labelled topic.  For instance, if the
+intention is to respond as part of a given labelled topic. For instance, if the
 user is currently filtered to only view messages with a given label, then new
 messages sent should use the same label. Similarly if the user sends a reply to
 a given message, that reply should typically use the same labels as the message
