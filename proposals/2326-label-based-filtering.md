@@ -87,6 +87,12 @@ addition with the `m.new_content` field of the decrypted event's `content`
 field, so that servers can update the list of labels associated with the
 original event accordingly.
 
+When sending an edit of an event that has labels attached to it, clients are
+expected to provide a list of labels, even if the edit doesn't add or remove any
+label from the list provided in the original event or its latest edit (in this
+case, the list is the same as the one provided in the original event or its
+latest edit).
+
 ### Encrypted rooms
 
 In encrypted rooms, the `m.label` field of `m.room.encrypted` events contains,
