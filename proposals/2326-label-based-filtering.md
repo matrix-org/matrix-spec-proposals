@@ -48,6 +48,11 @@ the various hashtags present within it. Labels which are not prefixed with # are
 expected to be hidden from the user by clients (so that they can be used as
 e.g. thread IDs bridged from another platform).
 
+A label can contain any UTF-8 character, regardless of whether it starts with a
+hash or not (i.e. we don't limit the hashtag to e.g. the set of allowed
+characters in a Twitter hashtag, and not-hashtag-like labels also don't have
+that sort of constraints).
+
 Clients can use these to filter the overlapping conversations in a room into
 different topics. The labels could also be used when bridging as a hashtag to
 help manage the disconnect which can happen when bridging a threaded room to an
