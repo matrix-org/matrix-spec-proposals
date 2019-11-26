@@ -19,10 +19,14 @@ POST /_matrix/client/r0/rooms/{roomId}/ban
 POST /_matrix/client/r0/rooms/{roomId}/unban
 POST /_matrix/client/r0/rooms/{roomId}/join
 POST /_matrix/client/r0/join/{roomIdOrAlias}
+PUT  /_matrix/client/r0/rooms/{roomId}/state/m.room.member/{userID}
 ```
 
 If specified the `reason` field will be added to the generated membership
 event's content.
+
+*Note: `/state/m.room.member` API currently allows this as clients can specify
+arbitrary content already*
 
 Clients may choose to display the reason for membership events in a room,
 though may not do so if e.g. they have collapsed a set of membership changes.
