@@ -75,6 +75,9 @@ need to be taken to mitigate this.
   addresses to prevent users from being able to access resources that are only
   available on an internal network.
 
+Since the homeserver downloads the file, this will not work for trying to
+upload encrypted files for end-to-end encrypted rooms.
+
 ## Unstable prefix
 
 Unstable implementations should use the
