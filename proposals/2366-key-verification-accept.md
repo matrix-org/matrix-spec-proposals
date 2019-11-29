@@ -32,6 +32,14 @@ compared instead.  If both parties send an `m.key.verification.start` event,
 but they specify different verification methods, the verification should be
 cancelled with a `code` of `m.unexpected_message`.
 
+With to-device messages, previously the sender of the
+`m.key.verification.request` message would send an `m.key.verification.cancel`
+message to the recipient's other devices when it received an
+`m.key.verification.start` event. With this new event, the sender of the
+`m.key.verification.request` message should send an `m.key.verification.cancel`
+message when it receives an `m.key.verification.ready` or
+`m.key.verification.start` message, whichever comes first.
+
 The `m.key.verification.ready` event is optional; the recipient of the
 `m.key.verification.request` event may respond directly with a
 `m.key.verification.start` event instead.  This is for compatibility with the
