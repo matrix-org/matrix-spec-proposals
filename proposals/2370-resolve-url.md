@@ -74,3 +74,12 @@ need to be taken to mitigate this.
 * Homeservers should allow administrators to blacklist URL patterns and IP
   addresses to prevent users from being able to access resources that are only
   available on an internal network.
+
+## Unstable prefix
+
+Unstable implementations should use the
+`/_matrix/media/unstable/org.matrix/resolve_url` endpoint.
+
+Additionally, servers implementing this feature should advertise that they do
+so by exposing a `org.matrix.resolve_url` flag in the `unstable_features` part
+of the `/versions` response.
