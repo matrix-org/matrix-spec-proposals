@@ -83,7 +83,7 @@ In terms of hierachy, the protocol can contain many networks, which can contain 
 The event may contain information specific to the bridge in question, such as the mode for the room in IRC. These keys
 should be prefixed by the bridge's name. Clients may be capable of displaying this extra information and are free to do so.
 
-## /_matrix/app/v1/thirdparty/location
+## `/_matrix/app/v1/thirdparty/location`
 
 This proposal does NOT seek to deprecate the `location` API even though this spec effectively supercedes it in most respects.
 A future MSC may choose to remove it, however.
