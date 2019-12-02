@@ -216,12 +216,12 @@ response:
 }
 ```
 
-Similarly, the federation endpoints `GET /user/keys/query` and `POST
+Similarly, the federation endpoints `POST /user/keys/query` and `POST
 /user/devices/{userId}` will include the master and self-signing keys.  (It
 will not include the user-signing key because it is not intended to be visible
 to other users.)
 
-`POST /keys/query`
+`POST /user/keys/query`
 
 ``` json
 {
