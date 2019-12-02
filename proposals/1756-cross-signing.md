@@ -216,12 +216,12 @@ response:
 }
 ```
 
-Similarly, the federation endpoints `GET /user/keys/query` and `POST
+Similarly, the federation endpoints `POST /user/keys/query` and `POST
 /user/devices/{userId}` will include the master and self-signing keys.  (It
 will not include the user-signing key because it is not intended to be visible
 to other users.)
 
-`POST /keys/query`
+`POST /user/keys/query`
 
 ``` json
 {
@@ -432,27 +432,31 @@ response:
       }
     }
   },
-  "master_key": {
-    "user_id": "@alice:example.com",
-    "usage": ["master"],
-    "keys": {
-      "ed25519:base64+master+public+key": "base64+master+public+key"
-    },
-    "signatures": {
-      "@alice:example.com": {
-        "ed25519:HIJKLMN": "base64+signature+of+master+key"
+  "master_keys": {
+    "@alice:example.com": {
+      "user_id": "@alice:example.com",
+      "usage": ["master"],
+      "keys": {
+        "ed25519:base64+master+public+key": "base64+master+public+key"
+      },
+      "signatures": {
+        "@alice:example.com": {
+          "ed25519:HIJKLMN": "base64+signature+of+master+key"
+        }
       }
     }
   },
-  "self_signing_key": {
-    "user_id": "@alice:example.com",
-    "usage": ["self_signing"],
-    "keys": {
-      "ed25519:base64+self+signing+public+key": "base64+self+signing+public+key"
-    },
-    "signatures": {
-      "@alice:example.com": {
-        "ed25519:base64+master+public+key": "base64+signature"
+  "self_signing_keys": {
+    "@alice:example.com": {
+      "user_id": "@alice:example.com",
+      "usage": ["self_signing"],
+      "keys": {
+        "ed25519:base64+self+signing+public+key": "base64+self+signing+public+key"
+      },
+      "signatures": {
+        "@alice:example.com": {
+          "ed25519:base64+master+public+key": "base64+signature"
+        }
       }
     }
   }
