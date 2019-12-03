@@ -13,7 +13,7 @@ rooms, e.g. if a token is present and valid in the invite state.
 This proposal is about adding `invite_room_state` to the `unsigned` block of invite events when sending
 them out to Application Services.
 
-As content of `invite_room_state` an array of `StrippedState` (defined [here](https://matrix.org/docs/spec/client_server/r0.6.0#m-room-member))
+As content of `invite_room_state` an array of `StrippedState` (defined [here](https://matrix.org/docs/spec/server_server/r0.1.3#put-matrix-federation-v2-invite-roomid-eventid))
 objects would be used. This way it would
 be in line with the Server-Server API to send invites.
 
@@ -60,7 +60,7 @@ An invite event of `@alice:example.com` inviting `@bob:example.com` could look a
 # Potential issues
 Depending on server implementation this could be a heavy operation. Additionally more data is sent
 down the line to the Application Service. As this is already done for normal clients it shouldn't be
-to bad, though.
+too bad, though.
 
 # Alternatives
 Instead of aligning with S-S API `/invite` it could be aligned with C-S API `/sync` and putting the
