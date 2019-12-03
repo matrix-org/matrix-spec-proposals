@@ -33,7 +33,7 @@ bridged network and nothing more.
     "type": "m.bridge",
     "content": {
         "creator": "@alice:matrix.org", // Optional
-        "status": "active" // Optional, will default to active. One of "active", "disabled".
+        "status": "active", // Optional, will default to active. One of "active", "disabled".
         "protocol": {
             "id": "irc",
             "displayname": "IRC"
@@ -87,6 +87,103 @@ In terms of hierachy, the protocol can contain many networks, which can contain 
 
 The event may contain information specific to the bridge in question, such as the mode for the room in IRC. These keys
 should be prefixed by the bridge's name. Clients may be capable of displaying this extra information and are free to do so.
+
+### Example Content
+
+#### XMPP
+
+An example of a non-messaging bridge, such as the GitHub bridge:
+
+```js
+{
+    "state_key": "org.matrix.matrix-bifrost://xmpp/general/muc.xmpp.org",
+    "type": "m.bridge",
+    "content": {
+        "creator": "@alice:matrix.org",
+        "status": "active",
+        "protocol": {
+            "id": "xmpp",
+            "displayname": "XMPP"
+        },
+        "network": {
+            "id": "muc.xmpp.org",
+            "displayname": "XSF",
+            "external_url": "xmpp:muc.xmpp.org"
+        },
+        "channel": {
+            "id": "xsf@muc.xmpp.org",
+            "displayname": "XSF Discussion",
+            "external_url": "xmpp:xsf@muc.xmpp.org"
+        }
+    },
+    "sender": "@xmpp:matrix.org"
+}
+```
+
+#### GitHub
+
+An example of a non-messaging bridge, such as the GitHub bridge:
+
+```js
+{
+    "state_key": "uk.half-shot.matrix-github://github/matrix-org%2Fmatrix-doc/2346",
+    "type": "m.bridge",
+    "content": {
+        "creator": "@alice:matrix.org",
+        "status": "active",
+        "protocol": {
+            "id": "github",
+            "displayname": "GitHub"
+        },
+        "network": {
+            "id": "matrix-org/matrix-doc",
+            "external_url": "https://github.com/matrix-org/matrix-doc"
+        },
+        "channel": {
+            "id": "2346",
+            "displayname": "MSC2346: Bridge information state event",
+            "external_url": "https://github.com/matrix-org/matrix-doc/pull/2346"
+        },
+        "uk.half-shot.matrix-github.merged": false,
+        "uk.half-shot.matrix-github.opened_by": "Half-Shot",
+    },
+    "sender": "@github:matrix.org"
+}
+```
+
+#### Mastodon feed
+
+An example of a feed oriented bridge.
+
+```js
+{
+    "state_key": "org.matrix-org.matrix-mastodon://mastodon/mastodon.matrix.org/@matrix",
+    "type": "m.bridge",
+    "content": {
+        "creator": "@alice:matrix.org",
+        "status": "active",
+        "protocol": {
+            "id": "mastodon",
+            "displayname": "Mastodon"
+        },
+        "network": {
+            "id": "mastodon.matrix.org",
+            "external_url": "https://mastodon.matrix.org"
+        },
+        "channel": {
+            "id": "@matrix",
+            "displayname": "Matrix.org",
+            "external_url": "https://mastodon.matrix.org/@matrix"
+        }
+    },
+    "org.matrix-org.matrix-mastodon.bio": "An open standard for decentralised persistent communication. Toots by @matthew, @Amandine & co.",
+    "org.matrix-org.matrix-mastodon.joined": "May 2017",
+    "sender": "@mastodon:matrix.org"
+}
+```
+
+Note the `@` in this case helps distinguish the type of channel. Here the protocol used is "Mastodon" rather than "ActivityPub".
+While the underlying protocol might indeed be ActivityPub, the choice of name should be recognisable to users.
 
 ## `/_matrix/app/v1/thirdparty/location`
 
