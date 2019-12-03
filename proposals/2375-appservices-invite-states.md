@@ -1,4 +1,4 @@
-# MSC xxxx: Proposal to add invite states to invites send to Application Services
+# MSC 2375: Proposal to add invite states to invites send to Application Services
 Application Services are a great way to extend the homeservers functionality, e.g. by bridging matrix
 to other networks.
 
