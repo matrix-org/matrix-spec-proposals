@@ -90,7 +90,7 @@ should be prefixed by the bridge's name. Clients may be capable of displaying th
 
 #### XMPP
 
-An example of a non-messaging bridge, such as the GitHub bridge:
+An example of a straight forward messaging bridge, such as the XMPP (bifrost) bridge:
 
 ```js
 {
