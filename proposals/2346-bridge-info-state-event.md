@@ -57,6 +57,9 @@ bridged network and nothing more.
 ```
 
 The `state_key` must be comprised of the bridge's prefix, followed by the `network.id`, followed by the `channel.id`.
+Any `/`s must be escaped into `%2F`. The bridge prefix can be anything, but should uniquely identify the bridge software
+that consumes the event. E.g. The matrix.org IRC bridge `matrix-org/matrix-appservice-irc` becomes `org.matrix.appservice-irc`.
+This is to help distinguish two bridges on different softwares which may conflict.
 
 The `sender` should be the MXID of the bridge bot.
 
@@ -74,6 +77,8 @@ It's important to make the distinction here that this does *NOT* describe the pr
 the user is on. For protocols that do not have the concept of a network, this field may be omitted.
 
 The `channel` field should be information about the specific channel the room is connected to. 
+
+The `id` field is case-insensitive and should be lowercase.
 
 The `external_url` key is a optional link to a connected channel or network that works in much the same way as
 `external_url` works for bridged messages in the AS spec.
