@@ -1,8 +1,8 @@
-# MSC 2375: Proposal to add invite states to invites send to Application Services
+# MSC 2375: Proposal to add invite states to invites sent to Application Services
 Application Services are a great way to extend the homeservers functionality, e.g. by bridging matrix
 to other networks.
 
-When initiating an invite you might want to get additional information about the room you are invited
+When receiving an invite you might want to get additional information about the room you are invited
 to, such as the room name and icon to e.g. bridge them nicely to the remote network. Currently
 Application Services do not offer this, unlike clients.
 
@@ -13,11 +13,12 @@ rooms, e.g. if a token is present and valid in the invite state.
 This proposal is about adding `invite_room_state` to the `unsigned` block of invite events when sending
 them out to Application Services.
 
-As content of `invite_room_state` an array of `StrippedState` objects would be used. This way it would
+As content of `invite_room_state` an array of `StrippedState` (defined [here](https://matrix.org/docs/spec/client_server/r0.6.0#m-room-member))
+objects would be used. This way it would
 be in line with the Server-Server API to send invites.
 
 ### Example
-An invite event of `@admin:example.com` inviting `@user:example.com` could look as follows:
+An invite event of `@alice:example.com` inviting `@bob:example.com` could look as follows:
 
 ```json
 {
@@ -29,15 +30,15 @@ An invite event of `@admin:example.com` inviting `@user:example.com` could look 
   "event_id": "$some_event_id",
   "origin_server_ts": 1575368937985,
   "room_id": "!some_room:example.com",
-  "sender": "@admin:example.com",
-  "state_key": "@user:example.com",
+  "sender": "@alice:example.com",
+  "state_key": "@bob:example.com",
   "type": "m.room.member",
   "unsigned": {
     "age": 1167,
     "invite_room_state": [
       {
         "type": "m.room.name",
-        "sender": "@admin:example.com",
+        "sender": "@alice:example.com",
         "state_key": "",
         "content": {
           "name": "Example Room"
@@ -45,7 +46,7 @@ An invite event of `@admin:example.com` inviting `@user:example.com` could look 
       },
       {
         "type": "m.room.join_rules",
-        "sender": "@admin:example.com",
+        "sender": "@alice:example.com",
         "state_key": "",
         "content": {
           "join_rule": "invite"
@@ -57,7 +58,9 @@ An invite event of `@admin:example.com` inviting `@user:example.com` could look 
 ```
 
 # Potential issues
-none
+Depending on server implementation this could be a heavy operation. Additionally more data is sent
+down the line to the Application Service. As this is already done for normal clients it shouldn't be
+to bad, though.
 
 # Alternatives
 Instead of aligning with S-S API `/invite` it could be aligned with C-S API `/sync` and putting the
