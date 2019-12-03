@@ -5,7 +5,7 @@ is already obvious from the message itself.
 
 ## Proposal
 This proposal adds a new attribute to the `formatted_body` key of messages with type
-`m.room.member` and msgtype `m.text`.
+`m.room.message` and msgtype `m.text`.
 
 It adds a new attribute, `data-mx-nopreview` to the `<a>` HTML tag. If this attribute is present the
 client SHOULD NOT display a URL preview.
@@ -22,12 +22,16 @@ client SHOULD NOT display a URL preview.
 
 ## Potential issues
 HTML tags are usually meant for formatting. Disabling URL previews isn't strictly formatting.
-However, as the client will already have parsed the tag in order to generate a URL preview the place
-seems appropriate.
+
+Additionally, clients may currently only gather the URL previews only from the `body`, forcing them
+to parse the `formatted_body` as well.
 
 ## Alternatives
 A flag could be set for the entire message to disable URL previews, however that doesn't allow for
 having within a message one URL with preview and one without.
+
+Alternatively, a new, optional, key `url_previews` with an array of the URLs to preview for could be
+introduced.
 
 ## Security considerations
 You could get tricked more easily into being Rickroll'd.
