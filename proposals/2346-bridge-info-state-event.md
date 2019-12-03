@@ -14,18 +14,16 @@ as it assumes prior knowledge of these networks and an understanding of how brid
 ## Proposal
 
 This proposal attempts to address this problem by providing a single state event for each bridge in a room
-to announce what network/channel combination have been bridged into a room.
+to announce which channels have been bridged into a room.
 
 It should be noted that this MSC is intended to provide the baseline needed to display information about
-a bridge, and nothing more.
+a bridge, and nothing more. See the "Future MSCs" section for more information.
 
 This proposal is heavily based upon my previous attempt [#1410](https://github.com/matrix-org/matrix-doc/issues/1410)
 albeit with a notably reduced set of features. The aim of this proposal is to offer information about the
 bridged network and nothing more.
 
 ### `m.bridge`
-
-*The name of the event type should eventually be `m.bridge` but has been prefixed until the spec is ready.*
 
 ```js
 {
