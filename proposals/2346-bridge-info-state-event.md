@@ -172,10 +172,10 @@ An example of a feed oriented bridge.
             "id": "@matrix",
             "displayname": "Matrix.org",
             "external_url": "https://mastodon.matrix.org/@matrix"
-        }
+        },
+        "org.matrix-org.matrix-mastodon.bio": "An open standard for decentralised persistent communication. Toots by @matthew, @Amandine & co.",
+        "org.matrix-org.matrix-mastodon.joined": "May 2017",
     },
-    "org.matrix-org.matrix-mastodon.bio": "An open standard for decentralised persistent communication. Toots by @matthew, @Amandine & co.",
-    "org.matrix-org.matrix-mastodon.joined": "May 2017",
     "sender": "@mastodon:matrix.org"
 }
 ```
