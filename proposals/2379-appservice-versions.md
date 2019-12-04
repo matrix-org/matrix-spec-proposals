@@ -1,4 +1,4 @@
-# MSC XXXX: Add supported appservice version to registration information. 
+# MSC 2379: Add supported appservice version to registration information. 
 
 The [AS registration format](https://matrix.org/docs/spec/application_service/r0.1.2#registration) does
 not have a way to specify what version of the spec that bridges support. This means that if the path
