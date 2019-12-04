@@ -28,7 +28,7 @@ Example:
 
 Request:
 ```
-POST /_matrix/media/v1/resolve_url
+POST /_matrix/media/r0/resolve_url
 Content-Type: application/json
 Authentication: Bearer <access token>
 
