@@ -54,7 +54,7 @@ bridged network and nothing more.
 }
 ```
 
-The `state_key` must be comprised of the bridge's prefix, followed by the `network.id`, followed by the `channel.id`.
+The `state_key` must be comprised of the bridge's prefix, followed by the `protocol.id`, followed by the `network.id`, followed by the `channel.id`.
 Any `/`s must be escaped into `%2F`. The bridge prefix can be anything, but should uniquely identify the bridge software
 that consumes the event. E.g. The matrix.org IRC bridge `matrix-org/matrix-appservice-irc` becomes `org.matrix.appservice-irc`.
 This is to help distinguish two bridges on different softwares which may conflict.
@@ -94,7 +94,7 @@ An example of a straight forward messaging bridge, such as the XMPP (bifrost) br
 
 ```js
 {
-    "state_key": "org.matrix.matrix-bifrost://xmpp/general/muc.xmpp.org",
+    "state_key": "org.matrix.matrix-bifrost://xmpp/muc.xmpp.org/xsf@muc.xmpp.org",
     "type": "m.bridge",
     "content": {
         "creator": "@alice:matrix.org",
