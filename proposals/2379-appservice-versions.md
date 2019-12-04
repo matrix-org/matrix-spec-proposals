@@ -17,9 +17,10 @@ Homeservers may optionally support an omitted value, which will make it support 
 by Synapse `<=1.6.X`.
 
 The legacy paths omit the /_matrix/app/{version} prefix entirely for:
-    - `/_matrix/app/{version}/transactions/{txnId}`` becomes  `/transactions/{txnId}`
-    - `/_matrix/app/{version}/users/{userId}`` becomes  `/users/{userId}`
-    - `/_matrix/app/{version}/rooms/{txnId}`` becomes  `/rooms/{roomAlias}`
+
+    - `/_matrix/app/{version}/transactions/{txnId}` becomes  `/transactions/{txnId}`
+    - `/_matrix/app/{version}/users/{userId}` becomes  `/users/{userId}`
+    - `/_matrix/app/{version}/rooms/{txnId}` becomes  `/rooms/{roomAlias}`
 
 Additionally, the `{version}` for the Third party network routes is always set to `unstable`.
 
