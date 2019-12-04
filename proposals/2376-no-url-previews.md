@@ -35,4 +35,6 @@ Alternatively, a new, optional, key `url_previews` with an array of the URLs to 
 introduced.
 
 ## Security considerations
-You could get tricked more easily into being Rickroll'd.
+You could get tricked more easily into being Rickroll'd. This can be alleviated by encouraging
+clients to request previews explicitly (either by hovering or by clicking a special button next to
+the link).
