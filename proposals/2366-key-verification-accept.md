@@ -7,6 +7,16 @@ experienced users through the verification process, especially if they are not
 verifying in-person, but are using a trusted but remote channel of verification
 (such as telephone or video conference).
 
+As an example, let us say that Alice is an experienced Matrix user and is
+introducing Bob to the wonders of federated communications.  Alice wants to
+verify keys with Bob, so she clicks on the "Verify" button in her client on
+Bob's profile (which sends a `m.key.verification.request` message to Bob).
+Bob's device receives the verification request and prompts Bob to accept the
+verification request.  At this point, under the current framework, Bob is
+responsible for choosing the verification method to use.  However, with this
+proposal, Bob would be able to just accept the verification request without
+choosing a method, and allow Alice to choose the verification method.
+
 ## Proposal
 
 A new event type is added to the key verification framework:
