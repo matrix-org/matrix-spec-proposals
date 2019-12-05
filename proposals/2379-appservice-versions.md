@@ -10,30 +10,12 @@ A new endpoint is required, which is `/_matrix/app/versions`. This is nearly ide
 [C-S API](https://matrix.org/docs/spec/client_server/r0.6.0#get-matrix-client-versions) endpoint
 but lacks a `unstable_features` key, and is hosted by the appservice rather than the homeserver.
 
-All bridges SHOULD implement this endpoint and specify which version(s) of the `AS` API they support. 
+All bridges MUST implement this endpoint and specify which version(s) of the `AS` API they support. 
 The homeserver MUST send requests to the endpoints specified by that version of the AS spec.
-
-Homeservers may optionally support a 404 response to this endpoint, which will make it use the legacy paths used
-by Synapse `<=1.6.X`. Alternatively, the homeserver may choose not to communicate with a bridge that lacks a /versions
-endpoint.
-
-The legacy paths omit the /_matrix/app/{version} prefix entirely for:
-
-    - `/_matrix/app/{version}/transactions/{txnId}` becomes  `/transactions/{txnId}`
-    - `/_matrix/app/{version}/users/{userId}` becomes  `/users/{userId}`
-    - `/_matrix/app/{version}/rooms/{roomAlias}` becomes  `/rooms/{roomAlias}`
-
-Additionally, the `{version}` for the Third party network routes is always set to `unstable`.
-
-It should be reiterated that support for this is up to the homeserver implemetor. Homeservers may
-refuse to load appservices that do not include this `key`.
 
 ## Potential issues
 
-Keeping a 'legacy' mode around in the spec sucks, because it's horribly non-compliant to the version system.
-However, most of the ecosystem has been modeled over Synapse behaviours which means this spec change would break
-support for bridges if implemented by Synapse. This option remains the most pragmatic option. In a future version
-of the spec, this mode could be removed.
+None
 
 ## Alternatives
 
