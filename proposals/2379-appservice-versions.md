@@ -1,19 +1,19 @@
-# MSC 2379: Add supported appservice version to registration information. 
+# MSC 2379: Add /versions endpoint to Appservice API. 
 
-The [AS registration format](https://matrix.org/docs/spec/application_service/r0.1.2#registration) does
-not have a way to specify what version of the spec that bridges support. This means that if the path
+Bridges do not have a way to specify what version of the spec they support. This means that if the path
 of any of the appservice endpoints were to change in the spec, homeservers would not be able to
 intelligently discover the paths that a bridge supports.
 
 ## Proposal
 
-The `registration` file should contain one new key: `as_version`.
+A new endpoint is required, which is `/versions`. This is nearly identical to the
+[C-S API](https://matrix.org/docs/spec/client_server/r0.6.0#get-matrix-client-versions) endpoint
+but lacks a `unstable_features` key.
 
-The value of the key should be set to the AS API version (`rX.X.X`) that the bridge supports. This
-key SHOULD be specified by all bridges. When set, the homeserver MUST send requests to the endpoints
-specified by that version of the AS spec.
+All bridges SHOULD implement this endpoint and specify which version(s) of the `AS` API they support. 
+The homeserver MUST send requests to the endpoints specified by that version of the AS spec.
 
-Homeservers may optionally support an omitted value, which will make it support the legacy paths used
+Homeservers may optionally support a 404 response to this endpoint, which will make it use the legacy paths used
 by Synapse `<=1.6.X`.
 
 The legacy paths omit the /_matrix/app/{version} prefix entirely for:
@@ -36,9 +36,10 @@ of the spec, this mode could be removed.
 
 ## Alternatives
 
-A /versions endpoint could be defined for the bridge to host, but this feels overcomplicated when the
-registration format could also work.
-
+This proposal previously used the `registration` file as a way to specify the supported version, but
+this was dropped as it was hard for the bridge to be authoritive over what version it supports. Typically
+the registration format is generated once by the bridge and then handled by the homeserver. If a bridge were
+to update and require a new version of the AS API, the registration data would need to be updated/regenerated.
 
 ## Security considerations
 
