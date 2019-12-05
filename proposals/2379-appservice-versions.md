@@ -14,7 +14,8 @@ All bridges SHOULD implement this endpoint and specify which version(s) of the `
 The homeserver MUST send requests to the endpoints specified by that version of the AS spec.
 
 Homeservers may optionally support a 404 response to this endpoint, which will make it use the legacy paths used
-by Synapse `<=1.6.X`.
+by Synapse `<=1.6.X`. Alternatively, the homeserver may choose not to communicate with a bridge that lacks a /versions
+endpoint.
 
 The legacy paths omit the /_matrix/app/{version} prefix entirely for:
 
