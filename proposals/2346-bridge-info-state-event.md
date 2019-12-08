@@ -31,7 +31,6 @@ bridged network and nothing more.
     "type": "m.bridge",
     "content": {
         "creator": "@alice:matrix.org", // Optional
-        "status": "active", // Optional, will default to active. One of "active", "disabled".
         "protocol": {
             "id": "irc",
             "displayname": "IRC"
@@ -63,8 +62,6 @@ The `sender` should be the MXID of the bridge bot.
 
 The `creator` field is the name of the *user* which provisioned the bridge. In the case of alias based bridges, where the
 creator is not known -- it may be omitted.
-
-The `status` field informs the client if the bridge is still active, or has been disabled.
 
 The `protocol` field describes the protocol that is being bridged. For example, it may be "IRC", "Slack", or "Discord". This
 field does not describe the low level protocol the bridge is using to access the network, but a common user recongnisable
