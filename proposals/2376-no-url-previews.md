@@ -1,4 +1,6 @@
 # MSC 2376: Disable URL Previews
+This MSC is an alternative suggestion to [MSC2385](https://github.com/matrix-org/matrix-doc/pull/2385).
+
 Currently URLs posted in chat give a URL preview. Sometimes, for example with bots, this can be
 unwanted. For instance if a bot is posting a message with a lot of links, or the content of the link
 is already obvious from the message itself.
@@ -32,7 +34,7 @@ A flag could be set for the entire message to disable URL previews, however that
 having within a message one URL with preview and one without.
 
 Alternatively, a new, optional, key `url_previews` with an array of the URLs to preview for could be
-introduced.
+introduced. See [MSC2385](https://github.com/matrix-org/matrix-doc/pull/2385).
 
 ## Security considerations
 You could get tricked more easily into being Rickroll'd. This can be alleviated by encouraging
