@@ -33,7 +33,9 @@ bridged network and nothing more.
         "creator": "@alice:matrix.org", // Optional
         "protocol": {
             "id": "irc",
-            "displayname": "IRC"
+            "displayname": "IRC", // Optional
+            "avatar": "mxc://foo/bar", // Optional
+            "external_url": "https://example.com" // Optional
         },
         "network": { // Optional
             "id": "freenode",
@@ -44,6 +46,7 @@ bridged network and nothing more.
         "channel": {
             "id": "#friends",
             "displayname": "Friends", // Optional
+            "avatar": "mxc://foo/bar", // Optional
             "external_url": "irc://chat.freenode.net/#friends" // Optional
         },
         // Custom vendor-specific keys
@@ -71,11 +74,13 @@ The `network` field should be information about the specific network the bridge 
 It's important to make the distinction here that this does *NOT* describe the protocol name, but the specific network
 the user is on. For protocols that do not have the concept of a network, this field may be omitted.
 
-The `channel` field should be information about the specific channel the room is connected to. 
+The `channel` field should be information about the specific channel the room is connected to.
 
 The `id` field is case-insensitive and should be lowercase.
 
-The `external_url` key is a optional link to a connected channel or network that works in much the same way as
+The `network`, `channel` and `protocol` fields can contain `displayname` and `avatar` keys. The `displayname` is meant to be a human readable identifier for the item in question, whereas the ID should be a unique identifer relevant to the protocol. The `id` should be used in place of a `displayname`, if not given. The `avatar` key is a MXC URI which refers to an image file, similar to a user or room avatar.
+
+The `external_url` key is a optional link to a connected channel, network or protocol that works in much the same way as
 `external_url` works for bridged messages in the AS spec.
 
 In terms of hierachy, the protocol can contain many networks, which can contain many channels.
