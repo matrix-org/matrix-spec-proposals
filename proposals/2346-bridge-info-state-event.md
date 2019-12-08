@@ -95,7 +95,6 @@ An example of a straight forward messaging bridge, such as the XMPP (bifrost) br
     "type": "m.bridge",
     "content": {
         "creator": "@alice:matrix.org",
-        "status": "active",
         "protocol": {
             "id": "xmpp",
             "displayname": "XMPP"
@@ -125,7 +124,6 @@ An example of a non-messaging bridge, such as the GitHub bridge:
     "type": "m.bridge",
     "content": {
         "creator": "@alice:matrix.org",
-        "status": "active",
         "protocol": {
             "id": "github",
             "displayname": "GitHub"
@@ -156,7 +154,6 @@ An example of a feed oriented bridge.
     "type": "m.bridge",
     "content": {
         "creator": "@alice:matrix.org",
-        "status": "active",
         "protocol": {
             "id": "mastodon",
             "displayname": "Mastodon"
