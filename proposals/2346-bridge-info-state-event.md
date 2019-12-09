@@ -76,7 +76,7 @@ the user is on. For protocols that do not have the concept of a network, this fi
 
 The `channel` field should be information about the specific channel the room is connected to.
 
-The `id` field is case-insensitive and should be lowercase.
+The `id` field is case-insensitive and should be lowercase. Uppercase characters should be escaped (e.g. using QP encoding or similar). The purpose of the id field is not to be human readable but just for comparing within the same bridge type, hence no encoding standard will be enforced in this proposal.
 
 The `network`, `channel` and `protocol` fields can contain `displayname` and `avatar` keys. The `displayname` is meant to be a human readable identifier for the item in question, whereas the ID should be a unique identifer relevant to the protocol. The `id` should be used in place of a `displayname`, if not given. The `avatar` key is a MXC URI which refers to an image file, similar to a user or room avatar.
 
