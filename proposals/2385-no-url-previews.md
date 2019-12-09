@@ -7,9 +7,9 @@ is already obvious from the message itself.
 
 ## Proposal
 This proposal adds a new, optional key to `m.room.message` messages, named `url_previews`. It is an
-array of strings containing the URLs a preview should be given to. Is this key absent it is expected
-that the client gives URL previews to all present URLs. Is a URL present in this key that is *not*
-present in the body it is expected to not render a preview for that URL.
+array of strings containing the URLs a preview should be given to. If this key is absent, it is expected
+that the client gives URL previews for all URLs present in the message body. If a URL is present in this key that is *not*
+present in the body clients SHOULD NOT render a preview for that URL.
 
 ### Examples
 No key added, preview to all URLs:
@@ -45,7 +45,7 @@ URLs that should have a preview need to be sent twice - once in the body, once i
 this feature is meant for bots, normal human clients would probably omit `url_previews` alltogether,
 resulting in all URLs sent from them having a preview.
 
-URLs in `url_previews` and the body need to be an exact slash, which could be confusing with trailing
+URLs in `url_previews` and in the body need to match exactly, which could be confusing with trailing
 slashes (`/`).
 
 ## Alternatives
