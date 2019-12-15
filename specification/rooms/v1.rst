@@ -94,7 +94,7 @@ results of the resolution so far.
   passes authentication in :math:`R` and add it to :math:`R`.
 
 A *conflict* occurs between states where those states have different
-``event_ids`` for the same ``(state_type, state_key)``. The events thus
+``event_ids`` for the same ``(event_type, state_key)``. The events thus
 affected are said to be *conflicting* events.
 
 
