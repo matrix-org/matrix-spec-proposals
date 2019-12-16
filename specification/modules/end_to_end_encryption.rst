@@ -767,6 +767,126 @@ previously-received ``request`` message with the same ``request_id`` and
   A reasonable strategy is for a user's client to only send keys requested by the
   verified devices of the same user.
 
+Server-side key backups
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Devices may upload encrypted copies of keys to the server. When a device tries
+to read a message that it does not have keys for, it may request the key from
+the server and decrypt it. Backups are per-user, and users may replace backups
+with new backups.
+
+In contrast with `Key requests`_, Server-side key backups do not require another
+device to be online from which to request keys. However, as the session keys are
+stored on the server encrypted, it requires users to enter a decryption key to
+decrypt the session keys.
+
+To create a backup, a client will call ``POST /room_keys/version`` and define
+how the keys are to be encrypted through the backup's ``auth_data``; other
+clients can discover the backup by calling ``GET /room_keys/version``.  Keys
+are encrypted according to the backups ``auth_data`` and added to the backup by
+calling ``PUT /room_keys/keys?version=$v`` or one of its variants, and can be
+retrieved by calling ``GET /room_keys/keys?version=$v`` or one of its variants.
+Backups can also be deleted using ``DELETE /room_keys/version``, or individual
+keys can be deleted using ``DELETE /room_key/keys?version=$v`` or one of its
+variants.
+
+Clients must only store keys in backups after they have ensured that the
+``auth_data`` is trusted, either by checking the signatures on it, or by
+deriving the public key from a private key that it obtained from a trusted
+source.
+
+When a client uploads a key for a session that the server already has a key
+for, the server will choose to either keep the existing key or replace it with
+the new key based on the key metadata as follows:
+
+- if the keys have different values for ``is_verified``, then it will keep the
+  key that has ``is_verified`` set to ``true``;
+- if they have the same values for ``is_verified``, then it will keep the key
+  with a lower ``first_message_index``;
+- and finally, is ``is_verified`` and ``first_message_index`` are equal, then
+  it will keep the key with a lower ``forwarded_count``.
+
+Recovery key
+<<<<<<<<<<<<
+
+If the recovery key (the private half of the backup encryption key) is
+presented to the user to save, it is presented as a string constructed as
+follows:
+
+1. The 256-bit curve25519 private key is prepended by the bytes ``0x8B`` and
+   ``0x01``
+2. All the bytes in the string above, including the two header bytes, are XORed
+   together to form a parity byte. This parity byte is appended to the byte
+   string.
+3. The byte string is encoded using base58, using the same mapping as is used
+   for Bitcoin addresses.
+4. A space should be added after every 4th character.
+
+When reading in a recovery key, clients must disregard whitespace, and perform
+the reverse of steps 1 through 3.
+
+Backup algorithm: ``m.megolm_backup.v1.curve25519-aes-sha2``
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+When a backup is created with the ``algorithm`` set to
+``m.megolm_backup.v1.curve25519-aes-sha2``, the ``auth_data`` should have the
+following format:
+
+``AuthData``
+
+.. table::
+   :widths: auto
+
+   ========== =========== ======================================================
+   Parameter  Type        Description
+   ========== =========== ======================================================
+   public_key string      Required. The curve25519 public key used to encrypt
+                          the backups, encoded in unpadded base64.
+   signatures {string:    Optional. Signatures of the ``auth_data``, as Signed
+              {string:    JSON
+              string}}
+   ========== =========== ======================================================
+
+The ``session_data`` field in the backups is constructed as follows:
+
+1. Encode the session key to be backed up as a JSON object with the properties:
+
+   .. table::
+      :widths: auto
+
+      =============================== ======== =========================================
+      Parameter                       Type     Description
+      =============================== ======== =========================================
+      algorithm                       string   Required. The end-to-end message
+                                               encryption algorithm that the key is
+                                               for.  Must be ``m.megolm.v1.aes-sha2``.
+      sender_key                      string   Required. Unpadded base64-encoded
+                                               device curve25519 key.
+      sender_claimed_keys             {string: Required. Object containing the
+                                       string} identity key for the sending device.
+      forwarding_curve25519_key_chain [string] Required. Zero or more curve25519 keys
+                                               for devices who forwarded the session key.
+      session_key                     string   Required. Unpadded base64-encoded
+                                               session key in `session-sharing format
+                                               <https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md#session-sharing-format>`_.
+      =============================== ======== =========================================
+
+2. Generate an ephemeral curve25519 key, and perform an ECDH with the ephemeral
+   key and the backup's public key to generate a shared secret.  The public
+   half of the ephemeral key, encoded using unpadded base64, becomes the ``ephemeral``
+   property of the ``session_data``.
+3. Using the shared secret, generate 80 bytes by performing an HKDF using
+   SHA-256 as the hash, with a salt of 32 bytes of 0, and with the empty string
+   as the info.  The first 32 bytes are used as the AES key, the next 32 bytes
+   are used as the MAC key, and the last 16 bytes are used as the AES
+   initialization vector.
+4. Stringify the JSON object, and encrypt it using AES-CBC-256 with PKCS#7
+   padding.  This encrypted data, encoded using unpadded base64, becomes the
+   ``ciphertext`` property of the ``session_data``.
+5. Pass the raw encrypted data (prior to base64 encoding) through HMAC-SHA-256
+   using the MAC key generated above.  The first 8 bytes of the resulting MAC
+   are base64-encoded, and become the ``mac`` property of the ``session_data``.
+
 Key exports
 ~~~~~~~~~~~
 
@@ -1088,6 +1208,11 @@ Key management API
 ~~~~~~~~~~~~~~~~~~
 
 {{keys_cs_http_api}}
+
+Key Backup API
+~~~~~~~~~~~~~~
+
+{{key_backup_cs_http_api}}
 
 
 .. anchor for link from /sync api spec
