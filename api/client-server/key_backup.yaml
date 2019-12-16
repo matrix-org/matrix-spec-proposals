@@ -92,9 +92,9 @@ paths:
           type: string
           name: version
           description: |-
-            Optional. The backup version to get. If omitted, the current backup
-            is returned.
-          required: false
+            The backup version to get. When an empty string, the trailing slash
+            is optional, and the current backup is returned.
+          required: true
           x-example: "1"
       responses:
         200:
@@ -678,12 +678,6 @@ paths:
             The backup from which to retrieve the keys. If omitted, the keys are
             retrieved from the current backup.
           x-example: "1"
-        - in: path
-          type: string
-          name: roomId
-          description: The ID of the room that the requested key is for.
-          required: true
-          x-example: "!roomid:example.org"
       responses:
         200:
           description: |-
@@ -736,12 +730,6 @@ paths:
             The backup from which to delete the key
           required: true
           x-example: "1"
-        - in: path
-          type: string
-          name: roomId
-          description: The ID of the room that the specified key is for.
-          required: true
-          x-example: "!roomid:example.org"
       responses:
         200:
           description: The update succeeded
