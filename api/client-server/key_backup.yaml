@@ -106,7 +106,6 @@ paths:
               algorithm:
                 type: string
                 description: The algorithm used for storing backups.
-                type: string
                 enum: ["m.megolm_backup.v1.curve25519-aes-sha2"]
                 example: "m.megolm_backup.v1.curve25519-aes-sha2"
               auth_data:
