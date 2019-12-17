@@ -23,12 +23,12 @@ properties:
     example: 1
   forwarded_count:
     description: |-
-      The number of times this key has been forwarded.
+      The number of times this key has been forwarded via key-sharing between devices.
     type: integer
     example: 0
   is_verified:
     description: |-
-      Whether the device backing up the key was verified the device that the key
+      Whether the device backing up the key verified the device that the key
       is from.
     type: boolean
     example: false
