@@ -59,7 +59,7 @@ Errors can occur when processing the request.
   the endpoint should respond with an `M_UNKNOWN` error and HTTP code 400.
 * If the resource cannot be downloaded because it has been blacklisted, it should
   respond with an `M_FORBIDDEN` error and HTTP code 403.
-* If the resource is larger than the homeserver's upload size limit, it should
+* If the resource is larger than the homeserver's limit, it should
   respond with an `M_TOO_LARGE` error and HTTP code 400.
 
 ## Security considerations
