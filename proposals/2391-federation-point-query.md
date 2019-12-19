@@ -14,14 +14,14 @@ point-queries for room state (see: client-to-server r0.6.0 §9.5.1 and §9.5.2)
 so we are compelled to approach the following solutions as a reduction from
 the client-to-server interface.
 
-##### GET /_matrix/federation/v1/state/{roomId}/{eventType}/{stateKey}
+##### GET `/_matrix/federation/v1/state/{roomId}/{eventType}/{stateKey}`
 
 We specify an endpoint capable of querying state at a cellular level over
 Federation using `(eventType,stateKey)` arguments. All other parameters,
 response format, and error conditions are inherited from server-to-server
 §10.1.
 
-##### GET /_matrix/federation/v1/state/{roomId}/{eventType}
+##### GET `/_matrix/federation/v1/state/{roomId}/{eventType}`
 
 We specify an endpoint capable of querying state at a class level over
 Federation using `(eventType)` arguments. All other parameters,
