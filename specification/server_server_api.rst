@@ -391,27 +391,8 @@ creating a new event in this room should populate the new event's
   |
   E4
 
-.. _`auth events selection`:
-
-The ``auth_events`` field of a PDU identifies the set of events which give the
-sender permission to send the event. The ``auth_events`` for the
-``m.room.create`` event in a room is empty; for other events, it should be the
-following subset of the room state:
-
-- The ``m.room.create`` event.
-- The current ``m.room.power_levels`` event, if any.
-- The sender's current ``m.room.member`` event, if any.
-- If type is ``m.room.member``:
-
-    - The target's current ``m.room.member`` event, if any.
-    - If ``membership`` is ``join`` or ``invite``, the current
-      ``m.room.join_rules`` event, if any.
-    - If membership is ``invite`` and ``content`` contains a
-      ``third_party_invite`` property, the current
-      ``m.room.third_party_invite`` event with ``state_key`` matching
-      ``content.third_party_invite.signed.token``, if any.
-
 For a full schema of what a PDU looks like, see the `room version specification`_.
+
 
 Checks performed on receipt of a PDU
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -465,6 +446,29 @@ given event is checked multiple times against different sets of state, as
 specified above. Each room version can have a different algorithm for how the
 rules work, and which rules are applied. For more detailed information, please
 see the `room version specification`_.
+
+
+Auth events selection
+^^^^^^^^^^^^^^^^^^^^^
+
+The ``auth_events`` field of a PDU identifies the set of events which give the
+sender permission to send the event. The ``auth_events`` for the
+``m.room.create`` event in a room is empty; for other events, it should be the
+following subset of the room state:
+
+- The ``m.room.create`` event.
+- The current ``m.room.power_levels`` event, if any.
+- The sender's current ``m.room.member`` event, if any.
+- If type is ``m.room.member``:
+
+    - The target's current ``m.room.member`` event, if any.
+    - If ``membership`` is ``join`` or ``invite``, the current
+      ``m.room.join_rules`` event, if any.
+    - If membership is ``invite`` and ``content`` contains a
+      ``third_party_invite`` property, the current
+      ``m.room.third_party_invite`` event with ``state_key`` matching
+      ``content.third_party_invite.signed.token``, if any.
+
 
 Rejection
 +++++++++
