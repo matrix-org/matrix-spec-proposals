@@ -26,9 +26,12 @@ that it should not expect to receive keys for the message.  This message may
 also be sent in reply to a `m.room_key_request`.  The `m.room.no_key` event has
 the properties:
 
-- `room_id`: Required. The ID of the room that the session belongs to.
-- `session_id`: Required. The ID of the session.
-- `code`: An machine-readable code for why the key was not sent.
+- `room_id`: Required if `code` is not `m.no_olm`. The ID of the room that the
+  session belongs to.
+- `algorithm`: Required. The encryption algorithm that the key is for.
+- `session_id`: Required if `code` is not `m.no_olm`. The ID of the session.
+- `sender_key`: Required.  The key of the session creator.
+- `code`: A machine-readable code for why the key was not sent.
   Possible values are:
   - `m.blacklisted`: the user/device was blacklisted
   - `m.unverified`: the user/devices is unverified
@@ -37,10 +40,28 @@ the properties:
     user was not in the room when the message was sent
   - `m.unavailable`: sent in reply to a key request if the device that the key
     is requested from does not have the requested key
+  - `m.no_olm`: an olm session could not be established.  This may happen, for
+    example, if the sender was unable to obtain a one-time key from the
+    recipient.
 - `reason`: A human-readable reason for why the key was not sent.  If there is
   a `code`, this should be a human-readable representation of `code`.  The
   receiving client should only use this string if it does not understand the
   `code` or if `code` is not provided.
+
+An `m.room_key.withheld` event should only be sent once per session; the
+recipient of the event should assume that the event applies to all messages in
+that session.  If a sender unblocks a recipient, it may re-use the existing
+session for which the recipient was previously informed that it was blocked, in
+which case, the recipient of the `m.room_key.withheld` message should assume
+that the event applies to all messages in the session prior to the index of the
+first key that it has received for that session.
+
+A `code` of `m.no_olm` is used to indicate that the sender is unable to
+establish an olm session with the recipient.  When this happens, multiple
+sessions will be affected.  In order to avoid filling the recipient's device
+mailbox, the sender should only send one `m.room_key.withheld` message with no
+`room_id` nor `session_id` set.  FIXME: how does the recipient determine which
+sessions the notification applies to?
 
 ## Potential issues
 
@@ -50,9 +71,10 @@ megolm keys.
 ## Security considerations
 
 A user might not want to notify another user of the reason why it was not sent
-the keys.  Sending `m.room_key.witheld`, or specifying the `reason`/`code` are
+the keys.  Sending `m.room_key.withheld`, or specifying the `reason`/`code` are
 optional.
 
 ## Unstable prefix
 
-While in development, clients will send events of type `org.matrix.room_key.witheld`.
+While in development, clients will send events of type
+`org.matrix.room_key.withheld`.
