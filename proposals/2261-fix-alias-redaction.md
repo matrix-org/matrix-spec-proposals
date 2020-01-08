@@ -23,8 +23,15 @@ alias.
 
 ## Potential issues
 
-This could increase the number of cases in which `m.room.aliases` events
-differ from reality (see https://github.com/matrix-org/matrix-doc/issues/2262).
+* This could increase the number of cases in which `m.room.aliases` events
+  differ from reality (see https://github.com/matrix-org/matrix-doc/issues/2262).
+
+* Redacting an `m.room.aliases` event adding an abusive alias will remove not
+  only the abusive alias from the room state, but also all other aliases that
+  are in the same state_key (i.e. other aliases from the same server).
+
+  This could be mitigated by replacing `m.room.aliases` events with granular
+  `m.room.alias` events (https://github.com/matrix-org/matrix-doc/issues/2259).
 
 ## See also
 
