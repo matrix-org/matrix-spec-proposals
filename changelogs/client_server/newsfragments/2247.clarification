@@ -1,1 +1,0 @@
-Fix the ``m.room_key_request`` ``action`` value, setting it from ``cancel_request`` to ``request_cancellation``.

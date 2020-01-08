@@ -51,13 +51,13 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/identity_service/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.3.0 <https://matrix.org/docs/spec/identity_service/r0.3.0.html>`_
+- `r0.2.1 <https://matrix.org/docs/spec/identity_service/r0.2.1.html>`_
 - `r0.2.0 <https://matrix.org/docs/spec/identity_service/r0.2.0.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/identity_service/r0.1.0.html>`_
 
 General principles
 ------------------
-
-.. TODO: TravisR - Define auth for IS v2 API in a future PR
 
 The purpose of an identity server is to validate, store, and answer questions
 about the identities of users. In particular, it stores associations of the form
@@ -157,6 +157,23 @@ should allow a 3PID to be mapped to a Matrix user identity, but not in the other
 direction (i.e. one should not be able to get all 3PIDs associated with a Matrix
 user ID, or get all 3PIDs associated with a 3PID).
 
+Version 1 API deprecation
+-------------------------
+
+.. TODO: Remove this section when the v1 API is removed.
+
+As described on each of the version 1 endpoints, the v1 API is deprecated in
+favour of the v2 API described here. The major difference, with the exception
+of a few isolated cases, is that the v2 API requires authentication to ensure
+the user has given permission for the identity server to operate on their data.
+
+The v1 API is planned to be removed from the specification in a future version.
+
+Clients SHOULD attempt the v2 endpoints first, and if they receive a ``404``,
+``400``, or similar error they should try the v1 endpoint or fail the operation.
+Clients are strongly encouraged to warn the user of the risks in using the v1 API,
+if they are planning on using it.
+
 Web browser clients
 -------------------
 
@@ -172,6 +189,60 @@ to be returned by servers on all requests are::
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
   Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization
+
+Authentication
+--------------
+
+Most ``v2`` endpoints in the Identity Service API require authentication in order
+to ensure that the requesting user has accepted all relevant policies and is otherwise
+permitted to make the request. The ``v1`` API (currently deprecated) does not require
+this authentication, however using ``v1`` is strongly discouraged as it will be removed
+in a future release.
+
+Identity Servers use a scheme similar to the Client-Server API's concept of access
+tokens to authenticate users. The access tokens provided by an Identity Server cannot
+be used to authenticate Client-Server API requests.
+
+An access token is provided to an endpoint in one of two ways:
+
+1. Via a query string parameter, ``access_token=TheTokenHere``.
+2. Via a request header, ``Authorization: Bearer TheTokenHere``.
+
+Clients are encouraged to the use the ``Authorization`` header where possible to prevent
+the access token being leaked in access/HTTP logs. The query string should only be used
+in cases where the ``Authorization`` header is inaccessible for the client.
+
+When credentials are required but missing or invalid, the HTTP call will return with a
+status of 401 and the error code ``M_UNAUTHORIZED``.
+
+{{v2_auth_is_http_api}}
+
+
+.. _`agree to more terms`:
+
+Terms of service
+----------------
+
+Identity Servers are encouraged to have terms of service (or similar policies) to
+ensure that users have agreed to their data being processed by the server. To facilitate
+this, an identity server can respond to almost any authenticated API endpoint with a
+HTTP 403 and the error code ``M_TERMS_NOT_SIGNED``. The error code is used to indicate
+that the user must accept new terms of service before being able to continue.
+
+All endpoints which support authentication can return the ``M_TERMS_NOT_SIGNED`` error.
+When clients receive the error, they are expected to make a call to ``GET /terms`` to
+find out what terms the server offers. The client compares this to the ``m.accepted_terms``
+account data for the user (described later) and presents the user with option to accept
+the still-missing terms of service. After the user has made their selection, if applicable,
+the client sends a request to ``POST /terms`` to indicate the user's acceptance. The
+server cannot expect that the client will send acceptance for all pending terms, and the
+client should not expect that the server will not respond with another ``M_TERMS_NOT_SIGNED``
+on their next request. The terms the user has just accepted are appended to ``m.accepted_terms``.
+
+{{m_accepted_terms_event}}
+
+{{v2_terms_is_http_api}}
+
 
 Status check
 ------------
@@ -206,7 +277,134 @@ Association lookup
 
 {{lookup_is_http_api}}
 
-.. TODO: TravisR - Add v2 lookup API in future PR
+{{v2_lookup_is_http_api}}
+
+Client behaviour
+~~~~~~~~~~~~~~~~
+
+.. TODO: Remove this note when v1 is removed completely
+.. Note::
+   This section only covers the v2 lookup endpoint. The v1 endpoint is described
+   in isolation above.
+
+Prior to performing a lookup clients SHOULD make a request to the ``/hash_details``
+endpoint to determine what algorithms the server supports (described in more detail
+below). The client then uses this information to form a ``/lookup`` request and
+receive known bindings from the server.
+
+Clients MUST support at least the ``sha256`` algorithm.
+
+Server behaviour
+~~~~~~~~~~~~~~~~
+
+.. TODO: Remove this note when v1 is removed completely
+.. Note::
+   This section only covers the v2 lookup endpoint. The v1 endpoint is described
+   in isolation above.
+
+Servers, upon receipt of a ``/lookup`` request, will compare the query against
+known bindings it has, hashing the identifiers it knows about as needed to
+verify exact matches to the request.
+
+Servers MUST support at least the ``sha256`` algorithm.
+
+Algorithms
+~~~~~~~~~~
+
+Some algorithms are defined as part of the specification, however other formats
+can be negotiated between the client and server using ``/hash_details``.
+
+``sha256``
+++++++++++
+
+This algorithm MUST be supported by clients and servers at a minimum. It is
+additionally the preferred algorithm for lookups.
+
+When using this algorithm, the client converts the query first into strings
+separated by spaces in the format ``<address> <medium> <pepper>``. The ``<pepper>``
+is retrieved from ``/hash_details``, the ``<medium>`` is typically ``email`` or
+``msisdn`` (both lowercase), and the ``<address>`` is the 3PID to search for.
+For example, if the client wanted to know about ``alice@example.org``'s bindings,
+it would first format the query as ``alice@example.org email ThePepperGoesHere``.
+
+.. admonition:: Rationale
+
+   Mediums and peppers are appended to the address to prevent a common prefix
+   for each 3PID, helping prevent attackers from pre-computing the internal state
+   of the hash function.
+
+After formatting each query, the string is run through SHA-256 as defined by
+`RFC 4634 <https://tools.ietf.org/html/rfc4634>`_. The resulting bytes are then
+encoded using URL-Safe `Unpadded Base64`_ (similar to `room version 4's
+event ID format <../rooms/v4.html#event-ids>`_).
+
+An example set of queries when using the pepper ``matrixrocks`` would be::
+
+  "alice@example.com email matrixrocks" -> "4kenr7N9drpCJ4AfalmlGQVsOn3o2RHjkADUpXJWZUc"
+  "bob@example.com email matrixrocks"   -> "LJwSazmv46n0hlMlsb_iYxI0_HXEqy_yj6Jm636cdT8"
+  "18005552067 msisdn matrixrocks"      -> "nlo35_T5fzSGZzJApqu8lgIudJvmOQtDaHtr-I4rU7I"
+
+
+The set of hashes is then given as the ``addresses`` array in ``/lookup``. Note
+that the pepper used MUST be supplied as ``pepper`` in the ``/lookup`` request.
+
+``none``
+++++++++
+
+This algorithm performs plaintext lookups on the identity server. Typically this
+algorithm should not be used due to the security concerns of unhashed identifiers,
+however some scenarios (such as LDAP-backed identity servers) prevent the use of
+hashed identifiers. Identity servers (and optionally clients) can use this algorithm
+to perform those kinds of lookups.
+
+Similar to the ``sha256`` algorithm, the client converts the queries into strings
+separated by spaces in the format ``<address> <medium>`` - note the lack of ``<pepper>``.
+For example, if the client wanted to know about ``alice@example.org``'s bindings,
+it would format the query as ``alice@example.org email``.
+
+The formatted strings are then given as the ``addresses`` in ``/lookup``. Note that
+the ``pepper`` is still required, and must be provided to ensure the client has made
+an appropriate request to ``/hash_details`` first.
+
+Security considerations
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. Note::
+   `MSC2134 <https://github.com/matrix-org/matrix-doc/pull/2134>`_ has much more
+   information about the security considerations made for this section of the
+   specification. This section covers the high-level details for why the specification
+   is the way it is.
+
+Typically the lookup endpoint is used when a client has an unknown 3PID it wants to
+find a Matrix User ID for. Clients normally do this kind of lookup when inviting new
+users to a room or searching a user's address book to find any Matrix users they may
+not have discovered yet. Rogue or malicious identity servers could harvest this
+unknown information and do nefarious things with it if it were sent in plain text.
+In order to protect the privacy of users who might not have a Matrix identifier bound
+to their 3PID addresses, the specification attempts to make it difficult to harvest
+3PIDs.
+
+.. admonition:: Rationale
+
+   Hashing identifiers, while not perfect, helps make the effort required to harvest
+   identifiers significantly higher. Phone numbers in particular are still difficult
+   to protect with hashing, however hashing is objectively better than not.
+
+   An alternative to hashing would be using bcrypt or similar with many rounds, however
+   by nature of needing to serve mobile clients and clients on limited hardware the
+   solution needs be kept relatively lightweight.
+
+Clients should be cautious of servers not rotating their pepper very often, and
+potentially of servers which use a weak pepper - these servers may be attempting to
+brute force the identifiers or use rainbow tables to mine the addresses. Similarly,
+clients which support the ``none`` algorithm should consider at least warning the user
+of the risks in sending identifiers in plain text to the identity server.
+
+Addresses are still potentially reversable using a calculated rainbow table given
+some identifiers, such as phone numbers, common email address domains, and leaked
+addresses are easily calculated. For example, phone numbers can have roughly 12
+digits to them, making them an easier target for attack than email addresses.
+
 
 Establishing associations
 -------------------------

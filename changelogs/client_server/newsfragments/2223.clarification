@@ -1,1 +1,0 @@
-Add a missing ``state_key`` check on ``.m.rule.tombstone``.
