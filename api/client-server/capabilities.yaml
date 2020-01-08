@@ -96,6 +96,7 @@ paths:
                         example: "1"
                       available:
                         type: object
+                        title: AvailableRoomVersions
                         description: |-
                           A detailed description of the room versions the server supports.
                         additionalProperties:

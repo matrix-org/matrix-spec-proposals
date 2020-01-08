@@ -30,8 +30,8 @@ properties:
   country:
     type: string
     description: |-
-      The two-letter uppercase ISO country code that the number in
-      ``phone_number`` should be parsed as if it were dialled from.
+      The two-letter uppercase ISO-3166-1 alpha-2 country code that the
+      number in ``phone_number`` should be parsed as if it were dialled from.
     example: "GB"
   phone_number:
     type: string

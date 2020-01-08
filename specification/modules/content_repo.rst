@@ -19,7 +19,7 @@ Content repository
 .. _module:content:
 
 The content repository (or "media repository") allows users to upload
-files to their homeserver for later user. For example, files which the
+files to their homeserver for later use. For example, files which the
 user wants to send to a room would be uploaded here, as would an avatar
 the user wants to use.
 

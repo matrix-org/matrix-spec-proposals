@@ -31,7 +31,7 @@ paths:
     post:
       summary: Searches the user directory.
       description: |-
-        Performs a search for users on the homeserver. The homeserver may
+        Performs a search for users. The homeserver may
         determine which subset of users are searched, however the homeserver
         MUST at a minimum consider the users the requesting user shares a
         room with and those who reside in public rooms (known to the homeserver).
