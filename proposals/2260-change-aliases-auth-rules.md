@@ -82,8 +82,10 @@ the aliases published, though.
 ## Potential issues
 
 1. This does little to address the drift of `m.room.aliases` from
-   reality. Indeed, it would exacerbate
-   https://github.com/matrix-org/synapse/issues/1477.
+   reality. Indeed, it would exacerbate it: it increases the number of cases
+   in which we don't have permission to update the `aliases` event (for example:
+   `DELETE /directory/room` allows users to delete aliases without
+   (necessarily) having the abilility to update the `aliases` event).
 
 2. Unless we replace `m.room.aliases` with `m.room.alias`
    (https://github.com/matrix-org/matrix-doc/issues/2259), there are problems
@@ -105,3 +107,9 @@ the aliases published, though.
    the previous one and just adds the new alias; however that screams races to
    me and (particularly once state resolution comes into play) I think it's
    likely that the list is going to get out of sync.
+
+   Yet another alternative impl is possible where we keep track (in the
+   directory table) of whether each alias was added by a user who had
+   rights to send the `aliases` event. Eve's `#evil_alias` is therefore marked
+   as evil, so when Bob adds his `#nice_alias` the server can exclude it from
+   the generated `m.room.aliases` event.
