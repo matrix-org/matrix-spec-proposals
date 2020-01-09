@@ -1,4 +1,4 @@
-# MSC2400: Add "knock" feature
+# MSC2403: Add "knock" feature
 Many people are in invite-only rooms. Sometimes, someone wants to join such a room and can't, as
 they aren't invited. This proposal adds a feature for this user to indicate that they want to join
 said room.
