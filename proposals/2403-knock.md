@@ -87,7 +87,7 @@ The user wasn't allowed to knock (e.g. they are banned). Error reply:
 ```
 
 ## Server-Server API
-The new endpoint for the server-server API is `PUT /_matrix/federation/v2/knock/{roomId}/{eventId}`. (`/v2/` or `/v1`? Just looked at how invite currently works)
+The new endpoint for the server-server API is `PUT /_matrix/federation/v2/knock/{roomId}/{eventId}`.
 The path parameters are the room id you want to knock and the event id of the knock event. The post
 body consists of an `event` parameter, which is the knock event. A request could look as follows:
 
