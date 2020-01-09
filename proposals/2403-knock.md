@@ -55,9 +55,6 @@ as a way to limit who can knock and who can't.
 }
 ```
 
-## New Join Rule
-
-
 ## Client-Server API
 The new endpoint for the client-server API is `POST /_matrix/client/r0/rooms/{roomId}/knock`.
 The path parameter (`roomId`) is the room you want to knock. It is required. The post body accepts
