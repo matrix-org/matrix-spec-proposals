@@ -217,3 +217,8 @@ Anybody with the correct PLs to post state events will be able to manipulate a r
 event into a room, even if the bridge is not present or does not exist. It goes without saying that if
 you let people modify your room state, you need to trust them not to mess around. A future MSC may allow
 users to "trust" some mxids as bridges, rather than relying on just PLs to convey trustworthiness.
+
+
+## Implementation notes
+
+This proposal is partially implemented by [Riot](https://github.com/vector-im/riot-web) and the [IRC Bridge](https://github.com/matrix-org/matrix-appservice-irc) using the `uk.half-shot.*` namespace until this becomes stable. Therefore `m.bridge` becomes `uk.half-shot.bridge`.
