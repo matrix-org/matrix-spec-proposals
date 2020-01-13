@@ -123,6 +123,8 @@ Content-Type: application/json
     "state_key": "@alice:example.org",
     "content": {
       "membership": "knock",
+      "displayname": "Alice",
+      "avatar_url": "mxc://example.org/avatar",
       "reason": "I want to join this room as I really love foxes!"
     }
   }
