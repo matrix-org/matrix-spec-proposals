@@ -6,7 +6,8 @@ said room.
 # Proposal
 This proposal implements the reserved "knock" membership type for the `m.room.member` state event.
 This state event indicates that a user knocks a room, that is asking for permission to join. It
-contains an optional "reason" parameter to specify the reason you want to join. This membership can
+contains an optional "reason" parameter to specify the reason you want to join. Like other
+memtership types the parameters "displayname" and "avatar_url" are optional. This membership can
 be set from users who aren't currently in said room. An example for the membership would look as
 follows:
 ```json
@@ -77,12 +78,30 @@ The user knocked successfully. Empty reply:
 {}
 ```
 
+#### Status code 400:
+This request was invalid, e.g. bad JSON. Example reply:
+```json
+{
+  "errcode": "M_UNKNOWN",
+  "error": "An unknown error occurred"}
+```
+
 #### Status code 403:
 The user wasn't allowed to knock (e.g. they are banned). Error reply:
 ```json
 {
   "errcode": "M_FORBIDDEN",
   "error": "The user isn't allowed to knock in this room."
+}
+```
+
+#### Status code 429:
+This request was rate-limited. Example reply:
+```json
+{
+  "errcode": "M_LIMIT_EXCEEDED",
+  "error": "Too many requests",
+  "retry_after_ms": 2000
 }
 ```
 
@@ -123,10 +142,20 @@ The knock was performed successfully. The knock event is sent back with the "eve
     "state_key": "@alice:example.org",
     "content": {
       "membership": "knock",
+      "displayname": "Alice",
+      "avatar_url": "mxc://example.org/avatar",
       "reason": "I want to join this room as I really love foxes!"
     }
   }
 }
+```
+
+#### Status code 400:
+This request was invalid, e.g. bad JSON. Example reply:
+```json
+{
+  "errcode": "M_UNKNOWN",
+  "error": "An unknown error occurred"}
 ```
 
 #### Status code 403:
