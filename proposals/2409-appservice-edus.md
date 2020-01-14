@@ -1,6 +1,7 @@
-# MSC1888: Proposal to send EDUs to appservices
+# MSC2409: Proposal to send EDUs to appservices
 
-*Note: This proposal is not ready for review yet and merely is a brief note on what I propose to do.*
+*Node: This proposal is a continuation of [MSC1888](https://github.com/matrix-org/matrix-doc/pull/1888)
+and deprecates that one.*
 
 The appservice /transaction API currently supports pushing PDU events (regular message and state events)
 however it doesn't provison for EDU events (typing, presence and more). This means that bridges cannot
@@ -17,7 +18,7 @@ specifiys how these can be pushed to an appservice.
 The `PUT /_matrix/app/v1/transactions/{txnId}` API currently supports sending PDUs
 via the `events` array.
 
-```javascript
+```json
 {
    "events": [
       {
@@ -40,12 +41,10 @@ via the `events` array.
 }
 ```
 
-This proposal would extend the `PUT /_matrix/app/v1/transactions/` endpoint to include
-a new key `ephemeral` to match the CS APIs `/sync`.
+This proposal would extend the `PUT /_matrix/app/v1/transactions/` endpoint to include a new key
+`ephemeral` to match the CS APIs `/sync`.
 
-*Note: Does m.typing bath user_ids together like that? Looks strange*
-
-```javascript
+```json
 {
    "ephemeral": [
       {
@@ -88,20 +87,18 @@ registers interests in rooms and (usually) it's own users, however EDU events ar
 tied to a single room in all situtations and as such there needs to be a specified way of
 forwarding these events.
 
-*Note: How do we determine when to send an EDU? If the room_id is shared by any AS user?*
-
-## Tradeoffs
-
-TBD, but probably some.
+An EDU should be sent to an appservice if the `room_id` is shared by any of the registered appservices
+users, if possible. For EDUs where that isn't the case, that is `m.presence`, the EDU should be sent
+if the sender is present in a room that is shared by any of the registered appservices users.
 
 ## Potential issues
 
-TBD, but probably some.
+Determining which EDUs to transmit to the appservice could lead to quite some overhead on the
+homeservers side. Additionally, more network traffic is produced, potentially straining the local
+network and the appservice more.
 
 ## Security considerations
 
-TBD, but probably some.
-
-## Conclusion
-
-TBD, and there definiely will be one.
+The homeserver needs to accuratley determine which EDUs to send to the appservice, as to not leak
+any metadata about users. Particularly `m.presence` could be tricky, as no `room_id` is present in
+that EDU.
