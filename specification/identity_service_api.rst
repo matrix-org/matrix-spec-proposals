@@ -336,7 +336,7 @@ it would first format the query as ``alice@example.org email ThePepperGoesHere``
 After formatting each query, the string is run through SHA-256 as defined by
 `RFC 4634 <https://tools.ietf.org/html/rfc4634>`_. The resulting bytes are then
 encoded using URL-Safe `Unpadded Base64`_ (similar to `room version 4's
-event ID format <../../rooms/v4.html#event-ids>`_).
+event ID format <../rooms/v4.html#event-ids>`_).
 
 An example set of queries when using the pepper ``matrixrocks`` would be::
 
