@@ -23,7 +23,7 @@ allOf:
         include a port. This parameter is ignored when the homeserver handles
         3PID verification.
 
-        This parameter is deprected with a plan to be removed in a future specification
+        This parameter is deprecated with a plan to be removed in a future specification
         version for ``/account/password`` and ``/register`` requests.
       example: "id.example.com"
     id_access_token:
