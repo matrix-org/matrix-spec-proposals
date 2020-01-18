@@ -1,4 +1,4 @@
-# MSC0000: Make `reason` optional for reporting content
+# MSC2414: Make `reason` optional for reporting content
 
 Currently, the spec says that the `reason` parameter on the content reporting
 endpoint is required, but also says that the string "may be blank." This
