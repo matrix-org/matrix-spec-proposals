@@ -97,7 +97,7 @@ the form:
 The QR codes to be displayed and scanned, which are not a part of an in-person
 verification (for example, for printing on business cards), will encode URLs of
 the form:
-`https://matrix.to/#/<user-id>?&action=verify&key_<keyid>=<key-in-base64>...`
+`https://matrix.to/#/<user-id>?action=verify&key_<keyid>=<key-in-base64>...`
 In this case, only the user scanning the QR code will verify the key of the
 user whose QR code was scanned; bi-directional verification is not possible.
 
