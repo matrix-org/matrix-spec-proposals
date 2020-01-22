@@ -81,7 +81,7 @@ This proposal defines three verification methods that can be used in
 
 The QR codes to be displayed and scanned using this format will encode URLs of
 the form:
-`https://matrix.to/#/<user-id>?request=<event-id>&action=verify&key_<keyid>=<key-in-base64>...&verification_algorithms=<algorithm>&verification_key=<random-key-in-base64>&other_user_key=<master-key-in-base64>`
+`https://matrix.to/#/<user-id>?request=<event-id>&action=verify&key_<keyid>=<key-in-base64>...&secret=<shared-secret>&other_user_key=<master-key-in-base64>`
 (when `matrix:` URLs are specced, this will be used instead).
 
 - `request`: is the event ID of the associated verification request event.
