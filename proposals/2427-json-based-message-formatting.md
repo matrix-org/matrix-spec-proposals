@@ -1,4 +1,4 @@
-# JSON based message formatting
+# JSON-based message formatting
 ## Problem
 Matrix formatting is currently based on a subset of HTML. While HTML is easy to
 render in a browser, other platforms have to either make a completely custom
@@ -149,13 +149,13 @@ I like cheese <em>Thiiiiiis</em> much
 }
 ```
 ```html
-<font color="#ff0000">R</font>
-<font color="#ffdb00">A</font>
-<font color="#49ff00">I</font>
-<font color="#00ff92">N</font>
-<font color="#0092ff">B</font>
-<font color="#4900ff">O</font>
-<font color="#ff00db">W</font>
+<font data-mx-color="#ff0000">R</font>
+<font data-mx-color="#ffdb00">A</font>
+<font data-mx-color="#49ff00">I</font>
+<font data-mx-color="#00ff92">N</font>
+<font data-mx-color="#0092ff">B</font>
+<font data-mx-color="#4900ff">O</font>
+<font data-mx-color="#ff00db">W</font>
 ```
 
 ## Alternatives
