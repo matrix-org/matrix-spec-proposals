@@ -123,7 +123,7 @@ Did you see this image?<br/>
   "m.formatted.version": "0.1",
   "m.formatted": [
     {"m.text": "I like cheese "},
-    {"m.italic" true, "m.text": "Thiiiiiis" },
+    {"m.italic": true, "m.text": "Thiiiiiis" },
     {"m.text": " much"}
   ]
 }
