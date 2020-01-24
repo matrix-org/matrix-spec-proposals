@@ -34,7 +34,13 @@ Example flow:
 4. Bob's client prompts Bob to verify Alice's key.  The prompt includes a QR
    code that Alice can scan (if the `m.key.verification.request` message listed
    `m.qr_code.scan.v1`), and an option to scan Alice's QR code (if the
-   `m.key.verification.request` message listed `m.qr_code.show.v1`).
+   `m.key.verification.request` message listed `m.qr_code.show.v1`).  The QR
+   code encodes:
+   - Bob's Matrix user ID,
+   - Bob's keys that he wants Alice to verify (should contain at least his
+     master cross-signing key),
+   - what Bob thinks Alice's master cross-signing key is,
+   - a random shared secret.
 5. Alice scans Bob's QR code.
 6. Alice's device ensures that:
    - the user ID in the QR code is the same as the expected user ID (which it
@@ -45,14 +51,22 @@ Example flow:
    - Alice's cross-signing key matches the cross-signing key encoded in the QR
      code.
 
-   If any of these checks fail, Alice's device displays an error message.
+   If any of these checks fail, Alice's device displays an error message
+   indicating that the code is incorrect, and sends a
+   `m.key.verification.cancel` message to Bob's device.
+
    Otherwise, at this point, Alice's device has now verified Bob's key, and her
    device will display a message saying that all is well.
 7. Alice's device sends a `m.key.verification.start` message with `method` set
-   to `m.reciprocate.v1` to Bob (see below).
-8. Upon receipt of the `m.key.verification.start` message, Bob's device
-   presents a button for him to press /after/ he has checked that Alice's
-   device says that things match.
+   to `m.reciprocate.v1` to Bob (see below).  The message includes the shared
+   secret from the QR code.
+8. Upon receipt of the `m.key.verification.start` message, Bob's device ensures
+   that the shared secret matches, and if so, presents a button for him to press
+   /after/ he has checked that Alice's device says that things match, and a
+   button for him to press if Alice's device indicates that the QR code is
+   invalid or if Alice has not yet scanned.  If the shared secret does not
+   match, it should display an error message indicating that an attack was
+   attempted.  (This does not affect Alice's verification of Bob's keys.)
 9. Bob sees Alice's device confirm that the key matches, and presses the button
    on his device to indicate that Alice's key is verified.
 10. Both devices send an `m.key.verification.done` message.
