@@ -76,7 +76,7 @@ all.
 Events that use the `m.formatted` key MUST also contain the `m.formatted.version`
 key, which specifies the version of the formatting schema. The value of the
 version field should be two numeric identifiers, the major and minor version
-number, separated by a dot.
+number, separated by a dot. The initial version is `0.1`.
 
 Minor version changes may only add or deprecate secondary fields. Major version
 changes may also change primary fields. When a client encounters a major version
@@ -101,11 +101,14 @@ of a message, i.e. rich quotes.
 
 ### Examples
 ```json
-"m.formatted": [ 
-  {"m.mention": true, "m.user": "@user:example.org", "m.text": "Pretty user"},
-  {"m.text": ": Good day, user!\nDid you see this image?\n"},
-  {"m.width": 128, "m.height": 64, "m.alt_text": "Fancy image", m.image": "mxc://example.org/ABCDEF"}
-]
+{
+  "m.formatted.version": "0.1",
+  "m.formatted": [
+    {"m.mention": true, "m.user": "@user:example.org", "m.text": "Pretty user"},
+    {"m.text": ": Good day, user!\nDid you see this image?\n"},
+    {"m.width": 128, "m.height": 64, "m.alt_text": "Fancy image", "m.image": "mxc://example.org/ABCDEF"}
+  ]
+}
 ``` 
 ```html
 <a href="https://matrix.to/#/@user:example.org">Pretty user</a>: Good day, user!<br/>
@@ -116,11 +119,14 @@ Did you see this image?<br/>
 ---
 
 ```json
-"m.formatted": [
-  {"m.text": "I like cheese "},
-  {"m.italic" true, "m.text": "Thiiiiiis" },
-  {"m.text": " much"}
-]
+{
+  "m.formatted.version": "0.1",
+  "m.formatted": [
+    {"m.text": "I like cheese "},
+    {"m.italic" true, "m.text": "Thiiiiiis" },
+    {"m.text": " much"}
+  ]
+}
 ```
 ```html
 I like cheese <em>Thiiiiiis</em> much
@@ -129,15 +135,18 @@ I like cheese <em>Thiiiiiis</em> much
 ---
 
 ```json
-"m.formatted": [
-  {"m.fg_color": "#ff0000", "m.text":"R"}
-  {"m.fg_color": "#ffdb00", "m.text":"A"}
-  {"m.fg_color": "#49ff00", "m.text":"I"}
-  {"m.fg_color": "#00ff92", "m.text":"N"}
-  {"m.fg_color": "#0092ff", "m.text":"B"}
-  {"m.fg_color": "#4900ff", "m.text":"O"}
-  {"m.fg_color": "#ff00db", "m.text":"W"}
-]
+{
+  "m.formatted.version": "0.1",
+  "m.formatted": [
+    {"m.fg_color": "#ff0000", "m.text":"R"},
+    {"m.fg_color": "#ffdb00", "m.text":"A"},
+    {"m.fg_color": "#49ff00", "m.text":"I"},
+    {"m.fg_color": "#00ff92", "m.text":"N"},
+    {"m.fg_color": "#0092ff", "m.text":"B"},
+    {"m.fg_color": "#4900ff", "m.text":"O"},
+    {"m.fg_color": "#ff00db", "m.text":"W"}
+  ]
+}
 ```
 ```html
 <font color="#ff0000">R</font>
