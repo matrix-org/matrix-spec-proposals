@@ -83,7 +83,8 @@ changes may also change primary fields. When a client encounters a major version
 that it does not recognize, it should fall back to rendering the plaintext body.
 
 For example, a future minor version could include support for replies to a part
-of a message, i.e. rich quotes.
+of a message, i.e. rich quotes. A future major version could include support
+for proper nesting to make tables and lists possible.
 
 ### Disadvantages compared to current Matrix HTML
 * No truly nested formatting. While a chunk can have multiple styles like
