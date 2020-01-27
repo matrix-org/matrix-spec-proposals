@@ -55,21 +55,32 @@ Example flow:
    indicating that the code is incorrect, and sends a
    `m.key.verification.cancel` message to Bob's device.
 
-   Otherwise, at this point, Alice's device has now verified Bob's key, and her
-   device will display a message saying that all is well.
-7. Alice's device sends a `m.key.verification.start` message with `method` set
+   Otherwise, at this point:
+   - Alice's device has now verified Bob's key, and
+   - Alice's device knows that Bob has the correct key for her.
+
+   Thus for Bob to verify Alice's key, Alice needs to tell Bob that he has the
+   right key.
+7. Alice's device displays a message saying that all is well.  This message
+   tells Alice that she has the right key for Bob, and tells Bob that he has
+   the right key for Alice.
+8. Alice's device sends a `m.key.verification.start` message with `method` set
    to `m.reciprocate.v1` to Bob (see below).  The message includes the shared
-   secret from the QR code.
-8. Upon receipt of the `m.key.verification.start` message, Bob's device ensures
-   that the shared secret matches, and if so, presents a button for him to press
-   /after/ he has checked that Alice's device says that things match, and a
-   button for him to press if Alice's device indicates that the QR code is
-   invalid or if Alice has not yet scanned.  If the shared secret does not
-   match, it should display an error message indicating that an attack was
-   attempted.  (This does not affect Alice's verification of Bob's keys.)
-9. Bob sees Alice's device confirm that the key matches, and presses the button
-   on his device to indicate that Alice's key is verified.
-10. Both devices send an `m.key.verification.done` message.
+   secret from the QR code.  This signals to Bob's device that Alice has
+   scanned Bob's QR code.  (This message is merely a signal for Bob's device to
+   proceed to the next step, and is not used in the actual verification.)
+9. Upon receipt of the `m.key.verification.start` message, Bob's device ensures
+   that the shared secret matches.
+
+   If the shared secret does not match, it should display an error message
+   indicating that an attack was attempted.  (This does not affect Alice's
+   verification of Bob's keys.)
+
+   If the shared secret does match, it asks Bob to confirm that Alice
+   has scanned the QR code.
+10. Bob sees Alice's device confirm that the key matches, and presses the button
+    on his device to indicate that Alice's key is verified.
+11. Both devices send an `m.key.verification.done` message.
 
 ### Verification methods
 
@@ -119,8 +130,7 @@ user whose QR code was scanned; bi-directional verification is not possible.
 
 #### `m.key.verification.start`
 
-Alice's device tells Bob's device that the keys are verified.  The request is
-MAC'ed using the verification algorithm and verification key from the QR code.
+Alice's device tells Bob's device that the QR code has been scanned.
 
 message contents:
 
@@ -167,6 +177,14 @@ Other methods of verifying keys, which do not require scanning QR codes, are
 needed for devices that are unable to scan QR codes.  One such method is
 [MSC1267](https://github.com/matrix-org/matrix-doc/issues/1267).
 
+Rather than embedding the keys in the QR codes directly, the two clients could
+perform an exchange similar to
+[MSC1267](https://github.com/matrix-org/matrix-doc/issues/1267), and encoding
+the Short Authentication String code in the QR code.  However, this means that
+the clients must exchange several messages before they can verify each other,
+which would delay showing the QR codes.  This proposal is also simpler to
+implement.
+
 Security Considerations
 -----------------------
 
@@ -176,7 +194,7 @@ able to trick Alice into verifying a key under his control, and evesdropping on
 Alice's communications with Carol.
 
 The security of verifying Alice's key depends on Bob not hitting the "Verified"
-button (step 9 in the example flow) until after Alice's device indicates
+button (step 10 in the example flow) until after Alice's device indicates
 success or failure.  Users have a tendency to click on buttons without reading
 what the screen says, but this is partially mitigated by the fact that it is
 unlikely that Bob will be interacting with the device while Alice is scanning
