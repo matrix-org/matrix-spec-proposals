@@ -67,8 +67,10 @@ Example flow:
 8. Alice's device sends a `m.key.verification.start` message with `method` set
    to `m.reciprocate.v1` to Bob (see below).  The message includes the shared
    secret from the QR code.  This signals to Bob's device that Alice has
-   scanned Bob's QR code.  (This message is merely a signal for Bob's device to
-   proceed to the next step, and is not used in the actual verification.)
+   scanned Bob's QR code.
+
+   This message is merely a signal for Bob's device to proceed to the next
+   step, and is not used for verification purposes.
 9. Upon receipt of the `m.key.verification.start` message, Bob's device ensures
    that the shared secret matches.
 
@@ -80,7 +82,22 @@ Example flow:
    has scanned the QR code.
 10. Bob sees Alice's device confirm that the key matches, and presses the button
     on his device to indicate that Alice's key is verified.
+
+    Bob's verification of Alice's key hinges on Alice telling Bob the result of
+    her scan.  Since the QR code includes what Bob thinks Alice's key is,
+    Alice's device can check whether Bob has the right key for her.  Alice has
+    no motivation to lie about the result, as getting Bob to trust an incorrect
+    key would only affect communications between herself and Bob.  Thus Alice
+    telling Bob that the code was scanned successfully is sufficient for Bob to
+    trust Alice's key, under the assumption that this communication is done
+    over a trusted medium (such as in-person).
 11. Both devices send an `m.key.verification.done` message.
+
+This flow allows Alice to verify Bob's key, and Bob to verify Alice's key.
+Alice verifies Bob's key because she can trust the QR code that Bob displays
+for her, as this is done over a trusted medium.  Bob verifies Alice's key
+because Alice can trust the QR code that Bob displays, and Bob can trust Alice
+to tell him the result of the verification.
 
 ### Verification methods
 
