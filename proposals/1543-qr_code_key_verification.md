@@ -21,7 +21,7 @@ thinks Alice's key is.  When Alice scans the QR code, she will ensure that the
 keys match what is expected, in which case, she relays this information to Bob,
 who can then tell his device that the keys match.
 
-Example flow:
+### Example flow
 
 1. Alice and Bob meet in person, and want to verify each other's keys.
 2. Alice requests a key verification through her device by sending an
@@ -99,6 +99,64 @@ for her, as this is done over a trusted medium.  Bob verifies Alice's key
 because Alice can trust the QR code that Bob displays, and Bob can trust Alice
 to tell him the result of the verification.
 
+#### Self-verification
+
+QR codes can also be used by a user to verify their own devices.  These examples
+shows Alice verifying two devices, one of them (Osborne2) having cross-signing
+already set up, and the other one (Dynabook) having just logged in.
+
+In the first example, Osborne2 scans Dynabook:
+
+1. Alice logs into her new Dynabook and wants other users to be able to trust
+   it via cross-signing, and to trust other devices via cross-signing.
+2. Dynabook retrieves Alice's public cross-signing key from the server, and
+   displays a QR code that encodes:
+   - Alice's user ID,
+   - Dynabook's device key,
+   - what it thinks Alice's master key is, as the `other_user_key` parameter, and
+   - a random shared secret.
+
+   Note that in this case, the QR code does not include Alice's master key in a
+   `key_<key_id>` parameter, since Dynabook does not know whether it is trusted
+   or not.
+3. Osborne2 scans the QR code displayed by Dynabook.  At this point, Osborne2
+   knows Dynabook's device key and can sign it with the self-signing key and
+   upload the signature, and can trust Dynabook for sending secrets via SSSS.
+   It also knows that Dynabook has the correct cross-signing key.
+4. Osborne2 tells Alice that the scan was successful, and sends the
+   `reciprocate` message containing the shared secret.
+5. Upon receipt of the `reciprocate` message, Dynabook (after checking the
+   shared secret) confirms with Alice that she successfully scanned the QR
+   code.
+6. Alice confirms.
+7. Dynabook now knows that it can trust Alice's cross-signing keys that it
+   fetched from the server.
+
+In the second example, Dynabook scans Osborne2:
+
+1. Alice logs into her new Dynabook and wants other users to be able to trust
+   it via cross-signing, and to trust other devices via cross-signing.
+2. Osborne2 notices that Dynabook is a new device.  Osborne2 fetches Dynabook's
+   identity key and displays a QR code that encodes:
+   - Alice's user ID,
+   - Osborne2's device key (optional),
+   - what it thinks Dynabook's key is, as `other_device_key`,
+   - Alice's master key, both as `key_<key_id>` and `other_user_key`
+     parameters, and
+   - a random shared secret.
+3. Dynabook scans the QR code shown by Osborne2.  At this point, Dynabook knows
+   Alice's cross-signing key, and so it can trust it to sign other devices.  It
+   also knows that Osborne2 as the correct key for it.
+4. Dynabook tells Alice that the scan is successful, and sends the
+   `reciprocate` message containing the shared secret.
+5. Upon receipt of the `reciprocate` message, Osborne2 (after checking the
+   shared secret) confirms with Alice that she successfully scanned the QR
+   code.
+6. Alice confirms.
+7. Osborne2 now knows that it has the correct device key for Dynabook, and can
+   sign it with the self-signing key and upload the signature.  Osborne2 can
+   also trust Dynabook for sending secrets via SSSS.
+
 ### Verification methods
 
 This proposal defines three verification methods that can be used in
@@ -129,12 +187,18 @@ the form:
 - `request`: is the event ID of the associated verification request event.
 - `key_<key_id>`: each key that the user wants verified will have an entry of
   this form, where the value is the key in unpadded base64.  The QR code should
-  contain at least the user's master cross-signing key.
+  contain at least the user's master cross-signing key.  In the case where a
+  device does not have a cross-signing key (as in the case where a user logs in
+  to a new device, and is verifying against another device), thin the QR code
+  should contain at least the device's key.
 - `secret`: is a random single-use shared secret in unpadded base64. It must be
   at least 256-bits long (43 characters when base64-encoded).
 - `other_user_key`: the other user's master cross-signing key, in unpadded
   base64.  In other words, if Alice is displaying the QR code, this would be
   the copy of Bob's master cross-signing key that Alice has.
+- `other_device_key`: the other device's key, in unpadded base64.  This is only
+  needed when a user is verifying their own devices, where the other device has
+  not yet been signed with the cross-signing key.
 
 The QR codes to be displayed and scanned, which are not a part of an in-person
 verification (for example, for printing on business cards), will encode URLs of
