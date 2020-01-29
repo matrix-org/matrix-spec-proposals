@@ -141,8 +141,8 @@ In the second example, Dynabook scans Osborne2:
    - Alice's user ID,
    - Osborne2's device key (optional),
    - what it thinks Dynabook's key is, as `other_device_key`,
-   - Alice's master key, both as `key_<key_id>` and `other_user_key`
-     parameters, and
+   - Alice's master key as a `key_<key_id>` parameter and (optionally) a `other_user_key`
+     parameter, and
    - a random shared secret.
 3. Dynabook scans the QR code shown by Osborne2.  At this point, Dynabook knows
    Alice's cross-signing key, and so it can trust it to sign other devices.  It
