@@ -184,7 +184,8 @@ the form:
 `https://matrix.to/#/<user-id>?request=<event-id>&action=verify&key_<keyid>=<key-in-base64>...&secret=<shared-secret>&other_user_key=<master-key-in-base64>`
 (when `matrix:` URLs are specced, this will be used instead).
 
-- `request`: is the event ID of the associated verification request event.
+- `request`: is the event ID or `transaction_id` of the associated verification
+  request event.
 - `key_<key_id>`: each key that the user wants verified will have an entry of
   this form, where the value is the key in unpadded base64.  The QR code should
   contain at least the user's master cross-signing key.  In the case where a
