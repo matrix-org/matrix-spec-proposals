@@ -1,4 +1,4 @@
-# Proposal for mandating case folding when processing e-mail address localparts
+# Proposal for mandating case folding when processing e-mail addresses
 
 [RFC822](https://tools.ietf.org/html/rfc822#section-3.4.7) mandates that
 localparts in e-mail addresses must be processed with the original case
@@ -22,8 +22,8 @@ Sydent.
 
 This proposal suggests changing the specification of the e-mail 3PID type in
 [the Matrix spec appendices](https://matrix.org/docs/spec/appendices#pid-types)
-to mandate that, before any processing, e-mail address localparts must go
-through a full case folding based on [the unicode mapping
+to mandate that, before any processing, e-mail addresses must go through a full
+case folding based on [the unicode mapping
 file](https://www.unicode.org/Public/8.0.0/ucd/CaseFolding.txt), on top of
 having their domain lowercased.
 
