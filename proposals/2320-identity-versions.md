@@ -9,7 +9,7 @@ API it claims to support.
 
 ## Proposal
 
-This proposal adds two endpoints to the identity server API.
+This proposal adds the following endpoint to the identity server API.
 
 ### `GET /_matrix/identity/versions`
 
