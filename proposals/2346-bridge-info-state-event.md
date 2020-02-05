@@ -34,7 +34,7 @@ bridged network and nothing more.
         "protocol": {
             "id": "irc",
             "displayname": "IRC", // Optional
-            "avatar": "mxc://foo/bar", // Optional
+            "avatar_url": "mxc://foo/bar", // Optional
             "external_url": "https://example.com" // Optional
         },
         "network": { // Optional
@@ -86,7 +86,7 @@ The `external_url` key is a optional link to a connected channel, network or pro
 In terms of hierachy, the protocol can contain many networks, which can contain many channels.
 
 The event may contain information specific to the bridge in question, such as the mode for the room in IRC. These keys
-should be prefixed by the bridge's name. Clients may be capable of displaying this extra information and are free to do so.
+should be prefixed by the bridge's prefix. Clients may be capable of displaying this extra information and are free to do so.
 
 ### Example Content
 
