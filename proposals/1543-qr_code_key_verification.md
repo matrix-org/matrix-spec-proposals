@@ -1,5 +1,5 @@
-Key verification using QR codes
-===============================
+Bi-directional Key verification using QR codes
+==============================================
 
 Problem/Background
 ------------------
@@ -28,7 +28,7 @@ who can then tell his device that the keys match.
    `m.key.verification.request` message (see
    [MSC2241](https://github.com/matrix-org/matrix-doc/pull/2241)), with
    `m.qr_code.show.v1`, `m.qr_code.scan.v1`, and `m.reciprocate.v1` listed in
-   `methods`.
+   `methods`, and Bob responds with a `m.key.verification.ready` message.
 3. Alice's client displays a QR code that Bob is able to scan, and an option to
    scan Bob's QR code.
 4. Bob's client prompts Bob to verify Alice's key.  The prompt includes a QR
@@ -36,17 +36,12 @@ who can then tell his device that the keys match.
    `m.qr_code.scan.v1`), and an option to scan Alice's QR code (if the
    `m.key.verification.request` message listed `m.qr_code.show.v1`).  The QR
    code encodes:
-   - Bob's Matrix user ID,
-   - Bob's keys that he wants Alice to verify (should contain at least his
-     master cross-signing key),
-   - what Bob thinks Alice's master cross-signing key is,
+   - Bob's master cross-signing public key,
+   - what Bob thinks Alice's master cross-signing public key is,
    - a random shared secret.
 5. Alice scans Bob's QR code.
 6. Alice's device ensures that:
-   - the user ID in the QR code is the same as the expected user ID (which it
-     knows because it is the recipient of her `m.key.verification.request`
-     message),
-   - Bob's keys encoded in the QR code match the keys that she already has for
+   - Bob's key encoded in the QR code match the key that she already has for
      Bob, and
    - Alice's cross-signing key matches the cross-signing key encoded in the QR
      code.
@@ -111,9 +106,8 @@ In the first example, Osborne2 scans Dynabook:
    it via cross-signing, and to trust other devices via cross-signing.
 2. Dynabook retrieves Alice's public cross-signing key from the server, and
    displays a QR code that encodes:
-   - Alice's user ID,
    - Dynabook's device key,
-   - what it thinks Alice's master key is, as the `other_user_key` parameter, and
+   - what it thinks Alice's master key is, and
    - a random shared secret.
 
    Note that in this case, the QR code does not include Alice's master key in a
@@ -138,11 +132,8 @@ In the second example, Dynabook scans Osborne2:
    it via cross-signing, and to trust other devices via cross-signing.
 2. Osborne2 notices that Dynabook is a new device.  Osborne2 fetches Dynabook's
    identity key and displays a QR code that encodes:
-   - Alice's user ID,
-   - Osborne2's device key (optional),
-   - what it thinks Dynabook's key is, as `other_device_key`,
-   - Alice's master key as a `key_<key_id>` parameter and (optionally) a `other_user_key`
-     parameter, and
+   - what it thinks Dynabook's key is,
+   - Alice's master key, and
    - a random shared secret.
 3. Dynabook scans the QR code shown by Osborne2.  At this point, Dynabook knows
    Alice's cross-signing key, and so it can trust it to sign other devices.  It
@@ -163,12 +154,12 @@ This proposal defines three verification methods that can be used in
 `m.key.verification.request` messages (see
 [MSC2241](https://github.com/matrix-org/matrix-doc/pull/2241)).
 
-- `m.qr_code.show.v1`: means that the sender of the
+- `m.qr_code.show.v2`: means that the sender of the
   `m.key.verification.request` message can show a QR code that the recipient
   can scan.  If the recipient can scan the QR code, it should allow the user to
   do so.  This method is never sent as part of a `m.key.verification.start`
   message.
-- `m.qr_code.scan.v1`: means that the sender of the
+- `m.qr_code.scan.v2`: means that the sender of the
   `m.key.verification.request` message can scan a QR code displayed by the
   recipient.  If the recipient can display a QR code, it should allow the user
   to display it so that the sender can scan it.  This method is never sent as
@@ -179,34 +170,51 @@ This proposal defines three verification methods that can be used in
 
 ### QR code format
 
-The QR codes to be displayed and scanned using this format will encode URLs of
-the form:
-`https://matrix.to/#/<user-id>?request=<event-id>&action=verify&key_<keyid>=<key-in-base64>...&secret=<shared-secret>&other_user_key=<master-key-in-base64>`
-(when `matrix:` URLs are specced, this will be used instead).
+The QR codes to be displayed and scanned using this format will encode binary
+strings in the general form:
 
-- `request`: is the event ID or `transaction_id` of the associated verification
-  request event.
-- `key_<key_id>`: each key that the user wants verified will have an entry of
-  this form, where the value is the key in unpadded base64.  The QR code should
-  contain at least the user's master cross-signing key.  In the case where a
-  device does not have a cross-signing key (as in the case where a user logs in
-  to a new device, and is verifying against another device), thin the QR code
-  should contain at least the device's key.
-- `secret`: is a random single-use shared secret in unpadded base64. It must be
-  at least 256-bits long (43 characters when base64-encoded).
-- `other_user_key`: the other user's master cross-signing key, in unpadded
-  base64.  In other words, if Alice is displaying the QR code, this would be
-  the copy of Bob's master cross-signing key that Alice has.
-- `other_device_key`: the other device's key, in unpadded base64.  This is only
-  needed when a user is verifying their own devices, where the other device has
-  not yet been signed with the cross-signing key.
+- the ASCII string "MATRIX"
+- one byte indicating the QR code version (must be `0x02`)
+- one byte indicating the QR code verification mode.  May be one of the
+  following values:
+  - `0x00` verifying another user with cross-signing
+  - `0x01` self-verifying in which the current device does trust the master key
+  - `0x02` self-verifying in which the current device does not yet trust the
+    master key
+- the event ID or `transaction_id` of the associated verification
+  request event, encoded as:
+  - two bytes in network byte order (big-endian) indicating the length of the
+    ID
+  - the ID as an ASCII string
+- the first key, as 32 bytes.  The key to use depends on the mode field:
+  - if `0x00` or `0x01`, then the user's own master cross-signing public key
+  - if `0x02`, then the current device's device key
+- the second key, as 32 bytes.  The key to use depends on the mode field:
+  - if `0x00`, then what the device thinks the other user's master
+    cross-signing key is
+  - if `0x01`, then what the device thinks the other device's device key is
+  - if `0x02`, then what the device thinks the user's master cross-signing key
+    is
+- a random shared secret, as a byte string.  It is suggested to use a secret
+  that is about 8 bytes long.  Note: as we do not share the length of the
+  secret, and it is not a fixed size, clients will just use the remainder of
+  binary string as the shared secret.
 
-The QR codes to be displayed and scanned, which are not a part of an in-person
-verification (for example, for printing on business cards), will encode URLs of
-the form:
-`https://matrix.to/#/<user-id>?action=verify&key_<keyid>=<key-in-base64>...`
-In this case, only the user scanning the QR code will verify the key of the
-user whose QR code was scanned; bi-directional verification is not possible.
+For example, if Alice displays a QR code encoding the following binary string:
+
+```
+      "MATRIX"    |ver|mode| len   | event ID
+ 4D 41 54 52 49 58  02  00   00 2D   21 41 42 43 44 ...
+| user's cross-signing key    | other user's cross-signing key | shared secret
+  00 01 02 03 04 05 06 07 ...   10 11 12 13 14 15 16 17 ...      20 21 22 23 24 25 26 27
+```
+
+this indicates that Alice is verifying another user (say Bob), in response to
+the request from event "!ABCD...", her cross-signing key is
+`0001020304050607...` (which is "AAECAwQFBg..." in base64), she thinks that
+Bob's cross-signing key is `1011121314151617...` (which is "EBESExQVFh..." in
+base64), and the shared secret is `2021222324252627` (which is "ICEiIyQlJic" in
+base64).
 
 ### Message types
 
@@ -218,7 +226,7 @@ message contents:
 
 - `method`: `m.reciprocate.v1`
 - `m.relates_to`: as per [key verification framework](https://github.com/matrix-org/matrix-doc/pull/2241)
-- `secret`: the shared secret from the QR code
+- `secret`: the shared secret from the QR code, encoded using unpadded base64
 
 Example:
 
@@ -257,7 +265,9 @@ Tradeoffs/Alternatives
 
 Other methods of verifying keys, which do not require scanning QR codes, are
 needed for devices that are unable to scan QR codes.  One such method is
-[MSC1267](https://github.com/matrix-org/matrix-doc/issues/1267).
+[MSC1267](https://github.com/matrix-org/matrix-doc/issues/1267).  Since the key
+verification framework allows for multiple methods to be supported, clients can
+allow users to use different methods depending on their capability.
 
 Rather than embedding the keys in the QR codes directly, the two clients could
 perform an exchange similar to
@@ -267,13 +277,12 @@ the clients must exchange several messages before they can verify each other,
 which would delay showing the QR codes.  This proposal is also simpler to
 implement.
 
+This proposal does not support the case of asynchronous verification, such as
+printing a QR code on a business card for others to scan.  That may be address
+in a separate MSC.
+
 Security Considerations
 -----------------------
-
-The first check in Step 6 in the example flow is to ensure that Bob does not
-present a QR code claiming to be Carol's key.  Without this check, Bob will be
-able to trick Alice into verifying a key under his control, and evesdropping on
-Alice's communications with Carol.
 
 The security of verifying Alice's key depends on Bob not hitting the "Verified"
 button (step 10 in the example flow) until after Alice's device indicates
