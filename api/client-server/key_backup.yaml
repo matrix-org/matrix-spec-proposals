@@ -67,7 +67,7 @@ paths:
       responses:
         200:
           description:
-            The version of the new backup.
+            The version id of the new backup.
           schema:
             type: object
             properties:
@@ -123,7 +123,7 @@ paths:
                     }
                   }
               count:
-                description: The number of key stored in the backup.
+                description: The number of keys stored in the backup.
                 type: integer
                 example: 42
               etag:

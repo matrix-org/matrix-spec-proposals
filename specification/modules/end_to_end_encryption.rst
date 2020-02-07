@@ -786,6 +786,7 @@ clients can discover the backup by calling ``GET /room_keys/version``.  Keys
 are encrypted according to the backups ``auth_data`` and added to the backup by
 calling ``PUT /room_keys/keys?version=$v`` or one of its variants, and can be
 retrieved by calling ``GET /room_keys/keys?version=$v`` or one of its variants.
+Keys can only be written to the most recently created version of the backup.
 Backups can also be deleted using ``DELETE /room_keys/version``, or individual
 keys can be deleted using ``DELETE /room_key/keys?version=$v`` or one of its
 variants.
