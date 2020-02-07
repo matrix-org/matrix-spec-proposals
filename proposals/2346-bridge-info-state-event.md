@@ -194,11 +194,6 @@ An example of a feed oriented bridge.
 Note the `@` in this case helps distinguish the type of channel. Here the protocol used is "Mastodon" rather than "ActivityPub".
 While the underlying protocol might indeed be ActivityPub, the choice of name should be recognisable to users.
 
-## `/_matrix/app/v1/thirdparty/location`
-
-This proposal does NOT seek to deprecate the `location` API even though this spec effectively supercedes it in most respects.
-A future MSC may choose to remove it, however.
-
 ## Potential issues
 
 ### We do not specify a "bridge type".
