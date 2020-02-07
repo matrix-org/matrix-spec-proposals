@@ -4,8 +4,9 @@ Many rooms across the Matrix network are currently bridged into third party netw
 However the spec does not contain a cross-federated method to determine which networks are
 bridged into a given room.
 
-There exists a way to do this in a local setting, by using the [/thirdparty/location](https://matrix.org/docs/spec/application_service/r0.1.2#get-matrix-app-v1-thirdparty-protocol-protocol) API but this creates a splitbrain view across the
-federation and is an unnacceptable situation.
+There exists a way to do this in a local setting, by using the
+[/thirdparty/location](https://matrix.org/docs/spec/application_service/r0.1.2#get-matrix-app-v1-thirdparty-protocol-protocol)
+API but this creates a splitbrain view across the federation and is an unnacceptable situation.
 
 Many users have taken to peeking at the list of aliases for a giveaway alias like `#freenode_` or
 looking for bridge bots or users with a `@_discord_` prefix. This is an unacceptable situation,
@@ -30,6 +31,7 @@ bridged network and nothing more.
     "state_key": "org.matrix.appservice-irc://{protocol.id}/{network.id}/{channel.id}",
     "type": "m.bridge",
     "content": {
+        "bridgebot": "@appservice-irc:matrix.org",
         "creator": "@alice:matrix.org", // Optional
         "protocol": {
             "id": "irc",
@@ -48,23 +50,23 @@ bridged network and nothing more.
             "displayname": "Friends", // Optional
             "avatar": "mxc://foo/bar", // Optional
             "external_url": "irc://chat.freenode.net/#friends" // Optional
-        },
-        // Custom vendor-specific keys
-        "org.matrix.appservice-irc.room_mode": "+sn",
+        }
     },
     "sender": "@appservice-irc:matrix.org"
 }
 ```
 
-The `state_key` must be comprised of the bridge's prefix, followed by the `protocol.id`, followed by the `network.id`, followed by the `channel.id`.
-Any `/`s must be escaped into `%2F`. The bridge prefix can be anything, but should uniquely identify the bridge software
-that consumes the event. E.g. The matrix.org IRC bridge `matrix-org/matrix-appservice-irc` becomes `org.matrix.appservice-irc`.
-This is to help distinguish two bridges on different softwares which may conflict.
+The `state_key` must be comprised of the bridge's prefix, followed by the `protocol.id`, followed by the `network.id`, 
+followed by the `channel.id`. Any `/`s must be escaped into `%2F`. The bridge prefix can be anything, but should uniquely 
+identify the bridge software. E.g. The matrix.org IRC bridge `matrix-org/matrix-appservice-irc` 
+becomes `org.matrix.appservice-irc`. This is to help distinguish two bridges on different softwares which may conflict.
 
-The `sender` should be the MXID of the bridge bot.
+The `bridgebot` should be the MXID of the bridge bot. It is important to note that `sender` should not be presumed to be 
+the bridge bot. This is because room upgrades, other bridges or admins could also set the state in the room on behalf of
+the bridge bot.
 
 The `creator` field is the name of the *user* which provisioned the bridge. In the case of alias based bridges, where the
-creator is not known -- it may be omitted.
+creator is not known -- it should be omitted.
 
 The `protocol` field describes the protocol that is being bridged. For example, it may be "IRC", "Slack", or "Discord". This
 field does not describe the low level protocol the bridge is using to access the network, but a common user recongnisable
@@ -76,17 +78,24 @@ the user is on. For protocols that do not have the concept of a network, this fi
 
 The `channel` field should be information about the specific channel the room is connected to.
 
-The `id` field is case-insensitive and should be lowercase. Uppercase characters should be escaped (e.g. using QP encoding or similar). The purpose of the id field is not to be human readable but just for comparing within the same bridge type, hence no encoding standard will be enforced in this proposal.
+The `id` field is case-insensitive and should be lowercase. Uppercase characters should be escaped (e.g. using QP encoding 
+or similar).The purpose of the id field is not to be human readable but just for comparing within the same bridge type, 
+hence no encoding standard will be enforced in this proposal.
 
-The `network`, `channel` and `protocol` fields can contain `displayname` and `avatar` keys. The `displayname` is meant to be a human readable identifier for the item in question, whereas the ID should be a unique identifer relevant to the protocol. The `id` should be used in place of a `displayname`, if not given. The `avatar` key is a MXC URI which refers to an image file, similar to a user or room avatar.
+The `network`, `channel` and `protocol` fields can contain `displayname` and `avatar` keys. The `displayname` is meant to 
+be a human readable identifier for the item in question, whereas the ID should be a unique identifer relevant to the protocol. 
+The `id` should be used in place of a `displayname`, if not given. The `avatar` key is a MXC URI which refers to an image 
+file, similar to a user or room avatar.
 
 The `external_url` key is a optional link to a connected channel, network or protocol that works in much the same way as
 `external_url` works for bridged messages in the AS spec.
 
 In terms of hierachy, the protocol can contain many networks, which can contain many channels.
 
-The event may contain information specific to the bridge in question, such as the mode for the room in IRC. These keys
-should be prefixed by the bridge's name. Clients may be capable of displaying this extra information and are free to do so.
+### Removing a bridge
+
+When removing a bridge, you simply need to send a new state event with the same `state_key` with a `content` of `{}`. This
+is because matrix does not yet have a mechanism to remove a state event in it's entireity. 
 
 ### Example Content
 
@@ -189,9 +198,17 @@ A future MSC may choose to remove it, however.
 
 ## Potential issues
 
+### We do not specify a "bridge type".
+
 The proposal intentionally sidesteps the 'bridge type' problem: Codifing what a portal, plumbed and gatewayed bridge look
 like in Matrix. For the time being, the event will not contain information about the type of bridge in a room but merely
 information about what is is connected to.
+
+### Anyone* can send this event into the room.
+
+This kinda goes for *any* event in Matrix, there is no way to determine a bridge across federation. The difference here
+is that we at least require the user for the ability to send state events into the room. If you are allowed to send
+arbitrary state events into the room, it's assumed you are somewhat trusted.
 
 ## Alternatives
 
@@ -221,4 +238,6 @@ users to "trust" some mxids as bridges, rather than relying on just PLs to conve
 
 ## Implementation notes
 
-This proposal is partially implemented by [Riot](https://github.com/vector-im/riot-web) and the [IRC Bridge](https://github.com/matrix-org/matrix-appservice-irc) using the `uk.half-shot.*` namespace until this becomes stable. Therefore `m.bridge` becomes `uk.half-shot.bridge`.
+This proposal is partially implemented by [Riot](https://github.com/vector-im/riot-web) and the
+[IRC Bridge](https://github.com/matrix-org/matrix-appservice-irc) using the `uk.half-shot.*` namespace
+until this becomes stable. Therefore `m.bridge` becomes `uk.half-shot.bridge`.
