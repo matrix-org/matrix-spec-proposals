@@ -7,7 +7,7 @@ said room.
 This proposal implements the reserved "knock" membership type for the `m.room.member` state event.
 This state event indicates that a user knocks a room, that is asking for permission to join. It
 contains an optional "reason" parameter to specify the reason you want to join. Like other
-memtership types the parameters "displayname" and "avatar_url" are optional. This membership can
+membership types the parameters "displayname" and "avatar_url" are optional. This membership can
 be set from users who aren't currently in said room. An example for the membership would look as
 follows:
 ```json
@@ -20,8 +20,10 @@ follows:
 ```
 
 After a knock is received in a room it is expected to be displayed in the timeline, similar to other
-membership changes. Clients can optionally add a way for users of a room to review all current
-knocks. After a knock in a room a member of the room can invite the knocker.
+membership changes. It is recommended to not display the reason until the user interacts with the
+client in some way (e.g. clicking on a "show reason" button), as else this would basically allow
+outsiders to send messages into the room. Clients can optionally add a way for users of a room to
+review all current knocks. After a knock in a room, a member of the room can invite the knocker.
 
 To be able to implement this properly two new endpoints need to be added, one in the client-server
 API and one in the server-server API.
@@ -39,9 +41,9 @@ in public rooms. Additionally the new join rule "private" is introduced. This is
 when creating a new room, prevent anyone from knocking.
 
 ### Power levels
-The default power level for "knock" is 0. If a user has a too low power level to knock they aren't
-allowed to do this. As power levels can be set for users not currently in the room this can be used
-as a way to limit who can knock and who can't.
+The default power level for "knock" is the default power level for the room. If a user has a too low
+power level to knock they aren't allowed to do this. As power levels can be set for users not currently
+in the room this can be used as a way to limit who can knock and who can't.
 
 #### Example:
 `@alice:example.org` CAN knock, but `@bob:example.org` can't: The (incomplete) content of
@@ -55,6 +57,13 @@ as a way to limit who can knock and who can't.
   "knock": 1
 }
 ```
+
+## Membership changes
+Once someone has sent the `knock` membership into the room a change to the following memberships is
+possible:
+ - `invite`: The knock was accepted by someone inside the room and they are inviting the knocker into
+   the room.
+ - `leave`: Similar to how kicks are handled, the knock was rejected.
 
 ## Client-Server API
 Two new endpoints are introduced in the client-server API (similarly to join):
@@ -86,7 +95,8 @@ This request was invalid, e.g. bad JSON. Example reply:
 ```json
 {
   "errcode": "M_UNKNOWN",
-  "error": "An unknown error occurred"}
+  "error": "An unknown error occurred"
+}
 ```
 
 ##### Status code 403:
