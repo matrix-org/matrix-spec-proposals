@@ -35,8 +35,8 @@ bridged network and nothing more.
         "creator": "@alice:matrix.org", // Optional
         "protocol": {
             "id": "irc",
-            "displayname": "IRC", // Optional
-            "avatar": "mxc://foo/bar", // Optional
+            "display_name": "IRC", // Optional
+            "avatar_url": "mxc://foo/bar", // Optional
             "external_url": "https://example.com" // Optional
         },
         "network": { // Optional
@@ -95,7 +95,7 @@ In terms of hierachy, the protocol can contain many networks, which can contain 
 ### Removing a bridge
 
 When removing a bridge, you simply need to send a new state event with the same `state_key` with a `content` of `{}`. This
-is because matrix does not yet have a mechanism to remove a state event in it's entireity. 
+is because matrix does not yet have a mechanism to remove a state event in it's entireity.
 
 ### Example Content
 
