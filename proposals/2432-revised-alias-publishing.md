@@ -32,7 +32,7 @@ We propose that that room moderators should be able to manually curate a list
 of "official" aliases for their room, instead of matrix servers automatically
 publishing lists of all room aliases into the room state. No particular
 guarantees are offered that this alias list is entirely accurate: it becomes
-room moderators' responsibilty to keep it so.
+room moderators' responsibility to keep it so.
 
 Meanwhile, the aliases that map to a given room on a given server become
 the ultimate responsibility of the administrators of that server. We give them
@@ -182,7 +182,7 @@ for the future.
    one user with a right to see it.
 
  * Similarly, room moderators may wish to be able to delete aliases on a remote
-   server for their room. We could envisage a fedaration API which allows such
+   server for their room. We could envisage a federation API which allows such
    a request to be made, subject to the calling homeserver having at least one
    moderator in the room.
 
