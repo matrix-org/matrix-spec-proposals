@@ -114,7 +114,6 @@ Server behaviour
 ----------------
 Servers have no additional requirements placed on them by this module.
 
-
 Security considerations
 -----------------------
 This module could be used to build a system of shared blacklists, which may create
