@@ -81,7 +81,7 @@ rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules) and
    empty. This means that no alias has been picked out as the 'main' alias.
 
    (Note: although the spec currently claims that `alias` is mandatory, Synapse
-   generates `m.room.canonical` alias events with no `alias` property when the
+   generates `m.room.canonical_alias` events with no `alias` property when the
    main alias is deleted. This change would legitimise that behaviour.)
 
    (For clarity: it is not proposed that the `alt_aliases` be considered when
