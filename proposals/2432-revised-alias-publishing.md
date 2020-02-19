@@ -131,6 +131,9 @@ rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules) and
    users result in `M_FORBIDDEN`). For rooms with `history_visibility` set to
    `world_readable`, it can also be called by users outside the room.
 
+   Servers might also choose to allow access to other users such as server
+   administrators.
+
 Various APIs are currently subject to implementation-defined access
 restrictions. No change to the specification is changed in this regard
 (implementations will continue to be free to impose their own
