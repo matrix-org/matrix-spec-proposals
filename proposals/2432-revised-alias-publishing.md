@@ -128,11 +128,8 @@ rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules) and
    ```
 
    This API can be called by any current member of the room (calls from other
-   users result in `M_FORBIDDEN`).
-
-   TODO: should this be tied in with `history_visibilty` to allow peeking from
-   non-members? On the one hand that feels like pointless clutter; on the other
-   it feels like it makes it more consistent with peekable rooms.
+   users result in `M_FORBIDDEN`). For rooms with `history_visibility` set to
+   `world_readable`, it can also be called by users outside the room.
 
 Various APIs are currently subject to implementation-defined access
 restrictions. No change to the specification is changed in this regard
