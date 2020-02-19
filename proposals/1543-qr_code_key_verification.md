@@ -294,39 +294,6 @@ the following form:
   is not a fixed size, clients will just use the remainder of binary string as
   the shared secret.
 
-1. generate a binary string by concatenating:
-  - the event ID or `transaction_id` of the associated verification
-    request event, encoded as:
-    - two bytes in network byte order (big-endian) indicating the length in
-      bytes of the ID as a UTF-8 string
-    - the ID as a UTF-8 string
-  - the first key, as 32 bytes.  The key to use depends on the mode field as
-    described in step 3:
-    - if "0" or "1", then the user's own master cross-signing public key
-    - if "2", then the current device's device key
-  - the second key, as 32 bytes.  The key to use depends on the mode field:
-    - if "0", then what the device thinks the other user's master
-      cross-signing key is
-    - if "1", then what the device thinks the other device's device key is
-    - if "2", then what the device thinks the user's master cross-signing key
-      is
-  - a random shared secret, as a byte string.  It is suggested to use a secret
-    that is about 8 bytes long.  Note: as we do not share the length of the
-    secret, and it is not a fixed size, clients will just use the remainder of
-    binary string as the shared secret.
-2. encode the above string using unpadded base64
-3. prepend the resulting string with
-   - the string "MATRIX"
-   - one character indicating the version (must by "2")
-   - one character indicating the QR code verification mode.  May be one of the
-     following values:
-     - "0" verifying another user with cross-signing
-     - "1" self-verifying in which the current device does trust the master key
-     - "2" self-verifying in which the current device does not yet trust the
-           master key
-
-The QR code is then generated using byte encoding mode.
-
 ### Message types
 
 #### `m.key.verification.start`
