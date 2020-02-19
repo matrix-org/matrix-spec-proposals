@@ -222,6 +222,7 @@ None currently identified.
 While this feature is in development, the following names will be in use:
 
 | Proposed final name | Name while in development |
+| --- | --- |
 | `GET /_matrix/client/r0/rooms/{roomId}/aliases` | `GET /_matrix/client/unstable/org.matrix.msc2432/rooms/{roomId}/aliases` |
 
 Servers will indicate support for the new endpoint via a non-empty value for feature flag
