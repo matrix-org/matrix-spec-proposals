@@ -43,17 +43,21 @@ we might put filters). The peeking server selects an ID for the peeking
 subscription for the purposes of idempotency. The ID must be 8 or less bytes
 of ASCII and should be unique for a given peeking & peeked server.
 
+PUT and DELETE return 200 OK with an empty `{}` on success.
+
 ```
 PUT /_matrix/federation/v1/peek/{roomId}/{peekId}
 {}
 
-{
-    "peek_id": "12345",
-}
+200 OK
+{}
 ```
 
 ```
 DELETE /_matrix/federation/v1/peek/{roomId}/{peekId}
+{}
+
+200 OK
 {}
 ```
 
