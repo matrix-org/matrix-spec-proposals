@@ -26,8 +26,9 @@ We do this by subscribing to a room on one or more servers via a new `/peek`
 S2S API, which lets users on a given server declare their interest in viewing
 events in that room.  Having started peeking into the room, the server(s)
 being peeked will relay *all* events it sees in that room to the peeking
-server (including ones from other servers).  It will also service the backfill
-and event-retrieval APIs as if the peeking server was in the room.
+server (including ones from other servers).  Backfill
+and event-retrieval APIs should be changed to be queryable from servers not
+in the room if the room is peekable.
 
 This continues until the peeking server calls DELETE on the peek it initiated.
 
