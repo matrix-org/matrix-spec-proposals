@@ -1,4 +1,4 @@
-# Proposal for implementing peeking over federation
+# Proposal for implementing peeking over federation (server pseudousers)
 
 ## Problem
 
