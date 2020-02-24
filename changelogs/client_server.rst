@@ -74,7 +74,7 @@ Backwards Compatible Changes
 - Support optional features by having clients query for capabilities. (`#1829 <https://github.com/matrix-org/matrix-doc/issues/1829>`_, `#1879 <https://github.com/matrix-org/matrix-doc/issues/1879>`_)
 - Add ``M_RESOURCE_LIMIT_EXCEEDED`` as an error code for when homeservers exceed limits imposed on them. (`#1874 <https://github.com/matrix-org/matrix-doc/issues/1874>`_)
 - Emit ``M_UNSUPPORTED_ROOM_VERSION`` error codes where applicable on ``/createRoom`` and ``/invite`` APIs. (`#1908 <https://github.com/matrix-org/matrix-doc/issues/1908>`_)
-- Add a ``.m.rule.tombstone`` default push rule for room ugprade notifications. (`#2020 <https://github.com/matrix-org/matrix-doc/issues/2020>`_)
+- Add a ``.m.rule.tombstone`` default push rule for room upgrade notifications. (`#2020 <https://github.com/matrix-org/matrix-doc/issues/2020>`_)
 - Add support for sending server notices to clients. (`#2026 <https://github.com/matrix-org/matrix-doc/issues/2026>`_)
 - Add MSISDN (phone number) support to User-Interactive Authentication. (`#2030 <https://github.com/matrix-org/matrix-doc/issues/2030>`_)
 - Add the option to lazy-load room members for increased client performance. (`#2035 <https://github.com/matrix-org/matrix-doc/issues/2035>`_)
