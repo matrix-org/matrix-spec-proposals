@@ -58,11 +58,12 @@ as such should only be used in conjunction with the following
 
 ### Inline images
 
-An optional attribute is added to `<img>` tags in messages: `data-blurhash`,
-where the value of the attribute is the blurhash representation of the inline
-image.
+An optional attribute is added to `<img>` tags in messages:
+`data-mx-blurhash`, where the value of the attribute is the blurhash
+representation of the inline image.
 
-This would be optionally displayed with the inline image itself is loaded in parallel.
+This would be optionally displayed with the inline image itself is loaded in
+parallel.
 
 Example `m.room.message.formatted_body`:
 
@@ -122,10 +123,14 @@ Newer clients would only show it if it exists.
 
 ## Unstable prefixes
 
-Implementations wishing to add this before this MSC is merged can do so with the following:
+Implementations wishing to add this before this MSC is merged can do so with
+the following:
 
-The `blurhash` key in `m.room.message` should be replaced with `xyz.amorgan.blurhash`.
+The `blurhash` key in `m.room.message` should be replaced with
+`xyz.amorgan.blurhash`.
 
-The `blurhash` key in `/_matrix/media/r0/upload`s response should be replaced with `xyz.amorgan.blurhash`.
+The `blurhash` key in `/_matrix/media/r0/upload`s response should be replaced
+with `xyz.amorgan.blurhash`.
 
-The `data-blurhash` attribute in `<img>` tags should be replaced with `data-xyz-amorgan-blurhash`.
+The `data-mx-blurhash` attribute in `<img>` tags should be replaced with
+`data-xyz-amorgan-blurhash`.
