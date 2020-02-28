@@ -132,8 +132,9 @@ the following:
 The `blurhash` key in `m.room.message` should be replaced with
 `xyz.amorgan.blurhash`.
 
-The `blurhash` key in `/_matrix/media/r0/upload`s response should be replaced
-with `xyz.amorgan.blurhash`.
+`/_matrix/media/r0/upload` should be replaced with
+`/_matrix/media/unstable/xyz.amorgan/upload`, which keeps the same `blurhash`
+response key.
 
 The `data-mx-blurhash` attribute in `<img>` tags should be replaced with
 `data-xyz-amorgan-blurhash`.
