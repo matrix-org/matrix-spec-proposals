@@ -37,7 +37,7 @@ Example `m.room.message` content field:
       "w": 301,
       "h": 193,
       "mimetype": "image/png",
-      "size": 172958
+      "size": 72958
     },
     "w": 301,
     "h": 193,
