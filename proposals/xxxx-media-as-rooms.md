@@ -117,6 +117,13 @@ solution not only requires deduplication of media on the local homeserver,
 but also across the federation. This should average out less storage space
 used across the federation.
 
+Hmm, here's a hard one. Servers will create rooms on their lonesome and not
+be able to find other rooms that have been created with the same hash,
+causing collisions.
+
+When a server creates a media room, they need a way to know whether one
+already exists. How? DHT I guess.
+
 ## Alternative solutions
 
 Instead of representing files as a simple list of chunks with a hash on top,
