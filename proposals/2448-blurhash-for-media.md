@@ -49,6 +49,13 @@ Example `m.room.message` content field:
 }
 ```
 
+Note that a BlurHash representation is really only applicable to media, and
+as such should only be used in conjunction with the following
+`m.room.message` msgtypes:
+
+* `m.image`
+* `m.video`
+
 ### Inline images
 
 An optional attribute is added to `<img>` tags in messages: `data-blurhash`,
@@ -62,13 +69,6 @@ Example `m.room.message.formatted_body`:
 ```
 "formatted_body": This is awesome <img alt=\"flutterjoy\" title=\"flutterjoy\" height=\"32\" src=\"mxc://matrix.example.org/abc\" data-blurhash=\"LEHV6nWB2yk8pyo\" />
 ```
-
-Note that a BlurHash representation is really only applicable to media, and
-as such should only be used in conjunction with the following
-`m.room.message` msgtypes:
-
-* `m.image`
-* `m.video`
 
 To be clear: This does not replace thumbnails - it will be shown before they
 are downloaded.
