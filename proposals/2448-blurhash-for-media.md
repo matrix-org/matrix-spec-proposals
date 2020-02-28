@@ -14,19 +14,82 @@ thumbnail downloads.
 
 ## Proposal
 
-A new field is added in `m.room.message`'s content field called `blurhash`.
-It is a BlurHash of the original piece of media. Clients could then render
-this using [one of the available BlurHash
+### m.room.message
+
+A new optional field is added in `m.room.message`'s content field called
+`blurhash`. It is a BlurHash of the original piece of media. Clients could
+then render this using [one of the available BlurHash
 implementations](https://github.com/woltapp/blurhash).
 
-This would be displayed while the thumbnail of the media is loaded in parallel.
+This would be optionally displayed while the thumbnail of the media is loaded
+in parallel.
 
-This is beneficial as it's an extremely efficient way to give someone a quick
-idea of what a piece of media contains before any requests are made to a
-media repository.
+Example `m.room.message` content field:
+
+```
+{
+  "body": "image.png",
+  "info": {
+    "size": 149234,
+    "mimetype": "image/png",
+    "thumbnail_info": {
+      "w": 301,
+      "h": 193,
+      "mimetype": "image/png",
+      "size": 172958
+    },
+    "w": 301,
+    "h": 193,
+    "thumbnail_url": "mxc://example.org/abcdefg"
+  },
+  "msgtype": "m.image",
+  "url": "mxc://example.org/abcde",
+  "blurhash": "JadR*.7kCMdnj"
+}
+```
+
+### Inline images
+
+An optional attribute is added to `<img>` tags in messages: `blurhash`, where
+the value of the attribute is the blurhash representation of the inline
+image.
+
+This would be optionally displayed with the inline image itself is loaded in parallel.
+
+Example `m.room.message.formatted_body`:
+
+```
+"formatted_body": This is awesome <img alt=\"flutterjoy\" title=\"flutterjoy\" height=\"32\" src=\"mxc://matrix.example.org/abc\" blurhash=\"LEHV6nWB2yk8pyo\" />
+```
+
+Note that a BlurHash representation is really only applicable to media, and
+as such should only be used in conjunction with the following
+`m.room.message` msgtypes:
+
+* `m.image`
+* `m.video`
 
 To be clear: This does not replace thumbnails - it will be shown before they
 are downloaded.
+
+## Calculating a blurhash
+
+BlurHashes are inserted into `m.room.message` events by the client, however
+some clients may not be able to implement the BlurHash library for whatever
+reason. In this case, it would be nice to allow the media repository to
+calculate the BlurHash of a piece of media for the client, similar to how
+thumbnails are calculated by media repositories today.
+
+The [`/_matrix/media/r0/upload`](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-media-r0-upload) endpoint response is modified to include an optional `blurhash` parameter, which the client may use to insert into messages if desired:
+
+Example response:
+
+```
+{
+  "content_uri": "mxc://example.com/abcde123",
+  "blurhash": "LKO2?U%2Tw=w]~RB"
+}
+```
 
 ## Visualisation
 
