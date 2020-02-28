@@ -71,6 +71,9 @@ Example `m.room.message.formatted_body`:
 "formatted_body": This is awesome <img alt=\"flutterjoy\" title=\"flutterjoy\" height=\"32\" src=\"mxc://matrix.example.org/abc\" data-blurhash=\"LEHV6nWB2yk8pyo\" />
 ```
 
+Note that that the blurhash MUST be HTML-encoded here to comply with HTML
+standards.
+
 To be clear: This does not replace thumbnails - it will be shown before they
 are downloaded.
 
@@ -134,3 +137,9 @@ with `xyz.amorgan.blurhash`.
 
 The `data-mx-blurhash` attribute in `<img>` tags should be replaced with
 `data-xyz-amorgan-blurhash`.
+
+## Links
+
+BlurHash's algorithm description can be found
+[here](https://github.com/woltapp/blurhash/blob/master/Algorithm.md), which
+also includes the full output character set.
