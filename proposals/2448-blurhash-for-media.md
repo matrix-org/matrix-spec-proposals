@@ -8,9 +8,10 @@ loading. Some clients, such as Riot, simply display an empty space.
 While thumbnails exist to combat this to some degree, they still need to be
 downloaded from a homeserver, which is not instantaneous.
 
-Instead, a blurhash can be sent inside the `m.room.message` event, which upon
+Instead, a BlurHash can be sent inside the `m.room.message` event, which upon
 receipt other clients can render for a pretty preview while the actual
-thumbnail downloads.
+thumbnail downloads. They also do not contain any `"` characters, making them
+simple to stick inside existing JSON blobs.
 
 ## Proposal
 
@@ -50,8 +51,8 @@ Example `m.room.message` content field:
 
 ### Inline images
 
-An optional attribute is added to `<img>` tags in messages: `blurhash`, where
-the value of the attribute is the blurhash representation of the inline
+An optional attribute is added to `<img>` tags in messages: `data-blurhash`,
+where the value of the attribute is the blurhash representation of the inline
 image.
 
 This would be optionally displayed with the inline image itself is loaded in parallel.
@@ -59,7 +60,7 @@ This would be optionally displayed with the inline image itself is loaded in par
 Example `m.room.message.formatted_body`:
 
 ```
-"formatted_body": This is awesome <img alt=\"flutterjoy\" title=\"flutterjoy\" height=\"32\" src=\"mxc://matrix.example.org/abc\" blurhash=\"LEHV6nWB2yk8pyo\" />
+"formatted_body": This is awesome <img alt=\"flutterjoy\" title=\"flutterjoy\" height=\"32\" src=\"mxc://matrix.example.org/abc\" data-blurhash=\"LEHV6nWB2yk8pyo\" />
 ```
 
 Note that a BlurHash representation is really only applicable to media, and
@@ -80,7 +81,10 @@ reason. In this case, it would be nice to allow the media repository to
 calculate the BlurHash of a piece of media for the client, similar to how
 thumbnails are calculated by media repositories today.
 
-The [`/_matrix/media/r0/upload`](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-media-r0-upload) endpoint response is modified to include an optional `blurhash` parameter, which the client may use to insert into messages if desired:
+The
+[`/_matrix/media/r0/upload`](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-media-r0-upload)
+endpoint response is modified to include an optional `blurhash` key,
+which the client may use to insert into messages if desired:
 
 Example response:
 
@@ -115,3 +119,13 @@ produces much more efficient textual representations.
 Older clients would ignore the new `blurhash` parameter.
 
 Newer clients would only show it if it exists.
+
+## Unstable prefixes
+
+Implementations wishing to add this before this MSC is merged can do so with the following:
+
+The `blurhash` key in `m.room.message` should be replaced with `xyz.amorgan.blurhash`.
+
+The `blurhash` key in `/_matrix/media/r0/upload`s response should be replaced with `xyz.amorgan.blurhash`.
+
+The `data-blurhash` attribute in `<img>` tags should be replaced with `data-xyz-amorgan-blurhash`.
