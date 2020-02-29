@@ -135,7 +135,7 @@ rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules) and
    administrators.
 
 Various APIs are currently subject to implementation-defined access
-restrictions. No change to the specification is changed in this regard
+restrictions. No change to the specification is introduced in this regard
 (implementations will continue to be free to impose their own
 restrictions). Nevertheless as part of this MSC it is useful to consider some
 proposed changes to Synapse's implementation:
