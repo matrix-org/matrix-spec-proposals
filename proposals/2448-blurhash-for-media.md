@@ -96,24 +96,39 @@ Example response:
 }
 ```
 
-In addition, a new endpoint will be added to the Media API that allows a
-client with an existing mxc URL to retrieve a blurhash for it from the
-server. It will take the form of `GET
-/_matrix/media/r0/blurhash/{serverName}/{mediaId}`.
+A server MUST also be able to render a BlurHash image from a BlurHash string.
+This is to support clients that do not have a BlurHash client implementation
+or are otherwise unable to do so themselves.
+
+This takes the form of a new endpoint, `GET
+/_matrix/media/r0/blurhash/{encodedBlurHash}`. This endpoint supports the following query parameters:
+
+* `width` - The width in pixels of the returned BlurHash image
+* `height` - The height in pixels of the returned BlurHash image
+
+Note that implementations should be careful to limit the size of accepted
+BlurHash strings, as not to overload the server with processing an obscenely
+long string. If this is the case, the server should return a `400
+M_TOO_LARGE`.
 
 Example request:
 
 ```
-GET /_matrix/media/r0/download/example.com/abcde12345/blurhash
+GET /_matrix/media/r0/blurhash/LG.F5%5D%3B%2BYk%5E6%23%25*%2B%2CK-%3A9%3D%3F%40%5B
+
+{}
 ```
 
 Example response:
 
 ```
-{
-  "blurhash": "LEHV6nWB2yk8pyo"
-}
+<bytes representing BlurHash image>
 ```
+
+In addition, the server can return the BlurHash string for an image when
+given an MXC URL. This would be through something like the Media Information
+API (specified in
+[MSC2380](https://github.com/matrix-org/matrix-doc/pull/2380)), or similar.
 
 ## Visualisation
 
