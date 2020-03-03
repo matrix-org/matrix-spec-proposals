@@ -1,4 +1,4 @@
-# MSCxxxx: Remove the `query_auth` federation endpoint
+# MSC2451: Remove the `query_auth` federation endpoint
 
 The `query_auth` federation endpoint is unused by Synapse and should be removed.
 The current implementation in Synapse is not robust and will return a 500 error
