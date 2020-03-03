@@ -99,7 +99,7 @@ Example response:
 In addition, a new endpoint will be added to the Media API that allows a
 client with an existing mxc URL to retrieve a blurhash for it from the
 server. It will take the form of `GET
-/_matrix/media/r0/download/{serverName}/{mediaId}/blurhash`.
+/_matrix/media/r0/blurhash/{serverName}/{mediaId}`.
 
 Example request:
 
@@ -152,12 +152,16 @@ The `blurhash` key in `m.room.message` should be replaced with
 `/_matrix/media/unstable/xyz.amorgan/upload`, which keeps the same `blurhash`
 response key.
 
-`/_matrix/media/r0/download/{serverName}/{mediaId}/blurhash` should be
+`/_matrix/media/r0/blurhash/{serverName}/{mediaId}` should be
 replaced with
-`/_matrix/media/unstable/xyz.amorgan/download/{serverName}/{mediaId}/blurhash`.
+`/_matrix/media/unstable/xyz.amorgan/blurhash/{serverName}/{mediaId}`.
 
 The `data-mx-blurhash` attribute in `<img>` tags should be replaced with
 `data-xyz-amorgan-blurhash`.
+
+And finally, an entry should be added to the homeserver's `GET
+/_matrix/client/versions` endpoint, in `unstable_features`, with the key
+`xyz.amorgan.blurhash` set to `true`.
 
 ## Links
 
