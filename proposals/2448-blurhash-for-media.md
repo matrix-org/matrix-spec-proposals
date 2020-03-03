@@ -115,8 +115,6 @@ Example request:
 
 ```
 GET /_matrix/media/r0/blurhash/LG.F5%5D%3B%2BYk%5E6%23%25*%2B%2CK-%3A9%3D%3F%40%5B
-
-{}
 ```
 
 Example response:
