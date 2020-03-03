@@ -13,6 +13,9 @@ receipt other clients can render for a pretty preview while the actual
 thumbnail downloads. They also do not contain any `"` characters, making them
 simple to stick inside existing JSON blobs.
 
+To be clear: A BlurHash does not replace a thumbnail - it will be shown
+before the thumbnail is downloaded.
+
 ## Proposal
 
 ### m.room.message
@@ -41,11 +44,11 @@ Example `m.room.message` content field:
     },
     "w": 301,
     "h": 193,
-    "thumbnail_url": "mxc://example.org/abcdefg"
+    "thumbnail_url": "mxc://example.org/abcdefg",
+    "blurhash": "JadR*.7kCMdnj"
   },
   "msgtype": "m.image",
   "url": "mxc://example.org/abcde",
-  "blurhash": "JadR*.7kCMdnj"
 }
 ```
 
@@ -62,7 +65,7 @@ An optional attribute is added to `<img>` tags in messages:
 `data-mx-blurhash`, where the value of the attribute is the blurhash
 representation of the inline image.
 
-This would be optionally displayed with the inline image itself is loaded in
+This would be optionally displayed while the inline image itself is loaded in
 parallel.
 
 Example `m.room.message.formatted_body`:
@@ -70,9 +73,6 @@ Example `m.room.message.formatted_body`:
 ```
 "formatted_body": This is awesome <img alt=\"flutterjoy\" title=\"flutterjoy\" height=\"32\" src=\"mxc://matrix.example.org/abc\" data-blurhash=\"LEHV6nWB2yk8pyo\" />
 ```
-
-To be clear: This does not replace thumbnails - it will be shown before they
-are downloaded.
 
 ## Calculating a blurhash
 
