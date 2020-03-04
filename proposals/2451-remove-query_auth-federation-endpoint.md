@@ -1,8 +1,19 @@
 # MSC2451: Remove the `query_auth` federation endpoint
 
-The `query_auth` federation endpoint is unused by Synapse and should be removed.
-The current implementation in Synapse is not robust and will return a 500 error
-in some situations.
+This API was added without sufficient thought nor testing. The endpoint isn't
+used in any known implementations, and we do not believe it to be necessary
+for federation to work. The only known implementation (in Synapse) was not fully
+fleshed out and is broken.
+
+For background, the idea behind this endpoint was that two homeservers would be
+able to share state events with the hope of filling in missing state from one
+of homeservers allowing state resolution to complete. This was to protect
+against a joining server not providing the full (or providing stale) state.
+
+In addition to the ideas above not coming to fruition, it is unclear whether the
+current design of this endpoint would be sufficient. If this state negotiation
+feature is needed in the future it should be redesigned from scratch via the MSC
+proposal process.
 
 ## Proposal
 
@@ -17,7 +28,8 @@ this endpoint should have minimal impact as it was an unused error path in
 Synapse. The federation client code to call this endpoint was removed in Synapse
 v1.5.0rc1.
 
-Note that dendrite has never implemented this federation endpoint.
+There is no evidence of other homeserver implementations having implemented this
+endpoint.
 
 ### History
 
