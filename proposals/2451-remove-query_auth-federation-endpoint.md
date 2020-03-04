@@ -37,7 +37,7 @@ error condition is never assigned).
 
 ## Alternatives
 
-The endpoint could be deprecated in removed in a future version of the specification.
+The endpoint could be deprecated and removed in a future version of the specification.
 
 ## Security considerations
 
