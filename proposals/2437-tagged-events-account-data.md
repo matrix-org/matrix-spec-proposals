@@ -106,7 +106,7 @@ Example of content:
                 ]
             }
         },
-		"u.personal": {
+        "u.personal": {
             "$903456781253Hhjkl:example.org": {
                 "keywords": [
                   "vacation",
@@ -131,3 +131,40 @@ redacted.
 About the hidden events, clients must hide these events from the room history.
 The event information don't seem very useful. We have provided some of them as
 example.
+
+## Limitation
+Given that clients have to encode the complete set of tagged events to add,
+remove or modify one entry, it might happen that different clients overwrite
+each other modifications to the tagged events.
+
+This is a known limitation for any new event type added to the `account_data`
+section of a room, or to the top-level `account_data`. For exemple, we already
+suffer from it to handle the `m.direct` event type.
+
+This limitation has been addressed for only one case: the room tagging. Indeed
+a set of endpoints have been defined for the corresponding event type `m.tag`.
+Here is the existing APIs for this feature: 
+
+```
+GET /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags
+PUT /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags/{tag}
+DELETE /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags/{tag}
+```
+
+Should we consider this approach for any new event type?
+Another suggestion has been provided during the review: We could provide
+account data endpoints to append and remove values to an array in a specific
+account data value, something like:
+
+```
+PUT /_matrix/client/r0/user/{userId}/rooms/{roomId}/account_data/<type>/append
+DELETE /_matrix/client/r0/user/{userId}/rooms/{roomId}/account_data/<type>/index/4
+```
+
+For the `DELETE` method, you'd need some kind of `ETag` value to pass as an
+`If-Match` header so avoid deleting an indexed that is out of date because of
+other clients deleting an index as well. Perhaps the server could add some kind
+of unique tag to the account data value when it is updated.
+
+We mentioned here the discussion about this limitation to keep it in our mind.
+This should be the subject of another proposal.
