@@ -15,7 +15,7 @@ It would probably be for the best to allow or even prefer `color` on the
 ## Proposal
 
 Add the `color` attribute to the allowed attributes of `<font>` in section
-13.2.1.7. Allow only hexcodes as allowed value for this attribute for now.
+13.2.1.7. No changes to the allowable values from the HTML spec are made here.
 
 ## Potential issues
 
