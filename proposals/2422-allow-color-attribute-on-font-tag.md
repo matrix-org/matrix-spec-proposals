@@ -1,6 +1,6 @@
 # MSC2422: Allow `color` as attribute for `<font>` in messages
 
-Currently the spec requires you to use `data-mx-color` instead of the standard
+Currently the spec recommends that you to use `data-mx-color` instead of the standard
 `color` html attribute for the `<font>` tag. This is probably done to make it
 consistent with `<span>`, where you may not want to allow a generic style tag for.
 
@@ -35,4 +35,3 @@ Add the `color` attribute to the allowed attributes of `<font>` in section
 - Add a section to tell the clients to prefer `color` over `mx-data-color`
 - Spec an entirely different format for messages (that would probably not make
     this proposal obsolete)
-
