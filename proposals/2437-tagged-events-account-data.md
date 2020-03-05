@@ -138,7 +138,7 @@ remove or modify one entry, it might happen that different clients overwrite
 each other modifications to the tagged events.
 
 This is a known limitation for any new event type added to the `account_data`
-section of a room, or to the top-level `account_data`. For exemple, we already
+section of a room, or to the top-level `account_data`. For example, we already
 suffer from it to handle the `m.direct` event type.
 
 This limitation has been addressed for only one case: the room tagging. Indeed
