@@ -505,7 +505,7 @@ framework outlined above. SAS verification is intended to be a highly interactiv
 process for users, and as such exposes verfiication methods which are easier for
 users to use.
 
-The verification process is heavily inspired by Phil Zimmerman's ZRTP key agreement
+The verification process is heavily inspired by Phil Zimmermann's ZRTP key agreement
 handshake. A key part of key agreement in ZRTP is the hash commitment: the party that
 begins the Diffie-Hellman key sharing sends a hash of their part of the Diffie-Hellman
 exchange, and does not send their part of the Diffie-Hellman exchange until they have
