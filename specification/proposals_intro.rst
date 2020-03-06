@@ -385,14 +385,14 @@ The process for an implementation willing to be ahead of a spec release is:
    * When using this approach correctly, the implementation can ship/release the
      feature at any time, so long as the implementation is able to accept the technical
      debt that results from needing to provide adequate backwards and forwards
-     compatibility. The implementation MUST support the flag disappearing and be
+     compatibility. The implementation MUST support the flag (and server-side implementation) disappearing and be
      generally safe for users. Note that implementations early in the MSC review
      process may also be required to provide backwards compatibility with earlier
      editions of the proposal.
    * If the implementation cannot support the technical debt (or if it's impossible
      to provide forwards/backwards compatibility - e.g. a user authentication change
      which can't be safely rolled back), the implementation should not attempt to
-     implement the feature and instead wait for a spec release.
+     implement the feature and should instead wait for a spec release.
    * If at any point the idea changes, the feature flag should also change so that
      implementations can adapt as needed.
 
@@ -429,7 +429,7 @@ The process for an implementation willing to be ahead of a spec release is:
 In summary:
 
 * Implementations MUST NOT use stable endpoints before the MSC is in the spec. This
-  includes NOT using stable endpoints before a spec release happens, but after FCP has
+  includes NOT using stable endpoints in the period between completion of FCP and release of the spec.
   passed.
 * Implementations are able to ship features that are exposed to users by default before
   an MSC has been merged to the spec, provided they follow the process above.
