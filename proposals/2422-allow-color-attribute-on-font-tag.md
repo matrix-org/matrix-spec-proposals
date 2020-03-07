@@ -29,9 +29,11 @@ Add the `color` attribute to the allowed attributes of `<font>` in section
 
 ## Alternatives
 
-- fix the clients
-- remove the `data-mx-color` and `data-mx-bg-color` attributes entirely, leaving
-    us just with `color` for `<font>`
-- Add a section to tell the clients to prefer `color` over `mx-data-color`
-- Spec an entirely different format for messages (that would probably not make
-    this proposal obsolete)
+- fix the clients  
+  -> This currently seems not feasible. Multiple clients started using color first (i.e. RiotX, Gomuks) and if it isn't spelled out explicitly in the spec, this will probably continue.
+- remove the `data-mx-color` and `data-mx-bg-color` attributes entirely, leaving us just with `color` for `<font>`  
+  -> This would break old messages and can be done independently of this proposal at a later date, if it is deemed useful.
+- Add a section to tell the clients to prefer `color` over `mx-data-color`  
+  -> I don't really know, why mx-data-* was chosen, but I assume there was a reason, so I don't want to change that.
+- Spec an entirely different format for messages (that would probably not make this proposal obsolete)  
+  -> This wouldn't fix the issue, where some client may choose to remove the color tag, since it is dicouraged in the spec. Migration would probably also take a while, so this proposal is a quick solution, that doesn't prevent other solutions at a later date.
