@@ -393,7 +393,7 @@ The process for an implementation willing to be ahead of a spec release is:
      to provide forwards/backwards compatibility - e.g. a user authentication change
      which can't be safely rolled back), the implementation should not attempt to
      implement the feature and should instead wait for a spec release.
-   * If at any point the idea changes, the feature flag should also change so that
+   * If at any point after early release, the idea changes in a backwards-incompatible way, the feature flag should also change so that
      implementations can adapt as needed.
 
 3. In parallel, or ahead of implementation, open an MSC and solicit review per above.
