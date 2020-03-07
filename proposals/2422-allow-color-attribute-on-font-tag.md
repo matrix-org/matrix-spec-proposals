@@ -19,7 +19,7 @@ Add the `color` attribute to the allowed attributes of `<font>` in section
 
 ## Potential issues
 
-- We now have a redundant attribute in the spec. While it matches, what the
+- We now have a redundant attribute in the spec. While it matches what the
     clients currently do, it may be better to fix each client instead.
 - Clients may not sanitize the color attribute and will let other color values
     through, increasing compatibility issues again.
