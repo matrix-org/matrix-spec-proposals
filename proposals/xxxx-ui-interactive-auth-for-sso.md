@@ -1,6 +1,4 @@
-# User-Interactive Auth for SSO-backed homeservers
-
-## Background
+# User-Interactive Auth for SSO-backed homeserver
 
 Certain endpoints, such as `DELETE /_matrix/client/r0/devices/{deviceId}` and
 `POST /_matrix/client/r0/account/3pid/add`, require the user to reconfirm their
@@ -9,15 +7,17 @@ entire account.
 
 On a normal homeserver, this is done by prompting the user to enter their
 password. However, on a homeserver where users authenticate via a single-sign-on
-system, the user doesn't have a password, so this doesn't work. Instead we need
-to delegate that check to the SSO system.
+system, the user doesn't have a password registered with the homeserver. Instead
+we need to delegate that check to the SSO system.
 
 At the protocol level, this means adding support for SSO to
 [user-interactive auth](https://matrix.org/docs/spec/client_server/r0.6.0#user-interactive-authentication-api).
 
-### The current implementation
+In theory, any clients that already implement the fallback process for unknown
+authentication types will work fine without modification. It is unknown whether
+this is widely supported among clients.
 
-Or, "how UI Auth works, in practice":
+### UI Auth Overview
 
 When the client calls one of the protected endpoints, it initially returns a 401
 response. For example:
@@ -52,7 +52,7 @@ The client:
 * discovers there is a flow it knows how to follow
 * carries out the first "stage" of that flow (m.login.password)
 
-ie, the client prompts the user to enter a password.
+In this example, the client prompts the user to enter a password.
 
 The client then resubmits with an additional 'auth' param, with "type" giving
 the name of the authentication type it has just carried out. That completes the
@@ -89,24 +89,25 @@ additional params as part of this auth type.
     window for `/_matrix/client/r0/auth/m.login.sso/fallback/web?session=<...>`
     with session set to the UI-Auth session id (from the "auth" dict).
 
-    The homeserver returns a page which says words to the effect of "A client is
-    trying to remove a device/add an email address/take over your account. To
-    confirm this action, **re-authenticate with single sign-on**. If you did not
-    expect this, your account may be compromised!"
+    The homeserver returns a page which asks for the user's confirmation before
+    proceeding. See the security considerations section below for why this is
+    necessary. For example, the page could say words to the effect of:
 
-    See security section below.
+    > A client is trying to remove a device/add an email address/take over your
+    > account. To confirm this action, **re-authenticate with single sign-on**.
+    > If you did not expect this, your account may be compromised!
 2.  The link, once the user clicks on it, goes to the SSO provider's page.
 3.  The SSO provider validates the user, and redirects the browser back to the
     homeserver.
 4.  The homeserver validates the response from the SSO provider, updates the
-    user-interactive auth session to show that the SSO has completed, serves the
-    fallback auth completion page as specced:
-    https://matrix.org/docs/spec/client_server/r0.6.0#fallback
+    user-interactive auth session to show that the SSO has completed,
+    [serves the fallback auth completion page as specced](https://matrix.org/docs/spec/client_server/r0.6.0#fallback).
 5.  The client resubmits its original request, with its original session id,
-    which now hopefully completes.
+    which now should complete.
 
 Note that the post-SSO URL on the homeserver is left up to the homeserver
-implementation rather than forming part of the spec.
+implementation rather than forming part of the specification, choices might be
+limited by the chosen SSO implementation, for example:
 
 *   SAML2 servers typically only support one URL per service provider, so in
     practice it will need to be the same as that already used for the login flow
@@ -216,47 +217,50 @@ implementation rather than forming part of the spec.
     {}
     ```
 
-A few notes:
+## Alternatives
 
-*   The security of this relies on UI-Auth sessions only being used for the same
-    request as they were initiated for. I don't think that's currently enforced.
-*   We might consider an alternative client flow where the fallback auth ends up
-    redirecting to a given URI, instead of doing javascript postMessage foo. I
-    think that's an orthogonal change to the fallback auth though.
-*   In theory, any clients that already implement the fallback process for
-    unknown authentication types will work fine without modification.
-    Unfortunately, I don't think Riot (on any platform) is among them.
+An alternative client flow where the fallback auth ends up redirecting to a
+given URI, instead of doing JavaScript postMessage foo could be considered.
+This is probably an orthogonal change to the fallback auth though.
 
 ## Security considerations
 
+### Why we need user to confirm before the SSO flow
+
 Recall that the thing we are trying to guard against here is a single leaked
 access-token being used to take over an entire account. So let's assume the
-attacker has got hold of an access token for your account. What happens if we
- skip the confirmation step?
+attacker has got hold of an access token for your account. What happens if the
+confirmation step is skipped?
 
-The attacker, who has your access token, starts a UI-Auth session to add his
-email address to your account.
+The attacker, who has your access token, starts a UI Authentication session to
+add their email address to your account.
 
-He then sends you a link "hey, check out this cool video!"; the link leads (via
-an innocent-looking url shortener) to
+They then sends you a link "hey, check out this cool video!"; the link leads (via
+an innocent-looking URL shortener or some other phishing technique) to
 `/_matrix/client/r0/auth/m.login.sso/fallback/web?session=<...>`, with the ID of
 the session that he just created.
 
-Recall that we're skipping the confirmation step, so the server redirects
-straight to the SSO provider.
+Since there is no confirmation step, the server redirects directly to the SSO
+provider.
 
 It's common for SSO providers to redirect straight back to the app if you've
 recently authenticated with them; even in the best case, the SSO provider shows
-some innocent message along the lines of "Confirm that you want to sign in to
-<your matrix homeserver>".
+an innocent message along the lines of "Confirm that you want to sign in to
+<your Matrix homeserver>".
 
-So the SSO completes, and the attacker's session is validated.
+After redirecting back to the homeserver, the SSO is completed and the
+attacker's session is validated. They are now able to make their malicious
+change to your account.
 
-By telling the user what's about to happen as clearly as we can, and making them
-confirm, we can mitigate this problem.
+This problem can be mitigated by clearly telling the user what is about to happen.
+
+### Reusing UI-Auth sessions
+
+The security of this relies on UI-Auth sessions only being used for the same
+request as they were initiated for. It is not believed that this is currently
+enforced.
 
 ## Unstable prefix
 
-We should use a vendor prefix here until this hits the spec.
-
-`org.matrix.login.sso` ?
+A vendor prefix of `org.matrix.login.sso` (instead of `m.login.sso` is proposed
+until this is part of the specification.
