@@ -1,4 +1,4 @@
-# User-Interactive Auth for SSO-backed homeserver
+# User-Interactive Authentication for SSO-backed homeserver
 
 Certain endpoints, such as `DELETE /_matrix/client/r0/devices/{deviceId}` and
 `POST /_matrix/client/r0/account/3pid/add`, require the user to reconfirm their
@@ -10,17 +10,21 @@ password. However, on a homeserver where users authenticate via a single-sign-on
 system, the user doesn't have a password registered with the homeserver. Instead
 we need to delegate that check to the SSO system.
 
-At the protocol level, this means adding support for SSO to
+At the protocol level, this means adding support for SSO to the
 [user-interactive authentication API](https://matrix.org/docs/spec/client_server/r0.6.0#user-interactive-authentication-api).
 
-In theory, any clients that already implement the fallback process for unknown
-authentication types will work fine without modification. It is unknown whether
-this is widely supported among clients.
+In theory, once SSO is added as a possible flow for authentication any clients
+that already implement the [fallback process for unknown authentication types](https://matrix.org/docs/spec/client_server/r0.6.0#fallback)
+will work fine without modification. It is unknown whether this is widely
+supported among clients.
 
 ## Proposal
 
-We add an `m.login.sso` authentication type to the UI auth spec. There are no
-additional params as part of this auth type.
+An [additional authentication type](https://matrix.org/docs/spec/client_server/r0.6.0#authentication-types)
+of `m.login.sso` is added to the user-interactive authentication specification.
+There are no additional parameters as part of this authentication type.
+
+When choosing this authentication flow, the following should occur:
 
 1.  If the client wants to complete that authentication type, it opens a browser
     window for `/_matrix/client/r0/auth/m.login.sso/fallback/web?session=<...>`
@@ -91,8 +95,9 @@ limited by the chosen SSO implementation, for example:
     HTTP/1.1 200 OK
 
     <body>
-    can delete device pls?
-    <a href="https://sso_provider/validate?SAMLRequest=...">clicky</a>
+    A client is trying to remove a device from your account. To confirm this
+    action, <a href="https://sso_provider/validate?SAMLRequest=...">re-authenticate with single sign-on</a>.
+    If you did not expect this, your account may be compromised!
     </body>
     ```
 
@@ -101,11 +106,12 @@ limited by the chosen SSO implementation, for example:
     ```
     GET https://sso_provider/validate?SAMLRequest=<etc> HTTP/1.1
 
-    ... SAML/CAS stuff
+    <SAML/CAS or other SSO data>
     ```
 
 3.  The SSO provider validates the user and ends up redirecting the browser back
-    to the homeserver. (The example below shows a 302 for simplicity but SAML normally uses a 200 with an html <form>, with javascript to automatically submit it.)
+    to the homeserver. The example below shows a 302 for simplicity, this might
+    vary based on SSO implementation.
 
     ```
     HTTP/1.1 302 Moved
@@ -191,13 +197,13 @@ change to your account.
 
 This problem can be mitigated by clearly telling the user what is about to happen.
 
-### Reusing UI-Auth sessions
+### Reusing User Interactive Authentication sessions
 
-The security of this relies on UI-Auth sessions only being used for the same
-request as they were initiated for. It is not believed that this is currently
-enforced.
+The security of this relies on User Interactive Authentication sessions only
+being used for the same request as they were initiated for. It is not believed
+that this is currently enforced.
 
 ## Unstable prefix
 
-A vendor prefix of `org.matrix.login.sso` (instead of `m.login.sso` is proposed
+A vendor prefix of `org.matrix.login.sso` is proposed (instead of `m.login.sso`)
 until this is part of the specification.
