@@ -11,74 +11,11 @@ system, the user doesn't have a password registered with the homeserver. Instead
 we need to delegate that check to the SSO system.
 
 At the protocol level, this means adding support for SSO to
-[user-interactive auth](https://matrix.org/docs/spec/client_server/r0.6.0#user-interactive-authentication-api).
+[user-interactive authentication API](https://matrix.org/docs/spec/client_server/r0.6.0#user-interactive-authentication-api).
 
 In theory, any clients that already implement the fallback process for unknown
 authentication types will work fine without modification. It is unknown whether
 this is widely supported among clients.
-
-### UI Auth Overview
-
-When the client calls one of the protected endpoints, it initially returns a 401
-response. For example:
-
-```
-POST /_matrix/client/r0/delete_devices HTTP/1.1
-Content-Type: application/json
-
-{
-    "devices": ["FSVVTZRRAA"]
-}
-
-HTTP/1.1 401 Unauthorized
-Content-Type: application/json
-
-{
-    "flows": [
-        {
-            "stages": [
-                "m.login.password"
-            ]
-        }
-    ],
-    "params": {},
-    "session": "dTKfsLHSAJeAhqfxUsvrIVJd"
-}
-```
-
-The client:
-
-* inspects the "flows" list
-* discovers there is a flow it knows how to follow
-* carries out the first "stage" of that flow (m.login.password)
-
-In this example, the client prompts the user to enter a password.
-
-The client then resubmits with an additional 'auth' param, with "type" giving
-the name of the authentication type it has just carried out. That completes the
-authentication flow, so the server is now happy, and returns a 200:
-
-```
-POST /_matrix/client/r0/delete_devices HTTP/1.1
-Content-Type: application/json
-
-{
-  "devices": ["FSVVTZRRAA"],
-  "auth": {
-    "session":"dTKfsLHSAJeAhqfxUsvrIVJd",
-    "type":"m.login.password",
-    "identifier":{"type":"m.id.user", "user":"@userid:matrix.org"},
-    "password":"<password>"
-  }
-}
-
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 179
-
-{}
-```
 
 ## Proposal
 
