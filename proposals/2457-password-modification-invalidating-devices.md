@@ -36,15 +36,18 @@ modifying the password.
 
 ## Potential issues
 
-While Synapse defaults to the behavior of invalidating other devices and
-sessions this may not be true of other implementations. Thus, a default of
-`true` may not be backwards compatible. It might be more prudent to specify that
-the behavior of not specifying the `logout_devices` flag is undefined.
+The specification states:
+
+> The homeserver SHOULD NOT revoke the access token provided in the request,
+> however all other access tokens for the user should be revoked if the request
+> succeeds.
+
+Defaulting `logout_devices` to `true` should be backwards compatible.
 
 ## Alternatives
 
-Provide a new endpoint in a future version that supports an additional field (as
-above), using a new endpoint would avoid backwards compatibility issues.
+A new endpoint could be provided in a future version of the specification that
+supports an additional field (as described above).
 
 ## Security considerations
 
