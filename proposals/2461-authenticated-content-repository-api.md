@@ -1,8 +1,14 @@
 # Authenticated Content Repository API
 Currently anyone can fetch resources from content repositories.
 This can be undesired behaviour for several reasons as discussed
-in [synapse#2150](https://github.com/matrix-org/synapse/issues/2150) and [synapse#2133](https://github.com/matrix-org/synapse/issues/2133).
-Homeservers might want to be able to restrict access to the content they serve.
+in [synapse#2133](https://github.com/matrix-org/synapse/issues/2133) and
+somewhat in [synapse#2150](https://github.com/matrix-org/synapse/issues/2150).
+
+Homeserver administrators might want to be able to
+restrict access to the content they serve.
+
+This is unrelated to controlling access to content on a per-file basis,
+which is something a user might desire.
 
 ## Proposal
 Homeservers may reject unauthenticated access to media endpoints.
@@ -23,7 +29,8 @@ Example response:
 
 ### Configuration
 To allow clients to predetermine whether authentication is required,
-the configuration field m.media.unauthenticated is added.
+the field m.media.unauthenticated is added to
+`GET /_matrix/media/r0/config`.
 It specifies what content can be accessed unauthenticated.
 
 The following behaviours are defined:
