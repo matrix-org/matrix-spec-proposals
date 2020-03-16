@@ -29,7 +29,7 @@ Alternately a client may default to whichever workflow is best for their users.
 
 ## Proposal
 
-An optional field is added to the JSON body body of the [password reset endpoint](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-account-password)
+An optional field is added to the JSON body of the [password reset endpoint](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-account-password)
 called `logout_devices`. This is a boolean flag (defaulting to `true`) that
 signals to whether other devices and sessions should be invalidated after
 modifying the password.
