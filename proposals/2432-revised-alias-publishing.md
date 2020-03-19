@@ -96,8 +96,16 @@ rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules) and
    (Note: Synapse currently implements this check on the main alias, though
    this is unspecced.)
 
-   (TODO: what error code should be returned if the alias is invalid, or if it
-   points to the wrong room?)
+   The following error codes are specified:
+
+   * HTTP 400, with `errcode: M_INVALID_PARAMETER` if an attempt is made to add
+     an entry which is not a well-formed alias (examples: too long, doesn't
+     start with `#`, doesn't contain a `:`).
+
+   * HTTP 400, with `errcode: M_BAD_ALIAS` if an added alias does not point at
+     the given room (either because the alias doesn't exist, because it can't
+     be resolved due to an unreachable server, or because the alias points at a
+     different room).
 
  * Currently, [`PUT /_matrix/client/r0/directory/room/{roomAlias}`](https://matrix.org/docs/spec/client_server/r0.6.0#put-matrix-client-r0-directory-room-roomalias)
    attempts to send updated `m.room.aliases` events on the caller's
@@ -110,8 +118,14 @@ rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules) and
    deleted. (Again, this is implemented in Synapse but does not appear to be
    explicitly specced.) The `m.room.aliases` functionality should be removed,
    and the `m.room.canonical_alias` functionality should be extended to cover
-   `alt_aliases`. As today, no error occurs if the caller does not have
-   permission to send such an event.
+   `alt_aliases`.
+
+   The behaviour if the calling user has permission to delete the alias but
+   does not have permission to send `m.room.canonical_alias` events in the room
+   (for example, by virtue of being a "server administrator", or by being the
+   user that created the alias) is implementation-defined. It is *recommended*
+   that in this case, the alias is deleted anyway, and a successful response is
+   returned to the client.
 
  * A new api endpoint, `GET /_matrix/client/r0/rooms/{roomId}/aliases` is
    added, which returns the list of aliases currently defined on the local
