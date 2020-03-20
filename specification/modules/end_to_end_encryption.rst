@@ -861,12 +861,14 @@ The ``session_data`` field in the backups is constructed as follows:
       algorithm                       string   Required. The end-to-end message
                                                encryption algorithm that the key is
                                                for.  Must be ``m.megolm.v1.aes-sha2``.
+      forwarding_curve25519_key_chain [string] Required. Chain of Curve25519 keys
+                                               through which this session was
+                                               forwarded, via
+                                               `m.forwarded_room_key`_ events.
       sender_key                      string   Required. Unpadded base64-encoded
                                                device curve25519 key.
       sender_claimed_keys             {string: Required. Object containing the
                                        string} identity key for the sending device.
-      forwarding_curve25519_key_chain [string] Required. Zero or more curve25519 keys
-                                               for devices who forwarded the session key.
       session_key                     string   Required. Unpadded base64-encoded
                                                session key in `session-sharing format
                                                <https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md#session-sharing-format>`_.
@@ -960,6 +962,9 @@ described as follows:
    session_id                      string      Required. The ID of the session.
    session_key                     string      Required. The key for the session.
    =============================== =========== ====================================
+
+This is similar to the format before encryption used for the session keys in
+`Server-side key backups`_ but adds the ``room_id`` and ``session_id`` fields.
 
 Example:
 
