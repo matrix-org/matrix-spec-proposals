@@ -36,4 +36,4 @@ Add the `color` attribute to the allowed attributes of `<font>` in section
 - Add a section to tell the clients to prefer `color` over `mx-data-color`  
   -> I don't really know, why mx-data-* was chosen, but I assume there was a reason, so I don't want to change that.
 - Spec an entirely different format for messages (that would probably not make this proposal obsolete)  
-  -> This wouldn't fix the issue, where some client may choose to remove the color tag, since it is dicouraged in the spec. Migration would probably also take a while, so this proposal is a quick solution, that doesn't prevent other solutions at a later date.
+  -> This wouldn't fix the issue, where some client may choose to remove the color tag, since it is discouraged in the spec. Migration would probably also take a while, so this proposal is a quick solution, that doesn't prevent other solutions at a later date.
