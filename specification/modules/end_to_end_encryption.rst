@@ -868,7 +868,7 @@ The ``session_data`` field in the backups is constructed as follows:
       sender_key                      string   Required. Unpadded base64-encoded
                                                device curve25519 key.
       sender_claimed_keys             {string: Required. Object containing the
-                                       string} identity key for the sending device.
+                                      string}  identity key for the sending device.
       session_key                     string   Required. Unpadded base64-encoded
                                                session key in `session-sharing format
                                                <https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md#session-sharing-format>`_.
