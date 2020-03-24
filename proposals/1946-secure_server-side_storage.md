@@ -10,7 +10,7 @@ signing keys.  This proposal presents a standardized way of storing such data.
 
 ## Changes
 
-- [MSCxxxx](https://github.com/matrix-org/matrix-doc/pull/xxxx) changed the
+- [MSC2472](https://github.com/matrix-org/matrix-doc/pull/2472) changed the
   encryption algorithm used from an asymmetric algorithm (Curve25519) to a
   symmetric algorithm (AES).
 
