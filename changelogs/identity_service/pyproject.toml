@@ -20,6 +20,11 @@
         showcontent = true
 
     [[tool.towncrier.type]]
+        directory = "removal"
+        name = "Removed Endpoints"
+        showcontent = true
+
+    [[tool.towncrier.type]]
         directory = "feature"
         name = "Backwards Compatible Changes"
         showcontent = true
