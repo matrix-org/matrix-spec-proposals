@@ -43,7 +43,7 @@ A key with ID `abcdefg` is stored in `m.secret_storage.key.abcdefg`
 ```json
 {
   "name": "Some key",
-  "algorithm": "m.secret_storage.v1.curve25519-aes-sha2",
+  "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
   // ... other properties according to algorithm
 }
 ```
@@ -106,7 +106,7 @@ and the key descriptions for the keys would be:
 ```json
 {
   "name": "Some key",
-  "algorithm": "m.secret_storage.v1.curve25519-aes-sha2",
+  "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
   // ... other properties according to algorithm
 }
 ```
@@ -116,7 +116,7 @@ and the key descriptions for the keys would be:
 ```json
 {
   "name": "Some other key",
-  "algorithm": "m.secret_storage.v1.curve25519-aes-sha2",
+  "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
   // ... other properties according to algorithm
 }
 ```
