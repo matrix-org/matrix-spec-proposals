@@ -8,6 +8,12 @@ decryption key for the backups on the server, or cross-signing
 ([MSC1756](https://github.com/matrix-org/matrix-doc/pull/1756)) can store the
 signing keys.  This proposal presents a standardized way of storing such data.
 
+## Changes
+
+- [MSCxxxx](https://github.com/matrix-org/matrix-doc/pull/xxxx) changed the
+  encryption algorithm used from an asymmetric algorithm (Curve25519) to a
+  symmetric algorithm (AES).
+
 ## Proposal
 
 Secrets are data that clients need to use and that are sent through or stored
