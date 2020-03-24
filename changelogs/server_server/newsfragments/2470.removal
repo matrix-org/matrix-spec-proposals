@@ -1,0 +1,1 @@
+Remove the unused ``query_auth`` API per [MSC2451](https://github.com/matrix-org/matrix-doc/pull/2451).
