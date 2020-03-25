@@ -94,9 +94,10 @@ It should be noted here that erasure requests for a given user should only be
 allowed from the homeserver the user belongs to. If this isn't the case, the
 other homeserver should respond with a `403 M_FORBIDDEN`.
 
-For application services, a new API endpoint will be added on the application
-service: `POST /_matrix/app/v1/users/erase`. It contains a single, required
-field `user_id`, which is the user ID to erase identifying data of.
+For all application services, a new API endpoint will be added on the
+application service: `POST /_matrix/app/v1/users/erase`. It contains a
+single, required field `user_id`, which is the user ID to erase identifying
+data of.
 
 Example request:
 
