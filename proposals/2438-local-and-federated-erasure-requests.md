@@ -67,7 +67,6 @@ point, we would like to communicate the erasure request to:
 * Other homeservers 
 * Application services
 * Identity Servers
-* Integration managers
 * Any other service in the matrix ecosystem
 
 which may have data (e.g. messages) pertaining to this user.
