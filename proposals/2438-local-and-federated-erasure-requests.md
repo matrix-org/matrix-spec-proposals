@@ -20,7 +20,7 @@ ecosystem. We start with the initial erasure request from a user to their
 homeserver.
 
 A new parameter to the
-[`/account/deactivate`](https://matrix.org/docs/spec/client_server/unstable#post-matrix-client-r0-account-deactivate)
+[`/account/deactivate`](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-account-deactivate)
 Client-Server API endpoint will be added, called `erase`, which is a boolean
 that specifies whether the homeserver MUST attempt to erase all personal
 data pertaining to the user off of the homeserver and as much of the rest of
@@ -33,11 +33,9 @@ POST /_matrix/client/r0/account/deactivate
 
 {
   "auth": {
-    "type": "m.login.password",
-    "identifier": {
-      "type": "m.id.user",
-      "user": "someone"
-    },
+    "type": "example.type.foo",
+    "session": "xxxxx",
+    "example_credential": "verypoorsharedsecret"
   },
   "erase": true
 }
