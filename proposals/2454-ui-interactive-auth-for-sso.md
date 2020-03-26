@@ -52,7 +52,7 @@ limited by the chosen SSO implementation, for example:
 
 *   SAML2 servers typically only support one URL per service provider, so in
     practice it will need to be the same as that already used for the login flow
-    (for synapse, it's /_matrix/saml2/authn_response) - and the server needs to
+    (for synapse, it's `/_matrix/saml2/authn_response`) - and the server needs to
     be able to figure out if it's doing SSO for a login attempt or an SSO
     attempt.
 *   CAS doesn't have the same restriction.
