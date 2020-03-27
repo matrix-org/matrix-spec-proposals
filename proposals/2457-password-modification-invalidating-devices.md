@@ -13,9 +13,9 @@ These can be summarized into two groups:
 2. "I just want to change my password."
 
 The [current Matrix specification](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-account-password)
-does not provide a way to differentiate between these use cases. It gives no
-guidance into what should happen to other sessions / devices when a password is
-modified and leaves it up to the implementation.
+does not provide a way to differentiate between these use cases. It currently
+specifies behavior that fits well into the first use-case above: that the
+sessions except the current session should be revoked.
 
 It is reasonable for a client to want to specify this behavior to offer two
 different workflows:
