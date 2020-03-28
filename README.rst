@@ -66,6 +66,8 @@ The above will write the rendered version of the specification to
 
 Windows users
 ~~~~~~~~~~~~~
+The ``source`` program does not exist on Windows, so instead run one of the 
+``activate`` files in ``.\env\Scripts\`` to activate the virtual environment.
 
 If you're on Windows Vista or higher, be sure that the "Symbolic Links"
 option was selected when installing Git prior to cloning this repository. If
@@ -80,6 +82,24 @@ cloned matrix-doc directory and run the following::
 
 This will delete the file and replace it with a symlink. Git should not detect
 this as a change, and you should be able to go back to building the project.
+
+Powershell doesn't have ``mklink`` so use cmd.  Or, here is the full set of 
+steps for Powershell:
+
+.. code-block:: powershell
+
+  virtualenv -p python3 env
+  .\env\Scripts\pip.exe install -r .\scripts\requirements.txt
+
+  .\env\Scripts\activate.ps1 # Adds a global function 'deactivate' for leaving the env when you are done.
+  .\Scripts\gendoc.py
+
+  # If you get errors:
+  cd api\client-server\definitions
+  del event-schemas
+  New-Item -ItemType SymbolicLink -Name event-schemas -Value "..\..\..\event-schemas"
+  cd ..\..\..\
+  .\scripts\gendoc.py
 
 Generating the OpenAPI (Swagger) specs
 --------------------------------------
