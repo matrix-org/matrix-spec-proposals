@@ -1077,7 +1077,6 @@ The following endpoint prefixes MUST be protected:
 * ``/_matrix/federation/v1/state_ids``
 * ``/_matrix/federation/v1/backfill``
 * ``/_matrix/federation/v1/event_auth``
-* ``/_matrix/federation/v1/query_auth``
 * ``/_matrix/federation/v1/get_missing_events``
 
 
