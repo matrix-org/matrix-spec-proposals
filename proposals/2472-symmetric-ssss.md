@@ -51,6 +51,10 @@ is able to store data.
   using a symmetric encryption algorithm, the client needs to know the key that
   is used to encrypt, so the purpose of the field cannot be fulfilled.
 
+* Signing the Secret Storage key with the user's master cross-signing key is no
+  longer required.  The key is trusted on the basis of the user entering the
+  key/passphrase.
+
 
 ## Potential issues
 

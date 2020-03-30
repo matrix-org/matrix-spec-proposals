@@ -38,9 +38,8 @@ Each key has an ID, and the description of the key is stored in the user's
 account_data using the event type `m.secret_storage.key.[key ID]`.  The contents
 of the account data for the key will include an `algorithm` property, which
 indicates the encryption algorithm used, as well as a `name` property, which is
-a human-readable name.  The contents will be signed as signed JSON using the
-user's master cross-signing key.  Other properties depend on the encryption
-algorithm, and are described below.
+a human-readable name.  Other properties depend on the encryption algorithm,
+and are described below.
 
 Example:
 
@@ -60,13 +59,6 @@ the key as its `key` property.  The default key will be used to encrypt all
 secrets that the user would expect to be available on all their clients.
 Unless the user specifies otherwise, clients will try to use the default key to
 decrypt secrets.
-
-Clients MUST ensure that the key is trusted before using it to encrypt secrets.
-One way to do that is to have the client that creates the key sign the key
-description (as signed JSON) using the user's master cross-signing key.
-Another way to do that is to prompt the user to enter the passphrase used to
-generate the encryption key and ensure that the generated private key
-corresponds to the public key.
 
 #### Secret storage
 
