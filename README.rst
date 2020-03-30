@@ -73,7 +73,7 @@ If you're on Windows Vista or higher, be sure that the "Symbolic Links"
 option was selected when installing Git prior to cloning this repository. If
 you're still seeing errors about files not being found it is likely because
 the symlink at ``api/client-server/definitions/event-schemas`` looks like a
-file. To correct the problem, open an Administrative/Elevated shell in your
+file. To correct the problem, open an Administrative/Elevated Command Prompt in your
 cloned matrix-doc directory and run the following::
 
   cd api\client-server\definitions
@@ -82,24 +82,6 @@ cloned matrix-doc directory and run the following::
 
 This will delete the file and replace it with a symlink. Git should not detect
 this as a change, and you should be able to go back to building the project.
-
-Powershell doesn't have ``mklink`` so use cmd.  Or, here is the full set of 
-steps for Powershell:
-
-.. code-block:: powershell
-
-  virtualenv -p python3 env
-  .\env\Scripts\pip.exe install -r .\scripts\requirements.txt
-
-  .\env\Scripts\activate.ps1 # Adds a global function 'deactivate' for leaving the env when you are done.
-  .\Scripts\gendoc.py
-
-  # If you get errors:
-  cd api\client-server\definitions
-  del event-schemas
-  New-Item -ItemType SymbolicLink -Name event-schemas -Value "..\..\..\event-schemas"
-  cd ..\..\..\
-  .\scripts\gendoc.py
 
 Generating the OpenAPI (Swagger) specs
 --------------------------------------
