@@ -141,13 +141,23 @@ is encrypted and MACed as follows:
 
 (We use AES-CTR to match file encryption and key exports.)
 
+For the purposes of allowing clients to check whether a user has correctly
+entered the key, clients should:
+
+  1. encrypt and MAC a message consisting of 32 bytes of 0 as described above,
+     using the empty string as the info parameter to the HKDF in step 1.
+  2. store the `iv` and `mac` in the `m.secret_storage.key.[key ID]`
+     account-data.
+
 For example, the `m.secret_storage.key.key_id` for a key using this algorithm
 could look like:
 
 ```json
 {
   "name": "m.default",
-  "algorithm": "m.secret_storage.v1.aes-hmac-sha2"
+  "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
+  "iv": "random+data",
+  "mac": "mac+of+encrypted+zeros"
 }
 ```
 

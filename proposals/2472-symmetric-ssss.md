@@ -43,6 +43,14 @@ is able to store data.
   bits that should be generated from PBKDF2 (in other words, the size of the
   key).
 
+* For the purposes of allowing clients to check whether a user has correctly
+  entered the key, clients should:
+
+  1. encrypt and MAC a message consisting of 32 bytes of 0 as described above,
+     using the empty string as the info parameter to the HKDF in step 1.
+  2. store the `iv` and `mac` in the `m.secret_storage.key.[key ID]`
+     account-data.
+
 * The `passthrough` property specified in the "Enconding the recovery key for
   server-side storage via MSC1946" section of MSC1219 is removed.  The primary
   purpose of that property was to allow easy migration of pre-MSC1946 backups,
