@@ -70,23 +70,6 @@ Status code 200:
 {}
 ```
 
-
-**NB**;  
-To reduce the risk of abuse, this endpoint is suggested to never allow sending any ephemeral data of
-any type matching the wildcard `m.*`, instead keeping the sending of those well-defined event types
-under their already existing endpoints.
-
-An error that could be returned for a user attempting to send such a blocked type is suggested as;
-
-Status code 403
-
-```json
-{
-  "errcode": "M_FORBIDDEN",
-  "error": "Cannot send this ephemeral type"
-}
-```
-
 ### Extension of power levels to handle user-defined ephemeral events
 
 As it would be possible for the user-defined events to be used to flood a room with invisible
