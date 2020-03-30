@@ -239,7 +239,7 @@ A user-defined ephemeral event could then look like this when federated;
 ```json
 {
   "content": {
-    "print_event_id": "$E2RPcyuMUiXyDkQ02ASEbFxcJ4wFNrt5JVgov0wrqWo"
+    "print_event_id": "$E2RPcyuMUiXyDkQ02ASEbFxcJ4wFNrt5JVgov0wrqWo",
     "printer_id": "10",
     "status": {
       "hotend_c": 181.4,
