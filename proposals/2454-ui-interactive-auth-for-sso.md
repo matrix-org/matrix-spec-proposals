@@ -22,11 +22,27 @@ supported among clients.
 
 An [additional authentication type](https://matrix.org/docs/spec/client_server/r0.6.0#authentication-types)
 of `m.login.sso` is added to the user-interactive authentication specification.
-There are no additional parameters as part of this authentication type.
+
+There are no additional parameters as part of this authentication type. As per
+the user-interactive authentication specification the only parameter include in
+the `auth` dictionary should be the session ID from the homeserver, e.g.:
+
+```json
+{
+  "auth": {
+    "session": "<session ID>"
+  }
+}
+```
+
+### Detailed fallback authentication flow:
+
+The following is a re-iteration of the [fallback authentication flow](https://matrix.org/docs/spec/client_server/r0.6.0#fallback), 
+but with details filled in for the proposed new authentication type.
 
 When choosing this authentication flow, the following should occur:
 
-1.  If the client wants to complete that authentication type, it opens a browser
+1.  If the client wants to complete authentication using SSO, it opens a browser
     window for `/_matrix/client/r0/auth/m.login.sso/fallback/web?session=<...>`
     with session set to the UI-Auth session id (from the "auth" dict).
 
@@ -58,6 +74,10 @@ limited by the chosen SSO implementation, for example:
 *   CAS doesn't have the same restriction.
 
 ### Example flow:
+
+A more complete example is provided below in which a user attempts to delete
+a device and is pushed into the user interactive authentication process with
+SSO being the only possible flow.
 
 0.  Client submits the request, which the server says requires SSO:
 
@@ -163,7 +183,7 @@ limited by the chosen SSO implementation, for example:
 ## Alternatives
 
 An alternative client flow where the fallback auth ends up redirecting to a
-given URI, instead of doing JavaScript postMessage foo could be considered.
+given URI, instead of doing JavaScript `postMessage` foo could be considered.
 This is probably an orthogonal change to the fallback auth though.
 
 ## Security considerations
@@ -200,8 +220,9 @@ This problem can be mitigated by clearly telling the user what is about to happe
 ### Reusing User Interactive Authentication sessions
 
 The security of this relies on User Interactive Authentication sessions only
-being used for the same request as they were initiated for. It is not believed
-that this is currently enforced.
+being used for the same request as they were initiated for. This security is not
+only a concern for the proposed SSO authentication type. It is not believed
+that this is currently enforced in implementations.
 
 ## Unstable prefix
 
