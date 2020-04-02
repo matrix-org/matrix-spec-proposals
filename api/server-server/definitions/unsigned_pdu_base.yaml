@@ -76,7 +76,7 @@ properties:
     type: integer
     description: |-
       The maximum depth of the ``prev_events``, plus one. Must be less than the
-      maximum value for an integer (2^63 - 1). If the room's depth is already at
+      maximum value for an integer (2^53 - 1). If the room's depth is already at
       the limit, the depth must be set to the limit.
     example: 12
   auth_events:
