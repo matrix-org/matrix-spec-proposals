@@ -71,7 +71,7 @@ parallel.
 Example `m.room.message.formatted_body`:
 
 ```
-"formatted_body": This is awesome <img alt=\"flutterjoy\" title=\"flutterjoy\" height=\"32\" src=\"mxc://matrix.example.org/abc\" data-blurhash=\"LEHV6nWB2yk8pyo\" />
+"formatted_body": This is awesome <img alt=\"flutterjoy\" title=\"flutterjoy\" height=\"32\" src=\"mxc://matrix.example.org/abc\" data-mx-blurhash=\"LEHV6nWB2yk8pyo\" />
 ```
 
 ## Calculating a blurhash
