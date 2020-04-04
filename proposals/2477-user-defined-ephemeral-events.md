@@ -315,6 +315,6 @@ the regular Matrix types as well, which would remove the need for optional field
 return impact the federation between servers, if they're built to only handle the exact requirements
 of the spec.
 
-[MSC1763]: https://github.com/matrix-org/matrix-doc/blob/matthew/msc1763/proposals/1763-configurable-retention-periods.md
-[MSC2228]: https://github.com/matrix-org/matrix-doc/tree/matthew/msc2228/proposals/2228-self-destructing-events.md
-[MSC2409]: https://github.com/Sorunome/matrix-doc/blob/soru%2Bhs/appservice-edus/proposals/2409-appservice-edus.md
+[MSC1763]: https://github.com/matrix-org/matrix-doc/pull/1763
+[MSC2228]: https://github.com/matrix-org/matrix-doc/pull/2228
+[MSC2409]: https://github.com/matrix-org/matrix-doc/pull/2409
