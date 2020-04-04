@@ -139,7 +139,7 @@ the use of fields that can be both optional *as well as* required depending on t
             {
               "content": {
                 "body": "Print of fan_shroud_v5.gcode started on printer 10, ETA is 2h. Stream is available at https://example.com/printers/10.m3u8",
-                "print": {
+                "com.example.3dprint": {
                   "gcode": "mxc://example.com/GEnfasiifADESSAF",
                   "printer": 10,
                   "video": "https://example.com/printers/10.m3u",
