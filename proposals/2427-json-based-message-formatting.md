@@ -65,9 +65,9 @@ turns into this:
 ```
 
 Flattening has deliberately not been defined for array[arrayN[chunk]] Since implementations then for the fallback path would need to check each array to a deep level to decide if one chunk is legal or not.
-Uses for this likely require heavily modified renderers, and thus should be adresses in a major version, or a costum context specific version.
+Uses for this likely require heavily modified renderers, and thus should be addressed in a major version, or a custom context specific version.
 * `m.spoiler` (array[chunk]) marks a range as a spoiler
-* `m.quote` (array[chunk]}) marks a range as a qoute
+* `m.quote` (array[chunk]}) marks a range as a quote
 
 ###### Special field
 Implementations should have atleast basic support for lists.
@@ -120,12 +120,12 @@ version field should be two numeric identifiers, the major and minor version
 number, separated by a dot. The initial version is `0.1`.
 
 Minor version changes may only add or deprecate secondary or flattenable fields. Major version
-changes may also change primary fields or parsing logic in generall. When a client encounters a major version
+changes may also change primary fields or parsing logic in general. When a client encounters a major version
 that it does not recognize, it should fall back to rendering the plaintext body.
 
 For example, a future minor version could include support for replies to a part of a message, i.e. rich quotes.
 
-A future mayor version may add support for tables.
+A future major version may add support for tables.
 
 ### Disadvantages compared to current Matrix HTML
 * The current version does not support tables due to their implementation complexity
@@ -140,7 +140,7 @@ A future mayor version may add support for tables.
   "m.formatted": [
     {"m.reference": "@user:example.org", "m.text": "Pretty user"},
     {"m.text": ": Good day, user!\nDid you see this image?\n"},
-    {"m.width": 128, "m.height": 64, "m.alt_text": "Fancy image", "m.image": "mxc://example.org/ABCDEF"}
+    {"m.width": 128, "m.height": 64, "m.alt": "Fancy image", "m.image": "mxc://example.org/ABCDEF"}
   ]
 }
 ``` 
@@ -172,7 +172,7 @@ I like cheese <em>Thiiiiiis</em> much
 {
   "m.formatted.version": "0.1",
   "m.formatted": [
-    {"m.color.fg"": "#ff0000", "m.text":"R"},
+    {"m.color.fg": "#ff0000", "m.text":"R"},
     {"m.color.fg": "#ffdb00", "m.text":"A"},
     {"m.color.fg": "#49ff00", "m.text":"I"},
     {"m.color.fg": "#00ff92", "m.text":"N"},
@@ -192,21 +192,19 @@ I like cheese <em>Thiiiiiis</em> much
 <font data-mx-color="#ff00db">W</font>
 ```
 
----
--- TODO fix "bullet"
 ```json
 {
   "m.formatted.version": "0.1",
   "m.formatted": [
     {"m.text":"Consider these points:"},
     {
-	    "m.list.style": "numeric ascending",
-	    "m.list": [
+    "m.list.style": "numeric ascending",
+    "m.list": [
         [{"m.text": "convincing point"}],
         [{"m.text": "extremely convincing point"}],
         [{"m.text": "irrelevant point"}]
       ]
-	}
+    }
   ]
 }
 ```
