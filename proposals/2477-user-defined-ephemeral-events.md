@@ -257,7 +257,8 @@ should mitigate the potential of abuse from the feature though, as long as admin
 user-defined ephemeral types to be sent by regular users.
 
 This change could impact the - currently in review - [MSC2409], necessitating some kind of filter for
-what event types would be transferred to appservices.
+what event types would be transferred to appservices. [MSC2487] suggests a possible solution for this
+potential problem.
 
 
 ## Alternatives
@@ -318,3 +319,4 @@ of the spec.
 [MSC1763]: https://github.com/matrix-org/matrix-doc/pull/1763
 [MSC2228]: https://github.com/matrix-org/matrix-doc/pull/2228
 [MSC2409]: https://github.com/matrix-org/matrix-doc/pull/2409
+[MSC2487]: https://github.com/matrix-org/matrix-doc/pull/2487
