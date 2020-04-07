@@ -38,7 +38,7 @@ def getpage(url):
     pagecount = 1
     for link in resp.links.values():
         if link['rel'] == 'last':
-            pagecount = int(re.search('page=(.+?)', link['url']).group(1))
+            pagecount = int(re.search('page=(.+)', link['url']).group(1))
 
     val = resp.json()
     if not isinstance(val, list):
