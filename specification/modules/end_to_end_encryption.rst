@@ -277,7 +277,7 @@ Parameter Type             Description
 ========= ================ =====================================================
 url       string           **Required.** The URL to the file.
 key       JWK              **Required.** A `JSON Web Key`_ object.
-iv        string           **Required.** The Initialisation Vector used by
+iv        string           **Required.** The 128-bit unique counter block used by
                            AES-CTR, encoded as unpadded base64.
 hashes    {string: string} **Required.** A map from an algorithm name to a hash
                            of the ciphertext, encoded as unpadded base64. Clients
