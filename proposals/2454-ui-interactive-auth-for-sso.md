@@ -13,7 +13,7 @@ we need to delegate that check to the SSO system.
 At the protocol level, this means adding support for SSO to the
 [user-interactive authentication API](https://matrix.org/docs/spec/client_server/r0.6.0#user-interactive-authentication-api).
 
-In theory, once SSO is added as a possible flow for authentication any clients
+In theory, once SSO is added as a possible flow for authentication, any clients
 that already implement the [fallback process for unknown authentication types](https://matrix.org/docs/spec/client_server/r0.6.0#fallback)
 will work fine without modification. It is unknown whether this is widely
 supported among clients.
@@ -24,7 +24,7 @@ An [additional authentication type](https://matrix.org/docs/spec/client_server/r
 of `m.login.sso` is added to the user-interactive authentication specification.
 
 There are no additional parameters as part of this authentication type. As per
-the user-interactive authentication specification the only parameter include in
+the user-interactive authentication specification, the only parameter included in
 the `auth` dictionary should be the session ID from the homeserver, e.g.:
 
 ```json
@@ -57,7 +57,7 @@ When choosing this authentication flow, the following should occur:
 3.  The SSO provider validates the user, and redirects the browser back to the
     homeserver.
 4.  The homeserver validates the response from the SSO provider, updates the
-    user-interactive auth session to show that the SSO has completed,
+    user-interactive auth session to show that the SSO has completed, and
     [serves the fallback auth completion page as specced](https://matrix.org/docs/spec/client_server/r0.6.0#fallback).
 5.  The client resubmits its original request, with its original session id,
     which now should complete.
