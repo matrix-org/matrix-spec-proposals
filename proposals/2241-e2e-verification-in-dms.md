@@ -86,7 +86,7 @@ verification itself.
 
 #### Accepting a key verification
 
-To accept a key verification, Bob will send an `m.key.verification.start` event
+To accept a key verification, Bob will send an `m.key.verification.ready` event
 with the following properties in its contents:
 
 TODO: MSC1849 may use `m.relationship` rather than `m.relates_to`, in which
@@ -96,17 +96,38 @@ case this proposal should follow suit.
   - `rel_type`: `m.reference`
   - `event_id`: the event ID of the key verification request that is being
     accepted
-- `method`: the key verification method that is being used
+- `methods`: an array of verification methods that the device supports
 - `from_device`: Bob's device ID.  This is required since some verification
   methods may use the device IDs as part of the verification process.
 
-Clients should ignore `m.key.verification.start` events that correspond to
+Clients should ignore `m.key.verification.ready` events that correspond to
 verification requests that they did not send.
+
+After this, either Alice or Bob may start the verification by sending an
+`m.key.verification.start` event with the following properties in its contents:
+
+- `m.relates_to`: an object with the properties:
+  - `rel_type`: `m.reference`
+  - `event_id`: the event ID of the key verification request that is being
+    started
+- `method`: the key verification method that is being used.  This should be a
+  method that both Alice's and Bob's devices support.
+- `from_device`: The user's device ID.
+
+If both Alice and Bob send an `m.key.verification.start` message, and they both
+specify the same verification method, then the event sent by the user whose
+user ID is the smallest is used, and the other event is ignored.  If they both
+send an `m.key.verification.start` message and the method is different, then
+the verification should be cancelled with a `code` of `m.unexpected_message`.
+
+After the `m.key.verification.start` event is sent, the devices may exchange
+messages (if any) according to the verification method in use.
 
 #### Rejecting a key verification
 
-To reject a key verification, Bob will send an `m.key.verification.cancel`
-event with the following properties in its contents:
+To reject a key verification, Alice or Bob will send an
+`m.key.verification.cancel` event with the following properties in its
+contents:
 
 - `m.relates_to`: an object with the properties:
   - `rel_type`: `m.reference`
@@ -135,7 +156,13 @@ properties in its contents:
 
 This provides a record within the room of the result of the verification.
 
-Any subsequent key verification messages relating to the same request are ignored.
+Any subsequent key verification messages relating to the same request are
+ignored.
+
+Although a client may have successfully completed its side of the verification,
+it may wait until receiving an `m.key.verification.done` (or
+`m.key.verification.cancel`) event from the other device before informing the
+user that the verification was successful or unsuccessful.
 
 #### Other events
 
@@ -145,7 +172,7 @@ should have an `m.relates_to` property as defined for
 `m.key.verification.accept` or `m.key.verification.cancel` events.
 
 Clients should ignore events with an `m.relates_to` that have a `rel_type` of
-`m.reference` that refer to a verification where it is not the requester
+`m.reference` that refer to a verification where it is neither the requester
 nor the accepter.
 
 Clients should not redact or edit verification messages.  A client may ignore
@@ -242,12 +269,15 @@ then the hash commitment will be based on the message contents:
 
 Messages sent by the verification methods, after the initial key verification
 request message, could be sent as to-device messages.  The
-`m.key.verification.start`, `m.key.verification.cancel`, and
+`m.key.verification.ready`, `m.key.verification.cancel`, and
 `m.key.verification.done` messages must be still be sent in the room, as the
-`m.key.verification.start` notifies the sender's other devices that the request
+`m.key.verification.ready` notifies the sender's other devices that the request
 has been acknowledged, and the `m.key.verification.cancel` and
 `m.key.verification.done` provide a record of the status of the key
 verification.
+
+However, it seems more natural to have all messages sent via the same
+mechanism.
 
 ## Potential issues
 
@@ -262,8 +292,8 @@ decryption keys are sent to all of the target user's devices), or should be
 sent unencrypted, so that unverified devices will be able to be verified.
 
 Users might have multiple Direct Messaging rooms with other users.  In this
-case, clients will need to prompt the user to select the room in which they
-want to perform the verification.
+case, clients could need to prompt the user to select the room in which they
+want to perform the verification, or could select a room.
 
 ## Security considerations
 
