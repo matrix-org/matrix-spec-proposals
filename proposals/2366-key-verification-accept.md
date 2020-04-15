@@ -1,4 +1,4 @@
-# Key verification flow addition: `m.key.verification.ready`
+# Key verification flow additions: `m.key.verification.ready` and `m.key.verification.done`
 
 The current key verification framework is asymmetrical in that the user who
 requests the verification is unable to select the key verification method.
@@ -17,11 +17,22 @@ responsible for choosing the verification method to use.  However, with this
 proposal, Bob would be able to just accept the verification request without
 choosing a method, and allow Alice to choose the verification method.
 
+In addition, the current key verification framework does not have a method for
+clients to signal to the other side that a key verification was successful.
+Some clients may wish to wait until the other side has either confirmed a
+successful verification or indicated an error before displaying the result of
+the verification, in order to give the two users a consistent view of the
+verification as a whole.
+
 ## Proposal
 
-A new event type is added to the key verification framework:
-`m.key.verification.ready`, which may be sent by the target of the
-`m.key.verification.request` message, upon receipt of the
+Two new event types are added to the key verification framework.  The new event
+types are already described in [MSC2241 (Key verification in
+DMs)](https://github.com/matrix-org/matrix-doc/pull/2241).  This proposal adds
+them to verifications in to-device messages.
+
+The first event type is `m.key.verification.ready`, which may be sent by the
+target of the `m.key.verification.request` message, upon receipt of the
 `m.key.verification.request` event.  It has the fields:
 
 - `from_device`: the ID of the device that sent the `m.key.verification.ready`
@@ -50,22 +61,17 @@ message to the recipient's other devices when it received an
 message when it receives an `m.key.verification.ready` or
 `m.key.verification.start` message, whichever comes first.
 
-The `m.key.verification.ready` event is optional; the recipient of the
-`m.key.verification.request` event may respond directly with a
-`m.key.verification.start` event instead.  This is for compatibility with the
-current version of the spec.
+The `m.key.verification.ready` event is required for verifications in both DMs
+and in to-device messages to accept verifications requested using an
+`m.key.verification.request` event.
+
+The second event type is `m.key.verification.done`, which has no fields other
+than the usual `transaction_id` or `m.relates_to` field.  This indicates that
+the device has successfully completed its side of the verification.
 
 ## Potential issues
 
-There are now three possible ways that a key verification can be performed:
-
-1. A device begins a verification by sending an `m.key.verification.start`
-   event.  This is only possible for to-device verification.
-2. A device sends an `m.key.verification.request` event and the recipient
-   replies with an `m.key.verification.start` event.
-3. A device sends an `m.key.verification.request` event and the recipient
-   replies with an `m.key.verification.ready` event, and which point, either
-   device can send an `m.key.verification.start` event to begin the
-   verification.
-
-This increases the complexity of implementations.
+Clients that follow the Client-Server 0.6.0 spec may not expect an
+`m.key.verification.ready` message in response to `m.key.verification.request`.
+However to our knowledge, no clients implement `m.key.verification.request` in
+this way yet.
