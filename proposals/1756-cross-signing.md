@@ -216,7 +216,7 @@ response:
 }
 ```
 
-Similarly, the federation endpoints `POST /user/keys/query` and `POST
+Similarly, the federation endpoints `POST /user/keys/query` and `GET
 /user/devices/{userId}` will include the master and self-signing keys.  (It
 will not include the user-signing key because it is not intended to be visible
 to other users.)
@@ -463,7 +463,7 @@ response:
 }
 ```
 
-Similarly, the federation endpoints `GET /user/keys/query` and `POST
+Similarly, the federation endpoints `POST /user/keys/query` and `GET
 /user/devices/{userId}` will include the new signatures for her own devices or
 master key, but not signatures made by her user-signing key.
 
