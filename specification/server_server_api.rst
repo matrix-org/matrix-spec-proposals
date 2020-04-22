@@ -316,8 +316,8 @@ Example python code:
              "destination": destination_name,
         }
 
-        if content_json is not None:
-            request["content"] = content
+        if content is not None:
+            request_json["content"] = content
 
         signed_json = sign_json(request_json, origin_name, origin_signing_key)
 
