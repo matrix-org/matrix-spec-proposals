@@ -344,7 +344,7 @@ Obsolete                         obsolete                       A proposal which
 Categories
 ----------
 
-We use category labels on MSCs to place them into a track of work. The spec core team
+We use category labels on MSCs to place them into a track of work. The Spec Core Team
 decides which of the tracks they are focusing on for the next while and generally makes
 an effort to pull MSCs out of that category when possible.
 
@@ -365,11 +365,11 @@ new transports, and bookmarks in comparison. Finally, maintenance MSCs would inc
 improving error codes, clarifying what is required of an API, and adding properties
 to an API which makes it easier to use.
 
-The spec core team assigns a category to each MSC based on the descriptions above.
+The Spec Core Team assigns a category to each MSC based on the descriptions above.
 This can mean that new MSCs get categorized into an area the team isn't focused on,
 though that can always change as priorities evolve. We still encourage that MSCs be
 opened, even if not the focus for the time being, as they can still make progress and
-even be merged without the spec core team focusing on them specifically.
+even be merged without the Spec Core Team focusing on them specifically.
 
 Proposal Tracking
 -----------------
