@@ -18,6 +18,12 @@ instead of later.
 
 So, I propose to introduce a new message type `m.voice` with the same contents as `m.audio`, but to be handled slightly differently.
 
+### Related links:
+- [A long-standing issue on Riot Web that calls for voice messages
+](https://github.com/vector-im/riot-web/issues/1358)
+- [An earlier proposal to send m.typing-like status codes when recording
+](https://github.com/matrix-org/matrix-doc/pull/310)
+
 ## Potential issues
 
 Introducing a new message type means that client developers will have to do work to implement it,
@@ -40,4 +46,4 @@ like it could be a security issue. (e.g. DoS by using up users' bandwidth,
 could cause malicious content to be automatically downloaded)
 
 This could be solved by having clients handle auto-download responsibly,
-e.g. only auto-download voice messages fromtrusted contacts.
+e.g. only auto-download voice messages from trusted contacts.
