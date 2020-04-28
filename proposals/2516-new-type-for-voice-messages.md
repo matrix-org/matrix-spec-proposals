@@ -1,7 +1,8 @@
 # Add a seperate message type for voice messages
 
 In the matrix spec right now, there is a message type `m.audio` for audio files.
-In other messaging apps, there is also a special type for voice memos, since they carry a different meaning and inflict different behaviour.
+In other messaging apps, there is also a special type for voice memos,
+since they carry a different meaning and inflict different behaviour.
 This MSC calls for the introduction of an `m.voice` message type.
 
 
@@ -12,11 +13,16 @@ voice memos are very important to a lot of users of modern instant messaging ser
 In order to provide awesome voice messages, they need to be treated differently from generic audio files.
 
 For example, WhatsApp renders them differenty, to highlight that they are a way of communication.
-WhatsApp also always force-downloads them, because like a text message, they should be available to consume as early as possible.
-This lets the recipient know at a glance that they are being expected to listen to the voice messages now,
-instead of later.
+WhatsApp also always force-downloads them, because like a text message,
+they should be available to consume as early as possible.
+This lets the recipient know at a glance that they are being expected
+to listen to the voice messages now, instead of later.
 
-So, I propose to introduce a new message type `m.voice` with the same contents as `m.audio`, but to be handled slightly differently.
+Matrix voice messages should reinforce the authenticity, originality
+and potential urgency of the audio content.
+
+So, I propose to introduce a new message type `m.voice` with the same
+contents as `m.audio`, but to be handled slightly differently.
 
 ### Related links:
 - [A long-standing issue on Riot Web that calls for voice messages
