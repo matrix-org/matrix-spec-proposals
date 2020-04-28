@@ -28,6 +28,16 @@ or many people won't be able to use the feature.
 Alternatively, a flag `voice = true` or `type = "voice"` could be created inside of the `m.audio` event.
 I'm not sure what the more canonical way of doing things would be here.
 
+This alternative version (extending the m.audio message type) has the benefit
+that it comes with backwards compatibility for free. However, we should keep
+types as simple as possible.
+
 ## Security considerations
 
-none
+@uhoreg offers:
+> Auto-downloading of files (if clients follow WhatsApp's example) sounds
+like it could be a security issue. (e.g. DoS by using up users' bandwidth,
+could cause malicious content to be automatically downloaded)
+
+This could be solved by having clients handle auto-download responsibly,
+e.g. only auto-download voice messages fromtrusted contacts.
