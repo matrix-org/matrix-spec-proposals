@@ -31,7 +31,8 @@ paths:
     post:
       summary: Start the requesting user participating in a particular room.
       description: |-
-        *Note that this API requires a room ID, not alias.* ``/join/{roomIdOrAlias}`` *exists if you have a room alias.*
+        *Note that this API requires a room ID, not alias.*
+        ``/join/{roomIdOrAlias}`` *exists if you have a room alias.*
 
         This API starts a user participating in a particular room, if that user
         is allowed to participate in that room. After this call, the client is
@@ -40,10 +41,6 @@ paths:
 
         After a user has joined a room, the room will appear as an entry in the
         response of the |/initialSync|_ and |/sync|_ APIs.
-
-        If a ``third_party_signed`` was supplied, the homeserver must verify
-        that it matches a pending ``m.room.third_party_invite`` event in the
-        room, and perform key validity checking if required by the event.
       operationId: joinRoomById
       security:
         - accessToken: []
@@ -56,6 +53,10 @@ paths:
           x-example: "!d41d8cd:matrix.org"
         - in: body
           name: third_party_signed
+          description: |-
+            If supplied, the homeserver must verify that it matches a pending
+            ``m.room.third_party_invite`` event in the room, and perform
+            key validity checking if required by the event.
           schema:
             type: object
             properties:
@@ -79,7 +80,8 @@ paths:
             required: ["room_id"]
         403:
           description: |-
-            You do not have permission to join the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejection are:
+            You do not have permission to join the room. A meaningful ``errcode``
+            and description error text will be returned. Example reasons for rejection are:
 
             - The room is invite-only and the user was not invited.
             - The user has been banned from the room.
@@ -155,7 +157,8 @@ paths:
             required: ["room_id"]
         403:
           description: |-
-            You do not have permission to join the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejection are:
+            You do not have permission to join the room. A meaningful ``errcode``
+            and description error text will be returned. Example reasons for rejection are:
 
             - The room is invite-only and the user was not invited.
             - The user has been banned from the room.

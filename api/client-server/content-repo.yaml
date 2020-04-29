@@ -163,9 +163,10 @@ paths:
         - Media
   "/download/{serverName}/{mediaId}/{fileName}":
     get:
-      summary: |-
-        Download content from the content repository. This is the same as
-        the download endpoint above, except permitting a desired file name.
+      summary: Download content from the content repository overriding the file name
+      description: |-
+        This is the same as the download endpoint above, except permitting
+        a desired file name.
       operationId: getContentOverrideName
       produces: ["*/*"]
       parameters:
@@ -233,9 +234,9 @@ paths:
         - Media
   "/thumbnail/{serverName}/{mediaId}":
     get:
-      summary: |-
-        Download a thumbnail of content from the content repository. See the `thumbnailing <#thumbnails>`_
-        section for more information.
+      summary: Download a thumbnail of content from the content repository
+      description: |-
+        See the `thumbnailing <#thumbnails>`_ section for more information.
       operationId: getContentThumbnail
       produces: ["image/jpeg", "image/png"]
       parameters:
@@ -283,10 +284,10 @@ paths:
           x-example: false
           required: false
           default: true
-          description: |
-            Indicates to the server that it should not attempt to fetch the media if it is deemed
-            remote. This is to prevent routing loops where the server contacts itself. Defaults to
-            true if not provided.
+          description: |-
+            Indicates to the server that it should not attempt to fetch
+            the media if it is deemed remote. This is to prevent routing loops
+            where the server contacts itself. Defaults to true if not provided.
       responses:
         200:
           description: "A thumbnail of the requested content."
