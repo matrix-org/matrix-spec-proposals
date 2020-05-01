@@ -1,0 +1,1 @@
+Fix the ``.m.rule.contains_user_name`` default push rule to set the highlight tweak, matching Synapse and users' expectations.
