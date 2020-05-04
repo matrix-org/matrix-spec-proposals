@@ -328,8 +328,7 @@ paths:
 
         The homeserver may change the flows available depending on whether a
         valid access token is provided. The homeserver SHOULD NOT revoke the
-        access token provided in the request, however all other access tokens
-        for the user should be revoked if the request succeeds.
+        access token provided in the request.
       security:
         - accessToken: []
       operationId: changePassword
@@ -343,6 +342,11 @@ paths:
                 type: string
                 description: The new password for the account.
                 example: "ihatebananas"
+              logout_devices:
+                type: boolean
+                description: |-
+                  Whether other access tokens should be revoked if the request succeeds. Defaults to true.
+                example: true
               auth:
                 description: |-
                   Additional authentication information for the user-interactive authentication API.
