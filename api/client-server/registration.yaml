@@ -328,7 +328,8 @@ paths:
 
         The homeserver may change the flows available depending on whether a
         valid access token is provided. The homeserver SHOULD NOT revoke the
-        access token provided in the request.
+        access token provided in the request. Whether other access tokens for
+        the user are revoked depends on the request parameters.
       security:
         - accessToken: []
       operationId: changePassword
