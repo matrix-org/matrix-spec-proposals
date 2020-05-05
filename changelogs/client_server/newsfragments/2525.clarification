@@ -1,2 +1,1 @@
-Clarification that the event ids are required in the response when putting room
-events.
+Clarify that an ``event_id`` is returned when sending events.
