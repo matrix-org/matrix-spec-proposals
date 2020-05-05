@@ -31,14 +31,14 @@ paths:
     post:
       summary: Create a new backup.
       description: |-
-        Creates a new backup
+        Creates a new backup.
       operationId: postRoomKeysVersion
       security:
         - accessToken: []
       parameters:
         - in: body
           name: version
-          description: "The backup configuration"
+          description: "The backup configuration."
           schema:
             type: object
             properties:
@@ -73,7 +73,7 @@ paths:
             properties:
               version:
                 type: string
-                description: The backup version
+                description: The backup version.
                 example: "1"
             required:
               - version
@@ -146,12 +146,12 @@ paths:
               - version
         404:
           description:
-            The backup specified does not exist
+            The backup specified does not exist.
           examples:
             application/json: {
-                "errcode": "M_NOT_FOUND",
-                "error": "Unknown backup version"
-              }
+              "errcode": "M_NOT_FOUND",
+              "error": "Unknown backup version"
+            }
           schema:
             "$ref": "definitions/errors/error.yaml"
       tags:
@@ -209,12 +209,12 @@ paths:
               - auth_data
       responses:
         200:
-          description: The update succeeded
+          description: The update succeeded.
           schema:
             type: object
             properties: {}
         404:
-          description: The backup specified does not exist
+          description: The backup specified does not exist.
           examples:
             application/json: {
                 "errcode": "M_NOT_FOUND",
@@ -226,7 +226,7 @@ paths:
         - End-to-end encryption
   "/room_keys/keys/{roomId}/{sessionId}":
     put:
-      summary: Store a key in the backup
+      summary: Store a key in the backup.
       description: |-
         Store a key in the backup.
       operationId: postRoomKeysKeyRoomIdSessionId
@@ -254,12 +254,12 @@ paths:
           x-example: "sessionid"
         - in: body
           name: data
-          description: "The key data"
+          description: "The key data."
           schema:
             "$ref": "definitions/key_backup_data.yaml"
       responses:
         200:
-          description: The update succeeded
+          description: The update succeeded.
           schema:
             type: object
             properties:
