@@ -39,10 +39,10 @@ properties:
       expected format of the data.
     type: object
     example: {
-        "ephemeral": "base64+ephemeral+key",
-        "ciphertext": "base64+ciphertext+of+JSON+data",
-        "mac": "base64+mac+of+ciphertext"
-      }
+      "ephemeral": "base64+ephemeral+key",
+      "ciphertext": "base64+ciphertext+of+JSON+data",
+      "mac": "base64+mac+of+ciphertext"
+    }
 required:
   - first_message_index
   - forwarded_count
