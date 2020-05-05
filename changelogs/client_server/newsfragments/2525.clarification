@@ -1,0 +1,2 @@
+Clarification that the event ids are required in the response when putting room
+events.
