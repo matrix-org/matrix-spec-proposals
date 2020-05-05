@@ -1,4 +1,4 @@
-# Add ability to delete key backups
+# MSC2526: Add ability to delete key backups
 
 [MSC1219](https://github.com/matrix-org/matrix-doc/issues/1219) defined a
 mechanism for key backups.  However, it inadvertently omitted the endpoint to
