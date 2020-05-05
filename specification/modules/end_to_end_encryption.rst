@@ -890,6 +890,8 @@ The ``session_data`` field in the backups is constructed as follows:
    using the MAC key generated above.  The first 8 bytes of the resulting MAC
    are base64-encoded, and become the ``mac`` property of the ``session_data``.
 
+{{key_backup_cs_http_api}}
+
 Key exports
 ~~~~~~~~~~~
 
@@ -1214,11 +1216,6 @@ Key management API
 ~~~~~~~~~~~~~~~~~~
 
 {{keys_cs_http_api}}
-
-Key Backup API
-~~~~~~~~~~~~~~
-
-{{key_backup_cs_http_api}}
 
 
 .. anchor for link from /sync api spec
