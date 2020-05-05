@@ -565,9 +565,9 @@ The process between Alice and Bob verifying each other would be:
    they match or not.
 #. Assuming they match, Alice and Bob's devices calculate the HMAC of their own device keys
    and a comma-separated sorted list of of the key IDs that they wish the other user
-   to verify, using SHA-256 as the hash function. HMAC is defined in [RFC 2104](https://tools.ietf.org/html/rfc2104).
+   to verify, using SHA-256 as the hash function. HMAC is defined in `RFC 2104 <https://tools.ietf.org/html/rfc2104>`_.
    The key for the HMAC is different for each item and is calculated by generating
-   32 bytes (256 bits) using `the key verification HKDF <#SAS-HKDF>`_.
+   32 bytes (256 bits) using `the key verification HKDF <#sas-hkdf>`_.
 #. Alice's device sends Bob's device a ``m.key.verification.mac`` message containing the
    MAC of Alice's device keys and the MAC of her key IDs to be verified. Bob's device does
    the same for Bob's device keys and key IDs concurrently with Alice.
@@ -653,14 +653,14 @@ are used in addition to those already specified:
 {{m_key_verification_mac_event}}
 
 
-.. _`SAS-HKDF`:
+.. _sas-hkdf:
 
 HKDF calculation
 <<<<<<<<<<<<<<<<
 
-In all of the SAS methods, HKDF is as defined in [RFC 5869](https://tools.ietf.org/html/rfc5869)
+In all of the SAS methods, HKDF is as defined in `RFC 5869 <https://tools.ietf.org/html/rfc5869>`_
 and uses the previously agreed-upon hash function for the hash function. The shared
-secret is supplied as the input keying material. No salt is used, and the input
+secret is supplied as the input keying material. No salt is used, and the info
 parameter is the concatenation of:
 
   * The string ``MATRIX_KEY_VERIFICATION_SAS``.
@@ -677,7 +677,7 @@ parameter is the concatenation of:
 
 For verification of each party's device keys, HKDF is as defined in RFC 5869 and
 uses SHA-256 as the hash function. The shared secret is supplied as the input keying
-material. No salt is used, and in the input parameter is the concatenation of:
+material. No salt is used, and in the info parameter is the concatenation of:
 
   * The string ``MATRIX_KEY_VERIFICATION_MAC``.
   * The Matrix ID of the user whose key is being MAC-ed.
@@ -691,7 +691,7 @@ material. No salt is used, and in the input parameter is the concatenation of:
 SAS method: ``decimal``
 <<<<<<<<<<<<<<<<<<<<<<<
 
-Generate 5 bytes using `HKDF <#SAS-HKDF>`_ then take sequences of 13 bits to
+Generate 5 bytes using `HKDF <#sas-hkdf>`_ then take sequences of 13 bits to
 convert to decimal numbers (resulting in 3 numbers between 0 and 8191 inclusive
 each). Add 1000 to each calculated number.
 
@@ -708,7 +708,7 @@ such as dashes, or with the numbers on individual lines.
 SAS method: ``emoji``
 <<<<<<<<<<<<<<<<<<<<<
 
-Generate 6 bytes using `HKDF <#SAS-HKDF>`_ then split the first 42 bits into
+Generate 6 bytes using `HKDF <#sas-hkdf>`_ then split the first 42 bits into
 7 groups of 6 bits, similar to how one would base64 encode something. Convert
 each group of 6 bits to a number and use the following table to get the corresponding
 emoji:
