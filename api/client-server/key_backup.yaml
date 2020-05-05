@@ -73,7 +73,7 @@ paths:
             properties:
               version:
                 type: string
-                description: The backup version.
+                description: The backup version. This is an opaque string.
                 example: "1"
             required:
               - version
@@ -92,8 +92,10 @@ paths:
           type: string
           name: version
           description: |-
-            The backup version to get. When an empty string, the trailing slash
-            is optional, and the current backup is returned.
+            The backup version to get, as returned in the ``version`` parameter
+            of the response in `POST /_matrix/client/r0/room_keys/version`_ or
+            this endpoint. When an empty string, the trailing slash is
+            optional, and the current backup is returned.
           required: true
           x-example: "1"
       responses:
@@ -168,7 +170,11 @@ paths:
           type: string
           name: version
           description: |-
-            The backup version to update.
+            The backup version to update, as returned in the ``version``
+            parameter in the response of `POST
+            /_matrix/client/r0/room_keys/version`_ or `GET
+            /_matrix/client/r0/room_keys/version/{version}`_. Unlike with the
+            ``GET`` version of this endpoint, this may not be empty.
           required: true
           x-example: "1"
         - in: body

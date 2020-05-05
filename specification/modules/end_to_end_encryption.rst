@@ -819,8 +819,8 @@ follows:
 2. All the bytes in the string above, including the two header bytes, are XORed
    together to form a parity byte. This parity byte is appended to the byte
    string.
-3. The byte string is encoded using base58, using the same mapping as is used
-   for Bitcoin addresses.
+3. The byte string is encoded using base58, using the same `mapping as is used
+   for Bitcoin addresses <https://en.bitcoin.it/wiki/Base58Check_encoding#Base58_symbol_chart>`_.
 4. A space should be added after every 4th character.
 
 When reading in a recovery key, clients must disregard whitespace, and perform
