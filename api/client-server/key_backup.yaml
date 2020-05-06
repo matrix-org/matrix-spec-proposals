@@ -219,13 +219,25 @@ paths:
           schema:
             type: object
             properties: {}
+        400:
+          description: |-
+            A parameter was incorrect.  For example, the ``algorithm`` does not
+            match the current backup algorithm, or the ``version`` in the body
+            does not match the ``version`` in the path.
+          examples:
+            application/json: {
+              "errcode": "M_INVALID_PARAM",
+              "error": "Algorithm does not match"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
         404:
           description: The backup specified does not exist.
           examples:
             application/json: {
-                "errcode": "M_NOT_FOUND",
-                "error": "Unknown backup version"
-              }
+              "errcode": "M_NOT_FOUND",
+              "error": "Unknown backup version"
+            }
           schema:
             "$ref": "definitions/errors/error.yaml"
       tags:
@@ -260,9 +272,9 @@ paths:
           description: The backup specified does not exist.
           examples:
             application/json: {
-                "errcode": "M_NOT_FOUND",
-                "error": "Unknown backup version"
-              }
+              "errcode": "M_NOT_FOUND",
+              "error": "Unknown backup version"
+            }
           schema:
             "$ref": "definitions/errors/error.yaml"
       tags:

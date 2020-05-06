@@ -846,9 +846,8 @@ following format:
    ========== =========== ======================================================
    public_key string      Required. The curve25519 public key used to encrypt
                           the backups, encoded in unpadded base64.
-   signatures {string:    Optional. Signatures of the ``auth_data``, as Signed
-              {string:    JSON
-              string}}
+   signatures Signatures  Optional. Signatures of the ``auth_data``, as Signed
+                          JSON
    ========== =========== ======================================================
 
 The ``session_data`` field in the backups is constructed as follows:
@@ -870,8 +869,9 @@ The ``session_data`` field in the backups is constructed as follows:
                                                `m.forwarded_room_key`_ events.
       sender_key                      string   Required. Unpadded base64-encoded
                                                device curve25519 key.
-      sender_claimed_keys             {string: Required. Object containing the
-                                      string}  identity key for the sending device.
+      sender_claimed_keys             {string: Required. A map from algorithm name
+                                      string}  (``ed25519``) to the identity key
+                                               for the sending device.
       session_key                     string   Required. Unpadded base64-encoded
                                                session key in `session-sharing format
                                                <https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md#session-sharing-format>`_.
