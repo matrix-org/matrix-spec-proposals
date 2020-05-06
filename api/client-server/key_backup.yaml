@@ -230,6 +230,43 @@ paths:
             "$ref": "definitions/errors/error.yaml"
       tags:
         - End-to-end encryption
+    delete:
+      summary: Delete an existing key backup.
+      description: |-
+        Delete an existing key backup. Both the information about the backup,
+        as well as all key data related to the backup will be deleted.
+      operationId: deleteRoomKeysVersion
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: version
+          description: |-
+            The backup version to delete, as returned in the ``version``
+            parameter in the response of `POST
+            /_matrix/client/r0/room_keys/version`_ or `GET
+            /_matrix/client/r0/room_keys/version/{version}`_. Unlike with the
+            ``GET`` version of this endpoint, this may not be empty.
+          required: true
+          x-example: "1"
+      responses:
+        200:
+          description: The delete succeeded.
+          schema:
+            type: object
+            properties: {}
+        404:
+          description: The backup specified does not exist.
+          examples:
+            application/json: {
+                "errcode": "M_NOT_FOUND",
+                "error": "Unknown backup version"
+              }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+      tags:
+        - End-to-end encryption
   "/room_keys/keys/{roomId}/{sessionId}":
     put:
       summary: Store a key in the backup.

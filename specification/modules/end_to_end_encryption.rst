@@ -780,15 +780,18 @@ device to be online from which to request keys. However, as the session keys are
 stored on the server encrypted, it requires users to enter a decryption key to
 decrypt the session keys.
 
-To create a backup, a client will call ``POST /room_keys/version`` and define
-how the keys are to be encrypted through the backup's ``auth_data``; other
-clients can discover the backup by calling ``GET /room_keys/version``.  Keys
-are encrypted according to the backups ``auth_data`` and added to the backup by
-calling ``PUT /room_keys/keys?version=$v`` or one of its variants, and can be
-retrieved by calling ``GET /room_keys/keys?version=$v`` or one of its variants.
-Keys can only be written to the most recently created version of the backup.
-Backups can also be deleted using ``DELETE /room_keys/version``, or individual
-keys can be deleted using ``DELETE /room_key/keys?version=$v`` or one of its
+To create a backup, a client will call `POST
+/_matrix/client/r0/room_keys/version`_ and define how the keys are to be
+encrypted through the backup's ``auth_data``; other clients can discover the
+backup by calling `GET /_matrix/client/r0/room_keys/version/{version}`_,
+setting ``{version}`` to the empty string.  Keys are encrypted according to the
+backups ``auth_data`` and added to the backup by calling `PUT
+/_matrix/client/r0/room_keys/keys`_ or one of its variants, and can be
+retrieved by calling `GET /_matrix/client/r0/room_keys/keys`_ or one of its
+variants.  Keys can only be written to the most recently created version of the
+backup.  Backups can also be deleted using `DELETE
+/_matrix/client/r0/room_keys/version/{version}`_, or individual keys can be
+deleted using `DELETE /_matrix/client/r0/room_keys/keys`_ or one of its
 variants.
 
 Clients must only store keys in backups after they have ensured that the
