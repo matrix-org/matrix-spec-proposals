@@ -12,15 +12,22 @@ If the `filename` field is present in a media message, clients should treat
 `body` as a caption instead of a file name. The `formatted_body` field should
 also be supported and work the same way as they do in `m.text` messages.
 
-## Tradeoffs
+## Comparison to MSC2529
 
 While this approach isn't backwards-compatible like MSC2529, it's simpler to
-implement as it doesn't require handling relations. Additionally, some clients
-already render the body as a file name, so the caption would already be visible
-in those cases.
+implement as it doesn't require handling relations.
+
+Implementing relation-based captions would be especially difficult for bridges.
+It would require either waiting a predefined amount of time for the caption to
+come through, or editing the message on the target platform (if edits are
+supported).
+
+Additionally, some clients already render the body (as a file name), so the
+new-style caption would already be visible in those cases.
 
 The format proposed by MSC2529 would also make it technically possible to use
-other message types without changing the format of the events.
+other message types without changing the format of the events, which is not
+possible with this proposal.
 
 ## Potential issues
 
