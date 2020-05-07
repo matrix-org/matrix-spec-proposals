@@ -9,7 +9,7 @@ immediately afterward to simulate a caption.
 
 Better would be to able to explicitly mark an event as a caption.
 
-## Proposal
+## Proposal
 
 Allow an optional `m.relates_to` field in the `content` field of a text message
 event.
