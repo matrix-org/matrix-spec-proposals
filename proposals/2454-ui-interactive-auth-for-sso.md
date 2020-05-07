@@ -209,7 +209,7 @@ provider.
 It's common for SSO providers to redirect straight back to the app if you've
 recently authenticated with them; even in the best case, the SSO provider shows
 an innocent message along the lines of "Confirm that you want to sign in to
-<your Matrix homeserver>".
+\<your Matrix homeserver>".
 
 After redirecting back to the homeserver, the SSO is completed and the
 attacker's session is validated. They are now able to make their malicious
