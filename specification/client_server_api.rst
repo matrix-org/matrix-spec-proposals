@@ -643,6 +643,7 @@ This specification defines the following auth types:
  - ``m.login.password``
  - ``m.login.recaptcha``
  - ``m.login.oauth2``
+ - ``m.login.sso``
  - ``m.login.email.identity``
  - ``m.login.msisdn``
  - ``m.login.token``
@@ -780,6 +781,38 @@ The client then visits the ``Authorization Request URI``, which then shows the
 OAuth2 Allow/Deny prompt. Hitting 'Allow' redirects to the ``redirect URI`` with
 the auth code. Homeservers can choose any path for the ``redirect URI``. Once
 the OAuth flow has completed, the client retries the request with the session
+only, as above.
+
+Single Sign-On
+<<<<<<<<<<<<<<
+:Type:
+  ``m.login.sso``
+:Description:
+  Authentication is supported by authorising with an external single sign-on
+  provider.
+
+A client wanting to complete authentication using SSO should use the
+`Fallback`_ authentication flow by opening a browser window for
+``/_matrix/client/r0/auth/m.login.sso/fallback/web?session=<...>`` with the
+session parameter set to the session ID provied by the server.
+
+The homeserver should return a page which asks for the user's confirmation
+before proceeding. For example, the page could say words to the effect of:
+
+  A client is trying to remove a device/add an email address/take over your
+  account. To confirm this action, re-authenticate with single sign-on. If you
+  did not expect this, your account may be compromised!
+
+Once the user has confirmed they should be redirected to the single sign-on
+provider's login page. Once the provider has validated the user, the browser is
+redirected back to the homeserver.
+
+The homeserver then validates the response from the single sign-on provider and
+updates the user-interactive authentication session to mark the single sign-on
+stage has been completed. The browser is shown the fallback authentication
+completion page.
+
+Once the flow has completed, the client retries the request with the session
 only, as above.
 
 Email-based (identity / homeserver)
