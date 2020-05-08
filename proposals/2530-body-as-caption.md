@@ -12,6 +12,11 @@ If the `filename` field is present in a media message, clients should treat
 `body` as a caption instead of a file name. The `formatted_body` field should
 also be supported and work the same way as they do in `m.text` messages.
 
+The current spec is inconsistent with how `body` should be handled, but in
+practice, clients (or at least Riot) use it as the file name. Therefore, this
+proposal suggests that clients should treat `body` as the file name if the
+`filename` field is not present.
+
 ## Comparison to MSC2529
 
 While this approach isn't backwards-compatible like MSC2529, it's simpler to
