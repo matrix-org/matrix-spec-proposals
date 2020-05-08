@@ -196,6 +196,7 @@ paths:
                 additionalProperties:
                   type: object
                   additionalProperties:
+                    title: DeviceInformation
                     allOf:
                       - $ref: definitions/device_keys.yaml
                     properties:
