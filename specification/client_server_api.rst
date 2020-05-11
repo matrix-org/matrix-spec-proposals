@@ -794,7 +794,7 @@ Single Sign-On
 A client wanting to complete authentication using SSO should use the
 `Fallback`_ authentication flow by opening a browser window for
 ``/_matrix/client/r0/auth/m.login.sso/fallback/web?session=<...>`` with the
-session parameter set to the session ID provied by the server.
+session parameter set to the session ID provided by the server.
 
 The homeserver should return a page which asks for the user's confirmation
 before proceeding. For example, the page could say words to the effect of:
