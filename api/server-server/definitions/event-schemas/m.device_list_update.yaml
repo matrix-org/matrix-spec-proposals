@@ -1,4 +1,5 @@
 # Copyright 2018 New Vector Ltd
+# Copyright 2020 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +18,8 @@ title: m.device_list_update
 description: |-
   An EDU that lets servers push details to each other when one of their users
   adds a new device to their account, required for E2E encryption to correctly
-  target the current set of devices for a given user.
+  target the current set of devices for a given user. This event will also be
+  sent when an existing device gets a new cross-signing signature.
 
 # FIXME: It's very unclear why we have this API surface for synchronising
 # device lists, rather than just using a room (which could also be used for

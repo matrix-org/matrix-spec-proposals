@@ -1,5 +1,6 @@
 # Copyright 2016 OpenMarket Ltd
 # Copyright 2018 New Vector Ltd
+# Copyright 2020 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -233,7 +234,74 @@ paths:
                         "device_display_name": "Alice's mobile phone"
                       }
                     }
-
+              master_keys:
+                type: object
+                description: |-
+                  Information on the master cross-signing keys of the queried users.
+                  A map from user ID, to master key information.  For each key, the
+                  information returned will be the same as uploaded via
+                  ``/keys/device_signing/upload``.
+                additionalProperties:
+                  allOf:
+                    - $ref: definitions/cross_signing_key.yaml
+                example: {
+                  "@alice:example.com": {
+                    "user_id": "@alice:example.com",
+                    "usage": ["master"],
+                    "keys": {
+                      "ed25519:base64+master+public+key": "base64+master+public+key",
+                    }
+                  }
+                }
+              self_signing_keys:
+                type: object
+                description: |-
+                  Information on the self-signing keys of the queried users. A map
+                  from user ID, to self-signing key information.  For each key, the
+                  information returned will be the same as uploaded via
+                  ``/keys/device_signing/upload``.
+                additionalProperties:
+                  allOf:
+                    - $ref: definitions/cross_signing_key.yaml
+                example: {
+                  "@alice:example.com": {
+                    "user_id": "@alice:example.com",
+                    "usage": ["self_signing"],
+                    "keys": {
+                      "ed25519:base64+self+signing+public+key": "base64+self+signing+master+public+key",
+                    },
+                    "signatures": {
+                      "@alice:example.com": {
+                        "ed25519:base64+master+public+key": "signature+of+self+signing+key"
+                      }
+                    }
+                  }
+                }
+              user_signing_keys:
+                type: object
+                description: |-
+                  Information on the user-signing key of the user making the
+                  request, if they queried their own device information. A map
+                  from user ID, to user-signing key information.  The
+                  information returned will be the same as uploaded via
+                  ``/keys/device_signing/upload``.
+                additionalProperties:
+                  allOf:
+                    - $ref: definitions/cross_signing_key.yaml
+                example: {
+                  "@alice:example.com": {
+                    "user_id": "@alice:example.com",
+                    "usage": ["user_signing"],
+                    "keys": {
+                      "ed25519:base64+user+signing+public+key": "base64+user+signing+master+public+key",
+                    },
+                    "signatures": {
+                      "@alice:example.com": {
+                        "ed25519:base64+master+public+key": "signature+of+user+signing+key"
+                      }
+                    }
+                  }
+                }
       tags:
         - End-to-end encryption
   "/keys/claim":
