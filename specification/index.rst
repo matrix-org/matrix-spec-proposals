@@ -106,7 +106,7 @@ The principles that Matrix attempts to follow are:
 - Empowering the end-user
 
   + The user should be able to choose the server and clients they use
-  + The user should be control how private their communication is
+  + The user should be able to control how private their communication is
   + The user should know precisely where their data is stored
 
 - Fully decentralised - no single points of control over conversations or the
@@ -540,7 +540,7 @@ some other reason. Versions can switch between stable and unstable periodically
 for a variety of reasons, including discovered security vulnerabilities and age.
 
 Clients should not ask room administrators to upgrade their rooms if the room is
-running a stable version. Servers SHOULD use room version 4 as the default room
+running a stable version. Servers SHOULD use room version 5 as the default room
 version when creating new rooms.
 
 The available room versions are:

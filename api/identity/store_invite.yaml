@@ -55,6 +55,7 @@ paths:
         server's ability. Identity servers may use these variables when notifying
         the ``address`` of the pending invite for display purposes.
       operationId: storeInvite
+      deprecated: true
       parameters:
         - in: body
           name: body

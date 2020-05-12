@@ -61,6 +61,7 @@ Summary
  `Stickers`_                           Optional   Optional   Optional   Optional   Optional
  `Server ACLs`_                        Optional   Optional   Optional   Optional   Optional
  `Server Notices`_                     Optional   Optional   Optional   Optional   Optional
+ `Moderation policies`_                Optional   Optional   Optional   Optional   Optional
 ===================================== ========== ========== ========== ========== ==========
 
 *Please see each module for more details on what clients need to implement.*
@@ -94,6 +95,7 @@ Summary
 .. _Stickers: `module:stickers`_
 .. _Server ACLs: `module:server-acls`_
 .. Server Notices already has a link elsewhere.
+.. _Moderation Policies: `module:moderation-policies`_
 
 Clients
 -------

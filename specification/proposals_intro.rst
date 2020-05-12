@@ -79,7 +79,7 @@ their proposed changes to the Matrix protocol:
 * Pragmatism rather than perfection
 * Proof rather than conjecture
 
-Please see [MSC1779](https://github.com/matrix-org/matrix-doc/blob/matthew/msc1779/proposals/1779-open-governance.md)
+Please `see MSC1779 <https://github.com/matrix-org/matrix-doc/blob/master/proposals/1779-open-governance.md>`_
 for full details of the project's Guiding Principles.
 
 Technical notes
@@ -341,6 +341,35 @@ Closed                           proposal-closed                A proposal which
 Obsolete                         obsolete                       A proposal which has been made obsolete by another proposal or decision elsewhere.
 ===============================  =============================  ====================================
 
+Categories
+----------
+
+We use category labels on MSCs to place them into a track of work. The Spec Core Team
+decides which of the tracks they are focusing on for the next while and generally makes
+an effort to pull MSCs out of that category when possible.
+
+The current categories are:
+
+============ ================= ======================================
+Name         Github Label      Description
+============ ================= ======================================
+Core         kind:core         Important for the protocol's success.
+Feature      kind:feature      Nice to have additions to the spec.
+Maintenance  kind:maintenance  Fixes or clarifies existing spec.
+============ ================= ======================================
+
+Some examples of core MSCs would be aggregations, cross-signing, and groups/communities.
+These are the sorts of things that if not implemented could cause the protocol to
+fail or become second-class. Features would be areas like enhanced media APIs,
+new transports, and bookmarks in comparison. Finally, maintenance MSCs would include
+improving error codes, clarifying what is required of an API, and adding properties
+to an API which makes it easier to use.
+
+The Spec Core Team assigns a category to each MSC based on the descriptions above.
+This can mean that new MSCs get categorized into an area the team isn't focused on,
+though that can always change as priorities evolve. We still encourage that MSCs be
+opened, even if not the focus for the time being, as they can still make progress and
+even be merged without the Spec Core Team focusing on them specifically.
 
 Proposal Tracking
 -----------------

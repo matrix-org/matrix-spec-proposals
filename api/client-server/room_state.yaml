@@ -92,6 +92,8 @@ paths:
                 type: string
                 description: |-
                   A unique identifier for the event.
+            required:
+              - event_id
         403:
           description: |-
             The sender doesn't have permission to send the event into the room.

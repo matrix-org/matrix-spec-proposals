@@ -277,7 +277,7 @@ Parameter Type             Description
 ========= ================ =====================================================
 url       string           **Required.** The URL to the file.
 key       JWK              **Required.** A `JSON Web Key`_ object.
-iv        string           **Required.** The Initialisation Vector used by
+iv        string           **Required.** The 128-bit unique counter block used by
                            AES-CTR, encoded as unpadded base64.
 hashes    {string: string} **Required.** A map from an algorithm name to a hash
                            of the ciphertext, encoded as unpadded base64. Clients
@@ -505,7 +505,7 @@ framework outlined above. SAS verification is intended to be a highly interactiv
 process for users, and as such exposes verfiication methods which are easier for
 users to use.
 
-The verification process is heavily inspired by Phil Zimmerman's ZRTP key agreement
+The verification process is heavily inspired by Phil Zimmermann's ZRTP key agreement
 handshake. A key part of key agreement in ZRTP is the hash commitment: the party that
 begins the Diffie-Hellman key sharing sends a hash of their part of the Diffie-Hellman
 exchange, and does not send their part of the Diffie-Hellman exchange until they have
@@ -565,9 +565,9 @@ The process between Alice and Bob verifying each other would be:
    they match or not.
 #. Assuming they match, Alice and Bob's devices calculate the HMAC of their own device keys
    and a comma-separated sorted list of of the key IDs that they wish the other user
-   to verify, using SHA-256 as the hash function. HMAC is defined in [RFC 2104](https://tools.ietf.org/html/rfc2104).
+   to verify, using SHA-256 as the hash function. HMAC is defined in `RFC 2104 <https://tools.ietf.org/html/rfc2104>`_.
    The key for the HMAC is different for each item and is calculated by generating
-   32 bytes (256 bits) using `the key verification HKDF <#SAS-HKDF>`_.
+   32 bytes (256 bits) using `the key verification HKDF <#sas-hkdf>`_.
 #. Alice's device sends Bob's device a ``m.key.verification.mac`` message containing the
    MAC of Alice's device keys and the MAC of her key IDs to be verified. Bob's device does
    the same for Bob's device keys and key IDs concurrently with Alice.
@@ -653,14 +653,14 @@ are used in addition to those already specified:
 {{m_key_verification_mac_event}}
 
 
-.. _`SAS-HKDF`:
+.. _sas-hkdf:
 
 HKDF calculation
 <<<<<<<<<<<<<<<<
 
-In all of the SAS methods, HKDF is as defined in [RFC 5869](https://tools.ietf.org/html/rfc5869)
+In all of the SAS methods, HKDF is as defined in `RFC 5869 <https://tools.ietf.org/html/rfc5869>`_
 and uses the previously agreed-upon hash function for the hash function. The shared
-secret is supplied as the input keying material. No salt is used, and the input
+secret is supplied as the input keying material. No salt is used, and the info
 parameter is the concatenation of:
 
   * The string ``MATRIX_KEY_VERIFICATION_SAS``.
@@ -677,7 +677,7 @@ parameter is the concatenation of:
 
 For verification of each party's device keys, HKDF is as defined in RFC 5869 and
 uses SHA-256 as the hash function. The shared secret is supplied as the input keying
-material. No salt is used, and in the input parameter is the concatenation of:
+material. No salt is used, and in the info parameter is the concatenation of:
 
   * The string ``MATRIX_KEY_VERIFICATION_MAC``.
   * The Matrix ID of the user whose key is being MAC-ed.
@@ -691,7 +691,7 @@ material. No salt is used, and in the input parameter is the concatenation of:
 SAS method: ``decimal``
 <<<<<<<<<<<<<<<<<<<<<<<
 
-Generate 5 bytes using `HKDF <#SAS-HKDF>`_ then take sequences of 13 bits to
+Generate 5 bytes using `HKDF <#sas-hkdf>`_ then take sequences of 13 bits to
 convert to decimal numbers (resulting in 3 numbers between 0 and 8191 inclusive
 each). Add 1000 to each calculated number.
 
@@ -708,7 +708,7 @@ such as dashes, or with the numbers on individual lines.
 SAS method: ``emoji``
 <<<<<<<<<<<<<<<<<<<<<
 
-Generate 6 bytes using `HKDF <#SAS-HKDF>`_ then split the first 42 bits into
+Generate 6 bytes using `HKDF <#sas-hkdf>`_ then split the first 42 bits into
 7 groups of 6 bits, similar to how one would base64 encode something. Convert
 each group of 6 bits to a number and use the following table to get the corresponding
 emoji:
@@ -756,8 +756,8 @@ sending `m.room_key_request`_ to-device messages to other devices with
 device, it can forward the keys to the first device by sending an encrypted
 `m.forwarded_room_key`_ to-device message. The first device should then send an
 `m.room_key_request`_ to-device message with ``action`` set to
-``cancel_request`` to the other devices that it had originally sent the key
-request to; a device that receives a ``cancel_request`` should disregard any
+``request_cancellation`` to the other devices that it had originally sent the key
+request to; a device that receives a ``request_cancellation`` should disregard any
 previously-received ``request`` message with the same ``request_id`` and
 ``requesting_device_id``.
 
@@ -844,24 +844,22 @@ Example:
 
 .. code:: json
 
-    {
-        "sessions": [
-            {
-                "algorithm": "m.megolm.v1.aes-sha2",
-                "forwarding_curve25519_key_chain": [
-                    "hPQNcabIABgGnx3/ACv/jmMmiQHoeFfuLB17tzWp6Hw"
-                ],
-                "room_id": "!Cuyf34gef24t:localhost",
-                "sender_key": "RF3s+E7RkTQTGF2d8Deol0FkQvgII2aJDf3/Jp5mxVU",
-                "sender_claimed_keys": {
-                    "ed25519": "<device ed25519 identity key>",
-                },
-                "session_id": "X3lUlvLELLYxeTx4yOVu6UDpasGEVO0Jbu+QFnm0cKQ",
-                "session_key": "AgAAAADxKHa9uFxcXzwYoNueL5Xqi69IkD4sni8Llf..."
+    [
+        {
+            "algorithm": "m.megolm.v1.aes-sha2",
+            "forwarding_curve25519_key_chain": [
+                "hPQNcabIABgGnx3/ACv/jmMmiQHoeFfuLB17tzWp6Hw"
+            ],
+            "room_id": "!Cuyf34gef24t:localhost",
+            "sender_key": "RF3s+E7RkTQTGF2d8Deol0FkQvgII2aJDf3/Jp5mxVU",
+            "sender_claimed_keys": {
+                "ed25519": "<device ed25519 identity key>",
             },
-            ...
-        ]
-    }
+            "session_id": "X3lUlvLELLYxeTx4yOVu6UDpasGEVO0Jbu+QFnm0cKQ",
+            "session_key": "AgAAAADxKHa9uFxcXzwYoNueL5Xqi69IkD4sni8Llf..."
+        },
+        ...
+    ]
 
 Messaging Algorithms
 --------------------
