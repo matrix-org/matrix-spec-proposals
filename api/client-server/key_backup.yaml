@@ -79,6 +79,74 @@ paths:
               - version
       tags:
         - End-to-end encryption
+  "/room_keys/version":
+    get:
+      summary: Get information about the latest backup version.
+      description: |-
+        Get information about the latest backup version.
+      operationId: getRoomKeysVersionCurrent
+      security:
+        - accessToken: []
+      responses:
+        200:
+          description:
+            The information about the backup.
+          schema:
+            type: object
+            properties:
+              algorithm:
+                type: string
+                description: The algorithm used for storing backups.
+                enum: ["m.megolm_backup.v1.curve25519-aes-sha2"]
+                example: "m.megolm_backup.v1.curve25519-aes-sha2"
+              auth_data:
+                description: |-
+                  Algorithm-dependent data. See the documentation for the backup
+                  algorithms in `Server-side key backups`_ for more information on the
+                  expected format of the data.
+                type: object
+                example: {
+                  "public_key": "abcdefg",
+                  "signatures": {
+                    "@alice:example.org": {
+                      "ed25519:deviceid": "signature"
+                    }
+                  }
+                }
+              count:
+                description: The number of keys stored in the backup.
+                type: integer
+                example: 42
+              etag:
+                description: |-
+                  An opaque string representing stored keys in the backup.
+                  Clients can compare it with the ``etag`` value they received
+                  in the request of their last key storage request.  If not
+                  equal, another client has modified the backup.
+                type: string
+                example: "anopaquestring"
+              version:
+                type: string
+                description: The backup version
+                example: "1"
+            required:
+              - algorithm
+              - auth_data
+              - count
+              - etag
+              - version
+        404:
+          description:
+            No backup exists.
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "No current backup version"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+      tags:
+        - End-to-end encryption
   "/room_keys/version/{version}":
     get:
       summary: Get information about an existing backup.
@@ -94,8 +162,7 @@ paths:
           description: |-
             The backup version to get, as returned in the ``version`` parameter
             of the response in `POST /_matrix/client/r0/room_keys/version`_ or
-            this endpoint. When an empty string, the trailing slash is
-            optional, and the current backup is returned.
+            this endpoint.
           required: true
           x-example: "1"
       responses:
@@ -173,8 +240,7 @@ paths:
             The backup version to update, as returned in the ``version``
             parameter in the response of `POST
             /_matrix/client/r0/room_keys/version`_ or `GET
-            /_matrix/client/r0/room_keys/version/{version}`_. Unlike with the
-            ``GET`` version of this endpoint, this may not be empty.
+            /_matrix/client/r0/room_keys/version/{version}`_.
           required: true
           x-example: "1"
         - in: body
@@ -258,8 +324,7 @@ paths:
             The backup version to delete, as returned in the ``version``
             parameter in the response of `POST
             /_matrix/client/r0/room_keys/version`_ or `GET
-            /_matrix/client/r0/room_keys/version/{version}`_. Unlike with the
-            ``GET`` version of this endpoint, this may not be empty.
+            /_matrix/client/r0/room_keys/version/{version}`_.
           required: true
           x-example: "1"
       responses:
