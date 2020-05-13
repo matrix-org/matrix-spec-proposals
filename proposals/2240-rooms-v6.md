@@ -5,7 +5,7 @@ and incorporating the following MSCs:
 
 * [MSC2209](https://github.com/matrix-org/matrix-doc/pull/2209) - Including notifications in power level auth rules.
 * [MSC2212](https://github.com/matrix-org/matrix-doc/pull/2432) - Alias event authorisation and redaction.
-* PLACEHOLDER - Something to do with integers.
+* [MSC2540](https://github.com/matrix-org/matrix-doc/pull/2540) - Integers in canonical JSON compliance.
 
 Though other MSCs are capable of being included in this version, they do not have sufficient implementation to be
 considered stable enough for v6 rooms. A future room version may still include them.
