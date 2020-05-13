@@ -20,18 +20,26 @@ even support these by default. One common additional feature is handling
 
 ## Proposal
 
-In a future room version, Matrix server implementations are to strictly enforce
-the JSON compliance of the Canonical JSON specification for events.
+In a future room version, homeserver implementations are to strictly enforce
+the JSON compliance of the Canonical JSON specification for events. Events that
+do not abide by these rules should be rejected with the error code `M_NOT_JSON`.
 
 The rationale for doing this in a future room version is to avoid a split brain
 room -- where some federated servers believe an event is valid and others reject
 it as invalid. Rooms will be able to opt into this behavior as part of a room
 version upgrade.
 
+Homeserver implementations are not to strictly enforce this JSON compliance in
+[stable room versions](https://matrix.org/docs/spec/#complete-list-of-room-versions).
+The rationale is essentially the same as why a future room version is necessary,
+this ensures that all federated servers treat the same events as valid.
+
 
 ## Potential issues
 
-N/A
+Homeserver implementations might include JSON parsers which are stricter than
+others. It may not be worthwhile or reasonable to loosen those restrictions for
+stable room versions. 
 
 
 ## Alternatives
