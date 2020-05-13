@@ -10,9 +10,9 @@ key to devices that they have not verified yet.
 Currently, when this happens, there is no feedback given to the affected
 devices; devices that have not received keys do not know why they did not
 receive the key, and so cannot inform the user as to whether it is expected
-that the message cannot be decrypted.  To address this, senders can send a
-message to devices indicating that they purposely did not send a megolm
-key.
+that the message cannot be decrypted.  To address this, this proposal defines a
+message that senders can (optionally) send to devices indicating that they
+purposely did not send a megolm key.
 
 A similar issue happens with keyshare requests; devices are not informed when
 other devices decide not to send back keys, and so do not know whether to
@@ -59,16 +59,35 @@ A `code` of `m.no_olm` is used to indicate that the sender is unable to
 establish an olm session with the recipient.  When this happens, multiple
 sessions will be affected.  In order to avoid filling the recipient's device
 mailbox, the sender should only send one `m.room_key.withheld` message with no
-`room_id` nor `session_id` set.  In response to receiving this message, the
-recipient may start an olm session with the sender, and send an `m.dummy`
-message to notify the sender of the new olm session.  The recipient may assume
-that this `m.room_key.withheld` message applies to all encrypted room messages
-sent before it receives the message.
+`room_id` nor `session_id` set.  If the sender retries and fails to create an
+olm session again in the future, it should not send another
+`m.room_key.withheld` message with a `code` of `m.no_olm`, unless another olm
+session was previously established successfully.  In response to receiving an
+`m.room_key.withheld` message with a `code` of `m.no_olm`, the recipient may
+start an olm session with the sender and send an `m.dummy` message to notify
+the sender of the new olm session.  The recipient may assume that this
+`m.room_key.withheld` message applies to all encrypted room messages sent
+before it receives the message.
+
+### Interaction with key sharing
+
+If Alice withholds a megolm session from Bob for some messages in a room, and
+then later on decides to allow Bob to decrypt later messages, she can send Bob
+the megolm session, ratcheted up to the point at which she allows Bob to
+decrypt the messages.  If Bob logs into a new device and uses key sharing to
+obtain the decryption keys, the new device will be sent the megolm sessions
+that have been ratcheted up.  Bob's old device can include the reason that the
+session was initially not shared by including a `withheld` property in the
+`m.forwarded_room_key` message that is an object with the `code` and `reason`
+properties from the `m.room_key.withheld` message.
 
 ## Potential issues
 
 This does not handle all possible reasons why a device may not have received
 megolm keys.
+
+There is currently no way of indicating that part of a session was withheld in
+key backups.
 
 ## Security considerations
 
