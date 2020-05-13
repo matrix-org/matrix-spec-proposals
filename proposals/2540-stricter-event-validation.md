@@ -20,7 +20,7 @@ even support these by default. One common additional feature is handling
 
 ## Proposal
 
-In a future room version, Matrix server implementations should strictly enforce
+In a future room version, Matrix server implementations are to strictly enforce
 the JSON compliance of the Canonical JSON specification for events.
 
 The rationale for doing this in a future room version is to avoid a split brain
