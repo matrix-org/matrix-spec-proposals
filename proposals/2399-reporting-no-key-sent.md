@@ -23,7 +23,7 @@ expect to receive a key in response to the request.
 Devices that purposely do not send megolm keys to a device may instead send an
 `m.room_key.withheld` event as a to-device message to the device to indicate
 that it should not expect to receive keys for the message.  This message may
-also be sent in reply to a `m.room_key_request`.  The `m.room.no_key` event has
+also be sent in reply to a `m.room_key_request`.  The `m.room_key.withheld` event has
 the properties:
 
 - `room_id`: Required if `code` is not `m.no_olm`. The ID of the room that the
