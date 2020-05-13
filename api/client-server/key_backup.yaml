@@ -79,7 +79,6 @@ paths:
               - version
       tags:
         - End-to-end encryption
-  "/room_keys/version":
     get:
       summary: Get information about the latest backup version.
       description: |-
