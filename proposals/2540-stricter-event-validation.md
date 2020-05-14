@@ -30,7 +30,7 @@ it as invalid. Rooms will be able to opt into this behavior as part of a room
 version upgrade.
 
 Homeserver implementations are not to strictly enforce this JSON compliance in
-[stable room versions](https://matrix.org/docs/spec/#complete-list-of-room-versions).
+[room versions 1, 2, 3, 4, and 5](https://matrix.org/docs/spec/#complete-list-of-room-versions).
 The rationale is essentially the same as why a future room version is necessary,
 this ensures that all federated servers treat the same events as valid.
 
