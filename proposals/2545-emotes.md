@@ -43,7 +43,25 @@ Room emotes are per-room emotes that every user of a specific room can use insid
 are set with a state event of type `im.ponies-room_emotes` and a blank state key. The contents are
 the same as for the user emotes.
 
-## Ideas
+## Sending
+In places where fancy tab-complete with the emote itself is not possible it is suggested that sending
+the shortcode will convert to the img tag, e.g. sending `Hey there :wave:` will convert to `Hey there <img-for-wave>`.
+
+If there are collisions due to the same emote shortcode being present as both room emote and user emote
+a user could specify the emote source by writing e.g. `:room~wave:` or `:user~wave:`. Other sources
+could perhaps be added, see ideas section.
+
+# Ideas
  - Tag rooms as "these emotes can be used anywhere" inside of account data somehow
  - Some kind of packs - for room emotes the state key could be used as pack identifier, for user
    emotes something like `im.ponies.user_emotes.<pack_name>`.
+
+# Current implementations
+## Emote rendering (rendering of the `<img>` tag)
+ - riot-web
+ - revolution
+ - nheko
+ - fluffychat
+## Emote sending, using the mentioned state events here
+ - revolution
+ - fluffychat
