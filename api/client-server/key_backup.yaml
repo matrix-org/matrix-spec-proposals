@@ -328,12 +328,16 @@ paths:
           x-example: "1"
       responses:
         200:
-          description: The delete succeeded.
+          description: |-
+            The delete succeeded, or the specified backup was previously
+            deleted.
           schema:
             type: object
             properties: {}
         404:
-          description: The backup specified does not exist.
+          description: |-
+            The backup specified does not exist. If the backup was previously
+            deleted, the call should succeed rather than returning an error.
           examples:
             application/json: {
               "errcode": "M_NOT_FOUND",
