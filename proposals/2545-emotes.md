@@ -62,6 +62,6 @@ could perhaps be added, see ideas section.
  - revolution
  - nheko
  - fluffychat
-## Emote sending, using the mentioned state events here
+## Emote sending, using the mentioned events here
  - revolution
  - fluffychat
