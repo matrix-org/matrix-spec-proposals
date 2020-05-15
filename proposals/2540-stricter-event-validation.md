@@ -8,7 +8,7 @@ this: JSON compliance.
 
 The [Canonical JSON](https://matrix.org/docs/spec/appendices#canonical-json)
 specification requires that numbers that are serialized in JSON are integers in
-the inclusive range of `[-2 ^ 53 + 1, 2 ^ 53 - 1]`, which matches the requirements of
+the inclusive range of `[-(2^53) + 1, (2^53) - 1]`, which matches the requirements of
 [section 6 of RFC 7159](https://tools.ietf.org/html/rfc7159). Note that it is
 not explicit, but all floats are invalid.
 
