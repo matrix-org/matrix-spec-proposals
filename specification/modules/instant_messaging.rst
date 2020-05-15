@@ -79,10 +79,10 @@ for the tag.
 
 
 :``font``:
-  ``data-mx-bg-color``, ``data-mx-color``
+  ``data-mx-bg-color``, ``data-mx-color``, ``color``
 
 :``span``:
-  ``data-mx-bg-color``, ``data-mx-color``
+  ``data-mx-bg-color``, ``data-mx-color``, ``data-mx-spoiler`` (see `spoilers <#spoiler-messages>`_)
 
 :``a``:
   ``name``, ``target``, ``href`` (provided the value is not relative and has a scheme
@@ -499,6 +499,54 @@ the output looks similar to the following::
 For ``m.image``, the text should be ``"sent an image."``. For ``m.video``, the text
 should be ``"sent a video."``. For ``m.audio``, the text should be ``"sent an audio file"``.
 
+Spoiler messages
+~~~~~~~~~~~~~~~~
+
+Parts of a message can be hidden visually from the user through use of spoilers. This does
+not affect the server's representation of the event content - it is simply a visual cue to
+the user that the message may reveal important information about something, spoiling any
+relevant surprise.
+
+Spoilers require use of the ``formatted_body`` and therefore the ``org.matrix.custom.html``
+message format, described above.
+
+Spoilers themselves are contained within ``span`` tags, with the reason (optionally) being
+in the ``data-mx-spoiler`` attribute. Spoilers without a reason must at least specify the
+attribute, though the value may be empty/undefined.
+
+An example of a spoiler is:
+
+.. code-block:: json
+
+  {
+    "msgtype": "m.text",
+    "format": "org.matrix.custom.html",
+    "body": "Alice [Spoiler](mxc://example.org/abc123) in the movie.",
+    "formatted_body": "Alice <span data-mx-spoiler>lived happily ever after</span> in the movie."
+  }
+
+
+If a reason were to be supplied, it would look like:
+
+.. code-block:: json
+
+  {
+    "msgtype": "m.text",
+    "format": "org.matrix.custom.html",
+    "body": "Alice [Spoiler for health of Alice](mxc://example.org/abc123) in the movie.",
+    "formatted_body": "Alice <span data-mx-spoiler="health of alice">lived happily ever after</span> in the movie."
+  }
+
+
+The plain text (``body``) fallback for spoilers is a little different than the HTML-formatted
+message as the ``body`` is often included as-is in notifications to the user. To prevent spoilers
+in notifications and other places, clients are strongly encouraged to first upload the spoiler
+text to the media/content repository, then use the returned content URI in a markdown-style link
+as shown in the above examples. The markdown-style link's text should be ``Spoiler`` when no reason
+is supplied and ``Spoiler for <reason>`` when a reason is supplied.
+
+Clients SHOULD render spoilers differently with some sort of disclosure. For example, the client
+could blur the actual text and ask the user to click on it for it to be revealed.
 
 Server behaviour
 ----------------
