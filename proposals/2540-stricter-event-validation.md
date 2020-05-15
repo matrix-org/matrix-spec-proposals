@@ -13,7 +13,7 @@ the range of [-2 ^ 53 + 1, 2 ^ 53 - 1], which matches the requirements of
 not explicit, but all floats are invalid.
 
 It is worth mentioning that there are common extensions to JSON which produce 
-invalid JSON according to the Matrix specification, some programming langauges
+invalid JSON according to the Matrix specification; some programming langauges
 even support these by default. One common additional feature is handling
 "special" float values: `Infinity`, `-Infinity`, and `NaN`.
 
@@ -31,7 +31,7 @@ version upgrade.
 
 Homeserver implementations are not to strictly enforce this JSON compliance in
 [room versions 1, 2, 3, 4, and 5](https://matrix.org/docs/spec/#complete-list-of-room-versions).
-The rationale is essentially the same as why a future room version is necessary,
+The rationale is essentially the same as why a future room version is necessary:
 this ensures that all federated servers treat the same events as valid.
 
 
@@ -57,7 +57,7 @@ N/A
 
 ## Unstable prefix
 
-A room versions of `org.matrix.strict_canonicaljson` until a future room version
+A room version of `org.matrix.strict_canonicaljson` until a future room version
 is available. This room version will use
 [room version 5](https://matrix.org/docs/spec/rooms/v5) as base and include the
 above modifications.
