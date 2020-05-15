@@ -346,8 +346,11 @@ paths:
               logout_devices:
                 type: boolean
                 description: |-
-                  Whether the other access tokens, and their associated devices, for the user should be 
+                  Whether the other access tokens, and their associated devices, for the user should be
                   revoked if the request succeeds. Defaults to true.
+
+                  When ``false``, the server can still take advantage of `the soft logout method <#soft-logout>`_
+                  for the user's remaining devices.
                 example: true
               auth:
                 description: |-
