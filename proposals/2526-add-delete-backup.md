@@ -8,7 +8,7 @@ delete an entire key backup.  This proposal adds the endpoint.
 
 An endpoint is added, `DELETE /room_keys/version/{version}`, that deletes a
 backup version.  Both the information about the key backup, as well as all keys
-associated with the backup should be deleted.  Like `POST
-/room_keys/version/{version}`, and unlike `GET /room_keys/version/{version}`,
-`{version}` cannot be empty, to ensure that the wrong backup is not
-accidentally deleted.
+associated with the backup should be deleted.  If the specified version was
+previously deleted, the endpoint succeeds, returning an HTTP code of 200.  If
+the specified version never existed, the endpoint returns an HTTP code of 404
+with a Matrix `errcode` of `M_NOT_FOUND`.
