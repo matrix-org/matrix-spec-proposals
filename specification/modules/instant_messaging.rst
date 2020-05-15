@@ -534,7 +534,7 @@ If a reason were to be supplied, it would look like:
     "msgtype": "m.text",
     "format": "org.matrix.custom.html",
     "body": "Alice [Spoiler for health of Alice](mxc://example.org/abc123) in the movie.",
-    "formatted_body": "Alice <span data-mx-spoiler="health of alice">lived happily ever after</span> in the movie."
+    "formatted_body": "Alice <span data-mx-spoiler='health of alice'>lived happily ever after</span> in the movie."
   }
 
 
