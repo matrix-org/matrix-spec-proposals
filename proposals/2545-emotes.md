@@ -40,7 +40,7 @@ guide exists yet.
 
 ### Room emotes
 Room emotes are per-room emotes that every user of a specific room can use inside of that room. They
-are set with a state event of type `im.ponies-room_emotes` and a blank state key. The contents are
+are set with a state event of type `im.ponies.room_emotes` and a blank state key. The contents are
 the same as for the user emotes.
 
 ## Sending
