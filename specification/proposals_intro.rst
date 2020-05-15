@@ -382,17 +382,16 @@ in some cases the MSC itself will be small enough to be considered proven. Where
 unclear if a MSC will require an implementation proof, ask in `#matrix-spec:matrix.org
 <https://matrix.to/#/#matrix-spec:matrix.org>`_.
 
-Early adoption of a MSC/idea
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Early release of a MSC/idea
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To help facilitate early releases of software dependent on a spec release, implementations
 are required to use the following process to ensure that the official Matrix namespace
 is not cluttered with development or testing data.
 
 .. Note::
-   Proof of concept implementations that are solely left on a branch/unreleased and for
-   demonstrating that a particular MSC works do not have to follow this. Note that the
-   ``develop`` branch adopted by some projects is still subject to this process.
+   Proof of concept implementations that are solely left on a branch/unreleased for
+   demonstrating that a particular MSC works do not have to follow this.
 
 The process for an implementation willing to be ahead of a spec release is:
 
@@ -404,9 +403,9 @@ The process for an implementation willing to be ahead of a spec release is:
      `/_matrix/client/unstable/com.example/login`. Vendor prefixes throughout Matrix
      always use the Java package naming convention. The MSC for the feature should
      identify which preferred vendor prefix is to be used by early adopters.
-   * Unstable endpoints **do not** inherit from stable (e.g. `/r0`) APIs. Implementations
-     cannot assume that a particular endpoint will exist in the unstable namespace
-     even if the server advertises support for the feature.
+   * Note that unstable namespaces do not automatically inherit endpoints from stable
+     namespaces: for example, the fact that ``/_matrix/client/r0/sync`` exists does
+     not imply that ``/_matrix/client/unstable/com.example/sync`` exists.
    * If the client needs to be sure the server supports the feature, an unstable
      feature flag that MUST be vendor prefixed is to be used. This kind of flag shows
      up in the ``unstable_features`` section of ``/versions`` as, for example,
@@ -431,7 +430,7 @@ The process for an implementation willing to be ahead of a spec release is:
    working as proposed. A typical example of this is an implementation of the MSC,
    though the implementation does not need to be shipped anywhere and can therefore
    avoid the forwards/backwards compatibility concerns mentioned here.
-5. FCP is gone through, and assuming nothing is flagged the MSC lands.
+5. The FCP process is completed, and assuming nothing is flagged the MSC lands.
 6. A spec PR is written to incorporate the changes into Matrix.
 7. A spec release happens.
 8. Implementations switch to using stable prefixes (e.g.: ``/r0``) if the server
