@@ -275,13 +275,9 @@ choose a name:
 1. If the room has an `m.room.name`_ state event with a non-empty ``name``
    field, use the name given by that field.
 
-#. If the room has an `m.room.canonical_alias`_ state event with a non-empty
-   ``alias`` field, use the alias given by that field as the name.
-
-#. If neither of the above conditions are met, the client can optionally guess
-   an alias from the ``m.room.alias`` events in the room. This is a temporary
-   measure while clients do not promote canonical aliases as prominently. This
-   step may be removed in a future version of the specification.
+#. If the room has an `m.room.canonical_alias`_ state event with a valid
+   ``alias`` field, use the alias given by that field as the name. Note that
+   clients should avoid using ``alt_aliases`` when calculating the room name.
 
 #. If none of the above conditions are met, a name should be composed based
    on the members of the room. Clients should consider `m.room.member`_ events
