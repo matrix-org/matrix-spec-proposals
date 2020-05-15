@@ -780,7 +780,9 @@ and responds to the joining server with the full set of state for the
 newly-joined room. The resident server must also send the event to other servers
 participating in the room.
 
-{{joins_ss_http_api}}
+{{joins_v1_ss_http_api}}
+
+{{joins_v2_ss_http_api}}
 
 .. TODO-spec
   - (paul) I don't really understand why the full auth_chain events are given
@@ -817,7 +819,9 @@ signs the event and replaces the ``event_id`` with it's own. This is then sent t
 the resident server via ``/send_leave``. The resident server will then send the
 event to other servers in the room.
 
-{{leaving_ss_http_api}}
+{{leaving_v1_ss_http_api}}
+
+{{leaving_v2_ss_http_api}}
 
 Third-party invites
 -------------------
@@ -1071,8 +1075,11 @@ The following endpoint prefixes MUST be protected:
 * ``/_matrix/federation/v1/make_join``
 * ``/_matrix/federation/v1/make_leave``
 * ``/_matrix/federation/v1/send_join``
+* ``/_matrix/federation/v2/send_join``
 * ``/_matrix/federation/v1/send_leave``
+* ``/_matrix/federation/v2/send_leave``
 * ``/_matrix/federation/v1/invite``
+* ``/_matrix/federation/v2/invite``
 * ``/_matrix/federation/v1/state``
 * ``/_matrix/federation/v1/state_ids``
 * ``/_matrix/federation/v1/backfill``

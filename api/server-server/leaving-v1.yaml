@@ -1,4 +1,5 @@
 # Copyright 2018 New Vector Ltd
+# Copyright 2020 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -142,6 +143,10 @@ paths:
     put:
       summary: Submit a signed leave event to a resident server
       description: |-
+        .. Note::
+           Servers should instead prefer to use the v2 ``/send_leave``
+           endpoint.
+
         Submits a signed leave event to the resident server for it
         to accept it into the room's graph. Note that events have
         a different format depending on the  room version - check
@@ -149,7 +154,7 @@ paths:
         **The request and response body here describes the common
         event fields in more detail and may be missing other required
         fields for a PDU.**
-      operationId: sendLeave
+      operationId: sendLeaveV1
       security:
         - signedRequest: []
       parameters:
