@@ -101,7 +101,7 @@ paths:
       responses:
         200:
           description:
-            The provided keys were sucessfully uploaded.
+            The provided keys were successfully uploaded.
           schema:
             type: object
             properties:

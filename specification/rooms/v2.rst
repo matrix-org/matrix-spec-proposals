@@ -148,8 +148,8 @@ The *resolution* of a set of states is obtained as follows:
 1. Take all *power events* and any events in their auth chains, recursively,
    that appear in the *full conflicted set* and order them by the *reverse
    topological power ordering*.
-2. Apply the *iterative auth checks algorithm* on the *unconflicted state map*
-   and the list of events from the previous step to get a partially resolved
+2. Apply the *iterative auth checks algorithm*, starting from the *unconflicted state map*,
+   to the list of events from the previous step to get a partially resolved
    state.
 3. Take all remaining events that weren't picked in step 1 and order them by
    the mainline ordering based on the power level in the partially resolved

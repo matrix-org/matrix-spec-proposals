@@ -90,4 +90,4 @@ paths:
           schema:
             "$ref": "definitions/errors/error.yaml"
       tags:
-        - Room ugprades
+        - Room upgrades

@@ -316,8 +316,8 @@ Example python code:
              "destination": destination_name,
         }
 
-        if content_json is not None:
-            request["content"] = content
+        if content is not None:
+            request_json["content"] = content
 
         signed_json = sign_json(request_json, origin_name, origin_signing_key)
 
@@ -1077,7 +1077,6 @@ The following endpoint prefixes MUST be protected:
 * ``/_matrix/federation/v1/state_ids``
 * ``/_matrix/federation/v1/backfill``
 * ``/_matrix/federation/v1/event_auth``
-* ``/_matrix/federation/v1/query_auth``
 * ``/_matrix/federation/v1/get_missing_events``
 
 

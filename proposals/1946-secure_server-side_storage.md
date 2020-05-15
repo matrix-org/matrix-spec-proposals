@@ -66,7 +66,7 @@ corresponds to the public key.
 
 Encrypted data is stored in the user's account_data using the event type
 defined by the feature that uses the data.  For example, decryption keys for
-key backups could be stored under the type `m.megolm_backup.v1.recovery_key`,
+key backups could be stored under the type `m.megolm_backup.v1`,
 or the self-signing key for cross-signing could be stored under the type
 `m.cross_signing.self_signing`.
 
