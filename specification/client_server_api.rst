@@ -411,7 +411,7 @@ each device at any one time.
 Soft logout
 ~~~~~~~~~~~
 
-When a requests fail due to a 401 status code per above, the server can
+When a request fails due to a 401 status code per above, the server can
 include an extra response parameter, ``soft_logout``, to indicate if the
 device information has been retained by the server. This defaults to ``false``,
 implying the server has deleted the device alongside the access token.
