@@ -513,7 +513,7 @@ received the other party's part. Thus an attacker essentially only has one attem
 attack the Diffie-Hellman exchange, and hence we can verify fewer bits while still
 achieving a high degree of security: if we verify n bits, then an attacker has a 1 in
 2\ :sup:`n` chance of success.  For example, if we verify 40 bits, then an attacker has
-a 1 in 1,099,511,627,776 chance (or less than 1 in 1012 chance) of success. A failed
+a 1 in 1,099,511,627,776 chance (or less than 1 in 10\ :sup:`12` chance) of success. A failed
 attack would result in a mismatched Short Authentication String, alerting users to the
 attack.
 
