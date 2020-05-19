@@ -1,4 +1,4 @@
-# MSC0000: Clarifications on spoilers
+# MSC2557: Clarifications on spoilers
 
 Spoiler messages are described in [MSC2010](https://github.com/matrix-org/matrix-doc/pull/2010)
 though the MSC is unclear if the fallback is required to be sent by clients.
