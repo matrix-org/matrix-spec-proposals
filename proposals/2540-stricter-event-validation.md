@@ -22,7 +22,7 @@ even support these by default. One common additional feature is handling
 
 In a future room version, homeserver implementations are to strictly enforce
 the JSON compliance of the Canonical JSON specification for events. Events that
-do not abide by these rules should be rejected with the error code `M_NOT_JSON`.
+do not abide by these rules should be treated like any other bad JSON value.
 
 The rationale for doing this in a future room version is to avoid a split brain
 room -- where some federated servers believe an event is valid and others reject
