@@ -415,7 +415,7 @@ When a request fails due to a 401 status code per above, the server can
 include an extra response parameter, ``soft_logout``, to indicate if the client's
 persisted information can be retained. This defaults to ``false``, indicating
 that the server has destroyed the session. Any persisted state held by the client,
-such as encryption keys and device information, will not be able to be reused.
+such as encryption keys and device information, must not be reused and must be discarded.
 
 When ``soft_logout`` is true, the client can acquire a new access token by
 specifying the device ID it is already using to the login API. In most cases
