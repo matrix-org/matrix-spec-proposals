@@ -15,6 +15,6 @@ this includes `m.text` (already included by MSC2010), `m.notice`, and `m.emote`.
 
 ## Potential issues
 
-Clients could inadvertadly spoil parts of a message by not representing the spoiler correctly
+Clients could inadvertently spoil parts of a message by not representing the spoiler correctly
 in the `body` of the message. The author believes this would quickly show up as a bug report
 on the client due to the nature of spoilers.
