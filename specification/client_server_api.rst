@@ -412,17 +412,17 @@ Soft logout
 ~~~~~~~~~~~
 
 When a request fails due to a 401 status code per above, the server can
-include an extra response parameter, ``soft_logout``, to indicate if the
-device information has been retained by the server. This defaults to ``false``,
-implying the server has deleted the device alongside the access token.
+include an extra response parameter, ``soft_logout``, to indicate if the client's
+persisted information can be retained. This defaults to ``false``, indicating
+that the server has destroyed the session. Any persisted state held by the client,
+such as encryption keys and device information, will not be able to be reused.
 
 When ``soft_logout`` is true, the client can acquire a new access token by
 specifying the device ID it is already using to the login API. In most cases
 a ``soft_logout: true`` response indicates that the user's session has expired
 on the server-side and the user simply needs to provide their credentials again.
 
-If ``soft_logout`` is ``false``, the client will not be able to reuse the device
-information it already has - the server has destroyed the session.
+In either case, the client's previously known access token will no longer function.
 
 User-Interactive Authentication API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
