@@ -38,7 +38,7 @@ paths:
         The sending server must wait and retry for a 200 OK response before sending a
         transaction with a different ``txnId`` to the receiving server.
 
-        Note that events have a different format depending on the  room version - check
+        Note that events have a different format depending on the room version - check
         the `room version specification`_ for precise event formats.
       operationId: sendTransaction
       security:

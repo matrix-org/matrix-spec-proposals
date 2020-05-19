@@ -63,7 +63,7 @@ paths:
         200:
           description: |-
             A template to be used for the rest of the `Joining Rooms`_ handshake. Note that
-            events have a different format depending on the  room version - check the
+            events have a different format depending on the room version - check the
             `room version specification`_ for precise event formats. **The response body
             here describes the common event fields in more detail and may be missing other
             required fields for a PDU.**
@@ -172,7 +172,7 @@ paths:
 
         Submits a signed join event to the resident server for it
         to accept it into the room's graph. Note that events have
-        a different format depending on the  room version - check
+        a different format depending on the room version - check
         the `room version specification`_ for precise event formats.
         **The request and response body here describes the common
         event fields in more detail and may be missing other required
