@@ -1,0 +1,1 @@
+Add new v2 ``/send_join`` and ``/send_leave`` endpoints per `MSC1802 <https://github.com/matrix-org/matrix-doc/pull/1802>`_.

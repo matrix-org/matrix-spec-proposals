@@ -1,4 +1,5 @@
 # Copyright 2018 New Vector Ltd
+# Copyright 2020 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +15,7 @@
 
 swagger: '2.0'
 info:
-  title: "Matrix Federation Leave Room API"
+  title: "Matrix Federation Join Room API"
   version: "1.0.0"
 host: localhost:8448
 schemes:
@@ -27,33 +28,42 @@ produces:
 securityDefinitions:
   $ref: definitions/security.yaml
 paths:
-  "/make_leave/{roomId}/{userId}":
+  "/make_join/{roomId}/{userId}":
     get:
-      summary: Get information required to make a leave event for a room
+      summary: Get information required to make a join event for a room
       description: |-
         Asks the receiving server to return information that the sending
-        server will need to prepare a leave event to get out of the room.
-      operationId: makeLeave
+        server will need to prepare a join event to get into the room.
+      operationId: makeJoin
       security:
         - signedRequest: []
       parameters:
         - in: path
           name: roomId
           type: string
-          description: The room ID that is about to be left.
+          description: The room ID that is about to be joined.
           required: true
           x-example: "!abc123:matrix.org"
         - in: path
           name: userId
           type: string
-          description: The user ID the leave event will be for.
+          description: The user ID the join event will be for.
           required: true
           x-example: "@someone:example.org"
+        - in: query
+          type: array
+          items:
+            type: string
+          name: ver
+          description: |-
+            The room versions the sending server has support for. Defaults
+            to ``[1]``.
+          x-example: ["1", "2"]
       responses:
         200:
           description: |-
-            A template to be used to call ``/send_leave``. Note that
-            events have a different format depending on the  room version - check the
+            A template to be used for the rest of the `Joining Rooms`_ handshake. Note that
+            events have a different format depending on the room version - check the
             `room version specification`_ for precise event formats. **The response body
             here describes the common event fields in more detail and may be missing other
             required fields for a PDU.**
@@ -63,7 +73,7 @@ paths:
               room_version:
                 type: string
                 description: |-
-                  The version of the room where the server is trying to leave. If not provided,
+                  The version of the room where the server is trying to join. If not provided,
                   the room version is assumed to be either "1" or "2".
                 example: "2"
               event:
@@ -76,7 +86,7 @@ paths:
                 properties:
                   sender:
                     type: string
-                    description: The user ID of the leaving member.
+                    description: The user ID of the joining member.
                     example: "@someone:example.org"
                   origin:
                     type: string
@@ -93,26 +103,26 @@ paths:
                     example: "m.room.member"
                   state_key:
                     type: string
-                    description: The user ID of the leaving member.
+                    description: The user ID of the joining member.
                     example: "@someone:example.org"
                   content:
                     type: object
                     title: Membership Event Content
                     description: The content of the event.
-                    example: {"membership": "leave"}
+                    example: {"membership": "join"}
                     properties:
                       membership:
                         type: string
-                        description: The value ``leave``.
-                        example: "leave"
+                        description: The value ``join``.
+                        example: "join"
                     required: ['membership']
                 required:
                   - state_key
-                  - sender
                   - origin
                   - origin_server_ts
                   - type
                   - content
+                  - sender
           examples:
             application/json: {
               "room_version": "2",
@@ -124,45 +134,63 @@ paths:
                 "origin_server_ts": 1549041175876,
                 "sender": "@someone:example.org",
                 "content": {
-                  "membership": "leave"
+                  "membership": "join"
                 }
               }
             }
-        403:
+        400:
           description: |-
-            The request is not authorized. This could mean that the user is not in the room.
+            The request is invalid or the room the server is attempting
+            to join has a version that is not listed in the ``ver``
+            parameters.
+
+            The error should be passed through to clients so that they
+            may give better feedback to users.
           schema:
-            $ref: "../client-server/definitions/errors/error.yaml"
+            allOf:
+              - $ref: "../client-server/definitions/errors/error.yaml"
+              - type: object
+                properties:
+                  room_version:
+                    type: string
+                    description: |-
+                      The version of the room. Required if the ``errcode``
+                      is ``M_INCOMPATIBLE_ROOM_VERSION``.
           examples:
             application/json: {
-              "errcode": "M_FORBIDDEN",
-              "error": "User is not in the room."
+              "errcode": "M_INCOMPATIBLE_ROOM_VERSION",
+              "error": "Your homeserver does not support the features required to join this room",
+              "room_version": "3"
             }
-  "/send_leave/{roomId}/{eventId}":
+  "/send_join/{roomId}/{eventId}":
     put:
-      summary: Submit a signed leave event to a resident server
+      summary: Submit a signed join event to a resident server
       description: |-
-        Submits a signed leave event to the resident server for it
+        .. Note::
+           Servers should instead prefer to use the v2 ``/send_join``
+           endpoint.
+
+        Submits a signed join event to the resident server for it
         to accept it into the room's graph. Note that events have
-        a different format depending on the  room version - check
+        a different format depending on the room version - check
         the `room version specification`_ for precise event formats.
         **The request and response body here describes the common
         event fields in more detail and may be missing other required
         fields for a PDU.**
-      operationId: sendLeave
+      operationId: sendJoinV1
       security:
         - signedRequest: []
       parameters:
         - in: path
           name: roomId
           type: string
-          description: The room ID that is about to be left.
+          description: The room ID that is about to be joined.
           required: true
           x-example: "!abc123:matrix.org"
         - in: path
           name: eventId
           type: string
-          description: The event ID for the leave event.
+          description: The event ID for the join event.
           required: true
           x-example: "$abc123:example.org"
         - in: body
@@ -174,16 +202,16 @@ paths:
             properties:
               sender:
                 type: string
-                description: The user ID of the leaving member.
+                description: The user ID of the joining member.
                 example: "@someone:example.org"
               origin:
                 type: string
-                description: The name of the leaving homeserver.
+                description: The name of the joining homeserver.
                 example: "matrix.org"
               origin_server_ts:
                 type: integer
                 format: int64
-                description: A timestamp added by the leaving homeserver.
+                description: A timestamp added by the joining homeserver.
                 example: 1234567890
               type:
                 type: string
@@ -191,30 +219,25 @@ paths:
                 example: "m.room.member"
               state_key:
                 type: string
-                description: The user ID of the leaving member.
+                description: The user ID of the joining member.
                 example: "@someone:example.org"
               content:
                 type: object
                 title: Membership Event Content
                 description: The content of the event.
-                example: {"membership": "leave"}
+                example: {"membership": "join"}
                 properties:
                   membership:
                     type: string
-                    description: The value ``leave``.
-                    example: "leave"
+                    description: The value ``join``.
+                    example: "join"
                 required: ['membership']
-              depth:
-                type: integer
-                description: This field must be present but is ignored; it may be 0.
-                example: 12
             required:
               - state_key
               - sender
               - origin
               - origin_server_ts
               - type
-              - depth
               - content
           example: {
             "$ref": "examples/minimal_pdu.json",
@@ -224,14 +247,13 @@ paths:
             "origin_server_ts": 1549041175876,
             "sender": "@someone:example.org",
             "content": {
-                "membership": "leave"
+                "membership": "join"
             }
           }
       responses:
         200:
           description: |-
-            An empty response to indicate the event was accepted into the graph by
-            the receiving homeserver.
+            The full state for the room, having accepted the join event.
           schema:
             type: array
             minItems: 2
@@ -241,7 +263,52 @@ paths:
                 description: The value ``200``.
                 example: 200
               - type: object
-                title: Empty Object
-                description: An empty object.
+                title: Room State
+                description: The state for the room.
+                properties:
+                  origin:
+                    type: string
+                    description: The resident server's DNS name.
+                  auth_chain:
+                    type: array
+                    description: |-
+                      The auth chain. Note that events have a different format depending on
+                      the room version - check the `room version specification`_ for precise
+                      event formats.
+                    items:
+                      type: object
+                      title: PDU
+                      description: |-
+                        The `PDUs <#pdus>`_ that make up the auth chain. The event format varies depending
+                        on the room version - check the `room version specification`_ for precise event formats.
+                      schema:
+                        type: object
+                        properties: []
+                      example:
+                        $ref: "examples/minimal_pdu.json"
+                  state:
+                    type: array
+                    description: |-
+                      The room state. The event format varies depending on the room version -
+                      check the `room version specification`_ for precise event formats.
+                    items:
+                      type: object
+                      title: PDU
+                      description: |-
+                        The `PDUs <#pdus>`_ for the fully resolved state of the room. The event format varies depending
+                        on the room version - check the `room version specification`_ for precise event formats.
+                      schema:
+                        type: object
+                        properties: []
+                      example:
+                        $ref: "examples/minimal_pdu.json"
+                required: ["auth_chain", "state", "origin"]
           examples:
-            application/json: [200, {}]
+            application/json: [
+              200,
+              {
+                "origin": "matrix.org",
+                "auth_chain": [{"$ref": "examples/minimal_pdu.json"}],
+                "state": [{"$ref": "examples/minimal_pdu.json"}]
+              }
+            ]
