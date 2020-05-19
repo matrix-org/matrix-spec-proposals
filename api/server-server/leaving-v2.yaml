@@ -46,7 +46,7 @@ paths:
         to accept it into the room's graph. Note that events have
         a different format depending on the room version - check
         the `room version specification`_ for precise event formats.
-        **The request and response body here describes the common
+        **The request and response body here describe the common
         event fields in more detail and may be missing other required
         fields for a PDU.**
       operationId: sendLeaveV2
