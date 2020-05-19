@@ -507,8 +507,8 @@ not affect the server's representation of the event content - it is simply a vis
 the user that the message may reveal important information about something, spoiling any
 relevant surprise.
 
-Spoilers require use of the ``formatted_body`` and therefore the ``org.matrix.custom.html``
-message format, described above.
+To send spoilers clients MUST use the ``formatted_body`` and therefore the 
+``org.matrix.custom.html``  format, described above.
 
 Spoilers themselves are contained within ``span`` tags, with the reason (optionally) being
 in the ``data-mx-spoiler`` attribute. Spoilers without a reason must at least specify the
