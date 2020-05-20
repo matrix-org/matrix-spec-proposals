@@ -35,7 +35,7 @@ is `im.ponies.user_emotes` (`m.emotes`). The content is as following:
 ```
 
 The emotes are defined inside of a dict called `short`, meant as the "short and easy" representation
-of the emotes. Other, additional, keys may exist to define more metadata for the emotes. No such
+of the emotes. Other, additional keys may exist to define more metadata for the emotes. No such
 guide exists yet.
 
 ### Room emotes
