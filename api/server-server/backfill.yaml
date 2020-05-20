@@ -32,8 +32,8 @@ paths:
       summary: Retrieves the events which precede the given event
       description: |-
         Retrieves a sliding-window history of previous PDUs that occurred in the given room.
-        Starting from the PDU ID(s) given in the ``v`` argument, the PDUs that preceded it
-        are retrieved, up to the total number given by the ``limit``.
+        Starting from the PDU ID(s) given in the ``v`` argument, the PDUs given in ``v`` and
+        the PDUs that preceded them are retrieved, up to the total number given by the ``limit``.
       operationId: backfillRoom
       security:
         - signedRequest: []
