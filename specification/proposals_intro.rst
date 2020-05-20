@@ -390,17 +390,15 @@ are required to use the following process to ensure that the official Matrix nam
 is not cluttered with development or testing data.
 
 .. Note::
-   Proof of concept implementations that are solely left on a branch/unreleased for
-   demonstrating that a particular MSC works do not have to follow this.
-
-The process for an implementation willing to be ahead of a spec release is:
+   Unreleased implementations (including proofs-of-concept demonstrating that a
+   particular MSC works) do not have to follow this process.
 
 1. Have an idea for a feature.
 2. Implement the feature using unstable endpoints, vendor prefixes, and unstable
    feature flags as appropriate.
 
    * When using unstable endpoints, they MUST include a vendor prefix. For example:
-     `/_matrix/client/unstable/com.example/login`. Vendor prefixes throughout Matrix
+     ``/_matrix/client/unstable/com.example/login``. Vendor prefixes throughout Matrix
      always use the Java package naming convention. The MSC for the feature should
      identify which preferred vendor prefix is to be used by early adopters.
    * Note that unstable namespaces do not automatically inherit endpoints from stable
