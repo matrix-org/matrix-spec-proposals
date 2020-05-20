@@ -23,7 +23,7 @@ mxc uris. For this there are two different emote sources:
 
 ### User emotes
 User emotes are per-user emotes that are defined in the users respective account data. The type for that
-is `im.ponies.user_emotes` (`m.emotes`). The content is as following:
+is `im.ponies.user_emotes` (later: `m.emotes`). The content is as following:
 
 ```json
 {
@@ -34,31 +34,30 @@ is `im.ponies.user_emotes` (`m.emotes`). The content is as following:
 }
 ```
 
-The emotes are defined inside of a dict called `short`, meant as the "short and easy" representation
-of the emotes. Other, additional keys may exist to define more metadata for the emotes. No such
-guide exists yet.
+The emotes are defined inside of a dict called `short`, which stands for shortcode. Other, additional
+keys may exist to define more metadata for the emotes. No such guide exists yet.
 
 ### Room emotes
 Room emotes are per-room emotes that every user of a specific room can use inside of that room. They
-are set with a state event of type `im.ponies.room_emotes` (`m.emotes`). The state key denotes a possible
+are set with a state event of type `im.ponies.room_emotes` (later: `m.emotes`). The state key denotes a possible
 pack, whereas the default one would be a blank state key. E.g. a discord bridge could set as state key
 `de.sorunome.mx-puppet-bridge.discord` and have all the bridged emotes in said state event, keeping
-bridged emotes from own, custom ones separate.
+bridged emotes from matrix emotes separate.
 
 The content extends that of the user emotes: It uses the `short` key, which is a map of the shortcode
 of the emote to its mxc uri. Additionally, an optional `pack` key can be set, which defines meta-information
-on the pack. The following attributes are there:
+on the pack. The following keys for `pack` are valid:
 
- - `pack.displayname`: An easy displayname for the pack. Defaults to the room name, if it doesn't exist
- - `pack.avatar_url`: The mxc uri of an avatar/icon to display for the pack. Defaults to the room name,
+ - `displayname`: An easy displayname for the pack. Defaults to the room name, if it doesn't exist
+ - `avatar_url`: The mxc uri of an avatar/icon to display for the pack. Defaults to the room name,
    if it doesn't exist.
- - `pack.short`: A short identifier of the pack. Defaults to the normalized state key, and if the state
+ - `name`: A short identifier of the pack. Defaults to the normalized state key, and if the state
    key is blank it defaults to "room".
    
    Normalized means here, converting spaces to `-`, taking only alphanumerical characters, `-` and `_`,
-   and casting it all to lowercase.
+   and casting it all to lowercase. In regex, this would be `[a-z0-9-_]+`.
 
-As such, a content of a room emote pack could look as following:
+As such, a `im.ponies.room_emotes` (later: `m.emotes`) state event could look like the following:
 
 ```json
 {
@@ -69,18 +68,20 @@ As such, a content of a room emote pack could look as following:
   "pack": {
     "displayname": "Emotes from Discord!",
     "avatar_url": "mxc://example.org/discord_guild",
-    "short": "some_discord_guild"
+    "name": "some_discord_guild"
   }
 }
 ```
 
 ### Emote rooms
 While room emotes are specific to a room and are only accessible within that room, emote rooms should
-be accessible from everywhere. They do not differentiate themself from room emotes at all, instead you
-set an event in your account data of type `im.ponies.emote_rooms` (`m.emotes.rooms`) which outlines
+be accessible from everywhere. They do not differentiate themselves from room emotes at all, instead you
+set an event in your account data of type `im.ponies.emote_rooms` (later: `m.emotes.rooms`) which outlines
 which room emote states should be globally accessible for that user. For that, a `room` key contains
-a map of room id that contains a map of state key that contains an optional pack definition override.
-As such, the contents of `im.ponies.emote_rooms` could look as follows:
+a map of room ids that map to state keys that map to an optional pack definition override.
+If you are currently viewing a room that is in your `im.ponies.emote_rooms` (later: `m.emotes.rooms`)
+it is expected that the client de-duplicates the packs, to only give suggestions for it onces.
+The the contents of `im.ponies.emote_rooms` (later: `m.emotes.rooms`) could look like the following:
 
 ```json
 {
@@ -88,7 +89,7 @@ As such, the contents of `im.ponies.emote_rooms` could look as follows:
     "!someroom:example.org": {
       "": {},
       "de.sorunome.mx-puppet-bridge.discord": {
-        "name": "Overriden name",
+        "displayname": "Overriden name",
         "short": "new_short_name"
       }
     },
@@ -109,7 +110,8 @@ the shortcode will convert to the img tag, e.g. sending `Hey there :wave:` will 
 
 If there are collisions due to the same emote shortcode being present as both room emote and user emote
 a user could specify the emote source by writing e.g. `:room~wave:` or `:user~wave:`. Here the short
-pack name is used for room emotes, and "user" for user emotes.
+pack name is used for room emotes, and "user" for user emotes. If a room pack does not have a short
+pack name and has a blank state key, then "room" is used.
 
 # Ideas
  - ???
