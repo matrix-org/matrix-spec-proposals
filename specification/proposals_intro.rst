@@ -436,16 +436,13 @@ is not cluttered with development or testing data.
    specification version, but does have the feature flag, unstable prefixes should
    still be used.
 9. A transition period of about 2 months starts immediately after the spec release,
-   before implementations start to loudly encourage other implementations to switch
+   before implementations start to encourage other implementations to switch
    to stable endpoints. For example, a server implementation should start asking
    client implementations to support the stable endpoints 2 months after the spec
    release, if they haven't already. The same applies in the reverse: if clients
    cannot switch to stable prefixes because server implementations haven't started
    supporting the new spec release, some noise should be raised in the general direction
    of the implementation.
-
-     * Please be considerate when being noisy to implementations. A gentle reminder
-       in their issue tracker is generally good enough.
 
 .. Note::
    MSCs MUST still describe what the stable endpoints/feature looks like with a note
