@@ -21,8 +21,10 @@ even support these by default. One common additional feature is handling
 ## Proposal
 
 In a future room version, homeserver implementations are to strictly enforce
-the JSON compliance of the Canonical JSON specification for events. Events that
-do not abide by these rules should be treated like any other bad JSON value.
+the JSON compliance of the Canonical JSON specification for events.
+Non-compliant events should be treated like any other malformed event, 
+for example by rejecting the request with an HTTP 400 error with `M_BAD_JSON`,
+or by discarding the event.
 
 The rationale for doing this in a future room version is to avoid a split brain
 room -- where some federated servers believe an event is valid and others reject
