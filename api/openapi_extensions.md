@@ -43,3 +43,11 @@ doesn't work, as in the following example:
           properties:
             ...
 ```
+
+## OpenAPI 3's "2xx" format for response codes
+
+<!-- TODO: Remove this section after upgrading to OpenAPI v3 -->
+
+In some cases, the schema will have HTTP response code definitions like
+`2xx`, `3xx`, and `4xx`. These indicate that a response code within those
+ranges (`2xx` = `200` to `299`) is valid for the schema.
