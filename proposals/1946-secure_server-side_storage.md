@@ -8,6 +8,12 @@ decryption key for the backups on the server, or cross-signing
 ([MSC1756](https://github.com/matrix-org/matrix-doc/pull/1756)) can store the
 signing keys.  This proposal presents a standardized way of storing such data.
 
+## Changes
+
+- [MSC2472](https://github.com/matrix-org/matrix-doc/pull/2472) changed the
+  encryption algorithm used from an asymmetric algorithm (Curve25519) to a
+  symmetric algorithm (AES).
+
 ## Proposal
 
 Secrets are data that clients need to use and that are sent through or stored
@@ -32,9 +38,8 @@ Each key has an ID, and the description of the key is stored in the user's
 account_data using the event type `m.secret_storage.key.[key ID]`.  The contents
 of the account data for the key will include an `algorithm` property, which
 indicates the encryption algorithm used, as well as a `name` property, which is
-a human-readable name.  The contents will be signed as signed JSON using the
-user's master cross-signing key.  Other properties depend on the encryption
-algorithm, and are described below.
+a human-readable name.  Other properties depend on the encryption algorithm,
+and are described below.
 
 Example:
 
@@ -43,7 +48,7 @@ A key with ID `abcdefg` is stored in `m.secret_storage.key.abcdefg`
 ```json
 {
   "name": "Some key",
-  "algorithm": "m.secret_storage.v1.curve25519-aes-sha2",
+  "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
   // ... other properties according to algorithm
 }
 ```
@@ -54,13 +59,6 @@ the key as its `key` property.  The default key will be used to encrypt all
 secrets that the user would expect to be available on all their clients.
 Unless the user specifies otherwise, clients will try to use the default key to
 decrypt secrets.
-
-Clients MUST ensure that the key is trusted before using it to encrypt secrets.
-One way to do that is to have the client that creates the key sign the key
-description (as signed JSON) using the user's master cross-signing key.
-Another way to do that is to prompt the user to enter the passphrase used to
-generate the encryption key and ensure that the generated private key
-corresponds to the public key.
 
 #### Secret storage
 
@@ -106,7 +104,7 @@ and the key descriptions for the keys would be:
 ```json
 {
   "name": "Some key",
-  "algorithm": "m.secret_storage.v1.curve25519-aes-sha2",
+  "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
   // ... other properties according to algorithm
 }
 ```
@@ -116,45 +114,50 @@ and the key descriptions for the keys would be:
 ```json
 {
   "name": "Some other key",
-  "algorithm": "m.secret_storage.v1.curve25519-aes-sha2",
+  "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
   // ... other properties according to algorithm
 }
 ```
 
 #### Encryption algorithms
 
-##### `m.secret_storage.v1.curve25519-aes-sha2`
+##### `m.secret_storage.v1.aes-hmac-sha2`
 
-The public key is stored in the `pubkey` property of the `m.secret_storage.key.[key
-ID]` account_data as a base64-encoded string.
+Secrets are encrypted using AES-CTR-256 and MACed using HMAC-SHA-256.  The data
+is encrypted and MACed as follows:
 
-The data is encrypted and MACed as follows:
+1. Given the secret storage key, generate 64 bytes by performing an HKDF with
+   SHA-256 as the hash, a salt of 32 bytes of 0, and with the secret name as
+   the info.  The first 32 bytes are used as the AES key, and the next 32 bytes
+   are used as the MAC key
+2. Generate 16 random bytes, set bit 63 to 0 (in order to work around
+   differences in AES-CTR implementations), and use this as the AES
+   initialization vector.  This becomes the `iv` property, encoded using base64.
+3. Encrypt the data using AES-CTR-256 using the AES key generated above.  This
+   encrypted data, encoded using base64, becomes the `ciphertext` property.
+4. Pass the raw encrypted data (prior to base64 encoding) through HMAC-SHA-256
+   using the MAC key generated above.  The resulting MAC is base64-encoded and
+   becomes the `mac` property.
 
-1. Generate an ephemeral curve25519 key, and perform an ECDH with the ephemeral
-   key and the public key to generate a shared secret.  The public half of the
-   ephemeral key, encoded using base64, becomes the `ephemeral` property.
-2. Using the shared secret, generate 80 bytes by performing an HKDF using
-   SHA-256 as the hash, with a salt of 32 bytes of 0, and with the empty string
-   as the info.  The first 32 bytes are used as the AES key, the next 32 bytes
-   are used as the MAC key, and the last 16 bytes are used as the AES
-   initialization vector.
-4. Encrypt the data using AES-CBC-256 with PKCS#7 padding.  This encrypted
-   data, encoded using base64, becomes the `ciphertext` property.
-5. Pass the raw encrypted data (prior to base64 encoding) through HMAC-SHA-256
-   using the MAC key generated above.  The first 8 bytes of the resulting MAC
-   are base64-encoded, and become the `mac` property.
+(We use AES-CTR to match file encryption and key exports.)
 
-(The key HKDF, AES, and HMAC steps are the same as what are used for encryption
-in olm and megolm.)
+For the purposes of allowing clients to check whether a user has correctly
+entered the key, clients should:
 
-For example, the `m.secret_storage.key.[key ID]` for a key using this algorithm
+  1. encrypt and MAC a message consisting of 32 bytes of 0 as described above,
+     using the empty string as the info parameter to the HKDF in step 1.
+  2. store the `iv` and `mac` in the `m.secret_storage.key.[key ID]`
+     account-data.
+
+For example, the `m.secret_storage.key.key_id` for a key using this algorithm
 could look like:
 
 ```json
 {
   "name": "m.default",
-  "algorithm": "m.secret_storage.v1.curve25519-aes-sha2",
-  "pubkey": "base64+public+key"
+  "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
+  "iv": "random+data",
+  "mac": "mac+of+encrypted+zeros"
 }
 ```
 
@@ -164,8 +167,8 @@ and data encrypted using this algorithm could look like this:
 {
   "encrypted": {
       "key_id": {
+        "iv": "16+bytes+base64",
         "ciphertext": "base64+encoded+encrypted+data",
-        "ephemeral": "base64+ephemeral+key",
         "mac": "base64+encoded+mac"
       }
   }
@@ -174,7 +177,7 @@ and data encrypted using this algorithm could look like this:
 
 ###### Keys
 
-When a user is given a raw key for `m.secret_storage.v1.curve25519-aes-sha2`,
+When a user is given a raw key for `m.secret_storage.v1.aes-hmac-sha2`,
 it will be encoded as follows (this is the same as what is proposed in MSC1703):
 
 * prepend the two bytes 0x8b and 0x01 to the key
@@ -200,7 +203,8 @@ ID]` account-data:
     "passphrase": {
         "algorithm": "m.pbkdf2",
         "salt": "MmMsAlty",
-        "iterations": 100000
+        "iterations": 100000,
+        "bits": 256
     },
     ...
 }
@@ -209,7 +213,9 @@ ID]` account-data:
 **`m.pbkdf2`**
 
 The key is generated using PBKDF2 using the salt given in the `salt` parameter,
-and the number of iterations given in the `iterations` parameter.
+and the number of iterations given in the `iterations` parameter.  The key size
+that is generated is given by the `bits` parameter, or 256 bits if no `bits`
+parameter is given.
 
 ### Sharing
 
