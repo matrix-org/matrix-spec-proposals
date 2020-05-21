@@ -273,6 +273,7 @@ def rst2html(i, o, stylesheets):
                 writer_name="html",
                 settings_overrides={
                     "stylesheet_path": stylesheets,
+                    "syntax_highlight": "short",
                 },
             )
 

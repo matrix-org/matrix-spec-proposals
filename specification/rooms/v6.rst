@@ -55,5 +55,37 @@ Authorization rules for events
 Like redactions, all rules relating specifically to events of type ``m.room.aliases``
 are removed. They must still pass authorization checks relating to state events.
 
+Additionally, the authorization rules for events of type ``m.room.power_levels``
+now include the content key ``notifications``. This new rule takes the place of the
+rule which checks the ``events`` and ``users`` keys.
+
+For completeness, the changes to the auth rules can be represented as follows:
+
+.. code:: diff
+
+     ...
+
+    -If type is `m.room.aliases`:
+    -
+    -   a. If event has no `state_key`, reject.
+    -   b. If sender's domain doesn't matches `state_key`, reject.
+    -   c. Otherwise, allow.
+
+     ...
+
+     If type is `m.room.power_levels`:
+
+     ...
+
+    -  * For each entry being added, changed or removed in both the `events` and `users` keys:
+    +  * For each entry being added, changed or removed in the `events`, `users`, and `notifications` keys:
+
+        i. If the current value is higher than the `sender`'s current power level, reject.
+
+        ii. If the new value is higher than the `sender`'s current power level, reject.
+
+     ...
+
+
 The remaining rules are the same as in `room version 3 <v3.html#authorization-rules-for-events>`_
 (the last inherited room version to specify the authorization rules).
