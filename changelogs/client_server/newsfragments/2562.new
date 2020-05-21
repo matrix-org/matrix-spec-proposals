@@ -1,0 +1,1 @@
+Added ``/rooms/{roomId}/aliases`` for retrieving local aliases for a room.
