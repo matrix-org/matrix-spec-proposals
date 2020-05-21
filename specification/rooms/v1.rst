@@ -352,6 +352,12 @@ Events in version 1 rooms have the following structure:
 
 {{definition_ss_pdu}}
 
+Canonical JSON
+~~~~~~~~~~~~~~
+
+Servers MUST NOT strictly enforce the JSON format specified in the
+`appendices <../appendices.html#canonical-json>`_ for the reasons described there.
+
 
 .. _`auth events selection`: ../server_server/%SERVER_RELEASE_LABEL%.html#auth-events-selection
 .. _`Signing Events`: ../server_server/%SERVER_RELEASE_LABEL%.html#signing-events
