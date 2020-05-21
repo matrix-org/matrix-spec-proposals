@@ -31,7 +31,7 @@ implementation.
 Redactions
 ~~~~~~~~~~
 
-Upon receipt of a redaction event, the server should strip off any keys not in
+Upon receipt of a redaction event, the server must strip off any keys not in
 the following list:
 
 - ``event_id``
@@ -54,7 +54,7 @@ the following list:
    Some of the keys, such as ``hashes``, will appear on the federation-formatted
    event and therefore the client may not be aware of them.
 
-The content object should also be stripped of all keys, unless it is one of
+The content object must also be stripped of all keys, unless it is one of
 one of the following event types:
 
 - ``m.room.member`` allows key ``membership``.
