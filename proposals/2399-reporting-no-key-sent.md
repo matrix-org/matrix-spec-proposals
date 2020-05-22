@@ -30,7 +30,7 @@ the properties:
   session belongs to.
 - `algorithm`: Required. The encryption algorithm that the key is for.
 - `session_id`: Required if `code` is not `m.no_olm`. The ID of the session.
-- `sender_key`: Required.  The key of the session creator.
+- `sender_key`: Required.  The unpadded base64-encoded device curve25519 key of the session creator.
 - `code`: Required.  A machine-readable code for why the megolm key was not sent.
   Possible values are:
   - `m.blacklisted`: the user/device was blacklisted
