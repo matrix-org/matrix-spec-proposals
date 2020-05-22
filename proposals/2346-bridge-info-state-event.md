@@ -42,13 +42,13 @@ bridged network and nothing more.
         "network": { // Optional
             "id": "freenode",
             "displayname": "Freenode", // Optional
-            "avatar": "mxc://foo/bar", // Optional
+            "avatar_url": "mxc://foo/bar", // Optional
             "external_url": "irc://chat.freenode.net" // Optional
         },
         "channel": {
             "id": "#friends",
             "displayname": "Friends", // Optional
-            "avatar": "mxc://foo/bar", // Optional
+            "avatar_url": "mxc://foo/bar", // Optional
             "external_url": "irc://chat.freenode.net/#friends" // Optional
         }
     },
