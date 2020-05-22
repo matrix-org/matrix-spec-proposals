@@ -47,7 +47,7 @@ the properties:
   receiving client should only use this string if it does not understand the
   `code`.
 
-An `m.room_key.withheld` event should only be sent once per session; the
+An `m.room_key.withheld` event should only be sent once per session per target; the
 recipient of the event should assume that the event applies to all messages in
 that session.  If a sender unblocks a recipient, it may re-use the existing
 session for which the recipient was previously informed that it was blocked, in
