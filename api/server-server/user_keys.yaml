@@ -88,10 +88,12 @@ paths:
                             description: The key, encoded using unpadded base64.
                           signatures:
                             type: object
+                            title: Signatures
                             description: |-
-                              Signature for the device. Mapped from user ID to signature object.
-                            additionalProperties:
-                              type: string
+                              Signature of the key object.
+
+                              The signature is calculated using the process described at `Signing
+                              JSON`_.
                         required: ['key', 'signatures']
                 example: {
                   "@alice:example.com": {
