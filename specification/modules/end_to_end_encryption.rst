@@ -83,9 +83,23 @@ Base64`_. Example:
   "JGLn/yafz74HB2AbPLYJWIVGnKAtqECOBf11yyXac2Y"
 
 The name ``signed_curve25519`` also corresponds to the Curve25519 algorithm,
-but keys using this algorithm are objects with the properties ``key`` (giving
-the Base64-encoded 32-byte Curve25519 public key), and ``signatures`` (giving a
-signature for the key object, as described in `Signing JSON`_). Example:
+but a key using this algorithm is represented by an object with a the following
+properties:
+
+``KeyObject``
+
+========== ================ =====================================================
+Parameter  Type             Description
+========== ================ =====================================================
+key        string           **Required.** The unpadded Base64-encoded 32-byte
+                            Curve25519 public key.
+signatures Signatures       **Required.** Signatures of the key object.
+
+                            The signature is calculated using the process described
+                            at `Signing JSON`_.
+========== ================ =====================================================
+
+Example:
 
 .. code:: json
 
