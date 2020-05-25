@@ -83,7 +83,7 @@ paths:
           schema:
             type: object
             allOf:
-               - $ref: "definitions/client_device.yaml"
+              - $ref: "definitions/client_device.yaml"
           examples:
             application/json: {
                 "device_id": "QBUAZIFURK",
@@ -158,9 +158,10 @@ paths:
             properties:
               auth:
                 description: |-
-                    Additional authentication information for the
-                    user-interactive authentication API.
-                "$ref": "definitions/auth_data.yaml"
+                  Additional authentication information for the
+                  user-interactive authentication API.
+                allOf:
+                  - "$ref": "definitions/auth_data.yaml"
       responses:
         200:
           description: |-
@@ -203,10 +204,11 @@ paths:
                   description: A list of device IDs.
                 example: ["QBUAZIFURK", "AUIECTSRND"]
               auth:
+                allOf:
+                  - "$ref": "definitions/auth_data.yaml"
                 description: |-
                     Additional authentication information for the
                     user-interactive authentication API.
-                "$ref": "definitions/auth_data.yaml"
             required:
               - devices
       responses:

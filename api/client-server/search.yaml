@@ -96,7 +96,8 @@ paths:
                         # for now :/
                         description: |-
                           This takes a `filter`_.
-                        $ref: "definitions/room_event_filter.yaml"
+                        allOf:
+                          - $ref: "definitions/room_event_filter.yaml"
                       order_by:
                         title: "Ordering"
                         type: string

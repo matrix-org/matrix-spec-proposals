@@ -201,10 +201,11 @@ paths:
             type: object
             properties:
               auth:
-                description: |-
-                    Additional authentication information for the
-                    user-interactive authentication API.
-                $ref: "definitions/auth_data.yaml"
+                allOf:
+                - description: |-
+                      Additional authentication information for the
+                      user-interactive authentication API.
+                - $ref: "definitions/auth_data.yaml"
               client_secret:
                 type: string
                 description: The client secret used in the session with the homeserver.
@@ -432,7 +433,7 @@ paths:
           name: body
           required: true
           schema:
-            $ref: "./definitions/request_email_validation.yaml"
+            $ref: "definitions/request_email_validation.yaml"
       responses:
         200:
           description: |-
@@ -482,7 +483,7 @@ paths:
           name: body
           required: true
           schema:
-            $ref: "./definitions/request_msisdn_validation.yaml"
+            $ref: "definitions/request_msisdn_validation.yaml"
       responses:
         200:
           description: An SMS message was sent to the given phone number.

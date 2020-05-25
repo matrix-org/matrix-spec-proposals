@@ -39,7 +39,6 @@ paths:
         200:
           description: Server discovery information.
           schema:
-            type: object
             "$ref": "definitions/wellknown/full.yaml"
         404:
           description: No server discovery information available.
