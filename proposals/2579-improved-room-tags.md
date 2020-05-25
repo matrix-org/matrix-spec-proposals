@@ -1,4 +1,4 @@
-# MSC0000: Improved room tagging support
+# MSC2579: Improved room tagging support
 
 Currently the specification supports 2 kinds of ordering rooms: whatever the client decides and
 manually specified ordering through [room tagging](https://matrix.org/docs/spec/client_server/r0.6.0#room-tagging).
@@ -69,8 +69,8 @@ which rooms belong to which tags for example, however Occam's Razor begins to ta
 
 ## Unstable prefix
 
-While this MSC is not merged to the spec, clients are to use `org.matrix.msc0000` in place of the
+While this MSC is not merged to the spec, clients are to use `org.matrix.msc2579` in place of the
 new `m.*` prefixes defined in this proposal.
 
-For clarity, that means `m.tag.m.favourite` becomes `org.matrix.msc0000.m.favourite` and `m.manual`
-becomes `org.matrix.msc0000.manual`.
+For clarity, that means `m.tag.m.favourite` becomes `org.matrix.msc2579.m.favourite` and `m.manual`
+becomes `org.matrix.msc2579.manual`.
