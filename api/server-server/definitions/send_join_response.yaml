@@ -22,9 +22,10 @@ properties:
   auth_chain:
     type: array
     description: |-
-      The auth chain. Note that events have a different format depending on
-      the room version - check the `room version specification`_ for precise
-      event formats.
+      The auth chain for the entire current room state prior to the join event.
+
+      Note that events have a different format depending on the room version - check the
+      `room version specification`_ for precise event formats.
     items:
       type: object
       title: PDU
@@ -39,8 +40,10 @@ properties:
   state:
     type: array
     description: |-
-      The room state. The event format varies depending on the room version -
-      check the `room version specification`_ for precise event formats.
+      The resolved current room state prior to the join event.
+
+      The event format varies depending on the room version - check the `room version specification`_
+      for precise event formats.
     items:
       type: object
       title: PDU
