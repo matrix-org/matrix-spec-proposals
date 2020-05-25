@@ -291,6 +291,11 @@ Step 1 sign JSON:
         }
    }
 
+The server names in the JSON above are the server names involved. Delegation from
+the `server name resolution section <#resolving-server-names>`_ above do not affect
+these - the server names from before delegation would take place are used. This
+same condition applies throughout the request signing process.
+
 Step 2 add Authorization header:
 
 .. code::
