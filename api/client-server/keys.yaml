@@ -41,6 +41,7 @@ paths:
           name: keys
           description: |-
             The keys to be published
+          required: true
           schema:
             type: object
             properties:
@@ -133,6 +134,7 @@ paths:
           name: query
           description: |-
             Query defining the keys to be downloaded
+          required: true
           schema:
             type: object
             properties:
@@ -250,6 +252,7 @@ paths:
           name: query
           description: |-
             Query defining the keys to be claimed
+          required: true
           schema:
             type: object
             properties:

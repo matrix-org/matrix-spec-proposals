@@ -53,6 +53,7 @@ paths:
           x-example: "!d41d8cd:matrix.org"
         - in: body
           name: third_party_signed
+          required: true
           description: |-
             If supplied, the homeserver must verify that it matches a pending
             ``m.room.third_party_invite`` event in the room, and perform
@@ -134,6 +135,7 @@ paths:
           x-example: ["matrix.org", "elsewhere.ca"]
         - in: body
           name: third_party_signed
+          required: true
           schema:
             type: object
             properties:

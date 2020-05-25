@@ -84,6 +84,7 @@ paths:
           description: The kind of account to register. Defaults to ``user``.
         - in: body
           name: body
+          required: true
           schema:
             type: object
             properties:
@@ -336,6 +337,7 @@ paths:
       parameters:
         - in: body
           name: body
+          required: true
           schema:
             type: object
             properties:
@@ -507,6 +509,7 @@ paths:
       parameters:
         - in: body
           name: body
+          required: true
           schema:
             type: object
             properties:

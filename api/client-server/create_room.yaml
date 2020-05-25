@@ -74,6 +74,7 @@ paths:
         - in: body
           name: body
           description: The desired room configuration.
+          required: true
           schema:
             type: object
             example: {
