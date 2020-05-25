@@ -1257,3 +1257,4 @@ issue.
 .. _`Device Management module`: ../client_server/%CLIENT_RELEASE_LABEL%.html#device-management
 .. _`End-to-End Encryption module`: ../client_server/%CLIENT_RELEASE_LABEL%.html#end-to-end-encryption
 .. _`room version specification`: ../index.html#room-versions
+.. _`Client-Server Key Algorithms`: ../client_server/%CLIENT_RELEASE_LABEL%.html#key-algorithms
