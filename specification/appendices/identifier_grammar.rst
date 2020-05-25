@@ -45,7 +45,7 @@ following grammar::
     IPv6char    = DIGIT / %x41-46 / %x61-66 / ":" / "."
                       ; 0-9, A-F, a-f, :, .
 
-    dns-name    = *255dns-char
+    dns-name    = 1*255dns-char
 
     dns-char    = DIGIT / ALPHA / "-" / "."
 
