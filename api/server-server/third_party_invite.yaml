@@ -103,6 +103,10 @@ paths:
                           signatures:
                             type: object
                             title: Signatures
+                            additionalProperties:
+                              type: object
+                              additionalProperties:
+                                type: string
                             description: |-
                               The server signatures for this event.
 

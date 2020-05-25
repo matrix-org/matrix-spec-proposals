@@ -89,6 +89,10 @@ paths:
                           signatures:
                             type: object
                             title: Signatures
+                            additionalProperties:
+                              type: object
+                              additionalProperties:
+                                type: string
                             description: |-
                               Signature of the key object.
 

@@ -54,6 +54,10 @@ properties:
 
        The signature is calculated using the process described at `Signing
        JSON`_.
+    additionalProperties:
+      type: object
+      additionalProperties:
+        type: string
     example:
       "@alice:example.com":
         "ed25519:JLAFKJWSCS": "dSO80A01XiigH3uBiDVx/EjzaoycHcjq9lfQX0uWsqxl2giMIiSPR8a4d291W1ihKJL/a+myXS367WT6NAIcBA"
