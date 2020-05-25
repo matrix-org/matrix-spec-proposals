@@ -262,47 +262,7 @@ paths:
               - type: integer
                 description: The value ``200``.
                 example: 200
-              - type: object
-                title: Room State
-                description: The state for the room.
-                properties:
-                  origin:
-                    type: string
-                    description: The resident server's DNS name.
-                  auth_chain:
-                    type: array
-                    description: |-
-                      The auth chain. Note that events have a different format depending on
-                      the room version - check the `room version specification`_ for precise
-                      event formats.
-                    items:
-                      type: object
-                      title: PDU
-                      description: |-
-                        The `PDUs <#pdus>`_ that make up the auth chain. The event format varies depending
-                        on the room version - check the `room version specification`_ for precise event formats.
-                      schema:
-                        type: object
-                        properties: []
-                      example:
-                        $ref: "examples/minimal_pdu.json"
-                  state:
-                    type: array
-                    description: |-
-                      The room state. The event format varies depending on the room version -
-                      check the `room version specification`_ for precise event formats.
-                    items:
-                      type: object
-                      title: PDU
-                      description: |-
-                        The `PDUs <#pdus>`_ for the fully resolved state of the room. The event format varies depending
-                        on the room version - check the `room version specification`_ for precise event formats.
-                      schema:
-                        type: object
-                        properties: []
-                      example:
-                        $ref: "examples/minimal_pdu.json"
-                required: ["auth_chain", "state", "origin"]
+              - $ref: "./definitions/send_join_response.yaml"
           examples:
             application/json: [
               200,
