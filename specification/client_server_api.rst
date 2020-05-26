@@ -1820,8 +1820,6 @@ one of the following event types:
 - ``m.room.aliases`` allows key ``aliases``.
 - ``m.room.history_visibility`` allows key ``history_visibility``.
 
-.. TODO: Room v6 changes how redaction works in MSC2432 (no special meaning for aliases)
-
 The server should add the event causing the redaction to the ``unsigned``
 property of the redacted event, under the ``redacted_because`` key. When a
 client receives a redaction event it should change the redacted event in the
