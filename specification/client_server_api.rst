@@ -123,6 +123,10 @@ The common error codes are:
 :``M_UNKNOWN_TOKEN``:
   The access token specified was not recognised.
 
+  An additional response parameter, ``soft_logout``, might be present on the response
+  for 401 HTTP status codes. See `the soft logout section <#soft-logout>`_ for more
+  information.
+
 :``M_MISSING_TOKEN``:
   No access token was specified for the request.
 
@@ -403,6 +407,22 @@ should pass the ``device_id`` in the request body. If the client sets the
 ``device_id``, the server will invalidate any access token previously assigned
 to that device. There is therefore at most one active access token assigned to
 each device at any one time.
+
+Soft logout
+~~~~~~~~~~~
+
+When a request fails due to a 401 status code per above, the server can
+include an extra response parameter, ``soft_logout``, to indicate if the client's
+persisted information can be retained. This defaults to ``false``, indicating
+that the server has destroyed the session. Any persisted state held by the client,
+such as encryption keys and device information, must not be reused and must be discarded.
+
+When ``soft_logout`` is true, the client can acquire a new access token by
+specifying the device ID it is already using to the login API. In most cases
+a ``soft_logout: true`` response indicates that the user's session has expired
+on the server-side and the user simply needs to provide their credentials again.
+
+In either case, the client's previously known access token will no longer function.
 
 User-Interactive Authentication API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
