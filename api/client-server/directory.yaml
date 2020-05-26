@@ -185,7 +185,7 @@ paths:
         membership.
 
         .. Note::
-           Clients are not recommended to display this list of aliases prominently
+           Clients are recommended not to display this list of aliases prominently
            as they are not curated, unlike those listed in the ``m.room.canonical_alias``
            state event.
 
