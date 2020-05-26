@@ -299,6 +299,7 @@ hashes    {string: string} **Required.** A map from an algorithm name to a hash
                            ``sha256``.
 v         string           **Required.** Version of the encrypted attachments
                            protocol. Must be ``v2``.
+mimetype  string           The mimetype of the file, e.g. ``image/jpeg``
 ========= ================ =====================================================
 
 ``JWK``
