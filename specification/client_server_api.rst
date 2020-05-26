@@ -1614,8 +1614,6 @@ Room Events
 This specification outlines several standard event types, all of which are
 prefixed with ``m.``
 
-{{m_room_aliases_event}}
-
 {{m_room_canonical_alias_event}}
 
 {{m_room_create_event}}
@@ -1628,6 +1626,15 @@ prefixed with ``m.``
 
 {{m_room_redaction_event}}
 
+Historical events
++++++++++++++++++
+
+Some events within the ``m.`` namespace might appear in rooms, however they
+serve no significant meaning in this version of the specification. They are:
+
+* ``m.room.aliases``
+
+Previous versions of the specification have more information on these events.
 
 Syncing
 ~~~~~~~
@@ -1891,15 +1898,15 @@ send update requests to other servers. However, homeservers MUST handle
 ``GET`` requests to resolve aliases on other servers; they should do this using
 the federation API if necessary.
 
-Rooms store a *partial* list of room aliases via the ``m.room.aliases`` state
-event. This alias list is partial because it cannot guarantee that the alias
-list is in any way accurate or up-to-date, as room aliases can point to
-different room IDs over time. Crucially, the aliases in this event are
-**purely informational** and SHOULD NOT be treated as accurate. They SHOULD
-be checked before they are used or shared with another user. If a room
-appears to have a room alias of ``#alias:example.com``, this SHOULD be checked
-to make sure that the room's ID matches the ``room_id`` returned from the
-request.
+Rooms do not store a list of all aliases present on a room, though members
+of the room with relevant permissions may publish preferred aliases through
+the ``m.room.canonical_alias`` state event. The aliases in the state event
+should point to the room ID they are published within, however room aliases
+can and do drift to other room IDs over time. Clients SHOULD NOT treat the
+aliases as accurate. They SHOULD be checked before they are used or shared
+with another user. If a room appears to have a room alias of ``#alias:example.com``,
+this SHOULD be checked to make sure that the room's ID matches the ``room_id``
+returned from the request.
 
 {{directory_cs_http_api}}
 
