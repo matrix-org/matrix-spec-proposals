@@ -1,3 +1,34 @@
+r0.1.4
+======
+
+New Endpoints
+-------------
+
+- Add new ``POST /publicRooms`` endpoint for filtering the room directory. (`#2035 <https://github.com/matrix-org/matrix-doc/issues/2035>`_)
+- Add new v2 ``/send_join`` and ``/send_leave`` endpoints per `MSC1802 <https://github.com/matrix-org/matrix-doc/pull/1802>`_. (`#2547 <https://github.com/matrix-org/matrix-doc/issues/2547>`_)
+
+
+Removed Endpoints
+-----------------
+
+- Remove the unused ``query_auth`` API per `MSC2451 <https://github.com/matrix-org/matrix-doc/pull/2451>`_. (`#2470 <https://github.com/matrix-org/matrix-doc/issues/2470>`_)
+
+
+Spec Clarifications
+-------------------
+
+- Move auth event selection to a more obvious location. (`#2392 <https://github.com/matrix-org/matrix-doc/issues/2392>`_)
+- Fix typo in Request Authentication python example. (`#2510 <https://github.com/matrix-org/matrix-doc/issues/2510>`_)
+- Clarify which fields are required on the key server endpoints. (`#2527 <https://github.com/matrix-org/matrix-doc/issues/2527>`_)
+- Clarify the limits of ``prev_events`` and ``auth_events`` for PDUs. (`#2538 <https://github.com/matrix-org/matrix-doc/issues/2538>`_)
+- Clarify which events are targeted by backfill. (`#2559 <https://github.com/matrix-org/matrix-doc/issues/2559>`_)
+- Fix the response format of the ``/send`` endpoint. (`#2560 <https://github.com/matrix-org/matrix-doc/issues/2560>`_)
+- Clarify signature object structures for encryption. (`#2566 <https://github.com/matrix-org/matrix-doc/issues/2566>`_)
+- Clarify the server names to use when signing requests. (`#2570 <https://github.com/matrix-org/matrix-doc/issues/2570>`_)
+- Clarify the state/auth chain requirements for ``/send_join``. (`#2575 <https://github.com/matrix-org/matrix-doc/issues/2575>`_)
+- Fix various spelling errors throughout the specification. (`#2577 <https://github.com/matrix-org/matrix-doc/issues/2577>`_)
+
+
 r0.1.3
 ======
 
