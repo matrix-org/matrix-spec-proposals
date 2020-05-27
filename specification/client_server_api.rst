@@ -45,6 +45,7 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/client_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.6.1 <https://matrix.org/docs/spec/client_server/r0.6.1.html>`_
 - `r0.6.0 <https://matrix.org/docs/spec/client_server/r0.6.0.html>`_
 - `r0.5.0 <https://matrix.org/docs/spec/client_server/r0.5.0.html>`_
 - `r0.4.0 <https://matrix.org/docs/spec/client_server/r0.4.0.html>`_
