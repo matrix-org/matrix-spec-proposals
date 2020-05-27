@@ -1,3 +1,40 @@
+r0.6.1
+======
+
+New Endpoints
+-------------
+
+- Added ``/rooms/{roomId}/aliases`` for retrieving local aliases for a room. (`#2562 <https://github.com/matrix-org/matrix-doc/issues/2562>`_)
+
+
+Backwards Compatible Changes
+----------------------------
+
+- Added data structures for defining moderation policies in rooms per `MSC2313 <https://github.com/matrix-org/matrix-doc/pull/2313>`_. (`#2434 <https://github.com/matrix-org/matrix-doc/issues/2434>`_)
+- Optionally invalidate other access tokens during password modification per `MSC2457 <https://github.com/matrix-org/matrix-doc/pull/2457>`_. (`#2523 <https://github.com/matrix-org/matrix-doc/issues/2523>`_)
+- Add User-Interactive Authentication for SSO-backed homeserver per `MSC2454 <https://github.com/matrix-org/matrix-doc/pull/2454>`_. (`#2532 <https://github.com/matrix-org/matrix-doc/issues/2532>`_)
+- Add soft-logout support per `MSC1466 <https://github.com/matrix-org/matrix-doc/issues/1466>`_. (`#2546 <https://github.com/matrix-org/matrix-doc/issues/2546>`_)
+- Replaced legacy room alias handling with a more sustainable solution per `MSC2432 <https://github.com/matrix-org/matrix-doc/pull/2432>`_. (`#2562 <https://github.com/matrix-org/matrix-doc/issues/2562>`_)
+
+
+Spec Clarifications
+-------------------
+
+- List available enum values for the room versions capability. (`#2245 <https://github.com/matrix-org/matrix-doc/issues/2245>`_)
+- Fix various spelling errors throughout the specification. (`#2351 <https://github.com/matrix-org/matrix-doc/issues/2351>`_, `#2415 <https://github.com/matrix-org/matrix-doc/issues/2415>`_, `#2453 <https://github.com/matrix-org/matrix-doc/issues/2453>`_, `#2524 <https://github.com/matrix-org/matrix-doc/issues/2524>`_, `#2553 <https://github.com/matrix-org/matrix-doc/issues/2553>`_, `#2569 <https://github.com/matrix-org/matrix-doc/issues/2569>`_)
+- Minor clarifications to token-based User-Interactive Authentication. (`#2369 <https://github.com/matrix-org/matrix-doc/issues/2369>`_)
+- Minor clarification for what the user directory searches. (`#2381 <https://github.com/matrix-org/matrix-doc/issues/2381>`_)
+- Fix key export format example to match the specification. (`#2430 <https://github.com/matrix-org/matrix-doc/issues/2430>`_)
+- Clarify the IV data type for encrypted files. (`#2492 <https://github.com/matrix-org/matrix-doc/issues/2492>`_)
+- Fix the ``.m.rule.contains_user_name`` default push rule to set the highlight tweak. (`#2519 <https://github.com/matrix-org/matrix-doc/issues/2519>`_)
+- Clarify that an ``event_id`` is returned when sending events. (`#2525 <https://github.com/matrix-org/matrix-doc/issues/2525>`_)
+- Fix some numbers in the specification to match their explanation text. (`#2554 <https://github.com/matrix-org/matrix-doc/issues/2554>`_)
+- Move redaction algorithm into the room version specifications. (`#2563 <https://github.com/matrix-org/matrix-doc/issues/2563>`_)
+- Clarify signature object structures for encryption. (`#2566 <https://github.com/matrix-org/matrix-doc/issues/2566>`_)
+- Clarify which events are created as part of ``/createRoom``. (`#2571 <https://github.com/matrix-org/matrix-doc/issues/2571>`_)
+- Remove claims that the homeserver is exclusively responsible for profile information in membership events. (`#2574 <https://github.com/matrix-org/matrix-doc/issues/2574>`_)
+
+
 r0.6.0
 ======
 
