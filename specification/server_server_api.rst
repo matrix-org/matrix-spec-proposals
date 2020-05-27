@@ -80,6 +80,8 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/server_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.1.4 <https://matrix.org/docs/spec/server_server/r0.1.4.html>`_
+- `r0.1.3 <https://matrix.org/docs/spec/server_server/r0.1.3.html>`_
 - `r0.1.2 <https://matrix.org/docs/spec/server_server/r0.1.2.html>`_
 - `r0.1.1 <https://matrix.org/docs/spec/server_server/r0.1.1.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/server_server/r0.1.0.html>`_
