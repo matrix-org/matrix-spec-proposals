@@ -43,7 +43,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "--client_release", "-c", metavar="LABEL",
     default="unstable",
-    help="""The client-server release version to gneerate for. Default:
+    help="""The client-server release version to generate for. Default:
     %(default)s""",
 )
 parser.add_argument(
