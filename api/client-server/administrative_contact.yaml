@@ -201,10 +201,10 @@ paths:
             type: object
             properties:
               auth:
+                description: |-
+                  Additional authentication information for the
+                  user-interactive authentication API.
                 allOf:
-                - description: |-
-                      Additional authentication information for the
-                      user-interactive authentication API.
                 - $ref: "definitions/auth_data.yaml"
               client_secret:
                 type: string

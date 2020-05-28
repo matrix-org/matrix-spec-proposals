@@ -89,13 +89,13 @@ paths:
             type: object
             properties:
               auth:
-                allOf:
-                - description: |-
+                description: |-
                     Additional authentication information for the
                     user-interactive authentication API. Note that this
                     information is *not* used to define how the registered user
                     should be authenticated, but is instead used to
                     authenticate the ``register`` call itself.
+                allOf:
                 - "$ref": "definitions/auth_data.yaml"
               username:
                 type: string
@@ -347,9 +347,9 @@ paths:
                 description: The new password for the account.
                 example: "ihatebananas"
               auth:
-                allOf:
-                - description: |-
+                description: |-
                     Additional authentication information for the user-interactive authentication API.
+                allOf:
                 - "$ref": "definitions/auth_data.yaml"
             required: ["new_password"]
       responses:
