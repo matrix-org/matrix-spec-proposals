@@ -119,9 +119,9 @@ paths:
               display_name:
                 type: string
                 description: |-
-                    The new display name for this device. If not given, the
-                    display name is unchanged.
-                example: My other phone
+                  The new display name for this device. If not given, the
+                  display name is unchanged.
+            example: { "display_name": "My other phone" }
       responses:
         200:
           description: The device was successfully updated.

@@ -45,7 +45,6 @@ paths:
         - in: body
           name: body
           required: true
-          description: The request body
           schema:
             type: object
             properties:

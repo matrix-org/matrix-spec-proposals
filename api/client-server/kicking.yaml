@@ -77,7 +77,8 @@ paths:
             type: object
         403:
           description: |-
-            You do not have permission to kick the user from the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejections are:
+            You do not have permission to kick the user from the room. A meaningful ``errcode`` and
+            description error text will be returned. Example reasons for rejections are:
 
             - The kicker is not currently in the room.
             - The kickee is not currently in the room.

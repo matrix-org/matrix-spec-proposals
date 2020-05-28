@@ -86,7 +86,7 @@ paths:
           name: body
           required: true
           description: |-
-            Options for which rooms to return.
+            Options for which rooms to return, or empty object to use defaults.
           schema:
             type: object
             properties:
