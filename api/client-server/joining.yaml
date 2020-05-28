@@ -54,15 +54,16 @@ paths:
         - in: body
           name: third_party_signed
           required: true
-          description: |-
-            If supplied, the homeserver must verify that it matches a pending
-            ``m.room.third_party_invite`` event in the room, and perform
-            key validity checking if required by the event.
           schema:
             type: object
             properties:
               third_party_signed:
-                $ref: "definitions/third_party_signed.yaml"
+                allOf:
+                - $ref: "definitions/third_party_signed.yaml"
+                description: |-
+                  If supplied, the homeserver must verify that it matches a pending
+                  ``m.room.third_party_invite`` event in the room, and perform
+                  key validity checking if required by the event.
       responses:
         200:
           description: |-
@@ -110,10 +111,6 @@ paths:
 
         After a user has joined a room, the room will appear as an entry in the
         response of the |/initialSync|_ and |/sync|_ APIs.
-
-        If a ``third_party_signed`` was supplied, the homeserver must verify
-        that it matches a pending ``m.room.third_party_invite`` event in the
-        room, and perform key validity checking if required by the event.
       operationId: joinRoom
       security:
         - accessToken: []
@@ -140,7 +137,12 @@ paths:
             type: object
             properties:
               third_party_signed:
-                $ref: "definitions/third_party_signed.yaml"
+                allOf:
+                  - $ref: "definitions/third_party_signed.yaml"
+                description: |-
+                  If a ``third_party_signed`` was supplied, the homeserver must verify
+                  that it matches a pending ``m.room.third_party_invite`` event in the
+                  room, and perform key validity checking if required by the event.
       responses:
         200:
           description: |-
