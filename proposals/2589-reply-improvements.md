@@ -1,4 +1,4 @@
-# MSC0000: Improving replies
+# MSC2589: Improving replies
 
 Currently replies in the spec require clients to parse HTML and/or plain text in order to accurately
 represent the event. This fallback also introduces a number of limitations preventing clients from
@@ -81,6 +81,6 @@ https://github.com/matrix-org/matrix-doc/issues/1654 is still not fixed as part 
 
 ## Unstable prefix
 
-Clients should use `org.matrix.msc0000` in place of `m.*` within this MSC. For example,
-`m.relationship` becomes `org.matrix.msc0000.relationship` while this MSC has not been included in
+Clients should use `org.matrix.msc2589` in place of `m.*` within this MSC. For example,
+`m.relationship` becomes `org.matrix.msc2589.relationship` while this MSC has not been included in
 a spec release.
