@@ -4,7 +4,7 @@ r0.1.4
 New Endpoints
 -------------
 
-- Add new ``POST /publicRooms`` endpoint for filtering the room directory. (`#2035 <https://github.com/matrix-org/matrix-doc/issues/2035>`_)
+- Add new ``POST /publicRooms`` endpoint for filtering the room directory. (`#2305 <https://github.com/matrix-org/matrix-doc/issues/2305>`_)
 - Add new v2 ``/send_join`` and ``/send_leave`` endpoints per `MSC1802 <https://github.com/matrix-org/matrix-doc/pull/1802>`_. (`#2547 <https://github.com/matrix-org/matrix-doc/issues/2547>`_)
 
 
