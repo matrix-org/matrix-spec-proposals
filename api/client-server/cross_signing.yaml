@@ -136,6 +136,11 @@ paths:
             The signatures to be published.
           schema:
             type: object
+            title: Signatures
+            additionalProperties:
+              type: object
+              additionalProperties:
+                type: object
             example: {
               "@alice:example.com": {
                 "HIJKLMN": {

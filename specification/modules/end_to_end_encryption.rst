@@ -739,19 +739,20 @@ common set of translations for all languages.
 Cross-signing
 ~~~~~~~~~~~~~
 
-Rather than requiring Alice to verify each of Bob's devices will each of her
-own devices and vice versa, Matrix allows users to cross-sign their keys so
-that Alice and Bob only need to verify once. With cross-signing, each user has
-a set of cross-signing keys that are used to sign their own device keys and
-other users' keys, and can be used to trust device keys that were not verified
-directly.
+Rather than requiring Alice to verify each of Bob's devices with each of her
+own devices and vice versa, the cross-signing feature allows users sign their
+device keys such that Alice and Bob only need to verify once. With
+cross-signing, each user has a set of cross-signing keys that are used to sign
+their own device keys and other users' keys, and can be used to trust device
+keys that were not verified directly.
 
-With cross-signing, each user has three cross-signing ed25519 keys pairs:
+Each user has three ed25519 keys pairs for cross-signing:
 
-* a master key that serves as the user's identity in cross-signing and signs
+* a master key (MSK) that serves as the user's identity in cross-signing and signs
   their other cross-signing keys;
-* a user-signing key that signs other users' master keys, and
-* a self-signing key that signs the user's own device keys.
+* a user-signing key (USK) -- only visible to the user that it belongs to --
+  that signs other users' master keys, and
+* a self-signing key (SSK) that signs the user's own device keys.
 
 The master key may also be used to sign other items such as the backup key. The
 master key may also be signed by the user's own device keys to aid in migrating
@@ -774,6 +775,64 @@ trust Bob's device if:
 - Alice's user-signing key has signed Bob's master key,
 - Bob's master key has signed Bob's self-signing key, and
 - Bob's self-signing key has signed Bob's device key.
+
+The following diagram illustrates how keys are signed:
+
+.. code::
+
+   +------------------+                ..................   +----------------+
+   | +--------------+ |   ..................            :   | +------------+ |
+   | |              v v   v            :   :            v   v v            | |
+   | |           +-----------+         :   :         +-----------+         | |
+   | |           | Alice MSK |         :   :         |  Bob MSK  |         | |
+   | |           +-----------+         :   :         +-----------+         | |
+   | |             |       :           :   :           :       |           | |
+   | |          +--+       :...        :   :        ...:       +--+        | |
+   | |          v             v        :   :        v             v        | |
+   | |    +-----------+ .............  :   :  ............. +-----------+  | |
+   | |    | Alice SSK | : Alice USK :  :   :  :  Bob USK  : |  Bob SSK  |  | |
+   | |    +-----------+ :...........:  :   :  :...........: +-----------+  | |
+   | |      |  ...  |         :        :   :        :         |  ...  |    | |
+   | |      V       V         :........:   :........:         V       V    | |
+   | | +---------+   -+                                  +---------+   -+  | |
+   | | | Devices | ...|                                  | Devices | ...|  | |
+   | | +---------+   -+                                  +---------+   -+  | |
+   | |      |  ...  |                                         |  ...  |    | |
+   | +------+       |                                         |       +----+ |
+   +----------------+                                         +--------------+
+
+.. based on https://jcg.re/blog/quick-overview-matrix-cross-signing/
+
+In the diagram, boxes represent keys and lines represent signatures with the
+arrows pointing from the signing key to the key being signed.  Dotted boxes and
+lines represent keys and signatures that are only visible to the user who
+created them.
+
+The following diagram illustrates Alice's view, hiding the keys and signatures
+that she cannot see:
+
+.. code::
+
+   +------------------+                +----------------+   +----------------+
+   | +--------------+ |                |                |   | +------------+ |
+   | |              v v                |                v   v v            | |
+   | |           +-----------+         |             +-----------+         | |
+   | |           | Alice MSK |         |             |  Bob MSK  |         | |
+   | |           +-----------+         |             +-----------+         | |
+   | |             |       |           |                       |           | |
+   | |          +--+       +--+        |                       +--+        | |
+   | |          v             v        |                          v        | |
+   | |    +-----------+ +-----------+  |                    +-----------+  | |
+   | |    | Alice SSK | | Alice USK |  |                    |  Bob SSK  |  | |
+   | |    +-----------+ +-----------+  |                    +-----------+  | |
+   | |      |  ...  |         |        |                      |  ...  |    | |
+   | |      V       V         +--------+                      V       V    | |
+   | | +---------+   -+                                  +---------+   -+  | |
+   | | | Devices | ...|                                  | Devices | ...|  | |
+   | | +---------+   -+                                  +---------+   -+  | |
+   | |      |  ...  |                                         |  ...  |    | |
+   | +------+       |                                         |       +----+ |
+   +----------------+                                         +--------------+
 
 Verification methods can be used to verify a user's master key by using the
 master public key, encoded using unpadded base64, as the device ID, and
