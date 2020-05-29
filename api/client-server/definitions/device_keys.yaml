@@ -47,6 +47,7 @@ properties:
       "ed25519:JLAFKJWSCS": "lEuiRJBit0IG6nUf5pUzWTUEsRVVe/HJkoKuEww9ULI"
   signatures:
     type: object
+    title: Signatures
     description: |-
        Signatures for the device key object. A map from user ID, to a map from
        ``<algorithm>:<device_id>`` to the signature.

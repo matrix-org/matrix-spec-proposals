@@ -33,6 +33,10 @@ properties:
     type: object
     description: A signatures object containing a signature of the entire signed object.
     title: Signatures
+    additionalProperties:
+      type: object
+      additionalProperties:
+        type: string
     example: {
       "example.org": {
         "ed25519:0": "some9signature"

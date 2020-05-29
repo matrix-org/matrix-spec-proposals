@@ -48,10 +48,10 @@ properties:
   content:
     properties:
       avatar_url:
-        description: 'The avatar URL for this user, if any. This is added by the homeserver.'
+        description: 'The avatar URL for this user, if any.'
         type: string
       displayname:
-        description: 'The display name for this user, if any. This is added by the homeserver.'
+        description: 'The display name for this user, if any.'
         type:
           - "string"
           - "null"
@@ -82,6 +82,10 @@ properties:
                 description: 'A single signature from the verifying server, in the format specified by the Signing Events section of the server-server API.'
                 title: Signatures
                 type: object
+                additionalProperties:
+                  type: object
+                  additionalProperties:
+                    type: string
               token:
                 description: The token property of the containing third_party_invite object.
                 type: string

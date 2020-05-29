@@ -102,12 +102,16 @@ paths:
                         properties:
                           signatures:
                             type: object
-                            description: The server signatures for this event.
+                            title: Signatures
                             additionalProperties:
                               type: object
-                              title: Server Signatures
                               additionalProperties:
                                 type: string
+                            description: |-
+                              The server signatures for this event.
+
+                              The signature is calculated using the process
+                              described at `Signing JSON`_.
                             example: {
                               "magic.forest": {
                                 "ed25519:3": "fQpGIW1Snz+pwLZu6sTy2aHy/DYWWTspTJRPyNp0PKkymfIsNffysMl6ObMMFdIJhk6g6pwlIqZ54rxo8SLmAg"

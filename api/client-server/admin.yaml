@@ -82,7 +82,7 @@ paths:
               devices:
                 type: object
                 description: |-
-                  Each key is an identitfier for one of the user's devices.
+                  Each key is an identifier for one of the user's devices.
                 additionalProperties:
                   type: object
                   title: DeviceInfo

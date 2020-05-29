@@ -74,7 +74,7 @@ paths:
                   One-time keys for the queried devices. A map from user ID, to a
                   map from devices to a map from ``<algorithm>:<key_id>`` to the key object.
 
-                  See the Client-Server Key Algorithms section for more information on
+                  See the `Client-Server Key Algorithms`_ section for more information on
                   the Key Object format.
                 additionalProperties:
                   type: object
@@ -89,10 +89,16 @@ paths:
                             description: The key, encoded using unpadded base64.
                           signatures:
                             type: object
-                            description: |-
-                              Signature for the device. Mapped from user ID to signature object.
+                            title: Signatures
                             additionalProperties:
-                              type: string
+                              type: object
+                              additionalProperties:
+                                type: string
+                            description: |-
+                              Signature of the key object.
+
+                              The signature is calculated using the process described at `Signing
+                              JSON`_.
                         required: ['key', 'signatures']
                 example: {
                   "@alice:example.com": {

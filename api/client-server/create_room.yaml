@@ -38,20 +38,26 @@ paths:
         the new room, including checking power levels for each event. It MUST
         apply the events implied by the request in the following order:
 
-        0. A default ``m.room.power_levels`` event, giving the room creator
+        1. The ``m.room.create`` event itself. Must be the first event in the
+           room.
+
+        2. An ``m.room.member`` event for the creator to join the room. This is
+           needed so the remaining events can be sent.
+
+        3. A default ``m.room.power_levels`` event, giving the room creator
            (and not other members) permission to send state events. Overridden
            by the ``power_level_content_override`` parameter.
 
-        1. Events set by the ``preset``. Currently these are the ``m.room.join_rules``,
+        4. Events set by the ``preset``. Currently these are the ``m.room.join_rules``,
            ``m.room.history_visibility``, and ``m.room.guest_access`` state events.
 
-        2. Events listed in ``initial_state``, in the order that they are
+        5. Events listed in ``initial_state``, in the order that they are
            listed.
 
-        3. Events implied by ``name`` and ``topic`` (``m.room.name`` and ``m.room.topic``
+        6. Events implied by ``name`` and ``topic`` (``m.room.name`` and ``m.room.topic``
            state events).
 
-        4. Invite events implied by ``invite`` and ``invite_3pid`` (``m.room.member`` with
+        7. Invite events implied by ``invite`` and ``invite_3pid`` (``m.room.member`` with
            ``membership: invite`` and ``m.room.third_party_invite``).
 
         The available presets do the following with respect to room state:

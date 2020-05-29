@@ -213,6 +213,7 @@ def get_json_schema_object_fields(obj, enforce_title=False):
         res = process_data_type(additionalProps)
         tables = res["tables"]
         val_title = res["title"]
+        gen_title = "{%s: %s}" % (key_type, val_title)
         if res.get("enum_desc") and val_title != "enum":
             # A map to enum needs another table with enum description
             tables.append(TypeTable(
@@ -220,7 +221,7 @@ def get_json_schema_object_fields(obj, enforce_title=False):
                 rows=[TypeTableRow(key="(mapped value)", title="enum", desc=res["desc"])]
             ))
         return {
-            "title": "{%s: %s}" % (key_type, val_title),
+            "title": obj_title if obj_title else gen_title,
             "tables": tables,
         }
 

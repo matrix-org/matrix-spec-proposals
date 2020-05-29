@@ -80,6 +80,8 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/server_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.1.4 <https://matrix.org/docs/spec/server_server/r0.1.4.html>`_
+- `r0.1.3 <https://matrix.org/docs/spec/server_server/r0.1.3.html>`_
 - `r0.1.2 <https://matrix.org/docs/spec/server_server/r0.1.2.html>`_
 - `r0.1.1 <https://matrix.org/docs/spec/server_server/r0.1.1.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/server_server/r0.1.0.html>`_
@@ -290,6 +292,11 @@ Step 1 sign JSON:
             }
         }
    }
+
+The server names in the JSON above are the server names for each homeserver involved. Delegation from
+the `server name resolution section <#resolving-server-names>`_ above do not affect
+these - the server names from before delegation would take place are used. This
+same condition applies throughout the request signing process.
 
 Step 2 add Authorization header:
 
@@ -780,7 +787,9 @@ and responds to the joining server with the full set of state for the
 newly-joined room. The resident server must also send the event to other servers
 participating in the room.
 
-{{joins_ss_http_api}}
+{{joins_v1_ss_http_api}}
+
+{{joins_v2_ss_http_api}}
 
 .. TODO-spec
   - (paul) I don't really understand why the full auth_chain events are given
@@ -817,7 +826,9 @@ signs the event and replaces the ``event_id`` with it's own. This is then sent t
 the resident server via ``/send_leave``. The resident server will then send the
 event to other servers in the room.
 
-{{leaving_ss_http_api}}
+{{leaving_v1_ss_http_api}}
+
+{{leaving_v2_ss_http_api}}
 
 Third-party invites
 -------------------
@@ -1073,8 +1084,11 @@ The following endpoint prefixes MUST be protected:
 * ``/_matrix/federation/v1/make_join``
 * ``/_matrix/federation/v1/make_leave``
 * ``/_matrix/federation/v1/send_join``
+* ``/_matrix/federation/v2/send_join``
 * ``/_matrix/federation/v1/send_leave``
+* ``/_matrix/federation/v2/send_leave``
 * ``/_matrix/federation/v1/invite``
+* ``/_matrix/federation/v2/invite``
 * ``/_matrix/federation/v1/state``
 * ``/_matrix/federation/v1/state_ids``
 * ``/_matrix/federation/v1/backfill``
@@ -1252,3 +1266,4 @@ issue.
 .. _`Device Management module`: ../client_server/%CLIENT_RELEASE_LABEL%.html#device-management
 .. _`End-to-End Encryption module`: ../client_server/%CLIENT_RELEASE_LABEL%.html#end-to-end-encryption
 .. _`room version specification`: ../index.html#room-versions
+.. _`Client-Server Key Algorithms`: ../client_server/%CLIENT_RELEASE_LABEL%.html#key-algorithms
