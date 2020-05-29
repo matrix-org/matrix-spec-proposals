@@ -52,7 +52,8 @@ to reply to it, the reply's content would look like this:
 }
 ```
 
-The `format` field describes the `reply_formatted_body` format.
+The `format` field describes the `reply_formatted_body` format. The requirement for replies to
+be HTML-formatted is also dropped: a plain text reply (no `format`) is completely acceptable.
 
 ## Potential issues
 
