@@ -4,9 +4,10 @@ power level to disinvite someone. This can cause embarassing situations if you
 accidentally invite someone and don't have the power level to rescind it.
 
 ## Proposal
-The proposed fix is a modification to the authorization rules. In section
-"5. If type is `m.room.member`" -> "d. If `membership` is `leave`", a new step
-is added after step `iv`:
+The proposed fix is a modification to the authorization rules to always allow
+rescinding invites that you sent. The modifications are applied on top of room
+version 6. In section "5. If type is `m.room.member`" -> "d. If `membership`
+is `leave`", a new step is added after step `iv`:
 
 > v. If the *target user*'s current membership state is `invite`, and the `sender`
   of that membership event is the same as `sender`, allow.
@@ -20,8 +21,6 @@ needed. Step `iii` is modified to add `invite` to the list of prohibited
 previous membership states:
 
 > iii. If *target user*'s current membership state is `invite`, `join` or `ban`, reject.
-
-The modified authorization rules are applied on top of room version 6.
 
 ## Potential issues
 The additional modification to section 5.c prohibits changing invite event
