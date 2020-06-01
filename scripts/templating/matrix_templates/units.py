@@ -910,6 +910,13 @@ class MatrixUnits(Units):
             Units.prop(json_schema, "properties/content")
         )
 
+        # Include UnsignedData if it is present on the object
+        unsigned = Units.prop(json_schema, "properties/unsigned")
+        if unsigned:
+            tbls = get_tables_for_schema(unsigned)
+            for tbl in tbls:
+                schema["content_fields"].append(tbl)
+
         # grab msgtype if it is the right kind of event
         msgtype = Units.prop(
             json_schema, "properties/content/properties/msgtype/enum"
