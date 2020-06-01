@@ -31,3 +31,7 @@ for changing the reason after sending the invite.
 Race conditions over federation could result in weird situations, as users
 would have permission to change `invite`->`leave`, but not `join`->`leave`.
 Hopefully the state resolution algorithm can handle those cases adequately.
+
+## Unstable prefix
+The vendor-prefixed room version `net.maunium.msc2596` can be used until the
+proposal is assigned to a future official room version.
