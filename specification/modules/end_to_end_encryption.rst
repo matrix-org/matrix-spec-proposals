@@ -587,7 +587,7 @@ The process between Alice and Bob verifying each other would be:
    the same for Bob's device keys and key IDs concurrently with Alice.
 #. When the other device receives the ``m.key.verification.mac`` message, the device
    calculates the HMAC of its copies of the other device's keys given in the message,
-   as well as the HMAC of the comma-seperated, sorted, list of key IDs in the message.
+   as well as the HMAC of the comma-separated, sorted, list of key IDs in the message.
    The device compares these with the HMAC values given in the message, and if everything
    matches then the device keys are verified.
 
