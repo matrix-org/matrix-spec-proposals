@@ -1,14 +1,10 @@
 {
-  "age": 242352,
+  "$ref": "core/state_event.json",
+  "type": "m.room.server_acl",
+  "state_key": "",
   "content": {
     "allow_ip_literals": false,
     "allow": ["*"],
     "deny": ["*.evil.com", "evil.com"]
-  },
-  "state_key": "",
-  "origin_server_ts": 1431961217939,
-  "event_id": "$WLGTSEFSEF:localhost",
-  "type": "m.room.server_acl",
-  "room_id": "!Cuyf34gef24t:localhost",
-  "sender": "@example:localhost"
+  }
 }

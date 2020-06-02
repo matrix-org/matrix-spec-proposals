@@ -100,16 +100,6 @@ properties:
           - signed
         title: Invite
         type: object
-      unsigned:
-        type: object
-        title: UnsignedData
-        description: Contains optional extra information about the event.
-        properties:
-          invite_room_state:
-            description: 'A subset of the state of the room at the time of the invite, if ``membership`` is ``invite``. Note that this state is informational, and SHOULD NOT be trusted; once the client has joined the room, it SHOULD fetch the live state from the server and discard the invite_room_state. Also, clients must not rely on any particular state being present here; they SHOULD behave properly (with possibly a degraded but not a broken experience) in the absence of any particular events here. If they are set on the room, at least the state for ``m.room.avatar``, ``m.room.canonical_alias``, ``m.room.join_rules``, and ``m.room.name`` SHOULD be included.'
-            items:
-              $ref: "stripped_state.yaml"
-            type: array
     required:
       - membership
     title: EventContent
@@ -124,5 +114,15 @@ properties:
     enum:
       - m.room.member
     type: string
+  unsigned:
+    allOf:
+      - $ref: "core-event-schema/unsigned_prop.yaml"
+      - type: object
+        properties:
+          invite_room_state:
+            description: 'A subset of the state of the room at the time of the invite, if ``membership`` is ``invite``. Note that this state is informational, and SHOULD NOT be trusted; once the client has joined the room, it SHOULD fetch the live state from the server and discard the invite_room_state. Also, clients must not rely on any particular state being present here; they SHOULD behave properly (with possibly a degraded but not a broken experience) in the absence of any particular events here. If they are set on the room, at least the state for ``m.room.avatar``, ``m.room.canonical_alias``, ``m.room.join_rules``, and ``m.room.name`` SHOULD be included.'
+            items:
+              $ref: "stripped_state.yaml"
+            type: array
 title: The current membership state of a user in the room.
 type: object
