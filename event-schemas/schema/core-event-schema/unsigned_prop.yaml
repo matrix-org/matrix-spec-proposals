@@ -23,7 +23,7 @@ properties:
       cause the age to either be negative or greater than it actually is.
     type: integer
   redacted_because:
-    description: Optional. The event that redacted this event, if any.
+    description: The event that redacted this event, if any.
     title: Event
     type: object
   transaction_id:
