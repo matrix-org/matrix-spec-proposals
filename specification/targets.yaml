@@ -70,6 +70,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/send_to_device.rst
     - modules/device_management.rst
     - modules/end_to_end_encryption.rst
+    - modules/secrets.rst
     - modules/history_visibility.rst
     - modules/push.rst
     - modules/third_party_invites.rst
