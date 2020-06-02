@@ -785,7 +785,7 @@ To create a backup, a client will call `POST
 encrypted through the backup's ``auth_data``; other clients can discover the
 backup by calling `GET /_matrix/client/r0/room_keys/version/{version}`_,
 setting ``{version}`` to the empty string.  Keys are encrypted according to the
-backups ``auth_data`` and added to the backup by calling `PUT
+backup's ``auth_data`` and added to the backup by calling `PUT
 /_matrix/client/r0/room_keys/keys`_ or one of its variants, and can be
 retrieved by calling `GET /_matrix/client/r0/room_keys/keys`_ or one of its
 variants.  Keys can only be written to the most recently created version of the
