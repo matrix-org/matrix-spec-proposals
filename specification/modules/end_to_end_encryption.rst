@@ -783,13 +783,12 @@ decrypt the session keys.
 To create a backup, a client will call `POST
 /_matrix/client/r0/room_keys/version`_ and define how the keys are to be
 encrypted through the backup's ``auth_data``; other clients can discover the
-backup by calling `GET /_matrix/client/r0/room_keys/version/{version}`_,
-setting ``{version}`` to the empty string.  Keys are encrypted according to the
-backup's ``auth_data`` and added to the backup by calling `PUT
-/_matrix/client/r0/room_keys/keys`_ or one of its variants, and can be
-retrieved by calling `GET /_matrix/client/r0/room_keys/keys`_ or one of its
-variants.  Keys can only be written to the most recently created version of the
-backup.  Backups can also be deleted using `DELETE
+backup by calling `GET /_matrix/client/r0/room_keys/version`_.  Keys are
+encrypted according to the backup's ``auth_data`` and added to the backup by
+calling `PUT /_matrix/client/r0/room_keys/keys`_ or one of its variants, and
+can be retrieved by calling `GET /_matrix/client/r0/room_keys/keys`_ or one of
+its variants.  Keys can only be written to the most recently created version of
+the backup.  Backups can also be deleted using `DELETE
 /_matrix/client/r0/room_keys/version/{version}`_, or individual keys can be
 deleted using `DELETE /_matrix/client/r0/room_keys/keys`_ or one of its
 variants.
@@ -823,7 +822,10 @@ follows:
    together to form a parity byte. This parity byte is appended to the byte
    string.
 3. The byte string is encoded using base58, using the same `mapping as is used
-   for Bitcoin addresses <https://en.bitcoin.it/wiki/Base58Check_encoding#Base58_symbol_chart>`_.
+   for Bitcoin addresses
+   <https://en.bitcoin.it/wiki/Base58Check_encoding#Base58_symbol_chart>`_,
+   that is, using the alphabet
+   ``123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz``.
 4. A space should be added after every 4th character.
 
 When reading in a recovery key, clients must disregard whitespace, and perform
@@ -844,7 +846,7 @@ following format:
    ========== =========== ======================================================
    Parameter  Type        Description
    ========== =========== ======================================================
-   public_key string      Required. The curve25519 public key used to encrypt
+   public_key string      **Required.** The curve25519 public key used to encrypt
                           the backups, encoded in unpadded base64.
    signatures Signatures  Optional. Signatures of the ``auth_data``, as Signed
                           JSON
@@ -860,19 +862,19 @@ The ``session_data`` field in the backups is constructed as follows:
       =============================== ======== =========================================
       Parameter                       Type     Description
       =============================== ======== =========================================
-      algorithm                       string   Required. The end-to-end message
+      algorithm                       string   **Required.** The end-to-end message
                                                encryption algorithm that the key is
                                                for.  Must be ``m.megolm.v1.aes-sha2``.
-      forwarding_curve25519_key_chain [string] Required. Chain of Curve25519 keys
+      forwarding_curve25519_key_chain [string] **Required.** Chain of Curve25519 keys
                                                through which this session was
                                                forwarded, via
                                                `m.forwarded_room_key`_ events.
-      sender_key                      string   Required. Unpadded base64-encoded
+      sender_key                      string   **Required.** Unpadded base64-encoded
                                                device curve25519 key.
-      sender_claimed_keys             {string: Required. A map from algorithm name
+      sender_claimed_keys             {string: **Required.** A map from algorithm name
                                       string}  (``ed25519``) to the identity key
                                                for the sending device.
-      session_key                     string   Required. Unpadded base64-encoded
+      session_key                     string   **Required.** Unpadded base64-encoded
                                                session key in `session-sharing format
                                                <https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md#session-sharing-format>`_.
       =============================== ======== =========================================

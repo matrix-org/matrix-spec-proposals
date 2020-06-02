@@ -77,6 +77,10 @@ paths:
                 example: "1"
             required:
               - version
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - End-to-end encryption
     get:
@@ -144,6 +148,10 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - End-to-end encryption
   "/room_keys/version/{version}":
@@ -222,6 +230,10 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - End-to-end encryption
     put:
@@ -305,6 +317,10 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - End-to-end encryption
     delete:
@@ -345,6 +361,10 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - End-to-end encryption
   "/room_keys/keys/{roomId}/{sessionId}":
@@ -412,6 +432,10 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - End-to-end encryption
     get:
@@ -455,6 +479,10 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
     delete:
       summary: Delete a key from the backup
       description: |-
@@ -511,6 +539,10 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
   "/room_keys/keys/{roomId}":
     put:
       summary: Store several keys in the backup for a given room.
@@ -595,6 +627,10 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - End-to-end encryption
     get:
@@ -650,6 +686,10 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
     delete:
       summary: Delete a key from the backup
       description: |-
@@ -700,6 +740,10 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
   "/room_keys/keys":
     put:
       summary: Store several keys in the backup.
@@ -784,6 +828,10 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
       tags:
         - End-to-end encryption
     get:
@@ -838,6 +886,10 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
     delete:
       summary: Delete a key from the backup
       description: |-
@@ -882,3 +934,7 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
