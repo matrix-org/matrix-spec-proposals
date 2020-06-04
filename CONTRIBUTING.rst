@@ -13,7 +13,7 @@ https://github.com/matrix-org/matrix-doc/blob/master/meta/documentation_style.rs
 
 Python code within the ``matrix-doc`` project should follow the same style as
 synapse, which is documented at
-https://github.com/matrix-org/synapse/tree/master/docs/code_style.rst.
+https://github.com/matrix-org/synapse/tree/master/docs/code_style.md.
 
 Matrix-doc workflows
 --------------------
