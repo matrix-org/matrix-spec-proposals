@@ -425,6 +425,8 @@ on the server-side and the user simply needs to provide their credentials again.
 
 In either case, the client's previously known access token will no longer function.
 
+.. _`user-interactive authentication`:
+
 User-Interactive Authentication API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
