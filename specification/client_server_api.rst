@@ -1,4 +1,4 @@
-.. Copyright 2016 OpenMarket Ltd
+.. Copyright 2016-2020 The Matrix.org Foundation C.I.C.
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -425,6 +425,8 @@ on the server-side and the user simply needs to provide their credentials again.
 
 In either case, the client's previously known access token will no longer function.
 
+.. _`user-interactive authentication`:
+
 User-Interactive Authentication API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -813,28 +815,8 @@ Single Sign-On
   provider.
 
 A client wanting to complete authentication using SSO should use the
-`Fallback`_ authentication flow by opening a browser window for
-``/_matrix/client/r0/auth/m.login.sso/fallback/web?session=<...>`` with the
-session parameter set to the session ID provided by the server.
-
-The homeserver should return a page which asks for the user's confirmation
-before proceeding. For example, the page could say words to the effect of:
-
-  A client is trying to remove a device/add an email address/take over your
-  account. To confirm this action, re-authenticate with single sign-on. If you
-  did not expect this, your account may be compromised!
-
-Once the user has confirmed they should be redirected to the single sign-on
-provider's login page. Once the provider has validated the user, the browser is
-redirected back to the homeserver.
-
-The homeserver then validates the response from the single sign-on provider and
-updates the user-interactive authentication session to mark the single sign-on
-stage has been completed. The browser is shown the fallback authentication
-completion page.
-
-Once the flow has completed, the client retries the request with the session
-only, as above.
+`Fallback`_ mechanism. See `SSO during User-Interactive Authentication`_ for
+more information.
 
 Email-based (identity / homeserver)
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -939,6 +921,8 @@ should open is::
 
 Where ``auth type`` is the type name of the stage it is attempting and
 ``session ID`` is the ID of the session given by the homeserver.
+
+.. _`user-interactive authentication fallback completion`:
 
 This MUST return an HTML page which can perform this authentication stage. This
 page must use the following JavaScript when the authentication has been
@@ -1157,7 +1141,7 @@ with ``403 Forbidden`` and an error code of ``M_FORBIDDEN``.
 
 If the homeserver advertises ``m.login.sso`` as a viable flow, and the client
 supports it, the client should redirect the user to the ``/redirect`` endpoint
-for `Single Sign-On <#sso-client-login>`_. After authentication is complete, the
+for `client login via SSO`_. After authentication is complete, the
 client will need to submit a ``/login`` request matching ``m.login.token``.
 
 {{login_cs_http_api}}
