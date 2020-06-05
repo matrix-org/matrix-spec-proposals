@@ -135,7 +135,7 @@ Security considerations
    ``https://server.example.org/login/sso/redirect?redirectUrl=https://client.example.com?hs=server.example.org``.
 
    An attacker could trick a victim into following a link to
-   ``https://server.example.org/login/sso/redirect?redirectUrl=https://client.example.com?hs=evil.org``,
+   ``https://server.example.org/login/sso/redirect?redirectUrl=https://client.example.com?hs=evil.com``,
    which would result in the client sending a login token for the victim's
    account to the attacker-controlled site ``evil.com``.
 
@@ -192,9 +192,9 @@ checking a signature on the response.
 The homeserver then proceeds as follows:
 
 #. The homeserver MUST map the user details received from the authentication
-   server to a valid `Matrix user identifier <../index.html#user-identifiers>`_.
+   server to a valid `Matrix user identifier <../appendices.html#user-identifiers>`_.
    The guidance in `Mapping from other character sets
-   <../index.html#mapping-from-other-character-sets>`_ may be useful.
+   <../appendices.html#mapping-from-other-character-sets>`_ may be useful.
 
 #. If the generated user identifier represents a new user, it should be
    registered as a new user.
@@ -316,7 +316,7 @@ Security considerations
    since they may not realise what is being asked of them, or the SSO system
    may even confirm the authentication automatically.
 
-   For example, the homeserver might serve a page with words to the effact of:
+   For example, the homeserver might serve a page with words to the effect of:
 
      A client is trying to remove a device from your account. To confirm this
      action, re-authenticate with single sign-on. If you did not expect this, your
