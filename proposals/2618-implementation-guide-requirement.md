@@ -1,4 +1,4 @@
-# MSC0000: Helping others with mandatory implementation guides
+# MSC2618: Helping others with mandatory implementation guides
 
 Thus far the spec has been a mix of implementation guide and documenting nuances with the individual
 components of Matrix, which leads to confusion, lack of clarity, and excess information for typical
