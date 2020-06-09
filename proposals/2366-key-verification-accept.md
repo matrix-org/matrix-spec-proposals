@@ -26,7 +26,9 @@ verification as a whole.
 
 ## Proposal
 
-Two new event types are added to the key verification framework.  The new event
+Two new event types are added to the [key verification
+framework](https://matrix.org/docs/spec/client_server/r0.6.1#key-verification-framework)
+when verifying in to-device messages.  The new event
 types are already described in [MSC2241 (Key verification in
 DMs)](https://github.com/matrix-org/matrix-doc/pull/2241).  This proposal adds
 them to verifications in to-device messages.
@@ -74,4 +76,5 @@ the device has successfully completed its side of the verification.
 Clients that follow the Client-Server 0.6.0 spec may not expect an
 `m.key.verification.ready` message in response to `m.key.verification.request`.
 However to our knowledge, no clients implement `m.key.verification.request` in
-this way yet.
+this way yet -- to our knowledge, all clients that implement verification
+implement this proposal.
