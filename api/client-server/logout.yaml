@@ -39,7 +39,7 @@ paths:
         - accessToken: []
       responses:
         200:
-          description: The access token used in the request was succesfully invalidated.
+          description: The access token used in the request was successfully invalidated.
           schema:
             type: object
             properties: {}
@@ -64,7 +64,7 @@ paths:
         - accessToken: []
       responses:
         200:
-          description: The user's access tokens were succesfully invalidated.
+          description: The user's access tokens were successfully invalidated.
           schema:
             type: object
             properties: {}

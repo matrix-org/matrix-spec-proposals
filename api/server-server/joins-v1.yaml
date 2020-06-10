@@ -1,4 +1,5 @@
 # Copyright 2018 New Vector Ltd
+# Copyright 2020 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -62,7 +63,7 @@ paths:
         200:
           description: |-
             A template to be used for the rest of the `Joining Rooms`_ handshake. Note that
-            events have a different format depending on the  room version - check the
+            events have a different format depending on the room version - check the
             `room version specification`_ for precise event formats. **The response body
             here describes the common event fields in more detail and may be missing other
             required fields for a PDU.**
@@ -165,14 +166,18 @@ paths:
     put:
       summary: Submit a signed join event to a resident server
       description: |-
+        .. Note::
+           Servers should instead prefer to use the v2 ``/send_join``
+           endpoint.
+
         Submits a signed join event to the resident server for it
         to accept it into the room's graph. Note that events have
-        a different format depending on the  room version - check
+        a different format depending on the room version - check
         the `room version specification`_ for precise event formats.
-        **The request and response body here describes the common
+        **The request and response body here describe the common
         event fields in more detail and may be missing other required
         fields for a PDU.**
-      operationId: sendJoin
+      operationId: sendJoinV1
       security:
         - signedRequest: []
       parameters:
@@ -257,47 +262,7 @@ paths:
               - type: integer
                 description: The value ``200``.
                 example: 200
-              - type: object
-                title: Room State
-                description: The state for the room.
-                properties:
-                  origin:
-                    type: string
-                    description: The resident server's DNS name.
-                  auth_chain:
-                    type: array
-                    description: |-
-                      The auth chain. Note that events have a different format depending on
-                      the room version - check the `room version specification`_ for precise
-                      event formats.
-                    items:
-                      type: object
-                      title: PDU
-                      description: |-
-                        The `PDUs <#pdus>`_ that make up the auth chain. The event format varies depending
-                        on the room version - check the `room version specification`_ for precise event formats.
-                      schema:
-                        type: object
-                        properties: []
-                      example:
-                        $ref: "examples/minimal_pdu.json"
-                  state:
-                    type: array
-                    description: |-
-                      The room state. The event format varies depending on the room version -
-                      check the `room version specification`_ for precise event formats.
-                    items:
-                      type: object
-                      title: PDU
-                      description: |-
-                        The `PDUs <#pdus>`_ for the fully resolved state of the room. The event format varies depending
-                        on the room version - check the `room version specification`_ for precise event formats.
-                      schema:
-                        type: object
-                        properties: []
-                      example:
-                        $ref: "examples/minimal_pdu.json"
-                required: ["auth_chain", "state", "origin"]
+              - $ref: "./definitions/send_join_response.yaml"
           examples:
             application/json: [
               200,

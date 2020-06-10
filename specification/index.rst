@@ -550,6 +550,7 @@ The available room versions are:
 * `Version 3 <rooms/v3.html>`_ - **Stable**. Introduces events whose IDs are the event's hash.
 * `Version 4 <rooms/v4.html>`_ - **Stable**. Builds on v3 by using URL-safe base64 for event IDs.
 * `Version 5 <rooms/v5.html>`_ - **Stable**. Introduces enforcement of signing key validity periods.
+* `Version 6 <rooms/v6.html>`_ - **Stable**. Alters several authorization rules for events.
 
 Specification Versions
 ----------------------

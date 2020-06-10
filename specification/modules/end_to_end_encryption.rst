@@ -83,9 +83,23 @@ Base64`_. Example:
   "JGLn/yafz74HB2AbPLYJWIVGnKAtqECOBf11yyXac2Y"
 
 The name ``signed_curve25519`` also corresponds to the Curve25519 algorithm,
-but keys using this algorithm are objects with the properties ``key`` (giving
-the Base64-encoded 32-byte Curve25519 public key), and ``signatures`` (giving a
-signature for the key object, as described in `Signing JSON`_). Example:
+but a key using this algorithm is represented by an object with a the following
+properties:
+
+``KeyObject``
+
+========== ================ =====================================================
+Parameter  Type             Description
+========== ================ =====================================================
+key        string           **Required.** The unpadded Base64-encoded 32-byte
+                            Curve25519 public key.
+signatures Signatures       **Required.** Signatures of the key object.
+
+                            The signature is calculated using the process described
+                            at `Signing JSON`_.
+========== ================ =====================================================
+
+Example:
 
 .. code:: json
 
@@ -513,7 +527,7 @@ received the other party's part. Thus an attacker essentially only has one attem
 attack the Diffie-Hellman exchange, and hence we can verify fewer bits while still
 achieving a high degree of security: if we verify n bits, then an attacker has a 1 in
 2\ :sup:`n` chance of success.  For example, if we verify 40 bits, then an attacker has
-a 1 in 1,099,511,627,776 chance (or less than 1 in 1012 chance) of success. A failed
+a 1 in 1,099,511,627,776 chance (or less than 1 in 10\ :sup:`12` chance) of success. A failed
 attack would result in a mismatched Short Authentication String, alerting users to the
 attack.
 
@@ -565,15 +579,15 @@ The process between Alice and Bob verifying each other would be:
    they match or not.
 #. Assuming they match, Alice and Bob's devices calculate the HMAC of their own device keys
    and a comma-separated sorted list of of the key IDs that they wish the other user
-   to verify, using SHA-256 as the hash function. HMAC is defined in [RFC 2104](https://tools.ietf.org/html/rfc2104).
+   to verify, using SHA-256 as the hash function. HMAC is defined in `RFC 2104 <https://tools.ietf.org/html/rfc2104>`_.
    The key for the HMAC is different for each item and is calculated by generating
-   32 bytes (256 bits) using `the key verification HKDF <#SAS-HKDF>`_.
+   32 bytes (256 bits) using `the key verification HKDF <#sas-hkdf>`_.
 #. Alice's device sends Bob's device a ``m.key.verification.mac`` message containing the
    MAC of Alice's device keys and the MAC of her key IDs to be verified. Bob's device does
    the same for Bob's device keys and key IDs concurrently with Alice.
 #. When the other device receives the ``m.key.verification.mac`` message, the device
    calculates the HMAC of its copies of the other device's keys given in the message,
-   as well as the HMAC of the comma-seperated, sorted, list of key IDs in the message.
+   as well as the HMAC of the comma-separated, sorted, list of key IDs in the message.
    The device compares these with the HMAC values given in the message, and if everything
    matches then the device keys are verified.
 
@@ -653,14 +667,14 @@ are used in addition to those already specified:
 {{m_key_verification_mac_event}}
 
 
-.. _`SAS-HKDF`:
+.. _sas-hkdf:
 
 HKDF calculation
 <<<<<<<<<<<<<<<<
 
-In all of the SAS methods, HKDF is as defined in [RFC 5869](https://tools.ietf.org/html/rfc5869)
+In all of the SAS methods, HKDF is as defined in `RFC 5869 <https://tools.ietf.org/html/rfc5869>`_
 and uses the previously agreed-upon hash function for the hash function. The shared
-secret is supplied as the input keying material. No salt is used, and the input
+secret is supplied as the input keying material. No salt is used, and the info
 parameter is the concatenation of:
 
   * The string ``MATRIX_KEY_VERIFICATION_SAS``.
@@ -677,7 +691,7 @@ parameter is the concatenation of:
 
 For verification of each party's device keys, HKDF is as defined in RFC 5869 and
 uses SHA-256 as the hash function. The shared secret is supplied as the input keying
-material. No salt is used, and in the input parameter is the concatenation of:
+material. No salt is used, and in the info parameter is the concatenation of:
 
   * The string ``MATRIX_KEY_VERIFICATION_MAC``.
   * The Matrix ID of the user whose key is being MAC-ed.
@@ -691,7 +705,7 @@ material. No salt is used, and in the input parameter is the concatenation of:
 SAS method: ``decimal``
 <<<<<<<<<<<<<<<<<<<<<<<
 
-Generate 5 bytes using `HKDF <#SAS-HKDF>`_ then take sequences of 13 bits to
+Generate 5 bytes using `HKDF <#sas-hkdf>`_ then take sequences of 13 bits to
 convert to decimal numbers (resulting in 3 numbers between 0 and 8191 inclusive
 each). Add 1000 to each calculated number.
 
@@ -708,7 +722,7 @@ such as dashes, or with the numbers on individual lines.
 SAS method: ``emoji``
 <<<<<<<<<<<<<<<<<<<<<
 
-Generate 6 bytes using `HKDF <#SAS-HKDF>`_ then split the first 42 bits into
+Generate 6 bytes using `HKDF <#sas-hkdf>`_ then split the first 42 bits into
 7 groups of 6 bits, similar to how one would base64 encode something. Convert
 each group of 6 bits to a number and use the following table to get the corresponding
 emoji:
@@ -766,6 +780,136 @@ previously-received ``request`` message with the same ``request_id`` and
   Key sharing can be a big attack vector, thus it must be done very carefully.
   A reasonable strategy is for a user's client to only send keys requested by the
   verified devices of the same user.
+
+Server-side key backups
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Devices may upload encrypted copies of keys to the server. When a device tries
+to read a message that it does not have keys for, it may request the key from
+the server and decrypt it. Backups are per-user, and users may replace backups
+with new backups.
+
+In contrast with `Key requests`_, Server-side key backups do not require another
+device to be online from which to request keys. However, as the session keys are
+stored on the server encrypted, it requires users to enter a decryption key to
+decrypt the session keys.
+
+To create a backup, a client will call `POST
+/_matrix/client/r0/room_keys/version`_ and define how the keys are to be
+encrypted through the backup's ``auth_data``; other clients can discover the
+backup by calling `GET /_matrix/client/r0/room_keys/version`_.  Keys are
+encrypted according to the backup's ``auth_data`` and added to the backup by
+calling `PUT /_matrix/client/r0/room_keys/keys`_ or one of its variants, and
+can be retrieved by calling `GET /_matrix/client/r0/room_keys/keys`_ or one of
+its variants.  Keys can only be written to the most recently created version of
+the backup.  Backups can also be deleted using `DELETE
+/_matrix/client/r0/room_keys/version/{version}`_, or individual keys can be
+deleted using `DELETE /_matrix/client/r0/room_keys/keys`_ or one of its
+variants.
+
+Clients must only store keys in backups after they have ensured that the
+``auth_data`` is trusted, either by checking the signatures on it, or by
+deriving the public key from a private key that it obtained from a trusted
+source.
+
+When a client uploads a key for a session that the server already has a key
+for, the server will choose to either keep the existing key or replace it with
+the new key based on the key metadata as follows:
+
+- if the keys have different values for ``is_verified``, then it will keep the
+  key that has ``is_verified`` set to ``true``;
+- if they have the same values for ``is_verified``, then it will keep the key
+  with a lower ``first_message_index``;
+- and finally, is ``is_verified`` and ``first_message_index`` are equal, then
+  it will keep the key with a lower ``forwarded_count``.
+
+Recovery key
+<<<<<<<<<<<<
+
+If the recovery key (the private half of the backup encryption key) is
+presented to the user to save, it is presented as a string constructed as
+follows:
+
+1. The 256-bit curve25519 private key is prepended by the bytes ``0x8B`` and
+   ``0x01``
+2. All the bytes in the string above, including the two header bytes, are XORed
+   together to form a parity byte. This parity byte is appended to the byte
+   string.
+3. The byte string is encoded using base58, using the same `mapping as is used
+   for Bitcoin addresses
+   <https://en.bitcoin.it/wiki/Base58Check_encoding#Base58_symbol_chart>`_,
+   that is, using the alphabet
+   ``123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz``.
+4. A space should be added after every 4th character.
+
+When reading in a recovery key, clients must disregard whitespace, and perform
+the reverse of steps 1 through 3.
+
+Backup algorithm: ``m.megolm_backup.v1.curve25519-aes-sha2``
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+When a backup is created with the ``algorithm`` set to
+``m.megolm_backup.v1.curve25519-aes-sha2``, the ``auth_data`` should have the
+following format:
+
+``AuthData``
+
+.. table::
+   :widths: auto
+
+   ========== =========== ======================================================
+   Parameter  Type        Description
+   ========== =========== ======================================================
+   public_key string      **Required.** The curve25519 public key used to encrypt
+                          the backups, encoded in unpadded base64.
+   signatures Signatures  Optional. Signatures of the ``auth_data``, as Signed
+                          JSON
+   ========== =========== ======================================================
+
+The ``session_data`` field in the backups is constructed as follows:
+
+1. Encode the session key to be backed up as a JSON object with the properties:
+
+   .. table::
+      :widths: auto
+
+      =============================== ======== =========================================
+      Parameter                       Type     Description
+      =============================== ======== =========================================
+      algorithm                       string   **Required.** The end-to-end message
+                                               encryption algorithm that the key is
+                                               for.  Must be ``m.megolm.v1.aes-sha2``.
+      forwarding_curve25519_key_chain [string] **Required.** Chain of Curve25519 keys
+                                               through which this session was
+                                               forwarded, via
+                                               `m.forwarded_room_key`_ events.
+      sender_key                      string   **Required.** Unpadded base64-encoded
+                                               device curve25519 key.
+      sender_claimed_keys             {string: **Required.** A map from algorithm name
+                                      string}  (``ed25519``) to the identity key
+                                               for the sending device.
+      session_key                     string   **Required.** Unpadded base64-encoded
+                                               session key in `session-sharing format
+                                               <https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md#session-sharing-format>`_.
+      =============================== ======== =========================================
+
+2. Generate an ephemeral curve25519 key, and perform an ECDH with the ephemeral
+   key and the backup's public key to generate a shared secret.  The public
+   half of the ephemeral key, encoded using unpadded base64, becomes the ``ephemeral``
+   property of the ``session_data``.
+3. Using the shared secret, generate 80 bytes by performing an HKDF using
+   SHA-256 as the hash, with a salt of 32 bytes of 0, and with the empty string
+   as the info.  The first 32 bytes are used as the AES key, the next 32 bytes
+   are used as the MAC key, and the last 16 bytes are used as the AES
+   initialization vector.
+4. Stringify the JSON object, and encrypt it using AES-CBC-256 with PKCS#7
+   padding.  This encrypted data, encoded using unpadded base64, becomes the
+   ``ciphertext`` property of the ``session_data``.
+5. Pass the raw encrypted data (prior to base64 encoding) through HMAC-SHA-256
+   using the MAC key generated above.  The first 8 bytes of the resulting MAC
+   are base64-encoded, and become the ``mac`` property of the ``session_data``.
+
+{{key_backup_cs_http_api}}
 
 Key exports
 ~~~~~~~~~~~
@@ -839,6 +983,9 @@ described as follows:
    session_id                      string      Required. The ID of the session.
    session_key                     string      Required. The key for the session.
    =============================== =========== ====================================
+
+This is similar to the format before encryption used for the session keys in
+`Server-side key backups`_ but adds the ``room_id`` and ``session_id`` fields.
 
 Example:
 

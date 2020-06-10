@@ -1,4 +1,4 @@
-.. Copyright 2016 OpenMarket Ltd
+.. Copyright 2016-2020 The Matrix.org Foundation C.I.C.
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/client_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.6.1 <https://matrix.org/docs/spec/client_server/r0.6.1.html>`_
 - `r0.6.0 <https://matrix.org/docs/spec/client_server/r0.6.0.html>`_
 - `r0.5.0 <https://matrix.org/docs/spec/client_server/r0.5.0.html>`_
 - `r0.4.0 <https://matrix.org/docs/spec/client_server/r0.4.0.html>`_
@@ -122,6 +123,10 @@ The common error codes are:
 
 :``M_UNKNOWN_TOKEN``:
   The access token specified was not recognised.
+
+  An additional response parameter, ``soft_logout``, might be present on the response
+  for 401 HTTP status codes. See `the soft logout section <#soft-logout>`_ for more
+  information.
 
 :``M_MISSING_TOKEN``:
   No access token was specified for the request.
@@ -404,6 +409,24 @@ should pass the ``device_id`` in the request body. If the client sets the
 to that device. There is therefore at most one active access token assigned to
 each device at any one time.
 
+Soft logout
+~~~~~~~~~~~
+
+When a request fails due to a 401 status code per above, the server can
+include an extra response parameter, ``soft_logout``, to indicate if the client's
+persisted information can be retained. This defaults to ``false``, indicating
+that the server has destroyed the session. Any persisted state held by the client,
+such as encryption keys and device information, must not be reused and must be discarded.
+
+When ``soft_logout`` is true, the client can acquire a new access token by
+specifying the device ID it is already using to the login API. In most cases
+a ``soft_logout: true`` response indicates that the user's session has expired
+on the server-side and the user simply needs to provide their credentials again.
+
+In either case, the client's previously known access token will no longer function.
+
+.. _`user-interactive authentication`:
+
 User-Interactive Authentication API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -643,6 +666,7 @@ This specification defines the following auth types:
  - ``m.login.password``
  - ``m.login.recaptcha``
  - ``m.login.oauth2``
+ - ``m.login.sso``
  - ``m.login.email.identity``
  - ``m.login.msisdn``
  - ``m.login.token``
@@ -782,6 +806,18 @@ the auth code. Homeservers can choose any path for the ``redirect URI``. Once
 the OAuth flow has completed, the client retries the request with the session
 only, as above.
 
+Single Sign-On
+<<<<<<<<<<<<<<
+:Type:
+  ``m.login.sso``
+:Description:
+  Authentication is supported by authorising with an external single sign-on
+  provider.
+
+A client wanting to complete authentication using SSO should use the
+`Fallback`_ mechanism. See `SSO during User-Interactive Authentication`_ for
+more information.
+
 Email-based (identity / homeserver)
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 :Type:
@@ -885,6 +921,8 @@ should open is::
 
 Where ``auth type`` is the type name of the stage it is attempting and
 ``session ID`` is the ID of the session given by the homeserver.
+
+.. _`user-interactive authentication fallback completion`:
 
 This MUST return an HTML page which can perform this authentication stage. This
 page must use the following JavaScript when the authentication has been
@@ -1103,7 +1141,7 @@ with ``403 Forbidden`` and an error code of ``M_FORBIDDEN``.
 
 If the homeserver advertises ``m.login.sso`` as a viable flow, and the client
 supports it, the client should redirect the user to the ``/redirect`` endpoint
-for `Single Sign-On <#sso-client-login>`_. After authentication is complete, the
+for `client login via SSO`_. After authentication is complete, the
 client will need to submit a ``/login`` request matching ``m.login.token``.
 
 {{login_cs_http_api}}
@@ -1561,8 +1599,6 @@ Room Events
 This specification outlines several standard event types, all of which are
 prefixed with ``m.``
 
-{{m_room_aliases_event}}
-
 {{m_room_canonical_alias_event}}
 
 {{m_room_create_event}}
@@ -1575,6 +1611,15 @@ prefixed with ``m.``
 
 {{m_room_redaction_event}}
 
+Historical events
++++++++++++++++++
+
+Some events within the ``m.`` namespace might appear in rooms, however they
+serve no significant meaning in this version of the specification. They are:
+
+* ``m.room.aliases``
+
+Previous versions of the specification have more information on these events.
 
 Syncing
 ~~~~~~~
@@ -1746,39 +1791,7 @@ redacted include a ``redacted_because`` key whose value is the event that caused
 it to be redacted, which may include a reason.
 
 
-Upon receipt of a redaction event, the server should strip off any keys not in
-the following list:
-
-- ``event_id``
-- ``type``
-- ``room_id``
-- ``sender``
-- ``state_key``
-- ``content``
-- ``hashes``
-- ``signatures``
-- ``depth``
-- ``prev_events``
-- ``prev_state``
-- ``auth_events``
-- ``origin``
-- ``origin_server_ts``
-- ``membership``
-
-.. Note:
-   Some of the keys, such as ``hashes``, will appear on the federation-formatted
-   event and therefore the client may not be aware of them.
-
-The content object should also be stripped of all keys, unless it is one of
-one of the following event types:
-
-- ``m.room.member`` allows key ``membership``.
-- ``m.room.create`` allows key ``creator``.
-- ``m.room.join_rules`` allows key ``join_rule``.
-- ``m.room.power_levels`` allows keys ``ban``, ``events``, ``events_default``,
-  ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
-- ``m.room.aliases`` allows key ``aliases``.
-- ``m.room.history_visibility`` allows key ``history_visibility``.
+The exact algorithm to apply against an event is defined in the `room version specification`_.
 
 The server should add the event causing the redaction to the ``unsigned``
 property of the redacted event, under the ``redacted_because`` key. When a
@@ -1838,15 +1851,15 @@ send update requests to other servers. However, homeservers MUST handle
 ``GET`` requests to resolve aliases on other servers; they should do this using
 the federation API if necessary.
 
-Rooms store a *partial* list of room aliases via the ``m.room.aliases`` state
-event. This alias list is partial because it cannot guarantee that the alias
-list is in any way accurate or up-to-date, as room aliases can point to
-different room IDs over time. Crucially, the aliases in this event are
-**purely informational** and SHOULD NOT be treated as accurate. They SHOULD
-be checked before they are used or shared with another user. If a room
-appears to have a room alias of ``#alias:example.com``, this SHOULD be checked
-to make sure that the room's ID matches the ``room_id`` returned from the
-request.
+Rooms do not store a list of all aliases present on a room, though members
+of the room with relevant permissions may publish preferred aliases through
+the ``m.room.canonical_alias`` state event. The aliases in the state event
+should point to the room ID they are published within, however room aliases
+can and do drift to other room IDs over time. Clients SHOULD NOT treat the
+aliases as accurate. They SHOULD be checked before they are used or shared
+with another user. If a room appears to have a room alias of ``#alias:example.com``,
+this SHOULD be checked to make sure that the room's ID matches the ``room_id``
+returned from the request.
 
 {{directory_cs_http_api}}
 

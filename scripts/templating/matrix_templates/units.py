@@ -213,6 +213,7 @@ def get_json_schema_object_fields(obj, enforce_title=False):
         res = process_data_type(additionalProps)
         tables = res["tables"]
         val_title = res["title"]
+        gen_title = "{%s: %s}" % (key_type, val_title)
         if res.get("enum_desc") and val_title != "enum":
             # A map to enum needs another table with enum description
             tables.append(TypeTable(
@@ -220,7 +221,7 @@ def get_json_schema_object_fields(obj, enforce_title=False):
                 rows=[TypeTableRow(key="(mapped value)", title="enum", desc=res["desc"])]
             ))
         return {
-            "title": "{%s: %s}" % (key_type, val_title),
+            "title": obj_title if obj_title else gen_title,
             "tables": tables,
         }
 
@@ -908,6 +909,13 @@ class MatrixUnits(Units):
         schema["content_fields"] = get_tables_for_schema(
             Units.prop(json_schema, "properties/content")
         )
+
+        # Include UnsignedData if it is present on the object
+        unsigned = Units.prop(json_schema, "properties/unsigned")
+        if unsigned:
+            tbls = get_tables_for_schema(unsigned)
+            for tbl in tbls:
+                schema["content_fields"].append(tbl)
 
         # grab msgtype if it is the right kind of event
         msgtype = Units.prop(

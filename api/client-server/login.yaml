@@ -154,7 +154,7 @@ paths:
             properties:
               user_id:
                 type: string
-                description: The fully-qualified Matrix ID that has been registered.
+                description: The fully-qualified Matrix ID for the account.
               access_token:
                 type: string
                 description: |-
