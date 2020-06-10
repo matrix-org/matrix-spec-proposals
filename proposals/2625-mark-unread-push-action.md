@@ -31,12 +31,12 @@ For compatibility with existing implementations, the `notify` action implies
    well as* contributing to the homeserver's count of unread messages in the
    room.
 
- For clarity then: an actions list of `["notify", "mark_unread"]` is the same
- as an actions list of just `["notify"]`.
+For clarity then: an actions list of `["notify", "mark_unread"]` is the same
+as an actions list of just `["notify"]`.
 
- (Aside: it may be helpful to note that the `dont_notify` action is a no-op and
- equivalent to an empty actions list. See also
- https://github.com/matrix-org/matrix-doc/issues/2624.)
+(Aside: it may be helpful to note that the `dont_notify` action is a no-op: its
+presence in the actions list has no effect. See also
+https://github.com/matrix-org/matrix-doc/issues/2624.)
 
 **Extended response to `/sync`**
 
@@ -69,12 +69,12 @@ is not included in this MSC.
 ## Alternatives
 
 The push rules system is complicated: the multiple "kinds" of push rule, the
-defaults, the fact that clients can change the behaviour of named push
-rules. This complexity makes it hard to reason about, and makes it difficult
-for Matrix clients to (reliably) represent the user's current state in a
-comprehensible way. There is an argument that, rather than adding yet more
-complexity, we should either replace it or use a different mechanism for the
-new behaviour.
+long list of default rules, the fact that clients can change the behaviour of
+named push rules, etc. This complexity makes it hard to reason about, and makes
+it difficult for Matrix clients to (reliably) represent the user's current
+state in a comprehensible way. There is an argument that, rather than adding
+yet more complexity, we should either replace it or use a different mechanism
+for the new behaviour.
 
 However, the change proposed here is incremental, and:
  * a wholesale redesign would take a lot of time which would be better spent
