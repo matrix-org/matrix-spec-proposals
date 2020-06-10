@@ -39,6 +39,7 @@ paths:
         - in: body
           name: version
           description: "The backup configuration."
+          required: true
           schema:
             type: object
             properties:
@@ -257,6 +258,7 @@ paths:
         - in: body
           name: version
           description: "The backup configuration"
+          required: true
           schema:
             type: object
             properties:
@@ -398,6 +400,7 @@ paths:
         - in: body
           name: data
           description: "The key data."
+          required: true
           schema:
             "$ref": "definitions/key_backup_data.yaml"
       responses:
@@ -568,6 +571,7 @@ paths:
         - in: body
           description: "The backup data"
           name: backupData
+          required: true
           schema:
             type: object
             properties:
@@ -763,6 +767,7 @@ paths:
         - in: body
           description: "The backup data"
           name: backupData
+          required: true
           schema:
             type: object
             properties:
