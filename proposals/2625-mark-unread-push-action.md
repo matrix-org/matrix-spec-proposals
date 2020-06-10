@@ -15,7 +15,7 @@ response, to differentiate between these two cases.
 
 ## Proposal
 
-** New push rule action **
+**New push rule action**
 
 To the current list of [Push rule
 actions](https://matrix.org/docs/spec/client_server/r0.6.1#actions), we add
@@ -38,7 +38,7 @@ For compatibility with existing implementations, the `notify` action implies
  equivalent to an empty actions list. See also
  https://github.com/matrix-org/matrix-doc/issues/2624.)
 
-** Extended response to `/sync` **
+**Extended response to `/sync`**
 
 In the response to
 [/sync](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-sync),
@@ -50,7 +50,7 @@ We expect the following inviariant to hold:
 
     highlight_count <= notification_count <= unread_count
 
-** Next steps **
+**Next steps**
 
 We expect a future MSC to change the specification of the default push rules so
 that `mark_unread` is used in place of `notify` in certain places. That change
@@ -76,7 +76,7 @@ comprehensible way. There is an argument that, rather than adding yet more
 complexity, we should either replace it or use a different mechanism for the
 new behaviour.
 
-However, the change proposed here seems incremental, and:
+However, the change proposed here is incremental, and:
  * a wholesale redesign would take a lot of time which would be better spent
    elsewhere.
  * using an alternative mechanism would add complexity overall rather than
