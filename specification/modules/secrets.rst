@@ -123,7 +123,7 @@ it will be presented as a string constructed as follows:
    <https://en.bitcoin.it/wiki/Base58Check_encoding#Base58_symbol_chart>`_,
    that is, using the alphabet
    ``123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz``.
-4. A space should be added after every 4th character.
+4. The string is formatted into groups of four characters separated by spaces.
 
 When decoding a raw key, the process should be reversed, with the exception
 that whitespace is insignificant in the user's input.
@@ -147,9 +147,9 @@ properties:
 ============ =========== ========================================================
 Parameter    Type        Description
 ============ =========== ========================================================
-algorithm    string      Required. Must be ``m.pbkdf2``
-salt         string      Required. The salt used in PBKDF2.
-iterations   integer     Required. The number of iterations to use in PBKDF2.
+algorithm    string      **Required.** Must be ``m.pbkdf2``
+salt         string      **Required.** The salt used in PBKDF2.
+iterations   integer     **Required.** The number of iterations to use in PBKDF2.
 bits         integer     Optional. The number of bits to generate for the key.
                          Defaults to 256.
 ============ =========== ========================================================
@@ -260,9 +260,9 @@ previous request. It is sent as an unencrypted to-device event.
    ===================== =========== =====================================================
    name                  string      Required if ``action`` is ``request``. The name of
                                      the secret that is being requested.
-   action                enum        Required. One of ["request", "request_cancellation"].
-   requesting_device_id  string      Required. The ID of the device requesting the secret.
-   request_id            string      Required. A random string uniquely identifying (with
+   action                enum        **Required.** One of ["request", "request_cancellation"].
+   requesting_device_id  string      **Required.** The ID of the device requesting the secret.
+   request_id            string      **Required.** A random string uniquely identifying (with
                                      respect to the requester and the target) the target
                                      for a secret. If the secret is requested from
                                      multiple devices at the same time, the same ID may
@@ -291,8 +291,8 @@ then sent as a to-device event.
 ============ =========== ========================================================
 Parameter    Type        Description
 ============ =========== ========================================================
-request_id   string      Required. The ID of the request that this a response to.
-secret       string      Required. The contents of the secret.
+request_id   string      **Required.** The ID of the request that this a response to.
+secret       string      **Required.** The contents of the secret.
 ============ =========== ========================================================
 
 Example:
