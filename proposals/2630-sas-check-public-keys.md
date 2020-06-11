@@ -52,4 +52,4 @@ This has been implemented in:
 - RiotX 0.21
 - Riot iOS 0.11.5 (matrix-ios-sdk 0.16.5)
 - matrix-weechat and pantalaimon (matrix-nio 0.12.0)
-- FluffyChat (famedlysdk)
+- famedlysdk
