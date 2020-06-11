@@ -97,7 +97,7 @@ content independently from redacting the membership events.
 
 Assuming that encrypted events don't reuse attachments is controversial but
 hopefully acceptable.  It does mean that stickers in encrypted rooms will end
-up getting re-encrypted/decrypted every time, but is hopefully be acceptable
+up getting re-encrypted/decrypted every time, but is hopefully acceptable
 given the resulting improvement in privacy.
 
 An alternative approach to solving the problem of attachment reuse could be to
