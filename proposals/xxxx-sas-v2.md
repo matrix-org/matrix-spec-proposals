@@ -42,3 +42,14 @@ addition of `|` as delimiter between the fields.
 The `key_agreement_protocol` `curve25519` is deprecated and may be removed in
 the future.  It will no longer be mandatory for clients to support, and new
 implementations are discouraged from implementing it.
+
+## Implementation
+
+This has been implemented in:
+
+- Riot Web 1.6.3 (matrix-js-sdk 6.2.0)
+- Riot Android 0.9.12 (matrix-android-sdk 0.9.35)
+- RiotX 0.21
+- Riot iOS 0.11.5 (matrix-ios-sdk 0.16.5)
+- matrix-weechat and pantalaimon (matrix-nio 0.12.0)
+- FluffyChat (famedlysdk)
