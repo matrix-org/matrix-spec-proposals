@@ -23,7 +23,7 @@ DELETE /_matrix/media/r0/download/{serverName}/{mediaId}
 ```
 with a JSON dict as a request body.
 
-The API would returns:
+The API would return:
  * `200 OK {}` on success
  * `403` with error `M_FORBIDDEN` if invalid access_token or not authorised to delete.
  * `404` with error `M_NOT_FOUND` if the content described in the URL does not exist on the local server.
