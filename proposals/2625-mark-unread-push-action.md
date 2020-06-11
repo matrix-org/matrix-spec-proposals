@@ -21,8 +21,8 @@ To the current list of [Push rule
 actions](https://matrix.org/docs/spec/client_server/r0.6.1#actions), we add
 `mark_unread`, defined as:
 
- * `mark_unread`: This causes each matching event to contribute to the homeserver's count of
-   unread messages in the room.
+ * `mark_unread`: This causes each matching event to contribute to the
+   homeserver's count of unread messages in the room.
 
 For compatibility with existing implementations, the `notify` action implies
 `mark_unread`. Its definition is therefore updated to:
@@ -49,6 +49,18 @@ within the `Unread Notification Counts` structure, we add a mandatory new field
 We expect the following inviariant to hold:
 
     highlight_count <= notification_count <= unread_count
+
+**Clarification in the Push Gateway API spec**
+
+The [`_matrix/push/v1/notify`
+endpoint](https://matrix.org/docs/spec/push_gateway/r0.1.1#post-matrix-push-v1-notify)
+includes a parameter `notification.counts.unread`, defined as "The number of
+unread messages a user has across all of the rooms they are a member of."
+
+Synapse uses a liberal interpretation of this definition (see
+https://github.com/matrix-org/matrix-doc/issues/2627), but notwithstanding
+that: this refers to unread *messages* (rather than notifications) and is
+therefore affected by events which match `match_unread` rules.
 
 **Next steps**
 
