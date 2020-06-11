@@ -9,7 +9,9 @@ should purge old messages for a given room.
 It originally also specified how media for purged events should be purged from
 disk, however this was split out into a new MSC [by
 request](https://github.com/matrix-org/matrix-doc/pull/1763#discussion_r320289119)
-during review.
+during review.  This proposal also solves
+https://github.com/vector-im/riot-meta/issues/168 - the ability to garbage
+collect attachments from redacted events.
 
 ## Proposal
 
@@ -21,7 +23,6 @@ propose:
 ```
 DELETE /_matrix/media/r0/download/{serverName}/{mediaId}
 ```
-with a JSON dict as a request body.
 
 The API would return:
  * `200 OK {}` on success
@@ -29,17 +30,23 @@ The API would return:
  * `404` with error `M_NOT_FOUND` if the content described in the URL does not exist on the local server.
 
 The user must be authenticated via access_token or Authorization header as the
-original uploader, or however the server sees fit in order to delete the content.
+original uploader, or server admin (as determined by the server implementation).
 
 Servers may wish to quarantine the deleted content for some timeframe before
 actually purging it from storage, in order to mitigate abuse.
 
-	XXX: We might want to provide an undelete API too to let users rescue
-	their content that they accidentally deleted, as you would get on a
-	typical desktop OS file manager.  Perhaps `DELETE` with `{ undo: true }`?
+If `serverName` is not the local server, the local cache (if any) of the content
+should be deleted.  This proposal makes no effort to delete the remote content.
 
-	XXX: We might also want to let admins quarantine rather than delete attachments
-	without a timelimit by passing `{ quarantine: true }` or similar.
+Overlapping or near-overlapping authorised requests to `DELETE` for existing
+content may either return 200 or 404 based on implementation choice.
+
+*XXX: We might want to provide an undelete API too to let users rescue
+their content that they accidentally deleted, as you would get on a
+typical desktop OS file manager.  Perhaps `DELETE` with `?undo=true`?*
+
+*XXX: We might also want to let admins quarantine rather than delete attachments
+without a timelimit by passing `?quarantine=true` or similar.*
 
 Server admins may choose to mark some content as undeletable in their
 implementation (e.g. for sticker packs and other content which should never be
@@ -58,17 +65,19 @@ only one referring event, and so when a client deems that the event should
 be deleted, it is safe to also delete the attachment without breaking any
 other events.
 
-It seems reasonable to consider the special case of forwarding encrypted
-attachments between rooms as a 'copy by reference' - if the original
-event gets deleted, the others should too.  If this isn't desired, then
-the attachment should be reencrypted.
+It seems reasonable to consider the special case of clients forwarding
+encrypted attachments between rooms as a 'copy by reference' - if the
+original event gets deleted, the copies should too.  If this isn't desired,
+then the attachment should have been reencrypted and stored as a separate
+instance in the media repo.
 
 ### Unencrypted rooms
 
-It's common for MXC URLs to be shared between unencrypted events - e.g. reusing
-sticker media, or when forwarding messages between rooms, etc.  In this instance,
-the homeserver (not media server) should count the references to a given MXC URL
-by events which refer to it.
+It's common for MXC URLs to be shared between unencrypted events - e.g.
+reusing sticker media, or when forwarding messages between rooms, etc.  In
+this instance, the homeserver (not media server) should count the references
+to a given MXC URL by events which refer to it (including state events such as
+avatar URLs in `m.room.membership` events.)
 
 If all events which refer to it have been purged or redacted, the HS should delete
 the attachment - either by internally deleting the media, or if using an
@@ -92,6 +101,20 @@ refcount of an unwanted avatar might be greater than zero (due to the avatar
 being referenced in multiple rooms), but the room admin may want to still
 purge the content from their server. This can be achieved by DELETEing the
 content independently from redacting the membership events.
+
+*N.B. we can't currently distinguish an E2EE attachment with unknown refering
+events, from a non-E2EE attachment with zero references which should be GCd.
+So we use mime-types as a heuristic to recognise E2EE attachments, and to stop
+them from being GC'd  This would of course be vulnerable to an attacker lying
+about their mime-type in order to stop their repository entries being GC'd,
+but given E2EE attachments already let you bypass the GC, this doesn't feel
+like a big issue.*
+
+Encrypted attachments should be stored with a mime-type of
+`application/aes-encrypted` (to be registered), and attachments
+with this mime-type which have never been referenced by an event should
+be exempt from GC.  For backwards compatibility, this rule may also be
+applied to attachments with mime-type of `application/octet-stream`.
 
 ## Tradeoffs
 
