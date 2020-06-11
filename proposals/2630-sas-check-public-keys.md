@@ -1,4 +1,4 @@
-# checking public keys in SAS verification
+# MSC2630: Checking public keys in SAS verification
 
 The current SAS protocol does not ensure that the two users correctly received
 each other's public keys.  An attacker could send Alice and Bob public keys
