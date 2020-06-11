@@ -35,7 +35,7 @@ For clarity then: an actions list of `["notify", "mark_unread"]` is the same
 as an actions list of just `["notify"]`.
 
 (Aside: it may be helpful to note that the `dont_notify` action is a no-op: its
-presence in the actions list has no effect. See also
+presence in the actions list has no effect on the actions of that rule. See also
 https://github.com/matrix-org/matrix-doc/issues/2624.)
 
 **Extended response to `/sync`**
