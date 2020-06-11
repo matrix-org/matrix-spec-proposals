@@ -42,8 +42,24 @@ Each key has an ID, and the description of the key is stored in the user's
 account_data using the event type ``m.secret_storage.key.[key ID]``.  The
 contents of the account data for the key will include an ``algorithm``
 property, which indicates the encryption algorithm used, as well as a ``name``
-property, which is a human-readable name.  Other properties depend on the
-encryption algorithm, and are described below.
+property, which is a human-readable name. Key descriptions may also have a
+``passphrase`` property for generating the key from a user-entered
+passphrase, as described in `deriving keys from passphrases`_.
+
+``KeyDescription``
+
+============ =========== =======================================================
+Parameter    Type        Description
+============ =========== =======================================================
+name         string      **Required.** The name of the key.
+algorithm    string      **Required.** The encryption algorithm to be used for
+                         this key. Currently, only
+                         ``m.secret_storage.v1.aes-hmac-sha2`` is supported.
+passphrase   string      See `deriving keys from passphrases`_ section for a
+                         description of this property.
+============ =========== =======================================================
+
+Other properties depend on the encryption algorithm, and are described below.
 
 A key can be marked as the "default" key by setting the user's account_data
 with event type ``m.secret_storage.default_key`` to an object that has the ID
@@ -63,6 +79,18 @@ the other properties are interpreted, though it's expected that most encryption
 schemes would have ``ciphertext`` and ``mac`` properties, where the
 ``ciphertext`` property is the unpadded base64-encoded ciphertext, and the
 ``mac`` is used to ensure the integrity of the data.
+
+``Secret``
+
+============ =========== =======================================================
+Parameter    Type        Description
+============ =========== =======================================================
+encrypted    {string:    **Required.** Map from key ID the encrypted data. The
+             object}     exact format for the encrypted data is dependent on the
+                         key algorithm. See the definition of
+                         ``AesHmacSha2EncryptedData`` in the
+                         `m.secret_storage.v1.aes-hmac-sha2`_ section.
+============ =========== =======================================================
 
 Example:
 
@@ -108,6 +136,88 @@ and the key descriptions for the keys would be:
      // ... other properties according to algorithm
    }
 
+``m.secret_storage.v1.aes-hmac-sha2``
++++++++++++++++++++++++++++++++++++++
+
+Secrets encrypted using the ``m.secret_storage.v1.aes-hmac-sha2`` algorithm are
+encrypted using AES-CTR-256, and authenticated using HMAC-SHA-256. The secret is
+encrypted as follows:
+
+1. Given the secret storage key, generate 64 bytes by performing an HKDF with
+   SHA-256 as the hash, a salt of 32 bytes of 0, and with the secret name as
+   the info.  The first 32 bytes are used as the AES key, and the next 32 bytes
+   are used as the MAC key
+2. Generate 16 random bytes, set bit 63 to 0 (in order to work around
+   differences in AES-CTR implementations), and use this as the AES
+   initialization vector.  This becomes the ``iv`` property, encoded using base64.
+3. Encrypt the data using AES-CTR-256 using the AES key generated above.  This
+   encrypted data, encoded using base64, becomes the ``ciphertext`` property.
+4. Pass the raw encrypted data (prior to base64 encoding) through HMAC-SHA-256
+   using the MAC key generated above.  The resulting MAC is base64-encoded and
+   becomes the ``mac`` property.
+
+``AesHmacSha2EncryptedData``
+
+============ =========== =======================================================
+Parameter    Type        Description
+============ =========== =======================================================
+iv           String      **Required.** The 16-byte initialization vector,
+                         encoded as base64.
+ciphertext   String      **Required.** The AES-CTR-encrypted data, encoded as
+                         base64.
+mac          String      **Required.** The MAC, encoded as base64.
+============ =========== =======================================================
+
+For the purposes of allowing clients to check whether a user has correctly
+entered the key, clients should:
+
+1. encrypt and MAC a message consisting of 32 bytes of 0 as described above,
+   using the empty string as the info parameter to the HKDF in step 1.
+2. store the ``iv`` and ``mac`` in the ``m.secret_storage.key.[key ID]``
+   account-data.
+
+``AesHmacSha2KeyDescription``
+
+============ =========== =======================================================
+Parameter    Type        Description
+============ =========== =======================================================
+name         string      **Required.** The name of the key.
+algorithm    string      **Required.** The encryption algorithm to be used for
+                         this key. Currently, only
+                         ``m.secret_storage.v1.aes-hmac-sha2`` is supported.
+passphrase   string      See `deriving keys from passphrases`_ section for a
+                         description of this property.
+iv           String      The 16-byte initialization vector, encoded as base64.
+mac          String      The MAC of the result of encrypting 32 bytes of 0,
+                         encoded as base64.
+============ =========== =======================================================
+
+For example, the ``m.secret_storage.key.key_id`` for a key using this algorithm
+could look like:
+
+.. code:: json
+
+   {
+     "name": "m.default",
+     "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
+     "iv": "random+data",
+     "mac": "mac+of+encrypted+zeros"
+   }
+
+and data encrypted using this algorithm could look like this:
+
+.. code:: json
+
+   {
+     "encrypted": {
+         "key_id": {
+           "iv": "16+bytes+base64",
+           "ciphertext": "base64+encoded+encrypted+data",
+           "mac": "base64+encoded+mac"
+         }
+     }
+   }
+
 Key representation
 ++++++++++++++++++
 
@@ -128,8 +238,8 @@ it will be presented as a string constructed as follows:
 When decoding a raw key, the process should be reversed, with the exception
 that whitespace is insignificant in the user's input.
 
-Passphrase
-++++++++++
+Deriving keys from passphrases
+++++++++++++++++++++++++++++++
 
 A user may wish to use a chosen passphrase rather than a randomly generated
 key.  In this case, information on how to generate the key from a passphrase
@@ -170,60 +280,6 @@ Example:
            "bits": 256
        },
        ...
-   }
-
-``m.secret_storage.v1.aes-hmac-sha2``
-+++++++++++++++++++++++++++++++++++++
-
-Secrets encrypted using the ``m.secret_storage.v1.aes-hmac-sha2`` algorithm are
-encrypted using AES-CTR-256, and authenticated using HMAC-SHA-256. The secret is
-encrypted as follows:
-
-1. Given the secret storage key, generate 64 bytes by performing an HKDF with
-   SHA-256 as the hash, a salt of 32 bytes of 0, and with the secret name as
-   the info.  The first 32 bytes are used as the AES key, and the next 32 bytes
-   are used as the MAC key
-2. Generate 16 random bytes, set bit 63 to 0 (in order to work around
-   differences in AES-CTR implementations), and use this as the AES
-   initialization vector.  This becomes the ``iv`` property, encoded using base64.
-3. Encrypt the data using AES-CTR-256 using the AES key generated above.  This
-   encrypted data, encoded using base64, becomes the ``ciphertext`` property.
-4. Pass the raw encrypted data (prior to base64 encoding) through HMAC-SHA-256
-   using the MAC key generated above.  The resulting MAC is base64-encoded and
-   becomes the ``mac`` property.
-
-For the purposes of allowing clients to check whether a user has correctly
-entered the key, clients should:
-
-1. encrypt and MAC a message consisting of 32 bytes of 0 as described above,
-   using the empty string as the info parameter to the HKDF in step 1.
-2. store the ``iv`` and ``mac`` in the ``m.secret_storage.key.[key ID]``
-   account-data.
-
-For example, the ``m.secret_storage.key.key_id`` for a key using this algorithm
-could look like:
-
-.. code:: json
-
-   {
-     "name": "m.default",
-     "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
-     "iv": "random+data",
-     "mac": "mac+of+encrypted+zeros"
-   }
-
-and data encrypted using this algorithm could look like this:
-
-.. code:: json
-
-   {
-     "encrypted": {
-         "key_id": {
-           "iv": "16+bytes+base64",
-           "ciphertext": "base64+encoded+encrypted+data",
-           "mac": "base64+encoded+mac"
-         }
-     }
    }
 
 Sharing
