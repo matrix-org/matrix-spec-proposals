@@ -59,7 +59,7 @@ be deleted, it is safe to also delete the attachment without breaking any
 other events.
 
 It seems reasonable to consider the special case of forwarding encrypted
-attachments between rooms as an a 'copy by reference' - if the original
+attachments between rooms as a 'copy by reference' - if the original
 event gets deleted, the others should too.  If this isn't desired, then
 the attachment should be reencrypted.
 
