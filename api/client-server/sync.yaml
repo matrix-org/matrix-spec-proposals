@@ -379,7 +379,6 @@ paths:
                       "state": {
                         "events": [
                           {
-                            "room_id": "!726s6s6q:example.com",
                             "$ref": "definitions/event-schemas/examples/m.room.member"
                           }
                         ]
@@ -387,11 +386,9 @@ paths:
                       "timeline": {
                         "events": [
                           {
-                            "room_id": "!726s6s6q:example.com",
                             "$ref": "definitions/event-schemas/examples/m.room.member"
                           },
                           {
-                            "room_id": "!726s6s6q:example.com",
                             "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
                           }
                         ],
