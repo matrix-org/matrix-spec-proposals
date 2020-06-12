@@ -121,6 +121,11 @@ paths:
                           description: |-
                             The format to use when sending notifications to the Push
                             Gateway.
+                        fallback_content:
+                          type: boolean
+                          description: |-
+                            The fallback_content flag to use when sending notifications to
+                            the Push Gateway.
                   required:
                     - pushkey
                     - app_id
@@ -233,6 +238,15 @@ paths:
                       homeserver should send to the push gateway are defined in the
                       `Push Gateway Specification`_. Currently the only format
                       available is 'event_id_only'.
+                  fallback_content:
+                    type: boolean
+                    description: |-
+                      The fallback_content to send notifications in to Push Gateways if the
+                      ``kind`` is ``http``.The details about what fields the
+                      homeserver should send to the push gateway are defined in the
+                      `Push Gateway Specification`_. This is used by Push Gateway to decide
+                      include a fallback content for `alert` and also `mutable-content` as `1`
+                      in APNS payload's `aps` if `format` is also `event_id_only`. The default is `false`.
               append:
                 type: boolean
                 description: |-
