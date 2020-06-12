@@ -216,6 +216,55 @@ Tweaks are passed transparently through the homeserver so client applications
 and Push Gateways may agree on additional tweaks. For example, a tweak may be
 added to specify how to flash the notification light on a mobile device.
 
+Conditions
+++++++++++
+
+``override`` and ``underride`` rules MAY have a list of 'conditions'.
+All conditions must hold true for an event in order for the rule to match.
+A rule with no conditions always matches. The following conditions are defined:
+
+``event_match``
+  This is a glob pattern match on a field of the event. Parameters:
+
+  * ``key``: The dot-separated field of the event to match, e.g. ``content.body``
+  * ``pattern``: The glob-style pattern to match against. Patterns with no
+    special glob characters should be treated as having asterisks
+    prepended and appended when testing the condition.
+
+``contains_display_name``
+  This matches unencrypted messages where ``content.body`` contains the owner's
+  display name in that room. This is a separate rule because display names may
+  change and as such it would be hard to maintain a rule that matched the user's
+  display name. This condition has no parameters.
+
+``room_member_count``
+  This matches the current number of members in the room. Parameters:
+
+  * ``is``: A decimal integer optionally prefixed by one of, ``==``, ``<``,
+    ``>``, ``>=`` or ``<=``. A prefix of ``<`` matches rooms where the member
+    count is strictly less than the given number and so forth. If no prefix is
+    present, this parameter defaults to ``==``.
+
+``sender_notification_permission``
+  This takes into account the current power levels in the room, ensuring the
+  sender of the event has high enough power to trigger the notification.
+
+  Parameters:
+
+  * ``key``: A string that determines the power level the sender must have to trigger
+    notifications of a given type, such as ``room``. Refer to the `m.room.power_levels`_
+    event schema for information about what the defaults are and how to interpret the event.
+    The ``key`` is used to look up the power level required to send a notification type
+    from the ``notifications`` object in the power level event content.
+
+Unrecognised conditions MUST NOT match any events, effectively making the push
+rule disabled.
+
+``room``, ``sender`` and ``content`` rules do not have conditions in the same
+way, but instead have predefined conditions. In the cases of ``room`` and
+``sender`` rules, the ``rule_id`` of the rule determines its behaviour.
+
+
 Predefined Rules
 ++++++++++++++++
 Homeservers can specify "server-default rules" which operate at a lower priority
@@ -639,55 +688,6 @@ Definition:
             }
         ]
    }
-
-
-Conditions
-++++++++++
-
-``override`` and ``underride`` rules MAY have a list of 'conditions'.
-All conditions must hold true for an event in order for the rule to match.
-A rule with no conditions always matches. The following conditions are defined:
-
-``event_match``
-  This is a glob pattern match on a field of the event. Parameters:
-
-  * ``key``: The dot-separated field of the event to match, e.g. ``content.body``
-  * ``pattern``: The glob-style pattern to match against. Patterns with no
-    special glob characters should be treated as having asterisks
-    prepended and appended when testing the condition.
-
-``contains_display_name``
-  This matches unencrypted messages where ``content.body`` contains the owner's
-  display name in that room. This is a separate rule because display names may
-  change and as such it would be hard to maintain a rule that matched the user's
-  display name. This condition has no parameters.
-
-``room_member_count``
-  This matches the current number of members in the room. Parameters:
-
-  * ``is``: A decimal integer optionally prefixed by one of, ``==``, ``<``,
-    ``>``, ``>=`` or ``<=``. A prefix of ``<`` matches rooms where the member
-    count is strictly less than the given number and so forth. If no prefix is
-    present, this parameter defaults to ``==``.
-
-``sender_notification_permission``
-  This takes into account the current power levels in the room, ensuring the
-  sender of the event has high enough power to trigger the notification.
-
-  Parameters:
-
-  * ``key``: A string that determines the power level the sender must have to trigger
-    notifications of a given type, such as ``room``. Refer to the `m.room.power_levels`_
-    event schema for information about what the defaults are and how to interpret the event.
-    The ``key`` is used to look up the power level required to send a notification type
-    from the ``notifications`` object in the power level event content.
-
-Unrecognised conditions MUST NOT match any events, effectively making the push
-rule disabled.
-
-``room``, ``sender`` and ``content`` rules do not have conditions in the same
-way, but instead have predefined conditions. In the cases of ``room`` and
-``sender`` rules, the ``rule_id`` of the rule determines its behaviour.
 
 Push Rules: API
 ~~~~~~~~~~~~~~~
