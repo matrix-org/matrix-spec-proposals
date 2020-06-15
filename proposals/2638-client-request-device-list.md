@@ -43,7 +43,7 @@ or call this endpoint on specific actions, or both.
 
 This proposal adds the following endpoint to the client-server API:
 
-### `GET /_matrix/client/r0/user/{userId}/devices`
+### `POST /_matrix/client/r0/user/{userId}/devices/refresh`
 
 In this request, `{userId}` is the full Matrix ID of the user to retrieve the
 device list for.
