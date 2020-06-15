@@ -174,7 +174,7 @@ paths:
                 }
               },
               "@bob:example.com": {
-                "bobs+base64+self+signing+public+key": {
+                "bobs+base64+master+public+key": {
                   "user_id": "@bob:example.com",
                   "keys": {
                     "ed25519:bobs+base64+master+public+key": "bobs+base64+master+public+key"
