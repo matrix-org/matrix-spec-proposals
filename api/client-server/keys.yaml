@@ -240,7 +240,9 @@ paths:
                   Information on the master cross-signing keys of the queried users.
                   A map from user ID, to master key information.  For each key, the
                   information returned will be the same as uploaded via
-                  ``/keys/device_signing/upload``.
+                  ``/keys/device_signing/upload``, along with the signatures
+                  uploaded via ``/keys/signatures/upload`` that the requesting user
+                  is allowed to see.
                 additionalProperties:
                   allOf:
                     - $ref: definitions/cross_signing_key.yaml
