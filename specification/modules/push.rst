@@ -137,7 +137,7 @@ is a unique string within the kind of rule and its' scope: ``rule_ids`` do not
 need to be unique between rules of the same kind on different devices. Rules may
 have extra keys depending on the value of ``kind``.
 
-The different ``kind``\ s of rule in descending order of priority are:
+The different ``kind``\ s of rule, in the order that they are checked, are:
 
 Override Rules ``override``
   The highest priority rules are user-configured overrides.
