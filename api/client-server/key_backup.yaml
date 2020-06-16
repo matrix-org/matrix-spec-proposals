@@ -569,22 +569,7 @@ paths:
           description: "The backup data"
           name: backupData
           schema:
-            type: object
-            properties:
-              sessions:
-                type: object
-                description: |-
-                  A map of session IDs to key data.
-                additionalProperties:
-                  allOf:
-                    - $ref: "definitions/key_backup_data.yaml"
-                example: {
-                  "sessionid1": {
-                    "ephemeral": "base64+ephemeral+key",
-                    "ciphertext": "base64+ciphertext+of+JSON+data",
-                    "mac": "base64+mac+of+ciphertext"
-                  }
-                }
+            $ref: "definitions/room_key_backup.yaml"
       responses:
         200:
           description: The update succeeded
@@ -661,21 +646,7 @@ paths:
             ``sessions`` property will be returned (``{"sessions": {}}``).
           schema:
             type: object
-            properties:
-              sessions:
-                type: object
-                description: |-
-                  A map of session IDs to key data.
-                additionalProperties:
-                  allOf:
-                    - $ref: "definitions/key_backup_data.yaml"
-                example: {
-                  "sessionid1": {
-                    "ephemeral": "base64+ephemeral+key",
-                    "ciphertext": "base64+ciphertext+of+JSON+data",
-                    "mac": "base64+mac+of+ciphertext"
-                  }
-                }
+            $ref: "definitions/room_key_backup.yaml"
         404:
           description: |-
             The backup was not found.
@@ -761,7 +732,7 @@ paths:
           required: true
           x-example: "1"
         - in: body
-          description: "The backup data"
+          description: "The backup data."
           name: backupData
           schema:
             type: object
@@ -769,23 +740,28 @@ paths:
               rooms:
                 type: object
                 description: |-
-                  A map of room IDs to session IDs to key data.
+                  A map of room IDs to room key backup data.
                 additionalProperties:
-                  type: object
-                  additionalProperties:
-                    allOf:
-                      - $ref: "definitions/key_backup_data.yaml"
+                  allOf:
+                    - $ref: "definitions/room_key_backup.yaml"
                 example: {
                   "!room:example.org": {
                     "sessions": {
                       "sessionid1": {
-                        "ephemeral": "base64+ephemeral+key",
-                        "ciphertext": "base64+ciphertext+of+JSON+data",
-                        "mac": "base64+mac+of+ciphertext"
+                        "first_message_index": 1,
+                        "forwarded_count": 0,
+                        "is_verified": true,
+                        "session_data": {
+                          "ephemeral": "base64+ephemeral+key",
+                          "ciphertext": "base64+ciphertext+of+JSON+data",
+                          "mac": "base64+mac+of+ciphertext"
+                        }
                       }
                     }
                   }
                 }
+            required:
+              - rooms
       responses:
         200:
           description: The update succeeded
@@ -860,19 +836,22 @@ paths:
               rooms:
                 type: object
                 description: |-
-                  A map of room IDs to session IDs to key data.
+                  A map of room IDs to room key backup data.
                 additionalProperties:
-                  type: object
-                  additionalProperties:
-                    allOf:
-                      - $ref: "definitions/key_backup_data.yaml"
+                  allOf:
+                    - $ref: "definitions/room_key_backup.yaml"
                 example: {
                   "!room:example.org": {
                     "sessions": {
                       "sessionid1": {
-                        "ephemeral": "base64+ephemeral+key",
-                        "ciphertext": "base64+ciphertext+of+JSON+data",
-                        "mac": "base64+mac+of+ciphertext"
+                        "first_message_index": 1,
+                        "forwarded_count": 0,
+                        "is_verified": true,
+                        "session_data": {
+                          "ephemeral": "base64+ephemeral+key",
+                          "ciphertext": "base64+ciphertext+of+JSON+data",
+                          "mac": "base64+mac+of+ciphertext"
+                        }
                       }
                     }
                   }
