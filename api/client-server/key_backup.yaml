@@ -130,7 +130,7 @@ paths:
                 example: "anopaquestring"
               version:
                 type: string
-                description: The backup version
+                description: The backup version.
                 example: "1"
             required:
               - algorithm
@@ -212,7 +212,7 @@ paths:
                 example: "anopaquestring"
               version:
                 type: string
-                description: The backup version
+                description: The backup version.
                 example: "1"
             required:
               - algorithm
@@ -450,7 +450,7 @@ paths:
           type: string
           name: version
           description: |-
-            The backup from which to retrieve the key
+            The backup from which to retrieve the key.
           required: true
           x-example: "1"
         - in: path
@@ -645,7 +645,7 @@ paths:
           type: string
           name: version
           description: |-
-            The backup from which to retrieve the key
+            The backup from which to retrieve the key.
           required: true
           x-example: "1"
         - in: path
@@ -702,7 +702,7 @@ paths:
           type: string
           name: version
           description: |-
-            The backup from which to delete the key
+            The backup from which to delete the key.
           required: true
           x-example: "1"
         - in: path
@@ -846,8 +846,8 @@ paths:
           type: string
           name: version
           description: |-
-            The backup from which to retrieve the keys. If omitted, the keys are
-            retrieved from the current backup.
+            The backup from which to retrieve the keys.
+          required: true
           x-example: "1"
       responses:
         200:
