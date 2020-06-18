@@ -165,8 +165,9 @@ paths:
     get:
       summary: Download content from the content repository overriding the file name
       description: |-
-        This is the same as the download endpoint above, except permitting
-        a desired file name.
+        This will download content from the content repository (same as
+        the previous endpoint) but replace the target file name with the one
+        provided by the caller.
       operationId: getContentOverrideName
       produces: ["*/*"]
       parameters:
@@ -236,6 +237,7 @@ paths:
     get:
       summary: Download a thumbnail of content from the content repository
       description: |-
+        Download a thumbnail of content from the content repository.
         See the `thumbnailing <#thumbnails>`_ section for more information.
       operationId: getContentThumbnail
       produces: ["image/jpeg", "image/png"]
