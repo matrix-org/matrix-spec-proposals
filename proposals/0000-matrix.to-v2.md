@@ -57,6 +57,31 @@ Examples of matrix.to URIs are:
 * User: ``https://matrix.to/#/%40alice%3Aexample.org``
 * Group: ``https://matrix.to/#/%2Bexample%3Aexample.org``
 
+### Revised syntax
+
+### Summary of changes
+
+* When permalinking to a specific event, the room ID is no longer required and
+  event IDs are now permitted in the identifier position, so URIs like
+  `https://matrix.to/#/%24event%3Aexample.org` are now acceptable
+  * TODO: To support this, a new client-server API will be defined which
+    allows clients to query the mapping from event ID to room ID.
+* Clients should prefer creating URIs with room aliases instead of room IDs
+  where possible, as it's more human-friendly and `via` params are not needed
+* A new, optional `client` parameter allows clients to indicate
+  which client shared the URI
+    * Clients should identify themselves via a schemeless `https` URL pointing
+      to a download / install page, such as:
+      * `foo.com`
+      * `apps.apple.com/app/foo/id1234`
+      * `play.google.com/store/apps/details?id=com.foo.client`
+* A new, optional `federated` parameter allows indicating whether a room exists
+  on a federating server (assumed to be the default), or if the client must
+  connect via the server identified by the room ID or event ID (when set to
+  `false`)
+* A new, optional `sharer` parameter allows indicating the MXID of the account
+  which created the link, in case that is meaningful to include
+
 ## Potential issues
 
 ## Alternatives
