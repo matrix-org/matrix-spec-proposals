@@ -11,7 +11,7 @@ This proposal suggests adding a new parameter to `PusherData` object which will 
 To the current parameters of [PusherData](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-pushers-set), we add
 `default_payload`, defined as:
 
- * `default_payload` (`JSON`): If provided, causes *Push Gateway* to include values from this JSON data in payload, and then do incremental changes upon the payload, according to other parameters like `event_id_only`.
+ * `default_payload` (`object`): If provided, causes *Push Gateway* to include values from this JSON data in payload, and then do incremental changes upon the payload, according to other parameters like `event_id_only`.
 
 Has no effect if not provided or as `{}`. Default value is `None`.
 
