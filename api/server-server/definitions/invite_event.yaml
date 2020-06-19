@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 type: object
-title: Invite Event
+title: InviteEvent
 description: |-
   An invite event. Note that events have a different format depending on the
   room version - check the `room version specification`_ for precise event formats.

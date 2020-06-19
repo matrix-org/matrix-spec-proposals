@@ -39,5 +39,5 @@ required:
 - event_id
 - sender
 - origin_server_ts
-title: Room Event
+title: SyncRoomEvent
 type: object
