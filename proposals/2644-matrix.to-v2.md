@@ -1,4 +1,4 @@
-# MSC0000: `matrix.to` URI syntax v2
+# MSC2644: `matrix.to` URI syntax v2
 
 `matrix.to` URIs are used frequently to link to Matrix things (events, rooms,
 users, groups) in the ecosystem today. By adjusting and extending them a bit
