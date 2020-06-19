@@ -35,5 +35,5 @@ properties:
     type: string
 required:
 - state_key
-title: State Event
+title: SyncStateEvent
 type: object
