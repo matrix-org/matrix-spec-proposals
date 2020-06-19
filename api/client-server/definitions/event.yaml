@@ -59,7 +59,7 @@ properties:
         description: Optional. The event that redacted this event, if any.
         title: Event
         type: object
-    title: Unsigned
+    title: UnsignedData
     type: object
 title: Event
 type: object
