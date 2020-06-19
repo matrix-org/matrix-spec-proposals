@@ -1,8 +1,15 @@
-# MSC0000: matrix.to URI syntax v2
+# MSC0000: `matrix.to` URI syntax v2
 
-TODO: A general summary
+`matrix.to` URIs are used frequently to link to Matrix things (events, rooms,
+users, groups) in the ecosystem today. By adjusting and extending them a bit
+further, both clients and the interstitial screens hosted at `matrix.to` can
+give the user more context and a better experience.
 
 ## Proposal
+
+In an attempt to make it easier for the reader to review, this proposal first
+summarises the current syntax, then describes the revised syntax, and finally
+summaries the changes proposed.
 
 ### Current syntax
 
@@ -65,7 +72,8 @@ Examples of matrix.to URIs are:
   event IDs are now permitted in the identifier position, so URIs like
   `https://matrix.to/#/%24event%3Aexample.org` are now acceptable
   * TODO: To support this, a new client-server API will be defined which
-    allows clients to query the mapping from event ID to room ID.
+    allows clients to query the mapping from event ID to room ID. I'd like
+    feedback on whether to define such a thing here, or in a separate MSC.
 * Clients should prefer creating URIs with room aliases instead of room IDs
   where possible, as it's more human-friendly and `via` params are not needed
 * A new, optional `client` parameter allows clients to indicate
@@ -84,8 +92,36 @@ Examples of matrix.to URIs are:
 
 ## Potential issues
 
+This proposal seeks to extend the existing `matrix.to` syntax, but there is also
+an open proposal for a [Matrix URI
+scheme](https://github.com/matrix-org/matrix-doc/pull/2312). If this proposal
+moves forward, the Matrix URI scheme would likely need to be reworked to
+accommodate the additions here.
+
+The new `client` parameter implies there are potentially many identifiers that
+might be passed that point to a given client. If there are use cases which rely
+on a static mapping of client identifier to client name, logo, etc. for some
+reason, then that could become a burden to maintain over time. The flexibility
+of accepting any URL as an identifier (and thus avoiding the need to register a
+client in a centralised place) seems preferable and hopefully outweighs this
+concern.
+
 ## Alternatives
+
+Instead of extending `matrix.to`, these embellishments could wait for and
+extend the future [Matrix URI
+scheme](https://github.com/matrix-org/matrix-doc/pull/2312). This proposal
+attempts to be pragmatic and tries to extend what is already in use today,
+rather than blocking on a new scheme.
 
 ## Security considerations
 
+The new `sharer` parameter is not authenticated, so you could make it appear as
+if someone had shared something they did not. It is currently assumed that this
+is a minor concern.
+
 ## Unstable prefix
+
+There's no concept of stability for the matrix.to URI syntax, so no prefix is
+used here. Since everything proposed here is purely additive, there should not
+be a compatibility issues. At worst, the new pieces are ignored.
