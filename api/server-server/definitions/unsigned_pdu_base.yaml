@@ -115,7 +115,7 @@ properties:
     example: "$def456:matrix.org"
   unsigned:
     type: object
-    title: Example Unsigned Data
+    title: UnsignedData
     description: |-
       Additional data added by the origin server but not covered by the ``signatures``. More
       keys than those defined here may be used.
