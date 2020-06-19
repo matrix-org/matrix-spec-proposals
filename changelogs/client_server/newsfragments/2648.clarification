@@ -1,0 +1,1 @@
+Clarify that ``prev_content`` is part of ``unsigned``, always.

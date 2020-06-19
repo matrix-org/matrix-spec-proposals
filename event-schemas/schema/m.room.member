@@ -28,8 +28,8 @@ description: |-
 
   The ``membership`` for a given user can change over time. The table below represents the various changes
   over time and how clients and servers must interpret those changes. Previous membership can be retrieved
-  from the ``prev_content`` object on an event. If not present, the user's previous membership must be assumed
-  as ``leave``.
+  from the ``prev_content`` object inside an event's ``unsigned`` object. If not present, the user's
+  previous membership must be assumed as ``leave``.
 
   .. TODO: Improve how this table is written? We use a csv-table to get around vertical header restrictions.
 

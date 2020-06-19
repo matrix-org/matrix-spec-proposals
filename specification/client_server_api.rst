@@ -1553,21 +1553,21 @@ State Event Fields
 
 In addition to the fields of a Room Event, State Events have the following fields.
 
-+--------------+--------------+-------------------------------------------------------------+
-| Key          | Type         | Description                                                 |
-+==============+==============+=============================================================+
-| state_key    | string       | **Required.** A unique key which defines the overwriting    |
-|              |              | semantics for this piece of room state. This value is often |
-|              |              | a zero-length string. The presence of this key makes this   |
-|              |              | event a State Event. State keys starting with an ``@`` are  |
-|              |              | reserved for referencing user IDs, such as room members.    |
-|              |              | With the exception of a few events, state events set with   |
-|              |              | a given user's ID as the state key MUST only be set by that |
-|              |              | user.                                                       |
-+--------------+--------------+-------------------------------------------------------------+
-| prev_content | EventContent | Optional. The previous ``content`` for this event. If there |
-|              |              | is no previous content, this key will be missing.           |
-+--------------+--------------+-------------------------------------------------------------+
++-------------------+--------------+-------------------------------------------------------------+
+| Key               | Type         | Description                                                 |
++===================+==============+=============================================================+
+| state_key         | string       | **Required.** A unique key which defines the overwriting    |
+|                   |              | semantics for this piece of room state. This value is often |
+|                   |              | a zero-length string. The presence of this key makes this   |
+|                   |              | event a State Event. State keys starting with an ``@`` are  |
+|                   |              | reserved for referencing user IDs, such as room members.    |
+|                   |              | With the exception of a few events, state events set with   |
+|                   |              | a given user's ID as the state key MUST only be set by that |
+|                   |              | user.                                                       |
++-------------------+--------------+-------------------------------------------------------------+
+| prev_content      | EventContent | Optional. The previous ``content`` for this event. If there |
+| (inside unsigned) |              | is no previous content, this key will be missing.           |
++-------------------+--------------+-------------------------------------------------------------+
 
 
 Size limits
