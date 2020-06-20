@@ -754,18 +754,18 @@ Cross-signing
 ~~~~~~~~~~~~~
 
 Rather than requiring Alice to verify each of Bob's devices with each of her
-own devices and vice versa, the cross-signing feature allows users sign their
+own devices and vice versa, the cross-signing feature allows users to sign their
 device keys such that Alice and Bob only need to verify once. With
 cross-signing, each user has a set of cross-signing keys that are used to sign
 their own device keys and other users' keys, and can be used to trust device
 keys that were not verified directly.
 
-Each user has three ed25519 keys pairs for cross-signing:
+Each user has three ed25519 key pairs for cross-signing:
 
 * a master key (MSK) that serves as the user's identity in cross-signing and signs
   their other cross-signing keys;
 * a user-signing key (USK) -- only visible to the user that it belongs to --
-  that signs other users' master keys, and
+  that signs other users' master keys; and
 * a self-signing key (SSK) that signs the user's own device keys.
 
 The master key may also be used to sign other items such as the backup key. The
@@ -863,9 +863,11 @@ A user's master key could allow an attacker to impersonate that user to other
 users, or other users to that user.  Thus clients must ensure that the private
 part of the master key is treated securely.  If clients do not have a secure
 means of storing the master key (such as a secret storage system provided by
-the operating system), then clients must not store the private part.  If a user
-changes their master key, clients of users that they communicate with must
-notify their users about the change.
+the operating system), then clients must not store the private part.
+
+If a user's client sees that any other user has changed their master key, that
+client must notify the user about the change before allowing communication
+between the users to continue.
 
 A user's user-signing and self-signing keys are intended to be easily
 replaceable if they are compromised by re-issuing a new key signed by the
