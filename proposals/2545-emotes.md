@@ -162,5 +162,8 @@ set one state event *per emote*. While this might seem like a nice idea on the s
 scale well. There are people who easily use and want hundreds or even thousands of emotes accessible.
 A simple dict of shortcode to mxc URI seems more appropriate for this.
 
+Additionally, this MSC is already used in the wild since about two years by some clients, while MSC1951
+only exists in MSC form, so far.
+
 In general, MSC1951 feels like a heavier approach to emote sourcs, while this MSC is more lightweight
 and thus should allow significantly larger packs.
