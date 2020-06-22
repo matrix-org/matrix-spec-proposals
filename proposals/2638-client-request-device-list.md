@@ -41,7 +41,7 @@ or call this endpoint on specific actions, or both.
 
 ## Proposal
 
-This proposal adds the following endpoint to the client-server API:
+This proposal adds the following authenticated endpoint to the client-server API:
 
 ### `POST /_matrix/client/r0/user/{userId}/devices/refresh`
 
