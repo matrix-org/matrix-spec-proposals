@@ -104,4 +104,4 @@ and a short-lived cache on the homeserver.
 
 Until this MSC is merged and included in a stable release of the spec,
 implementations should use the route
-`GET /_matrix/unstable/org.matrix.mscXXXX/user/{userId}/devices`.
+`GET /_matrix/unstable/org.matrix.msc2638/user/{userId}/devices`.
