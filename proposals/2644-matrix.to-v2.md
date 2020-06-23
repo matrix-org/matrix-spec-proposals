@@ -50,7 +50,7 @@ only apply in certain circumstances:
     room) since room IDs are not currently routable
 
 If multiple ``<additional arguments>`` are present, they should be joined by `&`
-characters, as in `https://matrix.to/!somewhere%3Aexample.org?via=example.org&via=alt.example.org`
+characters, as in `https://matrix.to/#/!somewhere%3Aexample.org?via=example.org&via=alt.example.org`
 
 The components of the matrix.to URI (``<identifier>`` and ``<extra parameter>``)
 are to be percent-encoded as per RFC 3986.
@@ -97,8 +97,8 @@ only apply in certain circumstances:
 * `via=<server>`
   * One or more servers [should be
     specified](https://matrix.org/docs/spec/appendices#routing) in the format
-    `example.org` when linking to a room (including a permalink to an event in a
-    room) since room IDs are not currently routable
+    `example.org` when linking to a room or an event since room IDs are
+    not currently routable
 * `client=<client URL>`
   * This parameter allows clients to indicate which client shared the URI
   * Clients should identify themselves via a schemeless `https` URL pointing
