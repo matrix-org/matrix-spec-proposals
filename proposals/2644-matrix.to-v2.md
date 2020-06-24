@@ -88,8 +88,8 @@ Since clients currently cannot find a room from the event ID alone, a new
 client-server API is added to support the new format with only an event ID.
 
 > TODO: To support this, a new client-server API will be defined which
-> allows clients to query the mapping from event ID to room ID. I'd like
-> feedback on whether to define such a thing here, or in a separate MSC.
+> allows clients to query the mapping from event ID to room ID. This will be
+> defined in a separate MSC.
 
 The ``<additional arguments>`` and the preceding question mark are optional and
 only apply in certain circumstances:
