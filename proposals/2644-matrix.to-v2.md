@@ -114,6 +114,9 @@ only apply in certain circumstances:
   * This parameter allows indicating the MXID of the account which created the
     link, so that clients and interstitial UIs can display more context to the
     user
+  * As an example, clients and interstitial UIs could use this to query profile
+    data for the sharer's account and display the sharer's avatar and display
+    name
 
 If multiple ``<additional arguments>`` are present, they should be joined by `&`
 characters, as in `https://matrix.to/!somewhere%3Aexample.org?via=example.org&via=alt.example.org`
