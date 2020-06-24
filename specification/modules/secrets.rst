@@ -161,11 +161,11 @@ encrypted as follows:
 ============ =========== =======================================================
 Parameter    Type        Description
 ============ =========== =======================================================
-iv           String      **Required.** The 16-byte initialization vector,
+iv           string      **Required.** The 16-byte initialization vector,
                          encoded as base64.
-ciphertext   String      **Required.** The AES-CTR-encrypted data, encoded as
+ciphertext   string      **Required.** The AES-CTR-encrypted data, encoded as
                          base64.
-mac          String      **Required.** The MAC, encoded as base64.
+mac          string      **Required.** The MAC, encoded as base64.
 ============ =========== =======================================================
 
 For the purposes of allowing clients to check whether a user has correctly
@@ -185,10 +185,10 @@ name         string      **Required.** The name of the key.
 algorithm    string      **Required.** The encryption algorithm to be used for
                          this key. Currently, only
                          ``m.secret_storage.v1.aes-hmac-sha2`` is supported.
-passphrase   string      See `deriving keys from passphrases`_ section for a
+passphrase   object      See `deriving keys from passphrases`_ section for a
                          description of this property.
-iv           String      The 16-byte initialization vector, encoded as base64.
-mac          String      The MAC of the result of encrypting 32 bytes of 0,
+iv           string      The 16-byte initialization vector, encoded as base64.
+mac          string      The MAC of the result of encrypting 32 bytes of 0,
                          encoded as base64.
 ============ =========== =======================================================
 
