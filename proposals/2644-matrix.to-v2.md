@@ -128,7 +128,7 @@ Examples of matrix.to URIs using the revised syntax are:
 
 * Room alias: ``https://matrix.to/#/%23somewhere%3Aexample.org``
 * Room alias with client and sharer:
-  ``https://matrix.to/#/%23somewhere%3Aexample.org?client=foo.com&sharer=%40alice%3Aexample.org``
+  ``https://matrix.to/#/%23somewhere%3Aexample.org?client=example.org%2Freleases%3Fdownload%23latest&sharer=%40alice%3Aexample.org``
 * Room: ``https://matrix.to/#/!somewhere%3Aexample.org?via=example.org&via=alt.example.org``
 * Event permalink: ``https://matrix.to/#/%24event%3Aexample.org?via=example.org&via=alt.example.org``
 * User: ``https://matrix.to/#/%40alice%3Aexample.org``
