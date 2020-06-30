@@ -2,12 +2,12 @@
 
 Homeservers currently send clients counts for missed notifications (and
 highlights) in responses to `/sync` requests, which allows them to display that
-information to clients. However, when it comes to unread messages, it doesn't
-provide a count. This means clients have no way of telling users how many
-messages they've missed since they last read a given room.
+information to clients. However, no count is provided for unread messages. This
+means clients have no way of telling users how many messages they've missed
+since they last read a given room.
 
 This MSC is an alternative to
-[MSC2625](https://github.com/matrix-org/matrix-doc/pull/2625) which doesn't use
+[MSC2625](https://github.com/matrix-org/matrix-doc/pull/2625), which doesn't use
 push rules to calculate unread counts, allowing for simpler implementations.
 
 
@@ -47,7 +47,8 @@ included in the count:
 * include a `m.relates_to` parameter in its content that includes a `rel_type`
   parameter, which value is `m.replace`. This matches the definition of an edit
   in [MSC1849](https://github.com/matrix-org/matrix-doc/pull/1849).
-* include a `msgtype` parameter in its content which value is `m.notice`.
+* have the type `m.room.message` and include a `msgtype` parameter in its
+  content which value is `m.notice`.
 
 Finally, a redaction to an event that was marked as unread should exclude that
 event from the unread count.
