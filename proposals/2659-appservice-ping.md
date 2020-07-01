@@ -27,13 +27,13 @@ excluded from any automatic retry that normal transactions have.
 
 The endpoint is only allowed when using a valid appservice token and it will
 ping the appservice associated with the token. Trying to use a non-appservice
-token should result in a `M_FORBIDDEN` error.
+token must result in a `M_FORBIDDEN` error.
 
 #### Response
-If the transaction request returned successfully, the endpoint should return
+If the transaction request returned successfully, the endpoint returns
 HTTP 200 with an empty JSON object as the body.
 
-If the transaction request fails, the endpoint should return a standard error
+If the transaction request fails, the endpoint returns a standard error
 response with `errcode`s and HTTP status codes as specified below:
 
 * For non-2xx responses, `M_BAD_STATUS` and HTTP 502.
