@@ -17,7 +17,7 @@ empty transaction to the appservice and reply with the result of that transactio
 Appservices can use the endpoint at startup to ensure communication works in
 both directions, and show an error to the user if it doesn't.
 
-### `POST /_matrix/client/r0/appservice/ping`
+### `POST /_matrix/client/r0/appservice/{appserviceId}/ping`
 The request body has an optional `txn_id` field that the homeserver must pass
 through to the `PUT transactions` call. If not specified, the transaction ID is
 up to the homeserver.
@@ -25,9 +25,9 @@ up to the homeserver.
 The transactions sent via this endpoint should only be attempted once and
 excluded from any automatic retry that normal transactions have.
 
-The endpoint is only allowed when using a valid appservice token and it will
-ping the appservice associated with the token. Trying to use a non-appservice
-token must result in a `M_FORBIDDEN` error.
+The endpoint is only allowed when using a valid appservice token and it can
+only ping the appservice ID associated with the token. Trying to use a
+non-appservice token must result in a `M_FORBIDDEN` error.
 
 #### Response
 If the transaction request returned successfully, the endpoint returns
@@ -43,4 +43,4 @@ response with `errcode`s and HTTP status codes as specified below:
 * For other connection errors, `M_CONNECTION_FAILED` and HTTP 502.
 
 ## Unstable prefix
-The endpoint can implemented as `/_matrix/client/unstable/net.maunium/appservice/ping` until it lands in the spec.
+The endpoint can implemented as `/_matrix/client/unstable/net.maunium.msc2659/appservice/ping` until it lands in the spec.
