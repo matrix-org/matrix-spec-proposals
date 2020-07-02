@@ -17,7 +17,7 @@ push rules to calculate unread counts, allowing for simpler implementations.
 ### Extended response to `/sync`
 
 This MSC proposes the addition of an `unread_count` parameter in the `Joined
-Room` structure of
+Room` section of
 [`/sync`](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-sync)
 responses.
 
@@ -27,17 +27,22 @@ read receipt (i.e. the latest `m.read` read marker) for the given user in the
 given room. If no read receipt exists for this user in this room, then the value
 of the parameter is a count of every unread event since that user joined it.
 
+In case of a mismatch between this count and the value of `notification_count`
+in the `Unread Notification Counts` section, clients should use the
+`unread_count`.
+
 
 ### Unread events
 
 An event should be counted in the unread count only if it matches at least one
 of the following criteria:
 
-* include a non-empty `body` parameter in its content
+* include a non-empty `body` parameter, which value is a string, in its content
 * be a state event which type is one of:
     * `m.room.name`
     * `m.room.topic`
     * `m.room.power_levels`
+    * `m.room.avatar`
 * be an encrypted message (i.e. have the `m.room.encrypted` type)
 
 Additionally, an event should _not_ be counted in the unread count if it matches
@@ -47,11 +52,14 @@ included in the count:
 * include a `m.relates_to` parameter in its content that includes a `rel_type`
   parameter, which value is `m.replace`. This matches the definition of an edit
   in [MSC1849](https://github.com/matrix-org/matrix-doc/pull/1849).
-* have the type `m.room.message` and include a `msgtype` parameter in its
-  content which value is `m.notice`.
+* have the type `m.room.message`, no `state_key`, and include a `msgtype`
+  parameter in its content which value is `m.notice`.
 
 Finally, a redaction to an event that was marked as unread should exclude that
 event from the unread count.
+
+If the event is an encrypted message, clients should decrypt it and apply the
+rules above to make adjustments to the unread count sent by the homeserver.
 
 
 ### Implementation notes on `POST /_matrix/push/v1/notify`
@@ -69,6 +77,10 @@ proposal.
 This MSC mentions edits, which are specified in
 [MSC1849](https://github.com/matrix-org/matrix-doc/pull/1849). Therefore, it is
 unclear whether this MSC can be merged before MSC1849.
+
+Unlike notifications, it is not possible to not have the homeserver provide an
+unread count for a given room. A way to do this will be described in a separate
+MSC.
 
 
 ## Alternatives
