@@ -35,7 +35,7 @@ bridged network and nothing more.
         "creator": "@alice:matrix.org", // Optional
         "protocol": {
             "id": "irc",
-            "display_name": "IRC", // Optional
+            "displayname": "IRC", // Optional
             "avatar_url": "mxc://foo/bar", // Optional
             "external_url": "https://example.com" // Optional
         },
