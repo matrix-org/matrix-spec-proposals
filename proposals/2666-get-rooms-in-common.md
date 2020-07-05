@@ -67,7 +67,7 @@ to request all state ahead of time.
 ## Unstable prefix
 
 The implementation MUST use `/_matrix/client/unstable/users/{user_id}/shared_rooms/{other_user_id}`.
-The /versions endpoint MUST include a new key in `unstable_features` with the name `uk.half-shot.msc2664`.
+The /versions endpoint MUST include a new key in `unstable_features` with the name `uk.half-shot.msc2666`.
 Once the MSC has been merged, clients should use `/_matrix/client/r0/users/{user_id}/shared_rooms/{other_user_id}`
 and will no longer need to check for the `unstable_features` flag.
 
