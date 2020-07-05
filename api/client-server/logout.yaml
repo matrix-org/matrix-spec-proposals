@@ -54,11 +54,12 @@ paths:
         for the user are also deleted. `Device keys <#device-keys>`_ for the device are
         deleted alongside the device.
 
-        This endpoint does not require UI authorization because UI authorization is
-        designed to protect against attacks where the someone gets hold of a single access
-        token then takes over the account. This endpoint invalidates all access tokens for
-        the user, including the token used in the request, and therefore the attacker is
-        unable to take over the account in this way.
+        This endpoint does not use the `User-Interactive Authentication API`_ because
+        User-Interactive Authentication is designed to protect against attacks where the
+        someone gets hold of a single access token then takes over the account. This
+        endpoint invalidates all access tokens for the user, including the token used in
+        the request, and therefore the attacker is unable to take over the account in
+        this way.
       operationId: logout_all
       security:
         - accessToken: []
