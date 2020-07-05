@@ -11,9 +11,8 @@ invites on their own do not present much context. With this endpoint, a client c
 rooms you have in common before you accept an invite.
 
 While this information can be determined if the user has full access to member state for all rooms,
-modern clients tend to implement "lazy-loaded" design patterns, so they often only have state for the
-rooms the user has interacted with, or at least a subset of all rooms they are in. Therefore, the homeserver
-should have a means to provide this information.
+modern clients often implement "lazy-loadeding", so they often only have state for a subset of all rooms
+the user is in. Therefore, the homeserver should have a means to provide this information.
 
 This proposal aims to implement a simple mechanism to fetch rooms you have in common with another user.
 
@@ -31,7 +30,7 @@ GET _matrix/client/unstable/users/@alice:example.com/shared_rooms/@bob:example.c
 
 ```json
 {
-    "rooms": [
+  "rooms": [
     "!OGEhHVWSdvArJzumhm:matrix.org",
     "!HYlSnuBHTxUPgyZPKC:half-shot.uk",
     "!DueayyFpVTeVOQiYjR:example.com"
@@ -41,8 +40,8 @@ GET _matrix/client/unstable/users/@alice:example.com/shared_rooms/@bob:example.c
 
 ## Potential issues
 
-Homeserver performance OR storage may be impacted by this endpoint. While a homeserver already stores
-membership information for each of it's users, the information may not be stored in a way that is quickly
+Homeserver performance and storage may be impacted by this endpoint. While a homeserver already stores
+membership information for each of its users, the information may not be stored in a way that is readily
 accessible. Homeservers that have implemented [POST /user-directory/search](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-user-directory-search)
 may have started some of this work, if they are limiting users to searching for users for which they
 share rooms. While this is not a given by any means, it may mean that implementations of this API
@@ -59,15 +58,14 @@ as well as include lots of extranious information.
 
 ## Security considerations
 
-The information provided in this endpoint is also accessible to day, if the client is in posession of all
-state that the user can see. This endpoint only makes it possible to view this information without having
+The information provided in this endpoint is already accessible to the client, if the client has a copy of all
+state that the user can see. This endpoint only makes it possible to get this information without having
 to request all state ahead of time.
 
 
 ## Unstable prefix
 
-The implementation MUST use `/_matrix/client/unstable/users/{user_id}/shared_rooms/{other_user_id}`.
-The /versions endpoint MUST include a new key in `unstable_features` with the name `uk.half-shot.msc2666`.
+The implementation MUST use `/_matrix/client/unstable/users/{user_id}/shared_rooms/{other_user_id}`.  
+The /versions endpoint MUST include a new key in `unstable_features` with the name `uk.half-shot.msc2666`.  
 Once the MSC has been merged, clients should use `/_matrix/client/r0/users/{user_id}/shared_rooms/{other_user_id}`
 and will no longer need to check for the `unstable_features` flag.
-
