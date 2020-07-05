@@ -1,4 +1,4 @@
-# MSC 2664: Get rooms in common with another user
+# MSC 2666: Get rooms in common with another user
 
 It is useful to be able to fetch rooms you have in common with another user. Popular messaging services
 such as Telegram offer users the ability to show "groups in common", which allows users to determine
