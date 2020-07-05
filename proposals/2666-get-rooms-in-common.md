@@ -58,7 +58,7 @@ as well as include lots of extranious information.
 
 ## Security considerations
 
-The information provided in this endpoint is already accessible to the client, if the client has a copy of all
+The information provided in this endpoint is already accessible to the client if it has a copy of all
 state that the user can see. This endpoint only makes it possible to get this information without having
 to request all state ahead of time.
 
