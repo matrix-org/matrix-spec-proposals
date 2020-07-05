@@ -19,10 +19,10 @@ This proposal aims to implement a simple mechanism to fetch rooms you have in co
 
 ## Proposal
 
-Homeservers should implement a new endpoint `/users/{user_id}/shared_rooms/{other_user_id}` which will take
-the current users mxid and the other users mxid, which the user is trying to search for.
+Homeservers should implement a new endpoint `/users/{current_user}/shared_rooms/{other_user_id}` which will take
+the authenticated users MxID and the user that is being searched for.
 
-The response format will be an array containing all rooms where both the `user_id` and `other_user_id` have
+The response format will be an array containing all rooms where both the `current_user` and `other_user_id` have
 a membership of type `join`. 
 
 ```
@@ -30,11 +30,13 @@ GET _matrix/client/unstable/users/@alice:example.com/shared_rooms/@bob:example.c
 ```
 
 ```json
-[
-  "!OGEhHVWSdvArJzumhm:matrix.org",
-  "!HYlSnuBHTxUPgyZPKC:half-shot.uk",
-  "!DueayyFpVTeVOQiYjR:example.com"
-]
+{
+    "rooms": [
+    "!OGEhHVWSdvArJzumhm:matrix.org",
+    "!HYlSnuBHTxUPgyZPKC:half-shot.uk",
+    "!DueayyFpVTeVOQiYjR:example.com"
+  ]
+}
 ```
 
 ## Potential issues
