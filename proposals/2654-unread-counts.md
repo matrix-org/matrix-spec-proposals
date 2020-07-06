@@ -58,6 +58,9 @@ included in the count:
 Finally, a redaction to an event that was marked as unread should exclude that
 event from the unread count.
 
+When calculating the unread count for a given user in a given room, events sent
+by the requesting user in the room should be ignored.
+
 If the event is an encrypted message, clients should decrypt it and apply the
 rules above to make adjustments to the unread count sent by the homeserver.
 
