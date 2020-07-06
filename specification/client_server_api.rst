@@ -1090,8 +1090,7 @@ Login
 
 A client can obtain access tokens using the ``/login`` API.
 
-Note that this endpoint does `not` currently use the user-interactive
-authentication API.
+Note that this endpoint does `not` currently use the `User-Interactive Authentication API`_.
 
 For a simple username/password login, clients should submit a ``/login``
 request as follows:
