@@ -23,7 +23,8 @@ the authenticated user's MxID and the user that is being searched for.
 
 The response format will be an array containing all rooms where both the `current_user` and `other_user_id` have
 a membership of type `join`. If either user is not joined to any rooms, or the `other_user_id` does not exist, an
-empty array should be returned.
+empty array should be returned. If the `current_user` and `other_user_id` are the same, then the endpoint SHOULD
+reject with HTTP 400.
 
 ```
 GET _matrix/client/unstable/users/@alice:example.com/shared_rooms/@bob:example.com
