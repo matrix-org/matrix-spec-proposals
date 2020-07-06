@@ -354,10 +354,6 @@ Definition:
             {
                 "set_tweak": "sound",
                 "value": "default"
-            },
-            {
-                "set_tweak": "highlight",
-                "value": false
             }
         ]
     }
@@ -546,10 +542,6 @@ Definition:
             {
                 "set_tweak": "sound",
                 "value": "ring"
-            },
-            {
-                "set_tweak": "highlight",
-                "value": false
             }
         ]
     }
@@ -586,10 +578,6 @@ Definition:
             {
                 "set_tweak": "sound",
                 "value": "default"
-            },
-            {
-                "set_tweak": "highlight",
-                "value": false
             }
         ]
     }
@@ -622,10 +610,6 @@ Definition:
             {
                 "set_tweak": "sound",
                 "value": "default"
-            },
-            {
-                "set_tweak": "highlight",
-                "value": false
             }
         ]
     }
@@ -650,11 +634,7 @@ Definition:
             }
         ],
         "actions": [
-            "notify",
-            {
-                "set_tweak": "highlight",
-                "value": false
-            }
+            "notify"
         ]
    }
 
@@ -681,11 +661,7 @@ Definition:
             }
         ],
         "actions": [
-            "notify",
-            {
-                "set_tweak": "highlight",
-                "value": false
-            }
+            "notify"
         ]
    }
 
