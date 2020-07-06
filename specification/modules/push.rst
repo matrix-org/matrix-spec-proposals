@@ -444,8 +444,7 @@ Definition:
         "actions": [
             "notify",
             {
-                "set_tweak": "highlight",
-                "value": true
+                "set_tweak": "highlight"
             }
         ]
     }
@@ -479,8 +478,7 @@ Definition:
         "actions": [
             "notify",
             {
-                "set_tweak": "highlight",
-                "value": true
+                "set_tweak": "highlight"
             }
         ]
     }
