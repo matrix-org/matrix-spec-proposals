@@ -1,4 +1,4 @@
-# MSCxxxx: Event relationships
+# MSC2674: Event relationships
 
 It's common to want to send events in Matrix which relate to existing events -
 for instance, reactions, edits and even replies/threads.
@@ -9,12 +9,12 @@ events to relate to each other.  Together, these proposals replace
 
 * This proposal defines a standard shape for indicating events which relate to
   other events.
-* [MSCxxxx](https://github.com/matrix-org/matrix-doc/pull/xxxx) defines APIs to
+* [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) defines APIs to
   let the server calculate the aggregations on behalf of the client, and so
   bundle the related events with the original event where appropriate.
-* [MSCxxxx](https://github.com/matrix-org/matrix-doc/pull/xxxx) defines how
+* [MSC2676](https://github.com/matrix-org/matrix-doc/pull/2676) defines how
   users can edit messages using this mechanism.
-* [MSCxxxx](https://github.com/matrix-org/matrix-doc/pull/xxxx) defines how
+* [MSC2677](https://github.com/matrix-org/matrix-doc/pull/2677) defines how
   users can annotate events, such as reacting to events with emoji, using this
   mechanism.
 
@@ -100,7 +100,7 @@ Relations are received during non-gappy incremental syncs (that is, syncs
 called with a `since` token, and that have `limited: false` in the portion of
 response for the given room) as normal discrete Matrix events.
 
-[MSCxxxx](https://github.com/matrix-org/matrix-doc/pull/xxxx) defines ways in
+[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) defines ways in
 which the server may aid clients in processing relations by aggregating the
 events.
 
@@ -128,7 +128,7 @@ from normal redacted messages, and maintain reply ordering.
 
 ## Edge Cases
 
-Can you reply (via m.references) to a [reaction](https://github.com/matrix-org/matrix-doc/pull/xxxx)/[edit](https://github.com/matrix-org/matrix-doc/pull/xxxx)?
+Can you reply (via m.references) to a [reaction](https://github.com/matrix-org/matrix-doc/pull/2677)/[edit](https://github.com/matrix-org/matrix-doc/pull/2677)?
  * Yes, at the protocol level.  But you shouldn't expect clients to do anything
    useful with it.
  * Replying to a reaction should be treated like a normal message and have the
