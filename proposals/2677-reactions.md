@@ -1,4 +1,4 @@
-# MSCxxxx: Annotations and Reactions
+# MSC2677: Annotations and Reactions
 
 Users sometimes wish to respond to a message using emojis.  When such responses
 are grouped visually below the message being reacted to, this provides a
@@ -8,28 +8,28 @@ This proposal is one in a series of proposals that defines a mechanism for
 events to relate to each other.  Together, these proposals replace
 [MSC1849](https://github.com/matrix-org/matrix-doc/pull/1849).
 
-* [MSCxxxx](https://github.com/matrix-org/matrix-doc/pull/xxxx) defines a
+* [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674) defines a
   standard shape for indicating events which relate to other events.
-* [MSCxxxx](https://github.com/matrix-org/matrix-doc/pull/xxxx) defines APIs to
+* [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) defines APIs to
   let the server calculate the aggregations on behalf of the client, and so
   bundle the related events with the original event where appropriate.
-* This proposal defines how users can edit messages using this mechanism.
-* [MSCxxxx](https://github.com/matrix-org/matrix-doc/pull/xxxx) defines how
-  users can annotate events, such as reacting to events with emoji, using this
-  mechanism.
+* [MSC2676](https://github.com/matrix-org/matrix-doc/pull/2676) defines how
+  users can edit messages using this mechanism.
+* This proposal defines how users can annotate events, such as reacting to
+  events with emoji, using this mechanism.
 
 ## Proposal
 
 A new `rel_type` of `m.annotation` is defined for use with the `m.relates_to`
 field as defined in
-[MSCxxxx](https://github.com/matrix-org/matrix-doc/pull/xxxx).  This `rel_type`
+[MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674).  This `rel_type`
 is intended primarily for handling emoji reactions, these lets you define an
 event which annotates an existing event.  The annotations are typically
 presented alongside the event in the timeline.  When used, the `m.relates_to`
 field also contains a `key` that indicates the annotation being applied.  For
 example, when reacting with emojis, the `key` contains the emoji being used.
 When aggregated (as in
-[MSCxxxx](https://github.com/matrix-org/matrix-doc/pull/xxxx)), it groups
+[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)), it groups
 events together based on their `key` and `type` and returns a `count`.  Another
 usage of an annotation is e.g. for bots, who could use annotations to report
 the success/failure or progress of a command.
@@ -115,11 +115,11 @@ total to 1234 thumbsups.
 #### Bundled relations
 
 When annotations are bundled according to the [Bundled relations section of
-MSCxxxx](https://github.com/matrix-org/matrix-doc/pulls/xxxx), the aggregated
-value in the bundle provides the `type` of the relation event, the aggregation
-`key`, the `origin_server_ts` of the first reaction to that event, and the
-`count` of the number of annotations of that `type` and `key` which reference
-that event.
+MSC2675](https://github.com/uhoreg/matrix-doc/blob/aggregations-helpers/proposals/2675-aggregations-server.md#bundled-relations),
+the aggregated value in the bundle provides the `type` of the relation event,
+the aggregation `key`, the `origin_server_ts` of the first reaction to that
+event, and the `count` of the number of annotations of that `type` and `key`
+which reference that event.
 
 For instance, the below example shows an event with five bundled relations:
 three thumbsup reaction annotations, and two thumbsdown reaction annotations.
@@ -168,7 +168,7 @@ How do you stop people reacting more than once with the same key?
  3. You don't pass duplicate reactions received over federation to your local user.
  4. XXX: does synapse do 2 & 3 yet?
 
-Can you [edit](https://github.com/matrix-org-matrix-doc/pull/xxxx) a reaction?
+Can you [edit](https://github.com/matrix-org-matrix-doc/pull/2676) a reaction?
  * It feels reasonable to say "if you want to edit a reaction, redact it and resend".
    `rel_type` is immutable, much like `type`.
 
