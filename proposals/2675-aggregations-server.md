@@ -1,4 +1,4 @@
-# MSCxxxx: Serverside aggregations of message relationships
+# MSC2675: Serverside aggregations of message relationships
 
 It's common to want to send events in Matrix which relate to existing events -
 for instance, reactions, edits and even replies/threads.
@@ -23,14 +23,14 @@ This proposal is one in a series of proposals that defines a mechanism for
 events to relate to each other.  Together, these proposals replace
 [MSC1849](https://github.com/matrix-org/matrix-doc/pull/1849).
 
-* [MSCxxxx](https://github.com/matrix-org/matrix-doc/pull/xxxx) defines a
+* [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674) defines a
   standard shape for indicating events which relate to other events.
 * This proposal defines APIs to let the server calculate the aggregations on
   behalf of the client, and so bundle the related events with the original
   event where appropriate.
-* [MSCxxxx](https://github.com/matrix-org/matrix-doc/pull/xxxx) defines how
+* [MSC2676](https://github.com/matrix-org/matrix-doc/pull/2676) defines how
   users can edit messages using this mechanism.
-* [MSCxxxx](https://github.com/matrix-org/matrix-doc/pull/xxxx) defines how
+* [MSC2677](https://github.com/matrix-org/matrix-doc/pull/2677) defines how
   users can annotate events, such as reacting to events with emoji, using this
   mechanism.
 
