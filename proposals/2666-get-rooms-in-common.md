@@ -27,7 +27,7 @@ empty array should be returned. If the `current_user` and `other_user_id` are th
 reject with HTTP 400.
 
 ```
-GET _matrix/client/unstable/users/@alice:example.com/shared_rooms/@bob:example.com
+GET _matrix/client/unstable/uk.half-shot.msc2666/users/@alice:example.com/shared_rooms/@bob:example.com
 ```
 
 ```json
@@ -67,7 +67,7 @@ to request all state ahead of time.
 
 ## Unstable prefix
 
-The implementation MUST use `/_matrix/client/unstable/users/{user_id}/shared_rooms/{other_user_id}`.  
+The implementation MUST use `/_matrix/client/unstable/uk.half-shot.msc2666/users/{user_id}/shared_rooms/{other_user_id}`.  
 The /versions endpoint MUST include a new key in `unstable_features` with the name `uk.half-shot.msc2666`.  
 Once the MSC has been merged, clients should use `/_matrix/client/r0/users/{user_id}/shared_rooms/{other_user_id}`
 and will no longer need to check for the `unstable_features` flag.
