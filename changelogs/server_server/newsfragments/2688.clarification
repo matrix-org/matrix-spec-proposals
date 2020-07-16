@@ -1,1 +1,1 @@
-Specify that `GET /_matrix/federation/v1/make_join/{roomId}/{userId}` can return a 404 if the room is unknown.
+Specify that ``GET /_matrix/federation/v1/make_join/{roomId}/{userId}`` can return a 404 if the room is unknown.
