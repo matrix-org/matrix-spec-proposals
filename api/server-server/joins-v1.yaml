@@ -162,6 +162,16 @@ paths:
               "error": "Your homeserver does not support the features required to join this room",
               "room_version": "3"
             }
+        404:
+          description: |-
+            The room that the joining server is attempting to join is unknown
+            to the receiving server.
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "Unknown room",
+            }
+  
   "/send_join/{roomId}/{eventId}":
     put:
       summary: Submit a signed join event to a resident server
