@@ -1,4 +1,4 @@
-# MSC2663: Errors for dealing with inexistent push rules
+# MSC2663: Errors for dealing with non-existent push rules
 
 This MSC proposes that homeservers respond with a HTTP 404 ('Not Found') status
 code and an `errcode` of `M_NOT_FOUND` when a client attempts to read or write
