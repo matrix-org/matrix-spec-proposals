@@ -19,7 +19,7 @@ This proposal aims to implement a simple mechanism to fetch rooms you have in co
 ## Proposal
 
 Homeservers should implement a new endpoint `/user/shared_rooms/{user_id}` which will take
-the authenticated user's MxID and the user that is being searched for.
+the MxID of the user who is being searched for.
 
 The response format will be an array containing all rooms where both the authenticated user and `user_id` have
 a membership of type `join`. If the `user_id` does not exist, or does not share any rooms with the authenticated user,
