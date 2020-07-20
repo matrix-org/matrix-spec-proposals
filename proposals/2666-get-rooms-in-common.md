@@ -18,13 +18,12 @@ This proposal aims to implement a simple mechanism to fetch rooms you have in co
 
 ## Proposal
 
-Homeservers should implement a new endpoint `/user/shared_rooms/{other_user_id}` which will take
+Homeservers should implement a new endpoint `/user/shared_rooms/{user_id}` which will take
 the authenticated user's MxID and the user that is being searched for.
 
-The response format will be an array containing all rooms where both the `current_user` and `other_user_id` have
-a membership of type `join`. If either user is not joined to any rooms, or the `other_user_id` does not exist, an
-empty array should be returned. If the `current_user` and `other_user_id` are the same, then the endpoint SHOULD
-reject with HTTP 400.
+The response format will be an array containing all rooms where both the authenticated user and `user_id` have
+a membership of type `join`. If the `user_id` does not exist, or does not share any rooms with the authenticated user,
+an empty array should be returned.
 
 ```
 GET _matrix/client/r0/user/shared_rooms/@bob:example.com
@@ -68,7 +67,7 @@ to request all state ahead of time.
 
 ## Unstable prefix
 
-The implementation MUST use `/_matrix/client/unstable/uk.half-shot.msc2666/user/shared_rooms/{other_user_id}`.  
+The implementation MUST use `/_matrix/client/unstable/uk.half-shot.msc2666/user/shared_rooms/{user_id}`.  
 The /versions endpoint MUST include a new key in `unstable_features` with the name `uk.half-shot.msc2666`.  
-Once the MSC has been merged, clients should use `/_matrix/client/r0/user/shared_rooms/{other_user_id}`
+Once the MSC has been merged, clients should use `/_matrix/client/r0/user/shared_rooms/{user_id}`
 and will no longer need to check for the `unstable_features` flag.
