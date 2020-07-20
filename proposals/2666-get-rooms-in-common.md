@@ -16,6 +16,7 @@ the user is in. Therefore, the homeserver should have a means to provide this in
 
 This proposal aims to implement a simple mechanism to fetch rooms you have in common with another user.
 
+
 ## Proposal
 
 Homeservers should implement a new endpoint `/user/shared_rooms/{user_id}` which will take
@@ -39,6 +40,7 @@ GET _matrix/client/r0/user/shared_rooms/@bob:example.com
 }
 ```
 
+
 ## Potential issues
 
 Homeserver performance and storage may be impacted by this endpoint. While a homeserver already stores
@@ -57,6 +59,7 @@ however do not have this information, as they will have only synced a subset of 
 all rooms. While a client *could* pull all membership for all rooms at the point of needing this information,
 it's computationally expensive for both the homeserver and the client, as well as a bandwidth waste for contrained
 clients.
+
 
 ## Security considerations
 
