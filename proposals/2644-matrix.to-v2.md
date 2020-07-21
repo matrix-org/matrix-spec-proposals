@@ -26,19 +26,19 @@ https://matrix.to/#/<identifier>/<extra parameter>?<additional arguments>
 
 The `identifier` (required) may be a:
 
-| type | literal value | encoded value |
-| ---- | ------------- | ------------- |
-| room ID | `!somewhere:example.org` | `!somewhere%3Aexample.org` |
-| room alias | `#somewhere:example.org` | `%23somewhere%3Aexample.org` |
-| user ID | `@alice:example.org` | `%40alice%3Aexample.org` |
-| group ID | `+example:example.org` | `%2Bexample%3Aexample.org` |
+| type | value |
+| ---- | ----- |
+| room ID | `!somewhere:example.org` |
+| room alias | `#somewhere:example.org` |
+| user ID | `@alice:example.org` |
+| group ID | `+example:example.org` |
 
 The `extra parameter` (optional) is only used in the case of permalinks where an
 event ID is referenced:
 
-| type | literal value | encoded value |
-| ---- | ------------- | ------------- |
-| event ID | `$event:example.org` | `%24event%3Aexample.org` |
+| type | value |
+| ---- | ----- |
+| event ID | `$event:example.org` |
 
 The ``<additional arguments>`` and the preceding question mark are optional and
 only apply in certain circumstances:
@@ -50,10 +50,12 @@ only apply in certain circumstances:
     room) since room IDs are not currently routable
 
 If multiple ``<additional arguments>`` are present, they should be joined by `&`
-characters, as in `https://matrix.to/#/!somewhere%3Aexample.org?via=example.org&via=alt.example.org`
+characters, as in `https://matrix.to/#/!somewhere:example.org?via=example.org&via=alt.example.org`
 
-The components of the matrix.to URI (``<identifier>`` and ``<extra parameter>``)
-are to be percent-encoded as per RFC 3986.
+While the spec says the components of the matrix.to URI (``<identifier>`` and
+``<extra parameter>``) are to be percent-encoded as per RFC 3986, clients often
+do not encode, and it is more human-friendly to leave them unencoded, so we
+ignore the encoded version here.
 
 ### Revised syntax
 
@@ -66,13 +68,13 @@ https://matrix.to/#/<identifier>/<extra parameter>?<additional arguments>
 
 The `identifier` (required) may be a:
 
-| type | literal value | encoded value |
-| ---- | ------------- | ------------- |
-| event ID | `$event:example.org` | `%24event%3Aexample.org` |
-| room ID | `!somewhere:example.org` | `!somewhere%3Aexample.org` |
-| room alias | `#somewhere:example.org` | `%23somewhere%3Aexample.org` |
-| user ID | `@alice:example.org` | `%40alice%3Aexample.org` |
-| group ID | `+example:example.org` | `%2Bexample%3Aexample.org` |
+| type | value |
+| ---- | ----- |
+| event ID | `$event:example.org` |
+| room ID | `!somewhere:example.org` |
+| room alias | `#somewhere:example.org` |
+| user ID | `@alice:example.org` |
+| group ID | `+example:example.org` |
 
 The `extra parameter` (optional) now only exists for compatibility with existing
 v1 links. It can be used when `identifier` is a room ID or room alias as a part
@@ -80,9 +82,9 @@ of a permalink that references a specific event, as shown in the table below.
 Going forward, this should be considered deprecated, and clients should place
 only the event ID in the `identifier` position for new links.
 
-| type | literal value | encoded value |
-| ---- | ------------- | ------------- |
-| event ID | `$event:example.org` | `%24event%3Aexample.org` |
+| type | value |
+| ---- | ----- |
+| event ID | `$event:example.org` |
 
 Since clients currently cannot find a room from the event ID alone, a new
 client-server API is added to support the new format with only an event ID.
@@ -106,6 +108,9 @@ only apply in certain circumstances:
     * `foo.com`
     * `apps.apple.com/app/foo/id1234`
     * `play.google.com/store/apps/details?id=com.foo.client`
+  * Since this is a URL embedded inside the `matrix.to` URI, the characters from
+    the RFC 3986 `gen-delims` set as well as `&` and `=` should be
+    percent-encoded: `:/?#[]@&=`.
 * `federated=false`
   * This parameter allows indicating whether a room exists on a federating
     server (assumed to be the default), or if the client must connect via the
@@ -119,26 +124,28 @@ only apply in certain circumstances:
     name
 
 If multiple ``<additional arguments>`` are present, they should be joined by `&`
-characters, as in `https://matrix.to/!somewhere%3Aexample.org?via=example.org&via=alt.example.org`
+characters, as in `https://matrix.to/!somewhere:example.org?via=example.org&via=alt.example.org`
 
-The components of the matrix.to URI (``<identifier>`` and ``<extra parameter>``)
-are to be percent-encoded as per RFC 3986.
+This revised syntax does not attempt to suggest percent-encoding all of the URI
+components, as it's generally more human-friendly to leave them unencoded.
+Certain arguments may still need to be encoded (such as the `client` URL), and
+those are marked as such where they are defined.
 
 Examples of matrix.to URIs using the revised syntax are:
 
-* Room alias: ``https://matrix.to/#/%23somewhere%3Aexample.org``
+* Room alias: ``https://matrix.to/#/#somewhere:example.org``
 * Room alias with client and sharer:
-  ``https://matrix.to/#/%23somewhere%3Aexample.org?client=example.org%2Freleases%3Fdownload%23latest&sharer=%40alice%3Aexample.org``
-* Room: ``https://matrix.to/#/!somewhere%3Aexample.org?via=example.org&via=alt.example.org``
-* Event permalink: ``https://matrix.to/#/%24event%3Aexample.org?via=example.org&via=alt.example.org``
-* User: ``https://matrix.to/#/%40alice%3Aexample.org``
-* Group: ``https://matrix.to/#/%2Bexample%3Aexample.org``
+  ``https://matrix.to/#/#somewhere:example.org?client=example.org%2Freleases%3Fdownload=latest&sharer=@alice:example.org``
+* Room: ``https://matrix.to/#/!somewhere:example.org?via=example.org&via=alt.example.org``
+* Event permalink: ``https://matrix.to/#/$event:example.org?via=example.org&via=alt.example.org``
+* User: ``https://matrix.to/#/@alice:example.org``
+* Group: ``https://matrix.to/#/+example:example.org``
 
 ### Summary of changes
 
 * When permalinking to a specific event, the room ID is no longer required and
   event IDs are now permitted in the identifier position, so URIs like
-  `https://matrix.to/#/%24event%3Aexample.org` are now acceptable
+  `https://matrix.to/#/$event:example.org` are now acceptable
 * Clients should prefer creating URIs with room aliases instead of room IDs
   where possible, as it's more human-friendly and `via` params are not needed
 * A new, optional `client` parameter allows clients to indicate
