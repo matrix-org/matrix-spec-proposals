@@ -70,7 +70,9 @@ The `identifier` (required) may be a:
 
 | type | value |
 | ---- | ----- |
-| event ID | `$event:example.org` |
+| event ID (v1) | `$event:example.org` |
+| event ID (v3) | `$Woq2vwLy8mNukf7e8oz61GxT5gpMmr/asNojhb56+wU` |
+| event ID (v4) | `$Woq2vwLy8mNukf7e8oz61GxT5gpMmr_asNojhb56-wU` |
 | room ID | `!somewhere:example.org` |
 | room alias | `#somewhere:example.org` |
 | user ID | `@alice:example.org` |
@@ -84,7 +86,9 @@ only the event ID in the `identifier` position for new links.
 
 | type | value |
 | ---- | ----- |
-| event ID | `$event:example.org` |
+| event ID (v1) | `$event:example.org` |
+| event ID (v3) | `$Woq2vwLy8mNukf7e8oz61GxT5gpMmr/asNojhb56+wU` |
+| event ID (v4) | `$Woq2vwLy8mNukf7e8oz61GxT5gpMmr_asNojhb56-wU` |
 
 Since clients currently cannot find a room from the event ID alone, a new
 client-server API is added to support the new format with only an event ID.
@@ -137,7 +141,7 @@ Examples of matrix.to URIs using the revised syntax are:
 * Room alias with client and sharer:
   ``https://matrix.to/#/#somewhere:example.org?client=example.org%2Freleases%3Fdownload=latest&sharer=@alice:example.org``
 * Room: ``https://matrix.to/#/!somewhere:example.org?via=example.org&via=alt.example.org``
-* Event permalink: ``https://matrix.to/#/$event:example.org?via=example.org&via=alt.example.org``
+* Event permalink: ``https://matrix.to/#/$Woq2vwLy8mNukf7e8oz61GxT5gpMmr_asNojhb56-wU?via=example.org&via=alt.example.org``
 * User: ``https://matrix.to/#/@alice:example.org``
 * Group: ``https://matrix.to/#/+example:example.org``
 
@@ -145,7 +149,7 @@ Examples of matrix.to URIs using the revised syntax are:
 
 * When permalinking to a specific event, the room ID is no longer required and
   event IDs are now permitted in the identifier position, so URIs like
-  `https://matrix.to/#/$event:example.org` are now acceptable
+  `https://matrix.to/#/$Woq2vwLy8mNukf7e8oz61GxT5gpMmr_asNojhb56-wU` are now acceptable
 * Clients should prefer creating URIs with room aliases instead of room IDs
   where possible, as it's more human-friendly and `via` params are not needed
 * A new, optional `client` parameter allows clients to indicate
