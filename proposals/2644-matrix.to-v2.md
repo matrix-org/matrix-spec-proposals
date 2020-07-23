@@ -52,7 +52,7 @@ only apply in certain circumstances:
   * One or more servers [should be
     specified](https://matrix.org/docs/spec/appendices#routing) in the format
     `example.org` when linking to a room (including a permalink to an event in a
-    room) since room IDs are not currently routable
+    room) since room IDs and event IDs are not currently routable
 
 If multiple ``<additional arguments>`` are present, they should be treated as
 query params following RFC 3986 (even though they are in the fragment):
@@ -154,7 +154,9 @@ Examples of matrix.to URIs using the revised syntax are:
 
 * When permalinking to a specific event, the room ID is no longer required and
   event IDs are now permitted in the identifier position, so URIs like
-  `https://matrix.to/#/$Woq2vwLy8mNukf7e8oz61GxT5gpMmr_asNojhb56-wU` are now acceptable
+  `https://matrix.to/#/$Woq2vwLy8mNukf7e8oz61GxT5gpMmr_asNojhb56-wU` are now
+  acceptable (though would need to include `via` params since event IDs are not
+  routable alone)
 * Clients should prefer creating URIs with room aliases instead of room IDs
   where possible, as it's more human-friendly and `via` params are not needed
 * A new, optional `client` parameter allows clients to indicate
