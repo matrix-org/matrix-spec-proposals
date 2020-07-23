@@ -160,9 +160,8 @@ Examples of matrix.to URIs using the revised syntax are:
 * A new, optional `client` parameter allows clients to indicate
   which client shared the URI
 * A new, optional `federated` parameter allows indicating whether a room exists
-  on a federating server (assumed to be the default), or if the client must
-  connect via the server identified by the room ID or event ID (when set to
-  `false`)
+  on a federating server (assumed to be the default), or if it's only
+  reachable through/at a certain server
 * A new, optional `sharer` parameter allows indicating the MXID of the account
   which created the link, in case that is meaningful to include
 
