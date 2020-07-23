@@ -5,6 +5,11 @@ users, groups) in the ecosystem today. By adjusting and extending them a bit
 further, both clients and the interstitial screens hosted at `matrix.to` can
 give the user more context and a better experience.
 
+While `matrix.to` is the initial use case for much of this proposal, it is also
+an opportunity to revise, clean up, and extend client handling of these links as
+well, as the revise format below can carry additional details in shared links,
+which should be broadly useful across the ecosystem.
+
 ## Proposal
 
 In an attempt to make it easier for the reader to review, this proposal first
