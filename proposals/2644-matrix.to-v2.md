@@ -43,7 +43,9 @@ event ID is referenced:
 
 | type | value |
 | ---- | ----- |
-| event ID | `$event:example.org` |
+| event ID (v1) | `$event:example.org` |
+| event ID (v3) | `$Woq2vwLy8mNukf7e8oz61GxT5gpMmr/asNojhb56+wU` |
+| event ID (v4) | `$Woq2vwLy8mNukf7e8oz61GxT5gpMmr_asNojhb56-wU` |
 
 The ``<additional arguments>`` and the preceding question mark are optional and
 only apply in certain circumstances:
