@@ -107,8 +107,8 @@ only apply in certain circumstances:
 * `via=<server>`
   * One or more servers [should be
     specified](https://matrix.org/docs/spec/appendices#routing) in the format
-    `example.org` when linking to a room or an event since room IDs are
-    not currently routable
+    `example.org` when linking to a room or an event since room IDs and event
+    IDs are not currently routable on their own
 * `client=<client URL>`
   * This parameter allows clients to indicate which client shared the URI
   * Clients should identify themselves via a schemeless `https` URL pointing
