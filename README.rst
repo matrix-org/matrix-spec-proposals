@@ -46,7 +46,7 @@ To use the scripts, it is best to create a Python 3.4+ virtualenv as follows::
   virtualenv -p python3 env
   env/bin/pip install -r scripts/requirements.txt
 
-(Benjamin Synders has contributed a script for `Nix`_ users, which can be
+(Benjamin Saunders has contributed a script for `Nix`_ users, which can be
 invoked with ``nix-shell scripts/contrib/shell.nix``.)
 
 .. TODO: Possibly we need some libs installed; should record what they are.

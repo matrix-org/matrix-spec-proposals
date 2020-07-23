@@ -65,6 +65,7 @@ paths:
           x-example: "37"
         - in: body
           name: body
+          required: true
           schema:
             type: object
             example: {

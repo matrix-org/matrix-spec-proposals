@@ -82,6 +82,7 @@ paths:
       parameters:
         - in: body
           name: body
+          required: true
           schema:
             type: object
             example: {
@@ -99,7 +100,6 @@ paths:
                 enum: ["m.login.password", "m.login.token"]
                 description: The login type being used.
               identifier:
-                description: Identification information for the user.
                 "$ref": "definitions/user_identifier.yaml"
               user:
                 type: string
@@ -175,13 +175,13 @@ paths:
                   ID of the logged-in device. Will be the same as the
                   corresponding parameter in the request, if one was specified.
               well_known:
-                type: object
                 description: |-
                   Optional client configuration provided by the server. If present,
                   clients SHOULD use the provided object to reconfigure themselves,
                   optionally validating the URLs within. This object takes the same
                   form as the one returned from .well-known autodiscovery.
-                "$ref": "definitions/wellknown/full.yaml"
+                allOf:
+                  - "$ref": "definitions/wellknown/full.yaml"
         400:
           description: |-
             Part of the request was invalid. For example, the login type may not be recognised.
