@@ -674,8 +674,27 @@ HKDF calculation
 
 In all of the SAS methods, HKDF is as defined in `RFC 5869 <https://tools.ietf.org/html/rfc5869>`_
 and uses the previously agreed-upon hash function for the hash function. The shared
-secret is supplied as the input keying material. No salt is used, and the info
-parameter is the concatenation of:
+secret is supplied as the input keying material. No salt is used. When the
+``key_agreement_protocol`` is ``curve25519-hkdf-sha256``, the info parameter is
+the concatenation of:
+
+  * The string ``MATRIX_KEY_VERIFICATION_SAS|``.
+  * The Matrix ID of the user who sent the ``m.key.verification.start`` message,
+    followed by ``|``.
+  * The Device ID of the device which sent the ``m.key.verification.start``
+    message, followed by ``|``.
+  * The public key from the ``m.key.verification.key`` message sent by the device
+    which sent the ``m.key.verification.start`` message, followed by ``|``.
+  * The Matrix ID of the user who sent the ``m.key.verification.accept`` message,
+    followed by ``|``.
+  * The Device ID of the device which sent the ``m.key.verification.accept``
+    message, followed by ``|``.
+  * The public key from the ``m.key.verification.key`` message sent by the device
+    which sent the ``m.key.verification.accept`` message, followed by ``|``.
+  * The ``transaction_id`` being used.
+
+When the ``key_agreement_protocol`` is the deprecated method ``curve25519``,
+the info parameter is the concatenation of:
 
   * The string ``MATRIX_KEY_VERIFICATION_SAS``.
   * The Matrix ID of the user who sent the ``m.key.verification.start`` message.
@@ -683,6 +702,8 @@ parameter is the concatenation of:
   * The Matrix ID of the user who sent the ``m.key.verification.accept`` message.
   * The Device ID of the device which sent the ``m.key.verification.accept`` message.
   * The ``transaction_id`` being used.
+
+New implementations are discouraged from implementing the ``curve25519`` method.
 
 .. admonition:: Rationale
 
