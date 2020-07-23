@@ -1,4 +1,4 @@
-# MSC0000: Get event by ID over federation
+# MSC2695: Get event by ID over federation
 
 Currently, there is no clear client-server API to retrieve a single event by the
 event ID alone. There is the deprecated [`GET
