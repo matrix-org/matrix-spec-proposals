@@ -90,12 +90,10 @@ only the event ID in the `identifier` position for new links.
 | event ID (v3) | `$Woq2vwLy8mNukf7e8oz61GxT5gpMmr/asNojhb56+wU` |
 | event ID (v4) | `$Woq2vwLy8mNukf7e8oz61GxT5gpMmr_asNojhb56-wU` |
 
-Since clients currently cannot find a room from the event ID alone, a new
-client-server API is added to support the new format with only an event ID.
-
-> TODO: To support this, a new client-server API will be defined which
-> allows clients to query the mapping from event ID to room ID. This will be
-> defined in a separate MSC.
+Since clients currently cannot find a room from the event ID alone, a revived
+client-server API (`GET /_matrix/client/r0/events/{eventId}`) is proposed by
+[MSC2695](https://github.com/matrix-org/matrix-doc/pull/2695) to support the new
+URI format when used with an event ID without a room ID.
 
 The ``<additional arguments>`` and the preceding question mark are optional and
 only apply in certain circumstances:
