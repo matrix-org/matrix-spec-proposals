@@ -54,8 +54,9 @@ only apply in certain circumstances:
     `example.org` when linking to a room (including a permalink to an event in a
     room) since room IDs are not currently routable
 
-If multiple ``<additional arguments>`` are present, they should be joined by `&`
-characters, as in `https://matrix.to/#/!somewhere:example.org?via=example.org&via=alt.example.org`
+If multiple ``<additional arguments>`` are present, they should be treated as
+query params following RFC 3986 (even though they are in the fragment):
+`https://matrix.to/#/!somewhere:example.org?via=example.org&via=alt.example.org`
 
 While the spec says the components of the matrix.to URI (``<identifier>`` and
 ``<extra parameter>``) are to be percent-encoded as per RFC 3986, clients often
@@ -130,8 +131,9 @@ only apply in certain circumstances:
     data for the sharer's account and display the sharer's avatar and display
     name
 
-If multiple ``<additional arguments>`` are present, they should be joined by `&`
-characters, as in `https://matrix.to/!somewhere:example.org?via=example.org&via=alt.example.org`
+If multiple ``<additional arguments>`` are present, they should be treated as
+query params following RFC 3986 (even though they are in the fragment):
+`https://matrix.to/#/!somewhere:example.org?via=example.org&via=alt.example.org`
 
 This revised syntax does not attempt to suggest percent-encoding all of the URI
 components, as it's generally more human-friendly to leave them unencoded.
