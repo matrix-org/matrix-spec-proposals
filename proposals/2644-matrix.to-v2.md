@@ -78,13 +78,16 @@ The `identifier` (required) may be a:
 
 | type | value |
 | ---- | ----- |
-| event ID (v1) | `$event:example.org` |
 | event ID (v3) | `$Woq2vwLy8mNukf7e8oz61GxT5gpMmr/asNojhb56+wU` |
 | event ID (v4) | `$Woq2vwLy8mNukf7e8oz61GxT5gpMmr_asNojhb56-wU` |
 | room ID | `!somewhere:example.org` |
 | room alias | `#somewhere:example.org` |
 | user ID | `@alice:example.org` |
 | group ID | `+example:example.org` |
+
+Matrix.to URIs using a event ID alone (without a room ID) should never be
+generated when the global uniqueness of the event ID cannot be guaranteed, such
+as in the case of v1 and v2 rooms.
 
 The `extra parameter` (optional) now only exists for compatibility with existing
 v1 links. It can be used when `identifier` is a room ID or room alias as a part
