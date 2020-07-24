@@ -1,6 +1,6 @@
 # MSC2689: Allow guests to operate in encrypted rooms
 
-MSC751 suggested to allow guests to use several endpoints in order to allow guests to use E2EE.
+[#751](https://github.com/matrix-org/matrix-doc/pull/751) granted guest users access to several endpoints in order to allow them to use E2EE.
 I found that guests are able to join encrypted rooms and read messages from other members. But when the
 guest wants to send an event into the room the client receives a "guest access not allowed" error
 for the `/rooms/{room_id}/members` endpoint. I assume the client tries to read the list of room members
