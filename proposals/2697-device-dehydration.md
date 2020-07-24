@@ -1,4 +1,4 @@
-# MSCxxxx: Device Dehydration
+# MSC2697: Device Dehydration
 
 End-to-end encryption in Matrix relies on the sending device being able to send
 megolm sessions to the recipients' devices using to-device messages.  When a
@@ -109,9 +109,7 @@ could access it and read the user's encrypted messages.
 ## Unstable prefix
 
 While this MSC is in development, the `POST /restore_device` endpoint will be
-reached at `POST /unstable/org.matrix.mscxxxx/restore_device`, and the `POST
+reached at `POST /unstable/org.matrix.msc2697/restore_device`, and the `POST
 /device/dehydrate` endpoint will be reached at `POST
-/unstable/org.matrix.mscxxxx/device/dehydrate`.  The `restore_device` parameter
-for `POST /login` will be called `org.matrix.mscxxxx.restore_device`.
-
-FIXME: change `mscxxxx` to the right number
+/unstable/org.matrix.msc2697/device/dehydrate`.  The `restore_device` parameter
+for `POST /login` will be called `org.matrix.msc2697.restore_device`.
