@@ -93,7 +93,7 @@ only `event_id` and `room_id` is returned with status code 200:
 ```
 {
   "event_id": "$Woq2vwLy8mNukf7e8oz61GxT5gpMmr_asNojhb56-wU",
-  "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
+  "room_id": "!jEsUZKDJdhlrceRyVU:example.org"
 }
 ```
 
