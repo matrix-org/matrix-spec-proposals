@@ -37,13 +37,14 @@ To cover the use cases above, the following scheme is proposed for Matrix URIs
 ```text
 matrix:[//{authority}/]{type}/{id without sigil}[/{more type/id pairs}][?{query}]
 ```
-with `type` being one of: `user`, `room`, `roomid`, `event` and
-`group`; and the only `query` defined for now is `action=join`. The Matrix
-identifier (or identifiers) can be reconstructed from the URI by taking
-the sigil that corresponds to `type` and appending `id without sigil` to it.
-The query may alter the kind of request with respect to the Matrix resource;
-and Matrix resources can be contained in each other, in which care the
-`more type/id pairs` series is used to reconstruct inner identifiers.
+with `type` defining the resource type (such as `user` or `roomid` - see
+the "Path" section in the proposal) and `query` containing additional hints
+or request details on the Matrix entity (see "Query" in the proposal).
+The Matrix identifier (or identifiers) can be reconstructed from the URI by
+taking the sigil that corresponds to `type` and appending `id without sigil`
+to it. To support a hierarchy of Matrix resources, `more type/id pairs` series
+is used to reconstruct inner identifiers (as of now, there can be only one
+inner identifier, pointing to an event in a room).
 
 This proposal defines initial mapping of URIs to Matrix identifiers and actions
 on corresponding resources; the scheme and mapping are subject
