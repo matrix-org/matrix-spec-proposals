@@ -252,10 +252,7 @@ describes two possible actions:
 * `action=join` is only valid in a URI resolving to a Matrix room;
   applications MUST ignore it if found in other contexts and MUST NOT generate
   it for other Matrix resources. This action means that client applications
-  SHOULD attempt to join it using the standard CS API means. Client
-  applications SHOULD ask for user confirmation before joining if the user
-  is neither a joined member of the room nor of its immediate
-  [successor or predecessor](https://matrix.org/docs/spec/client_server/latest#module-room-upgrades).
+  SHOULD attempt to join it using the standard CS API means.
 * `action=chat` is only valid in a URI resolving to a Matrix user;
   applications MUST ignore it if found in other contexts and MUST NOT generate
   it for other Matrix resources. A URI with this action that a client application
@@ -344,8 +341,7 @@ comparisons are case-INsensitive.
       [routing](https://matrix.org/docs/spec/appendices#routing).
       
    b. If `query` contains one or more items starting with `action=`: treat
-      _the last_ such item as an instruction for joining or opening a direct
-      chat, as per this proposal.
+      _the last_ such item as an instruction, as this proposal defines in [query](#query).
 
 The classes of URIs and corresponding default actions (along with relevant
 CS API calls) are collected as follows. This is non-normative and just provides
