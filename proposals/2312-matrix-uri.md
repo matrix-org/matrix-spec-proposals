@@ -422,7 +422,7 @@ further discussion should happen in GitHub comments.
    Not in this MSC but that can be considered in the future.
 1. _Why not Reddit-style single-letter type specifiers? That's almost
    as compact as a sigil, still pretty clearly conveys the type,
-   and nicely avoids the confusion described in the previous question._
+   and nicely avoids the singular vs. plural confusion._
    Reddit-style prefixes would eventually produce bigger ambiguity as
    primary notation; but they can be handy as shortcuts. As discussed
    further below, the current proposal provides enough space to define
