@@ -101,7 +101,7 @@ around MUST/SHOULD/MAY):
    MUST NOT have Matrix URIs that are equal in
    [RFC 3986](https://tools.ietf.org/html/rfc3986) sense
    (but two distinct Matrix URIs MAY map to the same Matrix identifier).
-1. The following classes MUST be supported:
+1. References to the following entities MUST be supported:
    1. User IDs (`@user:example.org`)
    1. Room IDs (`!roomid:example.org`)
    1. Room aliases (`#roomalias:example.org`)
@@ -407,7 +407,7 @@ further discussion should happen in GitHub comments.
    `//` if the URI doesn't have an authority component. In other words,
    `//` implies a centre of authority, and the (public) Matrix
    federation is not supposed to have one; hence no `//` in most URIs.
-1. _Why type specifiers use singular rather than plural
+1. _Why do type specifiers use singular rather than plural
    as is common in RESTful APIs?_
    Unlike in actual RESTful APIs, this MSC does not see `rooms/` or
    `users/` as collections to browse. The type specifier completes
@@ -428,7 +428,7 @@ further discussion should happen in GitHub comments.
    further below, the current proposal provides enough space to define
    synonyms; this may need some canonicalisation service from homeservers
    so that we don't have to enable synonyms at each client individually.
-1. _Why event URI cannot use the fragment part for the event id?_
+1. _Why can an event URI not use the fragment part for the event ID?_
    Because fragment is a part processed exclusively by the client
    in order to navigate within a larger document, and room cannot
    be considered a "document". Each event can be retrieved from the server
