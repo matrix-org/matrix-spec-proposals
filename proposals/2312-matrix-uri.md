@@ -53,7 +53,7 @@ Examples:
 * Room `#someroom:example.org`:
   `matrix:room/someroom:example.org`
 * Unfederated room `#internalroom:internal.example.org`:
-  `matrix:room/internalroom:internal.example.org`. This can only be resolved by a client connected to the appropriate server, likely internal.example.org in this case, so it can be hinted at: `matrix:room/internalroom:internal.example.org&via=internal.example.org`. See the [Discussion points and tradeoffs](#Discussion points and tradeoffs) section.
+  `matrix:room/internalroom:internal.example.org`. This can only be resolved by a client connected to the appropriate server, likely internal.example.org in this case, so it can be hinted at: `matrix:room/internalroom:internal.example.org&via=internal.example.org`. See the [Discussion points and tradeoffs](#discussion-points-and-tradeoffs) section.
 * Event in a room:
   `matrix:room/someroom:example.org/event/Arbitrary_Event_Id`
 * [A commit like this](https://github.com/her001/steamlug.org/commit/2bd69441e1cf21f626e699f0957193f45a1d560f)
