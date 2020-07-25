@@ -339,12 +339,11 @@ comparisons are case-INsensitive.
 1. Split the `query` into items separated by `&` character; several subsequent
    `&` characters delimit empty items, ignored by this algorithm.
    
-   a. If `query` contains one or more items starting with `via=` - treat
-      the rest of each this item after `via=` as a percent-encoded homeserver
-      name to be used in
+   a. If `query` contains one or more items starting with `via=`: for each item, treat
+      the rest of the string as a percent-encoded homeserver name to be used in
       [routing](https://matrix.org/docs/spec/appendices#routing).
       
-   b. If `query` contains one or more items starting with `action=` - treat
+   b. If `query` contains one or more items starting with `action=`: treat
       _the last_ such item as an instruction for joining or opening a direct
       chat, as per this proposal.
 
