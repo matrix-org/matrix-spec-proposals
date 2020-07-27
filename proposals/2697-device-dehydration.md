@@ -1,7 +1,7 @@
 # MSC2697: Device Dehydration
 
 End-to-end encryption in Matrix relies on the sending device being able to send
-megolm sessions to the recipients' devices using to-device messages.  When a
+megolm sessions to the recipients' devices.  When a
 user logs into a new device, they can obtain the megolm sessions using key
 backup or key sharing if another of their devices had previously received the
 session.  However, when a user has no logged-in devices when a message is sent,
@@ -27,7 +27,7 @@ used, it will respond with:
   "home_server": "home server address",
   "device_data": "base64+encoded+device+data",
   "device_id": "ID of dehydrated device",
-  "dehydration_token": "request+token"
+  "dehydration_token": "opaque+token"
 }
 ```
 
