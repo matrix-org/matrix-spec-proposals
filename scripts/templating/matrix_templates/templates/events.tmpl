@@ -1,7 +1,14 @@
 {% import 'tables.tmpl' as tables -%}
 
+{% if (event.type_with_msgtype) %}
+``{{event.type_with_msgtype}}``
+{{(4 + event.type_with_msgtype | length) * title_kind}}
+{% endif -%}
+
+{% if (not event.type_with_msgtype) %}
 ``{{event.type}}``
 {{(4 + event.type | length) * title_kind}}
+{% endif -%}
 
 {% if (event.typeof | length) %}
 *{{event.typeof}}*

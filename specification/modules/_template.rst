@@ -15,6 +15,7 @@
 Module Heading
 ==============
 
+.. NOTE: Prefer to identify-modules-with-dashes despite historical examples.
 .. _module:short-name:
 
 A short summary of the module. What features does this module provide? An anchor
@@ -67,4 +68,3 @@ This includes privacy leaks: for example leaking presence info. How do
 misbehaving clients or servers impact this module? This section should always be
 included, if only to say "we've thought about it but there isn't anything to do
 here".
-

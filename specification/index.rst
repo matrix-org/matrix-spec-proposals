@@ -50,16 +50,34 @@ one of the above APIs.
 The `Matrix Client-Server API Swagger Viewer <https://matrix.org/docs/api/client-server/>`_
 is useful for browsing the Client-Server API.
 
+
+Matrix versions
+~~~~~~~~~~~~~~~
+
+.. Note::
+  As of June 10th 2019, the Matrix specification is considered out of beta -
+  indicating that all currently released APIs are considered stable and secure
+  to the best of our knowledge, and the spec should contain the complete
+  information necessary to develop production-grade implementations of Matrix
+  without the need for external reference.
+
+Matrix 1.0 (released June 10th, 2019) consists of the following minimum API
+versions:
+
+=======================  =======
+API/Specification        Version
+=======================  =======
+Client-Server API        r0.5.0
+Server-Server API        r0.1.2
+Application Service API  r0.1.1
+Identity Service API     r0.1.1
+Push Gateway API         r0.1.0
+Room Version             v5
+=======================  =======
+
+
 Introduction to the Matrix APIs
 -------------------------------
-.. WARNING::
-  The Matrix specification is still evolving: the APIs are not yet frozen
-  and this document is in places a work in progress or stale. We have made every
-  effort to clearly flag areas which are still being finalised.
-  We're publishing it at this point because it's complete enough to be more than
-  useful and provide a canonical reference to how Matrix is evolving. Our end
-  goal is to mirror WHATWG's `Living Standard
-  <https://whatwg.org/faq?#living-standard>`_.
 
 Matrix is a set of open APIs for open-federated Instant Messaging (IM), Voice
 over IP (VoIP) and Internet of Things (IoT) communication, designed to create
@@ -88,7 +106,7 @@ The principles that Matrix attempts to follow are:
 - Empowering the end-user
 
   + The user should be able to choose the server and clients they use
-  + The user should be control how private their communication is
+  + The user should be able to control how private their communication is
   + The user should know precisely where their data is stored
 
 - Fully decentralised - no single points of control over conversations or the
@@ -196,7 +214,7 @@ allocated the account and has the form::
 
   @localpart:domain
 
-See `'Identifier Grammar' the appendices <appendices.html#identifier-grammar>`_ for full details of
+See `'Identifier Grammar' in the appendices <appendices.html#identifier-grammar>`_ for full details of
 the structure of user IDs.
 
 Devices
@@ -348,6 +366,12 @@ pushed over federation to the participating servers in a room, currently using
 full mesh topology. Servers may also request backfill of events over federation
 from the other servers participating in a room.
 
+.. Note::
+  Events are not limited to the types defined in this specification. New or custom
+  event types can be created on a whim using the Java package naming convention.
+  For example, a ``com.example.game.score`` event can be sent by clients and other
+  clients would receive it through Matrix, assuming the client has access to the
+  ``com.example`` namespace.
 
 Room Aliases
 ++++++++++++
@@ -425,6 +449,37 @@ dedicated API.  The API is symmetrical to managing Profile data.
   Would it really be overengineered to use the same API for both profile &
   private user data, but with different ACLs?
 
+
+Common concepts
+---------------
+
+Various things are common throughout all of the Matrix APIs. They are
+documented here.
+
+.. TODO: Some words about trailing slashes. See https://github.com/matrix-org/matrix-doc/issues/2107
+
+Namespacing
+~~~~~~~~~~~
+
+Namespacing helps prevent conflicts between multiple applications and the specification
+itself. Where namespacing is used, ``m.`` prefixes are used by the specification to
+indicate that the field is controlled by the specification. Custom or non-specified
+namespaces used in the wild MUST use the Java package naming convention to prevent
+conflicts.
+
+As an example, event types defined in the specification are namespaced under the
+special ``m.`` prefix, however any client can send a custom event type, such as
+``com.example.game.score`` (assuming the client has rights to the ``com.example``
+namespace) without needing to put the event into the ``m.`` namespace.
+
+Timestamps
+~~~~~~~~~~
+
+Unless otherwise stated, timestamps are measured as milliseconds since the Unix epoch.
+Throughout the specification this may be referred to as POSIX, Unix, or just "time in
+milliseconds".
+
+
 .. _`room versions`:
 
 Room Versions
@@ -485,7 +540,7 @@ some other reason. Versions can switch between stable and unstable periodically
 for a variety of reasons, including discovered security vulnerabilities and age.
 
 Clients should not ask room administrators to upgrade their rooms if the room is
-running a stable version. Servers SHOULD use room version 1 as the default room
+running a stable version. Servers SHOULD use room version 5 as the default room
 version when creating new rooms.
 
 The available room versions are:
@@ -493,6 +548,9 @@ The available room versions are:
 * `Version 1 <rooms/v1.html>`_ - **Stable**. The current version of most rooms.
 * `Version 2 <rooms/v2.html>`_ - **Stable**. Implements State Resolution Version 2.
 * `Version 3 <rooms/v3.html>`_ - **Stable**. Introduces events whose IDs are the event's hash.
+* `Version 4 <rooms/v4.html>`_ - **Stable**. Builds on v3 by using URL-safe base64 for event IDs.
+* `Version 5 <rooms/v5.html>`_ - **Stable**. Introduces enforcement of signing key validity periods.
+* `Version 6 <rooms/v6.html>`_ - **Stable**. Alters several authorization rules for events.
 
 Specification Versions
 ----------------------

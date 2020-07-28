@@ -46,7 +46,7 @@ To use the scripts, it is best to create a Python 3.4+ virtualenv as follows::
   virtualenv -p python3 env
   env/bin/pip install -r scripts/requirements.txt
 
-(Benjamin Synders has contributed a script for `Nix`_ users, which can be
+(Benjamin Saunders has contributed a script for `Nix`_ users, which can be
 invoked with ``nix-shell scripts/contrib/shell.nix``.)
 
 .. TODO: Possibly we need some libs installed; should record what they are.
@@ -66,12 +66,14 @@ The above will write the rendered version of the specification to
 
 Windows users
 ~~~~~~~~~~~~~
+The ``source`` program does not exist on Windows, so instead run one of the 
+``activate`` files in ``.\env\Scripts\`` to activate the virtual environment.
 
 If you're on Windows Vista or higher, be sure that the "Symbolic Links"
 option was selected when installing Git prior to cloning this repository. If
 you're still seeing errors about files not being found it is likely because
 the symlink at ``api/client-server/definitions/event-schemas`` looks like a
-file. To correct the problem, open an Administrative/Elevated shell in your
+file. To correct the problem, open an Administrative/Elevated Command Prompt in your
 cloned matrix-doc directory and run the following::
 
   cd api\client-server\definitions
@@ -138,4 +140,4 @@ Issue tracking
 Issues with the Matrix specification are tracked in `GitHub
 <https://github.com/matrix-org/matrix-doc/issues>`_.
 
-See `meta/labels.rst <meta/labels.rst>`_ for notes on what the labels mean.
+See `meta/github-labels.rst <meta/github-labels.rst>`_ for notes on what the labels mean.

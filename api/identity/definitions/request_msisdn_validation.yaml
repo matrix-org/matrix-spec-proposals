@@ -30,8 +30,8 @@ properties:
   country:
     type: string
     description: |-
-      The two-letter uppercase ISO country code that the number in
-      ``phone_number`` should be parsed as if it were dialled from.
+      The two-letter uppercase ISO-3166-1 alpha-2 country code that the
+      number in ``phone_number`` should be parsed as if it were dialled from.
     example: "GB"
   phone_number:
     type: string
@@ -51,7 +51,8 @@ properties:
   next_link:
     type: string
     description: |-
-      Optional. When the validation is completed, the identity
-      server will redirect the user to this URL.
+      Optional. When the validation is completed, the identity server will
+      redirect the user to this URL. This option is ignored when submitting
+      3PID validation information through a POST request.
     example: "https://example.org/congratulations.html"
 required: ["client_secret", "country", "phone_number", "send_attempt"]

@@ -20,6 +20,10 @@ allOf:
   - $ref: "unsigned_pdu_base.yaml"
   - type: object
     properties:
+      redacts:
+        type: string
+        description: For redaction events, the ID of the event being redacted.
+        example: "$def/456+oldevent"
       auth_events:
         type: array
         items:
@@ -28,6 +32,10 @@ allOf:
         description: |-
           Event IDs for the authorization events that would
           allow this event to be in the room.
+
+          Must contain less than or equal to 10 events. Note that if the relevant
+          auth event selection rules are used, this restriction should never be
+          encountered.
         example: ["$base64EncodedHash", "$AnotherEvent"]
       prev_events:
         type: array
@@ -37,6 +45,8 @@ allOf:
         description: |-
           Event IDs for the most recent events in the room
           that the homeserver was aware of when it made this event.
+
+          Must contain less than or equal to 20 events.
         example: ["$base64EncodedHash", "$AnotherEvent"]
       hashes:
         type: object

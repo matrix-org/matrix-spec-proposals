@@ -82,6 +82,20 @@ paths:
               }
           schema:
             type: object
+        400:
+          description: |-
+
+            The request is invalid. A meaningful ``errcode`` and description
+            error text will be returned. Example reasons for rejection include:
+
+            - The request body is malformed (``errcode`` set to ``M_BAD_JSON``
+              or ``M_NOT_JSON``).
+
+            - One or more users being invited to the room are residents of a
+              homeserver which does not support the requested room version. The
+              ``errcode`` will be ``M_UNSUPPORTED_ROOM_VERSION`` in these cases.
+          schema:
+            "$ref": "definitions/errors/error.yaml"
         403:
           description: |-
             You do not have permission to invite the user to the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejections are:

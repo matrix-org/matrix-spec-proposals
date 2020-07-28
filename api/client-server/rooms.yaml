@@ -42,7 +42,7 @@ paths:
           name: roomId
           description: The ID of the room the event is in.
           required: true
-          x-example: "!asfDuShaf7Gafaw:matrix.org"
+          x-example: "!636q39766251:matrix.org"
         - in: path
           type: string
           name: eventId
@@ -54,26 +54,30 @@ paths:
           description: The full event.
           examples:
             application/json: {
-                "content": {
-                  "body": "Hello world!",
-                  "msgtype": "m.text"
-                },
-                "room_id": "!wfgy43Sg4a:matrix.org",
-                "sender": "@bob:matrix.org",
-                "event_id": "$asfDuShaf7Gafaw:matrix.org",
-                "type": "m.room.message"
-              }
+              "room_id": "!636q39766251:matrix.org",
+              "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
+            }
           schema:
             allOf:
               - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
         404:
           description: The event was not found or you do not have permission to read this event.
+          examples:
+            application/json: {
+                "errcode": "M_NOT_FOUND",
+                "error": "Event not found."
+              }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Room participation
   "/rooms/{roomId}/state/{eventType}/{stateKey}":
     get:
       summary: Get the state identified by the type and key.
       description: |-
+        .. For backwards compatibility with older links...
+        .. _`get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state-eventtype`:
+
         Looks up the contents of a state event in a room. If the user is
         joined to the room then the state is taken from the current
         state of the room. If the user has left the room then the state is
@@ -97,51 +101,11 @@ paths:
         - in: path
           type: string
           name: stateKey
-          description: The key of the state to look up.
+          description: |-
+            The key of the state to look up. Defaults to an empty string. When
+            an empty string, the trailing slash on this endpoint is optional.
           required: true
           x-example: ""
-      responses:
-        200:
-          description: The content of the state event.
-          examples:
-            application/json: {
-              "name": "Example room name"}
-          schema:
-            type: object
-        404:
-          description: The room has no state with the given type or key.
-        403:
-          description: >
-            You aren't a member of the room and weren't previously a
-            member of the room.
-      tags:
-        - Room participation
-  "/rooms/{roomId}/state/{eventType}":
-    get:
-      summary: Get the state identified by the type, with the empty state key.
-      description: |-
-        Looks up the contents of a state event in a room. If the user is
-        joined to the room then the state is taken from the current
-        state of the room. If the user has left the room then the state is
-        taken from the state of the room when they left.
-
-        This looks up the state event with the empty state key.
-      operationId: getRoomStateByType
-      security:
-        - accessToken: []
-      parameters:
-        - in: path
-          type: string
-          name: roomId
-          description: The room to look up the state in.
-          required: true
-          x-example: "!636q39766251:example.com"
-        - in: path
-          type: string
-          name: eventType
-          description: The type of state to look up.
-          required: true
-          x-example: "m.room.name"
       responses:
         200:
           description: The content of the state event.
@@ -178,84 +142,23 @@ paths:
           description: The current state of the room
           examples:
             application/json: [
-                {
-                    "age": 7148266897,
-                    "content": {
-                        "join_rule": "public"
-                    },
-                    "event_id": "$14259997323TLwtb:example.com",
-                    "origin_server_ts": 1425999732392,
-                    "room_id": "!636q39766251:example.com",
-                    "state_key": "",
-                    "type": "m.room.join_rules",
-                    "sender": "@alice:example.com"
-                },
-                {
-                    "age": 6547561012,
-                    "content": {
-                        "avatar_url": "mxc://example.com/fzysBrHpPEeTGANCVLXWXNMI#auto",
-                        "membership": "join"
-                    },
-                    "event_id": "$1426600438280zExKY:example.com",
-                    "membership": "join",
-                    "origin_server_ts": 1426600438277,
-                    "room_id": "!636q39766251:example.com",
-                    "state_key": "@alice:example.com",
-                    "type": "m.room.member",
-                    "sender": "@alice:example.com"
-                },
-                {
-                    "age": 7148267200,
-                    "content": {
-                        "creator": "@alice:example.com"
-                    },
-                    "event_id": "$14259997320KhbwJ:example.com",
-                    "origin_server_ts": 1425999732089,
-                    "room_id": "!636q39766251:example.com",
-                    "state_key": "",
-                    "type": "m.room.create",
-                    "sender": "@alice:example.com"
-                },
-                {
-                    "age": 1622568720,
-                    "content": {
-                        "avatar_url": "mxc://example.com/GCmhgzMPRjqgpODLsNQzVuHZ#auto",
-                        "displayname": "Bob",
-                        "membership": "join"
-                    },
-                    "event_id": "$1431525430134MxlLX:example.com",
-                    "origin_server_ts": 1431525430569,
-                    "replaces_state": "$142652023736BSXcM:example.com",
-                    "room_id": "!636q39766251:example.com",
-                    "state_key": "@bob:example.com",
-                    "type": "m.room.member",
-                    "sender": "@bob:example.com"
-                },
-                {
-                    "age": 7148267004,
-                    "content": {
-                        "ban": 50,
-                        "events": {
-                            "m.room.name": 100,
-                            "m.room.power_levels": 100
-                         },
-                         "events_default": 0,
-                         "kick": 50,
-                         "redact": 50,
-                         "state_default": 50,
-                         "users": {
-                             "@alice:example.com": 100
-                         },
-                         "users_default": 0
-                    },
-                    "event_id": "$14259997322mqfaq:example.com",
-                    "origin_server_ts": 1425999732285,
-                    "room_id": "!636q39766251:example.com",
-                    "state_key": "",
-                    "type": "m.room.power_levels",
-                    "sender": "@alice:example.com"
-                }
-              ]
+              {
+                "room_id": "!636q39766251:example.com",
+                "$ref": "definitions/event-schemas/examples/m.room.join_rules"
+              },
+              {
+                "room_id": "!636q39766251:example.com",
+                "$ref": "definitions/event-schemas/examples/m.room.member"
+              },
+              {
+                "room_id": "!636q39766251:example.com",
+                "$ref": "definitions/event-schemas/examples/m.room.create"
+              },
+              {
+                "room_id": "!636q39766251:example.com",
+                "$ref": "definitions/event-schemas/examples/m.room.power_levels"
+              }
+            ]
           schema:
             type: array
             title: RoomState
@@ -288,6 +191,44 @@ paths:
           description: The room to get the member events for.
           required: true
           x-example: "!636q39766251:example.com"
+        - in: query
+          name: at
+          type: string
+          description: |-
+            The point in time (pagination token) to return members for in the room.
+            This token can be obtained from a ``prev_batch`` token returned for
+            each room by the sync API. Defaults to the current state of the room,
+            as determined by the server.
+          x-example: "YWxsCgpOb25lLDM1ODcwOA"
+        # XXX: As mentioned in MSC1227, replacing `[not_]membership` with a JSON
+        # filter might be a better alternative.
+        # See https://github.com/matrix-org/matrix-doc/issues/1337
+        - in: query
+          name: membership
+          type: string
+          enum:
+            - join
+            - invite
+            - leave
+            - ban
+          description: |-
+            The kind of membership to filter for. Defaults to no filtering if
+            unspecified. When specified alongside ``not_membership``, the two
+            parameters create an 'or' condition: either the membership *is*
+            the same as ``membership`` **or** *is not* the same as ``not_membership``.
+          x-example: "join"
+        - in: query
+          name: not_membership
+          type: string
+          enum:
+            - join
+            - invite
+            - leave
+            - ban
+          description: |-
+            The kind of membership to exclude from the results. Defaults to no
+            filtering if unspecified.
+          x-example: leave
       security:
         - accessToken: []
       responses:
@@ -300,33 +241,8 @@ paths:
             application/json: {
                 "chunk": [
                   {
-                    "age": 6547561012,
-                    "content": {
-                      "avatar_url": "mxc://example.com/fzysBrHpPEeTGANCVLXWXNMI#auto",
-                      "membership": "join"
-                    },
-                    "event_id": "$1426600438280zExKY:example.com",
-                    "membership": "join",
-                    "origin_server_ts": 1426600438277,
                     "room_id": "!636q39766251:example.com",
-                    "state_key": "@alice:example.com",
-                    "type": "m.room.member",
-                    "sender": "@alice:example.com"
-                  },
-                  {
-                    "age": 1622568720,
-                    "content": {
-                        "avatar_url": "mxc://example.com/GCmhgzMPRjqgpODLsNQzVuHZ#auto",
-                        "displayname": "Bob",
-                        "membership": "join"
-                    },
-                    "event_id": "$1431525430134MxlLX:example.com",
-                    "origin_server_ts": 1431525430569,
-                    "replaces_state": "$142652023736BSXcM:example.com",
-                    "room_id": "!636q39766251:example.com",
-                    "state_key": "@bob:example.com",
-                    "type": "m.room.member",
-                    "sender": "@bob:example.com"
+                    "$ref": "definitions/event-schemas/examples/m.room.member"
                   }
                 ]
               }

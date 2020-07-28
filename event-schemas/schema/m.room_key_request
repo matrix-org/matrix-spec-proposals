@@ -38,7 +38,7 @@ properties:
       action:
         enum:
           - request
-          - cancel_request
+          - request_cancellation
         type: string
       requesting_device_id:
         description: ID of the device requesting the key.

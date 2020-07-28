@@ -15,5 +15,6 @@
     "prev_events": [
         "$base64encodedeventid",
         "$adifferenteventid"
-    ]
+    ],
+    "redacts": "$some/old+event"
 }

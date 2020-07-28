@@ -1,0 +1,22 @@
+digraph {
+A1 [label="A's PDP-11"]
+A2 [label="A's Osborne 2"]
+AM [label="A's master key"]
+AS [label="A's self-signing key"]
+AU [label="A's user-signing key"]
+BM [label="B's master key"]
+BU [label="B's user-signing key"]
+BS [label="B's self-signing key"]
+B1 [label="B's Dynabook"]
+B2 [label="B's VAX"]
+AS -> A1
+AS -> A2
+AM -> AS
+AM -> AU
+AU -> BM
+BM -> BS
+BM -> BU
+BU -> AM
+BS -> B1
+BS -> B2
+}

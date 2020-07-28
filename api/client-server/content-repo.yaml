@@ -1,4 +1,5 @@
 # Copyright 2016 OpenMarket Ltd
+# Copyright 2019 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,7 +42,7 @@ paths:
           name: Content-Type
           type: string
           description: The content type of the file being uploaded
-          x-example: "Content-Type: audio/mpeg"
+          x-example: "Content-Type: application/pdf"
         - in: query
           type: string
           x-example: "War and Peace.pdf"
@@ -51,24 +52,48 @@ paths:
           name: "<content>"
           description: The content to be uploaded.
           required: true
+          x-example: "<bytes>" # so the spec shows "<bytes>" without quotes.
           schema:
             type: string
             example: "<bytes>"
             format: byte
       responses:
         200:
-          description: The MXC URI for the uploaded content.
+          description: The `MXC URI`_ for the uploaded content.
           schema:
             type: object
             required: ["content_uri"]
             properties:
               content_uri:
                 type: string
-                description: "The MXC URI to the uploaded content."
+                description: "The `MXC URI`_ to the uploaded content."
           examples:
             application/json: {
-                "content_uri": "mxc://example.com/AQwafuaFswefuhsfAFAgsw"
-              }
+              "content_uri": "mxc://example.com/AQwafuaFswefuhsfAFAgsw"
+            }
+        403:
+          description: |-
+            The user does not have permission to upload the content. Some reasons for this error include:
+
+            - The server does not permit the file type.
+            - The user has reached a quota for uploaded content.
+          examples:
+            application/json: {
+              "errcode": "M_FORBIDDEN",
+              "error": "Cannot upload this content"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+        413:
+          description: |-
+            The uploaded content is too large for the server.
+          examples:
+            application/json: {
+              "errcode": "M_TOO_LARGE",
+              "error": "Cannot upload files larger than 100mb"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
         429:
           description: This request was rate-limited.
           schema:
@@ -103,7 +128,7 @@ paths:
           default: true
           description: |
             Indicates to the server that it should not attempt to fetch the media if it is deemed
-            remote. This is to prevent routing loops where the server contacts itself. Defaults to 
+            remote. This is to prevent routing loops where the server contacts itself. Defaults to
             true if not provided.
       responses:
         200:
@@ -113,10 +138,23 @@ paths:
               description: "The content type of the file that was previously uploaded."
               type: "string"
             Content-Disposition:
-              description: "The name of the file that was previously uploaded, if set."
+              description: |-
+                The name of the file that was previously uploaded, if set.
               type: "string"
           schema:
             type: file
+            # This is a workaround for us not being able to say the response is required.
+            description: "**Required.** The bytes for the uploaded file."
+        502:
+          description: |-
+            The content is too large for the server to serve.
+          examples:
+            application/json: {
+              "errcode": "M_TOO_LARGE",
+              "error": "Content is too large to serve"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
         429:
           description: This request was rate-limited.
           schema:
@@ -125,7 +163,11 @@ paths:
         - Media
   "/download/{serverName}/{mediaId}/{fileName}":
     get:
-      summary: "Download content from the content repository as a given filename."
+      summary: Download content from the content repository overriding the file name
+      description: |-
+        This will download content from the content repository (same as
+        the previous endpoint) but replace the target file name with the one
+        provided by the caller.
       operationId: getContentOverrideName
       produces: ["*/*"]
       parameters:
@@ -148,8 +190,7 @@ paths:
           name: fileName
           x-example: filename.jpg
           required: true
-          description: |
-            The filename to give in the Content-Disposition
+          description: A filename to give in the ``Content-Disposition`` header.
         - in: query
           type: boolean
           name: allow_remote
@@ -158,7 +199,7 @@ paths:
           default: true
           description: |
             Indicates to the server that it should not attempt to fetch the media if it is deemed
-            remote. This is to prevent routing loops where the server contacts itself. Defaults to 
+            remote. This is to prevent routing loops where the server contacts itself. Defaults to
             true if not provided.
       responses:
         200:
@@ -168,10 +209,24 @@ paths:
               description: "The content type of the file that was previously uploaded."
               type: "string"
             Content-Disposition:
-              description: "The name of file given in the request"
+              description: |-
+                The ``fileName`` requested or the name of the file that was previously
+                uploaded, if set.
               type: "string"
           schema:
             type: file
+            # This is a workaround for us not being able to say the response is required.
+            description: "**Required.** The bytes for the uploaded file."
+        502:
+          description: |-
+            The content is too large for the server to serve.
+          examples:
+            application/json: {
+              "errcode": "M_TOO_LARGE",
+              "error": "Content is too large to serve"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
         429:
           description: This request was rate-limited.
           schema:
@@ -180,7 +235,10 @@ paths:
         - Media
   "/thumbnail/{serverName}/{mediaId}":
     get:
-      summary: "Download a thumbnail of the content from the content repository."
+      summary: Download a thumbnail of content from the content repository
+      description: |-
+        Download a thumbnail of content from the content repository.
+        See the `thumbnailing <#thumbnails>`_ section for more information.
       operationId: getContentThumbnail
       produces: ["image/jpeg", "image/png"]
       parameters:
@@ -188,7 +246,7 @@ paths:
           type: string
           name: serverName
           required: true
-          x-example: matrix.org
+          x-example: example.org
           description: |
             The server name from the ``mxc://`` URI (the authoritory component)
         - in: path
@@ -202,32 +260,36 @@ paths:
           type: integer
           x-example: 64
           name: width
+          required: true
           description: |-
-            The *desired* width of the thumbnail. The actual thumbnail may not
-            match the size specified.
+            The *desired* width of the thumbnail. The actual thumbnail may be
+            larger than the size specified.
         - in: query
           type: integer
           x-example: 64
           name: height
+          required: true
           description: |-
-            The *desired* height of the thumbnail. The actual thumbnail may not
-            match the size specified.
+            The *desired* height of the thumbnail. The actual thumbnail may be
+            larger than the size specified.
         - in: query
           type: string
           enum: ["crop", "scale"]
           name: method
           x-example: "scale"
-          description: The desired resizing method.
+          description: |-
+            The desired resizing method. See the `thumbnailing <#thumbnails>`_
+            section for more information.
         - in: query
           type: boolean
           name: allow_remote
           x-example: false
           required: false
           default: true
-          description: |
-            Indicates to the server that it should not attempt to fetch the media if it is deemed
-            remote. This is to prevent routing loops where the server contacts itself. Defaults to 
-            true if not provided.
+          description: |-
+            Indicates to the server that it should not attempt to fetch
+            the media if it is deemed remote. This is to prevent routing loops
+            where the server contacts itself. Defaults to true if not provided.
       responses:
         200:
           description: "A thumbnail of the requested content."
@@ -238,6 +300,40 @@ paths:
               enum: ["image/jpeg", "image/png"]
           schema:
             type: file
+            # This is a workaround for us not being able to say the response is required.
+            description: "**Required.** The bytes for the thumbnail."
+        400:
+          description: |-
+            The request does not make sense to the server, or the server cannot thumbnail
+            the content. For example, the client requested non-integer dimensions or asked
+            for negatively-sized images.
+          examples:
+            application/json: {
+              "errcode": "M_UNKNOWN",
+              "error": "Cannot generate thumbnails for the requested content"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+        413:
+          description: |-
+            The local content is too large for the server to thumbnail.
+          examples:
+            application/json: {
+              "errcode": "M_TOO_LARGE",
+              "error": "Content is too large to thumbnail"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+        502:
+          description: |-
+            The remote content is too large for the server to thumbnail.
+          examples:
+            application/json: {
+              "errcode": "M_TOO_LARGE",
+              "error": "Content is too large to thumbnail"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
         429:
           description: This request was rate-limited.
           schema:
@@ -247,6 +343,16 @@ paths:
   "/preview_url":
     get:
       summary: "Get information about a URL for a client"
+      description: |-
+        Get information about a URL for the client. Typically this is called when a
+        client sees a URL in a message and wants to render a preview for the user.
+
+        .. Note::
+          Clients should consider avoiding this endpoint for URLs posted in encrypted
+          rooms. Encrypted rooms often contain more sensitive information the users
+          do not want to share with the homeserver, and this can mean that the URLs
+          being shared should also not be shared with the homeserver.
+
       operationId: getUrlPreview
       produces: ["application/json"]
       security:
@@ -256,7 +362,7 @@ paths:
           type: string
           x-example: "https://matrix.org"
           name: url
-          description: "The URL to get a preview of"
+          description: "The URL to get a preview of."
           required: true
         - in: query
           type: integer
@@ -284,7 +390,7 @@ paths:
               "og:image":
                 type: string
                 description: |-
-                  An MXC URI to the image. Omitted if there is no image.
+                  An `MXC URI`_ to the image. Omitted if there is no image.
           examples:
             application/json: {
                 "og:title": "Matrix Blog Post",
@@ -328,7 +434,7 @@ paths:
               m.upload.size:
                 type: integer
                 format: int64
-                description: |- 
+                description: |-
                   The maximum size an upload can be in bytes.
                   Clients SHOULD use this as a guide when uploading content.
                   If not listed or null, the size limit should be treated as unknown.

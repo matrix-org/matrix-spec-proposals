@@ -33,4 +33,7 @@ is to pick up to 3 unique servers where the first one is that of the user with t
 highest power level in the room, provided that power level is 50 or higher. The other
 2 servers should be the most popular servers in the room based on the number of joined
 users. This same heuristic should apply to the first server if no user meets the power
-level requirements.
+level requirements. Servers blocked by server ACLs should not be picked because they
+are unlikely to continue being residents of the room. Similarly, IP addresses should
+not be picked because they cannot be redirected to another location like domain names
+can, making them a higher risk option.

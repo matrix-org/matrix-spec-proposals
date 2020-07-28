@@ -36,6 +36,7 @@ paths:
         This is primarly used for auto-discovery and health check purposes
         by entities acting as a client for the identity server.
       operationId: ping
+      deprecated: true
       responses:
         200:
           description: An identity server is ready to serve requests.
