@@ -57,3 +57,9 @@ with the authenticated endpoints.
   GDPR for the media repo.
 * [matrix-doc#1341](https://github.com/matrix-org/matrix-doc/issues/1341) - Concerns
   with servers using the client-server endpoints to download media over federation.
+
+## Unstable prefix
+
+While this MSC is not in a released version of the spec, use `unstable/org.matrix.msc1902` in place
+of the version. For example, `/_matrix/client/r0/media/config` becomes
+`/_matrix/client/unstable/org.matrix.msc1902/media/config`.
