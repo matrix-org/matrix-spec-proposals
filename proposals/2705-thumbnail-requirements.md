@@ -54,3 +54,7 @@ As mentioned, servers could face resource issues if this feature is left uncheck
 While this MSC is not in a released version of the spec, implementations should use `org.matrix.msc2705`
 as a prefix. For example, `?org.matrix.msc2705.animated=true`. No unstable endpoints are required due
 to backwards compatibility.
+
+## Implementations
+
+This MSC is already implemented by matrix-media-repo.
