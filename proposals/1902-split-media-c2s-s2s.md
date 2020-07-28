@@ -1,55 +1,57 @@
-## Splitting the media repo into a client-side and server-side component
+# Splitting the media repo into a client-side and server-side component
 
 Currently Matrix relies on media being pulled from servers using the same set
 of endpoints which clients use. This has so far meant that media repository
-implementations cannot reliably enforce auth on given resources.
+implementations cannot reliably enforce auth on given resources, and implementations
+are left confused/concerned about the lack of split in the endpoints.
 
-### Proposal
+## Proposal
 
-Servers shall use `/_matrix/media/v1` to access the media repository, adding
-applicable headers for any federation request they would normally do. The media
-repository must validate the request.
+Instead of using `/_matrix/media` for both servers and clients, servers must now use
+`/_matrix/federation/v1/remote_media` and clients must use `/_matrix/client/r0/media`.
 
-Clients shall use `/_matrix/client/{version}/media` to access the media repository,
-providing an access token as it normally would. More detailed access control for
-media is left as a task for [MSC701](https://github.com/matrix-org/matrix-doc/issues/701).
-Currently, `{version}` may only be `r0` (or `unstable` for testing purposes).
+To support backwards compatibility and logical usage of the media repo, only downloads
+and thumbnails will be available over the new federation prefix. The remaining endpoints
+will only be available through the client-server API.
 
-Besides auth, the endpoints covered by the media repository are left otherwise
-untouched. For example, the way to download a file from a server is still a request
-to `GET /_matrix/media/{version}/download/remote.example.org/mediaid`. The similar
-client endpoint would be `GET /_matrix/client/{version}/media/download/remote.example.org/mediaid`.
+The mapping of each endpoint would look like:
 
-### Changes required by known implementations
+| Old | Client-Server | Federation |
+|-----|---------------|------------|
+| `/_matrix/media/:version/download/:origin/:mediaId` | `/_matrix/client/r0/media/download/:origin/:mediaId` | `/_matrix/federation/v1/remote_media/download/:origin/:mediaId` |
+| `/_matrix/media/:version/thumbnail/:origin/:mediaId` | `/_matrix/client/r0/media/thumbnail/:origin/:mediaId` | `/_matrix/federation/v1/remote_media/thumbnail/:origin/:mediaId` |
+| `/_matrix/media/:version/upload` | `/_matrix/client/r0/media/upload` | N/A |
+| `/_matrix/media/:version/preview_url` | `/_matrix/client/r0/media/preview_url` | N/A |
+| `/_matrix/media/:version/config` | `/_matrix/client/r0/media/config` | N/A |
 
-**Clients**:
-* Use the new endpoint, supplying required auth. Historically clients have used
-  `/_matrix/media/` to download media unauthenticated, and media repository
-  implementations should consider this before locking down the endpoint for servers
-  only. Servers are encouraged to respect a reasonable transition period for clients
-  to adopt the new spec, once landed.
-* Potentially change how they download files. Currently many just stick the URL
-  into an `<img src="..." />` (or equivalent) and hope for the best, however this
-  opens up the user to risk if the access token were to be passed via the query
-  string: users would more often be accidentally handing out their access token to
-  people. Instead, clients should consider downloading media via other means and
-  using blobs to populate img elements (or whatever their equivalent is for their
-  chosen platform).
-* Actually use the `r0` route if they aren't already. Some clients use the `v1`
-  endpoints to show media to users, which is incorrect. Likewise, clients should
-  not be using the `unstable` editions of these in released versions.
+No schema changes are proposed to the endpoints, aside from the obvious pathing differences.
 
-**Servers / Media repository implementations**:
-* Mature server implementations currently require no changes here: they already
-  make requests to the `v1` route and sign the request appropriately.
-* Less mature implementations (such as the author's own media repository impl) will
-  need to verify they make requests to the right place, and sign requests where
-  appropriate.
-* All implementations will need to verify the request is correctly signed for `v1`
-  endpoints, and access token restrictions on the new `r0` endpoints.
+### Federation endpoints
 
+Because media is not (currently) actively federated, the endpoint is named "remote_media"
+to imply it is not a resource the target server is expected to have.
 
-### References
+The federation endpoints will require standard [request authentication](https://matrix.org/docs/spec/server_server/r0.1.4#request-authentication).
+
+### Client-server endpoints
+
+With the exception of `/download` and `/thumbnail`, all media endpoints require authentication.
+We could require access tokens on media, however [MSC701](https://github.com/matrix-org/matrix-doc/issues/701)
+and similar are better positioned to handle the problem.
+
+## Changes required by known implementations
+
+Clients and servers will have to adopt the new endpoints entirely. It is expected that
+existing implementations will continue to use the legacy routes for a short time while
+these changes gain popularity in the ecosystem.
+
+In a prior version of this proposal it was suggested to use `/_matrix/media/v1` for
+server-server communication with the authentication requirements described here, however
+due to some clients still using `/_matrix/media/v1` (despite the endpoint changing to be
+`/_matrix/media/r0` some versions ago) it is not feasible to support backwards compatibility
+with the authenticated endpoints.
+
+## References
 
 * [MSC701](https://github.com/matrix-org/matrix-doc/issues/701) - Access control and
   GDPR for the media repo.
