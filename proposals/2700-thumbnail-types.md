@@ -1,9 +1,12 @@
-# MSc2700: Thumbnail requirements for the media repo
+# MSC2700: Thumbnail requirements for the media repo
 
 Currently what can be thumbnailed is left as an implementation concern and not one that can be
 predicted or anticipated by clients. This relatively small proposal aims to fix that.
 
 ## Proposal
+
+**Note**: This proposal intentionally does not specify what mimetypes to return for thumbnails.
+See [MSC2705](https://github.com/matrix-org/matrix-doc/pull/2705) for details on those restrictions.
 
 This proposal does not alter how the thumbnails are generated, just that they can be generated.
 
