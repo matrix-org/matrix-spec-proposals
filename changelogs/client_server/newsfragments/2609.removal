@@ -1,0 +1,1 @@
+Remove unimplemented ``m.login.oauth2`` and ``m.login.token`` user-interactive authentication mechanisms.
