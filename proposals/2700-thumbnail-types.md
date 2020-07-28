@@ -1,4 +1,4 @@
-# MSC0000: Thumbnail requirements for the media repo
+# MSc2700: Thumbnail requirements for the media repo
 
 Currently what can be thumbnailed is left as an implementation concern and not one that can be
 predicted or anticipated by clients. This relatively small proposal aims to fix that.
