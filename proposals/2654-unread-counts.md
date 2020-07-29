@@ -51,7 +51,7 @@ included in the count:
 
 * include a `m.relates_to` parameter in its content that includes a `rel_type`
   parameter, which value is `m.replace`. This matches the definition of an edit
-  in [MSC1849](https://github.com/matrix-org/matrix-doc/pull/1849).
+  in [MSC2676](https://github.com/matrix-org/matrix-doc/pull/2676).
 * have the type `m.room.message`, no `state_key`, and include a `msgtype`
   parameter in its content which value is `m.notice`.
 
@@ -78,8 +78,8 @@ proposal.
 ## Potential issues
 
 This MSC mentions edits, which are specified in
-[MSC1849](https://github.com/matrix-org/matrix-doc/pull/1849). Therefore, it is
-unclear whether this MSC can be merged before MSC1849.
+[MSC2676](https://github.com/matrix-org/matrix-doc/pull/2676). Therefore, it is
+unclear whether this MSC can be merged before MSC2676.
 
 Unlike notifications, it is not possible to not have the homeserver provide an
 unread count for a given room. A way to do this will be described in a separate
