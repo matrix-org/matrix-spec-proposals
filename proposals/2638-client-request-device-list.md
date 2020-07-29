@@ -34,7 +34,7 @@ user's device list to their homeserver, using the [`GET
 federation endpoint. "device list update" here describes both a
 `m.device_list_update` EDU and a `m.signing_key_update` one.
 
-The proposal descibed here fixes this issue by adding a new endpoint to the
+The proposal described here fixes this issue by adding a new endpoint to the
 client-server API, allowing clients to request homeservers to resync device
 lists. Clients could then either expose a button a user can use when necessary,
 or call this endpoint on specific actions, or both.
