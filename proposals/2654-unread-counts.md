@@ -37,7 +37,7 @@ in the `Unread Notification Counts` section, clients should use the
 An event should be counted in the unread count only if it matches at least one
 of the following criteria:
 
-* include a non-empty `body` parameter, which value is a string, in its content
+* include a non-empty `body` field of type string, in its content
 * be a state event which type is one of:
     * `m.room.name`
     * `m.room.topic`
