@@ -1098,7 +1098,6 @@ process. The page will attempt to call the JavaScript function
 
 Non-credential parameters valid for the ``/login`` endpoint can be provided as query
 string parameters here. For example::
-These are to be forwarded to the login endpoint during the login process.
 
     GET /_matrix/static/client/login/?device_id=GHTYAJCE
 
