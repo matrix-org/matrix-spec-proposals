@@ -41,8 +41,8 @@ of the following criteria:
 * be a state event which type is one of:
     * `m.room.name`
     * `m.room.topic`
-    * `m.room.power_levels`
     * `m.room.avatar`
+    * `m.room.tombstone`
 * be an encrypted message (i.e. have the `m.room.encrypted` type)
 
 Additionally, an event should _not_ be counted in the unread count if it matches
