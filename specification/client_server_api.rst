@@ -1096,6 +1096,12 @@ This returns an HTML and JavaScript page which can perform the entire login
 process. The page will attempt to call the JavaScript function
 ``window.onLogin`` when login has been successfully completed.
 
+Non-credential parameters valid for the ``/login`` endpoint can be provided as query
+string parameters here. These are to be forwarded to the login endpoint during the login
+process. For example::
+
+    GET /_matrix/static/client/login/?device_id=GHTYAJCE
+
 .. _Registration:
 
 Account registration and management
