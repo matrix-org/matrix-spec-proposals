@@ -1,4 +1,4 @@
-# MSC0000: Remove deprecated Identity Service endpoints
+# MSC2713: Remove deprecated Identity Service endpoints
 
 Implementations will have had plenty of time to adopt the new v2 API for Identity Servers, so
 we should clean out the old endpoints.
