@@ -14,7 +14,7 @@ transfers, as requested in [#1885].
 
 ### Content repository behavior
 The proposal adds two new endpoints to the content repository API and modifies
-the behavior of the download endpoint.
+the download endpoint.
 
 #### `POST /_matrix/media/r0/create`
 Create a new MXC URI without content. Like `/upload`, this endpoint requires
@@ -44,20 +44,35 @@ TODO: decide if body is needed already and if yes, spec body schema
 #### `PUT /_matrix/media/r0/upload/{serverName}/{mediaId}`
 Upload content to a MXC URI that was created earlier. If the endpoint is called
 with a media ID that already has content, the request should be rejected with
-the error code `M_CANNOT_OVERWRITE_MEDIA`. This endpoint too requires auth.
+the error code `M_CANNOT_OVERWRITE_MEDIA` and HTTP status code 409. This endpoint
+requires auth.
 
 If the upload is successful, an empty JSON object and status code 200 is
 returned. If the serverName/mediaId combination is not known or not local, an
 `M_NOT_FOUND` error is returned. For other errors, such as file size, file type
 or user quota errors, the normal `/upload` rules apply.
 
-#### Behavior change in `/download`
-When another client tries to download media that has not yet been uploaded, the
-content repository should stall the request until it is uploaded. Optionally,
-content repository implementations may send the data that has already been
-uploaded and stream data as it comes in from the sender.
+#### Changes to the `/download` endpoint
+Two new query parameters are added: `max_stall` and `allow_stream`.
 
-TODO: this should have at least an option to not stall if there's no data yet
+* `max_stall` is an integer that specifies the maximum number of milliseconds
+  that the client is willing to wait for the upload to start (or finish, when
+  streaming is not enabled). The default value is 10000 (10 seconds).
+* `allow_stream` is a boolean that specifies whether or not the content
+  repository should stream data as it comes in from the sender. Defaults to
+  `true`.
+
+When another client tries to download media that is currently being uploaded,
+the content repository should send already uploaded data and stream new data as
+it comes in from the sender.
+
+If the upload is not started after the time limit, the content repository
+should return a `M_NOT_YET_UPLOADED` error. The error may include an additional
+`retry_after_ms` field to suggest when the client should try again.
+
+If streaming is not supported by the server, or if it's disabled with the query
+parameter, the content repository should act as if the upload has not started
+until the upload is finished.
 
 ## Tradeoffs
 
@@ -67,6 +82,15 @@ media.
 
 ## Security considerations
 
+## Unstable prefix
+While this MSC is not in a released version of the spec, implementations should
+use `net.maunium.msc2246` as a prefix and as a `unstable_features` flag in the
+`/versions` endpoint.
+
+* `POST /_matrix/media/unstable/net.maunium.msc2246/create`
+* `PUT /_matrix/media/unstable/net.maunium.msc2246/upload/{serverName}/{mediaId}`
+* `?net.maunium.msc2246.max_stall`
+* `?net.maunium.msc2246.allow_stream`
 
 [#1885]: https://github.com/matrix-org/matrix-doc/issues/1885
 [MSC701]: https://github.com/matrix-org/matrix-doc/issues/701
