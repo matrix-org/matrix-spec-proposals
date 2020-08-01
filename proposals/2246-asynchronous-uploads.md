@@ -53,9 +53,9 @@ returned. If the serverName/mediaId combination is not known or not local, an
 or user quota errors, the normal `/upload` rules apply.
 
 #### Changes to the `/download` endpoint
-Two new query parameters are added: `max_stall` and `allow_stream`.
+Two new query parameters are added: `max_stall_ms` and `allow_stream`.
 
-* `max_stall` is an integer that specifies the maximum number of milliseconds
+* `max_stall_ms` is an integer that specifies the maximum number of milliseconds
   that the client is willing to wait for the upload to start (or finish, when
   streaming is not enabled). The default value is 10000 (10 seconds).
 * `allow_stream` is a boolean that specifies whether or not the content
@@ -89,7 +89,7 @@ use `net.maunium.msc2246` as a prefix and as a `unstable_features` flag in the
 
 * `POST /_matrix/media/unstable/net.maunium.msc2246/create`
 * `PUT /_matrix/media/unstable/net.maunium.msc2246/upload/{serverName}/{mediaId}`
-* `?net.maunium.msc2246.max_stall`
+* `?net.maunium.msc2246.max_stall_ms`
 * `?net.maunium.msc2246.allow_stream`
 
 [#1885]: https://github.com/matrix-org/matrix-doc/issues/1885
