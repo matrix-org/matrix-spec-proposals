@@ -20,9 +20,9 @@ the download endpoint.
 Create a new MXC URI without content. Like `/upload`, this endpoint requires
 auth and returns the `content_uri` that can be used in events.
 
-This endpoint could have a JSON body that contains metadata, such as the mime
-type of the media that's going to be uploaded. In the future, the body could
-also contain access control settings (related: [MSC701]).
+The request body should be an empty JSON object. In the future, the body could
+be used for metadata about the file, such as the mime type or access control
+settings (related: [MSC701]).
 
 To prevent spam, servers should limit calls to this endpoint if the user has
 created many media IDs without uploading any content to them. The error code
@@ -30,9 +30,6 @@ for such a spam limit is `M_TOO_MANY_IDS_ASSIGNED`. Servers should also provide
 configuration options to let high-traffic clients like application services
 bypass these limits. The `rate_limited` flag in the appservice registration is
 one potential way to do this.
-
-##### Example request
-TODO: decide if body is needed already and if yes, spec body schema
 
 ##### Example response
 ```json
