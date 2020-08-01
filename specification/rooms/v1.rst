@@ -1,4 +1,5 @@
 .. Copyright 2017,2019 New Vector Ltd
+.. Copyright 2020 The Matrix.org Foundation C.I.C.
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -21,13 +22,57 @@ blocks for other room versions.
 .. contents:: Table of Contents
 .. sectnum::
 
+Client considerations
+---------------------
+
+Clients may need to consider some algorithms performed by the server for their own
+implementation.
+
+Redactions
+~~~~~~~~~~
+
+Upon receipt of a redaction event, the server must strip off any keys not in
+the following list:
+
+- ``event_id``
+- ``type``
+- ``room_id``
+- ``sender``
+- ``state_key``
+- ``content``
+- ``hashes``
+- ``signatures``
+- ``depth``
+- ``prev_events``
+- ``prev_state``
+- ``auth_events``
+- ``origin``
+- ``origin_server_ts``
+- ``membership``
+
+.. Note:
+   Some of the keys, such as ``hashes``, will appear on the federation-formatted
+   event and therefore the client may not be aware of them.
+
+The content object must also be stripped of all keys, unless it is one of
+one of the following event types:
+
+- ``m.room.member`` allows key ``membership``.
+- ``m.room.create`` allows key ``creator``.
+- ``m.room.join_rules`` allows key ``join_rule``.
+- ``m.room.power_levels`` allows keys ``ban``, ``events``, ``events_default``,
+  ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
+- ``m.room.aliases`` allows key ``aliases``.
+- ``m.room.history_visibility`` allows key ``history_visibility``.
+
 Server implementation components
 --------------------------------
 
 .. WARNING::
    The information contained in this section is strictly for server implementors.
    Applications which use the Client-Server API are generally unaffected by the
-   details contained here, and can safely ignore their presence.
+   intricacies contained here. The section above regarding client considerations
+   is the resource that Client-Server API use cases should reference.
 
 
 The algorithms defined here should only apply to version 1 rooms. Other algorithms
@@ -94,7 +139,7 @@ results of the resolution so far.
   passes authentication in :math:`R` and add it to :math:`R`.
 
 A *conflict* occurs between states where those states have different
-``event_ids`` for the same ``(state_type, state_key)``. The events thus
+``event_ids`` for the same ``(event_type, state_key)``. The events thus
 affected are said to be *conflicting* events.
 
 
@@ -112,7 +157,7 @@ The types of state events that affect authorization are:
 .. NOTE::
 
   Power levels are inferred from defaults when not explicitly supplied.
-  For example, mentions of the ``sender``'s power level can also refer 
+  For example, mentions of the ``sender``'s power level can also refer
   to the default power level for users in the room.
 
 The rules are as follows:
@@ -250,7 +295,7 @@ The rules are as follows:
    #. If there is no previous ``m.room.power_levels`` event in the room, allow.
 
    #. For the keys ``users_default``, ``events_default``,
-      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite`` check if they 
+      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite`` check if they
       were added, changed or removed. For each found alteration:
 
       i. If the current value is higher than the ``sender``'s current power level,
@@ -258,13 +303,13 @@ The rules are as follows:
 
       #. If the new value is higher than the ``sender``'s current power level,
          reject.
-         
-   #. For each entry being added, changed or removed in both the ``events`` and 
+
+   #. For each entry being added, changed or removed in both the ``events`` and
       ``users`` keys:
-      
+
       i. If the current value is higher than the ``sender``'s current power level,
          reject.
-         
+
       #. If the new value is higher than the ``sender``'s current power level,
          reject.
 
@@ -306,6 +351,12 @@ Event format
 Events in version 1 rooms have the following structure:
 
 {{definition_ss_pdu}}
+
+Canonical JSON
+~~~~~~~~~~~~~~
+
+Servers MUST NOT strictly enforce the JSON format specified in the
+`appendices <../appendices.html#canonical-json>`_ for the reasons described there.
 
 
 .. _`auth events selection`: ../server_server/%SERVER_RELEASE_LABEL%.html#auth-events-selection

@@ -30,6 +30,7 @@ paths:
       description: |-
         Determines if a given 3pid has been validated by a user.
       operationId: getValidated3pid
+      deprecated: true
       parameters:
         - in: query
           type: string
@@ -104,6 +105,7 @@ paths:
         ``application/x-form-www-urlencoded`` data.  However, this usage is
         deprecated.
       operationId: bind
+      deprecated: true
       parameters:
         - in: body
           name: body
@@ -221,6 +223,7 @@ paths:
         through to the client requesting an unbind through a homeserver, if the
         homeserver is acting on behalf of a client.
       operationId: unbind
+      deprecated: true
       parameters:
         - in: body
           name: body

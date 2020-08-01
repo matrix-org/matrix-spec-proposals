@@ -97,7 +97,7 @@ jobs:
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/api/client-server/index.html"; echo $DOCS_URL
   build-dev-scripts:
     docker:
-      - image: golang:1.8
+      - image: golang:1.10
     steps:
       - checkout
       - run:
@@ -121,4 +121,4 @@ workflows:
 
 notify:
   webhooks:
-    - url: https://giles.cadair.com/circleci
+    - url: https://giles.cadair.dev/circleci

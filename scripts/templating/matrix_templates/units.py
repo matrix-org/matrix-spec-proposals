@@ -211,9 +211,18 @@ def get_json_schema_object_fields(obj, enforce_title=False):
 
         key_type = additionalProps.get("x-pattern", "string")
         res = process_data_type(additionalProps)
+        tables = res["tables"]
+        val_title = res["title"]
+        gen_title = "{%s: %s}" % (key_type, val_title)
+        if res.get("enum_desc") and val_title != "enum":
+            # A map to enum needs another table with enum description
+            tables.append(TypeTable(
+                title=val_title,
+                rows=[TypeTableRow(key="(mapped value)", title="enum", desc=res["desc"])]
+            ))
         return {
-            "title": "{%s: %s}" % (key_type, res["title"]),
-            "tables": res["tables"],
+            "title": obj_title if obj_title else gen_title,
+            "tables": tables,
         }
 
     if not props:
@@ -338,8 +347,8 @@ def process_data_type(prop, required=False, enforce_title=True):
         prop_title = prop_type
 
     if prop.get("enum"):
+        prop_title = prop.get("title", "enum")
         if len(prop["enum"]) > 1:
-            prop_title = "enum"
             enum_desc = (
                 "One of: %s" % json.dumps(prop["enum"])
             )
@@ -586,7 +595,21 @@ class MatrixUnits(Units):
                 raise Exception("Error handling parameter %s" % param_name, e)
         # endfor[param]
         good_response = None
-        for code in sorted(endpoint_swagger.get("responses", {}).keys()):
+        endpoint_status_codes = endpoint_swagger.get("responses", {}).keys()
+        # Check to see if any of the status codes are strings ("4xx") and if
+        # so convert everything to a string to avoid comparing ints and strings.
+        has_string_status = False
+        for code in endpoint_status_codes:
+            if isinstance(code, str):
+                has_string_status = True
+                break
+        if has_string_status:
+            endpoint_status_codes = [str(i) for i in endpoint_status_codes]
+        for code in sorted(endpoint_status_codes):
+            # Convert numeric responses to ints, assuming they got converted
+            # above.
+            if isinstance(code, str) and code.isdigit():
+                code = int(code)
             res = endpoint_swagger["responses"][code]
             if not good_response and code == 200:
                 good_response = res
@@ -886,6 +909,13 @@ class MatrixUnits(Units):
         schema["content_fields"] = get_tables_for_schema(
             Units.prop(json_schema, "properties/content")
         )
+
+        # Include UnsignedData if it is present on the object
+        unsigned = Units.prop(json_schema, "properties/unsigned")
+        if unsigned:
+            tbls = get_tables_for_schema(unsigned)
+            for tbl in tbls:
+                schema["content_fields"].append(tbl)
 
         # grab msgtype if it is the right kind of event
         msgtype = Units.prop(

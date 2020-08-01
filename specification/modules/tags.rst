@@ -55,7 +55,7 @@ The tag namespace is defined as follows:
   display name directly). These non-namespaced tags are supported for historical reasons. New tags should use
   one of the defined namespaces above.
 
-Two special names are listed in the specification:
+Several special names are listed in the specification:
 The following tags are defined in the ``m.*`` namespace:
 
 * ``m.favourite``: The user's favourite rooms. These should be shown with higher precedence than other rooms.

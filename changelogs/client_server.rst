@@ -1,3 +1,84 @@
+r0.6.1
+======
+
+New Endpoints
+-------------
+
+- Added ``/rooms/{roomId}/aliases`` for retrieving local aliases for a room. (`#2562 <https://github.com/matrix-org/matrix-doc/issues/2562>`_)
+
+
+Backwards Compatible Changes
+----------------------------
+
+- Added data structures for defining moderation policies in rooms per `MSC2313 <https://github.com/matrix-org/matrix-doc/pull/2313>`_. (`#2434 <https://github.com/matrix-org/matrix-doc/issues/2434>`_)
+- Optionally invalidate other access tokens during password modification per `MSC2457 <https://github.com/matrix-org/matrix-doc/pull/2457>`_. (`#2523 <https://github.com/matrix-org/matrix-doc/issues/2523>`_)
+- Add User-Interactive Authentication for SSO-backed homeserver per `MSC2454 <https://github.com/matrix-org/matrix-doc/pull/2454>`_. (`#2532 <https://github.com/matrix-org/matrix-doc/issues/2532>`_)
+- Add soft-logout support per `MSC1466 <https://github.com/matrix-org/matrix-doc/issues/1466>`_. (`#2546 <https://github.com/matrix-org/matrix-doc/issues/2546>`_)
+- Replaced legacy room alias handling with a more sustainable solution per `MSC2432 <https://github.com/matrix-org/matrix-doc/pull/2432>`_. (`#2562 <https://github.com/matrix-org/matrix-doc/issues/2562>`_)
+
+
+Spec Clarifications
+-------------------
+
+- List available enum values for the room versions capability. (`#2245 <https://github.com/matrix-org/matrix-doc/issues/2245>`_)
+- Fix various spelling errors throughout the specification. (`#2351 <https://github.com/matrix-org/matrix-doc/issues/2351>`_, `#2415 <https://github.com/matrix-org/matrix-doc/issues/2415>`_, `#2453 <https://github.com/matrix-org/matrix-doc/issues/2453>`_, `#2524 <https://github.com/matrix-org/matrix-doc/issues/2524>`_, `#2553 <https://github.com/matrix-org/matrix-doc/issues/2553>`_, `#2569 <https://github.com/matrix-org/matrix-doc/issues/2569>`_)
+- Minor clarifications to token-based User-Interactive Authentication. (`#2369 <https://github.com/matrix-org/matrix-doc/issues/2369>`_)
+- Minor clarification for what the user directory searches. (`#2381 <https://github.com/matrix-org/matrix-doc/issues/2381>`_)
+- Fix key export format example to match the specification. (`#2430 <https://github.com/matrix-org/matrix-doc/issues/2430>`_)
+- Clarify the IV data type for encrypted files. (`#2492 <https://github.com/matrix-org/matrix-doc/issues/2492>`_)
+- Fix the ``.m.rule.contains_user_name`` default push rule to set the highlight tweak. (`#2519 <https://github.com/matrix-org/matrix-doc/issues/2519>`_)
+- Clarify that an ``event_id`` is returned when sending events. (`#2525 <https://github.com/matrix-org/matrix-doc/issues/2525>`_)
+- Fix some numbers in the specification to match their explanation text. (`#2554 <https://github.com/matrix-org/matrix-doc/issues/2554>`_)
+- Move redaction algorithm into the room version specifications. (`#2563 <https://github.com/matrix-org/matrix-doc/issues/2563>`_)
+- Clarify signature object structures for encryption. (`#2566 <https://github.com/matrix-org/matrix-doc/issues/2566>`_)
+- Clarify which events are created as part of ``/createRoom``. (`#2571 <https://github.com/matrix-org/matrix-doc/issues/2571>`_)
+- Remove claims that the homeserver is exclusively responsible for profile information in membership events. (`#2574 <https://github.com/matrix-org/matrix-doc/issues/2574>`_)
+
+
+r0.6.0
+======
+
+Breaking Changes
+----------------
+
+- Add ``id_access_token`` as a required request parameter to a few endpoints which require an ``id_server`` parameter as part of `MSC2140 <https://github.com/matrix-org/matrix-doc/pull/2140>`_. (`#2255 <https://github.com/matrix-org/matrix-doc/issues/2255>`_)
+
+
+New Endpoints
+-------------
+
+- Add ``POST /account/3pid/unbind`` for removing a 3PID from an identity server. (`#2282 <https://github.com/matrix-org/matrix-doc/issues/2282>`_)
+
+
+Backwards Compatible Changes
+----------------------------
+
+- Add ``M_USER_DEACTIVATED`` error code. (`#2234 <https://github.com/matrix-org/matrix-doc/issues/2234>`_)
+- Remove ``bind_msisdn`` and ``bind_email`` from ``/register`` now that the identity server's bind endpoint requires authentication. (`#2279 <https://github.com/matrix-org/matrix-doc/issues/2279>`_)
+- Add ``m.identity_server`` account data for tracking the user's preferred identity server. (`#2281 <https://github.com/matrix-org/matrix-doc/issues/2281>`_)
+- Deprecate ``id_server`` and make it optional in several places. (`#2310 <https://github.com/matrix-org/matrix-doc/issues/2310>`_)
+
+
+Spec Clarifications
+-------------------
+
+- Add missing format fields to ``m.room.message$m.notice`` schema. (`#2125 <https://github.com/matrix-org/matrix-doc/issues/2125>`_)
+- Remove "required" designation from the ``url`` field of certain ``m.room.message`` msgtypes. (`#2129 <https://github.com/matrix-org/matrix-doc/issues/2129>`_)
+- Fix various typos throughout the specification. (`#2131 <https://github.com/matrix-org/matrix-doc/issues/2131>`_, `#2136 <https://github.com/matrix-org/matrix-doc/issues/2136>`_, `#2148 <https://github.com/matrix-org/matrix-doc/issues/2148>`_, `#2215 <https://github.com/matrix-org/matrix-doc/issues/2215>`_)
+- Clarify the distinction between ``m.key.verification.start`` and its ``m.sas.v1`` variant. (`#2132 <https://github.com/matrix-org/matrix-doc/issues/2132>`_)
+- Fix link to Olm signing specification. (`#2133 <https://github.com/matrix-org/matrix-doc/issues/2133>`_)
+- Clarify the conditions for the ``.m.rule.room_one_to_one`` push rule. (`#2152 <https://github.com/matrix-org/matrix-doc/issues/2152>`_)
+- Clarify the encryption algorithms supported by the device of the device keys example. (`#2157 <https://github.com/matrix-org/matrix-doc/issues/2157>`_)
+- Clarify that ``/rooms/:roomId/event/:eventId`` returns a Matrix error. (`#2204 <https://github.com/matrix-org/matrix-doc/issues/2204>`_)
+- Add a missing ``state_key`` check on ``.m.rule.tombstone``. (`#2223 <https://github.com/matrix-org/matrix-doc/issues/2223>`_)
+- Fix the ``m.room_key_request`` ``action`` value, setting it from ``cancel_request`` to ``request_cancellation``. (`#2247 <https://github.com/matrix-org/matrix-doc/issues/2247>`_)
+- Clarify that the ``submit_url`` field is without authentication. (`#2341 <https://github.com/matrix-org/matrix-doc/issues/2341>`_)
+- Clarify the expected phone number format. (`#2342 <https://github.com/matrix-org/matrix-doc/issues/2342>`_)
+- Clarify that clients should consider not requesting URL previews in encrypted rooms. (`#2343 <https://github.com/matrix-org/matrix-doc/issues/2343>`_)
+- Add missing information on how filters are meant to work with ``/context``. (`#2344 <https://github.com/matrix-org/matrix-doc/issues/2344>`_)
+- Clarify what the keys are for rooms in ``/sync``. (`#2345 <https://github.com/matrix-org/matrix-doc/issues/2345>`_)
+
+
 r0.5.0
 ======
 
@@ -30,7 +111,7 @@ Backwards Compatible Changes
 - Support optional features by having clients query for capabilities. (`#1829 <https://github.com/matrix-org/matrix-doc/issues/1829>`_, `#1879 <https://github.com/matrix-org/matrix-doc/issues/1879>`_)
 - Add ``M_RESOURCE_LIMIT_EXCEEDED`` as an error code for when homeservers exceed limits imposed on them. (`#1874 <https://github.com/matrix-org/matrix-doc/issues/1874>`_)
 - Emit ``M_UNSUPPORTED_ROOM_VERSION`` error codes where applicable on ``/createRoom`` and ``/invite`` APIs. (`#1908 <https://github.com/matrix-org/matrix-doc/issues/1908>`_)
-- Add a ``.m.rule.tombstone`` default push rule for room ugprade notifications. (`#2020 <https://github.com/matrix-org/matrix-doc/issues/2020>`_)
+- Add a ``.m.rule.tombstone`` default push rule for room upgrade notifications. (`#2020 <https://github.com/matrix-org/matrix-doc/issues/2020>`_)
 - Add support for sending server notices to clients. (`#2026 <https://github.com/matrix-org/matrix-doc/issues/2026>`_)
 - Add MSISDN (phone number) support to User-Interactive Authentication. (`#2030 <https://github.com/matrix-org/matrix-doc/issues/2030>`_)
 - Add the option to lazy-load room members for increased client performance. (`#2035 <https://github.com/matrix-org/matrix-doc/issues/2035>`_)

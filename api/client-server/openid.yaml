@@ -62,7 +62,7 @@ paths:
         200:
           description: |-
             OpenID token information. This response is nearly compatible with the
-            response documented in the `OpenID 1.0 Specification <http://openid.net/specs/openid-connect-core-1_0.html#TokenResponse>`_
+            response documented in the `OpenID Connect 1.0 Specification <http://openid.net/specs/openid-connect-core-1_0.html#TokenResponse>`_
             with the only difference being the lack of an ``id_token``. Instead,
             the Matrix homeserver's name is provided.
           examples:
@@ -73,28 +73,7 @@ paths:
               "expires_in": 3600,
             }
           schema:
-            type: object
-            properties:
-              access_token:
-                type: string
-                description: |-
-                  An access token the consumer may use to verify the identity of
-                  the person who generated the token. This is given to the federation
-                  API ``GET /openid/userinfo``.
-              token_type:
-                type: string
-                description: The string ``Bearer``.
-              matrix_server_name:
-                type: string
-                description: |-
-                  The homeserver domain the consumer should use when attempting to
-                  verify the user's identity.
-              expires_in:
-                type: integer
-                description: |-
-                  The number of seconds before this token expires and a new one must
-                  be generated.
-            required: ['access_token', 'token_type', 'matrix_server_name', 'expires_in']
+            $ref: "definitions/openid_token.yaml"
         429:
           description: This request was rate-limited.
           schema:

@@ -79,7 +79,7 @@ their proposed changes to the Matrix protocol:
 * Pragmatism rather than perfection
 * Proof rather than conjecture
 
-Please see [MSC1779](https://github.com/matrix-org/matrix-doc/blob/matthew/msc1779/proposals/1779-open-governance.md)
+Please `see MSC1779 <https://github.com/matrix-org/matrix-doc/blob/master/proposals/1779-open-governance.md>`_
 for full details of the project's Guiding Principles.
 
 Technical notes
@@ -230,7 +230,8 @@ follows:
   comments and in relevant rooms on Matrix. Discussion outside of GitHub should
   be summarised in a comment on the PR.
 - When a member of the Spec Core Team believes that no new discussion points are
-  being made, they will propose a motion for a final comment period (FCP),
+  being made, and the proposal has suitable evidence of working (see `implementing a
+  proposal`_ below), they will propose a motion for a final comment period (FCP),
   along with a *disposition* of either merge, close or postpone. This FCP is
   provided to allow a short period of time for any invested party to provide a
   final objection before a major decision is made. If sufficient reasoning is
@@ -341,6 +342,129 @@ Closed                           proposal-closed                A proposal which
 Obsolete                         obsolete                       A proposal which has been made obsolete by another proposal or decision elsewhere.
 ===============================  =============================  ====================================
 
+Categories
+----------
+
+We use category labels on MSCs to place them into a track of work. The Spec Core Team
+decides which of the tracks they are focusing on for the next while and generally makes
+an effort to pull MSCs out of that category when possible.
+
+The current categories are:
+
+============ ================= ======================================
+Name         Github Label      Description
+============ ================= ======================================
+Core         kind:core         Important for the protocol's success.
+Feature      kind:feature      Nice to have additions to the spec.
+Maintenance  kind:maintenance  Fixes or clarifies existing spec.
+============ ================= ======================================
+
+Some examples of core MSCs would be aggregations, cross-signing, and groups/communities.
+These are the sorts of things that if not implemented could cause the protocol to
+fail or become second-class. Features would be areas like enhanced media APIs,
+new transports, and bookmarks in comparison. Finally, maintenance MSCs would include
+improving error codes, clarifying what is required of an API, and adding properties
+to an API which makes it easier to use.
+
+The Spec Core Team assigns a category to each MSC based on the descriptions above.
+This can mean that new MSCs get categorized into an area the team isn't focused on,
+though that can always change as priorities evolve. We still encourage that MSCs be
+opened, even if not the focus for the time being, as they can still make progress and
+even be merged without the Spec Core Team focusing on them specifically.
+
+Implementing a proposal
+-----------------------
+
+As part of the proposal process the spec core team will require evidence of the MSC
+working in order for it to move into FCP. This can usually be a branch/pull request
+to whichever implementation of choice that proves the MSC works in practice, though
+in some cases the MSC itself will be small enough to be considered proven. Where it's
+unclear if a MSC will require an implementation proof, ask in `#matrix-spec:matrix.org
+<https://matrix.to/#/#matrix-spec:matrix.org>`_.
+
+Early release of a MSC/idea
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To help facilitate early releases of software dependent on a spec release, implementations
+are required to use the following process to ensure that the official Matrix namespace
+is not cluttered with development or testing data.
+
+.. Note::
+   Unreleased implementations (including proofs-of-concept demonstrating that a
+   particular MSC works) do not have to follow this process.
+
+1. Have an idea for a feature.
+2. Implement the feature using unstable endpoints, vendor prefixes, and unstable
+   feature flags as appropriate.
+
+   * When using unstable endpoints, they MUST include a vendor prefix. For example:
+     ``/_matrix/client/unstable/com.example/login``. Vendor prefixes throughout Matrix
+     always use the Java package naming convention. The MSC for the feature should
+     identify which preferred vendor prefix is to be used by early adopters.
+   * Note that unstable namespaces do not automatically inherit endpoints from stable
+     namespaces: for example, the fact that ``/_matrix/client/r0/sync`` exists does
+     not imply that ``/_matrix/client/unstable/com.example/sync`` exists.
+   * If the client needs to be sure the server supports the feature, an unstable
+     feature flag that MUST be vendor prefixed is to be used. This kind of flag shows
+     up in the ``unstable_features`` section of ``/versions`` as, for example,
+     ``com.example.new_login``. The MSC for the feature should identify which preferred
+     feature flag is to be used by early adopters.
+   * When using this approach correctly, the implementation can ship/release the
+     feature at any time, so long as the implementation is able to accept the technical
+     debt that results from needing to provide adequate backwards and forwards
+     compatibility. The implementation MUST support the flag (and server-side implementation) disappearing and be
+     generally safe for users. Note that implementations early in the MSC review
+     process may also be required to provide backwards compatibility with earlier
+     editions of the proposal.
+   * If the implementation cannot support the technical debt (or if it's impossible
+     to provide forwards/backwards compatibility - e.g. a user authentication change
+     which can't be safely rolled back), the implementation should not attempt to
+     implement the feature and should instead wait for a spec release.
+   * If at any point after early release, the idea changes in a backwards-incompatible way, the feature flag should also change so that
+     implementations can adapt as needed.
+
+3. In parallel, or ahead of implementation, open an MSC and solicit review per above.
+4. Before FCP can be called, the Spec Core Team will require evidence of the MSC
+   working as proposed. A typical example of this is an implementation of the MSC,
+   though the implementation does not need to be shipped anywhere and can therefore
+   avoid the forwards/backwards compatibility concerns mentioned here.
+5. The FCP process is completed, and assuming nothing is flagged the MSC lands.
+6. A spec PR is written to incorporate the changes into Matrix.
+7. A spec release happens.
+8. Implementations switch to using stable prefixes (e.g.: ``/r0``) if the server
+   supports the specification version released. If the server doesn't advertise the
+   specification version, but does have the feature flag, unstable prefixes should
+   still be used.
+9. A transition period of about 2 months starts immediately after the spec release,
+   before implementations start to encourage other implementations to switch
+   to stable endpoints. For example, a server implementation should start asking
+   client implementations to support the stable endpoints 2 months after the spec
+   release, if they haven't already. The same applies in the reverse: if clients
+   cannot switch to stable prefixes because server implementations haven't started
+   supporting the new spec release, some noise should be raised in the general direction
+   of the implementation.
+
+.. Note::
+   MSCs MUST still describe what the stable endpoints/feature looks like with a note
+   towards the bottom for what the unstable feature flag/prefixes are. For example,
+   a MSC would propose `/_matrix/client/r0/new/endpoint`, not `/_matrix/client/unstable/
+   com.example/new/endpoint`.
+
+In summary:
+
+* Implementations MUST NOT use stable endpoints before the MSC is in the spec. This
+  includes NOT using stable endpoints in the period between completion of FCP and release of the spec.
+  passed.
+* Implementations are able to ship features that are exposed to users by default before
+  an MSC has been merged to the spec, provided they follow the process above.
+* Implementations SHOULD be wary of the technical debt they are incurring by moving faster
+  than the spec.
+* The vendor prefix is chosen by the developer of the feature, using the Java package
+  naming convention. The foundation's preferred vendor prefix is `org.matrix`.
+* The vendor prefixes, unstable feature flags, and unstable endpoints should be included
+  in the MSC, though the MSC MUST be written in a way that proposes new stable endpoints.
+  Typically this is solved by a small table at the bottom mapping the various values
+  from stable to unstable.
 
 Proposal Tracking
 -----------------

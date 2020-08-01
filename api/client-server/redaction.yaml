@@ -37,7 +37,7 @@ paths:
         This cannot be undone.
 
         Users may redact their own events, and any user with a power level
-        greater than or equal to the `redact` power level of the room may
+        greater than or equal to the ``redact`` power level of the room may
         redact events there.
       operationId: redactEvent
       security:
@@ -65,6 +65,7 @@ paths:
           x-example: "37"
         - in: body
           name: body
+          required: true
           schema:
             type: object
             example: {

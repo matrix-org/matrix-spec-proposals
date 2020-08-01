@@ -84,29 +84,19 @@ paths:
           description: The kind of account to register. Defaults to ``user``.
         - in: body
           name: body
+          required: true
           schema:
             type: object
             properties:
               auth:
                 description: |-
-                  Additional authentication information for the
-                  user-interactive authentication API. Note that this
-                  information is *not* used to define how the registered user
-                  should be authenticated, but is instead used to
-                  authenticate the ``register`` call itself.
-                "$ref": "definitions/auth_data.yaml"
-              bind_email:
-                type: boolean
-                description: |-
-                  If true, the server binds the email used for authentication to
-                  the Matrix ID with the identity server.
-                example: false
-              bind_msisdn:
-                type: boolean
-                description: |-
-                  If true, the server binds the phone number used for authentication
-                  to the Matrix ID with the identity server.
-                example: false
+                    Additional authentication information for the
+                    user-interactive authentication API. Note that this
+                    information is *not* used to define how the registered user
+                    should be authenticated, but is instead used to
+                    authenticate the ``register`` call itself.
+                allOf:
+                - "$ref": "definitions/auth_data.yaml"
               username:
                 type: string
                 description: |-
@@ -231,18 +221,15 @@ paths:
       description: |-
         The homeserver must check that the given email address is **not**
         already associated with an account on this homeserver. The homeserver
-        has the choice of validating the email address itself, or proxying the
-        request to the ``/validate/email/requestToken`` Identity Service API. The
-        request should be proxied to the domain that is sent by the client in
-        the ``id_server``. It is imperative that the homeserver keep a list of
-        trusted Identity Servers and only proxies to those it trusts.
+        should validate the email itself, either by sending a validation email
+        itself or by using a service it has control over.
       operationId: requestTokenToRegisterEmail
       parameters:
         - in: body
           name: body
           required: true
           schema:
-            $ref: "./definitions/request_email_validation.yaml"
+            $ref: "definitions/request_email_validation.yaml"
       responses:
         200:
           description: |-
@@ -284,18 +271,15 @@ paths:
       description: |-
         The homeserver must check that the given phone number is **not**
         already associated with an account on this homeserver. The homeserver
-        has the choice of validating the phone number itself, or proxying the
-        request to the ``/validate/msisdn/requestToken`` Identity Service API. The
-        request should be proxied to the domain that is sent by the client in
-        the ``id_server``. It is imperative that the homeserver keep a list of
-        trusted Identity Servers and only proxies to those it trusts.
+        should validate the phone number itself, either by sending a validation
+        message itself or by using a service it has control over.
       operationId: requestTokenToRegisterMSISDN
       parameters:
         - in: body
           name: body
           required: true
           schema:
-            $ref: "./definitions/request_msisdn_validation.yaml"
+            $ref: "definitions/request_msisdn_validation.yaml"
       responses:
         200:
           description: |-
@@ -346,14 +330,15 @@ paths:
 
         The homeserver may change the flows available depending on whether a
         valid access token is provided. The homeserver SHOULD NOT revoke the
-        access token provided in the request, however all other access tokens
-        for the user should be revoked if the request succeeds.
+        access token provided in the request. Whether other access tokens for
+        the user are revoked depends on the request parameters.
       security:
         - accessToken: []
       operationId: changePassword
       parameters:
         - in: body
           name: body
+          required: true
           schema:
             type: object
             properties:
@@ -361,10 +346,20 @@ paths:
                 type: string
                 description: The new password for the account.
                 example: "ihatebananas"
+              logout_devices:
+                type: boolean
+                description: |-
+                  Whether the user's other access tokens, and their associated devices, should be
+                  revoked if the request succeeds. Defaults to true.
+
+                  When ``false``, the server can still take advantage of `the soft logout method <#soft-logout>`_
+                  for the user's remaining devices.
+                example: true
               auth:
                 description: |-
-                  Additional authentication information for the user-interactive authentication API.
-                "$ref": "definitions/auth_data.yaml"
+                    Additional authentication information for the user-interactive authentication API.
+                allOf:
+                - "$ref": "definitions/auth_data.yaml"
             required: ["new_password"]
       responses:
         200:
@@ -400,12 +395,8 @@ paths:
         email to the given address prompting the user to create an account.
         ``M_THREEPID_IN_USE`` may not be returned.
 
-        The homeserver has the choice of validating the email address itself,
-        or proxying the request to the ``/validate/email/requestToken``
-        Identity Service API. The request should be proxied to the domain that
-        is sent by the client in the ``id_server``. It is imperative that the
-        homeserver keep a list of trusted Identity Servers and only proxies to
-        those that it trusts.
+        The homeserver should validate the email itself, either by sending a
+        validation email itself or by using a service it has control over.
 
 
         .. |/register/email/requestToken| replace:: ``/register/email/requestToken``
@@ -417,7 +408,7 @@ paths:
           name: body
           required: true
           schema:
-            $ref: "./definitions/request_email_validation.yaml"
+            $ref: "definitions/request_email_validation.yaml"
       responses:
         200:
           description: An email was sent to the given address.
@@ -437,7 +428,9 @@ paths:
         400:
           description: |-
             The referenced third party identifier is not recognised by the
-            homeserver, or the request was invalid
+            homeserver, or the request was invalid. The error code ``M_SERVER_NOT_TRUSTED``
+            can be returned if the server does not trust/support the identity server
+            provided in the request.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
@@ -461,12 +454,8 @@ paths:
         to the given phone number prompting the user to create an account.
         ``M_THREEPID_IN_USE`` may not be returned.
 
-        The homeserver has the choice of validating the phone number itself, or
-        proxying the request to the ``/validate/msisdn/requestToken`` Identity
-        Service API. The request should be proxied to the domain that is sent
-        by the client in the ``id_server``. It is imperative that the
-        homeserver keep a list of trusted Identity Servers and only proxies to
-        those that it trusts.
+        The homeserver should validate the phone number itself, either by sending a
+        validation message itself or by using a service it has control over.
 
         .. |/register/msisdn/requestToken| replace:: ``/register/msisdn/requestToken``
 
@@ -477,7 +466,7 @@ paths:
           name: body
           required: true
           schema:
-            $ref: "../identity/definitions/request_msisdn_validation.yaml"
+            $ref: "definitions/request_msisdn_validation.yaml"
       responses:
         200:
           description: An SMS message was sent to the given phone number.
@@ -497,7 +486,9 @@ paths:
         400:
           description: |-
             The referenced third party identifier is not recognised by the
-            homeserver, or the request was invalid
+            homeserver, or the request was invalid. The error code ``M_SERVER_NOT_TRUSTED``
+            can be returned if the server does not trust/support the identity server
+            provided in the request.
           schema:
             $ref: "definitions/errors/error.yaml"
           examples:
@@ -519,19 +510,25 @@ paths:
 
         The homeserver may change the flows available depending on whether a
         valid access token is provided.
+
+        Unlike other endpoints, this endpoint does not take an ``id_access_token``
+        parameter because the homeserver is expected to sign the request to the
+        identity server instead.
       security:
         - accessToken: []
       operationId: deactivateAccount
       parameters:
         - in: body
           name: body
+          required: true
           schema:
             type: object
             properties:
               auth:
                 description: |-
                   Additional authentication information for the user-interactive authentication API.
-                "$ref": "definitions/auth_data.yaml"
+                allOf:
+                  - $ref: "definitions/auth_data.yaml"
               id_server:
                 type: string
                 description: |-
