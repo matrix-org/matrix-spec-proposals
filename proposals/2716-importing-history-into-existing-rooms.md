@@ -74,6 +74,11 @@ with raw events, and should not be using the syntactic sugar APIs.
 
 There are a bunch of security considerations here - see below.
 
+This doesn't provide a way for a HS to tell an AS that a client has tried to call
+/messages beyond the beginning of a room, and that the AS should try to
+lazy-insert some more messages (as per https://github.com/matrix-org/matrix-doc/issues/698).
+For this MSC to be properly useful, we might want to flesh that out.
+
 ## Alternatives
 
 We could insist that we use the SS API to import history history in this manner rather than
