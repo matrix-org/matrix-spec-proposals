@@ -98,6 +98,21 @@ retrospectively import history.  Currently `predecessor` is in the immutable
 `m.room.create` event of a room, so cannot be changed retrospectively - and
 doing so in a safe and race-free manner sounds Hard.
 
+Another way could be to let the server who issued the m.room.create also go
+and retrospectively insert events into the room outside the context of the DAG
+(i.e. without parent prev_events or signatures).  To quote the original
+[bug](https://github.com/matrix-org/matrix-doc/issues/698#issuecomment-259478116):
+
+> You could just create synthetic events which look like normal DAG events but
+  exist before the m.room.create event. Their signatures and prev-events would
+  all be missing, but they would be blindly trusted based on the HS who is
+  allowed to serve them (based on metadata in the m.room.create event). Thus
+  you'd have a perimeter in the DAG beyond which events are no longer
+  decentralised or signed, but are blindly trusted to let HSes insert ancient
+  history provided by ASes.
+
+However, this feels needlessly complicated if the DAG approach is sufficient.
+
 ## Security considerations
 
 This allows an AS to tie the room DAG in knots by specifying inappropriate
