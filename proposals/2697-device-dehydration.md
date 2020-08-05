@@ -50,7 +50,9 @@ The client will use the device ID given to determine if it should use the
 dehydrated device, or if it should use a new device.  Even if the client was
 able to successfully decrypt the device data, it may not able to allowed to use
 it.  For example, two clients may race in trying to dehydrate the device; only
-one client should use the dehydrated device.
+one client should use the dehydrated device.  In the case of a race, the server
+will give the dehydrated device's ID to one client, and generate a new device
+ID for any other clients.
 
 ### Dehydrating a device
 
@@ -88,7 +90,41 @@ FIXME: should we just reuse libolm's pickle format?
 
 ## Potential issues
 
-FIXME:
+### One-time key exhaustion
+
+The dehydrated device may run out of one-time keys, since it is not backed by
+an active client that can replenish them.  Once a device has run out of
+one-time keys, no new olm sessions can be established with it, which means that
+devices that have not already shared megolm keys with the dehydrated device
+will not be able to share megolm keys.  This issue is not unique to dehydrated
+devices; this also occurs when devices are offline for an extended period of
+time.
+
+This could be addressed by modifying olm to operate using [Signal's
+x3dh](https://signal.org/docs/specifications/x3dh/), in which Bob has both a
+sign prekey (which is replaced periodically), and one-time prekeys.
+
+To reduce the chances of one-time key exhaustion, if the user has an active
+client, it can periodically replace the dehydrated device with a new dehydrated
+device with new one-time keys.  If a client does this, then it runs the risk of
+losing any megolm keys that were sent to the dehydrated device, but the client
+would likely have received those megolm keys itself.
+
+Alternatively, the client could perform a `/sync` for the dehydrated device,
+dehydrate the olm sessions, and upload new one-time keys.  By doing this
+instead of overwriting the dehydrated device, the device can receive megolm
+keys from more devices.  However, this would require additional server-side
+changes above what this proposal provides, so this approach is not possible for
+the moment.
+
+### Accumulated to-device messages
+
+If a dehydrated device is not rehydrated for a long time, then it may
+accumulate many to-device messages from other clients sending it megolm
+sessions.  This may result in a slower initial sync when the device eventually
+does get rehydrated, due to the number of messages that it will retrieve.
+Again, this can be addressed by periodically replacing the dehydrated device,
+or by performing a `/sync` for the dehydrated device and updating it.
 
 ## Alternatives
 
