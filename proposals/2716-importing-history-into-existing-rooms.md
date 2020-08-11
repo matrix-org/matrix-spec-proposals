@@ -29,16 +29,16 @@ This is currently not supported because:
 
 ## Proposal
 
- 1. We let the AS API override the parent(s) of an event when injecting it into
+ 1. We let the AS API override the prev_event(s) of an event when injecting it into
     the room, thus letting bridges consciously specify the topological ordering of
-    the room DAG.  We do this by adding a `parent` querystring parameter on the
+    the room DAG.  We do this by adding a `prev_event` querystring parameter on the
     `PUT /_matrix/client/r0/rooms/{roomId}/send/{eventType}/{txnId}` and
     `PUT /_matrix/client/r0/rooms/{roomId}/state/{eventType}/{stateKey}` endpoints.
-    The `parent` parameter can be repeated multiple times to specify multiple parent
-    event IDs of the event being submitted.  An event must not have more than 20 parents.
-    If a `parent` parameter is not presented, the server assumes the event is being
-    appended to the current timeline and calculates the parents as normal.  If an
-    unrecognised event ID is specified as a `parent`, the request fails with a 404.
+    The `prev_event` parameter can be repeated multiple times to specify multiple parent
+    event IDs of the event being submitted.  An event must not have more than 20 prev_events.
+    If a `prev_event` parameter is not presented, the server assumes the event is being
+    appended to the current timeline and calculates the prev_events as normal.  If an
+    unrecognised event ID is specified as a `prev_event`, the request fails with a 404.
 
  2. We also let the AS API override ('massage') the `origin_server_ts` timestamp applied
     to sent events.  We do this by adding a `ts` querystring parameter on the
