@@ -20,6 +20,15 @@ Only unredacted message events can be forwarded. If the given event ID is a
 state event, a redaction or a redacted message event, the request will be
 rejected with a standard error response using the code `M_NOT_FORWARDABLE`.
 
+If the generated event is too large, the request is rejected with a standard
+error response using the code `M_TOO_LARGE`. Before rejecting the request,
+servers MAY check if the event would be small enough without the profile data
+in `unsigned`, and send the event without that data if it is.
+
+Similar to the `/send` endpoint, this endpoint returns an object containing the
+`event_id` of the forwarded event.
+
+#### Generating forwarded event
 To forward an event, the server creates a new event with the same event type
 and normal top-level fields. To determine the content, the server has to
 inspect the content of the source event:
@@ -36,9 +45,10 @@ inspect the content of the source event:
   generate a new one. After generating the object, it is placed in `content` of
   the new event along with everything from the `content` of the source event.
 
+##### Generating `m.forwarded` object
 `m.forwarded` is an object that contains all the top-level keys of the source
-event, except for `type`, `content` and `unsigned`. The following keys
-are therefore at least required:
+event, except for `type`, `content` and `unsigned`. The following keys are
+therefore at least required:
 
 * `auth_events`
 * `prev_events`
@@ -58,14 +68,6 @@ The following keys may also be present:
 Additionally, when generating `m.forwarded` objects, the server SHOULD include
 its own `unsigned` object in the `m.forwarded` data that contains the
 `displayname` and `avatar_url` of the sender.
-
-If the resulting event is too large, the request is rejected with a standard
-error response using the code `M_TOO_LARGE`. Before rejecting the request,
-servers MAY check if the event would be small enough without the profile data
-in `unsigned`, and send the event without that data if it is.
-
-Similar to the `/send` endpoint, this endpoint returns an object containing the
-`event_id` of the forwarded event.
 
 #### Example
 
