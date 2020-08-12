@@ -770,6 +770,11 @@ Clients SHOULD show the emoji with the descriptions from the table, or appropria
 translation of those descriptions. Client authors SHOULD collaborate to create a
 common set of translations for all languages.
 
+.. Note::
+   Known translations for the emoji are available from
+   https://github.com/matrix-org/matrix-doc/blob/master/data-definitions/ and can be
+   translated online: https://translate.riot.im/projects/matrix-doc/sas-emoji-v1
+
 
 .. section name changed, so make sure that old links keep working
 .. _key-sharing:
