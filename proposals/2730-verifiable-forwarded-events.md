@@ -13,8 +13,8 @@ server adds the validation result to the top-level `unsigned` object.
 
 ### `PUT /_matrix/client/r0/rooms/{roomId}/event/{eventId}/forward/{targetRoomId}/{txnId}`
 This endpoint requests the server to find `eventId` from `roomId` and forward
-it to `targetRoomId`. The `txnId` behaves the same way as in the existing
-`/send` endpoints.
+it to `targetRoomId`. The `txnId` behaves the same way as in the `/send`
+endpoint. The request body is an empty JSON object.
 
 Only unredacted message events can be forwarded. If the given event ID is a
 state event, a redaction or a redacted message event, the request will be
@@ -36,7 +36,7 @@ inspect the content of the source event:
   generate a new one. After generating the object, it is placed in `content` of
   the new event along with everything from the `content` of the source event.
 
-`m.forwarded` is an object that contains all the top-level keys of the original
+`m.forwarded` is an object that contains all the top-level keys of the source
 event, except for `type`, `content` and `unsigned`. The following keys
 are therefore at least required:
 
@@ -63,6 +63,9 @@ If the resulting event is too large, the request is rejected with a standard
 error response using the code `M_TOO_LARGE`. Before rejecting the request,
 servers MAY check if the event would be small enough without the profile data
 in `unsigned`, and send the event without that data if it is.
+
+Similar to the `/send` endpoint, this endpoint returns an object containing the
+`event_id` of the forwarded event.
 
 #### Example
 
@@ -105,6 +108,22 @@ in `unsigned`, and send the event without that data if it is.
 ```
 
 </details>
+
+Request:
+
+```
+PUT /_matrix/client/r0/rooms/!FIIWlyqwNLyMAtmRBF:maunium.net/event/$BfxMy-oNFOeE0eFt6r-l3h7MtwNVIX0GrructyJq1wA/forward/!eVRGrjZQgJZGNllOkw:grin.hu/myTxnId1
+{}
+```
+
+Response:
+
+```json
+{
+  "event_id": "$r8h8W9A5KS8D65_Df8fwLkTe7aqOm48KmyaJ6tRNAmE"
+}
+```
+
 <details>
 <summary>Forwarded event (client format)</summary>
 
