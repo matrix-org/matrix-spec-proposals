@@ -4,639 +4,447 @@
         "emoji": "🐶",
         "description": "Dog",
         "unicode": "U+1F436",
-        "translated_descriptions": {
-            "en": "Dog",
-            "en_EN": "Dog"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 1,
         "emoji": "🐱",
         "description": "Cat",
         "unicode": "U+1F431",
-        "translated_descriptions": {
-            "en": "Cat",
-            "en_EN": "Cat"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 2,
         "emoji": "🦁",
         "description": "Lion",
         "unicode": "U+1F981",
-        "translated_descriptions": {
-            "en": "Lion",
-            "en_EN": "Lion"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 3,
         "emoji": "🐎",
         "description": "Horse",
         "unicode": "U+1F40E",
-        "translated_descriptions": {
-            "en": "Horse",
-            "en_EN": "Horse"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 4,
         "emoji": "🦄",
         "description": "Unicorn",
         "unicode": "U+1F984",
-        "translated_descriptions": {
-            "en": "Unicorn",
-            "en_EN": "Unicorn"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 5,
         "emoji": "🐷",
         "description": "Pig",
         "unicode": "U+1F437",
-        "translated_descriptions": {
-            "en": "Pig",
-            "en_EN": "Pig"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 6,
         "emoji": "🐘",
         "description": "Elephant",
         "unicode": "U+1F418",
-        "translated_descriptions": {
-            "en": "Elephant",
-            "en_EN": "Elephant"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 7,
         "emoji": "🐰",
         "description": "Rabbit",
         "unicode": "U+1F430",
-        "translated_descriptions": {
-            "en": "Rabbit",
-            "en_EN": "Rabbit"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 8,
         "emoji": "🐼",
         "description": "Panda",
         "unicode": "U+1F43C",
-        "translated_descriptions": {
-            "en": "Panda",
-            "en_EN": "Panda"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 9,
         "emoji": "🐓",
         "description": "Rooster",
         "unicode": "U+1F413",
-        "translated_descriptions": {
-            "en": "Rooster",
-            "en_EN": "Rooster"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 10,
         "emoji": "🐧",
         "description": "Penguin",
         "unicode": "U+1F427",
-        "translated_descriptions": {
-            "en": "Penguin",
-            "en_EN": "Penguin"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 11,
         "emoji": "🐢",
         "description": "Turtle",
         "unicode": "U+1F422",
-        "translated_descriptions": {
-            "en": "Turtle",
-            "en_EN": "Turtle"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 12,
         "emoji": "🐟",
         "description": "Fish",
         "unicode": "U+1F41F",
-        "translated_descriptions": {
-            "en": "Fish",
-            "en_EN": "Fish"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 13,
         "emoji": "🐙",
         "description": "Octopus",
         "unicode": "U+1F419",
-        "translated_descriptions": {
-            "en": "Octopus",
-            "en_EN": "Octopus"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 14,
         "emoji": "🦋",
         "description": "Butterfly",
         "unicode": "U+1F98B",
-        "translated_descriptions": {
-            "en": "Butterfly",
-            "en_EN": "Butterfly"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 15,
         "emoji": "🌷",
         "description": "Flower",
         "unicode": "U+1F337",
-        "translated_descriptions": {
-            "en": "Flower",
-            "en_EN": "Flower"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 16,
         "emoji": "🌳",
         "description": "Tree",
         "unicode": "U+1F333",
-        "translated_descriptions": {
-            "en": "Tree",
-            "en_EN": "Tree"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 17,
         "emoji": "🌵",
         "description": "Cactus",
         "unicode": "U+1F335",
-        "translated_descriptions": {
-            "en": "Cactus",
-            "en_EN": "Cactus"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 18,
         "emoji": "🍄",
         "description": "Mushroom",
         "unicode": "U+1F344",
-        "translated_descriptions": {
-            "en": "Mushroom",
-            "en_EN": "Mushroom"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 19,
         "emoji": "🌏",
         "description": "Globe",
         "unicode": "U+1F30F",
-        "translated_descriptions": {
-            "en": "Globe",
-            "en_EN": "Globe"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 20,
         "emoji": "🌙",
         "description": "Moon",
         "unicode": "U+1F319",
-        "translated_descriptions": {
-            "en": "Moon",
-            "en_EN": "Moon"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 21,
         "emoji": "☁️",
         "description": "Cloud",
         "unicode": "U+2601U+FE0F",
-        "translated_descriptions": {
-            "en": "Cloud",
-            "en_EN": "Cloud"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 22,
         "emoji": "🔥",
         "description": "Fire",
         "unicode": "U+1F525",
-        "translated_descriptions": {
-            "en": "Fire",
-            "en_EN": "Fire"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 23,
         "emoji": "🍌",
         "description": "Banana",
         "unicode": "U+1F34C",
-        "translated_descriptions": {
-            "en": "Banana",
-            "en_EN": "Banana"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 24,
         "emoji": "🍎",
         "description": "Apple",
         "unicode": "U+1F34E",
-        "translated_descriptions": {
-            "en": "Apple",
-            "en_EN": "Apple"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 25,
         "emoji": "🍓",
         "description": "Strawberry",
         "unicode": "U+1F353",
-        "translated_descriptions": {
-            "en": "Strawberry",
-            "en_EN": "Strawberry"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 26,
         "emoji": "🌽",
         "description": "Corn",
         "unicode": "U+1F33D",
-        "translated_descriptions": {
-            "en": "Corn",
-            "en_EN": "Corn"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 27,
         "emoji": "🍕",
         "description": "Pizza",
         "unicode": "U+1F355",
-        "translated_descriptions": {
-            "en": "Pizza",
-            "en_EN": "Pizza"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 28,
         "emoji": "🎂",
         "description": "Cake",
         "unicode": "U+1F382",
-        "translated_descriptions": {
-            "en": "Cake",
-            "en_EN": "Cake"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 29,
         "emoji": "❤️",
         "description": "Heart",
         "unicode": "U+2764U+FE0F",
-        "translated_descriptions": {
-            "en": "Heart",
-            "en_EN": "Heart"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 30,
         "emoji": "😀",
         "description": "Smiley",
         "unicode": "U+1F600",
-        "translated_descriptions": {
-            "en": "Smiley",
-            "en_EN": "Smiley"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 31,
         "emoji": "🤖",
         "description": "Robot",
         "unicode": "U+1F916",
-        "translated_descriptions": {
-            "en": "Robot",
-            "en_EN": "Robot"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 32,
         "emoji": "🎩",
         "description": "Hat",
         "unicode": "U+1F3A9",
-        "translated_descriptions": {
-            "en": "Hat",
-            "en_EN": "Hat"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 33,
         "emoji": "👓",
         "description": "Glasses",
         "unicode": "U+1F453",
-        "translated_descriptions": {
-            "en": "Glasses",
-            "en_EN": "Glasses"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 34,
         "emoji": "🔧",
         "description": "Spanner",
         "unicode": "U+1F527",
-        "translated_descriptions": {
-            "en": "Spanner",
-            "en_EN": "Spanner"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 35,
         "emoji": "🎅",
         "description": "Santa",
         "unicode": "U+1F385",
-        "translated_descriptions": {
-            "en": "Santa",
-            "en_EN": "Santa"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 36,
         "emoji": "👍",
         "description": "Thumbs Up",
         "unicode": "U+1F44D",
-        "translated_descriptions": {
-            "en": "Thumbs Up",
-            "en_EN": "Thumbs Up"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 37,
         "emoji": "☂️",
         "description": "Umbrella",
         "unicode": "U+2602U+FE0F",
-        "translated_descriptions": {
-            "en": "Umbrella",
-            "en_EN": "Umbrella"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 38,
         "emoji": "⌛",
         "description": "Hourglass",
         "unicode": "U+231B",
-        "translated_descriptions": {
-            "en": "Hourglass",
-            "en_EN": "Hourglass"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 39,
         "emoji": "⏰",
         "description": "Clock",
         "unicode": "U+23F0",
-        "translated_descriptions": {
-            "en": "Clock",
-            "en_EN": "Clock"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 40,
         "emoji": "🎁",
         "description": "Gift",
         "unicode": "U+1F381",
-        "translated_descriptions": {
-            "en": "Gift",
-            "en_EN": "Gift"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 41,
         "emoji": "💡",
         "description": "Light Bulb",
         "unicode": "U+1F4A1",
-        "translated_descriptions": {
-            "en": "Light Bulb",
-            "en_EN": "Light Bulb"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 42,
         "emoji": "📕",
         "description": "Book",
         "unicode": "U+1F4D5",
-        "translated_descriptions": {
-            "en": "Book",
-            "en_EN": "Book"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 43,
         "emoji": "✏️",
         "description": "Pencil",
         "unicode": "U+270FU+FE0F",
-        "translated_descriptions": {
-            "en": "Pencil",
-            "en_EN": "Pencil"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 44,
         "emoji": "📎",
         "description": "Paperclip",
         "unicode": "U+1F4CE",
-        "translated_descriptions": {
-            "en": "Paperclip",
-            "en_EN": "Paperclip"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 45,
         "emoji": "✂️",
         "description": "Scissors",
         "unicode": "U+2702U+FE0F",
-        "translated_descriptions": {
-            "en": "Scissors",
-            "en_EN": "Scissors"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 46,
         "emoji": "🔒",
         "description": "Lock",
         "unicode": "U+1F512",
-        "translated_descriptions": {
-            "en": "Lock",
-            "en_EN": "Lock"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 47,
         "emoji": "🔑",
         "description": "Key",
         "unicode": "U+1F511",
-        "translated_descriptions": {
-            "en": "Key",
-            "en_EN": "Key"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 48,
         "emoji": "🔨",
         "description": "Hammer",
         "unicode": "U+1F528",
-        "translated_descriptions": {
-            "en": "Hammer",
-            "en_EN": "Hammer"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 49,
         "emoji": "☎️",
         "description": "Telephone",
         "unicode": "U+260EU+FE0F",
-        "translated_descriptions": {
-            "en": "Telephone",
-            "en_EN": "Telephone"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 50,
         "emoji": "🏁",
         "description": "Flag",
         "unicode": "U+1F3C1",
-        "translated_descriptions": {
-            "en": "Flag",
-            "en_EN": "Flag"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 51,
         "emoji": "🚂",
         "description": "Train",
         "unicode": "U+1F682",
-        "translated_descriptions": {
-            "en": "Train",
-            "en_EN": "Train"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 52,
         "emoji": "🚲",
         "description": "Bicycle",
         "unicode": "U+1F6B2",
-        "translated_descriptions": {
-            "en": "Bicycle",
-            "en_EN": "Bicycle"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 53,
         "emoji": "✈️",
         "description": "Aeroplane",
         "unicode": "U+2708U+FE0F",
-        "translated_descriptions": {
-            "en": "Aeroplane",
-            "en_EN": "Aeroplane"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 54,
         "emoji": "🚀",
         "description": "Rocket",
         "unicode": "U+1F680",
-        "translated_descriptions": {
-            "en": "Rocket",
-            "en_EN": "Rocket"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 55,
         "emoji": "🏆",
         "description": "Trophy",
         "unicode": "U+1F3C6",
-        "translated_descriptions": {
-            "en": "Trophy",
-            "en_EN": "Trophy"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 56,
         "emoji": "⚽",
         "description": "Ball",
         "unicode": "U+26BD",
-        "translated_descriptions": {
-            "en": "Ball",
-            "en_EN": "Ball"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 57,
         "emoji": "🎸",
         "description": "Guitar",
         "unicode": "U+1F3B8",
-        "translated_descriptions": {
-            "en": "Guitar",
-            "en_EN": "Guitar"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 58,
         "emoji": "🎺",
         "description": "Trumpet",
         "unicode": "U+1F3BA",
-        "translated_descriptions": {
-            "en": "Trumpet",
-            "en_EN": "Trumpet"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 59,
         "emoji": "🔔",
         "description": "Bell",
         "unicode": "U+1F514",
-        "translated_descriptions": {
-            "en": "Bell",
-            "en_EN": "Bell"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 60,
         "emoji": "⚓",
         "description": "Anchor",
         "unicode": "U+2693",
-        "translated_descriptions": {
-            "en": "Anchor",
-            "en_EN": "Anchor"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 61,
         "emoji": "🎧",
         "description": "Headphones",
         "unicode": "U+1F3A7",
-        "translated_descriptions": {
-            "en": "Headphones",
-            "en_EN": "Headphones"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 62,
         "emoji": "📁",
         "description": "Folder",
         "unicode": "U+1F4C1",
-        "translated_descriptions": {
-            "en": "Folder",
-            "en_EN": "Folder"
-        }
+        "translated_descriptions": {}
     },
     {
         "number": 63,
         "emoji": "📌",
         "description": "Pin",
         "unicode": "U+1F4CC",
-        "translated_descriptions": {
-            "en": "Pin",
-            "en_EN": "Pin"
-        }
+        "translated_descriptions": {}
     }
 ]
