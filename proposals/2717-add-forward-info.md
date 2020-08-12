@@ -1,4 +1,4 @@
-# MSC2714: Add forward information to forwarded messages
+# MSC2717: Add forward information to forwarded messages
 
 Currently a forwarded message is not easily recognized as a forwarded message. While for messages of `msgtype` `m.text`, `m.emote` and `m.notice` clients could do something in the `formatted_body` of `content`, for all other message types the forward highlighting would be very poor. To get around this and provide a guideline to clients which information should go with a forward, we suggest adding the "forward info" explicitly. See also https://github.com/vector-im/riot-web/issues/4747.
 
