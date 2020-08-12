@@ -24,19 +24,20 @@ To forward an event, the server creates a new event with the same event type
 and normal top-level fields. To determine the content, the server has to
 inspect the content of the source event:
 
-If the source event was already forwarded from some other room, the `content`
-should simply be copied with no modifications. This means that an event
-forwarded many times will only remember the original source, not any hops it
-made on the way.
+* If the source event was already forwarded from some other room, the `content`
+  should simply be copied with no modifications. This means that an event
+  forwarded many times will only remember the original source, not any hops it
+  made on the way.
+* If the source event was not a forward, but contains (invalid) data in the
+  `m.forwarded` key, the request will be rejected with `M_NOT_FORWARDABLE` like
+  other unforwardable events. This limitation also can be used to intentionally
+  mark messages as unforwardable (e.g. `"m.forwarded": {"allow": false}`).
+* If the source event does not contain `m.forwarded` at all, the server must
+  generate a new one. After generating the object, it is placed in `content` of
+  the new event along with everything from the `content` of the source event.
 
-If the source event was not a forward, but contains (invalid) data in the
-`m.forwarded` key, the request will be rejected with `M_NOT_FORWARDABLE` like
-other unforwardable events. This limitation also can be used to intentionally
-mark messages as unforwardable (e.g. `"m.forwarded": {"allow": false}`).
-
-If the event does not contain `m.forwarded` at all, the server must generate a
-new one. `m.forwarded` is an object that contains all the top-level keys of the
-original event, except for `type`, `content` and `unsigned`. The following keys
+`m.forwarded` is an object that contains all the top-level keys of the original
+event, except for `type`, `content` and `unsigned`. The following keys
 are therefore at least required:
 
 * `auth_events`
@@ -54,9 +55,9 @@ The following keys may also be present:
 * `prev_state`, may be present as an empty array even in non-state events
 * `event_id`, only in v1 and v2 rooms
 
-Additionally, the server SHOULD include its own `unsigned` object in the
-`m.forwarded` data that contains the `displayname` and `avatar_url` of the
-sender.
+Additionally, when generating `m.forwarded` objects, the server SHOULD include
+its own `unsigned` object in the `m.forwarded` data that contains the
+`displayname` and `avatar_url` of the sender.
 
 If the resulting event is too large, the request is rejected with a standard
 error response using the code `M_TOO_LARGE`. Before rejecting the request,
@@ -173,14 +174,14 @@ and modify it as follows:
 * Copy `type` from the top level into `m.forwarded`.
 * Make a copy of the top-level `content`, remove `m.forwarded` and put it in
   the `m.forwarded`.
-* Using the result object, validate the hashes and signatures on the event, as
-  specified in sections 26.2 through 26.4 of the server-server specification:
-  https://matrix.org/docs/spec/server_server/r0.1.4#validating-hashes-and-signatures-on-received-events
+* Using the result object, validate the signature, calculate the reference hash
+  and check the content hash of the event as specified in sections 26.2 through
+  26.4 of the server-server specification: https://matrix.org/docs/spec/server_server/r0.1.4#validating-hashes-and-signatures-on-received-events
 
 #### Unsigned `m.forwarded` object
-For any message event with `m.fowarded` in the content, the server MUST add or
+For any message event with `m.forwarded` in the content, the server MUST add or
 override the `m.forwarded` key in the `unsigned` object of the event. The key
-MUST be an object that contains `valid` and `event_id`.
+MUST be an object that contains the keys `valid` and `event_id`.
 
 If the `m.forwarded` object was valid and the signatures were validated, the
 `valid` value should be `true`. In any other case (invalid signature, bogus
@@ -188,19 +189,33 @@ data, etc), the value should be `false`.
 
 In v1 and v2 rooms, the `event_id` is copied from the `m.forwarded` object in
 `content`. In v3 and up, the `event_id` is based on the reference hash that was
-validated in the previous section. Copying the event ID in v1/v2 rooms is for
+calculated in the previous section. Copying the event ID in v1/v2 rooms is for
 convenience of clients: they only need to look in one place regardless of the
 room version.
 
+## Client behavior
+Clients SHOULD NOT trust forward metadata in the event content without an
+explicit `"valid": true` in the unsigned `m.forwarded` object. Additionally,
+clients SHOULD make sure the server supports this proposal before trusting
+forwards even if the `valid` flag is present.
+
+Not trusting forward metadata does not necessarily mean it must be completely
+ignored. For example, clients could render the event as a forward, but include
+a notice saying it's unverified.
+
 ## Potential issues
-* This is not as simple as MSC2723 and requires server support
-* Events with bogus data in `m.forwarded` can't be forwarded
+* This is not as simple as MSC2723 and requires server support.
+* Events with bogus data in `m.forwarded` can't be forwarded.
 * Events that are close to the 64 KiB size limit can't be forwarded. MSC2723
   has the same problem, but this proposal has even more extra data. The amount
   of extra data in both proposals is rather low (<1kb), so this should not be
-  a problem in practice
+  a problem in practice.
+* Encrypted events forwarded to other rooms won't be decryptable. Clients
+  should probably either prevent forwarding completely or only allow forwarding
+  to the same room for encrypted events.
 
 ## Alternatives
+### Endpoint behavior
 Instead of an endpoint for sending a forward, the new endpoint could be used to
 generate the forward content and leave sending it up to the client with the
 normal /send endpoint. However, this is an extra roundtrip for the client and
@@ -211,5 +226,5 @@ While this MSC is not in a released version of the spec, implementations should
 use `net.maunium.msc2730` as a prefix and as a `unstable_features` flag in the
 `/versions` endpoint.
 
-* `PUT /_matrix/client/unstable/net.maunium.msc2730/rooms/{roomId}/event/{eventId}/forward/{targetRoomId}/{txnId}`
-* `net.maunium.msc2730.forwarded`
+* `PUT /_matrix/client/unstable/net.maunium.msc2730/rooms/{roomId}/event/{eventId}/forward/{targetRoomId}/{txnId}` as the endpoint
+* `net.maunium.msc2730.forwarded` instead of `m.forwarded` in `content` and `unsigned`
