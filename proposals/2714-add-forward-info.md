@@ -31,10 +31,21 @@ Leaning onto edits (adding `m.new_content` inside `content`), we want to suggest
 }
 ```
 
-Additional infos could be the original `event_id`, `displayname` and `avatar_url` (optionally?).
+Additional the original `event_id` could be added.
 
 ## Potential issues
 
+### Resolving display name and avatar
+Since the receiver (of a forward) may not be in the room, the message has originally been posted to, he may not be able to get the original sender's `displayname` and `avatar_url` from `/_matrix/client/r0/rooms/{roomId}/members`.
+
+We see two possible solutions at the moment:
+
+1. The forwarder adds `displayname` and `avatar_url` to `m.forward`.
+2. The receiving client resolves the `displayname` and the `avatar_url` from the user id given by `sender` using `/_matrix/client/r0/profile/{userId}`.
+
+Both solutions have a drawback. In case of 1., changing the display name or the avatar would not be reflected in forwards. And the avatar URL may even become invalid(?). The second solution may cause confusion is the original sender has set different display names and avatars for different rooms. I.e. if the original sender is in the room where the message is forwarded to, it may appear there under a different display name and avatar.
+
+### Clients can fake forwards
 Should we care of/can we avoid "fake forwards"? Does it make sense/is it possible at all to only add the original `event_id` when sending a forward and assign the server the responsibility of adding the forward information?
 
 ## Alternatives
@@ -67,7 +78,7 @@ Should we care of/can we avoid "fake forwards"? Does it make sense/is it possibl
 }
 ```
 
-### Discarded using m.relates_to
+### Discarded: Using m.relates_to
 
 We've also discussed and discarded usind `m_relates_to` for highlighting the message as forward, like the following:
 
