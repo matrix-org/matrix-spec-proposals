@@ -19,7 +19,7 @@ def merge_sas_emoji_v1():
         pth = os.path.join(data_defs_dir, "sas-emoji-v1-i18n")
         translations = [t for t in os.listdir(pth) if os.path.isfile(os.path.join(pth, t))]
         for translation in translations:
-            if translation == "base.json":
+            if not translation.endswith(".json") or translation == "base.json":
                 continue
             lang = translation[:-5] # trim off the json extension
             with open(os.path.join(pth, translation), encoding="utf8") as lf:
