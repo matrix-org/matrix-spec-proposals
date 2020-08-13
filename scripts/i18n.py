@@ -25,7 +25,7 @@ def merge_sas_emoji_v1():
             with open(os.path.join(pth, translation), encoding="utf8") as lf:
                 descs = json.load(lf)
                 for e in emoji:
-                    e["translated_descriptions"][lang] = descs[e["description"]]
+                    e["translated_descriptions"][lang] = descs.get(e["description"])
     with open(os.path.join(data_defs_dir, "sas-emoji.json"), mode="w+", encoding="utf8") as o:
         json.dump(emoji, o, ensure_ascii=False, indent=4)
 
