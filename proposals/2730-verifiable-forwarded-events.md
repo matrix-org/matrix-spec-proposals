@@ -249,3 +249,4 @@ use `net.maunium.msc2730` as a prefix and as a `unstable_features` flag in the
 
 * `PUT /_matrix/client/unstable/net.maunium.msc2730/rooms/{roomId}/event/{eventId}/forward/{targetRoomId}/{txnId}` as the endpoint
 * `net.maunium.msc2730.forwarded` instead of `m.forwarded` in `content` and `unsigned`
+* `NET.MAUNIUM.MSC2730_NOT_FORWARDABLE` instead of `M_NOT_FORWARDABLE` as the error code
