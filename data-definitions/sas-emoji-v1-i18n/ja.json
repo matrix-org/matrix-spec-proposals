@@ -1,1 +1,18 @@
-{}
+{
+    "Dog": "犬",
+    "Cat": "猫",
+    "Horse": "馬",
+    "Octopus": "たこ",
+    "Flower": "花",
+    "Tree": "木",
+    "Mushroom": "きのこ",
+    "Moon": "月",
+    "Apple": "リンゴ",
+    "Cake": "ケーキ",
+    "Robot": "ロボと",
+    "Glasses": "めがね",
+    "Book": "本",
+    "Telephone": "電話機",
+    "Train": "電車",
+    "Bicycle": "自転車"
+}
