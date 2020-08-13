@@ -65,9 +65,10 @@ The following keys may also be present:
 * `prev_state`, may be present as an empty array even in non-state events
 * `event_id`, only in v1 and v2 rooms
 
-Additionally, when generating `m.forwarded` objects, the server SHOULD include
-its own `unsigned` object in the `m.forwarded` data that contains the
-`displayname` and `avatar_url` of the sender.
+Additionally, the server MUST include an `unsigned` object, containing a
+`room_version` field that specifies the version of the source room. The server
+SHOULD also include the sender's profile metadata in the unsigned object under
+the fields `displayname` and `avatar_url`.
 
 #### Example
 
