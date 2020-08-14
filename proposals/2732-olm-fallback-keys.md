@@ -1,4 +1,4 @@
-# MSCxxxx: Olm fallback keys
+# MSC2732: Olm fallback keys
 
 Olm uses a set of one-time keys when initializing a session between two
 devices: Alice uploads one-time keys to her homeserver, and Bob claims one of
