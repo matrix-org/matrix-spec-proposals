@@ -1,15 +1,15 @@
 # MSC2403: Add "knock" feature
 Many people are in invite-only rooms. Sometimes, someone wants to join such a room and can't, as
-they aren't invited. This proposal adds a feature for this user to indicate that they want to join
-said room.
+they aren't invited. This proposal adds a feature for a user to indicate that they want to join
+a room.
 
 # Proposal
 This proposal implements the reserved "knock" membership type for the `m.room.member` state event.
-This state event indicates that a user knocks a room, that is asking for permission to join. It
+This state event indicates that when a user knocks on a room, they are asking for permission to join. It
 contains an optional "reason" parameter to specify the reason you want to join. Like other
-membership types the parameters "displayname" and "avatar_url" are optional. This membership can
-be set from users who aren't currently in said room. An example for the membership would look as
-follows:
+membership types the parameters, "displayname" and "avatar_url" are optional. This membership can
+be set from users who aren't currently in said room. An example for the membership would look like the
+following:
 ```json
 {
   "membership": "knock",
@@ -19,34 +19,34 @@ follows:
 }
 ```
 
-After a knock is received in a room it is expected to be displayed in the timeline, similar to other
+After a knock is received in a room, it is expected to be displayed in the timeline, similar to other
 membership changes. It is recommended to not display the reason until the user interacts with the
-client in some way (e.g. clicking on a "show reason" button), as else this would basically allow
+client in some way (e.g. clicking on a "show reason" button), as else this would essentially allow
 outsiders to send messages into the room. Clients can optionally add a way for users of a room to
 review all current knocks. After a knock in a room, a member of the room can invite the knocker.
 
-To be able to implement this properly two new endpoints need to be added, one in the client-server
-API and one in the server-server API.
+To be able to implement this properly, two new endpoints need to be added: one in the Client-Server
+API and one in the Server-Server API.
 
 ## Restrictions
 There are restrictions to being able to set this membership.
 
 ### Current membership
-Only users without a current membership or with their current membership being "leave" can knock a
-room. This means that a user that is banned or currently in the room can't knock on it.
+Only users without a current membership or with their current membership being "leave" can knock on a
+room. This means that a user that is banned or currently in the room cannot knock on it.
 
 ### Join Rules
-The `join_rule` of `m.room.join_rules` must be set to "invite". This means that people can't knock
+The `join_rule` of `m.room.join_rules` must be set to "invite" for a knock to succeed. This means that people can't knock
 in public rooms. Additionally the new join rule "private" is introduced. This is so that people can,
 when creating a new room, prevent anyone from knocking.
 
 ### Power levels
 The default power level for "knock" is the default power level for the room. If a user has a too low
-power level to knock they aren't allowed to do this. As power levels can be set for users not currently
-in the room this can be used as a way to limit who can knock and who can't.
+power level to knock, then they aren't allowed to do so. As power levels can be set for users not currently
+in the room, this can be used as a way to limit who can and can't knock.
 
 #### Example:
-`@alice:example.org` CAN knock, but `@bob:example.org` can't: The (incomplete) content of
+`@alice:example.org` CAN knock, but `@bob:example.org` CANNOT: The (incomplete) content of
 `m.room.power_levels` is as follows:
 ```json
 {
@@ -59,19 +59,20 @@ in the room this can be used as a way to limit who can knock and who can't.
 ```
 
 ## Membership changes
-Once someone has sent the `knock` membership into the room a change to the following memberships is
-possible:
- - `invite`: The knock was accepted by someone inside the room and they are inviting the knocker into
-   the room.
- - `leave`: Similar to how kicks are handled, the knock was rejected.
+Once someone has sent a `knock` membership into the room, the membership for
+that user can be transitioned to the following possible states:
+ - `invite`: In this case, the knock was accepted by someone inside the room
+   and they are inviting the knocker into the room.
+ - `leave`: In this case, similar to how kicks are handled, the knock has
+   been rejected.
 
 ## Client-Server API
-Two new endpoints are introduced in the client-server API (similarly to join):
+Two new endpoints are introduced in the Client-Server API (similarly to join):
 `POST /_matrix/client/r0/rooms/{roomId}/knock` and `POST /_matrix/client/r0/knock/{roomIdOrAlias}`.
 
 ### `POST /_matrix/client/r0/rooms/{roomId}/knock`
-The path parameter (`roomId`) is the room you want to knock. It is required. The post body accepts
-an optional parameter, `reason`, which is the reason you want to join the room. A request could look
+The path parameter (`roomId`) is the room on which you want to knock. It is required. The post body accepts
+an optional string parameter, `reason`, which is the reason you want to join the room. A request could look
 as follows:
 
 ```
@@ -120,8 +121,8 @@ This request was rate-limited. Example reply:
 
 ### `POST /_matrix/client/r0/knock/{roomIdOrAlias}`
 The path parameter (`roomIdOrAlias`) is either the room ID or the alias of the room you want to
-knock. Additionally several `server_name` parameters can be specified via the query parameters. The
-post body accepts an optional parameter, `reason`, which is the reason you want to join the room. A
+knock on. Additionally several `server_name` parameters can be specified via the query parameters. The
+post body accepts an optional string parameter, `reason`, which is the reason you want to join the room. A
 request could look as follows:
 
 ```
@@ -143,7 +144,7 @@ Similarly to join and leave over federation, a ping-pong game with two new endpo
 ### `GET /_matrix/federation/v1/make_knock/{roomId}/{userId}`
 
 Asks the receiving server to return information that the sending server will need to prepare a knock
-event to get into the room.
+event.
 
 Request format:
 
@@ -164,7 +165,7 @@ Response Format:
 
 #### Responses
 ##### Status code 200:
-Returns a template to be used to knock rooms. May depend on room version.
+Returns a template to be used to knock on rooms. May depend on room version.
 ```json
 {
   "room_version": "2",
@@ -210,7 +211,7 @@ Response Format:
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| <body> | [integer, Empty Object] |
+| `<body>` | [integer, Empty Object] |
 
 A request could look as follows:
 ```
@@ -250,9 +251,9 @@ potential spam.
 # Alternatives
 As for the join rule "invite", instead the join rule "knock" could be introduced, meaning the room
 is like "invite" only that people can also knock. The difference is for existing rooms: With this
-proposal people can knock in existing "invite" rooms, with the alternative suggestion they can't.
+proposal people can knock in existing "invite" rooms, with the alternative suggestion being that they can't.
 
-The two endpoints for the client-server API seem redundant, this MSC followed how JOIN is working
+The two endpoints for the Client-Server API seem redundant, this MSC followed how JOIN is working
 currently: One "proper" endpoint (`/rooms/{roomId}/join`) and one to work properly over federation
 (`/join/{roomIdOrAlias}`). They could both be merged into one, however, as that would also affect
 the join endpoint it seems out-of-scope for this MSC.
