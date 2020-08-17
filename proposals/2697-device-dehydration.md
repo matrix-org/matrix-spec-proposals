@@ -19,17 +19,15 @@ receive any to-device messages that were sent to the dehydrated device.
 A new parameter, `restore_device` is added to `POST /login`, indicating that the
 client can restore a previously stored device.  If the parameter is not
 present, it defaults to `false`.  If the server has a stored device that can be
-used, it will respond with:
+used, it will respond with the same response as a normal login, with the
+following exceptions:
 
-```json
-{
-  "user_id": "full MXID",
-  "home_server": "home server address",
-  "device_data": "base64+encoded+device+data",
-  "device_id": "ID of dehydrated device",
-  "dehydration_token": "opaque+token"
-}
-```
+- no `access_token` is provided
+- a `device_data` property is provided, containing information about the
+  dehydrated device that the client uses to try to rehydrate the device
+- a `dehydration_token` is provided, giving a token that the client uses to
+  complete the login.  The token may be expired if it is not used within a
+  reasonable amount of time (for example, 10 minutes).
 
 If the server does not have a stored device, or does not understand device
 dehydration, then it will respond as if a normal login request were made.
@@ -39,20 +37,30 @@ client will then make a `POST /restore_device` request, with the
 `dehydration_token` body parameter set to the token received from the server.
 If it was successful and it wishes to use the device, then it will set the
 `rehydrate` body parameter set to `true`.  Otherwise, it will set `rehydrate`
-to `false`.  The server will return an object with properties:
+to `false`.
 
-- `user_id`: the user's full MXID
-- `access_token`: the access token the client will use
-- `home_server`: the home server's address
-- `device_id`: the device ID for the client to use.
+The server will return an object in the same format as the response for a
+normal login.  The client will use the device ID given to determine if it
+should use the dehydrated device, or if it should use a new device.  Even if
+the client was able to successfully decrypt the device data, it may not able to
+allowed to use it.  For example, two clients may race in trying to dehydrate
+the device; only one client should use the dehydrated device.  In the case of a
+race, the server will give the dehydrated device's ID to one client, and
+generate a new device ID for any other clients.  Another potential reason that
+the client may not be allowed to use the dehydrated device is if the device was
+deleted.
 
-The client will use the device ID given to determine if it should use the
-dehydrated device, or if it should use a new device.  Even if the client was
-able to successfully decrypt the device data, it may not able to allowed to use
-it.  For example, two clients may race in trying to dehydrate the device; only
-one client should use the dehydrated device.  In the case of a race, the server
-will give the dehydrated device's ID to one client, and generate a new device
-ID for any other clients.
+If the dehydrated device is not used (whether because the client set
+`rehydrate` to `false`, or because the server indicated that the client is not
+able to use the dehydrated device), the server will use the `device_id` and
+`initial_device_display_name` parameters from the client's original call to
+`/login`, if they were provided, to create a device for the user.  If the
+dehydrated device is used, the server will set the device's name to the
+`initial_device_display_name` from the client's original call to `/login`, if
+it was provided.
+
+After `POST /restore_device` returns, the client is logged in and may proceed
+as normal.
 
 ### Dehydrating a device
 
@@ -62,8 +70,8 @@ will remove any previously-set dehydrated device.
 
 ```json
 {
-  "device_data": "base64+encoded+device+data",
-  "initial_device_name": "foo bar",
+  "device_data": {"device": "data"},
+  "initial_device_display_name": "foo bar",
 }
 ```
 
@@ -86,7 +94,14 @@ dehydrated device.
 
 ### Device dehydration format
 
-FIXME: should we just reuse libolm's pickle format?
+The `device_data` property is an object that has an `algorithm` field
+indicating what other fields are present.
+
+#### `m.dehydration.v1.olm`
+
+- `passphrase`: Optional.  Indicates how to generate the decryption key from a
+  passphrase.  It is in the same format with Secure Secret Storage.
+- `account`: Required. ... FIXME: should we just reuse libolm's pickle format?
 
 ## Potential issues
 
@@ -100,9 +115,8 @@ will not be able to share megolm keys.  This issue is not unique to dehydrated
 devices; this also occurs when devices are offline for an extended period of
 time.
 
-This could be addressed by modifying olm to operate using [Signal's
-x3dh](https://signal.org/docs/specifications/x3dh/), in which Bob has both a
-sign prekey (which is replaced periodically), and one-time prekeys.
+This may be addressed by using fallback keys as described in
+[MSC2732](https://github.com/matrix-org/matrix-doc/pull/2732).
 
 To reduce the chances of one-time key exhaustion, if the user has an active
 client, it can periodically replace the dehydrated device with a new dehydrated
@@ -135,7 +149,11 @@ issue for users who happen to never be online at the same time.  But this could
 be done in addition to the solution proposed here.
 
 The sender could also send the megolm session to a the user using a public key
-using some per-user mechanism.
+using some per-user mechanism.  This would require changes to both the sender
+and receiver (whereas this proposal only requires changes to the receiver), and
+would require developing a system by which the sender could determine whether
+the public key may be trusted (whereas this proposal the existing cross-signing
+mechanism).
 
 ## Security considerations
 
