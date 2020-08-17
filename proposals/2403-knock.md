@@ -249,10 +249,7 @@ Content-Type: application/json
 The event was successfully accepted into the graph by the receiving
 homeserver.
 ```json
-[
-  200,
-  {}
-]
+{}
 ```
 
 # Potential issues
