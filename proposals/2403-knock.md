@@ -274,4 +274,5 @@ could both be merged into one, however, as that would also affect the join
 endpoint it seems out-of-scope for this MSC.
 
 # Security considerations
-None. This doesn't allow users access to a room in any way.
+This doesn't allow users access to a room in any way. However, care should be
+taken to ensure that no spam vectors are enabled by this change.
