@@ -40,6 +40,7 @@ GET _matrix/client/r0/user/shared_rooms/@bob:example.com
 }
 ```
 
+The response error for trying to get shared rooms with yourself will be an HTTP code 400, with `M_FORBIDDEN` as the `errcode`.
 
 ## Potential issues
 
@@ -71,6 +72,7 @@ to request all state ahead of time.
 ## Unstable prefix
 
 The implementation MUST use `/_matrix/client/unstable/uk.half-shot.msc2666/user/shared_rooms/{user_id}`.  
-The /versions endpoint MUST include a new key in `unstable_features` with the name `uk.half-shot.msc2666`.  
+The /versions endpoint MUST include a new key in `unstable_features` with the name `uk.half-shot.msc2666`.
+If the value is false or the key is not present, clients MUST assume the feature is not available.
 Once the MSC has been merged, clients should use `/_matrix/client/r0/user/shared_rooms/{user_id}`
 and will no longer need to check for the `unstable_features` flag.
