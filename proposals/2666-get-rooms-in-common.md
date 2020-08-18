@@ -27,7 +27,7 @@ a membership of type `join`. If the `user_id` does not exist, or does not share 
 an empty array should be returned.
 
 ```
-GET _matrix/client/r0/user/shared_rooms/@bob:example.com
+GET /_matrix/client/r0/user/shared_rooms/%40bob%3Aexample.com
 ```
 
 ```json
