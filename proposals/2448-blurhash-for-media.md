@@ -176,6 +176,12 @@ And finally, an entry should be added to the homeserver's `GET
 /_matrix/client/versions` endpoint, in `unstable_features`, with the key
 `xyz.amorgan.blurhash` set to `true`.
 
+## Security considerations
+
+Blurhash entries in encrypted events, be it as part of the `info` property,
+or `<img>` tags, should be encrypted along with the rest of the event
+content.
+
 ## Links
 
 BlurHash's algorithm description can be found
