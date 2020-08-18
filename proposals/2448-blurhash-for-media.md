@@ -161,9 +161,9 @@ the following:
 The `blurhash` key in `m.room.message` should be replaced with
 `xyz.amorgan.blurhash`.
 
-`/_matrix/media/r0/upload` should be replaced with
-`/_matrix/media/unstable/xyz.amorgan/upload`, which keeps the same `blurhash`
-response key.
+`/_matrix/media/r0/upload` should return a `xyz.amorgan.blurhash` key
+containing the blurhash instead of `blurhash`. This is preferred to adding
+another endpoint, which is messier to later remove.
 
 `/_matrix/media/r0/blurhash/{serverName}/{mediaId}` should be
 replaced with
