@@ -6,11 +6,19 @@
         "unicode": "U+1F436",
         "translated_descriptions": {
             "de": "Hund",
+            "eo": "Hundo",
             "es": "Perro",
+            "et": "Koer",
+            "fi": "Koira",
             "fr": "Chien",
             "ja": "犬",
+            "nb_NO": "Hund",
+            "nl": "Hond",
             "ru": "Собака",
-            "uk": "Пес"
+            "sk": "Hlava psa",
+            "sv": "Hund",
+            "uk": "Пес",
+            "zh_Hans": "狗"
         }
     },
     {
@@ -20,11 +28,19 @@
         "unicode": "U+1F431",
         "translated_descriptions": {
             "de": "Katze",
+            "eo": "Kato",
             "es": "Gato",
+            "et": "Kass",
+            "fi": "Kissa",
             "fr": "Chat",
             "ja": "猫",
+            "nb_NO": "Katt",
+            "nl": "Kat",
             "ru": "Кошка",
-            "uk": "Кіт"
+            "sk": "Hlava mačky",
+            "sv": "Katt",
+            "uk": "Кіт",
+            "zh_Hans": "猫"
         }
     },
     {
@@ -34,11 +50,19 @@
         "unicode": "U+1F981",
         "translated_descriptions": {
             "de": "Löwe",
+            "eo": "Leono",
             "es": "León",
+            "et": "Lõvi",
+            "fi": "Leijona",
             "fr": "Lion",
             "ja": null,
+            "nb_NO": "Løve",
+            "nl": "Leeuw",
             "ru": "Лев",
-            "uk": "Лев"
+            "sk": "Hlava leva",
+            "sv": "Lejon",
+            "uk": "Лев",
+            "zh_Hans": "狮子"
         }
     },
     {
@@ -48,11 +72,19 @@
         "unicode": "U+1F40E",
         "translated_descriptions": {
             "de": "Pferd",
-            "es": null,
+            "eo": "Ĉevalo",
+            "es": "Caballo",
+            "et": "Hobune",
+            "fi": "Hevonen",
             "fr": "Cheval",
             "ja": "馬",
+            "nb_NO": "Hest",
+            "nl": "Paard",
             "ru": "Лошадь",
-            "uk": "Кінь"
+            "sk": "Kôň",
+            "sv": "Häst",
+            "uk": "Кінь",
+            "zh_Hans": "马"
         }
     },
     {
@@ -62,11 +94,19 @@
         "unicode": "U+1F984",
         "translated_descriptions": {
             "de": "Einhorn",
-            "es": null,
+            "eo": "Unukorno",
+            "es": "Unicornio",
+            "et": "Ükssarvik",
+            "fi": "Yksisarvinen",
             "fr": "Licorne",
             "ja": null,
+            "nb_NO": "Enhjørning",
+            "nl": "Eenhoorn",
             "ru": "Единорог",
-            "uk": "Єдиноріг"
+            "sk": "Hlava jednorožca",
+            "sv": "Enhörning",
+            "uk": "Єдиноріг",
+            "zh_Hans": "独角兽"
         }
     },
     {
@@ -76,11 +116,19 @@
         "unicode": "U+1F437",
         "translated_descriptions": {
             "de": "Schwein",
+            "eo": "Porko",
             "es": "Cerdo",
+            "et": "Siga",
+            "fi": "Sika",
             "fr": "Cochon",
             "ja": null,
+            "nb_NO": "Gris",
+            "nl": "Varken",
             "ru": "Свинья",
-            "uk": "Свиня"
+            "sk": "Hlava prasaťa",
+            "sv": "Gris",
+            "uk": "Свиня",
+            "zh_Hans": "猪"
         }
     },
     {
@@ -90,11 +138,19 @@
         "unicode": "U+1F418",
         "translated_descriptions": {
             "de": "Elefant",
-            "es": null,
+            "eo": "Elefanto",
+            "es": "Elefante",
+            "et": "Elevant",
+            "fi": "Norsu",
             "fr": "Éléphant",
             "ja": null,
+            "nb_NO": "Elefant",
+            "nl": "Olifant",
             "ru": "Слон",
-            "uk": "Слон"
+            "sk": "Slon",
+            "sv": "Elefant",
+            "uk": "Слон",
+            "zh_Hans": null
         }
     },
     {
@@ -104,11 +160,19 @@
         "unicode": "U+1F430",
         "translated_descriptions": {
             "de": "Hase",
-            "es": null,
+            "eo": "Kuniklo",
+            "es": "Conejo",
+            "et": "Jänes",
+            "fi": "Kani",
             "fr": "Lapin",
             "ja": null,
+            "nb_NO": "Kanin",
+            "nl": "Konijn",
             "ru": "Кролик",
-            "uk": "Кріль"
+            "sk": "Hlava zajaca",
+            "sv": "Kanin",
+            "uk": "Кріль",
+            "zh_Hans": null
         }
     },
     {
@@ -118,11 +182,19 @@
         "unicode": "U+1F43C",
         "translated_descriptions": {
             "de": "Panda",
-            "es": null,
+            "eo": "Pando",
+            "es": "Panda",
+            "et": "Panda",
+            "fi": "Panda",
             "fr": "Panda",
             "ja": null,
+            "nb_NO": "Panda",
+            "nl": "Panda",
             "ru": "Панда",
-            "uk": "Панда"
+            "sk": "Hlava pandy",
+            "sv": "Panda",
+            "uk": "Панда",
+            "zh_Hans": null
         }
     },
     {
@@ -132,11 +204,19 @@
         "unicode": "U+1F413",
         "translated_descriptions": {
             "de": "Hahn",
-            "es": null,
+            "eo": "Virkoko",
+            "es": "Gallo",
+            "et": "Kukk",
+            "fi": "Kukko",
             "fr": "Coq",
             "ja": null,
+            "nb_NO": "Hane",
+            "nl": "Haan",
             "ru": "Петух",
-            "uk": "Когут"
+            "sk": "Kohút",
+            "sv": "Tupp",
+            "uk": "Когут",
+            "zh_Hans": null
         }
     },
     {
@@ -146,11 +226,19 @@
         "unicode": "U+1F427",
         "translated_descriptions": {
             "de": "Pinguin",
-            "es": null,
-            "fr": "Pinguin",
+            "eo": "Pingveno",
+            "es": "Pingüino",
+            "et": "Pingviin",
+            "fi": "Pingviini",
+            "fr": "Manchot",
             "ja": null,
+            "nb_NO": "Pingvin",
+            "nl": "Pinguïn",
             "ru": "Пингвин",
-            "uk": "Пінгвін"
+            "sk": "Tučniak",
+            "sv": "Pingvin",
+            "uk": "Пінгвін",
+            "zh_Hans": null
         }
     },
     {
@@ -160,11 +248,19 @@
         "unicode": "U+1F422",
         "translated_descriptions": {
             "de": "Schildkröte",
-            "es": null,
+            "eo": "Testudo",
+            "es": "Tortuga",
+            "et": "Kilpkonn",
+            "fi": "Kilpikonna",
             "fr": "Tortue",
             "ja": null,
+            "nb_NO": "Skilpadde",
+            "nl": "Schildpad",
             "ru": "Черепаха",
-            "uk": "Черепаха"
+            "sk": "Korytnačka",
+            "sv": "Sköldpadda",
+            "uk": "Черепаха",
+            "zh_Hans": null
         }
     },
     {
@@ -174,11 +270,19 @@
         "unicode": "U+1F41F",
         "translated_descriptions": {
             "de": "Fisch",
-            "es": null,
+            "eo": "Fiŝo",
+            "es": "Pez",
+            "et": "Kala",
+            "fi": "Kala",
             "fr": "Poisson",
             "ja": null,
+            "nb_NO": "Fisk",
+            "nl": "Vis",
             "ru": "Рыба",
-            "uk": "Риба"
+            "sk": "Ryba",
+            "sv": "Fisk",
+            "uk": "Риба",
+            "zh_Hans": null
         }
     },
     {
@@ -188,11 +292,19 @@
         "unicode": "U+1F419",
         "translated_descriptions": {
             "de": "Oktopus",
-            "es": null,
+            "eo": "Polpo",
+            "es": "Pulpo",
+            "et": "Kaheksajalg",
+            "fi": "Tursas",
             "fr": "Poulpe",
             "ja": "たこ",
+            "nb_NO": "Blekksprut",
+            "nl": "Octopus",
             "ru": "Осьминог",
-            "uk": "Восьминіг"
+            "sk": "Chobotnica",
+            "sv": "Bläckfisk",
+            "uk": "Восьминіг",
+            "zh_Hans": null
         }
     },
     {
@@ -202,11 +314,19 @@
         "unicode": "U+1F98B",
         "translated_descriptions": {
             "de": "Schmetterling",
-            "es": null,
+            "eo": "Papilio",
+            "es": "Mariposa",
+            "et": "Liblikas",
+            "fi": "Perhonen",
             "fr": "Papillon",
             "ja": null,
+            "nb_NO": "Sommerfugl",
+            "nl": "Vlinder",
             "ru": "Бабочка",
-            "uk": "Метелик"
+            "sk": "Motýľ",
+            "sv": "Fjäril",
+            "uk": "Метелик",
+            "zh_Hans": null
         }
     },
     {
@@ -216,11 +336,19 @@
         "unicode": "U+1F337",
         "translated_descriptions": {
             "de": "Blume",
-            "es": null,
+            "eo": "Floro",
+            "es": "Flor",
+            "et": "Lill",
+            "fi": "Kukka",
             "fr": "Fleur",
             "ja": "花",
+            "nb_NO": "Blomst",
+            "nl": "Bloem",
             "ru": "Цветок",
-            "uk": "Квітка"
+            "sk": "Tulipán",
+            "sv": "Blomma",
+            "uk": "Квітка",
+            "zh_Hans": null
         }
     },
     {
@@ -230,11 +358,19 @@
         "unicode": "U+1F333",
         "translated_descriptions": {
             "de": "Baum",
-            "es": null,
+            "eo": "Arbo",
+            "es": "Árbol",
+            "et": "Puu",
+            "fi": "Puu",
             "fr": "Arbre",
             "ja": "木",
+            "nb_NO": "Tre",
+            "nl": "Boom",
             "ru": "Дерево",
-            "uk": "Дерево"
+            "sk": "Listnatý strom",
+            "sv": "Träd",
+            "uk": "Дерево",
+            "zh_Hans": null
         }
     },
     {
@@ -244,11 +380,19 @@
         "unicode": "U+1F335",
         "translated_descriptions": {
             "de": "Kaktus",
-            "es": null,
+            "eo": "Kakto",
+            "es": "Cactus",
+            "et": "Kaktus",
+            "fi": "Kaktus",
             "fr": "Cactus",
             "ja": null,
+            "nb_NO": "Kaktus",
+            "nl": "Cactus",
             "ru": "Кактус",
-            "uk": "Кактус"
+            "sk": "Kaktus",
+            "sv": "Kaktus",
+            "uk": "Кактус",
+            "zh_Hans": null
         }
     },
     {
@@ -258,11 +402,19 @@
         "unicode": "U+1F344",
         "translated_descriptions": {
             "de": "Pilz",
-            "es": null,
+            "eo": "Fungo",
+            "es": "Seta",
+            "et": "Seen",
+            "fi": "Sieni",
             "fr": "Champignon",
             "ja": "きのこ",
+            "nb_NO": "Sopp",
+            "nl": "Paddenstoel",
             "ru": "Гриб",
-            "uk": "Гриб"
+            "sk": "Huba",
+            "sv": "Svamp",
+            "uk": "Гриб",
+            "zh_Hans": null
         }
     },
     {
@@ -272,11 +424,19 @@
         "unicode": "U+1F30F",
         "translated_descriptions": {
             "de": "Globus",
-            "es": null,
+            "eo": "Globo",
+            "es": "Globo",
+            "et": "Maakera",
+            "fi": "Maapallo",
             "fr": "Globe",
             "ja": null,
+            "nb_NO": "Globus",
+            "nl": "Wereldbol",
             "ru": "Глобус",
-            "uk": "Глобус"
+            "sk": "Zemeguľa",
+            "sv": "Jordklot",
+            "uk": "Глобус",
+            "zh_Hans": null
         }
     },
     {
@@ -286,11 +446,19 @@
         "unicode": "U+1F319",
         "translated_descriptions": {
             "de": "Mond",
-            "es": null,
+            "eo": "Luno",
+            "es": "Luna",
+            "et": "Kuu",
+            "fi": "Kuu",
             "fr": "Lune",
             "ja": "月",
+            "nb_NO": "Måne",
+            "nl": "Maan",
             "ru": "Луна",
-            "uk": "Місяць"
+            "sk": "Polmesiac",
+            "sv": "Måne",
+            "uk": "Місяць",
+            "zh_Hans": null
         }
     },
     {
@@ -300,11 +468,19 @@
         "unicode": "U+2601U+FE0F",
         "translated_descriptions": {
             "de": "Wolke",
-            "es": null,
+            "eo": "Nubo",
+            "es": "Nube",
+            "et": "Pilv",
+            "fi": "Pilvi",
             "fr": "Nuage",
             "ja": null,
+            "nb_NO": "Sky",
+            "nl": "Wolk",
             "ru": "Облако",
-            "uk": "Хмара"
+            "sk": "Oblak",
+            "sv": "Moln",
+            "uk": "Хмара",
+            "zh_Hans": null
         }
     },
     {
@@ -314,11 +490,19 @@
         "unicode": "U+1F525",
         "translated_descriptions": {
             "de": "Feuer",
+            "eo": "Fajro",
             "es": "Fuego",
+            "et": "Tuli",
+            "fi": "Tuli",
             "fr": "Feu",
             "ja": null,
+            "nb_NO": "Flamme",
+            "nl": "Vuur",
             "ru": "Огонь",
-            "uk": "Вогонь"
+            "sk": "Oheň",
+            "sv": "Eld",
+            "uk": "Вогонь",
+            "zh_Hans": null
         }
     },
     {
@@ -328,11 +512,19 @@
         "unicode": "U+1F34C",
         "translated_descriptions": {
             "de": "Banane",
-            "es": null,
+            "eo": "Banano",
+            "es": "Plátano",
+            "et": "Banaan",
+            "fi": "Banaani",
             "fr": "Banane",
             "ja": null,
+            "nb_NO": "Banan",
+            "nl": "Banaan",
             "ru": "Банан",
-            "uk": "Банан"
+            "sk": "Banán",
+            "sv": "Banan",
+            "uk": "Банан",
+            "zh_Hans": null
         }
     },
     {
@@ -342,11 +534,19 @@
         "unicode": "U+1F34E",
         "translated_descriptions": {
             "de": "Apfel",
+            "eo": "Pomo",
             "es": "Manzana",
+            "et": "Õun",
+            "fi": "Omena",
             "fr": "Pomme",
             "ja": "リンゴ",
+            "nb_NO": "Eple",
+            "nl": "Appel",
             "ru": "Яблоко",
-            "uk": "Яблуко"
+            "sk": "Červené jablko",
+            "sv": "Äpple",
+            "uk": "Яблуко",
+            "zh_Hans": null
         }
     },
     {
@@ -356,11 +556,19 @@
         "unicode": "U+1F353",
         "translated_descriptions": {
             "de": "Erdbeere",
-            "es": null,
+            "eo": "Frago",
+            "es": "Fresa",
+            "et": "Maasikas",
+            "fi": "Mansikka",
             "fr": "Fraise",
             "ja": null,
+            "nb_NO": "Jordbær",
+            "nl": "Aardbei",
             "ru": "Клубника",
-            "uk": "Полуниця"
+            "sk": "Jahoda",
+            "sv": "Jordgubbe",
+            "uk": "Полуниця",
+            "zh_Hans": null
         }
     },
     {
@@ -370,11 +578,19 @@
         "unicode": "U+1F33D",
         "translated_descriptions": {
             "de": "Korn",
-            "es": null,
+            "eo": "Maizo",
+            "es": "Maíz",
+            "et": "Mais",
+            "fi": "Maissi",
             "fr": "Maïs",
             "ja": null,
+            "nb_NO": "Mais",
+            "nl": "Maïs",
             "ru": "Кукуруза",
-            "uk": "Кукурудза"
+            "sk": "Kukuričný klas",
+            "sv": "Majskolv",
+            "uk": "Кукурудза",
+            "zh_Hans": null
         }
     },
     {
@@ -384,11 +600,19 @@
         "unicode": "U+1F355",
         "translated_descriptions": {
             "de": "Pizza",
-            "es": null,
+            "eo": "Pico",
+            "es": "Pizza",
+            "et": "Pitsa",
+            "fi": "Pizza",
             "fr": "Pizza",
             "ja": null,
+            "nb_NO": "Pizza",
+            "nl": "Pizza",
             "ru": "Пицца",
-            "uk": "Піца"
+            "sk": "Pizza",
+            "sv": "Pizza",
+            "uk": "Піца",
+            "zh_Hans": null
         }
     },
     {
@@ -398,11 +622,19 @@
         "unicode": "U+1F382",
         "translated_descriptions": {
             "de": "Kuchen",
-            "es": null,
+            "eo": "Torto",
+            "es": "Tarta",
+            "et": "Kook",
+            "fi": "Kakku",
             "fr": "Gâteau",
             "ja": "ケーキ",
+            "nb_NO": "Kake",
+            "nl": "Taart",
             "ru": "Торт",
-            "uk": "Пиріг"
+            "sk": "Narodeninová torta",
+            "sv": "Tårta",
+            "uk": "Пиріг",
+            "zh_Hans": null
         }
     },
     {
@@ -412,11 +644,19 @@
         "unicode": "U+2764U+FE0F",
         "translated_descriptions": {
             "de": "Herz",
-            "es": null,
+            "eo": "Koro",
+            "es": "Corazón",
+            "et": "Süda",
+            "fi": "Sydän",
             "fr": "Cœur",
             "ja": null,
+            "nb_NO": "Hjerte",
+            "nl": "Hart",
             "ru": "Сердце",
-            "uk": "Серце"
+            "sk": "červené srdce",
+            "sv": "Hjärta",
+            "uk": "Серце",
+            "zh_Hans": null
         }
     },
     {
@@ -426,11 +666,19 @@
         "unicode": "U+1F600",
         "translated_descriptions": {
             "de": "Smiley",
-            "es": null,
-            "fr": "Personne souriante",
+            "eo": "Rideto",
+            "es": "Emoticono",
+            "et": "Smaili",
+            "fi": "Hymynaama",
+            "fr": "Sourire",
             "ja": null,
+            "nb_NO": "Smilefjes",
+            "nl": "Smiley",
             "ru": "Улыбка",
-            "uk": "Посмішка"
+            "sk": "Škeriaca sa tvár",
+            "sv": "Smiley",
+            "uk": "Посмішка",
+            "zh_Hans": null
         }
     },
     {
@@ -440,11 +688,19 @@
         "unicode": "U+1F916",
         "translated_descriptions": {
             "de": "Roboter",
-            "es": null,
+            "eo": "Roboto",
+            "es": "Robot",
+            "et": "Robot",
+            "fi": "Robotti",
             "fr": "Robot",
             "ja": "ロボと",
+            "nb_NO": "Robot",
+            "nl": "Robot",
             "ru": "Робот",
-            "uk": "Робот"
+            "sk": "Robot",
+            "sv": "Robot",
+            "uk": "Робот",
+            "zh_Hans": null
         }
     },
     {
@@ -454,11 +710,19 @@
         "unicode": "U+1F3A9",
         "translated_descriptions": {
             "de": "Hut",
-            "es": null,
+            "eo": "Ĉapelo",
+            "es": "Sombrero",
+            "et": "Kübar",
+            "fi": "Hattu",
             "fr": "Châpeau",
             "ja": null,
+            "nb_NO": "Hatt",
+            "nl": "Hoed",
             "ru": "Шляпа",
-            "uk": "Капелюх"
+            "sk": "Cilinder",
+            "sv": "Hatt",
+            "uk": "Капелюх",
+            "zh_Hans": null
         }
     },
     {
@@ -468,11 +732,19 @@
         "unicode": "U+1F453",
         "translated_descriptions": {
             "de": "Brille",
-            "es": null,
+            "eo": "Okulvitroj",
+            "es": "Gafas",
+            "et": "Prillid",
+            "fi": "Silmälasit",
             "fr": "Lunettes",
             "ja": "めがね",
+            "nb_NO": "Briller",
+            "nl": "Bril",
             "ru": "Очки",
-            "uk": "Окуляри"
+            "sk": "Okuliare",
+            "sv": "Glasögon",
+            "uk": "Окуляри",
+            "zh_Hans": null
         }
     },
     {
@@ -482,11 +754,19 @@
         "unicode": "U+1F527",
         "translated_descriptions": {
             "de": "Schraubenschlüssel",
-            "es": null,
+            "eo": "Ŝraŭbŝlosilo",
+            "es": "Llave inglesa",
+            "et": "Mutrivõti",
+            "fi": "Mutteriavain",
             "fr": "Clé à molette",
             "ja": null,
+            "nb_NO": "Fastnøkkel",
+            "nl": "Moersleutel",
             "ru": "Ключ",
-            "uk": "Гайковий ключ"
+            "sk": "Francúzsky kľúč",
+            "sv": "Skruvnyckel",
+            "uk": "Гайковий ключ",
+            "zh_Hans": null
         }
     },
     {
@@ -496,11 +776,19 @@
         "unicode": "U+1F385",
         "translated_descriptions": {
             "de": "Nikolaus",
+            "eo": "Kristnaska viro",
             "es": null,
+            "et": "Jõuluvana",
+            "fi": "Joulupukki",
             "fr": "Père Noël",
             "ja": null,
+            "nb_NO": "Julenisse",
+            "nl": "Kerstman",
             "ru": "Санта",
-            "uk": "Санта Клаус"
+            "sk": "Santa Claus",
+            "sv": "Tomte",
+            "uk": "Санта Клаус",
+            "zh_Hans": null
         }
     },
     {
@@ -510,11 +798,19 @@
         "unicode": "U+1F44D",
         "translated_descriptions": {
             "de": "Daumen Hoch",
+            "eo": "Dikfingro supren",
             "es": null,
+            "et": "Pöidlad püsti",
+            "fi": "Peukalo ylös",
             "fr": "Pouce en l'air",
             "ja": null,
+            "nb_NO": "Tommel Opp",
+            "nl": "Duim omhoog",
             "ru": "Большой палец вверх",
-            "uk": "Великий палець вгору"
+            "sk": "Palec nahor",
+            "sv": "Tummen upp",
+            "uk": "Великий палець вгору",
+            "zh_Hans": null
         }
     },
     {
@@ -524,11 +820,19 @@
         "unicode": "U+2602U+FE0F",
         "translated_descriptions": {
             "de": "Regenschirm",
+            "eo": "Ombrelo",
             "es": null,
+            "et": "Vihmavari",
+            "fi": "Sateenvarjo",
             "fr": "Parapluie",
             "ja": null,
+            "nb_NO": "Paraply",
+            "nl": "Paraplu",
             "ru": "Зонт",
-            "uk": "Парасолька"
+            "sk": "Dáždnik",
+            "sv": "Paraply",
+            "uk": "Парасолька",
+            "zh_Hans": null
         }
     },
     {
@@ -538,11 +842,19 @@
         "unicode": "U+231B",
         "translated_descriptions": {
             "de": "Sanduhr",
+            "eo": "Sablohorloĝo",
             "es": null,
+            "et": "Liivakell",
+            "fi": "Tiimalasi",
             "fr": "Sablier",
             "ja": null,
+            "nb_NO": "Timeglass",
+            "nl": "Zandloper",
             "ru": "Песочные часы",
-            "uk": "Пісковий годинник"
+            "sk": "Presýpacie hodiny",
+            "sv": "Timglas",
+            "uk": "Пісковий годинник",
+            "zh_Hans": null
         }
     },
     {
@@ -552,11 +864,19 @@
         "unicode": "U+23F0",
         "translated_descriptions": {
             "de": "Wecker",
+            "eo": "Horloĝo",
             "es": "Reloj",
-            "fr": "Horloge",
+            "et": "Kell",
+            "fi": "Pöytäkello",
+            "fr": "Réveil",
             "ja": null,
+            "nb_NO": "Klokke",
+            "nl": "Wekker",
             "ru": "Часы",
-            "uk": "Годинник"
+            "sk": "Budík",
+            "sv": "Klocka",
+            "uk": "Годинник",
+            "zh_Hans": null
         }
     },
     {
@@ -566,11 +886,19 @@
         "unicode": "U+1F381",
         "translated_descriptions": {
             "de": "Geschenk",
+            "eo": "Donaco",
             "es": "Regalo",
+            "et": "Kingitus",
+            "fi": "Lahja",
             "fr": "Cadeau",
             "ja": null,
+            "nb_NO": "Gave",
+            "nl": "Geschenk",
             "ru": "Подарок",
-            "uk": "Подарунок"
+            "sk": "Zabalený darček",
+            "sv": "Paket",
+            "uk": "Подарунок",
+            "zh_Hans": null
         }
     },
     {
@@ -580,11 +908,19 @@
         "unicode": "U+1F4A1",
         "translated_descriptions": {
             "de": "Glühbirne",
+            "eo": "Lampo",
             "es": null,
+            "et": "Lambipirn",
+            "fi": "Hehkulamppu",
             "fr": "Ampoule",
             "ja": null,
+            "nb_NO": "Lyspære",
+            "nl": "Gloeilamp",
             "ru": "Лампочка",
-            "uk": "Лампочка"
+            "sk": "Žiarovka",
+            "sv": "Lampa",
+            "uk": "Лампочка",
+            "zh_Hans": null
         }
     },
     {
@@ -594,11 +930,19 @@
         "unicode": "U+1F4D5",
         "translated_descriptions": {
             "de": "Buch",
+            "eo": "Libro",
             "es": "Libro",
+            "et": "Raamat",
+            "fi": "Kirja",
             "fr": "Livre",
             "ja": "本",
+            "nb_NO": "Bok",
+            "nl": "Boek",
             "ru": "Книга",
-            "uk": "Книга"
+            "sk": "Zatvorená kniha",
+            "sv": "Bok",
+            "uk": "Книга",
+            "zh_Hans": null
         }
     },
     {
@@ -608,11 +952,19 @@
         "unicode": "U+270FU+FE0F",
         "translated_descriptions": {
             "de": "Bleistift",
+            "eo": "Krajono",
             "es": "Lápiz",
+            "et": "Pliiats",
+            "fi": "Lyijykynä",
             "fr": "Crayon",
             "ja": null,
+            "nb_NO": "Blyant",
+            "nl": "Potlood",
             "ru": "Карандаш",
-            "uk": "Олівець"
+            "sk": "Ceruzka",
+            "sv": "Penna",
+            "uk": "Олівець",
+            "zh_Hans": null
         }
     },
     {
@@ -622,11 +974,19 @@
         "unicode": "U+1F4CE",
         "translated_descriptions": {
             "de": "Büroklammer",
+            "eo": "Paperkuntenilo",
             "es": null,
+            "et": "Kirjaklamber",
+            "fi": "Paperiliitin",
             "fr": "Trombone",
             "ja": null,
+            "nb_NO": "BInders",
+            "nl": "Papierklemmetje",
             "ru": "Скрепка",
-            "uk": "Спиначка"
+            "sk": "Sponka na papier",
+            "sv": "Gem",
+            "uk": "Спиначка",
+            "zh_Hans": null
         }
     },
     {
@@ -636,11 +996,19 @@
         "unicode": "U+2702U+FE0F",
         "translated_descriptions": {
             "de": "Schere",
+            "eo": "Tondilo",
             "es": null,
+            "et": "Käärid",
+            "fi": "Sakset",
             "fr": "Ciseaux",
             "ja": null,
+            "nb_NO": "Saks",
+            "nl": "Schaar",
             "ru": "Ножницы",
-            "uk": "Ножиці"
+            "sk": "Nožnice",
+            "sv": "Sax",
+            "uk": "Ножиці",
+            "zh_Hans": null
         }
     },
     {
@@ -650,11 +1018,19 @@
         "unicode": "U+1F512",
         "translated_descriptions": {
             "de": "Schloss",
+            "eo": "Seruro",
             "es": null,
+            "et": "Lukk",
+            "fi": "Lukko",
             "fr": "Cadenas",
             "ja": null,
+            "nb_NO": "Lås",
+            "nl": "Slot",
             "ru": "Замок",
-            "uk": "Замок"
+            "sk": "Zatvorená zámka",
+            "sv": "Lås",
+            "uk": "Замок",
+            "zh_Hans": null
         }
     },
     {
@@ -664,11 +1040,19 @@
         "unicode": "U+1F511",
         "translated_descriptions": {
             "de": "Schlüssel",
+            "eo": "Ŝlosilo",
             "es": "Llave",
+            "et": "Võti",
+            "fi": "Avain",
             "fr": "Clé",
             "ja": null,
+            "nb_NO": "Nøkkel",
+            "nl": "Sleutel",
             "ru": "Ключ",
-            "uk": "Ключ"
+            "sk": "Kľúč",
+            "sv": "Nyckel",
+            "uk": "Ключ",
+            "zh_Hans": null
         }
     },
     {
@@ -678,11 +1062,19 @@
         "unicode": "U+1F528",
         "translated_descriptions": {
             "de": "Hammer",
+            "eo": "Martelo",
             "es": "Martillo",
+            "et": "Haamer",
+            "fi": "Vasara",
             "fr": "Marteau",
             "ja": null,
+            "nb_NO": "Hammer",
+            "nl": "Hamer",
             "ru": "Молоток",
-            "uk": "Молоток"
+            "sk": "Kladivo",
+            "sv": "Hammare",
+            "uk": "Молоток",
+            "zh_Hans": null
         }
     },
     {
@@ -692,11 +1084,19 @@
         "unicode": "U+260EU+FE0F",
         "translated_descriptions": {
             "de": "Telefon",
+            "eo": "Telefono",
             "es": "Telefono",
+            "et": "Telefon",
+            "fi": "Puhelin",
             "fr": "Téléphone",
             "ja": "電話機",
+            "nb_NO": "Telefon",
+            "nl": "Telefoon",
             "ru": "Телефон",
-            "uk": "Телефон"
+            "sk": "Telefón",
+            "sv": "Telefon",
+            "uk": "Телефон",
+            "zh_Hans": null
         }
     },
     {
@@ -706,11 +1106,19 @@
         "unicode": "U+1F3C1",
         "translated_descriptions": {
             "de": "Flagge",
+            "eo": "Flago",
             "es": null,
+            "et": "Lipp",
+            "fi": "Lippu",
             "fr": "Drapeau",
             "ja": null,
+            "nb_NO": "Flagg",
+            "nl": "Vlag",
             "ru": "Флаг",
-            "uk": "Прапор"
+            "sk": "Kockovaná zástava",
+            "sv": "Flagga",
+            "uk": "Прапор",
+            "zh_Hans": null
         }
     },
     {
@@ -720,11 +1128,19 @@
         "unicode": "U+1F682",
         "translated_descriptions": {
             "de": "Zug",
+            "eo": "Vagonaro",
             "es": "Tren",
+            "et": "Rong",
+            "fi": "Juna",
             "fr": "Train",
             "ja": "電車",
+            "nb_NO": "Tog",
+            "nl": "Trein",
             "ru": "Поезд",
-            "uk": "Потяг"
+            "sk": "Rušeň",
+            "sv": "Ånglok",
+            "uk": "Потяг",
+            "zh_Hans": null
         }
     },
     {
@@ -734,11 +1150,19 @@
         "unicode": "U+1F6B2",
         "translated_descriptions": {
             "de": "Fahrrad",
+            "eo": "Biciklo",
             "es": "Bicicleta",
+            "et": "Jalgratas",
+            "fi": "Polkupyörä",
             "fr": "Vélo",
             "ja": "自転車",
+            "nb_NO": "Sykkel",
+            "nl": "Fiets",
             "ru": "Велосипед",
-            "uk": "Велосипед"
+            "sk": "Bicykel",
+            "sv": "Cykel",
+            "uk": "Велосипед",
+            "zh_Hans": null
         }
     },
     {
@@ -748,11 +1172,19 @@
         "unicode": "U+2708U+FE0F",
         "translated_descriptions": {
             "de": "Flugzeug",
+            "eo": "Aviadilo",
             "es": null,
+            "et": "Lennuk",
+            "fi": "Lentokone",
             "fr": "Avion",
             "ja": null,
+            "nb_NO": "Fly",
+            "nl": "Vliegtuig",
             "ru": "Самолет",
-            "uk": "Літак"
+            "sk": "Lietadlo",
+            "sv": "Flygplan",
+            "uk": "Літак",
+            "zh_Hans": null
         }
     },
     {
@@ -762,11 +1194,19 @@
         "unicode": "U+1F680",
         "translated_descriptions": {
             "de": "Rakete",
+            "eo": "Raketo",
             "es": null,
+            "et": "Rakett",
+            "fi": "Raketti",
             "fr": "Fusée",
             "ja": null,
+            "nb_NO": "Rakett",
+            "nl": "Raket",
             "ru": "Ракета",
-            "uk": "Ракета"
+            "sk": "Raketa",
+            "sv": "Raket",
+            "uk": "Ракета",
+            "zh_Hans": null
         }
     },
     {
@@ -776,11 +1216,19 @@
         "unicode": "U+1F3C6",
         "translated_descriptions": {
             "de": "Trophäe",
+            "eo": "Trofeo",
             "es": null,
+            "et": "Auhind",
+            "fi": "Palkinto",
             "fr": "Trophée",
             "ja": null,
+            "nb_NO": "Pokal",
+            "nl": "Trofee",
             "ru": "Кубок",
-            "uk": "Приз"
+            "sk": "Trofej",
+            "sv": "Trofé",
+            "uk": "Приз",
+            "zh_Hans": null
         }
     },
     {
@@ -790,11 +1238,19 @@
         "unicode": "U+26BD",
         "translated_descriptions": {
             "de": "Ball",
+            "eo": "Pilko",
             "es": "Bola",
+            "et": "Pall",
+            "fi": "Pallo",
             "fr": "Ballon",
             "ja": null,
+            "nb_NO": "Ball",
+            "nl": "Bal",
             "ru": "Мяч",
-            "uk": "М'яч"
+            "sk": "Futbal",
+            "sv": "Boll",
+            "uk": "М'яч",
+            "zh_Hans": null
         }
     },
     {
@@ -804,11 +1260,19 @@
         "unicode": "U+1F3B8",
         "translated_descriptions": {
             "de": "Gitarre",
+            "eo": "Gitaro",
             "es": "Guitarra",
+            "et": "Kitarr",
+            "fi": "Kitara",
             "fr": "Guitare",
             "ja": null,
+            "nb_NO": "Gitar",
+            "nl": "Gitaar",
             "ru": "Гитара",
-            "uk": "Гітара"
+            "sk": "Gitara",
+            "sv": "Gitarr",
+            "uk": "Гітара",
+            "zh_Hans": null
         }
     },
     {
@@ -818,11 +1282,19 @@
         "unicode": "U+1F3BA",
         "translated_descriptions": {
             "de": "Trompete",
+            "eo": "Trumpeto",
             "es": "Trompeta",
+            "et": "Trompet",
+            "fi": "Trumpetti",
             "fr": "Trompette",
             "ja": null,
+            "nb_NO": "Trompet",
+            "nl": "Trompet",
             "ru": "Труба",
-            "uk": "Труба"
+            "sk": "Trúbka",
+            "sv": "Trumpet",
+            "uk": "Труба",
+            "zh_Hans": null
         }
     },
     {
@@ -832,11 +1304,19 @@
         "unicode": "U+1F514",
         "translated_descriptions": {
             "de": "Glocke",
+            "eo": "Sonorilo",
             "es": "Campana",
+            "et": "Kelluke",
+            "fi": "Soittokello",
             "fr": "Cloche",
             "ja": null,
+            "nb_NO": "Bjelle",
+            "nl": "Bel",
             "ru": "Колокол",
-            "uk": "Дзвін"
+            "sk": "Zvon",
+            "sv": "Bjällra",
+            "uk": "Дзвін",
+            "zh_Hans": null
         }
     },
     {
@@ -846,11 +1326,19 @@
         "unicode": "U+2693",
         "translated_descriptions": {
             "de": "Anker",
+            "eo": "Ankro",
             "es": null,
+            "et": "Ankur",
+            "fi": "Ankkuri",
             "fr": "Ancre",
             "ja": null,
+            "nb_NO": "Anker",
+            "nl": "Anker",
             "ru": "Якорь",
-            "uk": "Якір"
+            "sk": "Kotva",
+            "sv": "Ankare",
+            "uk": "Якір",
+            "zh_Hans": null
         }
     },
     {
@@ -860,11 +1348,19 @@
         "unicode": "U+1F3A7",
         "translated_descriptions": {
             "de": "Kopfhörer",
+            "eo": "Kapaŭdilo",
             "es": null,
+            "et": "Kõrvaklapid",
+            "fi": "Kuulokkeet",
             "fr": "Casque audio",
             "ja": null,
+            "nb_NO": "Hodetelefoner",
+            "nl": "Koptelefoon",
             "ru": "Наушники",
-            "uk": "Навушники"
+            "sk": "Slúchadlá",
+            "sv": "Hörlurar",
+            "uk": "Навушники",
+            "zh_Hans": null
         }
     },
     {
@@ -874,11 +1370,19 @@
         "unicode": "U+1F4C1",
         "translated_descriptions": {
             "de": "Ordner",
+            "eo": "Dosierujo",
             "es": null,
+            "et": "Kaust",
+            "fi": "Kansio",
             "fr": "Dossier",
             "ja": null,
+            "nb_NO": "Mappe",
+            "nl": "Map",
             "ru": "Папка",
-            "uk": "Тека"
+            "sk": "Fascikel",
+            "sv": "Mapp",
+            "uk": "Тека",
+            "zh_Hans": null
         }
     },
     {
@@ -888,11 +1392,19 @@
         "unicode": "U+1F4CC",
         "translated_descriptions": {
             "de": "Stecknadel",
+            "eo": "Pinglo",
             "es": "Alfiler",
+            "et": "Nööpnõel",
+            "fi": "Nuppineula",
             "fr": "Punaise",
             "ja": null,
+            "nb_NO": "Tegnestift",
+            "nl": "Duimspijker",
             "ru": "Булавка",
-            "uk": "Кнопка"
+            "sk": "Špendlík",
+            "sv": "Häftstift",
+            "uk": "Кнопка",
+            "zh_Hans": null
         }
     }
 ]
