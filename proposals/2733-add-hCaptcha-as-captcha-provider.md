@@ -30,7 +30,7 @@ This move would have multiple benefits:
 
 ## Potential issues
 As a potential issue there would be the variables in homeserver.yaml, namely `recaptcha_public_key` `recaptcha_private_key` `recaptcha_siteverify_api` which would need to be renamed, which breaks config backwards compatibility.
-Also adoption and integration with clients like element.io and so on could become an issue. And possibly cumbersome to maintain multiple captcha providers.
+Also adoption and integration with clients like element.io and so on could become an issue and possibly cumbersome to maintain multiple captcha providers.
 
 ## Alternatives
 
