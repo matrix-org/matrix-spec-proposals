@@ -1,7 +1,7 @@
 # MSC2733 : Add hCaptcha as captcha provider
 
 This MSC proposes to generalize the use of a captcha api in the matrix spec and that 
-hCaptch is to be added to to provide a more privacy focused alternative to reCaptcha.
+hCaptch is to be added to provide a more privacy focused alternative to reCaptcha.
 
 ## Context
 
