@@ -22,6 +22,16 @@ This move would have multiple benefits:
 * Used by Cloudflare, see [here](https://blog.cloudflare.com/moving-from-recaptcha-to-hcaptcha/).
 * Supports [Privacy Pass](https://privacypass.github.io/)
 
+**All proposed changes listed chronologically:**
+* implement needed changes for multiple captcha providers
+* implementing hCaptcha api calls
+* switching to hCaptcha as default captcha provider
+* dropping reCaptcha
+
+## Potential issues
+As a potential issue there would be the variables in homeserver.yaml, namely `recaptcha_public_key` `recaptcha_private_key` `recaptcha_siteverify_api` which would need to be renamed, which breaks config backwards compatibility.
+Also adoption and integration with clients like element.io and so on could become an issue. And possibly cumbersome to maintain multiple captcha providers.
+
 ## Alternatives
 
 Some alternatives have been discussed in multiple Issues [1](https://github.com/vector-im/element-web/issues/3606) [2](https://github.com/matrix-org/matrix-doc/issues/1281).
@@ -29,7 +39,8 @@ There are generally two views regarding alternatives for reCaptcha. Design orien
 For Design, there are two notable mentions:
 * [VisualCaptcha](https://visualcaptcha.net/)
 * [MTCaptcha](https://www.mtcaptcha.com/)
-Regarding security and privacy the by far best option is [hCaptcha](https://www.hcaptcha.com/):
+Regarding security and privacy the by far best option is [hCaptcha](https://www.hcaptcha.com/)
+Since hCaptcha is pretty simmilar to reCaptcha design wise, it would be the ideal replacement since the majority of users are already familiar with reCaptcha.
 
 ## Security considerations
 
