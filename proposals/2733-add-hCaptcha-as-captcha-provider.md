@@ -18,13 +18,13 @@ as a captcha provider and also should be used as the default moving forward.
 This move would have multiple benefits:
 * Not relying on Google
 * Protecting users privacy, see [here](https://www.hcaptcha.com/privacy)
-* The captchas are easier to solve and aren't confusing like reCaptcha sometimes can be (only from own and anecdotal experiences)
+* The captchas are easier to solve and aren't confusing like reCaptcha sometimes can be (only from my own and anecdotal experiences)
 * Used by Cloudflare, see [here](https://blog.cloudflare.com/moving-from-recaptcha-to-hcaptcha/).
 * Supports [Privacy Pass](https://privacypass.github.io/)
 
 ## Alternatives
 
-Some alternatives have been discussed in multiple Issues [1].
+Some alternatives have been discussed in multiple Issues [1](https://github.com/vector-im/element-web/issues/3606) [2](https://github.com/matrix-org/matrix-doc/issues/1281).
 There are generally two views regarding alternatives for reCaptcha. Design oriented and Security/Privacy oriented.
 For Design, there are two notable mentions:
 * [VisualCaptcha](https://visualcaptcha.net/)
@@ -34,7 +34,3 @@ Regarding security and privacy the by far best option is [hCaptcha](https://www.
 ## Security considerations
 
 Arguably hCaptch isn't as bot proof as reCaptcha is, but to what degree is uncertain.
-
-[1]
- - https://github.com/vector-im/element-web/issues/3606
- - https://github.com/matrix-org/matrix-doc/issues/1281
