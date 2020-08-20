@@ -5,7 +5,7 @@ hCaptch is to be added to provide a more privacy focused alternative to reCaptch
 
 ## Context
 
-Since google is well known for their misuse of their customers data and general disregard 
+Since Google is well known for misuse of their customers data and general disregard 
 for basic privacy rights it is desireable to distance the Matrix spec from such a company.
 The ubiquitously used reCaptcha is one such mechanism to accumulate more private data for Google.
 
