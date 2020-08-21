@@ -34,9 +34,9 @@ The JSON object associated with each tag gives information about the tag, e.g ho
 to order the rooms with a given tag.
 
 Ordering information is given under the ``order`` key as a number between 0 and
-1. The numbers are compared such that 0 is displayed first. Therefore a room 
-with an ``order`` of ``0.2`` would be displayed before a room with an ``order`` 
-of ``0.7``. If a room has a tag without an ``order`` key then it should appear 
+1. The numbers are compared such that 0 is displayed first. Therefore a room
+with an ``order`` of ``0.2`` would be displayed before a room with an ``order``
+of ``0.7``. If a room has a tag without an ``order`` key then it should appear
 after the rooms with that tag that have an ``order`` key.
 
 The name of a tag MUST NOT exceed 255 bytes.
@@ -55,11 +55,12 @@ The tag namespace is defined as follows:
   display name directly). These non-namespaced tags are supported for historical reasons. New tags should use
   one of the defined namespaces above.
 
-Two special names are listed in the specification:
+Several special names are listed in the specification:
 The following tags are defined in the ``m.*`` namespace:
 
 * ``m.favourite``: The user's favourite rooms. These should be shown with higher precedence than other rooms.
 * ``m.lowpriority``: These should be shown with lower precedence than others.
+* ``m.server_notice``: Used to identify `Server Notice Rooms <#module-server-notices>`_.
 
 {{m_tag_event}}
 

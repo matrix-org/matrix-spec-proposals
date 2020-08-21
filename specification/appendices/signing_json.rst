@@ -39,6 +39,17 @@ range where they can be accurately represented using IEEE double precision
 floating point numbers since a number of JSON libraries represent all numbers
 using this representation.
 
+.. WARNING::
+   Events in room versions 1, 2, 3, 4, and 5 might not be fully compliant with
+   these restrictions. Servers SHOULD be capable of handling JSON which is considered
+   invalid by these restrictions where possible.
+
+   The most notable consideration is that integers might not be in the range
+   specified above.
+
+.. Note::
+   Float values are not permitted by this encoding.
+
 .. code:: python
 
  import json
@@ -59,7 +70,7 @@ Grammar
 +++++++
 
 Adapted from the grammar in http://tools.ietf.org/html/rfc7159 removing
-insignificant whitespace, fractions, exponents and redundant character escapes
+insignificant whitespace, fractions, exponents and redundant character escapes.
 
 .. code::
 

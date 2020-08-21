@@ -1,4 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
+.. Copyright 2019 The Matrix.org Foundation C.I.C.
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -32,13 +33,13 @@ Push Notifications
     Matrix   |                     |                    |  |      |            |
  Client/Server API  +              |                    |  |      |            |
              |      |              +--------------------+  +-------------------+
-             |   +--+-+                                           |             
-             |   |    <-------------------------------------------+             
-             +---+    |                                                        
-                 |    |          Provider Push Protocol                        
-                 +----+                                                        
-                                                                               
-         Mobile Device or Client                                               
+             |   +--+-+                                           |
+             |   |    <-------------------------------------------+
+             +---+    |
+                 |    |          Provider Push Protocol
+                 +----+
+
+         Mobile Device or Client
 
 
 This module adds support for push notifications. Homeservers send notifications
@@ -116,6 +117,16 @@ have received.
 
 {{notifications_cs_http_api}}
 
+Receiving notifications
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Servers MUST include the number of unread notifications in a client's ``/sync``
+stream, and MUST update it as it changes. Notifications are determined by the
+push rules which apply to an event.
+
+When the user updates their read receipt (either by using the API or by sending an
+event), notifications prior to and including that event MUST be marked as read.
+
 Push Rules
 ~~~~~~~~~~
 A push rule is a single rule that states under what *conditions* an event should
@@ -124,8 +135,9 @@ There are different "kinds" of push rules and each rule has an associated
 priority. Every push rule MUST have a ``kind`` and ``rule_id``. The ``rule_id``
 is a unique string within the kind of rule and its' scope: ``rule_ids`` do not
 need to be unique between rules of the same kind on different devices. Rules may
-have extra keys depending on the value of ``kind``. The different kinds of rule
-in descending order of priority are:
+have extra keys depending on the value of ``kind``.
+
+The different ``kind``\ s of rule, in the order that they are checked, are:
 
 Override Rules ``override``
   The highest priority rules are user-configured overrides.
@@ -144,15 +156,6 @@ Sender-specific rules ``sender``
 Underride rules ``underride``
   These are identical to ``override`` rules, but have a lower priority than
   ``content``, ``room`` and ``sender`` rules.
-
-This means that the full list of rule kinds, in descending priority order, is
-as follows:
-
-* Global Override
-* Global Content
-* Global Room
-* Global Sender
-* Global Underride
 
 Rules with the same ``kind`` can specify an ordering priority. This determines
 which rule is selected in the event of multiple matches. For example, a rule
@@ -177,7 +180,7 @@ notification is delivered for a matching event. The following actions are define
   This prevents each matching event from generating a notification
 ``coalesce``
   This enables notifications for matching events but activates homeserver
-  specific behaviour to intelligently coalesce multiple events into a single 
+  specific behaviour to intelligently coalesce multiple events into a single
   notification. Not all homeservers may support this. Those that do not support
   it should treat it as the ``notify`` action.
 ``set_tweak``
@@ -213,6 +216,55 @@ Tweaks are passed transparently through the homeserver so client applications
 and Push Gateways may agree on additional tweaks. For example, a tweak may be
 added to specify how to flash the notification light on a mobile device.
 
+Conditions
+++++++++++
+
+``override`` and ``underride`` rules MAY have a list of 'conditions'.
+All conditions must hold true for an event in order for the rule to match.
+A rule with no conditions always matches. The following conditions are defined:
+
+``event_match``
+  This is a glob pattern match on a field of the event. Parameters:
+
+  * ``key``: The dot-separated field of the event to match, e.g. ``content.body``
+  * ``pattern``: The glob-style pattern to match against. Patterns with no
+    special glob characters should be treated as having asterisks
+    prepended and appended when testing the condition.
+
+``contains_display_name``
+  This matches unencrypted messages where ``content.body`` contains the owner's
+  display name in that room. This is a separate rule because display names may
+  change and as such it would be hard to maintain a rule that matched the user's
+  display name. This condition has no parameters.
+
+``room_member_count``
+  This matches the current number of members in the room. Parameters:
+
+  * ``is``: A decimal integer optionally prefixed by one of, ``==``, ``<``,
+    ``>``, ``>=`` or ``<=``. A prefix of ``<`` matches rooms where the member
+    count is strictly less than the given number and so forth. If no prefix is
+    present, this parameter defaults to ``==``.
+
+``sender_notification_permission``
+  This takes into account the current power levels in the room, ensuring the
+  sender of the event has high enough power to trigger the notification.
+
+  Parameters:
+
+  * ``key``: A string that determines the power level the sender must have to trigger
+    notifications of a given type, such as ``room``. Refer to the `m.room.power_levels`_
+    event schema for information about what the defaults are and how to interpret the event.
+    The ``key`` is used to look up the power level required to send a notification type
+    from the ``notifications`` object in the power level event content.
+
+Unrecognised conditions MUST NOT match any events, effectively making the push
+rule disabled.
+
+``room``, ``sender`` and ``content`` rules do not have conditions in the same
+way, but instead have predefined conditions. In the cases of ``room`` and
+``sender`` rules, the ``rule_id`` of the rule determines its behaviour.
+
+
 Predefined Rules
 ++++++++++++++++
 Homeservers can specify "server-default rules" which operate at a lower priority
@@ -226,7 +278,7 @@ Default Override Rules
 
 ``.m.rule.master``
 ``````````````````
-Matches all events, this can be enabled to turn off all push notifications
+Matches all events. This can be enabled to turn off all push notifications
 other than those generated by override rules set by the user. By default this
 rule is disabled.
 
@@ -246,9 +298,7 @@ Definition
 
 ``.m.rule.suppress_notices``
 ````````````````````````````
-Matches messages with a ``msgtype`` of ``notice``. This should be an
-``override`` rule so that it takes priority over ``content`` / ``sender`` /
-``room`` rules.
+Matches messages with a ``msgtype`` of ``notice``.
 
 Definition:
 
@@ -304,10 +354,6 @@ Definition:
             {
                 "set_tweak": "sound",
                 "value": "default"
-            },
-            {
-                "set_tweak": "highlight",
-                "value": false
             }
         ]
     }
@@ -369,6 +415,41 @@ Definition:
     }
 
 
+``.m.rule.tombstone``
+`````````````````````
+Matches any state event whose type is ``m.room.tombstone``. This is intended
+to notify users of a room when it is upgraded, similar to what an
+``@room`` notification would accomplish.
+
+Definition:
+
+.. code:: json
+
+    {
+        "rule_id": ".m.rule.tombstone",
+        "default": true,
+        "enabled": true,
+        "conditions": [
+            {
+                "kind": "event_match",
+                "key": "type",
+                "pattern": "m.room.tombstone"
+            },
+            {
+                "kind": "event_match",
+                "key": "state_key",
+                "pattern": ""
+            }
+        ],
+        "actions": [
+            "notify",
+            {
+                "set_tweak": "highlight"
+            }
+        ]
+    }
+
+
 ``.m.rule.roomnotif``
 `````````````````````
 Matches any message whose content is unencrypted and contains the
@@ -397,8 +478,7 @@ Definition:
         "actions": [
             "notify",
             {
-                "set_tweak": "highlight",
-                "value": true
+                "set_tweak": "highlight"
             }
         ]
     }
@@ -426,6 +506,9 @@ Definition (as a ``content`` rule):
             {
                 "set_tweak": "sound",
                 "value": "default"
+            },
+            {
+                "set_tweak": "highlight"
             }
         ]
     }
@@ -457,10 +540,6 @@ Definition:
             {
                 "set_tweak": "sound",
                 "value": "ring"
-            },
-            {
-                "set_tweak": "highlight",
-                "value": false
             }
         ]
     }
@@ -497,10 +576,6 @@ Definition:
             {
                 "set_tweak": "sound",
                 "value": "default"
-            },
-            {
-                "set_tweak": "highlight",
-                "value": false
             }
         ]
     }
@@ -521,6 +596,11 @@ Definition:
             {
                 "kind": "room_member_count",
                 "is": "2"
+            },
+            {
+                "kind": "event_match",
+                "key": "type",
+                "pattern": "m.room.message"
             }
         ],
         "actions": [
@@ -528,10 +608,6 @@ Definition:
             {
                 "set_tweak": "sound",
                 "value": "default"
-            },
-            {
-                "set_tweak": "highlight",
-                "value": false
             }
         ]
     }
@@ -556,11 +632,7 @@ Definition:
             }
         ],
         "actions": [
-            "notify",
-            {
-                "set_tweak": "highlight",
-                "value": false
-            }
+            "notify"
         ]
    }
 
@@ -587,62 +659,9 @@ Definition:
             }
         ],
         "actions": [
-            "notify",
-            {
-                "set_tweak": "highlight",
-                "value": false
-            }
+            "notify"
         ]
    }
-
-
-Conditions
-++++++++++
-
-Override, Underride and Default Rules MAY have a list of 'conditions'. 
-All conditions must hold true for an event in order to apply the ``action`` for
-the event. A rule with no conditions always matches. Room, Sender, User and
-Content rules do not have conditions in the same way, but instead have
-predefined conditions. These conditions can be configured using the parameters
-outlined below. In the cases of room and sender rules, the ``rule_id`` of the
-rule determines its behaviour. The following conditions are defined:
-
-``event_match``
-  This is a glob pattern match on a field of the event. Parameters:
-
-  * ``key``: The dot-separated field of the event to match, e.g. ``content.body``
-  * ``pattern``: The glob-style pattern to match against. Patterns with no
-    special glob characters should be treated as having asterisks
-    prepended and appended when testing the condition.
-
-``contains_display_name``
-  This matches unencrypted messages where ``content.body`` contains the owner's
-  display name in that room. This is a separate rule because display names may
-  change and as such it would be hard to maintain a rule that matched the user's
-  display name. This condition has no parameters.
-
-``room_member_count``
-  This matches the current number of members in the room. Parameters:
-
-  * ``is``: A decimal integer optionally prefixed by one of, ``==``, ``<``,
-    ``>``, ``>=`` or ``<=``. A prefix of ``<`` matches rooms where the member
-    count is strictly less than the given number and so forth. If no prefix is
-    present, this parameter defaults to ``==``.
-
-``sender_notification_permission``
-  This takes into account the current power levels in the room, ensuring the
-  sender of the event has high enough power to trigger the notification.
-
-  Parameters:
-
-  * ``key``: A string that determines the power level the sender must have to trigger
-    notifications of a given type, such as ``room``. Refer to the `m.room.power_levels`_
-    event schema for information about what the defaults are and how to interpret the event.
-    The ``key`` is used to look up the power level required to send a notification type
-    from the ``notifications`` object in the power level event content.
-
-Unrecognised conditions MUST NOT match any events, effectively making the push
-rule disabled.
 
 Push Rules: API
 ~~~~~~~~~~~~~~~

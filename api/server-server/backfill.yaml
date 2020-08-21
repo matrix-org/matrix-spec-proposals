@@ -32,8 +32,8 @@ paths:
       summary: Retrieves the events which precede the given event
       description: |-
         Retrieves a sliding-window history of previous PDUs that occurred in the given room.
-        Starting from the PDU ID(s) given in the ``v`` argument, the PDUs that preceded it
-        are retrieved, up to the total number given by the ``limit``.
+        Starting from the PDU ID(s) given in the ``v`` argument, the PDUs given in ``v`` and
+        the PDUs that preceded them are retrieved, up to the total number given by the ``limit``.
       operationId: backfillRoom
       security:
         - signedRequest: []
@@ -63,8 +63,16 @@ paths:
           description: |-
             A transaction containing the PDUs that preceded the given event(s), including the given
             event(s), up to the given limit.
+
+            .. Note::
+               Though the PDU definitions require that ``prev_events`` and ``auth_events`` be limited
+               in number, the response of backfill MUST NOT be validated on these specific restrictions.
+
+               Due to historical reasons, it is possible that events which were previously accepted
+               would now be rejected by these limitations. The events should be rejected per usual by
+               the ``/send``, ``/get_missing_events``, and remaining endpoints.
           schema:
-            $ref: "definitions/transaction.yaml"
+            $ref: "definitions/unlimited_pdu_transaction.yaml"
   "/get_missing_events/{roomId}":
     post:
       summary: Retrieves events that the sender is missing

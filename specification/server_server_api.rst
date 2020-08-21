@@ -80,8 +80,22 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/server_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.1.4 <https://matrix.org/docs/spec/server_server/r0.1.4.html>`_
+- `r0.1.3 <https://matrix.org/docs/spec/server_server/r0.1.3.html>`_
+- `r0.1.2 <https://matrix.org/docs/spec/server_server/r0.1.2.html>`_
 - `r0.1.1 <https://matrix.org/docs/spec/server_server/r0.1.1.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/server_server/r0.1.0.html>`_
+
+
+API standards
+-------------
+
+The mandatory baseline for client-server communication in Matrix is exchanging
+JSON objects over HTTP APIs. More efficient optional transports will in future
+be supported as optional extensions - e.g. a packed binary encoding over
+stream-cipher encrypted TCP socket for low-bandwidth/low-roundtrip mobile usage.
+For the default HTTP transport, all API calls use a Content-Type of
+``application/json``.  In addition, all strings MUST be encoded as UTF-8.
 
 Server discovery
 ----------------
@@ -279,6 +293,11 @@ Step 1 sign JSON:
         }
    }
 
+The server names in the JSON above are the server names for each homeserver involved. Delegation from
+the `server name resolution section <#resolving-server-names>`_ above do not affect
+these - the server names from before delegation would take place are used. This
+same condition applies throughout the request signing process.
+
 Step 2 add Authorization header:
 
 .. code::
@@ -304,8 +323,8 @@ Example python code:
              "destination": destination_name,
         }
 
-        if content_json is not None:
-            request["content"] = content
+        if content is not None:
+            request_json["content"] = content
 
         signed_json = sign_json(request_json, origin_name, origin_signing_key)
 
@@ -379,27 +398,8 @@ creating a new event in this room should populate the new event's
   |
   E4
 
-.. _`auth events selection`:
-
-The ``auth_events`` field of a PDU identifies the set of events which give the
-sender permission to send the event. The ``auth_events`` for the
-``m.room.create`` event in a room is empty; for other events, it should be the
-following subset of the room state:
-
-- The ``m.room.create`` event.
-- The current ``m.room.power_levels`` event, if any.
-- The sender's current ``m.room.member`` event, if any.
-- If type is ``m.room.member``:
-
-    - The target's current ``m.room.member`` event, if any.
-    - If ``membership`` is ``join`` or ``invite``, the current
-      ``m.room.join_rules`` event, if any.
-    - If membership is ``invite`` and ``content`` contains a
-      ``third_party_invite`` property, the current
-      ``m.room.third_party_invite`` event with ``state_key`` matching
-      ``content.third_party_invite.signed.token``, if any.
-
 For a full schema of what a PDU looks like, see the `room version specification`_.
+
 
 Checks performed on receipt of a PDU
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -421,9 +421,8 @@ must ensure that the event:
 Further details of these checks, and how to handle failures, are described
 below.
 
-.. TODO:
-  Flesh this out a bit more, and probably change the doc to group the various
-  checks in one place, rather than have them spread out.
+The `Signing Events <#signing-events>`_ section has more information on which hashes
+and signatures are expected on events, and how to calculate them.
 
 
 Definitions
@@ -454,6 +453,29 @@ given event is checked multiple times against different sets of state, as
 specified above. Each room version can have a different algorithm for how the
 rules work, and which rules are applied. For more detailed information, please
 see the `room version specification`_.
+
+
+Auth events selection
+^^^^^^^^^^^^^^^^^^^^^
+
+The ``auth_events`` field of a PDU identifies the set of events which give the
+sender permission to send the event. The ``auth_events`` for the
+``m.room.create`` event in a room is empty; for other events, it should be the
+following subset of the room state:
+
+- The ``m.room.create`` event.
+- The current ``m.room.power_levels`` event, if any.
+- The sender's current ``m.room.member`` event, if any.
+- If type is ``m.room.member``:
+
+    - The target's current ``m.room.member`` event, if any.
+    - If ``membership`` is ``join`` or ``invite``, the current
+      ``m.room.join_rules`` event, if any.
+    - If membership is ``invite`` and ``content`` contains a
+      ``third_party_invite`` property, the current
+      ``m.room.third_party_invite`` event with ``state_key`` matching
+      ``content.third_party_invite.signed.token``, if any.
+
 
 Rejection
 +++++++++
@@ -765,7 +787,9 @@ and responds to the joining server with the full set of state for the
 newly-joined room. The resident server must also send the event to other servers
 participating in the room.
 
-{{joins_ss_http_api}}
+{{joins_v1_ss_http_api}}
+
+{{joins_v2_ss_http_api}}
 
 .. TODO-spec
   - (paul) I don't really understand why the full auth_chain events are given
@@ -802,7 +826,9 @@ signs the event and replaces the ``event_id`` with it's own. This is then sent t
 the resident server via ``/send_leave``. The resident server will then send the
 event to other servers in the room.
 
-{{leaving_ss_http_api}}
+{{leaving_v1_ss_http_api}}
+
+{{leaving_v2_ss_http_api}}
 
 Third-party invites
 -------------------
@@ -1056,13 +1082,15 @@ The following endpoint prefixes MUST be protected:
 * ``/_matrix/federation/v1/make_join``
 * ``/_matrix/federation/v1/make_leave``
 * ``/_matrix/federation/v1/send_join``
+* ``/_matrix/federation/v2/send_join``
 * ``/_matrix/federation/v1/send_leave``
+* ``/_matrix/federation/v2/send_leave``
 * ``/_matrix/federation/v1/invite``
+* ``/_matrix/federation/v2/invite``
 * ``/_matrix/federation/v1/state``
 * ``/_matrix/federation/v1/state_ids``
 * ``/_matrix/federation/v1/backfill``
 * ``/_matrix/federation/v1/event_auth``
-* ``/_matrix/federation/v1/query_auth``
 * ``/_matrix/federation/v1/get_missing_events``
 
 
@@ -1099,6 +1127,15 @@ originating server, following the algorithm described in `Checking for a signatu
 Note that this step should succeed whether we have been sent the full event or
 a redacted copy.
 
+The signatures expected on an event are:
+
+* The ``sender``'s server, unless the invite was created as a result of 3rd party invite.
+  The sender must already match the 3rd party invite, and the server which actually
+  sends the event may be a different server.
+* For room versions 1 and 2, the server which created the ``event_id``. Other room
+  versions do not track the ``event_id`` over federation and therefore do not need
+  a signature from those servers.
+
 If the signature is found to be valid, the expected content hash is calculated
 as described below. The content hash in the ``hashes`` property of the received
 event is base64-decoded, and the two are compared for equality.
@@ -1114,7 +1151,9 @@ Calculating the reference hash for an event
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The *reference hash* of an event covers the essential fields of an event,
-including content hashes. It is calculated as follows.
+including content hashes. It is used for event identifiers in some room versions.
+See the `room version specification`_ for more information. It is calculated as
+follows.
 
 1. The event is put through the redaction algorithm.
 
@@ -1225,3 +1264,4 @@ issue.
 .. _`Device Management module`: ../client_server/%CLIENT_RELEASE_LABEL%.html#device-management
 .. _`End-to-End Encryption module`: ../client_server/%CLIENT_RELEASE_LABEL%.html#end-to-end-encryption
 .. _`room version specification`: ../index.html#room-versions
+.. _`Client-Server Key Algorithms`: ../client_server/%CLIENT_RELEASE_LABEL%.html#key-algorithms

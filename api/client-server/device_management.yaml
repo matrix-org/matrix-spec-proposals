@@ -83,7 +83,7 @@ paths:
           schema:
             type: object
             allOf:
-               - $ref: "definitions/client_device.yaml"
+              - $ref: "definitions/client_device.yaml"
           examples:
             application/json: {
                 "device_id": "QBUAZIFURK",
@@ -119,9 +119,9 @@ paths:
               display_name:
                 type: string
                 description: |-
-                    The new display name for this device. If not given, the
-                    display name is unchanged.
-                example: My other phone
+                  The new display name for this device. If not given, the
+                  display name is unchanged.
+            example: { "display_name": "My other phone" }
       responses:
         200:
           description: The device was successfully updated.
@@ -152,14 +152,16 @@ paths:
           x-example: "QBUAZIFURK"
         - in: body
           name: body
+          required: true
           schema:
             type: object
             properties:
               auth:
                 description: |-
-                    Additional authentication information for the
-                    user-interactive authentication API.
-                "$ref": "definitions/auth_data.yaml"
+                  Additional authentication information for the
+                  user-interactive authentication API.
+                allOf:
+                  - "$ref": "definitions/auth_data.yaml"
       responses:
         200:
           description: |-
@@ -190,6 +192,7 @@ paths:
       parameters:
         - in: body
           name: body
+          required: true
           schema:
             type: object
             properties:
@@ -201,10 +204,11 @@ paths:
                   description: A list of device IDs.
                 example: ["QBUAZIFURK", "AUIECTSRND"]
               auth:
+                allOf:
+                  - "$ref": "definitions/auth_data.yaml"
                 description: |-
                     Additional authentication information for the
                     user-interactive authentication API.
-                "$ref": "definitions/auth_data.yaml"
             required:
               - devices
       responses:

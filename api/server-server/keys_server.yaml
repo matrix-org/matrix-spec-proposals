@@ -34,7 +34,7 @@ paths:
         Intermediate notary servers should cache a response for half of its
         lifetime to avoid serving a stale response. Originating servers should
         avoid returning responses that expire in less than an hour to avoid
-        repeated reqests for a certificate that is about to expire. Requesting
+        repeated requests for a certificate that is about to expire. Requesting
         servers should limit how frequently they query for certificates to
         avoid flooding a server with requests.
 
@@ -51,6 +51,8 @@ paths:
             **Deprecated**. Servers should not use this parameter and instead
             opt to return all keys, not just the requested one. The key ID to
             look up.
+
+            When excluded, the trailing slash on this endpoint is optional.
           required: false
           x-example: "ed25519:abc123"
           deprecated: true
