@@ -19,7 +19,7 @@ via a common widget - it would be nice if that widget could auth the user withou
 their username and password into an iframe.
 
 Widgets can request OpenID credentials from the user by sending a `fromWidget` action of `get_openid`
-to intiate the token exchange process. The client should respond with an acknowledgement of
+to initiate the token exchange process. The client should respond with an acknowledgement of
 `{"state":"request"}` (or `{"state":"blocked"}` if the client/user doesn't think the widget is safe).
 The client should then prompt the user if the widget should be allowed to get details about the user,
 optionally providing a way for the user to always accept/deny the widget. If the user agrees, the
@@ -31,7 +31,7 @@ the OpenID object (just like in the data for `openid_credentials`). The widget s
 credentials until after it has exchanged capabilities with the client, however this is not required. The
 widget should acknowledge the `openid_credentials` request with an empty response object.
 
-A full sequence diagram for this flow is as follows:
+A successful sequence diagram for this flow is as follows:
 
 ```
 +-------+                                    +---------+                                +---------+
