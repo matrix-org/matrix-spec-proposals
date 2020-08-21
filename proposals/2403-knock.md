@@ -8,7 +8,7 @@ This proposal implements the reserved "knock" membership type for the
 `m.room.member` state event. This state event indicates that when a user
 knocks on a room, they are asking for permission to join. It contains an
 optional "reason" parameter to specify the reason you want to join. Like
-other membership types the parameters, "displayname" and "avatar_url" are
+other membership types, the parameters "displayname" and "avatar_url" are
 optional. This membership can be set from users who aren't currently in said
 room. An example for the membership would look like the following:
 ```json
