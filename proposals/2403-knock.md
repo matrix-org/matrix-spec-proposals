@@ -273,5 +273,12 @@ could both be merged into one, however, as that would also affect the join
 endpoint it seems out-of-scope for this MSC.
 
 # Security considerations
-This doesn't allow users access to a room in any way. However, care should be
-taken to ensure that no spam vectors are enabled by this change.
+Clients must take care when implementing this feature in order to prevent
+simple abuse vectors that can be accomplished by individual users. For
+instance, When a knock occurs, client are advised to hide the reason by
+default, prompting the user to reveal it only if they choose to.
+
+It is still theoretically possible for a server admin to create many users
+with different user IDs or display names, all spelling out an abusive
+message, and then having each of them knock in order. In this case, room
+admins should employ typical abuse mitigation tools, such as Server ACLs.
