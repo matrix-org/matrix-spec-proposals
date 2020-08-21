@@ -71,6 +71,8 @@ that user can be transitioned to the following possible states:
    and they are inviting the knocker into the room.
  - `leave`: In this case, similar to how kicks are handled, the knock has
    been rejected.
+ - `ban`: In this case, the knock was rejected and the user has been prevented
+   from sending further knocks.
 
 ## Client-Server API
 Two new endpoints are introduced in the Client-Server API (similarly to
