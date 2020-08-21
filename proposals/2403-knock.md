@@ -40,29 +40,11 @@ being "leave" can knock on a room. This means that a user that is banned, has
 already knocked or is currently in the room cannot knock on it.
 
 ### Join Rules
-The `join_rule` of `m.room.join_rules` must be set to "invite" for a knock to
-succeed. This means that people can't knock in public rooms. Additionally the
-new join rule "private" is introduced. This is so that people can, when
-creating a new room, prevent anyone from knocking.
-
-### Power levels
-The default power level for "knock" is the default power level for the room.
-If a user has a too low power level to knock, then they aren't allowed to do
-so. As power levels can be set for users not currently in the room, this can
-be used as a way to limit who can and can't knock.
-
-#### Example:
-`@alice:example.org` CAN knock, but `@bob:example.org` CANNOT: The
-(incomplete) content of `m.room.power_levels` is as follows:
-```json
-{
-  "users": {
-    "@alice:example.org": 1
-  },
-  "users_default": 0,
-  "knock": 1
-}
-```
+This proposal introduces a new possible value for `join_rule` in
+`m.room.join_rules`: "knock". The value of `join_rule` in `m.room.join_rules`
+must be set to "knock" for a knock to succeed. This means that existing rooms
+will need to opt into allowing knocks in their room. rooms. Other than
+allowing knocks, "knock" is no different from the "invite" join rule.
 
 ## Membership changes
 Once someone has sent a `knock` membership into the room, the membership for
@@ -164,8 +146,7 @@ be protected via server ACLs.
 ### `GET /_matrix/federation/v1/make_knock/{roomId}/{userId}`
 
 Asks the receiving server to return information that the sending server will
-need to prepare a knock
-event.
+need to prepare a knock event.
 
 Request format:
 
@@ -264,16 +245,10 @@ homeserver.
 
 # Potential issues
 This new feature would allow users to spam rooms that they don't partake in.
-That is why this proposal adds both the new join rule and the new power
-level, in order to allow room admins to mitigate such potential spam.
+That is why this proposal adds a new join rule, in order to allow room admins
+to opt in to this behaviour.
 
 # Alternatives
-As for the join rule "invite", instead the join rule "knock" could be
-introduced, meaning the room is like "invite" only that people can also
-knock. The difference is for existing rooms: With this proposal people can
-knock in existing "invite" rooms, with the alternative suggestion being that
-they can't.
-
 The two endpoints for the Client-Server API seem redundant, this MSC followed
 how JOIN is working currently: One "proper" endpoint (`/rooms/{roomId}/join`)
 and one to work properly over federation (`/join/{roomIdOrAlias}`). They
