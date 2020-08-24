@@ -35,19 +35,19 @@ This allows the caller to determine which candidate events correspond to which a
 all candidates with matching `call_id` not from its own user are from the caller party, of which there
 is only one.)
 
-### Introduce `m.call.ack`
+### Introduce `m.call.select_answer`
 This event is sent by the caller once it has chosen an answer. Its `answer_id`
 field indicates the answer it's chosen (and has `call_id` too). If the callee
-sees an ack for an answer ID other than the one it sent, it ends the call and
-informs the user the call was answered elsewhere. It does not send any events.
-Media can start flowing before this event is seen or even sent. Clients that
-implement previous versions of this specification will ignore this event and
-behave as they did before.
+sees a `select_answer` for an answer ID other than the one it sent, it ends the
+call and informs the user the call was answered elsewhere. It does not send any
+events. Media can start flowing before this event is seen or even sent.
+Clients that implement previous versions of this specification will ignore this
+event and behave as they did before.
 
 Example:
 ```
 {
-    "type": "m.call.ack",
+    "type": "m.call.select_answer",
     "content": {
         "call_id": "12345",
         "answer_id": "67890",
@@ -60,9 +60,9 @@ Example:
  * If the `m.call.invite` event has `version` `1`, a client wishing to reject a call instead
    sends an `m.call.reject` event. This rejects the call on all devices, but if another device
    has already sent an accept, it disregards the reject and carries on. The reject has an
-   `answer_id` just like an answer, and the caller acks it just like an answer. If the other
-   client that had already sent an answer sees the caller ack the reject instead of its answer,
-   it ends the call.
+   `answer_id` just like an answer, and the caller sends a `select_answer` for it just like an
+   answer. If the other client that had already sent an answer sees the caller select the
+   reject response instead of its answer, it ends the call.
  * If the `m.call.invite` event has `version` `0`, the callee send an `m.call.hangup` event before.
 
 Example:
@@ -184,8 +184,8 @@ them to be present on events they receive.
 
 ## Alternatives
  * We could use event IDs for `call_id` and `answer_id` as discussed above.
- * The event type of `m.call.ack` mirrors that of SIP, although gives few other clues on its purpose.
-   `m.call.choose_answer` was considered but is quite verbose.
+ * `m.call.select_answer` was chosen such that its name reflect the intention of the event. `m.call.ack`
+   is more succinct and mirrors SIP, but this MSC opts for the more descriptive name.
 ## Security considerations
  * IP addresses remain in the room in candidates, as they did in the previous version of the spec.
    This is not ideal, but alternatives were either sending candidates over to-device messages
