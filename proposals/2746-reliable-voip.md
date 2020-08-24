@@ -26,7 +26,7 @@ it should be sufficiently unique in the context of this VoIP call). This identif
 a given `m.call.invite`.
 
 *Also considered: use the `event_id` of the answer event: this is rejected for similarity with `call_id`
-where it is desirable to know the ID of a call before receving the remote echo of the invite event (this
+where it is desirable to know the ID of a call before receiving the remote echo of the invite event (this
 will be useful in future for call transfers where the transferor can assign a `call_id` for the transferee
 to use).*
 
