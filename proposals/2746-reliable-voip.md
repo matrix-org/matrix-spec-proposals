@@ -180,7 +180,7 @@ them to be present on events they receive.
    signalling so a client will always see invites from other devices. We would need to introduce
    a way for a client to signal to other devices that they should treat the invite as an incoming
    call and mechanisms to clarify what events were from which party in a call. This would mean a
-   significant amount of protocol dedcated to just this feature, so this MSC omits it.
+   significant amount of protocol dedicated to just this feature, so this MSC omits it.
 
 ## Alternatives
  * We could use event IDs for `call_id` and `answer_id` as discussed above.
