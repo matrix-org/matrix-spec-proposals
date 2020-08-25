@@ -213,7 +213,7 @@ Response Format:
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `<body>` | [integer, Empty Object] |
+| `<body>` | Empty Object |
 
 A request could look as follows:
 ```
