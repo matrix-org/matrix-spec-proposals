@@ -43,8 +43,8 @@ already knocked or is currently in the room cannot knock on it.
 This proposal introduces a new possible value for `join_rule` in
 `m.room.join_rules`: "knock". The value of `join_rule` in `m.room.join_rules`
 must be set to "knock" for a knock to succeed. This means that existing rooms
-will need to opt into allowing knocks in their room. rooms. Other than
-allowing knocks, "knock" is no different from the "invite" join rule.
+will need to opt into allowing knocks in their rooms. Other than allowing
+knocks, "knock" is no different from the "invite" join rule.
 
 ## Membership changes
 Once someone has sent a `knock` membership into the room, the membership for
