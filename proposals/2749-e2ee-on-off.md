@@ -1,4 +1,4 @@
-# MSC0000: Per-user E2EE on/off setting
+# MSC2749: Per-user E2EE on/off setting
 
 Currently, there is no way for a server administrator to force disable end-to-end encryption for their
 server. This can lead to poor user experience and leave the server admin unable to monitor conversations
@@ -105,5 +105,5 @@ room list instead of displaying a warning.
 
 ## Unstable prefix
 
-The `m.encryption` field in the `capabilities` endpoint should have an unstable key of `org.matrix.msc0000`.
+The `m.encryption` field in the `capabilities` endpoint should have an unstable key of `org.matrix.msc2749`.
 
