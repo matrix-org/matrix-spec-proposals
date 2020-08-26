@@ -42,7 +42,7 @@ to `false`.
 The server will return an object in the same format as the response for a
 normal login.  The client will use the device ID given to determine if it
 should use the dehydrated device, or if it should use a new device.  Even if
-the client was able to successfully decrypt the device data, it may not able to
+the client was able to successfully decrypt the device data, it may not be
 allowed to use it.  For example, two clients may race in trying to dehydrate
 the device; only one client should use the dehydrated device.  In the case of a
 race, the server will give the dehydrated device's ID to one client, and
