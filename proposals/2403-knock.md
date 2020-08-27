@@ -20,13 +20,7 @@ room. An example for the membership would look like the following:
 }
 ```
 
-After a knock is received in a room, it is expected to be displayed in the
-timeline, similar to other membership changes. It is recommended to not
-display the reason until the user interacts with the client in some way (e.g.
-clicking on a "show reason" button), as else this would essentially allow
-outsiders to send messages into the room. Clients can optionally add a way
-for users of a room to review all current knocks. After a knock in a room, a
-member of the room can invite the knocker.
+After a knock in a room, a member of the room can invite the knocker.
 
 To be able to implement this properly, two new endpoints need to be added:
 one in the Client-Server API and one in the Server-Server API.
@@ -255,11 +249,20 @@ and one to work properly over federation (`/join/{roomIdOrAlias}`). They
 could both be merged into one, however, as that would also affect the join
 endpoint it seems out-of-scope for this MSC.
 
+# Client UX recommendations
+After a knock is received in a room, it is expected to be displayed in the
+timeline, similar to other membership changes. Clients can optionally add a way
+for users of a room to review all current knocks.
+
 # Security considerations
 Clients must take care when implementing this feature in order to prevent
 simple abuse vectors that can be accomplished by individual users. For
-instance, When a knock occurs, client are advised to hide the reason by
-default, prompting the user to reveal it only if they choose to.
+instance, when a knock occurs, clients are advised to hide the reason until
+the user interacts with the client in some way (e.g. clicking on a "show
+reason" button). The user should reveal the reason only if they choose to.
+
+It is recommended to not display the reason by default as else this would
+essentially allow outsiders to send messages into the room.
 
 It is still theoretically possible for a server admin to create many users
 with different user IDs or display names, all spelling out an abusive
