@@ -27,7 +27,7 @@ client sends a `toWidget` action of `openid_credentials` with `data` holding the
 object returned from the homeserver, and a `success: true` parameter, similar to the following:
 ```
 {
-    "api": "fromWidget",
+    "api": "toWidget",
     "requestId": "AABBCC",
     "action": "openid_credentials",
     "widgetId": "DDEEFF",
