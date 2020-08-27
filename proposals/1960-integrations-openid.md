@@ -10,7 +10,7 @@ API proposed by [MSC1236](https://github.com/matrix-org/matrix-doc/issues/1236).
 
 ## Proposal
 
-Room and account widgets may request new OpenID credentials from the user so they can log in/register with
+Room and account widgets may request new OpenID Connect credentials from the user so they can log in/register with
 the backing integration manager or other application. This is largely based on the prior art available
 [here (element-web#7153)](https://github.com/vector-im/element-web/issues/7153). The rationale for such an
 API is so that widgets can load things like a user's sticker packs or other information without having
@@ -18,12 +18,12 @@ to rely on secret strings. For example, a room could be used to let a user creat
 via a common widget - it would be nice if that widget could auth the user without asking them to enter
 their username and password into an iframe.
 
-Widgets can request OpenID credentials from the user by sending a `fromWidget` action of `get_openid`
+Widgets can request OpenID Connect credentials from the user by sending a `fromWidget` action of `get_openid`
 to initiate the token exchange process. The client responds with an acknowledgement of
 `{"state":"request"}` (or `{"state":"blocked"}` if the client/user doesn't think the widget is safe).
 The client then prompts the user if the widget should be allowed to get details about the user,
 optionally providing a way for the user to always accept/deny the widget. If the user agrees, the
-client sends a `toWidget` action of `openid_credentials` with `data` holding the raw OpenID credentials
+client sends a `toWidget` action of `openid_credentials` with `data` holding the raw OpenID Connect credentials
 object returned from the homeserver, and a `success: true` parameter, similar to the following:
 ```
 {
@@ -50,7 +50,7 @@ To lessen the number of requests, a client can also respond to the original `get
 `state` of `"allowed"`, `success: true`, and the OpenID Connect credentials object (just like in the `data` for
 `openid_credentials`).
 
-The widget should not request OpenID credentials until after it has exchanged capabilities with the client,
+The widget should not request OpenID Connect credentials until after it has exchanged capabilities with the client,
 however this is not required to wait for the capabiltiies exchange.
 
 The widget acknowledges the `openid_credentials` request with an empty response object.
