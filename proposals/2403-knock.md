@@ -22,9 +22,6 @@ room. An example for the membership would look like the following:
 
 After a knock in a room, a member of the room can invite the knocker.
 
-To be able to implement this properly, two new endpoints need to be added:
-one in the Client-Server API and one in the Server-Server API.
-
 ## Restrictions
 There are restrictions to being able to set this membership.
 
