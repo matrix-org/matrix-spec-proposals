@@ -238,9 +238,9 @@ homeserver.
 ```
 
 # Potential issues
-This new feature would allow users to spam rooms that they don't partake in.
-That is why this proposal adds a new join rule, in order to allow room admins
-to opt in to this behaviour.
+This new feature would allow users to send events into rooms that they don't
+partake in. That is why this proposal adds a new join rule, in order to allow
+room admins to opt in to this behaviour.
 
 # Alternatives
 The two endpoints for the Client-Server API seem redundant, this MSC followed
