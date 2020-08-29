@@ -36,10 +36,10 @@ To stop peeking, the user calls `/unpeek` on the room, similar to `/leave` or `/
 
 It could be seen as controversial to add another new block to the `/sync` response.  We could use the existing `joined` block, but:
 
- a) it's a misnomer (given the user hasn't joined the rooms)
- b) `joined` refers to rooms which the *user* is in, rather than that they are peeking into using a given device
- c) we risk breaking clients who aren't aware of the new style of peeking.
- d) there's already a precedent for per-device blocks in the sync response (for to-device messages)
+ * it's a misnomer (given the user hasn't joined the rooms)
+ * `joined` refers to rooms which the *user* is in, rather than that they are peeking into using a given device
+ * we risk breaking clients who aren't aware of the new style of peeking.
+ * there's already a precedent for per-device blocks in the sync response (for to-device messages)
 
 It could be seen as controversial to make peeking a per-device rather than per-user feature.  When thinking through use cases for peeking, however:
 
