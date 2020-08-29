@@ -13,7 +13,7 @@ This poses the following issues:
    stream.
  * v1 APIs are deprecated and not implemented on new servers.
 
-This MSC likely obsoletes [MSC1763](https://github.com/matrix-org/matrix-doc/pulls/1763).
+This MSC likely obsoletes [MSC1776](https://github.com/matrix-org/matrix-doc/pulls/1776).
 
 ## Proposal
 
@@ -49,14 +49,14 @@ It could be seen as controversial to make peeking a per-device rather than per-u
 
 ## Alternatives
 
-[MSC1763](https://github.com/matrix-org/matrix-doc/pulls/1763) defined an alternative approach, where you could use filters to add peeked rooms into a given `/sync` response as needed.  This however had some issues:
+[MSC1776](https://github.com/matrix-org/matrix-doc/pulls/1776) defined an alternative approach, where you could use filters to add peeked rooms into a given `/sync` response as needed.  This however had some issues:
 
  * You can't specify what servers to peek remote rooms via.
  * You can't identify rooms via alias, only ID
  * It feels hacky to bodge peeked rooms into the `joined` block of a given `/sync` response
  * Fiddling around with custom filters feels clunky relative to just calling a `/peek` endpoint similar to `/join`.
 
-While experimenting with implementing MSC1763, I came up with this as an alternative that empirically feels much simpler and tidier.
+While experimenting with implementing MSC1776, I came up with this as an alternative that empirically feels much simpler and tidier.
 
 ## Security considerations
 
