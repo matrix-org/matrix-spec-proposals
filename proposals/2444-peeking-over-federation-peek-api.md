@@ -47,7 +47,7 @@ of ASCII and should be unique for a given peeking & peeked server.
 PUT and DELETE return 200 OK with an empty `{}` on success.
 
 ```
-PUT /_matrix/federation/v1/peek/{roomId}/{peekId}
+PUT /_matrix/federation/v2/peek/{roomId}/{peekId}
 {}
 
 200 OK
