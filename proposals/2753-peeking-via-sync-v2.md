@@ -21,23 +21,23 @@ We add an CS API called `/peek/{roomIdOrAlias}`, very similar to `/join/{roomIdO
 
 Calling `/peek`:
  * Resolves the given room alias to a room ID, if needed.
- * Adds the room (if permissions allow) to a new section of the /sync response called `peeking` - but only for the device which called `/peek`.
- * The `peeking` section is identical to `joined`, but shows the live activity of rooms for which that device is peeking.
+ * Adds the room (if permissions allow) to a new section of the /sync response called `peek` - but only for the device which called `/peek`.
+ * The `peek` section is identical to `join`, but shows the live activity of rooms for which that device is peeking.
 
 The API returns 404 on an unrecognised room ID or alias, or 403 if the room does not allow peeking.
 
 Similar to `/join`, `/peek` lets you specify `server_name` querystring parameters to specify which server(s) to try to peek into the room via (when coupled with [MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444)).
 
-If a user subsequently `/join`s the room they're peeking, we atomically move the room to the `joined` block of the `/sync` response, allowing the client to build on the state and history it has already received without re-sending it down /sync.
+If a user subsequently `/join`s the room they're peeking, we atomically move the room to the `join` block of the `/sync` response, allowing the client to build on the state and history it has already received without re-sending it down /sync.
 
 To stop peeking, the user calls `/unpeek` on the room, similar to `/leave` or `/forget`.  This returns 200 on success, 404 on unrecognised ID, or 400 if the room was not being peeked in the first place.
 
 ## Potential issues
 
-It could be seen as controversial to add another new block to the `/sync` response.  We could use the existing `joined` block, but:
+It could be seen as controversial to add another new block to the `/sync` response.  We could use the existing `join` block, but:
 
  * it's a misnomer (given the user hasn't joined the rooms)
- * `joined` refers to rooms which the *user* is in, rather than that they are peeking into using a given device
+ * `join` refers to rooms which the *user* is in, rather than that they are peeking into using a given *device*
  * we risk breaking clients who aren't aware of the new style of peeking.
  * there's already a precedent for per-device blocks in the sync response (for to-device messages)
 
@@ -53,7 +53,7 @@ It could be seen as controversial to make peeking a per-device rather than per-u
 
  * You can't specify what servers to peek remote rooms via.
  * You can't identify rooms via alias, only ID
- * It feels hacky to bodge peeked rooms into the `joined` block of a given `/sync` response
+ * It feels hacky to bodge peeked rooms into the `join` block of a given `/sync` response
  * Fiddling around with custom filters feels clunky relative to just calling a `/peek` endpoint similar to `/join`.
 
 While experimenting with implementing MSC1776, I came up with this as an alternative that empirically feels much simpler and tidier.
