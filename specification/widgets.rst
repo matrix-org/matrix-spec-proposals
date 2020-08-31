@@ -182,3 +182,23 @@ potentially dangerous files. Most widgets will have schemes of ``http`` or ``htt
 Clients SHOULD apply a sandbox to their iframe or platform equivilant to ensure the widget cannot
 get access to the data stored by the client, such as access tokens or cryptographic keys. More
 information on origin restrictions is in the Widget API's security considerations section.
+
+Widget Types
+------------
+
+A widget's ``type`` can be one of the following specified types or a custom type which preferably
+uses the Java package naming convention as a namespace. Types prefixed with the ``m.`` namespace
+are reserved by this specification.
+
+Besides the ``type`` itself, widget types influence the widget's ``data`` by requiring specified
+keys to exist. It is expected that the widget will use these keys as variables for their URL, though
+this specification does not require such behaviour. Clients SHOULD treat widgets without the
+required ``data`` properties for the types specified here as invalid widgets, thus not rendering
+them.
+
+Clients MUST treat widgets of unknown types as ``m.custom``, unless it is impossible for the client
+to render the widget kind in that way. For example, custom widgets at the per-user rather than
+per-room level might not be possible and thus can be treated as invalid (ignored).
+
+Clients are not required to support all of these widget types (with the implied exception of
+``m.custom``) as they can all be safely represented as ``m.custom`` widgets.
