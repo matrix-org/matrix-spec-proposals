@@ -202,3 +202,14 @@ per-room level might not be possible and thus can be treated as invalid (ignored
 
 Clients are not required to support all of these widget types (with the implied exception of
 ``m.custom``) as they can all be safely represented as ``m.custom`` widgets.
+
+Jitsi Meet Conferences
+~~~~~~~~~~~~~~~~~~~~~~
+
+`Jitsi Meet <https://jitsi.org/jitsi-meet/>`_ conferences can be held on a per-room basis with
+a widget ``type`` of ``m.jitsi`` and ``data`` matching ``JitsiWidgetData``.
+
+.. Note::
+   Though technically possible, this widget type should not be used outside of room widgets.
+
+{{definition_widgets_jitsi_data}}
