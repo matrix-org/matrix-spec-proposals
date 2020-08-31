@@ -114,7 +114,71 @@ property from the ``m.widgets`` acount data.
 
 {{m_widgets_event}}
 
-URL Templating
---------------
 
-TODO
+Rendering
+---------
+
+Widgets SHOULD be rendered using an iframe or platform equivilant. Clients can use platform-specific
+rendering for widgets if they are confident in being able to do so, such as in the case of most
+video conference widgets.
+
+Clients SHOULD ask for permission to load a widget from the user prior to presenting the widget. If
+the user was the last ``sender`` of a widget (not the ``creatorUserId``), the prompt can be skipped.
+This prompt is strongly encouraged to ensure that users do not inadvertently send their information
+to a third party.
+
+URL Templating
+~~~~~~~~~~~~~~
+
+The widget's URL is a template of what the client should render and should never be parsed by the
+client to determine what the parameters are. All widgets make use of the ``data`` object to store
+configuration-like values, which is also where clients should inspect for values needed to render
+any UI.
+
+Variable names for the template are the keys of the ``data`` object, with the values being the same
+values of the object. Variables are included unencoded in the URL for population by the client, which
+MUST use appropriate escaping to ensure the URL will be as valid as possible.
+
+For example, given a ``data`` object like this::
+
+  {
+    "hello": "world",
+    "answer": 42
+  }
+
+and a ``url`` of ``https://example.com?var1=$hello&answer=$answer`` the client MUST come up with
+a URL of ``https://example.com?var1=world&answer=42`` to render. Complex types, such as objects and
+arrays, for variable values do not have defined behaviour - widget creators are encouraged to stick
+to "simple" types like numbers, strings, and booleans. Template variables can appear anywhere in the
+URL.
+
+Nested variables are not supported, and as such clients should be careful in their templating
+approach. For example, if ``hello`` in the above example ``data`` was set to ``$answer``, the literal
+value ``$answer`` would be included in the widget URL rather than ``42``.
+
+As mentioned, clients must also encode values on behalf of the widget creator to maintain a valid
+URL as much as possible. For example, ``test:value`` could become ``test%3Avalue`` when used as a
+template variable value.
+
+A few default variables, which MUST take priority over the same names in ``data``, are:
+
+* ``matrix_user_id`` - The current user's ID.
+* ``matrix_room_id`` - The room ID the user is currently viewing, or an empty string if none applicable.
+* ``matrix_display_name`` - The current user's display name, or user ID if not set.
+* ``matrix_avatar_url`` - The current user's avatar URL as reported in their profile, or and empty
+  string if not present. This shouldn't be the ``mxc://`` form of the user's avatar, but instead the
+  full HTTP URL to the ``/media/download`` endpoint for their avatar from the Client-Server API.
+
+Security Considerations
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Clients SHOULD check to ensure that widgets are valid URLs *after* templating but *before* rendering
+or asking for permission to load. Invalid URLs from the client's perspective should not be shown to
+the user and can be treated as though no ``url`` was present (i.e.: a deleted/invalid widget).
+
+Clients SHOULD limit which URL schemes are able to be rendered to ensure that they are not rendering
+potentially dangerous files. Most widgets will have schemes of ``http`` or ``https``.
+
+Clients SHOULD apply a sandbox to their iframe or platform equivilant to ensure the widget cannot
+get access to the data stored by the client, such as access tokens or cryptographic keys. More
+information on origin restrictions is in the Widget API's security considerations section.
