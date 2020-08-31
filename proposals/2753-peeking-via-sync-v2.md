@@ -32,6 +32,10 @@ If a user subsequently `/join`s the room they're peeking, we atomically move the
 
 To stop peeking, the user calls `/unpeek` on the room, similar to `/leave` or `/forget`.  This returns 200 on success, 404 on unrecognised ID, or 400 if the room was not being peeked in the first place.
 
+The act of joining a peeked room automatically cancels any ongoing /peeks by that user.
+
+Clients should check for any irrelevant peeked rooms on launch (left over from previous instances of the app) and explicitly `/unpeek` them to conserve resources.
+
 ## Potential issues
 
 It could be seen as controversial to add another new block to the `/sync` response.  We could use the existing `join` block, but:
