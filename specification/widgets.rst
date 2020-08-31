@@ -213,3 +213,17 @@ a widget ``type`` of ``m.jitsi`` and ``data`` matching ``JitsiWidgetData``.
    Though technically possible, this widget type should not be used outside of room widgets.
 
 {{definition_widgets_jitsi_data}}
+
+TradingView
+~~~~~~~~~~~
+
+`TradingView <https://www.tradingview.com/>`_ widgets can be addded on a per-room basis with
+a widget ``type`` of ``m.tradingview`` and ``data`` matching ``TradingViewWidgetData``.
+
+This widget type is meant to be used with TradingView's
+`Advanced Real-Time Chart Widget <https://www.tradingview.com/widget/advanced-chart/>`_.
+
+.. Note::
+   Though technically possible, this widget type should not be used outside of room widgets.
+
+{{definition_widgets_tradingview_data}}
