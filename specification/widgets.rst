@@ -20,6 +20,11 @@ Widgets
 Widgets are client-side embedded applications which can communicate with Matrix clients. Widgets
 are often used to present information to users and allow them to more interactively collaborate.
 
+Due to platform constraints, unreasonable implementation effort, and client-specific design choices,
+widgets are optional in Matrix. Clients are encouraged to support widgets if possible and reasonable,
+though degraded behaviour, such as "open in browser" links, is considered acceptable by this
+specification.
+
 .. contents:: Table of Contents
 .. sectnum::
 
