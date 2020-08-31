@@ -51,6 +51,13 @@ The following other versions are also available, in reverse chronological order:
 API Standards
 ~~~~~~~~~~~~~
 
+Throughout this specification, a "client" is referred to as something which is rendering/supporting
+("hosting") widgets. Widgets are unique in that they can be considered a client when referred to in
+a typical network setting, though this specification ensures that a widget is always referred to as
+a "widget" and the term "client" is solely reserved for the widget's host application. Note that
+widgets can be hosts to widgets - deciphering which role is which in this context is left as an
+exercise for the reader.
+
 The mandatory baseline for a widget is a typical website with the optional communication protocol
 described here. When communicating with a Matrix client, the mandatory baseline is the `JavaScript
 postMessage API <https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage>`_ using the
