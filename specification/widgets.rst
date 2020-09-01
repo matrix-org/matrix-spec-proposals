@@ -461,26 +461,34 @@ A broad sequence diagram for ``waitForIframeLoad: false`` is as follows::
 
 A broad sequence diagram for ``waitForIframeLoad: true`` is as follows::
 
-  +---------+                               +---------+
-  | Client  |                               | Widget  |
-  +---------+                               +---------+
-      |                                         |
-      | Render widget                           |
-      |--------------                           |
-      |             |                           |
-      |<-------------                           |
-      |                                         |
-      | capabilities request                    |
-      |---------------------------------------->|
-      |                                         |
-      |         Requested capabilities response |
-      |<----------------------------------------|
-      |                                         |
-      | Check/verify capabilities               |
-      |--------------------------               |
-      |                         |               |
-      |<-------------------------               |
-      |                                         |
+  +---------+                            +---------+
+  | Client  |                            | Widget  |
+  +---------+                            +---------+
+      |                                      |
+      | Render widget                        |
+      |--------------                        |
+      |             |                        |
+      |<-------------                        |
+      |                                      |
+      |                                      | iframe loading
+      |                                      |---------------
+      |                                      |              |
+      |                                      |<--------------
+      |                                      |
+      |                Implicit onLoad event |
+      |<-------------------------------------|
+      |                                      |
+      | capabilities request                 |
+      |------------------------------------->|
+      |                                      |
+      |      Requested capabilities response |
+      |<-------------------------------------|
+      |                                      |
+      | Check/verify capabilities            |
+      |--------------------------            |
+      |                         |            |
+      |<-------------------------            |
+      |                                      |
 
 After both sequence diagrams, the session has been successfully established and can continue as
 normal.
