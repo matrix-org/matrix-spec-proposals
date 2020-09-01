@@ -512,3 +512,36 @@ Available Capabilities
 
 The following capabilities are defined by this specification. Custom capabilities can only be
 defined via a namespace using the Java package naming convention.
+
+Screenshots
++++++++++++
+
+``m.capbility.screenshot`` can be requested by widgets if they support screenshots being taken
+of them via the ``screenshot`` action. Typically this is only used to verify that the widget API
+communications work between a client and widget. Widgets cannot use this capability to initiate
+screenshots being taken of them - clients must request screenshots with the ``screenshot`` action.
+
+``toWidget`` API
+~~~~~~~~~~~~~~~~~~
+
+The ``toWidget`` API is reserved for communications from the client to the widget. Custom
+actions can be defined by using the Java package naming convention as a namespace.
+
+Screenshots
++++++++++++
+
+If the widget is approved for use of the ``m.capbility.screenshot`` capability, the client can
+send a ``screenshot`` action (``ScreenshotActionRequest``) to request an image from the widget
+(returned as a ``ScreenshotActionResponse``).
+
+.. Note::
+   This is typically only used to verify that communication is working between the widget and client.
+
+.. WARNING::
+   Widgets have an ability to send extremely large files and non-images via this action. Clients
+   should only enable support for screenshots in a trusted environment, such as when a widget
+   developer is making use of the client to test their widget.
+
+{{definition_widgets_screenshot_action_request}}
+
+{{definition_widgets_screenshot_action_response}}
