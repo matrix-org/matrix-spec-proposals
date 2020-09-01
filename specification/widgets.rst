@@ -250,3 +250,14 @@ per-room basis with a widget ``type`` of ``m.spotify`` and ``data`` matching ``S
    Though technically possible, this widget type should not be used outside of room widgets.
 
 {{definition_widgets_spotify_data}}
+
+Videos
+~~~~~~
+
+Videos from video streaming sites can be added on a per-room basis with a widget ``type`` of
+``m.video`` and ``data`` matching ``VideoWidgetData``.
+
+.. Note::
+   Though technically possible, this widget type should not be used outside of room widgets.
+
+{{definition_widgets_video_data}}
