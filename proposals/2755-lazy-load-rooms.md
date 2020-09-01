@@ -1,4 +1,4 @@
-# MSC2755: Template for new MSCs
+# MSC2755: Lazy load rooms
 
 [MSC1227](https://github.com/matrix-org/matrix-doc/issues/1227) added lazy
 loading of member events to the spec. This was done because member events can
