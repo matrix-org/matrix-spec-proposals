@@ -213,7 +213,9 @@ to render the widget kind in that way. For example, custom widgets at the per-us
 per-room level might not be possible and thus can be treated as invalid (ignored).
 
 Clients are not required to support all of these widget types (with the implied exception of
-``m.custom``) as they can all be safely represented as ``m.custom`` widgets.
+``m.custom``) as they can all be safely represented as ``m.custom`` widgets. Similarly, if a
+widget fails the schema requirements for its ``type`` then it should be treated as ``m.custom``
+by the client.
 
 Jitsi Meet Conferences
 ~~~~~~~~~~~~~~~~~~~~~~
