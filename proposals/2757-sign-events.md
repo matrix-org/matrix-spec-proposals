@@ -92,8 +92,9 @@ The private key can be stored base64-encoded in SSSS under the key `m.message_si
 ### Signing messages
 
 To sign a message you strip the `signatures` and `unsigned` dicts off of the `content` (if present),
-encode it with canonical json and prepend the event type. Then you sign it with the message_signing
-and device ed25519 key.
+encode it with canonical json. Then you generate a string as `event_type + state_key + canonial_json`.
+If there is no state key, due to the event not beign a state event, a blank string is assumed. Then
+you sign it with the message_signing and device ed25519 key.
 
 For example, a message of type `m.room.message` with the following content:
 ```json
@@ -108,8 +109,12 @@ For example, a message of type `m.room.message` with the following content:
 
 Would yield the following string needing to be signed: `m.room.message{"body":"foxies!","msgtype":"m.text"}`
 
-Prepending the event type is done to rule out attack vectors where the server could modify the type of
-an event.
+Prepending the event type and state key is done to rule out attack vectors where the server could modify
+the type or state key of an event.
+
+The `unsigned` object is stripped before signing to stay in-line with every other signable object in
+the spec. It currently does not have any real usecase, however in the future one may arise. As such,
+it seems like a good idea to strip `unsigned` already.
 
 After that, the generated signatures are added in a signatures dict to the content, similar as done
 elsewhere:
@@ -130,7 +135,8 @@ elsewhere:
 }
 ```
 
-This new content is then used to send messages via `/_matrix/client/r0/rooms/{roomId}/send/{eventType}/{txnId}`.
+This new content is then used to send events via `/_matrix/client/r0/rooms/{roomId}/send/{eventType}/{txnId}`,
+`/_matrix/client/r0/rooms/{roomId}/state/{eventType}/{stateKey}` or other endpoints.
 
 ### Signing messages in encrypted rooms
 
@@ -195,6 +201,9 @@ to enable this feature, as the master key is typically not cached. Additionally,
 key should be cached on devices, so that the user doesn't have to enter their recovery key every time
 they want to send a message.
 
+Adding signatures to events uses up more bytes of the ~64k size limit of events. A rough estimate for
+signatures would be ~500 bytes, though, which seems insignificant compares to the size limit.
+
 ## Alternatives
 
 Instead of introducing a new message_signing key, the self_signing key could be re-used for that
@@ -209,4 +218,5 @@ The message_signing key should be cached by clients, but it shouldn't be stolen 
 Thus, clients will have to think about themselves how to resolve this issue, e.g. by using a securly
 encrypted store provided by their platform.
 
-Additionally, you lose deniability if you sign all your messages.
+Additionally, messages sent in plaintext rooms lose deniability, due to being signed. Messages in
+encrypted rooms didn't have deniability already anyways.
