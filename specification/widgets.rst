@@ -261,3 +261,19 @@ Videos from video streaming sites can be added on a per-room basis with a widget
    Though technically possible, this widget type should not be used outside of room widgets.
 
 {{definition_widgets_video_data}}
+
+Google Docs
+~~~~~~~~~~~
+
+Documents from Google Docs, Sheets, and Slides can be added as widgets on a per-room basis with a
+widget ``type`` of ``m.googledoc`` and ``data`` matching ``GoogleDocsWidgetData``.
+
+.. Note::
+   Documents typically need to be publicly accessible without authentication to be embedded. Most
+   documents that would be shared by widgets are not publicly accessible and thus generally will
+   refuse to embed properly.
+
+.. Note::
+   Though technically possible, this widget type should not be used outside of room widgets.
+
+{{definition_widgets_googledocs_data}}
