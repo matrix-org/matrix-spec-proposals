@@ -304,3 +304,15 @@ of ``m.etherpad`` and ``data`` matching ``EtherpadWidgetData``.
    Though technically possible, this widget type should not be used outside of room widgets.
 
 {{definition_widgets_etherpad_data}}
+
+Grafana
+~~~~~~~
+
+`Embedded Grafana Panels <https://grafana.com/docs/grafana/latest/reference/share_panel/>`_ can
+be added on a per-room basis with a widget ``type`` of ``m.grafana`` and ``data`` matching
+``GrafanaWidgetData``.
+
+.. Note::
+   Though technically possible, this widget type should not be used outside of room widgets.
+
+{{definition_widgets_grafana_data}}
