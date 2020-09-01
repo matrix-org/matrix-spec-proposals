@@ -2,8 +2,8 @@
 An appservice might want to log in to the homeserver as another user or a system administrator might
 want an easy way to authenticating as someone else to be able to investigate an issue. Currently
 two solutions for that exist: either using [shared secret auth](https://github.com/devture/matrix-synapse-shared-secret-auth)
-or synapses undocumented and unspeced `m.login.jwt`. Neither solution seems good: The shared secret
-auth provider seems like a hack on `m.login.password` and `m.login.jwt` is neither documented nor
+or synapses undocumented and unspeced `org.matrix.login.jwt`. Neither solution seems good: The shared secret
+auth provider seems like a hack on `m.login.password` and `org.matrix.login.jwt` is neither documented nor
 speced. Instead, it is proposed to add a new type of token allowed to the `m.login.token` type.
 
 ## Proposal
@@ -49,9 +49,11 @@ validates that token, that one should be used. Compareable to synapses auth prov
 A `m.login.password` auth provider could be used to log in as someone as a special user. This,
 however, feels rather hacky and not the intended purpose of `m.login.password`.
 
-Synapses `m.login.jwt` could be introduced properly in the spec, however, as it seems to be
-identical to `m.login.token` it makes sense to merge it into `m.login.token`.
+Synapses `org.matrix.login.jwt` could be introduced properly in the spec as `m.login.jwt`, however,
+as it seems to be identical to `m.login.token` it makes sense to merge it into `m.login.token`.
+(Note: Only got a very weak opinion on this, can also see arguments for the two being separate and
+would gladly adapt the MSC, if wanted)
 
 ## Security considerations
-Posession of the secret allows you to be logged in as anyone on that homeserver. As such, this
+Possession of the secret allows you to be logged in as anyone on that homeserver. As such, this
 secret has to be kept securely.
