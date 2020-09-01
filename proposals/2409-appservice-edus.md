@@ -3,41 +3,65 @@
 *Node: This proposal is a continuation of [MSC1888](https://github.com/matrix-org/matrix-doc/pull/1888)
 and deprecates that one.*
 
-The appservice /transaction API currently supports pushing PDU events (regular message and state events)
+The [appservice /transactions API](https://matrix.org/docs/spec/application_service/r0.1.2#put-matrix-app-v1-transactions-txnid)
+currently supports pushing PDU events (regular message and state events)
 however it doesn't provison for EDU events (typing, presence and more). This means that bridges cannot
 react to Matrix users who send any typing or presence information in a room the service is part of.
 
 There is an interest amongst the community to have equal bridging on both sides of a bridge, so that
 read reciepts and typing notifications can be seen on the remote side. To that end, this proposal
-specifiys how these can be pushed to an appservice.
+specifies how these can be pushed to an appservice.
 
 ## Proposal
 
-### Changes to the /transaction/ API
+### Changes to the registration file
+
+In order that appservices don't get flooded with EDUs, appservices have to opt-in to receive them by
+setting `receive_edus` to true. A registration file could look like following:
+
+```yaml
+id: "IRC Bridge"
+url: "http://127.0.0.1:1234"
+as_token: "30c05ae90a248a4188e620216fa72e349803310ec83e2a77b34fe90be6081f46"
+hs_token: "312df522183efd404ec1cd22d2ffa4bbc76a8c1ccf541dd692eef281356bb74e"
+sender_localpart: "_irc_bot"
+# We want to receive EDUs
+receive_edus: true
+namespaces:
+  users:
+    - exclusive: true
+      regex: "@_irc_bridge_.*"
+  aliases:
+    - exclusive: false
+      regex: "#_irc_bridge_.*"
+  rooms: []
+```
+
+### Changes to the /transactions/ API
 
 The `PUT /_matrix/app/v1/transactions/{txnId}` API currently supports sending PDUs
 via the `events` array.
 
 ```json
 {
-   "events": [
-      {
-         "content": {
-            "membership": "join",
-            "avatar_url": "mxc://domain.com/SEsfnsuifSDFSSEF#auto",
-            "displayname": "Alice Margatroid"
-         },
-         "type": "m.room.member",
-         "event_id": "$143273582443PhrSn:domain.com",
-         "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
-         "sender": "@example:domain.com",
-         "origin_server_ts": 1432735824653,
-         "unsigned": {
-            "age": 1234
-         },
-         "state_key": "@alice:domain.com"
-      }
-   ]
+  "events": [
+    {
+      "content": {
+        "membership": "join",
+        "avatar_url": "mxc://domain.com/SEsfnsuifSDFSSEF#auto",
+        "displayname": "Alice Margatroid"
+      },
+      "type": "m.room.member",
+      "event_id": "$143273582443PhrSn:domain.com",
+      "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
+      "sender": "@example:domain.com",
+      "origin_server_ts": 1432735824653,
+      "unsigned": {
+        "age": 1234
+      },
+      "state_key": "@alice:domain.com"
+    }
+  ]
 }
 ```
 
@@ -46,45 +70,45 @@ This proposal would extend the `PUT /_matrix/app/v1/transactions/` endpoint to i
 
 ```json
 {
-   "ephemeral": [
-      {
-         "type": "m.typing",
-         "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
-         "content": {
-            "user_ids": [
-               "@alice:example.com"
-            ]
-         }
-      },
-      {
-         "type": "m.receipt",
-         "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
-         "content": {
-            "$1435641916114394fHBLK:matrix.org": {
-               "m.read": {
-                  "@rikj:jki.re": {
-                     "ts": 1436451550453
-                  }
-               }
-            }
-         }
+  "ephemeral": [
+    {
+      "type": "m.typing",
+      "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
+      "content": {
+        "user_ids": [
+          "@alice:example.com"
+        ]
       }
-   ],
-   "events": [
-       // ...
-   ]
+    },
+    {
+      "type": "m.receipt",
+      "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
+      "content": {
+        "$1435641916114394fHBLK:matrix.org": {
+          "m.read": {
+            "@rikj:jki.re": {
+              "ts": 1436451550453
+            }
+          }
+        }
+      }
+    }
+  ],
+  "events": [
+    // ...
+  ]
 }
 ```
 
 The reason for a new key rather than bundling the events into `events` is that
-old implementations may mistake them for PDUs and could cause undefined behaviour.
+existing appservices may mistake them for PDUs and could cause undefined behaviour.
 While `events` may now be a somewhat misleading name, this is an acceptable tradeoff.
 
 ### Expectations of when an EDU should be pushed to an appservice
 
 It is not clear at face value what should be pushed to an appservice. An appservice
 registers interests in rooms and (usually) it's own users, however EDU events are not
-tied to a single room in all situtations and as such there needs to be a specified way of
+tied to a single room in all situations and as such there needs to be a specified way of
 forwarding these events.
 
 An EDU should be sent to an appservice if the `room_id` is shared by any of the registered appservices
@@ -95,7 +119,7 @@ if the sender is present in a room that is shared by any of the registered appse
 
 Determining which EDUs to transmit to the appservice could lead to quite some overhead on the
 homeservers side. Additionally, more network traffic is produced, potentially straining the local
-network and the appservice more.
+network and the appservice more. As such, appservices have to opt-in to receive EDUs.
 
 ## Security considerations
 
