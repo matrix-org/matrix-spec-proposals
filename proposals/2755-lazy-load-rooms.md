@@ -112,6 +112,6 @@ I don't think this has any obvious security implications.
 
 ## Unstable prefix
 
-Keys introduced in this MSC should use `msc2755` as a prefix:
-`msc2755.room_limit_by_complexity` in the filter and `msc2755.limited` inside
-the rooms key.
+Keys introduced in this MSC should use `im.nheko.msc2755` as a prefix:
+`im.nheko.msc2755.room_limit_by_complexity` in the filter and
+`im.nheko.msc2755.limited` inside the rooms key.
