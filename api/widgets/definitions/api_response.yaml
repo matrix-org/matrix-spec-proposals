@@ -34,5 +34,20 @@ properties:
     example: {
       "response-param": "value"
     }
+  # We define other properties from the api_request.yaml schema to override their descriptions
+  # for context purposes
+  api:
+    type: string
+    enum: [fromWidget, toWidget]
+    description: The API the request was sent over.
+    example: "fromWidget"
+  requestId:
+    type: string
+    description: The request ID supplied in the original request.
+    example: "generated-id-1234"
+  action:
+    type: string
+    description: The action which was invoked.
+    example: "com.example.say_hello"
 required:
   - response

@@ -30,7 +30,7 @@ properties:
         type: object
         title: WidgetApiError
         description: |-
-          Information about the error which happened.
+          Information about the error that happened.
         properties:
           message:
             type: string
