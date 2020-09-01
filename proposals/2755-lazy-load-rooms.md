@@ -81,7 +81,8 @@ endpoints.
     simply shouldn't enable this feature.
 
 - This feature adds additional complexity to `sync`, which will also need to be
-    encoded into the sync token. This may not be very maintainable.
+    encoded into the sync token or otherwise kept track off. This may not be
+    very maintainable.
 
 ## Alternatives
 
