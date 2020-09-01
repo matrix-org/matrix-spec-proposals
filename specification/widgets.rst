@@ -316,3 +316,15 @@ be added on a per-room basis with a widget ``type`` of ``m.grafana`` and ``data`
    Though technically possible, this widget type should not be used outside of room widgets.
 
 {{definition_widgets_grafana_data}}
+
+Stickerpicker
+~~~~~~~~~~~~~
+
+Stickerpickers are user widgets which allow the user to send ``m.sticker`` events to the current
+room using the Widget API described by this specification. They have a widget ``type`` of
+``m.stickerpicker`` and ``data`` which matches ``StickerpickerWidgetData``.
+
+.. Note::
+   Though technically possible, this widget type should not be used outside of user widgets.
+
+{{definition_widgets_stickerpicker_data}}
