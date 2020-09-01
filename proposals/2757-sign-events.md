@@ -137,6 +137,49 @@ This new content is then used to send messages via `/_matrix/client/r0/rooms/{ro
 To add additional verification and authenticity it is a good idea to also sign messages in encrypted
 rooms. The encrypted content should be signed.
 
+For example, you want to send an encrypted `m.room.message` with the content
+
+```json
+{
+  "msgtype": "m.text",
+  "body": "foxies!",
+}
+```
+
+You first encrypt the message as usual, so that it becomes an event of type `m.room.encrypted` with content
+
+```json
+{
+  "algorithm": "m.megolm.v1.aes-sha2",
+  "ciphertext": "beep",
+  "device_id": "HCJDXEANPN",
+  "sender_key": "boop",
+  "session_id": "blubb"
+}
+```
+
+Then, you have to sign the following string: `m.room.encrypted{"algorithm":"m.megolm.v1.aes-sha2","ciphertext":"beep","device_id":"HCJDXEANPN","sender_key":"boop","session_id":"blubb"}`
+
+Then, the content finally becomes
+
+```json
+{
+  "algorithm": "m.megolm.v1.aes-sha2",
+  "ciphertext": "beep",
+  "device_id": "HCJDXEANPN",
+  "sender_key": "boop",
+  "session_id": "blubb",
+  "signatures": {
+    "@alice:example.com": {
+      "ed25519:base64+message+signing+key": "signature+of+message+signing+key",
+      "ed25519:HCJDXEANPN": "signature+of+device+HCJDXEANPN"
+    }
+  }
+}
+```
+
+This content is then sent, as usual, as `m.room.encrypted`.
+
 ### Verifying message signatures
 
 If signatures are present and bad, a client MUST at least display a warning, or completely hide that
@@ -148,7 +191,7 @@ checkmark.
 ## Potential issues
 
 The introduction of a new message_signing key will force users to enter their recovery passphrase
-to enable this feature, as the master key is typically not cached. Additionally, the message_signin
+to enable this feature, as the master key is typically not cached. Additionally, the message_signing
 key should be cached on devices, so that the user doesn't have to enter their recovery key every time
 they want to send a message.
 
@@ -165,3 +208,5 @@ independently.
 The message_signing key should be cached by clients, but it shouldn't be stolen by a third party.
 Thus, clients will have to think about themselves how to resolve this issue, e.g. by using a securly
 encrypted store provided by their platform.
+
+Additionally, you lose deniability if you sign all your messages.
