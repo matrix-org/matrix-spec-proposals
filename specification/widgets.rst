@@ -239,3 +239,14 @@ This widget type is meant to be used with TradingView's
    Though technically possible, this widget type should not be used outside of room widgets.
 
 {{definition_widgets_tradingview_data}}
+
+Spotify
+~~~~~~~
+
+`Spotify Widgets <https://developer.spotify.com/documentation/widgets/>`_ can be added on a
+per-room basis with a widget ``type`` of ``m.spotify`` and ``data`` matching ``SpotifyWidgetData``.
+
+.. Note::
+   Though technically possible, this widget type should not be used outside of room widgets.
+
+{{definition_widgets_spotify_data}}
