@@ -23,7 +23,7 @@ past include:
  * [`m.room.message` `msgtypes`](https://matrix.org/docs/spec/client_server/r0.6.0#m-room-message-msgtypes)
  * `app_id` for [`POST /_matrix/client/r0/pushers/set`](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-pushers-set).
  * `rule_ids`, `actions` and `tweaks` for [push rules](https://matrix.org/docs/spec/client_server/r0.6.0#push-rules).
- * [E2E messaging algoritm names](https://matrix.org/docs/spec/client_server/r0.6.0#messaging-algorithm-names).
+ * [E2E messaging algorithm names](https://matrix.org/docs/spec/client_server/r0.6.0#messaging-algorithm-names).
 
 ## Proposal
 
@@ -51,4 +51,4 @@ for user-visible strings.
 
  * Avoiding non-ascii characters sidesteps any issues with homoglyphs or
    altenative encodings of the same characters.
- * Avoiding upper-case character sidesteps any concerns over case-sensistivity.
+ * Avoiding upper-case character sidesteps any concerns over case-sensitivity.
