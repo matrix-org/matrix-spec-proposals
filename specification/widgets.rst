@@ -230,6 +230,16 @@ Clients are not required to support all of these widget types (with the implied 
 widget fails the schema requirements for its ``type`` then it should be treated as ``m.custom``
 by the client.
 
+Custom Widgets
+~~~~~~~~~~~~~~
+
+Custom widgets are the most basic form of widget possible, and represent the default behaviour
+for all widgets. They have an explicit widget ``type`` of ``m.custom``, though any
+unknown/unsupported widget type for the client will be treated as a custom widget. They have
+``data`` matching ``CustomWidgetData``.
+
+{{definition_widgets_custom_data}}
+
 Jitsi Meet Conferences
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -343,16 +353,6 @@ room using the Widget API described by this specification. They have a widget ``
    Though technically possible, this widget type should not be used outside of user widgets.
 
 {{definition_widgets_stickerpicker_data}}
-
-Custom Widgets
-~~~~~~~~~~~~~~
-
-Custom widgets are the most basic form of widget possible, and represent teh default behaviour
-for all widgets. They have an explicit widget ``type`` of ``m.custom``, though any
-unknown/unsupported widget type for the client will be treated as a custom widget. They have
-``data`` matching ``CustomWidgetData``.
-
-{{definition_widgets_custom_data}}
 
 Widget Wrappers
 ---------------
