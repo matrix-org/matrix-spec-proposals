@@ -16,11 +16,10 @@ type: object
 title: GoogleDocsWidgetData
 description: |-
   Definition for a widget's ``data`` when using a ``type`` of ``m.googledoc``.
-example:
-  $ref: "../examples/googledocs_data.json"
 properties:
   url:
     type: string
     description: |-
       The URL to the document to embed. Required if the widget's URL differs from the document's
       URL, before templating occurs.
+    example: "https://docs.google.com/document/d/1uPF7XWY_dXTKVKV7jZQ2KmsI19wn9-kFRgQ1tFQP7wQ/edit"

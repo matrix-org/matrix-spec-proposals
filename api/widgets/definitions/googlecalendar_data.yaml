@@ -16,12 +16,11 @@ type: object
 title: GoogleCalendarWidgetData
 description: |-
   Definition for a widget's ``data`` when using a ``type`` of ``m.googlecalendar``.
-example:
-  $ref: "../examples/googlecalendar_data.json"
 properties:
   shareId:
     type: string
     description: |-
       The Google Calendar ID to embed.
+    example: "en.uk#holiday@group.v.calendar.google.com"
 required:
   - shareId

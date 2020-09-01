@@ -16,11 +16,10 @@ type: object
 title: GrafanaWidgetData
 description: |-
   Definition for a widget's ``data`` when using a ``type`` of ``m.grafana``.
-example:
-  $ref: "../examples/grafana_data.json"
 properties:
   url:
     type: string
     description: |-
       The URL to the Grafana dashboard, snapshot, or other embedded resource as supported by
       Grafana. Required if the widget's URL differs from the Grafana URL, before templating occurs.
+    example: "https://snapshot.raintank.io/dashboard-solo/snapshot/y7zwi2bZ7FcoTlB93WN7yWO4aMiz3pZb?from=1493369923321&to=1493377123321&panelId=4"

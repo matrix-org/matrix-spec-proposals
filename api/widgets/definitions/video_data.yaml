@@ -16,12 +16,11 @@ type: object
 title: VideoWidgetData
 description: |-
   Definition for a widget's ``data`` when using a ``type`` of ``m.video``.
-example:
-  $ref: "../examples/video_data.json"
 properties:
   url:
     type: string
     description: |-
       The URL to the video to embed.
+    example: "https://www.youtube.com/watch?v=gtbIWSsHICI"
 required:
   - url

@@ -16,18 +16,18 @@ type: object
 title: JitsiWidgetData
 description: |-
   Definition for a widget's ``data`` when using a ``type`` of ``m.jitsi``.
-example:
-  $ref: "../examples/jitsi_data.json"
 properties:
   domain:
     type: string
     description: |-
       The Jitsi Meet domain where the conference is to be hosted.
+    example: "meet.jit.si"
   conferenceId:
     type: string
     description: |-
       The conference ID (also known as the room name) where the conference is to
       be hosted on the given domain.
+    example: "HelloWorld"
   isAudioOnly:
     type: boolean
     default: false
@@ -35,6 +35,7 @@ properties:
       If true, the Jitsi Meet conference should be started as audio only ny the client
       if possible. When false, the conference should be started normally (with video).
       Defaults to false (normal conference) when not provided.
+    example: false
 required:
   - domain
   - conferenceId

@@ -17,8 +17,6 @@ title: CustomWidgetData
 description: |-
   Definition for a widget's ``data`` when using a ``type`` of ``m.custom`` or using an
   unknown/unsupported ``type``. Currently no requirements are specified.
-example:
-  $ref: "../examples/custom_data.json"
 properties:
   url:
     type: string
@@ -30,3 +28,4 @@ properties:
       will have this property, though all widgets are required to have a higher level ``url``
       which can be used to display them. As such, requirements for this field being present
       SHOULD only be enforced upon widgets with an explicit ``type`` of ``m.custom``.
+    example: "https://matrix.org"

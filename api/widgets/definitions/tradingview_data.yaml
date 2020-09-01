@@ -16,17 +16,17 @@ type: object
 title: TradingViewWidgetData
 description: |-
   Definition for a widget's ``data`` when using a ``type`` of ``m.tradingview``.
-example:
-  $ref: "../examples/tradingview_data.json"
 properties:
   interval:
     type: string
     description: |-
       The interval to supply to the TradingView chart, as supported by the chart.
+    example: "D"
   pair:
     type: string
     description: |-
       The symbol to represent by the TradingView chart, as supported by the chart.
+    example: "COINBASE:BTCUSD"
 required:
   - interval
   - pair

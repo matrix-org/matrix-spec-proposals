@@ -16,12 +16,11 @@ type: object
 title: SpotifyWidgetData
 description: |-
   Definition for a widget's ``data`` when using a ``type`` of ``m.spotify``.
-example:
-  $ref: "../examples/spotify_data.json"
 properties:
   uri:
     type: string
     description: |-
       The Spotify URI or share URL for the resource to embed, as supported by Spotify.
+    example: "spotify:episode:3jVWns139xO1u6F13dhwuF"
 required:
   - uri

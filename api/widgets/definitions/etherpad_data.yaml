@@ -16,11 +16,10 @@ type: object
 title: EtherpadWidgetData
 description: |-
   Definition for a widget's ``data`` when using a ``type`` of ``m.etherpad``.
-example:
-  $ref: "../examples/etherpad_data.json"
 properties:
   url:
     type: string
     description: |-
       The URL to the Etherpad editor to embed. Required if the widget's URL differs from the pad's
       URL, before templating occurs.
+    example: "https://etherpad.example.org/p/ExamplePadName"

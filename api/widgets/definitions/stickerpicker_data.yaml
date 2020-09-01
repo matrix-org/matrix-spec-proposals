@@ -17,6 +17,5 @@ title: StickerpickerWidgetData
 description: |-
   Definition for a widget's ``data`` when using a ``type`` of ``m.stickerpicker``. Currently no
   requirements are specified.
-example:
-  $ref: "../examples/stickerpicker_data.json"
 properties: {}
+example: {}
