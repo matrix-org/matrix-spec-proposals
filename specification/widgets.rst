@@ -49,7 +49,7 @@ The following other versions are also available, in reverse chronological order:
 - `HEAD <https://matrix.org/docs/spec/widgets/unstable.html>`_: Includes all changes since the latest versioned release.
 
 API Standards
-~~~~~~~~~~~~~
+-------------
 
 Throughout this specification, a "client" is referred to as something which is rendering/supporting
 ("hosting") widgets. Widgets are unique in that they can be considered a client when referred to in
