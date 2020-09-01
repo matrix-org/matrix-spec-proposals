@@ -137,7 +137,9 @@ video conference widgets.
 Clients SHOULD ask for permission to load a widget from the user prior to presenting the widget. If
 the user was the last ``sender`` of a widget (not the ``creatorUserId``), the prompt can be skipped.
 This prompt is strongly encouraged to ensure that users do not inadvertently send their information
-to a third party.
+to a third party. Private information such as the user's name, avatar, or IP address can be sent as
+a result of how widgets work, and thus clients should attempt to prevent users from sending this
+information unknowingly.
 
 URL Templating
 ~~~~~~~~~~~~~~
@@ -181,6 +183,11 @@ A few default variables, which MUST take priority over the same names in ``data`
   string if not present. This shouldn't be the ``mxc://`` form of the user's avatar, but instead the
   full HTTP URL to the ``/media/download`` endpoint for their avatar from the Client-Server API.
 
+.. WARNING::
+   The ``matrix_user_id`` variable MUST NOT be assumed to be the current authenticated user due to
+   how trivial it is to provide false details with. Widgets which need to store per-user details
+   or private information will need to verify the user's identity in some other way.
+
 Security Considerations
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -188,12 +195,18 @@ Clients SHOULD check to ensure that widgets are valid URLs *after* templating bu
 or asking for permission to load. Invalid URLs from the client's perspective should not be shown to
 the user and can be treated as though no ``url`` was present (i.e.: a deleted/invalid widget).
 
-Clients SHOULD limit which URL schemes are able to be rendered to ensure that they are not rendering
-potentially dangerous files. Most widgets will have schemes of ``http`` or ``https``.
+Clients MUST NOT attempt to render widgets with schemes other than ``http:`` and ``https:``. Widgets
+using alternative schemes, including template variables as schemes, are considered invalid and thus
+should be ignored. This is to prevent widget creators from using ``javascript:`` or similar schemes
+to gain access to the user's data.
 
 Clients SHOULD apply a sandbox to their iframe or platform equivilant to ensure the widget cannot
 get access to the data stored by the client, such as access tokens or cryptographic keys. More
 information on origin restrictions is in the Widget API's security considerations section.
+
+Clients should be aware of a potential `CSRF <https://owasp.org/www-community/attacks/csrf>`_
+opportunity due to clients making arbitrary ``GET`` requests to URLs. Typical sites should not
+be using ``GET`` as a state change method, though it is theoretically possible.
 
 Widget Types
 ------------
