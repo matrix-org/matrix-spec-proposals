@@ -367,3 +367,46 @@ the content within another iframe. This allows the widget to be gated by authent
 more easily embedded within Matrix (as would be the case for Spotify and similar widgets - the
 content to be embedded does not translate directly to a Matrix widget and instead needs a bit
 of help from a wrapper to embed nicely).
+
+Widget API
+----------
+
+The widget API is a bidirectional communication channel between the widget and the client, initiated
+by either side. This communication happens over the `JavaScript postMessage API
+<https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage>`_.
+
+The API is split into two parts: ``fromWidget`` (widget -> client) and ``toWidget`` (client -> widget).
+Both have the same general API shape: A request, called an ``action``, is sent to the other party
+using the ``WidgetApiRequest`` schema. The other party then processes the request and returns an
+object matching ``WidgetApiResponse``.
+
+All communication is done within a "session", where the first message sent to either side indicates
+the start of the session. Only the client can close/terminate a session by unloading/reloading the
+widget.
+
+The ``data`` of a ``WidgetApiRequest`` varies depending on the ``action`` of the request, as does the
+``response`` of a ``WidgetApiResponse``.
+
+{{definition_widgets_api_request}}
+
+{{definition_widgets_api_response}}
+
+Timeouts
+~~~~~~~~
+
+All requests sent over the API require a response from the other side, even if the response is to
+just acknowledge that the request happened. Both widgets and clients should implement timeouts on
+their requests to avoid them hanging forever. The default recommended timeout is 10 seconds, after
+which the request should be considered not answered and failed. Requests can be retried if they are
+failed, though some actions do not lend themselves well to idempotency.
+
+Error Handling
+~~~~~~~~~~~~~~
+
+When the receiver fails to handle a request, it should acknowledge the request with an error response.
+Note that this doesn't include timeouts, as the receiver will not have had an error processing the
+request - it simply did not receive it in time.
+
+An error response takes the shape of a ``WidgetApiErrorResponse``.
+
+{{definition_widgets_api_error}}
