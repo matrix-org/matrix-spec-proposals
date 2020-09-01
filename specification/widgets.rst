@@ -410,3 +410,105 @@ request - it simply did not receive it in time.
 An error response takes the shape of a ``WidgetApiErrorResponse``.
 
 {{definition_widgets_api_error}}
+
+Initiating Communication
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Immediately prior to rendering a widget, the client MUST prepare itself to handle communications
+with the widget. Typically this will result in setting up appropriate event listeners for the
+API requests.
+
+If the widget was set up with ``waitForIframeLoad: false``, the widget will initiate the
+communication by sending a ``fromWidget`` request with ``action`` of ``content_loaded`` (see below).
+If  ``waitForIframeLoad`` was ``true``, the client will initiate communication once the iframe or
+platform equivilant has loaded successfully (see ``waitForIframeLoad``'s description).
+
+Once the client has established that the widget has loaded, as defined by ``waitForIframeLoad``,
+it initiates a capabilities negotiation with the widget. This is done using the ``capabilities``
+action on the ``toWidget`` API.
+
+The capabilities negotiated set the stage for what the widget is allowed to do within the session.
+Clients MUST NOT re-negotiate capabilities after the session has been established.
+
+A broad sequence diagram for ``waitForIframeLoad: false`` is as follows::
+
+  +---------+                               +---------+
+  | Client  |                               | Widget  |
+  +---------+                               +---------+
+      |                                         |
+      | Render widget                           |
+      |--------------                           |
+      |             |                           |
+      |<-------------                           |
+      |                                         |
+      |                  content_loaded request |
+      |<----------------------------------------|
+      |                                         |
+      | Acknowledge content_loaded request      |
+      |---------------------------------------->|
+      |                                         |
+      | capabilities request                    |
+      |---------------------------------------->|
+      |                                         |
+      |         Requested capabilities response |
+      |<----------------------------------------|
+      |                                         |
+      | Check/verify capabilities               |
+      |--------------------------               |
+      |                         |               |
+      |<-------------------------               |
+      |                                         |
+
+A broad sequence diagram for ``waitForIframeLoad: true`` is as follows::
+
+  +---------+                               +---------+
+  | Client  |                               | Widget  |
+  +---------+                               +---------+
+      |                                         |
+      | Render widget                           |
+      |--------------                           |
+      |             |                           |
+      |<-------------                           |
+      |                                         |
+      | capabilities request                    |
+      |---------------------------------------->|
+      |                                         |
+      |         Requested capabilities response |
+      |<----------------------------------------|
+      |                                         |
+      | Check/verify capabilities               |
+      |--------------------------               |
+      |                         |               |
+      |<-------------------------               |
+      |                                         |
+
+After both sequence diagrams, the session has been successfully established and can continue as
+normal.
+
+Verifying Capabilities
+++++++++++++++++++++++
+
+The client MUST have a mechanism to approve/deny capabilities. This can be done within the client's
+code, not involving the user, by using heuristics such as the origin and widget type, or it can be
+done by involving the user with a prompt to approve/deny particular capabilities.
+
+The capabilities negotiation does not specify a way for the client to indicate to the widget which
+capabilities were denied. The widget SHOULD only request the bare minimum required to function and
+assume that it will receive all the requested capabilities. Clients SHOULD NOT automatically approve
+all requested capabilities from widgets.
+
+Whenever a widget attempts to do something with the API which requires a capability it was denied,
+the client MUST respond with an error response indicating as such.
+
+Any capabilities requested by the widget which the client does not recognize MUST be denied
+automatically. Similarly, a client MUST NOT send requests to a widget which require the widget
+to have been aprroved for a capability that it was denied access to. Clients MUST NOT approve
+capabilities the widget did not request - these are implicitly denied.
+
+A complete list of capabilities can be found in the `Available Capabilities`_ section.
+
+Available Capabilities
+~~~~~~~~~~~~~~~~~~~~~~
+
+The following capabilities are defined by this specification. Custom capabilities can only be
+defined via a namespace using the Java package naming convention.
