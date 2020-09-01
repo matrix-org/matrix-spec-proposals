@@ -293,3 +293,14 @@ of ``m.googlecalendar`` and ``data`` matching ``GoogleCalendarWidgetData``.
    Though technically possible, this widget type should not be used outside of room widgets.
 
 {{definition_widgets_googlecalendar_data}}
+
+Etherpad
+~~~~~~~~
+
+`Etherpad <https://etherpad.org/>`_ editors can be added on a per-room basis with a widget ``type``
+of ``m.etherpad`` and ``data`` matching ``EtherpadWidgetData``.
+
+.. Note::
+   Though technically possible, this widget type should not be used outside of room widgets.
+
+{{definition_widgets_etherpad_data}}
