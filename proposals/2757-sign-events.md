@@ -8,21 +8,21 @@ the recipient can ensure that the homeserver did not tamper with the message its
 ## Proposal
 
 The general idea is to sign the `content` of each event you send out with your own ed25519 key and a
-new `message_signing` key. Signing with your own ed25519 key is not enough, as that makes the signature
-unverifyable after you log out of your own device. Only using a `message_signing` key is not enough,
+new `event_signing` key. Signing with your own ed25519 key is not enough, as that makes the signature
+unverifyable after you log out of your own device. Only using a `event_signing` key is not enough,
 as signing with your own device key is a nice mitigation for a client that does not support cross-signing yet
 
-### The `message_signing` key
+### The `event_signing` key
 
-The `message_signing` key would be an ed25519 key similar to the cross-sigining `user_signing` and
+The `event_signing` key would be an ed25519 key similar to the cross-sigining `user_signing` and
 `self-signing` keys: It is signed by your own master key, uploaded and distributed via the same
 endpoints.
 
-As `usage` it is expected to have `message_signing` listed.
+As `usage` it is expected to have `event_signing` listed.
 
 #### POST `/_matrix/client/r0/keys/signatures/upload`
 
-A new key, `message_signing_key`, is introduced, which uploads the message singing key, signed by the
+A new key, `event_signing_key`, is introduced, which uploads the message singing key, signed by the
 master key. As usual, when a user uploads or changes a message singing key, the user ID of that person
 should appear in the `changed` field of the `/sync` reply of other users. An example payload could
 look as following:
@@ -60,9 +60,9 @@ look as following:
       }
     }
   },
-  "message_signing_key": {
+  "event_signing_key": {
     "user_id": "@alice:example.com",
-    "usage": ["message_signing"],
+    "usage": ["event_signing"],
     "keys": {
       "ed25519:base64+message+signing+public+key": "base64+message+signing+key"
     },
@@ -77,7 +77,7 @@ look as following:
 
 #### POST `/_matrix/client/r0/keys/query`
 
-Similar to `user_signing` keys etc. a new dict, `message_signing_keys` is introduced.
+Similar to `user_signing` keys etc. a new dict, `event_signing_keys` is introduced.
 
 #### Visibility
 
@@ -86,17 +86,17 @@ share a room with them. This is required to be abe to verify signatures of messa
 
 #### Storage in SSSS
 
-The private key can be stored base64-encoded in SSSS under the key `m.message_signing`
+The private key can be stored base64-encoded in SSSS under the key `m.event_signing`
 (`m.cross_signing.message_signin`? Calling these keys "cross-signing" was prolly not too descriptive...).
 
-### Signing messages
+### Signing events
 
-To sign a message you strip the `signatures` and `unsigned` dicts off of the `content` (if present),
+To sign a event you strip the `signatures` and `unsigned` dicts off of the `content` (if present),
 encode it with canonical json. Then you generate a string as `event_type + state_key + canonial_json`.
-If there is no state key, due to the event not beign a state event, a blank string is assumed. Then
-you sign it with the message_signing and device ed25519 key.
+If there is no state key, due to the event not being a state event, a blank string is assumed. Then
+you sign it with the event_signing and device ed25519 key.
 
-For example, a message of type `m.room.message` with the following content:
+For example, a event of type `m.room.message` with the following content:
 ```json
 {
   "msgtype": "m.text",
@@ -196,8 +196,8 @@ checkmark.
 
 ## Potential issues
 
-The introduction of a new message_signing key will force users to enter their recovery passphrase
-to enable this feature, as the master key is typically not cached. Additionally, the message_signing
+The introduction of a new event_signing key will force users to enter their recovery passphrase
+to enable this feature, as the master key is typically not cached. Additionally, the event_signing
 key should be cached on devices, so that the user doesn't have to enter their recovery key every time
 they want to send a message.
 
@@ -206,15 +206,15 @@ signatures would be ~500 bytes, though, which seems insignificant compares to th
 
 ## Alternatives
 
-Instead of introducing a new message_signing key, the self_signing key could be re-used for that
+Instead of introducing a new event_signing key, the self_signing key could be re-used for that
 purpose, as the visibility of those should be the same. The two keys, however, have different
-purposes. Additionally, the message_signing key should be cached, making it potentially more vulnerable
+purposes. Additionally, the event_signing key should be cached, making it potentially more vulnerable
 to being stolen. As such, it is a good idea to keep the two separate, to be able to revoke them
 independently.
 
 ## Security considerations
 
-The message_signing key should be cached by clients, but it shouldn't be stolen by a third party.
+The event_signing key should be cached by clients, but it shouldn't be stolen by a third party.
 Thus, clients will have to think about themselves how to resolve this issue, e.g. by using a securly
 encrypted store provided by their platform.
 
