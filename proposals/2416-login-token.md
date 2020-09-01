@@ -7,7 +7,7 @@ auth provider seems like a hack on `m.login.password` and `org.matrix.login.jwt`
 speced. Instead, it is proposed to add a new type of token allowed to the `m.login.token` type.
 
 ## Proposal
-The proposal adds JWTs ([Json Web Token](https://jwt.io/)) to the authentication type `m.login.token`.
+The proposal adds JWTs ([Json Web Token](https://jwt.io/)) to the authentication type `m.login.token` upon login.
 It is expected that the tokens are signed by a secret key. The algorithm of the JWT can be
 configured by the homeserver. As this endpoint is meant to be used by automated processes like
 application services there is no need to provide a mechanism to generate such tokens for clients.
