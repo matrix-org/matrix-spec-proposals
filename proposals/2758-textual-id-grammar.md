@@ -22,7 +22,7 @@ past include:
  * event types
  * [`m.room.message` `msgtypes`](https://matrix.org/docs/spec/client_server/r0.6.0#m-room-message-msgtypes)
  * `app_id` for [`POST /_matrix/client/r0/pushers/set`](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-pushers-set).
- * `rule_id`s, `actions` and `tweak`s for [push rules](https://matrix.org/docs/spec/client_server/r0.6.0#push-rules).
+ * `rule_ids`, `actions` and `tweaks` for [push rules](https://matrix.org/docs/spec/client_server/r0.6.0#push-rules).
  * [E2E messaging algoritm names](https://matrix.org/docs/spec/client_server/r0.6.0#messaging-algorithm-names).
 
 ## Proposal
@@ -44,7 +44,7 @@ The grammar is defined as follows:
    the Java Package Naming conventions of using a reversed domain name, for
    example `com.example.identifier`.
 
-This grammar is indented for use entirely by internal identifiers, and *not*
+This grammar is intended for use entirely by internal identifiers, and *not*
 for user-visible strings.
 
 ### Rationale
