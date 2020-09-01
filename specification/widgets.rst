@@ -277,3 +277,19 @@ widget ``type`` of ``m.googledoc`` and ``data`` matching ``GoogleDocsWidgetData`
    Though technically possible, this widget type should not be used outside of room widgets.
 
 {{definition_widgets_googledocs_data}}
+
+Google Calendar
+~~~~~~~~~~~~~~~
+
+Calendars from Google Calendar can be added as widgets on a per-room basis with a widget ``type``
+of ``m.googlecalendar`` and ``data`` matching ``GoogleCalendarWidgetData``.
+
+.. Note::
+   Calendars typically need to be publicly accessible without authentication to be embedded. Most
+   calendars that would be shared by widgets are not publicly accessible and thus generally will
+   refuse to embed properly.
+
+.. Note::
+   Though technically possible, this widget type should not be used outside of room widgets.
+
+{{definition_widgets_googlecalendar_data}}
