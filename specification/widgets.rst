@@ -338,3 +338,17 @@ unknown/unsupported widget type for the client will be treated as a custom widge
 ``data`` matching ``CustomWidgetData``.
 
 {{definition_widgets_custom_data}}
+
+Widget Wrappers
+---------------
+
+Most widgets in the wild are "wrapped" with some website that provides added functionality or
+handles the Widget API communications. They have no formal specification as they are implicitly
+handled as part of rendering widgets. As such, they also have no specific requirements to have
+any particular behaviour.
+
+A wrapper typically appears on a widget as a ``url`` pointing to a resource which then embeds
+the content within another iframe. This allows the widget to be gated by authentication or be
+more easily embedded within Matrix (as would be the case for Spotify and similar widgets - the
+content to be embedded does not translate directly to a Matrix widget and instead needs a bit
+of help from a wrapper to embed nicely).
