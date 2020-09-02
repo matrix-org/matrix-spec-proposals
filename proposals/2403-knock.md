@@ -64,7 +64,7 @@ join): `POST /_matrix/client/r0/rooms/{roomId}/knock` and `POST
 /_matrix/client/r0/knock/{roomIdOrAlias}`. These allow the client to state
 their intent to knock on a room.
 
-Additionally, additions to the `GET /_matrix/client/r0/sync` endpoint are
+Additionally, extensions to the `GET /_matrix/client/r0/sync` endpoint are
 introduced. These allow a client to receive information about the status of
 their knock attempt.
 
@@ -73,7 +73,7 @@ The path parameter (`roomId`) is the room on which you want to knock. It is
 required. The post body accepts an optional string parameter, `reason`, which
 is the reason you want to join the room. A request could look as follows:
 
-```
+```json
 POST /_matrix/client/r0/rooms/%21d41d8cd%3Amatrix.org/knock  HTTP/1.1
 Content-Type: application/json
 
@@ -124,7 +124,7 @@ can be specified via the query parameters. The post body accepts an optional
 string parameter, `reason`, which is the reason you want to join the room. A
 request could look as follows:
 
-```
+```json
 POST /_matrix/client/r0/knock/%23foxes%3Amatrix.org?server_name=matrix.org&server_name=elsewhere.ca  HTTP/1.1
 Content-Type: application/json
 
@@ -183,7 +183,7 @@ Response:
     "knock": {
       "!abcdefghijklmo:example.com": {
         "knock_state": {
-          events: [
+          "events": [
             {
               "content": {
                 "join_rule": "knock"
@@ -214,14 +214,9 @@ Response:
                 "displayname": "Knocking User",
                 "membership": "knock"
               },
-              "origin_server_ts": 1598548763903,
               "sender": "@knocking_user:example.org",
               "state_key": "@knocking_user:example.org",
               "type": "m.room.member",
-              "unsigned": {
-                "age": 5
-              },
-              "event_id": "$12345"
             }
           ]
         }
@@ -321,10 +316,10 @@ Response Format:
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `<body>` | Empty Object |
+| `knock_room_state` | [StrippedStateEvent] | Required. State events providing public room metadata
 
 A request could look as follows:
-```
+```json
 PUT /_matrix/federation/v1/send_knock/%21abc123%3Amatrix.org/%24abc123%3Aexample.org HTTP/1.1
 Content-Type: application/json
 
@@ -346,9 +341,53 @@ Content-Type: application/json
 #### Response:
 ##### Status code 200:
 The event was successfully accepted into the graph by the receiving
-homeserver.
+homeserver. The response contains `StrippedStateEvent`s with room metadata
+(room name, avatar ...) that the knocking homeserver can pass to the client.
+The event types that can be sent here should match those of the `/sync`
+extensions mentioned above.
+
+This is loosely based off of the
+[federated invite](https://matrix.org/docs/spec/server_server/r0.1.4#put-matrix-federation-v2-invite-roomid-eventid)
+request content.
 ```json
-{}
+{
+  "knock_room_state": [
+    {
+      "content": {
+        "join_rule": "knock"
+      },
+      "sender": "@room_admin:example.com",
+      "state_key": "",
+      "type": "m.room.join_rules"
+    },
+    {
+      "content": {
+        "name": "Some cool room"
+      },
+      "sender": "@room_admin:example.com",
+      "state_key": "",
+      "type": "m.room.name"
+    },
+    {
+      "content": {
+        "url": "mxc://example.com/xyz54321"
+      },
+      "sender": "@room_admin:example.com",
+      "state_key": "",
+      "type": "m.room.avatar"
+    },
+    {
+      "content": {
+        "avatar_url": "mxc://example.org/abc1234",
+        "displayname": "Knocking User",
+        "membership": "knock"
+      },
+      "sender": "@knocking_user:example.org",
+      "state_key": "@knocking_user:example.org",
+      "type": "m.room.member",
+    }
+  ]
+}
 ```
 
 # Potential issues
