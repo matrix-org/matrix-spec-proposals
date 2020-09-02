@@ -587,6 +587,13 @@ of them via the ``screenshot`` action. Typically this is only used to verify tha
 communications work between a client and widget. Widgets cannot use this capability to initiate
 screenshots being taken of them - clients must request screenshots with the ``screenshot`` action.
 
+Sticker Sending
++++++++++++++++
+
+``m.sticker`` can be requested by widgets if they would like to send stickers into the room the
+user is currently viewing. This should be implicitly approved by clients for ``m.stickerpicker``
+widgets.
+
 ``toWidget`` API
 ~~~~~~~~~~~~~~~~~~
 
@@ -669,3 +676,22 @@ been established.
 {{definition_widgets_content_loaded_action_request}}
 
 {{definition_widgets_content_loaded_action_response}}
+
+Sending Stickers
+++++++++++++++++
+
+:Introduced in: ``0.1.0``
+
+If the widget is approved for use of the ``m.sticker`` capability, the widget can send ``m.sticker``
+action requests (``StickerActionRequest``) to have the client post an ``m.sticker`` event to the
+room the user is currently viewing. If the room is encrypted, the client is responsible for
+encrypting the widget's implied event.
+
+The stickers widgets produce MUST meet the requirements of stickers in ``m.sticker`` events. For
+creating the sticker event, the client uses the ``name`` or ``description`` from the request
+in the event's ``body``, and otherwise copies the ``url`` and ``info`` values from the request
+to the event directly (potentially with some validation).
+
+{{definition_widgets_sticker_action_request}}
+
+{{definition_widgets_sticker_action_response}}
