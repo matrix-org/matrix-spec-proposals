@@ -594,6 +594,13 @@ Sticker Sending
 user is currently viewing. This should be implicitly approved by clients for ``m.stickerpicker``
 widgets.
 
+Always On Screen
+++++++++++++++++
+
+``m.always_on_screen`` can be requested by widgets if they would like to be able to use the
+``set_always_on_screen`` action. This should be implicitly approved by clients for ``m.jitsi``
+widgets (see the action's spec for more information).
+
 ``toWidget`` API
 ~~~~~~~~~~~~~~~~~~
 
@@ -695,3 +702,22 @@ to the event directly (potentially with some validation).
 {{definition_widgets_sticker_action_request}}
 
 {{definition_widgets_sticker_action_response}}
+
+Always On Screen
+++++++++++++++++
+
+:Introduced in: ``0.1.0``
+
+If the widget is approved for use of the ``m.always_on_screen`` capability, the widget can request
+that the client keep it always on screen with a ``set_always_on_screen`` action request
+(``StickyActionRequest``).
+
+Widgets by default are *not* always on screen, and only one widget at a time can be always on the
+screen. Typically this is used by video conferencing widgets to ensure that the call is not disrupted
+when the user switches rooms, and as such clients SHOULD ignore the restriction regarding only
+rendering widgets when the user is viewing that room while the widget has requested to be always on
+screen.
+
+{{definition_widgets_sticky_action_request}}
+
+{{definition_widgets_sticky_action_response}}
