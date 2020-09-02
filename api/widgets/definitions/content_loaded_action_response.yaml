@@ -18,7 +18,7 @@ description: |-
   Schema definition for a response to a ``ContentLoadedActionRequest``.
 allOf:
   - $ref: "./api_response.yaml"
-  - $ref: "./content_loaded_action.yaml"
+  - $ref: "./content_loaded_action_request.yaml"
 properties:
   response:
     type: object

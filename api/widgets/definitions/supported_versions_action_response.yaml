@@ -18,7 +18,7 @@ description: |-
   Schema definition for a response to a ``SupportedVersionsActionRequest``.
 allOf:
   - $ref: "./api_response.yaml"
-  - $ref: "./supported_versions_action.yaml"
+  - $ref: "./supported_versions_action_request.yaml"
 properties:
   response:
     type: object

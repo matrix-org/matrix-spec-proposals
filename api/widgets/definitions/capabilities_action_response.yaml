@@ -18,7 +18,7 @@ description: |-
   Schema definition for a response to a ``CapabilitiesActionRequest``.
 allOf:
   - $ref: "./api_response.yaml"
-  - $ref: "./capabilities_action.yaml"
+  - $ref: "./capabilities_action_request.yaml"
 properties:
   response:
     type: object
