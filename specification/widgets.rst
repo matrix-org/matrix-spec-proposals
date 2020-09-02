@@ -69,6 +69,9 @@ All objects exchanged over the Widget (``postMessage``) API are JSON objects.
 In essence, widgets are typically iframes or the platform equivilant to a website which are accessible
 in the client.
 
+All of the schemas in this specification are intended to be referenced by name, and thus can safely
+be used in auto-generated implementations which rely on stable naming.
+
 Widget Kinds
 ------------
 
