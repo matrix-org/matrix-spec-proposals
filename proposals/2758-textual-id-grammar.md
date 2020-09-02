@@ -41,8 +41,10 @@ The grammar is defined as follows:
  * Identifiers starting with the characters `m.` are reserved for use by the
    formal matrix specification.
  * Implementations wishing to implement unspecified identifiers should follow
-   the Java Package Naming conventions of using a reversed domain name, for
-   example `com.example.identifier`.
+   the Java Package Naming convention of starting with a reversed domain
+   name (with a dot after the domain name part). For example, for the 
+   organisation `example.com`, a valid identifier would be
+   `com.example.identifier`.
 
 This grammar is intended for use entirely by internal identifiers, and *not*
 for user-visible strings.
