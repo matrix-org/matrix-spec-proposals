@@ -535,6 +535,17 @@ screenshots being taken of them - clients must request screenshots with the ``sc
 The ``toWidget`` API is reserved for communications from the client to the widget. Custom
 actions can be defined by using the Java package naming convention as a namespace.
 
+Capabilities
+++++++++++++
+
+As part of the capabilities negotiation, the client sends a request with an action of
+``capabilities`` (``CapabilitiesActionRequest``) to the widget, which replies with the requested
+set of capabilities (``CapabilitiesActionResponse``).
+
+{{definition_widgets_capabilities_action_request}}
+
+{{definition_widgets_capabilities_action_response}}
+
 Screenshots
 +++++++++++
 
