@@ -626,3 +626,26 @@ send a ``screenshot`` action (``ScreenshotActionRequest``) to request an image f
 {{definition_widgets_screenshot_action_request}}
 
 {{definition_widgets_screenshot_action_response}}
+
+Widget Visibility
++++++++++++++++++
+
+:Introduced in: ``0.1.0``
+
+The client can indicate to the widget whether it is visible or not to the user with the ``visbility``
+action request (``VisibilityActionRequest``). If the widget does not receive visibility information,
+it must assume that it is visible to the user.
+
+Typically this action is not used on room widgets as they are visible implicitly to the user when
+they view that room. Account widgets, however, often get rendered in the background by the client
+and thus can be hidden/shown at times.
+
+.. Note::
+   Stickerpicker widgets and similar often make the best use of this to reload the user's available
+   content when the widget gets shown again.
+
+This action should only be sent when visibility of the widget to the user changes.
+
+{{definition_widgets_visibility_action_request}}
+
+{{definition_widgets_visibility_action_response}}
