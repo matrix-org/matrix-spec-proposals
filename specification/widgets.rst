@@ -649,3 +649,23 @@ This action should only be sent when visibility of the widget to the user change
 {{definition_widgets_visibility_action_request}}
 
 {{definition_widgets_visibility_action_response}}
+
+``fromWidget`` API
+~~~~~~~~~~~~~~~~~~
+
+The ``fromWidget`` API is reserved for communications from the widget to the client. Custom actions
+can be defined by using the Java package naming convention as a namespace.
+
+Indicating Content Loaded
++++++++++++++++++++++++++
+
+:Introduced in: ``0.1.0``
+
+In some rendering cases, the widget is expected to send a ``content_loaded`` action request taking
+the shape of ``ContentLoadedActionRequest``. The widget can send this any time, even when not
+required for establishing the session. Widgets SHOULD NOT send this action after the session has
+been established.
+
+{{definition_widgets_content_loaded_action_request}}
+
+{{definition_widgets_content_loaded_action_response}}
