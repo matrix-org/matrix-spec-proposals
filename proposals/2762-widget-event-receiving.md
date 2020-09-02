@@ -1,4 +1,4 @@
-# MSC0000: Allowing widgets to send/receive events
+# MSC2762: Allowing widgets to send/receive events
 
 [MSC1236](https://github.com/matrix-org/matrix-doc/issues/1236) originally specified a Widget API
 which supports widgets being able to receive specified events from the client, and for widgets to
@@ -198,5 +198,5 @@ the user's permission is valid.
 
 While this MSC is not present in the spec, clients and widgets should:
 
-* Use `org.matrix.msc0000.` in place of `m.` in all identifiers of this MSC.
-* Only call/support the `action`s if an API version of `org.matrix.msc0000` is advertised.
+* Use `org.matrix.msc2762.` in place of `m.` in all new identifiers of this MSC.
+* Only call/support the `action`s if an API version of `org.matrix.msc2762` is advertised.
