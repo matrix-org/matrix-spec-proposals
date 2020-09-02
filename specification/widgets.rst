@@ -411,6 +411,33 @@ An error response takes the shape of a ``WidgetApiErrorResponse``.
 
 {{definition_widgets_api_error}}
 
+Versioning
+~~~~~~~~~~
+
+The Widget API version tracks the version of this specification (``r0.1.0`` is Widget API version
+``0.1.0``, for example). Both widgets and clients can perform a request with action of
+``supported_api_versions`` (``SupportedVersionsActionRequest``) to get the other side's list of
+supported versions (``SupportedVersionsActionResponse``). The sender SHOULD NOT use actions which
+are unsupported by the intended destination. In the event that the sender and destination cannot
+agree on a supported version, either side should abort their continued execution
+
+Actions in this specification list which version they were introduced in for historical purposes.
+Actions will always be backwards compatible with prior versions of the specification, though the
+specification from time to time may add/remove actions as needed.
+
+In order for a widget/client to support an API version, it MUST implement all actions supported
+by that version. For clarity, all actions presented by this document at a given version are
+supported by that version. Implicitly, the actions to request supported API versions are mandatory
+for all implementations.
+
+.. Note::
+   For historical purposes, ``0.0.1`` and ``0.0.2`` are additionally valid versions which implement
+   the same set as ``0.1.0`` (the first version of this specification).
+
+{{definition_widgets_supported_versions_action_request}}
+
+{{definition_widgets_supported_versions_action_response}}
+
 Initiating Communication
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -430,65 +457,96 @@ action on the ``toWidget`` API.
 The capabilities negotiated set the stage for what the widget is allowed to do within the session.
 Clients MUST NOT re-negotiate capabilities after the session has been established.
 
+Prior to the session being initiated, neither side should be sending actions outside of those
+required to set up the session. Version checking can happen at any time by either side, though
+the initiator of the session should be left responsible for the first version check. For example,
+if the client is waiting for a ``content_loaded`` action then the widget should be the one to
+request the supported API versions first. Once a version check has been started by one side, it is
+implied that the other side can do the same.
+
 A broad sequence diagram for ``waitForIframeLoad: false`` is as follows::
 
-  +---------+                               +---------+
-  | Client  |                               | Widget  |
-  +---------+                               +---------+
-      |                                         |
-      | Render widget                           |
-      |--------------                           |
-      |             |                           |
-      |<-------------                           |
-      |                                         |
-      |                  content_loaded request |
-      |<----------------------------------------|
-      |                                         |
-      | Acknowledge content_loaded request      |
-      |---------------------------------------->|
-      |                                         |
-      | capabilities request                    |
-      |---------------------------------------->|
-      |                                         |
-      |         Requested capabilities response |
-      |<----------------------------------------|
-      |                                         |
-      | Check/verify capabilities               |
-      |--------------------------               |
-      |                         |               |
-      |<-------------------------               |
-      |                                         |
+  +---------+                                 +---------+
+  | Client  |                                 | Widget  |
+  +---------+                                 +---------+
+      |                                           |
+      | Render widget                             |
+      |--------------                             |
+      |             |                             |
+      |<-------------                             |
+      |                                           |
+      |          `supported_api_versions` request |
+      |<------------------------------------------|
+      |                                           |
+      | `supported_api_versions` response         |
+      |------------------------------------------>|
+      |                                           |
+      | `supported_api_versions` request          |
+      |------------------------------------------>|
+      |                                           |
+      |         `supported_api_versions` response |
+      |<------------------------------------------|
+      |                                           |
+      |                  `content_loaded` request |
+      |<------------------------------------------|
+      |                                           |
+      | Acknowledge `content_loaded` request      |
+      |------------------------------------------>|
+      |                                           |
+      | `capabilities` request                    |
+      |------------------------------------------>|
+      |                                           |
+      |                   `capabilities` response |
+      |<------------------------------------------|
+      |                                           |
+      | Approve/deny capabilities                 |
+      |--------------------------                 |
+      |                         |                 |
+      |<-------------------------                 |
+      |                                           |
 
 A broad sequence diagram for ``waitForIframeLoad: true`` is as follows::
 
-  +---------+                            +---------+
-  | Client  |                            | Widget  |
-  +---------+                            +---------+
-      |                                      |
-      | Render widget                        |
-      |--------------                        |
-      |             |                        |
-      |<-------------                        |
-      |                                      |
-      |                                      | iframe loading
-      |                                      |---------------
-      |                                      |              |
-      |                                      |<--------------
-      |                                      |
-      |                Implicit onLoad event |
-      |<-------------------------------------|
-      |                                      |
-      | capabilities request                 |
-      |------------------------------------->|
-      |                                      |
-      |      Requested capabilities response |
-      |<-------------------------------------|
-      |                                      |
-      | Check/verify capabilities            |
-      |--------------------------            |
-      |                         |            |
-      |<-------------------------            |
-      |                                      |
+  +---------+                                +---------+
+  | Client  |                                | Widget  |
+  +---------+                                +---------+
+      |                                          |
+      | Render widget                            |
+      |--------------                            |
+      |             |                            |
+      |<-------------                            |
+      |                                          |
+      |                                          | iframe loading
+      |                                          |---------------
+      |                                          |              |
+      |                                          |<--------------
+      |                                          |
+      |      Implicit `onLoad` event from iframe |
+      |<-----------------------------------------|
+      |                                          |
+      | `supported_api_versions` request         |
+      |----------------------------------------->|
+      |                                          |
+      |        `supported_api_versions` response |
+      |<-----------------------------------------|
+      |                                          |
+      |         `supported_api_versions` request |
+      |<-----------------------------------------|
+      |                                          |
+      | `supported_api_versions` response        |
+      |----------------------------------------->|
+      |                                          |
+      | `capabilities` request                   |
+      |----------------------------------------->|
+      |                                          |
+      |                  `capabilities` response |
+      |<-----------------------------------------|
+      |                                          |
+      | Approve/deny capabilities                |
+      |--------------------------                |
+      |                         |                |
+      |<-------------------------                |
+      |                                          |
 
 After both sequence diagrams, the session has been successfully established and can continue as
 normal.
@@ -538,6 +596,8 @@ actions can be defined by using the Java package naming convention as a namespac
 Capabilities
 ++++++++++++
 
+:Introduced in: ``0.1.0``
+
 As part of the capabilities negotiation, the client sends a request with an action of
 ``capabilities`` (``CapabilitiesActionRequest``) to the widget, which replies with the requested
 set of capabilities (``CapabilitiesActionResponse``).
@@ -548,6 +608,8 @@ set of capabilities (``CapabilitiesActionResponse``).
 
 Screenshots
 +++++++++++
+
+:Introduced in: ``0.1.0``
 
 If the widget is approved for use of the ``m.capbility.screenshot`` capability, the client can
 send a ``screenshot`` action (``ScreenshotActionRequest``) to request an image from the widget
