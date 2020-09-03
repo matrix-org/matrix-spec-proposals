@@ -233,8 +233,8 @@ Clients are not required to support all of these widget types (with the implied 
 widget fails the schema requirements for its ``type`` then it should be treated as ``m.custom``
 by the client.
 
-Custom Widgets
-~~~~~~~~~~~~~~
+Custom/Basic Widgets
+~~~~~~~~~~~~~~~~~~~~
 
 Custom widgets are the most basic form of widget possible, and represent the default behaviour
 for all widgets. They have an explicit widget ``type`` of ``m.custom``, though any
@@ -254,99 +254,8 @@ a widget ``type`` of ``m.jitsi`` and ``data`` matching ``JitsiWidgetData``.
 
 {{definition_widgets_jitsi_data}}
 
-TradingView
-~~~~~~~~~~~
-
-`TradingView <https://www.tradingview.com/>`_ widgets can be addded on a per-room basis with
-a widget ``type`` of ``m.tradingview`` and ``data`` matching ``TradingViewWidgetData``.
-
-This widget type is meant to be used with TradingView's
-`Advanced Real-Time Chart Widget <https://www.tradingview.com/widget/advanced-chart/>`_.
-
-.. Note::
-   Though technically possible, this widget type should not be used outside of room widgets.
-
-{{definition_widgets_tradingview_data}}
-
-Spotify
-~~~~~~~
-
-`Spotify Widgets <https://developer.spotify.com/documentation/widgets/>`_ can be added on a
-per-room basis with a widget ``type`` of ``m.spotify`` and ``data`` matching ``SpotifyWidgetData``.
-
-.. Note::
-   Though technically possible, this widget type should not be used outside of room widgets.
-
-{{definition_widgets_spotify_data}}
-
-Videos
-~~~~~~
-
-Videos from video streaming sites can be added on a per-room basis with a widget ``type`` of
-``m.video`` and ``data`` matching ``VideoWidgetData``.
-
-.. Note::
-   Though technically possible, this widget type should not be used outside of room widgets.
-
-{{definition_widgets_video_data}}
-
-Google Docs
-~~~~~~~~~~~
-
-Documents from Google Docs, Sheets, and Slides can be added as widgets on a per-room basis with a
-widget ``type`` of ``m.googledoc`` and ``data`` matching ``GoogleDocsWidgetData``.
-
-.. Note::
-   Documents typically need to be publicly accessible without authentication to be embedded. Most
-   documents that would be shared by widgets are not publicly accessible and thus generally will
-   refuse to embed properly.
-
-.. Note::
-   Though technically possible, this widget type should not be used outside of room widgets.
-
-{{definition_widgets_googledocs_data}}
-
-Google Calendar
-~~~~~~~~~~~~~~~
-
-Calendars from Google Calendar can be added as widgets on a per-room basis with a widget ``type``
-of ``m.googlecalendar`` and ``data`` matching ``GoogleCalendarWidgetData``.
-
-.. Note::
-   Calendars typically need to be publicly accessible without authentication to be embedded. Most
-   calendars that would be shared by widgets are not publicly accessible and thus generally will
-   refuse to embed properly.
-
-.. Note::
-   Though technically possible, this widget type should not be used outside of room widgets.
-
-{{definition_widgets_googlecalendar_data}}
-
-Etherpad
-~~~~~~~~
-
-`Etherpad <https://etherpad.org/>`_ editors can be added on a per-room basis with a widget ``type``
-of ``m.etherpad`` and ``data`` matching ``EtherpadWidgetData``.
-
-.. Note::
-   Though technically possible, this widget type should not be used outside of room widgets.
-
-{{definition_widgets_etherpad_data}}
-
-Grafana
-~~~~~~~
-
-`Embedded Grafana Panels <https://grafana.com/docs/grafana/latest/reference/share_panel/>`_ can
-be added on a per-room basis with a widget ``type`` of ``m.grafana`` and ``data`` matching
-``GrafanaWidgetData``.
-
-.. Note::
-   Though technically possible, this widget type should not be used outside of room widgets.
-
-{{definition_widgets_grafana_data}}
-
-Stickerpicker
-~~~~~~~~~~~~~
+Stickerpickers
+~~~~~~~~~~~~~~
 
 Stickerpickers are user widgets which allow the user to send ``m.sticker`` events to the current
 room using the Widget API described by this specification. They have a widget ``type`` of
