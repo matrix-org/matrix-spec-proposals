@@ -633,3 +633,12 @@ screen.
 {{definition_widgets_sticky_action_request}}
 
 {{definition_widgets_sticky_action_response}}
+
+Security Considerations
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The Widget API can allow for significant control of a client/widget, and thus needs to be secured
+as much as possible. Clients should refuse/ignore requests and responses from origins other than
+the widget's rendered origin, and should verify that the widget ID matches the expected value.
+Widgets have a harder time of determining the origin, though they can rely on techniques like
+``window.parent`` to ensure they are talking/responding to the right place.
