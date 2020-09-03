@@ -5,7 +5,7 @@ for a favicon-like experience. This proposal introduces such a concept.
 
 ## Proposal
 
-In the widget's `data`, a new optional paramater named `avatar_url` is added. This parameter is
+A new optional paramater named `avatar_url` is added to the widget definition. This parameter is
 an MXC URI to an image clients can use to associate with the widget, likely alongside the `name`
 and/or `title`.
 
@@ -15,6 +15,24 @@ use case.
 
 Rendering avatars is optional for clients, much like how clients are not required to use the `name`
 or `title` of a widget.
+
+An example widget would be:
+
+```json
+{
+    "creatorUserId": "@alice:example.org",
+    "data": {
+        "custom-key": "This is a custom key",
+        "title": "This is a witty description for the widget"
+    },
+    "id": "20200827_WidgetExample",
+    "name": "My Cool Widget",
+    "type": "m.custom",
+    "url": "https://example.org/my/widget.html?roomId=$matrix_room_id",
+    "waitForIframeLoad": true,
+    "avatar_url": "mxc://example.org/abc123"
+}
+```
 
 ## Alternatives
 
@@ -28,5 +46,6 @@ from the server when a widget avatar is a non-image.
 
 ## Unstable prefix
 
-Not applicable - this is backwards compatible with specification and an allowed property of `data`
-without this MSC.
+While this MSC is not in a released version of the specification, clients should use an alternative
+event type for widgets or use `org.matrix.msc2765.avatar_url` when using `m.widget` or `m.widgets`
+as an event type.
