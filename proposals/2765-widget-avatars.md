@@ -1,4 +1,4 @@
-# MSC0000: Widget avatars
+# MSC2765: Widget avatars
 
 Currently widgets have a name and title associated with them, though no opportunity for avatars
 for a favicon-like experience. This proposal introduces such a concept.
