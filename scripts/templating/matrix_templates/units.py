@@ -206,6 +206,11 @@ def get_json_schema_object_fields(obj, enforce_title=False):
     logger.debug("Processing object with title '%s'", obj_title)
 
     additionalProps = obj.get("additionalProperties")
+
+    # When 'additionalProps: true` is defined, it should be treated as a freeform object
+    if additionalProps == True:
+        additionalProps = dict(type="object", title="value")
+
     props = obj.get("properties")
     if additionalProps and not props:
         # not "really" an object, just a KV store

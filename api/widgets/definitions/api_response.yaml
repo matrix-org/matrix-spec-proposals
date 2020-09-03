@@ -28,9 +28,7 @@ properties:
     type: object
     description: |-
       The response data.
-    additionalProperties:
-      type: object
-      title: value  # intentionally named strangely to make it show up as {string: value}
+    additionalProperties: true
     example: {
       "response-param": "value"
     }
