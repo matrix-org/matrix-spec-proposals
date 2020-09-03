@@ -235,11 +235,6 @@ If they deny, then a leave membership event is sent in the room, and the
 knocking user will be notified through existing flows (matching the behaviour
 of when an invite is recinded).
 
-TODO: Federation passing certain needed state events from the server that has
-the room to the server that's knocking. Can we filter the events sent over so
-that we can avoid the security issue with invites that we found earlier? (And
-then backport this filter to invites? :)
-
 
 ## Server-Server API
 Similarly to join and leave over federation, a ping-pong game with two new
