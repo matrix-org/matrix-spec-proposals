@@ -341,7 +341,7 @@ homeserver. The response contains `StrippedStateEvent`s with room metadata
 The event types that can be sent here should match those of the `/sync`
 extensions mentioned above.
 
-This is loosely based off of the
+This is loosely based on the
 [federated invite](https://matrix.org/docs/spec/server_server/r0.1.4#put-matrix-federation-v2-invite-roomid-eventid)
 request content.
 ```json
