@@ -46,7 +46,7 @@ A client implementation may choose to use the device ID used in end-to-end crypt
 This event is sent by the caller's client once it has chosen an answer. Its
 `selected_party_id` field indicates the answer it's chosen (and has `call_id`
 and its own `party_id` too). If the callee's client sees a `select_answer` for an answer
-ID other than the one it sent, it ends the call and informs the user the call
+with party ID other than the one it sent, it ends the call and informs the user the call
 was answered elsewhere. It does not send any events. Media can start flowing
 before this event is seen or even sent.  Clients that implement previous
 versions of this specification will ignore this event and behave as they did
