@@ -143,7 +143,7 @@ all?)
 ## Dependencies
 
 This unblocks MSC1769 (profiles as rooms) and MSC1772 (groups as rooms)
-and is required for MSC1776 (peeking via /sync) to be of any use.
+and is required for MSC2753 (peeking via /sync) to be of any use.
 
 ## History
 
