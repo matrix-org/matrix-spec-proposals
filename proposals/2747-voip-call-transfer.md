@@ -116,8 +116,9 @@ it decides that the transferor is not sufficiently trustworthy, or it prompted t
 user chose to reject the transfer). The event has `replacement_id` equal to the `replacement_id`
 of the `m.call.replaces` event that initiated the transfer.
 
-On receiving this, the transferor aborts the transfer process and informs the user that the call
-transfer was rejected, and by which party. There is no explicit event to accept the transfer.
+On receiving this, the transferor aborts the transfer process and informs the transferor user
+that the call transfer was rejected, and by which party. There is no explicit event to accept
+the transfer.
 
 ## Potential issues
 A call transfer is fairly complex and involves a lot of round-trips and state on clients, and
