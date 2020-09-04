@@ -142,22 +142,18 @@ value is a mapping from room ID to room information. The room information is
 a mapping from a key `knock_state` to another mapping with key `events` being
 a list of `StrippedStateEvent`. `StrippedStateEvent`s are defined as state
 events that only contain the `sender`, `type`, `state_key` and `content`
-keys. This behaviour matches `invite_events` which already exists to provide
-information to the client their current room invites.
+keys.
 
 These stripped state events contain information about the room, most notably
 the room's name and avatar. A client will need this information to show a
-nice representation of pending knocked rooms. Only `m.room.name`,
-`m.room.avatar`, `m.room.join_rules` and `m.room.membership` state events
-should be included here, rather than all room state event types.
-Additionally, only `m.room.membership` events of the knocking user should be
-included.
+nice representation of pending knocked rooms. The recommended events to
+include are the join rules, canonical alias, avatar, and name of the room,
+rather than all room state. This behaviour matches the information sent to
+remote servers when invited their users to a room.
 
 This prevents unneeded state from the room leaking out, and also speeds
 things up (think not sending over hundreds of membership events from big
 rooms).
-
-XXX: Is `m.room.canonical_alias` worth allowing here for any reason?
 
 The following is an example of knock state coming down `/sync`.
 
