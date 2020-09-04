@@ -191,7 +191,7 @@ them to be present on events they receive.
 
 ## Potential issues
  * The ability to call yourself makes the protocol a little more complex for clients to implement,
-   and is somewhat of a special case. However, some of the necessary additions are necessary for
+   and is somewhat of a special case. However, some of the necessary additions are also required for
    other features so this MSC elects to make it possible.
  * Clients must make a decision on whether to ring for any given call: defining this in the spec
    would be cumbersome and would limit clients' ability to use reputation-based systems for this
