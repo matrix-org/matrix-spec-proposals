@@ -161,9 +161,10 @@ it should signal an incoming call. The amount of time allowed for the user to ac
 vary between clients, for example, it may be longer on a locked mobile device than on an unlocked
 desktop device.
 
-The client should only signal an incoming call once it has completed processing the entire sync
-response. This ensures that if the sync response contains subsequent events that indicate the call
-has been hung up, rejected, or answered elsewhere, the client does not signal it.
+The client should only signal an incoming call in a given room once it has completed processing the
+entire sync response and, for encrypted rooms, attempted to decrypt all encrypted events in the
+sync response for that room. This ensures that if the sync response contains subsequent events that
+indicate the call has been hung up, rejected, or answered elsewhere, the client does not signal it.
 
 If on startup, after processing locally stored events, the client determines that there is an invite
 that is still valid, it should still signal it but only after it has completed a sync from the homeserver.
