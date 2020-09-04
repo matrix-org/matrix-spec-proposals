@@ -24,7 +24,11 @@ Calling `/peek`:
  * Adds the room (if permissions allow) to a new section of the /sync response called `peek` - but only for the device which called `/peek`.
  * The `peek` section is identical to `join`, but shows the live activity of rooms for which that device is peeking.
 
-The API returns 404 on an unrecognised room ID or alias, or 403 if the room does not allow peeking.
+The API returns 404 on an unrecognised room ID or alias, or 403 if the room does not allow peeking.  Rooms allow peeking if they have history_visibility of "world_readable".  N.B. join_rules do not affect peekability - it's possible to have an invite-only room which joe public can still peek into, if history_visibility has been set to "world_readable".
+
+If the history_visibility of a room changes to not be world_readable, any peeks on the room are cancelled.
+
+In order to clear up stale peeks if a client restarts without cleaning up nicely, the act of calling /sync without a `since` token must cancel any peeks created by that device.
 
 Similar to `/join`, `/peek` lets you specify `server_name` querystring parameters to specify which server(s) to try to peek into the room via (when coupled with [MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444)).
 
