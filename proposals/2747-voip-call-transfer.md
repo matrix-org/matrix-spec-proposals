@@ -39,17 +39,18 @@ An `m.call.replaces` event has fields:
    given in the `target_user` field in a room of its choosing.
  * `target_user`: An object giving information about the transfer target:
    * `id`: The matrix user ID of the transfer target
-   * `display_name`: The display name of the transfer target.
-   * `avatar_url`: The avatar URL of the transfer target.
+   * `display_name`: (Optional) The display name of the transfer target.
+   * `avatar_url`: (Optional) The avatar URL of the transfer target.
  * `create_call`: If specified, gives the call ID for the transferee's client to use
    when placing the replacement call. Mutually exclusive with `await_call`.
  * `await_call`: If specified, gives the call ID that the transferee's client should wait
    for. Mutually exclusive with `create_call`.
- * `party_id`: The client's party ID for the call that it intends to replace.
+ * `party_id`: The transferor's client's party ID for the call that it intends to replace.
 
 The display name and avatar URL of the transfer target in the `target_user` field
 are purely informational and given by the transferor, so should be treated as such for
-trust purposes. It is recommended that the transferor uses the transfer target's global
+trust purposes. They should be omitted if the target has no display name or avatar URL set,
+respectively. It is recommended that the transferor uses the transfer target's global
 display name and avatar URL, or potentially those from the target room if available,
 rather than details from a direct message with the transfer target: the display name and
 avatar URL in the direct message room should be treated as private.
