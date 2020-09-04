@@ -36,15 +36,15 @@ properties:
         description: |-
           The human-readable name for the sticker.
         example: "Smiling Face"
+      description:
+        type: string
+        description: |-
+          A longer form human-readable description for the sticker.
+        example: "A circular emoticon smiles blankly"
       content:
         type: object
         title: StickerActionRequestEventContent
         properties:
-          description:
-            type: string
-            description: |-
-              A longer form human-readable description for the sticker.
-            example: "A circular emoticon smiles blankly"
           info:
             type: object
             # XXX: Ideally we'd link to the image info schema, but it has a bunch of backlinks which
