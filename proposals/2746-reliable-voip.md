@@ -43,9 +43,9 @@ by different clients to an invite, and matches `m.call.candidate` events to thei
 A client implementation may choose to use the device ID used in end-to-end cryptography for this purpose.
 
 ### Introduce `m.call.select_answer`
-This event is sent by the caller once it has chosen an answer. Its
+This event is sent by the caller's client once it has chosen an answer. Its
 `selected_party_id` field indicates the answer it's chosen (and has `call_id`
-and its own `party_id` too). If the callee sees a `select_answer` for an answer
+and its own `party_id` too). If the callee's client sees a `select_answer` for an answer
 ID other than the one it sent, it ends the call and informs the user the call
 was answered elsewhere. It does not send any events. Media can start flowing
 before this event is seen or even sent.  Clients that implement previous
@@ -117,7 +117,7 @@ This introduces SDP negotiation semantics for media pause, hold/resume, ICE rest
 call up/downgrading. Clients should implement & honour hold functionality as per WebRTC's
 recommendation: https://www.w3.org/TR/webrtc/#hold-functionality
 
-If both the invite event and the accepted answer event have `v` equal to `1`, either party may
+If both the invite event and the accepted answer event have `version` equal to `1`, either party may
 send `m.call.negotiate` with an `sdp` field to offer new SDP to the other party. This event has
 `call_id` with the ID of the call and `party_id` equal to the client's party ID for that call.
 The caller ignores any negotiate events with `party_id` not equal to the `party_id` of the
