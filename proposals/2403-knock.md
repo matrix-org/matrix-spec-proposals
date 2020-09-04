@@ -46,17 +46,9 @@ that user can be transitioned to the following possible states:
  - `invite`: In this case, the knock was accepted by someone inside the room
    and they are inviting the knocker into the room.
  - `leave`: In this case, similar to how kicks are handled, the knock has
-   been rejected.
+   been rejected. Alternatively, the knocking user has rescinded their knock.
  - `ban`: In this case, the knock was rejected and the user has been prevented
    from sending further knocks.
-
-Users are not allowed to change their membership once set to `knock`, in
-order to prevent users from being able to knock multiple times and spam a
-room.
-
-XXX: So if you knock on a room that's then abandoned that's in your `/sync`
-forever? Clients should have a way to tell their server to hide and show
-knocks.
 
 ## Client-Server API
 Two new endpoints are introduced in the Client-Server API (similarly to
@@ -84,7 +76,7 @@ Content-Type: application/json
 
 #### Responses:
 ##### Status code 200:
-The user knocked successfully. Empty reply:
+The user knocked successfully. Example reply:
 ```json
 {}
 ```
@@ -234,7 +226,6 @@ which the knocker will be notified about through existing flows.
 If they deny, then a leave membership event is sent in the room, and the
 knocking user will be notified through existing flows (matching the behaviour
 of when an invite is recinded).
-
 
 ## Server-Server API
 Similarly to join and leave over federation, a ping-pong game with two new
@@ -414,5 +405,14 @@ essentially allow outsiders to send messages into the room.
 
 It is still theoretically possible for a server admin to create many users
 with different user IDs or display names, all spelling out an abusive
-message, and then having each of them knock in order. In this case, room
-admins should employ typical abuse mitigation tools, such as Server ACLs.
+message, and then having each of them knock in order. 
+
+Another abuse vector is allowed by the ability for users to rescind knocks.
+This is to help users in case they knocked on a room accidentally, or simply
+no longer want to join a room they've knocked on. While this is a useful
+feature, it also allows users to spam a room by knocking and rescinding their
+knocks over and over.
+
+In both cases, room admins should employ typical abuse mitigation tools, such
+as user bans and server ACLs. Clients are encouraged to ease employing these
+tools easy even if the offensive user or server is present not in the room.
