@@ -39,19 +39,62 @@ server could also call S2S /state on m.room.members to find other servers
 participating in the room and try to peek them from too.
 
 The peeking server starts to peek by PUTting to `/peek` on the peeked server.
+The peeked server is determined from the `server_names` parameter of the CS API
+`/peek` command (from [MSC2753](https://github.com/matrix-org/matrix-doc/pull/2753)),
+or failing that the domain of the room_alias or room_id being peeked.
 The request takes an empty object as a body as a placeholder for future (where
 we might put filters). The peeking server selects an ID for the peeking
 subscription for the purposes of idempotency. The ID must be 8 or less bytes
-of ASCII and should be unique for a given peeking & peeked server.
+of ASCII and should be unique for a given `{ origin_server, room_id, target_server }`
+tuple.
 
-PUT and DELETE return 200 OK with an empty `{}` on success.
+We don't just use the `room_id` for idempotency because we may want to add
+filtering in future to the /peek invocation, and this lets us distinguish
+between different peeks which are filtering on different things for the
+same room between the same pair of servers.  Until filtering is added to the API,
+implementors can just go use `room_id` as a `peek_id` for convenience.
+
+PUT returns 200 OK with the current state of the room being peeked on success,
+using roughly the same response shape as the /state SS API.
+
+The response also includes a field called `renewal_interval` which specifies
+after how many milliseconds of inactivity the peeked server requires the
+peeking server to re-PUT the /peek in order for it to stay active.  If the
+peeked server is unavailable, it should retry via other servers from the
+room's members until it can reestablish.
+
+PUT returns 403 if the user does not have permission to peek into the room,
+and 404 if the room ID is not known to the peeked server.
+
+DELETE return 200 OK with an empty `{}` on success, and 404 if the room ID is
+not known to the peeked server.
 
 ```
 PUT /_matrix/federation/v2/peek/{roomId}/{peekId}
 {}
 
 200 OK
-{}
+{
+    "auth_chain": [
+      {
+        "type": "m.room.minimal_pdu",
+        "room_id": "!somewhere:example.org",
+        "content": {
+          "see_room_version_spec": "The event format changes depending on the room version."
+        }
+      }
+    ],
+    "state": [
+      {
+        "type": "m.room.minimal_pdu",
+        "room_id": "!somewhere:example.org",
+        "content": {
+          "see_room_version_spec": "The event format changes depending on the room version."
+        }
+      }
+    ],
+    "renewal_interval": 3600000
+}
 ```
 
 ```
@@ -62,10 +105,13 @@ DELETE /_matrix/federation/v1/peek/{roomId}/{peekId}
 {}
 ```
 
-If the peeking server hasn't heard any events from the peeked server for a
-while, it should attempt to re-PUT the /peek. If the peeked server is
-unavailable, it should retry via other servers from the room's members until
-it can reestablish.
+The state block returned by /peek should be validated just as the one returned
+by the /send_join API.
+
+When the user joins the peeked room, the server should just emit the right
+membership event rather than calling /make_join or /send_join, to avoid the
+unnecessary burden of a full room join, given the server is already participating
+in the room.
 
 ## Security considerations
 
