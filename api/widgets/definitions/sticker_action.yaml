@@ -31,15 +31,15 @@ properties:
     description: |-
       Information about the sticker to send.
     properties:
+      name:
+        type: string
+        description: |-
+          The human-readable name for the sticker.
+        example: "Smiling Face"
       content:
         type: object
         title: StickerActionRequestEventContent
         properties:
-          name:
-            type: string
-            description: |-
-              The human-readable name for the sticker.
-            example: "Smiling Face"
           description:
             type: string
             description: |-
@@ -73,7 +73,6 @@ properties:
             type: string
             example: "mxc://example.org/abc1234"
         required:
-          - name
           - info
           - url
-    required: ['content']
+    required: ['content', 'name']
