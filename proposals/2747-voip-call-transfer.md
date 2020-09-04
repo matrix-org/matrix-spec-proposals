@@ -64,6 +64,17 @@ fields:
  * `call_id`: The ID of the call that was intended to be replaced
  * `party_id`: The party ID of the client rejecting the replacement
  * `replacement_id`: The replacement ID of the replacement that is being rejected
+ * `reason`: The reason a replacement is being rejected. One of:
+   * `declined`: Either the user has declined the transfer, or the client has done so on
+     their behalf (eg. due to a policy set in their client).
+   * `failed_room_invite`: The transferee's client timed out whilst waiting for the room
+     invite to arrive
+   * `failed_call_invite`: The transferee's client timed out whilst waiting for the invite
+     for the replacement call to arrive.
+   * `failed_call`: The replacement call itself could not be made. The `call_failure_reason`
+     field may be used to give the reason the replacement call failed.
+ * `call_failure_reason`: (Optional) May be present if `reason` is `failed_call`, in which
+   case it gives the `reason` field from the replacement call's hangup event.
 
 To initiate a call transfer, the transferor's client:
  * Attempts to find a suitable room. This should be a room that contains at least all three
@@ -107,7 +118,9 @@ Upon receving an `m.call.replaces` event, a client behaves as follows:
    if the `m.call.replaces` event had `create_call`, it sends an `m.call.invite` in the target room,
    setting the `call_id` to the value of the `create_call` field and the `invitee` field to the
    `id` field of `target_user`. If the replaces event contained `await_call`, the client waits
-   for a call with ID equal to that in the `await_call` field.
+   for a call with ID equal to that in the `await_call` field. It is up to the transferee's client
+   to decide how long to wait for each invite before timing out. If it times out, it sends an
+   `m.call.reject_replacement` event in the original room to signal that the replcaement has failed.
  * If this call is sucessfully answred by the invitee, the client sends a hangup event in the
    room for the original call, ending the call.
 
