@@ -72,7 +72,7 @@ To initiate a call transfer, the transferor's client:
    call replace event.
  * Once it has created a new room or found an existing one, it then sends two `m.call.replace`
    events. One to the room for its call with the transfer target and one to the room for its
-   call with the transferee, each giving user information for the other ands with the
+   call with the transferee, each giving user information for the other and with the
    `call_id` field set to the call ID of the respective call. The `target_room` field
    is the newly created or chosen room in both cases. The transferor generates a new call ID and
    puts this call ID in the `create_call` field in one replace event and in the `await_call`
