@@ -1,61 +1,144 @@
 # MSC1960: OpenID Connect information exchange for widgets
 
-With the various integrations API proposals, widgets are left with no options to verify the
-requesting user's ID if they need it. Widgets like the sticker picker must know who is making
-the request and as such need a way to get accurate information about who is contacting them.
+Widgets are currently left with no options to verify the user's ID, making it hard for
+personalized and authenticated widgets to exist. The spec says the `$matrix_user_id`
+template variable cannot be relied upon due to how easy it is to faslify, which is true.
 
-This proposal introduces a way for widgets (room and account) to do so over the `fromWidget`
-API proposed by [MSC1236](https://github.com/matrix-org/matrix-doc/issues/1236).
+This MSC aims to solve the problem with verifiably accurate OpenID Connect credentials.
 
+As of writing, the best resource to learn more about the widgets spec is the following
+spec PR: https://github.com/matrix-org/matrix-doc/pull/2764
 
 ## Proposal
 
-Room and account widgets may request new OpenID Connect credentials from the user so they can log in/register with
-the backing integration manager or other application. This is largely based on the prior art available
-[here (element-web#7153)](https://github.com/vector-im/element-web/issues/7153). The rationale for such an
-API is so that widgets can load things like a user's sticker packs or other information without having
-to rely on secret strings. For example, a room could be used to let a user create custom sticker packs
-via a common widget - it would be nice if that widget could auth the user without asking them to enter
-their username and password into an iframe.
+Typically widgets which need to accurately verify the user's identity will also have a
+backend service of some kind. This backend service likely already uses the integration
+manager authentication APIs introduced by [MSC1961](https://github.com/matrix-org/matrix-doc/pull/1961).
 
-Widgets can request OpenID Connect credentials from the user by sending a `fromWidget` action of `get_openid`
-to initiate the token exchange process. The client responds with an acknowledgement of
-`{"state":"request"}` (or `{"state":"blocked"}` if the client/user doesn't think the widget is safe).
-The client then prompts the user if the widget should be allowed to get details about the user,
-optionally providing a way for the user to always accept/deny the widget. If the user agrees, the
-client sends a `toWidget` action of `openid_credentials` with `data` holding the raw OpenID Connect credentials
-object returned from the homeserver, and a `success: true` parameter, similar to the following:
-```
+Through using the same concepts from MSC1961, the widget can verify the user's identity
+by requesting a fresh OpenID Connect credential object to pass along to its backend, like
+the integration manager which might be running it.
+
+The protocol sequence defined here is based upon the previous discussion in the Element Web
+issue tracker: https://github.com/vector-im/element-web/issues/7153
+
+It is proposed that after the capabilities negotation, the widget can ask the client for
+an OpenID Connect credential object so it can pass it along to its backend for validation.
+The request SHOULD result in the user being prompted to confirm that the widget can have
+their information. Because of this user interaction, it's not always possible for the user
+to complete the approval within the 10 second suggested timeout by the widget spec. As
+such, the initial request by the widget can have one of three states:
+
+1. The client indicates that the user is being prompted (to be followed up on).
+2. The client sends over credentials for the widget to verify.
+3. The client indicates the request was blocked/denied.
+
+The initial request from the widget looks as follows:
+
+```json
 {
-    "api": "toWidget",
-    "requestId": "AABBCC",
-    "action": "openid_credentials",
-    "widgetId": "DDEEFF",
-    "data": {
-        "success": true,
-        "access_token": "SecretTokenHere",
+    "api": "fromWidget",
+    "action": "get_openid",
+    "requestId": "AAABBB",
+    "widgetId": "CCCDDD",
+    "data": {}
+}
+```
+
+Which then receives a response which has a `state` field alongside potentially the credentials
+to be verified. Matching the order of possible responses above, here are examples:
+
+```json
+{
+    "api": "fromWidget",
+    "action": "get_openid",
+    "requestId": "AAABBB",
+    "widgetId": "CCCDDD",
+    "data": {},
+    "response": {
+        "state": "request"
+    }
+}
+```
+
+```json
+{
+    "api": "fromWidget",
+    "action": "get_openid",
+    "requestId": "AAABBB",
+    "widgetId": "CCCDDD",
+    "data": {},
+    "response": {
+        "state": "allowed",
+        "access_token": "s3cr3t",
         "token_type": "Bearer",
-        "matrix_server_name": "example.com",
+        "matrix_server_name": "example.org",
         "expires_in": 3600
     }
 }
 ```
 
-For clarity, the `data` consists of properties as returned by `/_matrix/client/r0/user/:userId/openid/request_token`
-plus the `success` parameter.
+```json
+{
+    "api": "fromWidget",
+    "action": "get_openid",
+    "requestId": "AAABBB",
+    "widgetId": "CCCDDD",
+    "data": {},
+    "response": {
+        "state": "blocked"
+    }
+}
+```
 
-If the user denies the widget, just `success: false` is returned in the `data` property.
+The credential information is directly copied from the `/_matrix/client/r0/user/:userId/openid/request_token`
+response.
 
-To lessen the number of requests, a client can also respond to the original `get_openid` request with a
-`state` of `"allowed"`, `success: true`, and the OpenID Connect credentials object (just like in the `data` for
-`openid_credentials`).
+In the case of `state: "request"`, the user is being asked to approve the widget's attempt to
+verify their identity. To ensure that future requests are quicker, clients are encouraged to
+include a "remember this widget" option to make use of the immediate `state: "allowed"` or
+`state: "blocked"` responses above.
 
-The widget should not request OpenID Connect credentials until after it has exchanged capabilities with the client,
-however this is not required to wait for the capabiltiies exchange.
+There is no timeout associated with the user making their selection. Once a user does make
+a selection (allow or deny the request), the client sends a `toWidget` request to indicate the
+result, using a very similar structure to the above immediate responses:
 
-The widget acknowledges the `openid_credentials` request with an empty response object.
+```json
+{
+    "api": "toWidget",
+    "action": "openid_credentials",
+    "requestId": "EEEFFF",
+    "widgetId": "CCCDDD",
+    "data": {
+        "state": "allowed",
+        "original_request_id": "AAABBB",
+        "access_token": "s3cr3t",
+        "token_type": "Bearer",
+        "matrix_server_name": "example.org",
+        "expires_in": 3600
+    }
+}
+```
 
-A successful sequence diagram for this flow is as follows:
+```json
+{
+    "api": "toWidget",
+    "action": "openid_credentials",
+    "requestId": "EEEFFF",
+    "widgetId": "CCCDDD",
+    "data": {
+        "state": "blocked",
+        "original_request_id": "AAABBB"
+    }
+}
+```
+
+`original_request_id` is the `requestId` of the `get_openid` request which started the prompt,
+for the widget's reference.
+
+The widget acknowledges receipt of the credentials with an empty `response` object.
+
+A typical sequence diagram for this flow is as follows:
 
 ```
 +-------+                                    +---------+                                +---------+
@@ -63,10 +146,10 @@ A successful sequence diagram for this flow is as follows:
 +-------+                                    +---------+                                +---------+
     |                                             |                                          |
     |                                             |                 Capabilities negotiation |
-    |                                             |<-----------------------------------------|
+    |                                             |----------------------------------------->|
     |                                             |                                          |
     |                                             | Capabilities negotiation                 |
-    |                                             |----------------------------------------->|
+    |                                             |<-----------------------------------------|
     |                                             |                                          |
     |                                             |            fromWidget get_openid request |
     |                                             |<-----------------------------------------|
@@ -89,14 +172,16 @@ A successful sequence diagram for this flow is as follows:
 
 Prior to this proposal, widgets could use an undocumented `scalar_token` parameter if the client chose to
 send it to the widget. Clients typically chose to send it if the widget's URL matched a whitelist for URLs
-the client trusts. Widgets are now not able to rely on this behaviour with this proposal, although clients
-may wish to still support it until adoption is complete. Widgets may wish to look into cookies and other
-storage techniques to avoid continously requesting credentials, regardless of how they got those credentials.
+the client trusts. With the widget specification as written, widgets cannot rely on this behaviour.
 
-An implementation of this proposal is [here](https://github.com/matrix-org/matrix-react-sdk/pull/2781).
+Widgets may wish to look into cookies and other storage techniques to avoid continously requesting
+credentials. Widgets should also look into [MSC1961](https://github.com/matrix-org/matrix-doc/pull/1961)
+for information on how to properly verify the OpenID Connect credentials it will be receiving. The
+widget is ultimately responsible for how it deals with the credentials, though the author recommends
+handing it off to an integration manager's `/register` endpoint to acquire a single token string
+instead.
 
-The widget is left responsible for dealing with the OpenID object it receives, likely handing it off to
-the integration manager it is backed by to exchange it for a long-lived Bearer token.
+An implementation of this proposal's early draft is here: https://github.com/matrix-org/matrix-react-sdk/pull/2781
 
 ## Security considerations
 
