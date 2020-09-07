@@ -15,7 +15,7 @@ inconvenient in many other ways:
    (https://github.com/vector-im/riot-web/issues/2713)
  * You can't use rooms as generic pubsub mechanisms for synchronising data like
    profiles, groups, device-lists etc if you can't peek into them remotely.
- * Search engines can't work if they can't peek remote rooms.
+ * Matrix-speaking search engines can't work if they can't peek remote rooms.
 
 ## Solution
 
@@ -26,9 +26,9 @@ We do this by subscribing to a room on one or more servers via a new `/peek`
 S2S API, which lets users on a given server declare their interest in viewing
 events in that room.  Having started peeking into the room, the server(s)
 being peeked will relay *all* events it sees in that room to the peeking
-server (including ones from other servers).  Backfill
-and event-retrieval APIs should be changed to be queryable from servers not
-in the room if the room is peekable.
+server (including ones from other servers) via `/send` as if it were joined.
+Backfill and event-retrieval APIs should be changed to be queryable from
+servers not in the room if the room is peekable.
 
 This continues until the peeking server calls DELETE on the peek it initiated.
 
@@ -58,15 +58,19 @@ PUT returns 200 OK with the current state of the room being peeked on success,
 using roughly the same response shape as the /state SS API.
 
 The response also includes a field called `renewal_interval` which specifies
-after how many milliseconds of inactivity the peeked server requires the
-peeking server to re-PUT the /peek in order for it to stay active.  If the
-peeked server is unavailable, it should retry via other servers from the
-room's members until it can reestablish.
+how often the peeked server requires the peeking server to re-PUT the /peek in
+order for it to stay active.  If the peeked server is unavailable, it should
+retry via other servers from the room's members until it can reestablish.
+We require `/peek`s to be regularly renewed even if the server has been accepting
+peeked events, as the fact a server happens to accept peeked events doesn't
+mean that it was necessarily deliberately peeking.
 
 PUT returns 403 if the user does not have permission to peek into the room,
-and 404 if the room ID is not known to the peeked server.
+and 404 if the room ID or peek ID is not known to the peeked server.
+If the server implementation doesn't wish to honour the peek request due to
+server load, it may respond with 429.
 
-DELETE return 200 OK with an empty `{}` on success, and 404 if the room ID is
+DELETE return 200 OK with an empty `{}` on success, and 404 if the room ID or peek ID is
 not known to the peeked server.
 
 ```
