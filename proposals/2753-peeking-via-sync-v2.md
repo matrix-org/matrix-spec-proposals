@@ -34,7 +34,7 @@ Similar to `/join`, `/peek` lets you specify `server_name` querystring parameter
 
 If a user subsequently `/join`s the room they're peeking, we atomically move the room to the `join` block of the `/sync` response, allowing the client to build on the state and history it has already received without re-sending it down /sync.
 
-To stop peeking, the user calls `/unpeek` on the room, similar to `/leave` or `/forget`.  This returns 200 on success, 404 on unrecognised ID, or 400 if the room was not being peeked in the first place.
+To stop peeking, the user calls `/unpeek` on the room, similar to `/leave` or `/forget`.  This returns 200 on success, 404 on unrecognised ID, or 400 if the room was not being peeked in the first place.  Having stopped peeking, the empty room block appears in the `leave` block of the next sync response to tell the client that the user is no longer peeking.
 
 The act of joining a peeked room automatically cancels any ongoing /peeks by that user.
 
