@@ -133,7 +133,6 @@ being 50, while the suggested default - and fallback - values for `ephemeral` wo
 
 ```json
 {
-  "m.read": 0,
   "m.receipt": 0,
   "m.typing": 0
 }
