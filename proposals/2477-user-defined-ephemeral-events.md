@@ -7,8 +7,8 @@ both the Client-Server and Server-Server API.
 Currently only users are only able to provide their own event types and data in the case of
 persistent data, in the form of state events as well as messages / timeline events.  
 The sending of ephemeral data by clients - on the other hand - is currently limited to only typing
-notifications, event receipts, read markers, and presence updates. Which greatly limits the
-potential usefulness of ephemeral events as a general mechanism for transferring short-lived data.
+notifications, event receipts, and presence updates. Which greatly limits the potential usefulness
+of ephemeral events as a general mechanism for transferring short-lived data.
 
 Therefore, this proposal suggest extending both the Client-Server and Server-Server APIs to allow
 users to transfer arbitrary ephemeral data types and content into rooms in which they have the right
@@ -66,8 +66,53 @@ Example of a response;
 
 Status code 200:
 
+As EDUs do not have event IDs, this is an empty JSON object
+
 ```json
 {}
+```
+
+Status code 400:
+
+The user tried to send a `m.*` EDU, instead of using the type-specific endpoint
+
+```json
+{
+  "errcode": "M_UNKNOWN",
+  "error": "Cannot send built-in ephemeral types with this endpoint"
+}
+```
+
+Status code 403:
+
+Power levels forbid the user from sending the attempted EDU 
+
+```json
+{
+  "errcode": "M_FORBIDDEN",
+  "error": "You do not have permission to send the EDU"
+}
+```
+
+User is not in the room
+
+```json
+{
+  "errcode": "M_FORBIDDEN",
+  "error": "You are not a member of the room"
+}
+```
+
+Status code 429:
+
+The request was rate-limited
+
+```json
+{
+  "errcode": "M_LIMIT_EXCEEDED",
+  "error": "Too many requests",
+  "retry_after_ms": 2000
+}
 ```
 
 ### Extension of power levels to handle user-defined ephemeral events
@@ -76,41 +121,44 @@ As it would be possible for the user-defined events to be used to flood a room w
 traffic by malicious users - increasing the bandwidth usage for all connected servers, this proposal
 also suggests extending the power levels to handle ephemeral types as well.
 
-The suggested keys to add to the `m.room.power_levels` events are as follows;
+In any room version implementing this MSC, the auth rules to include in `m.room.power_levels` are;
 
-- `ephemeral`, of type `{string: integer}`
-- `ephemeral_default`, of type `integer`
+- `ephemeral` (`{string: integer}`) - A mapping of EDU types to the power-level required to send them
+- `ephemeral_default` (`integer`) - The default power-level required to send any EDU not listed in
+the above mapping
 
-These new keys are suggested to function in an identical manner to the already existing `events` and
+These new keys are to function in an identical manner to the already existing `events` and
 `events_default` keys, with the suggested default - and fallback - value for `ephemeral_default`
 being 50, while the suggested default - and fallback - values for `ephemeral` would be;
 
 ```json
 {
-  "m.fully_read": 0,
+  "m.read": 0,
   "m.receipt": 0,
   "m.typing": 0
 }
 ```
 
+These defaults are to ensure that all current Matrix EDUs continue to work as intended.
+
 **NB**;  
 To reduce the complexity of the change, this proposal suggests to - for the time being - only limit
 the user-defined types by these power levels changes. The default values for `m.*` specified here in
-`ephemeral_defaults` would then only be expected to be informational in purpose.
+`ephemeral` would then only be expected to be informational in purpose.
 
-### Extension of the ephemeral data received in /sync responses
+### Extension of the room-specific ephemeral data received in /sync responses
 
 Because the user-defined ephemeral events can't be aggregated and massaged by Synapse in a simple
-manner, this then suggests instead adding a few more (**optional** but suggested for `m.*`,
-**required** otherwise) fields to the ephemeral events as they are encoded in a sync response. The
-suggested additions are;  
+manner, this then suggests instead adding a few more fields to the room-specific ephemeral events as
+they are encoded in a sync response. The suggested additions are;
 
-- `sender`, of type `string`
-- `origin_server_ts`, of type `integer`
+- `sender` (`string`) - The fully qualified ID of the user that sent the EDU
+- `origin_server_ts` (`integer`) - Timestamp in milliseconds on the originating homeserver when this
+event was sent
 
 To reduce the risk of breaking existing clients, as well as reducing the scope of change required by
-this proposal, the suggestion is to leave the original `m.*` events unaltered for now - therefore
-the use of fields that can be both optional *as well as* required depending on the ephemeral type.
+this proposal, the suggestion is to allow the original `m.*` events to skip these keys where no value
+could be easily assigned to them. E.g. typing notices, read receipts.
 
 ```json
 {
@@ -125,7 +173,7 @@ the use of fields that can be both optional *as well as* required depending on t
             {
               "content": {
                 "gcode": "mxc://example.com/GEnfasiifADESSAF",
-                "printer": 10,
+                "printer": 10
               },
               "type": "com.example.3dprint_request",
               "event_id": "$4CvDieFIFAzSYaykmBObZ2iUhSa5XNEUnC-GQfLl2yc",
@@ -209,15 +257,15 @@ exist as part of the Matrix communication protocol, this proposal suggests addin
 to the EDU schema in order to let them transmit the user-specified data untouched - while still
 adding source information that is important for the receiving clients.
 
-The suggested (**optional** but suggested for `m.*`, **required** otherwise) fields to add to the
-EDU schema are;
+The suggested fields to add to the EDU schema are;
 
-- `room_id`, of type `string`
-- `sender`, of type `string`
-- `origin`, of type `string`
-- `origin_server_ts`, of type `integer`
+- `room_id` (`string`) - The fully qualified ID of the room the event was sent in
+- `sender` (`string`) - The fully qualified ID of the user that sent the event
+- `origin` (`string`) - The `server_name` of the homeserver that created this event
+- `origin_server_ts` (`integer`) - Timestamp in milliseconds on origin homeserver when this event
+was created
 
-A user-defined ephemeral event could then look like this when federated;
+A user-defined ephemeral event might then look like this when federated;
 
 ```json
 {
@@ -242,6 +290,9 @@ A user-defined ephemeral event could then look like this when federated;
 }
 ```
 
+To reduce the scope of change required by this proposal, the suggestion is to allow the original
+`m.*` events to skip these keys where no value can be easily assigned to them. E.g. aggregated typing
+notices, receipt lists.
 
 ## Potential issues
 
@@ -276,7 +327,9 @@ The additions to ephemeral objects could be expanded to also apply to the normal
 which would reduce the complexity of the spec as there would be no distinction between the built-in
 Matrix types as well as the user-defined types.  
 This could cause some clients to break though, if they expect the well-defined objects to keep to
-their specced forms.
+their specced forms. Additionally, it might be hard for the server to assign a correct sender and
+timestamp to events if they are aggregated from multiple sources - e.g. typing notices and read
+receipt lists.
 
 ### Server-Server protocol changes
 
