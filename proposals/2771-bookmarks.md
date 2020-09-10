@@ -28,8 +28,6 @@ It is being saved inside of the rooms account data
 Instead of using the room account data it would be possible to save this in the global account data.
 This would be similiar to `m.direct`.
 
-The events are grouped by the room id to allow easier filtering of bookmarks based on rooms.
-
 ```json
 {
   "!12345:example.com": [
