@@ -65,16 +65,6 @@ If the event is an encrypted message, clients should decrypt it and apply the
 rules above to make adjustments to the unread count sent by the homeserver.
 
 
-### Implementation notes on `POST /_matrix/push/v1/notify`
-
-As homeservers weren't previously calculating unread counts, missed
-notifications counts were usually used to calculate the the `unread` parameter
-of the `Counts` structure of [`POST
-/_matrix/push/v1/notify`](https://matrix.org/docs/spec/push_gateway/latest#post-matrix-push-v1-notify)
-requests. This parameter must now show the unread count described in this
-proposal.
-
-
 ## Potential issues
 
 This MSC mentions edits, which are specified in
