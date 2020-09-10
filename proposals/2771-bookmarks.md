@@ -10,7 +10,7 @@ Note: This is not the same as Element's message pinning feature.
 Bookmarks are selected by a User on a Event. This means a user can select a event and add it to the bookmarks.
 The bookmark event inside of the account data is used for clients to keep track of bookmarked events.
 
-The bookmarks are saved with the type `dev.nordgedanken.bookmarks` (later: `m.bookmarks`).
+The bookmarks are saved with the type `m.bookmarks`.
 
 It is being saved inside of the rooms account data
 
@@ -41,4 +41,4 @@ This would be similiar to `m.direct`.
 
 ## Potential issues
 
-* With the alternative version we might hit the 64k limit sooner.
+None
