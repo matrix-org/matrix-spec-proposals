@@ -158,9 +158,10 @@ party whose invite had the lexicographically greater call ID becomes the polite 
 
 ### Add explicit recommendations for call event liveness.
 `m.call.invite` contains a `lifetime` field that indicates how long the offer is valid for. When
-a client receives an invite, it should use the `age` field of the event plus the time since it
-received the event from the homeserver to determine whether the invite is still valid. If the
-invite is still valid *and will remain valid for long enough for the user to accept the call*,
+a client receives an invite, it should use the event's `age` field in the sync response plus the
+time since it received the event from the homeserver to determine whether the invite is still valid.
+The use of the `age` field ensures that incorrect clocks on client devices don't break calls.
+If the invite is still valid *and will remain valid for long enough for the user to accept the call*,
 it should signal an incoming call. The amount of time allowed for the user to accept the call may
 vary between clients, for example, it may be longer on a locked mobile device than on an unlocked
 desktop device.
