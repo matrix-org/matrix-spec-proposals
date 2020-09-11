@@ -4,7 +4,7 @@ Matrix has basic support for signalling 1:1 WebRTC calls, but has a number of sh
 
  * If several devices try to answer the same call, there is no way for them to determine clearly
    that the caller has set up the call with a different device, and no way for the caller to
-   determine candidate events map to which answer.
+   determine which candidate events map to which answer.
  * Hangup reasons are often incorrect.
  * There is confusion and no clear guidance on how clients should determine whether an incoming
    invite is stale or not.
@@ -71,13 +71,13 @@ Example:
 
 ### Introduce `m.call.reject`
 
- * If the `m.call.invite` event has `version` `1`, a client wishing to reject a call instead
+ * If the `m.call.invite` event has `version` `1`, a client wishing to reject the call
    sends an `m.call.reject` event. This rejects the call on all devices, but if another device
    has already sent an accept, it disregards the reject and carries on. The reject has a
    `party_id` just like an answer, and the caller sends a `select_answer` for it just like an
    answer. If the other client that had already sent an answer sees the caller select the
    reject response instead of its answer, it ends the call.
- * If the `m.call.invite` event has `version` `0`, the callee send an `m.call.hangup` event before.
+ * If the `m.call.invite` event has `version` `0`, the callee sends an `m.call.hangup` event before.
 
 Example:
 ```
@@ -148,7 +148,7 @@ Example:
 ### Designate one party as 'polite'
 In line with WebRTC perfect negotiation (https://w3c.github.io/webrtc-pc/#perfect-negotiation-example)
 we introduce rules to establish which party is polite. By default, the callee is the polite party.
-In a glare situation, if the client receives an invite whilst preparing to send, it becomes the callee
+In a glare situation, if the client receives an invite whilst preparing to send one, it becomes the callee
 and therefore becomes the polite party. If an invite is received after the client has sent one, the
 party whose invite had the lexicographically greater call ID becomes the polite party.
 
