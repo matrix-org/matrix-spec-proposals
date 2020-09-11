@@ -24,6 +24,7 @@ If clients see events with `version` other than `0` or `1`, they should treat th
 This allows for the following use cases:
  * Placing a call to a specifc user in a room where other users are also present.
  * Placing a call to oneself.
+
 The field should be added for all invites where the target is a specific user. Invites without an `invitee`
 field are defined to be intended for any member of the room other than the sender of the event. Clients
 should consider an incoming call if they see a non-expired invite event where the `invitee` field is either
