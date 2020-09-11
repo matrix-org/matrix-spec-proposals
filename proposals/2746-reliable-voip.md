@@ -190,6 +190,10 @@ in the RTP payload.
 These are redundant: clients should continue to send them but must not require
 them to be present on events they receive.
 
+### Specify exact grammar for VoIP IDs
+`call_id`s and the newly introduced `party_id` are explicitly defined to be up to 32 characters
+from the set of `A-Z` `a-z` `0-9` `.-_`.
+
 ## Potential issues
  * The ability to call yourself makes the protocol a little more complex for clients to implement,
    and is somewhat of a special case. However, some of the necessary additions are also required for
