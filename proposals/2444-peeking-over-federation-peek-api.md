@@ -46,7 +46,8 @@ The request takes an empty object as a body as a placeholder for future (where
 we might put filters). The peeking server selects an ID for the peeking
 subscription for the purposes of idempotency. The ID must be 8 or less bytes
 of ASCII and should be unique for a given `{ origin_server, room_id, target_server }`
-tuple.
+tuple. The request takes `?ver=` querystring parameters with the same behaviour
+as `/make_join` to advertise the room versions the peeking server supports.
 
 We don't just use the `room_id` for idempotency because we may want to add
 filtering in future to the /peek invocation, and this lets us distinguish
@@ -68,13 +69,15 @@ mean that it was necessarily deliberately peeking.
 PUT returns 403 if the user does not have permission to peek into the room,
 and 404 if the room ID or peek ID is not known to the peeked server.
 If the server implementation doesn't wish to honour the peek request due to
-server load, it may respond with 429.
+server load, it may respond with 429.  If the room version of the room being
+peeked isn't supported by the peeking server, it responds with 400 and
+`M_INCOMPATIBLE_ROOM_VERSION`.
 
 DELETE return 200 OK with an empty `{}` on success, and 404 if the room ID or peek ID is
 not known to the peeked server.
 
 ```
-PUT /_matrix/federation/v2/peek/{roomId}/{peekId}
+PUT /_matrix/federation/v1/peek/{roomId}/{peekId}?ver=5&ver=6
 {}
 
 200 OK
