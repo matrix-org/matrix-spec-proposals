@@ -37,8 +37,8 @@ incoming call invite, they still display the invite in the room and annotate tha
 ### Add `party_id` to all VoIP events
 Whenever a client first participates in a new call, it generates a `party_id` for itself to use for the
 duration of the call. This needs to be long enough that the chance of a collision between multiple devices
-both generating an answer at the same time generating the same party ID is vanishingly small: 8 uppercase
-+ lowercase alphanumeric characters is recommended. Parties in the call are identified by the tuple of
+both generating an answer at the same time generating the same party ID is vanishingly small: 8 uppercase +
+lowercase alphanumeric characters is recommended. Parties in the call are identified by the tuple of
 `(user_id, party_id)`.
 
 The client  adds a `party_id` field containing this ID alongside the `user_id` field to all VoIP events it sends on the
