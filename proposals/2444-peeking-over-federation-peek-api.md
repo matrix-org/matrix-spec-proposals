@@ -16,11 +16,15 @@ inconvenient in other ways:
  * Matrix-speaking search engines can't work if they can't peek remote rooms.
 
 A related problem (not solved by this MSC) is that servers can't participate
-in E2E encryption before joining a room, given the other users in the
-room do not know to encrypt for the peeking device.  This also impacts invited
-users (https://github.com/vector-im/riot-web/issues/2713), given the invited
-server doesn't currently tell the inviter about devicelist changes unless
-the inviter is joined.
+in E2E encryption when peeking into a room, given the other users in the
+room do not know to encrypt for the peeking device.
+
+Another related problem (not solved by this MSC) is that invited users can't
+reliably participate in E2E encryption before joining a room, given the invited
+server doesn't currently have a way to know about new users/devices in the room
+without peeking, and so doesn't tell them if the invited user's devices changes.
+(https://github.com/vector-im/element-web/issues/2713#issuecomment-691480736
+outlines a fix to this, not covered by this MSC).
 
 ## Solution
 
