@@ -8,14 +8,19 @@ in 2016.
 
 As well as stopping users from previewing rooms before joining, the fact that
 servers can't participate in remote rooms without joining them first is
-inconvenient in many other ways:
+inconvenient in other ways:
 
- * You can't reliably participate in E2E encryption in rooms you're invited to
-   unless the server is actually participating in the room
-   (https://github.com/vector-im/riot-web/issues/2713)
  * You can't use rooms as generic pubsub mechanisms for synchronising data like
-   profiles, groups, device-lists etc if you can't peek into them remotely.
+   profiles, groups, reputation lists, device-lists etc if you can't peek into
+   them remotely.
  * Matrix-speaking search engines can't work if they can't peek remote rooms.
+
+A related problem (not solved by this MSC) is that servers can't participate
+in E2E encryption before joining a room, given the other users in the
+room do not know to encrypt for the peeking device.  This also impacts invited
+users (https://github.com/vector-im/riot-web/issues/2713), given the invited
+server doesn't currently tell the inviter about devicelist changes unless
+the inviter is joined.
 
 ## Solution
 
@@ -119,6 +124,12 @@ When the user joins the peeked room, the server should just emit the right
 membership event rather than calling /make_join or /send_join, to avoid the
 unnecessary burden of a full room join, given the server is already participating
 in the room.
+
+It is considered a feature that you cannot peek into encrypted rooms, given
+the act of peeking would leak the identity of the peeker to the joined users
+in the room (as they'd need to encrypt for the peeker).  This also feels
+acceptable given there is little point in encrypting something intended to be
+world-readable.
 
 ## Security considerations
 
