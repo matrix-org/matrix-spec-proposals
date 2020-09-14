@@ -31,8 +31,8 @@ For instance, 99.4% (30661 out of 30856) of Matrix HQ's state is
 `m.room.member`s (see Stats section below).
 
 Therefore, in the response to `/send_join` (or a MSC2444 `/peek`), we propose
-sending only the following `m.room.member` events if the initiating server
-includes `lazy_load_members: true` in their JSON request body.
+sending only the following `m.room.member` events (if the initiating server
+includes `lazy_load_members: true` in their JSON request body):
 
  * the "hero" room members which are needed for clients to display
    a summary of the room (based on the
