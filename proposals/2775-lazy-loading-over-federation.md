@@ -1,6 +1,6 @@
 # Lazy loading room membership over federation
 
-## Problem
+## Problem
 
 Joining remote rooms for the first time from your homeserver can be very slow.
 This is particularly painful for the first time user experience of a new
@@ -38,6 +38,9 @@ includes `lazy_load_members: true` in their JSON request body.
    a summary of the room (based on the
    [requirements of the CS API](https://github.com/matrix-org/matrix-doc/blob/1c7a6a9c7fa2b47877ce8790ea5e5c588df5fa90/api/client-server/sync.yaml#L148))
  * any members which are in the auth chain for the state events in the response
+ * any members for user_ids which are referred to by the content of state events
+   in the response (e.g. `m.room.power_levels`) <-- TBD.  These could be irrelevant,
+   plus we don't know where to look for user_ids in arbitrary state events.
 
 In addition, we extend the response to `/send_join` and `/peek` to include a
 `summary` block, matching that of the CS `/sync` API, giving the local server
