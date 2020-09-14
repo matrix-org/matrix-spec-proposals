@@ -91,6 +91,11 @@ joining via to proactively push us member events it knows we don't know about
 yet, and save a roundtrip. This feels more fiddly though; we can optimise this
 edge case if it's actually needed.
 
+## Security considerations
+
+We currently trust the server we join via to provide us with accurate room state.
+This proposal doesn't make this any better or worse.
+
 ## Related
 
 MSC1228 (and future variants) also will help speed up joining rooms
