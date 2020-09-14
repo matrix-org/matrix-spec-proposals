@@ -75,6 +75,14 @@ We require `/peek`s to be regularly renewed even if the server has been acceptin
 peeked events, as the fact a server happens to accept peeked events doesn't
 mean that it was necessarily deliberately peeking.
 
+Finally, the response also includes a `latest_event_id` field which provides
+the most recent event (as ordered by stream id) at the point of the `/peek`.
+This is the same event_id that you would pass to `/state` to get the same
+response as this `/peek`.
+
+If the peek is renewed without having lapsed, `PUT /peek` simply returns `{}`
+on success.
+
 PUT returns 403 if the user does not have permission to peek into the room,
 and 404 if the room ID or peek ID is not known to the peeked server.
 If the server implementation doesn't wish to honour the peek request due to
@@ -109,7 +117,8 @@ PUT /_matrix/federation/v1/peek/{roomId}/{peekId}?ver=5&ver=6
         }
       }
     ],
-    "renewal_interval": 3600000
+    "renewal_interval": 3600000,
+    "latest_event_id": "$6omAdDmGphrSAE_zH5RhMPAJzUQWAYEYPwr6wnl4ptz"
 }
 ```
 
