@@ -129,7 +129,7 @@ recommendation: https://www.w3.org/TR/webrtc/#hold-functionality
 If both the invite event and the accepted answer event have `version` equal to `1`, either party may
 send `m.call.negotiate` with an `sdp` field to offer new SDP to the other party. This event has
 `call_id` with the ID of the call and `party_id` equal to the client's party ID for that call.
-The caller ignores any negotiate events with `party_id` not equal to the `party_id` of the
+The caller ignores any negotiate events with `party_id` + `user_id` tuple not equal to that of the
 answer it accepted. Clients should use the `party_id` field to ignore the remote echo of their
 own negotiate events.
 
