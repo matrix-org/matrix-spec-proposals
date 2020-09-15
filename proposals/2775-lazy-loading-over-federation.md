@@ -97,18 +97,36 @@ event you do the lookup of the event to the list of event state keys you need
 to auth; and if any of those are missing you need to fetch them from the
 remote server by type & state_key via /state (and auth them too).
 
-However, once our server has fully synced the state of the room at the point
-of the join event, we must rollback the DAG and replay all the events we've
-accepted into the room DAG in order to correctly capture the full state in the
-room as of that event. This could theoretically result in some events now
-being rejected/soft-failed, so it's important that "uncommitted" events in the
-DAG (i.e. those which arrived since the join, but before state was fully
-synced) do not have side-effects on the rest of the server (e.g. generate
-push) until the room is fully synced.
+While the server is incrementally syncing the missing members, it must ignore
+the partial state tracked on any newly received events for the purposes of
+answering /state, or calculating room stats, room directory entries etc.
 
-XXX: what's an example of an event being failed/rejected during replay which
-was previously accepted?  If we could auth it correctly before, shouldn't it
-still auth correctly afterwards?
+However, once our server has fully synced the state of the room at the point
+of the join event, we must recalculate and re-persist the state at the point
+of all the new events we've been sent since joining the room.  We should not
+need to re-auth these events, given the new state should not impact their
+auth results.  This ensures that the server ends up with correct historical
+state, useful when serving `/state` and when calculating state correctly
+when receiving future events.
+
+Finally, the common case when joining or peeking a room is to show scrollback
+to the user.  To get the scrollback we have to `/backfill` it from the remote
+server, and because we can't calculate state backwards in time, we have to
+call `/state_ids` to find the current state as of the oldest backfilled event.
+In order to keep things fast, we should also suppress irrelevant member events
+using the same criteria as for the `/send_join` or `/peek` response.  Therefore
+we pass `lazy_load_members: true` to `/state_ids`, and then call a full
+`/state_ids` in the background to pull in the full state.
+
+Therefore a good pattern to follow for a peek/join with scrollback would be:
+
+ * get partial state via /peek or /send_join
+ * /backfill the last N events
+ * get partial state_ids at the oldest backfilled event
+ * send the backfilled events to the client
+ * get full state at the oldest backfilled event in the background
+ * propagate that forwards through the backfill and any new events that have
+   arrived, so that our server has the correct full state view of its events.
 
 ## Alternatives
 
