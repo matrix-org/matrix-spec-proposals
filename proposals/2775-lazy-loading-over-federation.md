@@ -126,7 +126,8 @@ Therefore a good pattern to follow for a peek/join with scrollback would be:
  * send the backfilled events to the client
  * get full state at the oldest backfilled event in the background
  * propagate that forwards through the backfill and any new events that have
-   arrived, so that our server has the correct full state view of its events.
+   arrived, so that going forwards our server has the correct full state view
+   of these and thus future events
 
 ## Alternatives
 
@@ -134,7 +135,11 @@ Rather than making this specific to membership events, we could lazy load all
 state by default. However, it's challenging to know which events the server
 (and clients) need up front in order to correctly handle the room - plus this
 list may well change over time.  For instance, do we need to know the
-`uk.half-shot.bridge` event in the Stats section up front?
+`uk.half-shot.bridge` event in the Stats section up front?  We'd have to enumerate
+all the mandatory events (create, PL, join rules), as well as including all power
+events.  I think it's better to defer known boring events (e.g. members) rather
+than try to defer everything.  Server implementations could also choose to LL
+other classes of (non-power-event) events if they want as an optimisation feature.
 
 Rather than reactively pulling in missing membership events as needed while
 the room is syncing in the background, we could require the server we're
