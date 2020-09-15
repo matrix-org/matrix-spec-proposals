@@ -16,7 +16,7 @@ This MSC uses a similar approach, though puts the burden on the homeserver to fi
 In the `summary` of `/sync`, a field named `m.kind` is introduced. Like other fields in the summary,
 the `m.kind` can be omitted if unchanged since the last sync.
 
-The `m.kind` value grammer follows [MSC2758](https://github.com/matrix-org/matrix-doc/pull/2758)'s
+The `m.kind` value grammar follows [MSC2758](https://github.com/matrix-org/matrix-doc/pull/2758)'s
 proposal.
 
 Specified types are currently:
@@ -64,5 +64,5 @@ than against it.
 
 ## Unstable prefix
 
-Implementations should use `org.matrix.msc0000.` instead of `m.` while this MSC has not entered a released
+Implementations should use `org.matrix.msc2773.` instead of `m.` while this MSC has not entered a released
 version of the specification.
