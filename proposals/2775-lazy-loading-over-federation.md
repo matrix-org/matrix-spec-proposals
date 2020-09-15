@@ -38,6 +38,11 @@ includes `lazy_load_members: true` in their JSON request body):
    a summary of the room (based on the
    [requirements of the CS API](https://github.com/matrix-org/matrix-doc/blob/1c7a6a9c7fa2b47877ce8790ea5e5c588df5fa90/api/client-server/sync.yaml#L148))
  * any members which are in the auth chain for the state events in the response
+ * any members which are power events (aka control events): bans & kicks.
+ * one joined member per server (if we want to be able to send messages while
+   the room state is synchronising, otherwise we won't know where to send them
+   to)
+ * any membership events with membership `invite` (to mitigate risk of double invites)
  * any members for user_ids which are referred to by the content of state events
    in the response (e.g. `m.room.power_levels`) <-- TBD.  These could be irrelevant,
    plus we don't know where to look for user_ids in arbitrary state events.
@@ -51,22 +56,28 @@ The joining server can then sync in the remaining membership events by calling
 propose adding a parameter of `lazy_load_members_only: true` to the JSON
 request body which would then only return the missing `m.room.member` events.
 
+The remote server may decide not to honour lazy_loading if a room is too small
+(thus saving the additional roundtrip of calling `/state`), so the response to
+`/send_join` or `/peek` must include a `lazy_load_members: true` field if the
+state is partial and members need to be subsequently loaded by `/state`.
+
 Clients which are not lazy loading members (by MSC1227) must block returning
 the CS API `/join` or `/peek` until this `/state` has completed and been
 processed.
 
 Clients which are lazy loading members however may return the initial `/join`
 or `/peek` before `/state` has completed.  However, we need a way to tell
-clients once the server has finished synchronising its local state.  For
-instance, clients must not let the user send E2EE messages until their server
-has acquired the full set of room members for the room, otherwise some of the
-users will not have the keys to decrypt the message.  We do this by adding an
-`syncing: true` field to the room's `state` block in the `/sync` response.
-Once this field is missing or false, the client knows it is safe to call
-`/members` and get a full list of the room members in order to encrypt
-successfully.  The field can also be used to advise the client to not
-prematurely call `/members` to show an incomplete membership list in its UI
-(but show a spinner or similar instead).
+clients once the server has finished synchronising its local state. We do this
+by adding an `syncing: true` field to the room's `state` block in the `/sync`
+response.  Once this field is missing or false, the client knows that the joining
+server has fully synchronised the state for this room.  Operations which are
+blocked on state being fully synchronised are:
+
+ * Sending E2EE messages, otherwise some of the users will not have the keys
+   to decrypt the message.
+ * Calling /members to get an accurate detailed list of the users in the room.
+   Instead clients showing a membership list should calculate it from the
+   members they do have, and the room summary (e.g. "these 5 heroes + 124 others")
 
 While the joining server is busy syncing the remaining room members via
 `/state`, it will also need to sync new inbound events to the user (and old
@@ -76,6 +87,24 @@ yet) we should separately retrieve their membership event so the server can
 include it in the `/sync` response to the client.  To do this, we add fields
 to `/state` to let our server request a specific `type` and `state_key` from
 the target server.
+
+Matrix requires each server to track the full state rather than a partial
+state in its DB for every event persisted in the DAG, in order to correctly
+calculate resolved state as of that event for authorising events and servicing
+/state queries etc.  Loading the power events up front lets us authorise new
+events (backfilled & new traffic) using partial state. However, once our
+server has fully synced the state of the room at the point of the join event,
+we must rollback the DAG and replay all the events we've accepted into the
+room DAG in order to correctly capture the full state in the room as of that
+event. This could theoretically result in some events now being
+rejected/soft-failed, so it's important that "uncommitted" events in the DAG
+(i.e. those which arrived since the join, but before state was fully synced)
+do not have side-effects on the rest of the server (e.g. generate push) until
+the room is fully synced.
+
+XXX: what's an example of an event being failed/rejected during replay which
+was previously accepted?  If we could auth it correctly before, shouldn't it
+still auth correctly afterwards?
 
 ## Alternatives
 
