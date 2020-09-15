@@ -92,15 +92,19 @@ Matrix requires each server to track the full state rather than a partial
 state in its DB for every event persisted in the DAG, in order to correctly
 calculate resolved state as of that event for authorising events and servicing
 /state queries etc.  Loading the power events up front lets us authorise new
-events (backfilled & new traffic) using partial state. However, once our
-server has fully synced the state of the room at the point of the join event,
-we must rollback the DAG and replay all the events we've accepted into the
-room DAG in order to correctly capture the full state in the room as of that
-event. This could theoretically result in some events now being
-rejected/soft-failed, so it's important that "uncommitted" events in the DAG
-(i.e. those which arrived since the join, but before state was fully synced)
-do not have side-effects on the rest of the server (e.g. generate push) until
-the room is fully synced.
+events (backfilled & new traffic) using partial state - when you receive an
+event you do the lookup of the event to the list of event state keys you need
+to auth; and if any of those are missing you need to fetch them from the
+remote server by type & state_key via /state (and auth them too).
+
+However, once our server has fully synced the state of the room at the point
+of the join event, we must rollback the DAG and replay all the events we've
+accepted into the room DAG in order to correctly capture the full state in the
+room as of that event. This could theoretically result in some events now
+being rejected/soft-failed, so it's important that "uncommitted" events in the
+DAG (i.e. those which arrived since the join, but before state was fully
+synced) do not have side-effects on the rest of the server (e.g. generate
+push) until the room is fully synced.
 
 XXX: what's an example of an event being failed/rejected during replay which
 was previously accepted?  If we could auth it correctly before, shouldn't it
