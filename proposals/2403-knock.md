@@ -412,3 +412,25 @@ knocks over and over.
 In both cases, room admins should employ typical abuse mitigation tools, such
 as user bans and server ACLs. Clients are encouraged to ease employing these
 tools easy even if the offensive user or server is present not in the room.
+
+# Unstable prefix
+
+An unstable feature flag is added to the `unstable_features` dict of
+`/_matrix/client/versions` with the key `xyz.amorgan.knock` and value `true`.
+If this key is present, this is a signal to clients that the homeserver has
+experimental support for room knocking.
+
+The new endpoints should contain an unstable prefix during experimental
+implementation. The unstable counterpart for each endpoint is:
+
+* `POST /_matrix/client/r0/rooms/{roomId}/knock`
+* `POST /_matrix/client/unstable/xyz.amorgan/rooms/{roomId}/knock`
+
+* `POST /_matrix/client/knock/{roomIdOrAlias}`
+* `POST /_matrix/client/unstable/xyz.amorgan/knock/{roomIdOrAlias}`
+
+* `GET /_matrix/federation/v1/make_knock/{roomId}/{userId}`
+* `GET /_matrix/federation/unstable/xyz.amorgan/make_knock/{roomId}/{userId}`
+
+* `PUT /_matrix/federation/v1/send_knock/{roomId}/{eventId}`
+* `PUT /_matrix/federation/unstable/xyz.amorgan/send_knock/{roomId}/{eventId}`
