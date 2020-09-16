@@ -434,3 +434,8 @@ implementation. The unstable counterpart for each endpoint is:
 
 * `PUT /_matrix/federation/v1/send_knock/{roomId}/{eventId}`
 * `PUT /_matrix/federation/unstable/xyz.amorgan/send_knock/{roomId}/{eventId}`
+
+And finally, an unstable prefix is added to the key that comes down `/sync`,
+the new join rule for rooms and the `content.membership` key of the member
+event sent into rooms when a user has knocked successfully. Instead of
+`knock`, experimental implementations should use `xyz.amorgan.knock`.
