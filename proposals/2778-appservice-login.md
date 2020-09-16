@@ -32,7 +32,8 @@ Example request
 
 The response body should be unchanged from the existing `/login` specification.
 
-If 
+If:
+
 - The access token is not provided
 - The access token does not correspond to a appservice
 - The access token does not correspond to a appservice that manages this user
@@ -44,7 +45,7 @@ Homeservers should ignore the `access_token` parameter if a type other than
 `m.login.application_service` has been provided.
 
 The expected flow for appservices would be to `/register` their users, and
-then `/login` to generate the appropraite device.
+then `/login` to generate the appropriate device.
 
 ## Potential issues
 
@@ -56,12 +57,13 @@ new devices should the appservice intentionally or inadvertently lost the client
 
 One minor tweak to the current proposal could be to include the token as part of the auth data, rather than
 being part of the header/params to the request. An argument could be made for either, but since the specification
-expects the appservice to pass the token this way in all requests, including /register it seems wise to keep
+expects the appservice to pass the token this way in all requests, including `/register`, it seems wise to keep
 it that way.
 
 Some community members have used implementation details such as a "shared secret" authentication method to
 log into the accounts without having to use the /login process at all. Synapse provides such a function,
-but also means the appservice can now authenticate as any user on the homeserver.
+but also means the appservice can now authenticate as any user on the homeserver. This seems undesirable from a
+security standpoint.
 
 A third option could be to create a new endpoint that simply creates a new device for an appservice user on demand.
 Given the rest of the matrix eco-system does this with /login, and /login is already extensible with `type`, it would
