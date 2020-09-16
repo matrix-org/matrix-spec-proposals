@@ -1,4 +1,4 @@
-# MSC0000: Provide authentication method for appservice users
+# MSC2778: Providing authentication method for appservice users
 
 Appservices within Matrix are increasingly attempting to support End-to-End Encryption. As such, they
 need a way to generate devices for their users so that they can participate in E2E rooms. In order to
@@ -75,5 +75,5 @@ This can safely be ignored or used, but is an extra token hanging around.
 
 ## Unstable prefix
 
-Implementations should use `uk.half-shot.mscXXXX.login.application_service` for `type` given in the
+Implementations should use `uk.half-shot.msc2778.login.application_service` for `type` given in the
 `POST /login` until this lands in a released version of the specification.
