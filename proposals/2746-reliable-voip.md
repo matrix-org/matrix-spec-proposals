@@ -185,6 +185,16 @@ Clients should aim to send a small number of candidate events, with guidelines:
    invite or 500ms after sending the answer is suggested as starting point (since a delay is natural
    anyway after the invite whilst the client waits for the user to accept it).
 
+### Mandate the end-of-candidates candidate
+Mandate that an ICE candidate whose value is the empty string must be sent in an m.call.candidates
+message to signal that no more ICE candidates will be sent. The WebRTC spec requires browsers to
+generate such a candidate, however note that at time of writing, not all browsers do (Chrome does
+not). The client should send any remaining candidates once candidate generation finishes, ignoring
+timeouts above.
+
+This allows bridges to batch the candidates together when bridging to protocols that don't support
+trickle ICE.
+
 ### Add DTMF
 Add that Matrix clients can send DTMF as specified by WebRTC. The WebRTC standard as of August
 2020 does not support receiving DTMF but a Matrix client can receive and interpret the DTMF sent
