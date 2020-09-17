@@ -234,7 +234,15 @@ from the set of `A-Z` `a-z` `0-9` `.-_`.
    callers could be identified by the lack of an `answer_id`. An explicit field on every event may be
    easier to comprehend, less error-prone and clearer in the backwards-compatibility scenario.
  * We could make `party_id`s more prescriptive, eg. the caller could always have a `party_id` of the
-  empty string, the word `caller` or equal to the `call_id`, which may make debugging simpler.
+   empty string, the word `caller` or equal to the `call_id`, which may make debugging simpler.
+ * To allow for bridging into protocols that don't support trickle ICE, this proposal requires that
+   clients send an empty candidate to signal the end of candidates. This means it will be up to bridges
+   to buffer the invite and edit the SDP to add the candidates once they arrive, adding complexity to
+   bridges. The alternative would be a discovery mechanism so clients could know whether a callee supports
+   trickle ICE before calling, and disable it if so. This would add complexity to every Matrix client as
+   well as having to assume that all current clients did not, disabling trickle ICE everywhere until clients
+   support the discovery mechanism. The mechanism would also have to be per-user which would make sense for
+   bridged users, but not where some of a users devices support trickle ICE and some do not.
 
 ## Security considerations
  * IP addresses remain in the room in candidates, as they did in the previous version of the spec.
