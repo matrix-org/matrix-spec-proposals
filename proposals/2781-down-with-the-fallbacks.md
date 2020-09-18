@@ -58,6 +58,18 @@ event is still a reply, but you can't send a reply relation, since this is an
 edit. So for clients relying on the edit fallback, you send a broken reply
 fallback, that doesn't get stripped, even when the client supports rich replies.
 
+#### Format is somewhat badly specified
+
+Further complicating the stripping and creation portion of fallbacks is, that
+they are somewhat badly specified. While the fallback and html use are required,
+the spec only says how a fallback "should" look, not how it "must" look. In
+practice there are various variations of the fallback floating around, where the
+tame ones are just localized, but others are just straight up missing suggested
+links or tags.
+
+Basically a client can't rely on the fallback being present currently or it
+folllowing any kind of shape or form.
+
 #### Replies leak history
 
 A reply includes the `body` of another event. This means a reply to an event can
