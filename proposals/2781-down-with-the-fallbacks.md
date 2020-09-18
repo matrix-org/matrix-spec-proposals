@@ -94,7 +94,8 @@ Deprecate the rich reply fallback. Clients should stop sending them and should
 consider treating `<mx-reply>` parts as either something to be unconditionally
 stripped or as something to be escaped as invalid html. In the future the
 fallback should be removed from the spec completely with only a note left, that
-it may exist in old events.
+it may exist in old events. Clients may send replies without a formatted_body
+now.
 
 Furthermore, no fallback should be used for edits, since just adding an asterisk
 before the same message does not provide much value to users and it complicates
