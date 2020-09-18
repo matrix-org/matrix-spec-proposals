@@ -149,4 +149,6 @@ other cases this should **reduce** security issues.
 
 ## Unstable prefix
 
-Seems unnecessary, since this only removes stuff.
+Clients should use the prefix `im.nheko.msc2781.` for all their event types, if
+they implement this MSC in a publicly available release or events may otherwise
+bleed into public rooms.
