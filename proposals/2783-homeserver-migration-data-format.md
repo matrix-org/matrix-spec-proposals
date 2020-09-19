@@ -1,10 +1,9 @@
 # MSC2783: Homeserver Migration Data Format
 
 This MSC proposes a specification of a data format for homeservers to export into, and other
-homeservers to import from.
+homeservers to import from, this essentially allows transparent migration between homeserver implementations.
 
-This could counter potential "lock-in" and allow easy domain re-use, and more importantly;
-transparent migration between homeserver implementations.
+This could counter potential "implementations lock-in" and allow easy domain re-use.
 
 ## Proposal
 
@@ -12,10 +11,9 @@ The matrix spec should define an abstract resource/data format which homeservers
 
 This data format should be extendable, ensuring that implementation-specific details can be additionally caught by other implementations, should these details not yet have been formalized into specification.
 
-For example, this specification can be as simple as a gzipped-folder with the following structure;
+For example, this specification can be as simple as a gzip-tarred-directory with the following structure;
 
 ```text
-
 +- manifest.json
 |
 +- m.core.json
@@ -38,7 +36,6 @@ For example, this specification can be as simple as a gzipped-folder with the fo
 +- org.matrix.msc.9876/
    +- locations_index.idx
    +- locations.cbor
-
 ```
 
 With a manifest in the following format:
