@@ -1,4 +1,4 @@
-# MSCXXXX: Homeserver Migration Data Format
+# MSC2783: Homeserver Migration Data Format
 
 This MSC proposes a specification of a data format for homeservers to export into, and other
 homeservers to import from.
