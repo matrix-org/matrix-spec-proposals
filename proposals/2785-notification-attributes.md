@@ -537,6 +537,6 @@ development:
 
 Proposed final identifier       | Purpose | Development identifier
 ------------------------------- | ------- | ----
-`m.notification_attribute_data` | `account_data` event type |
-`m.notifications_profile` | `account_data` event types |
-`/_matrix/client/r0/notification_attribute_data/...` | API endpoints |
+`m.notification_attribute_data` | `account_data` event type | `org.matrix.msc2785.notification_attribute_data`
+`m.notifications_profile` | `account_data` event types | `org.matrix.msc2785.notifications_profile`
+`/_matrix/client/r0/notification_attribute_data/...` | API endpoints | `/_matrix/client/unstable/org.matrix.msc2785/notification_attribute_data`
