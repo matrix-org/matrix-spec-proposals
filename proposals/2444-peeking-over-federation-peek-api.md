@@ -78,7 +78,8 @@ mean that it was necessarily deliberately peeking.
 Finally, the response also includes a `latest_event_id` field which provides
 the most recent event (as ordered by stream id) at the point of the `/peek`.
 This is the same event_id that you would pass to `/state` to get the same
-response as this `/peek`.
+response as this `/peek`, and identifies the precise point in time that the
+given state refers to.
 
 If the peek is renewed without having lapsed, `PUT /peek` simply returns `{}`
 on success.
