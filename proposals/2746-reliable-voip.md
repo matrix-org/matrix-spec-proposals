@@ -189,8 +189,8 @@ Clients should aim to send a small number of candidate events, with guidelines:
 Mandate that an ICE candidate whose value is the empty string must be sent in an m.call.candidates
 message to signal that no more ICE candidates will be sent. The WebRTC spec requires browsers to
 generate such a candidate, however note that at time of writing, not all browsers do (Chrome does
-not). The client should send any remaining candidates once candidate generation finishes, ignoring
-timeouts above.
+not, but does generate an `icegatheringstatechange` event). The client should send any remaining
+candidates once candidate generation finishes, ignoring timeouts above.
 
 This allows bridges to batch the candidates together when bridging to protocols that don't support
 trickle ICE.
