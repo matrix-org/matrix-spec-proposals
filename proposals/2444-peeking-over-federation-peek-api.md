@@ -75,11 +75,12 @@ We require `/peek`s to be regularly renewed even if the server has been acceptin
 peeked events, as the fact a server happens to accept peeked events doesn't
 mean that it was necessarily deliberately peeking.
 
-Finally, the response also includes a `latest_event_id` field which provides
+Finally, the response also includes a `latest_event` field which provides
 the most recent event (as ordered by stream id) at the point of the `/peek`.
-This is the same event_id that you would pass to `/state` to get the same
+This is the event whose id you would pass to `/state` to get the same
 response as this `/peek`, and identifies the precise point in time that the
-given state refers to.
+given state refers to.  We return a full event rather than an eventid to
+avoid an unnecessary roundtrip.
 
 If the peek is renewed without having lapsed, `PUT /peek` simply returns `{}`
 on success.
@@ -119,7 +120,14 @@ PUT /_matrix/federation/v1/peek/{roomId}/{peekId}?ver=5&ver=6
       }
     ],
     "renewal_interval": 3600000,
-    "latest_event_id": "$6omAdDmGphrSAE_zH5RhMPAJzUQWAYEYPwr6wnl4ptz"
+    "latest_event": {
+        "type": "m.room.minimal_pdu",
+        "room_id": "!somewhere:example.org",
+        "content": {
+          "see_room_version_spec": "The event format changes depending on the room version."
+        }
+      }
+    }
 }
 ```
 
