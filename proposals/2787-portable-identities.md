@@ -89,22 +89,24 @@ attestation will be required.
 The completed attestation will take a format similar to this:
 
 ```
-"attestations": {
-    "content": {
-        "identity": ~upk_that_is_attesting",
-        "delegate": "^udk_that_is_being_attested",
-        "server_name": "example.com",
-        "expires": 15895491111111
-    },
-    "signatures": {
-        "~upk_that_is_attesting": {
-            "ed25519": "upk_signature"
+"attestations": [
+    {
+        "content": {
+            "identity": ~upk_that_is_attesting",
+            "delegate": "^udk_that_is_being_attested",
+            "server_name": "example.com",
+            "expires": 15895491111111
         },
-        "~udk_that_is_being_attested": {
-            "ed25519": "udk_signature"
+        "signatures": {
+            "~upk_that_is_attesting": {
+                "ed25519": "upk_signature"
+            },
+            "~udk_that_is_being_attested": {
+                "ed25519": "udk_signature"
+            }
         }
     }
-}
+]
 ```
 
 The attestation contains a `"server_name"` field which contains the name of the server
