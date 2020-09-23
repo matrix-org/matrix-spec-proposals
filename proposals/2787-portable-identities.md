@@ -88,6 +88,10 @@ An attestation will include the UDK that is being attested to, and an expiry tim
 attestation will be valid for events up until the expiry time, at which point a new
 attestation will be required.
 
+The attestation `"content"` is built by the client, and then is signed with the UPK
+before being sent to the server. The attested server will then add its own signature
+using the UDK.
+
 The completed attestation will take a format similar to this:
 
 ```
@@ -118,6 +122,15 @@ will not be able to work out where to route messages for this UDK.
 The attestation `"content"` key will then be canonicalised and signed, once by the UPK
 and then once by the homeserver that issued the UDK.
 
+Multiple attestations can be placed into a single membership event, each for a separate
+UDK and `"server_name"`, allowing multiple servers to participate in the same room on
+behalf of a single user. It is required that each of the `"server_names"` in each
+attestation is considered when sending federated events, rather than relying on the
+domain names from the `"state_key"` field as today.
+
+There should be only one attestation in `"attestations"` per UDK and `"server_name"`
+pair.
+
 #### Validity
 
 The attestation will be valid from the point that it is sent (in effect, from the
@@ -125,24 +138,27 @@ The attestation will be valid from the point that it is sent (in effect, from th
 
 Since there may be multiple membership state events with renewals over time, event
 validity is based on the attestation in the room state at (before) the event. If the attestation has expired in the room state at (before) the event, the attestation is
-considered invalid - newer attestations must not be considered.
+considered invalid - newer attestations must not be considered when determining the
+validity period.
 
 #### Authorisation rules
 
 Events will continue to refer to the membership event as an auth event, with the
-main difference being that the referred-to membership event will now contain an
-attestation.
+main difference being that the referred-to membership event will now contain one or
+more attestations.
 
 Authorisation rules will be updated to include extra clauses, that events should
 only be accepted for a specific UDK as long as there is:
 
 1. A valid attestation for the UDK in the referred membership event;
 2. The event falls inclusive of the `"origin_server_ts"` and the `"expires"` of
-   the attestation.
+   the attestation;
+3. An `m.room.member` event with an `"attestation"` section must contain a signature
+   from the UPK.
 
 To cover the possibility of an attestation not being renewed, soft-fail rules will
-be updated to include extra clauses, that events should be soft-failed unless there
-is:
+be updated to include extra clauses, that events should be soft-failed when received as
+new events unless there is:
 
 1. A valid attestation for the UDK in the current room state;
 2. The event falls before the `"expires"` timestamp of the attestation.
