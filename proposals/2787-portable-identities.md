@@ -1,10 +1,10 @@
-# MSCXXXX: Portable Identities
+# MSC2787: Portable Identities
 
 ## Background
 
 This is an evolution of [MSC1228](https://github.com/matrix-org/matrix-doc/pull/1228) 
 which aims to make it simpler to implement portable identities and decentralised
-accounts. 
+accounts.
 
 It is still a work-in-progress—some things that need attention include:
 
