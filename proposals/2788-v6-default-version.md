@@ -1,4 +1,4 @@
-# MSC2787: Room version 6 as a default
+# MSC2788: Room version 6 as a default
 
 Enough time has passed to allow the public federation to upgrade their servers to support room
 version 6. This proposal aims to make v6 the default room version.
