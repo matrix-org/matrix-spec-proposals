@@ -513,6 +513,90 @@ Always On Screen
 ``set_always_on_screen`` action. This should be implicitly approved by clients for ``m.jitsi``
 widgets (see the action's spec for more information).
 
+OpenID Connect Authentication
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Widgets can request OpenID Connect credentials from the client (which in turn requests them from the
+homeserver) to validate that the current user is who they say they are. The credentials are validated
+out of band from the client to ensure the client is not able to falsify them.
+
+There is no required capability for using this flow, however clients SHOULD prompt the user to
+approve the widget's request to validate their identity. This prompt can have a "always remember for
+this widget"-style checkbox on it, which is supported by the API exchange. Including the user in the
+approval prompt does mean that the request is at risk of timing out, and as such there is a two part
+exchange involving the client and widget.
+
+The request is always initiated by the widget using the ``fromWidget`` ``get_openid`` action. This
+is either responded to immediately with an OpenID Connect token, an indication of the request being
+blocked, or an indication that the user is making a decision. When a user makes a selection, the
+client uses the ``toWidget`` API to send a ``openid_credentials`` action with the relevant state.
+
+After the widget receives the token from the client, it should validate it with the federation API.
+Typically this means handing it off to a backend service which will validate the token and return
+another credential the widget can use for future requests.
+
+.. WARNING::
+   Like with the OpenID Connect endpoints described by the Client-Server API and Federation API, it
+   is important that the widget ensure the user ID returned by the server matches the server name
+   given in the token from the client.
+
+When needed, the client MUST call ``/_matrix/client/%CLIENT_MAJOR_VERSION%/user/{userId}/request_token``
+to get the needed token to pass through to the widget.
+
+A typical diagram of this flow is::
+
+   +-------+                                         +---------+                                +---------+                               +---------------+                                                  +-------------+
+   | User  |                                         | Client  |                                | Widget  |                               | WidgetBackend |                                                  | Homeserver  |
+   +-------+                                         +---------+                                +---------+                               +---------------+                                                  +-------------+
+      |                                                  |                                          |                                            |                                                                 |
+      |                                                  | Establish Widget API session             |                                            |                                                                 |
+      |                                                  |----------------------------------------->|                                            |                                                                 |
+      |                                                  |                                          |                                            |                                                                 |
+      |                                                  |             Establish Widget API session |                                            |                                                                 |
+      |                                                  |<-----------------------------------------|                                            |                                                                 |
+      |                                                  |                                          |                                            |                                                                 |
+      |                                                  |            fromWidget get_openid request |                                            |                                                                 |
+      |                                                  |<-----------------------------------------|                                            |                                                                 |
+      |                                                  |                                          |                                            |                                                                 |
+      |                                                  | ack with state "request"                 |                                            |                                                                 |
+      |                                                  |----------------------------------------->|                                            |                                                                 |
+      |                                                  |                                          |                                            |                                                                 |
+      |      Ask if the widget can verify their identity |                                          |                                            |                                                                 |
+      |<-------------------------------------------------|                                          |                                            |                                                                 |
+      |                                                  |                                          |                                            |                                                                 |
+      | Approve                                          |                                          |                                            |                                                                 |
+      |------------------------------------------------->|                                          |                                            |                                                                 |
+      |                                                  |                                          |                                            |                                                                 |
+      |                                                  | Call /_matrix/client/{version}/user/{userId}/request_token                            |                                                                 |
+      |                                                  |-------------------------------------------------------------------------------------------------------------------------------------------------------->|
+      |                                                  |                                          |                                            |                                                                 |
+      |                                                  |                                          |                                            |                                            OpenID Connect token |
+      |                                                  |<--------------------------------------------------------------------------------------------------------------------------------------------------------|
+      |                                                  |                                          |                                            |                                                                 |
+      |                                                  | toWidget openid_credentials request      |                                            |                                                                 |
+      |                                                  |----------------------------------------->|                                            |                                                                 |
+      |                                                  |                                          |                                            |                                                                 |
+      |                                                  |           ack with empty response object |                                            |                                                                 |
+      |                                                  |<-----------------------------------------|                                            |                                                                 |
+      |                                                  |                                          |                                            |                                                                 |
+      |                                                  |                                          | Send received token for validation         |                                                                 |
+      |                                                  |                                          |------------------------------------------->|                                                                 |
+      |                                                  |                                          |                                            |                                                                 |
+      |                                                  |                                          |                                            | Federated call to /_matrix/federation/v1/openid/userinfo        |
+      |                                                  |                                          |                                            |---------------------------------------------------------------->|
+      |                                                  |                                          |                                            |                                                                 |
+      |                                                  |                                          |                                            |                                                User information |
+      |                                                  |                                          |                                            |<----------------------------------------------------------------|
+      |                                                  |                                          |                                            |                                                                 |
+      |                                                  |                                          |                                            | Verify returned user information                                |
+      |                                                  |                                          |                                            |---------------------------------                                |
+      |                                                  |                                          |                                            |                                |                                |
+      |                                                  |                                          |                                            |<--------------------------------                                |
+      |                                                  |                                          |                                            |                                                                 |
+      |                                                  |                                          |             Successful validation response |                                                                 |
+      |                                                  |                                          |<-------------------------------------------|                                                                 |
+      |                                                  |                                          |                                            |                                                                 |
+
 ``toWidget`` API
 ~~~~~~~~~~~~~~~~~~
 
@@ -576,6 +660,25 @@ This action should only be sent when visibility of the widget to the user change
 
 {{definition_widgets_visibility_action_response}}
 
+OpenID Connect Credential Information
++++++++++++++++++++++++++++++++++++++
+
+:Introduced in: ``0.1.0``
+
+.. Note::
+   This section assumes the reader has the prior knowledge established by the
+   `OpenID Connect Authentication <#openid-connect-authentication>`_ section.
+
+This action is used by the client to indicate that the user has made a selection regarding the
+prompt to confirm if the widget can verify their identity.
+
+If approved, the request will contain the OpenID Connect token the widget will have to verify. If
+defined, the request will indicate as such.
+
+{{definition_widgets_openid_credentials_action_request}}
+
+{{definition_widgets_openid_credentials_action_response}}
+
 ``fromWidget`` API
 ~~~~~~~~~~~~~~~~~~
 
@@ -633,6 +736,30 @@ screen.
 {{definition_widgets_sticky_action_request}}
 
 {{definition_widgets_sticky_action_response}}
+
+Requesting OpenID Connect Tokens
+++++++++++++++++++++++++++++++++
+
+:Introduced in: ``0.1.0``
+
+.. Note::
+   This section assumes the reader has the prior knowledge established by the
+   `OpenID Connect Authentication <#openid-connect-authentication>`_ section.
+
+This action is used by the widget to ask the client to start the OpenID Connect token exchange.
+The client has three possible responses:
+
+* A ``state`` of ``allowed`` alongside the OpenID Connect token. This is typically used if the user
+  indicated that the widget is always allowed to verify their identity.
+* A ``state`` of ``blocked``. This is typically used when the user has indicated that the widget
+  can never verify their identity.
+* A ``state`` of ``request``. This indicates that the client is asking the user for permission and
+  will follow up with an appropriate ``toWidget`` ``openid_credentials`` request later.
+
+
+{{definition_widgets_get_openid_action_request}}
+
+{{definition_widgets_get_openid_action_response}}
 
 Security Considerations
 ~~~~~~~~~~~~~~~~~~~~~~~
