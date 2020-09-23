@@ -89,7 +89,7 @@ attestation will be required.
 The completed attestation will take a format similar to this:
 
 ```
-"attestation": {
+"attestations": {
     "content": {
         "identity": ~upk_that_is_attesting",
         "delegate": "^udk_that_is_being_attested",
@@ -162,22 +162,24 @@ A membership event including an attestation may look something like this:
         "avatar_url": "mxc://here/is/neilalexander.png",
         "displayname": "neilalexander",
         "membership": "join",
-        "attestation": {
-            "content": {
-                "identity": ~UPK_that_is_attesting",
-                "delegate": "^udk_that_is_being_attested",
-                "server_name": "example.com",
-                "expires": 15895491111111
-            },
-            "signatures": {
-                "~upk_that_is_attesting": {
-                    "ed25519": "upk_signature"
+        "attestations": [
+            {
+                "content": {
+                    "identity": ~UPK_that_is_attesting",
+                    "delegate": "^udk_that_is_being_attested",
+                    "server_name": "example.com",
+                    "expires": 15895491111111
                 },
-                "~udk_that_is_being_attested": {
-                    "ed25519": "udk_signature"
+                "signatures": {
+                    "~upk_that_is_attesting": {
+                        "ed25519": "upk_signature"
+                    },
+                    "~udk_that_is_being_attested": {
+                        "ed25519": "udk_signature"
+                    }
                 }
             }
-        }
+        ]
     },
     "origin_server_ts": 1589549295296,
     "sender": "^udk_that_is_being_attested",
@@ -256,7 +258,7 @@ to send events into the room on behalf of the user.
 
 To satisfy data deletion requests, or where it may be important to fully remove links
 between UDKs and UPKs for legal compliance, it should be possible to redact the
-membership events to remove the `"attestation"` section from them.
+membership events to remove the `"attestations"` section from them.
 
 This may need to be done recursively, following the `"auth_events"`, to remove all
 historical attestations too.
@@ -266,7 +268,7 @@ verify that the events were allowed to be sent?
 
 As the redaction algorithms already have rules for `m.room.member` events which will
 preserve the `"membership"` key, it should be possible to redact any other personally
-identifiable information such as the `"attestation"`, the `"display_name"` or the
+identifiable information such as the `"attestations"`, the `"display_name"` or the
 `"avatar_url"` without issue.
 
 The UDK signature will remain in the event, but without the attestation, it will not
