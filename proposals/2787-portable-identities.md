@@ -8,6 +8,8 @@ accounts.
 
 It is still a work-in-progress—some things that need attention include:
 
+- How to handle multiple homeservers joining the same room, all with attestations
+  from the same UPK, and how they synchronise state amongst themselves;
 - How to handle invites, given that you won't know a UDK until after the user has
   joined the room;
 - How to adequately disconnect UDKs from UPKs as a part of a data removal request
@@ -167,7 +169,7 @@ A membership event including an attestation may look something like this:
         "attestations": [
             {
                 "content": {
-                    "identity": ~UPK_that_is_attesting",
+                    "identity": ~upk_that_is_attesting",
                     "delegate": "^udk_that_is_being_attested",
                     "server_name": "example.com",
                     "expires": 15895491111111
@@ -184,14 +186,14 @@ A membership event including an attestation may look something like this:
         ]
     },
     "origin_server_ts": 1589549295296,
-    "sender": "^udk_that_is_being_attested",
+    "sender": "^upk_that_is_attesting",
     "signatures": {
-        "^udk_that_is_being_attested": "signature_as_signed_by_udk"
+        "^udk_that_is_being_attested": ...
     },
     "hashes": {
         "sha256": ...,
     }
-    "state_key": "^udk_that_is_being_attested",
+    "state_key": "^upk_that_is_attesting",
     "type": "m.room.member",
     "unsigned": {
         "age": 25,
@@ -202,10 +204,7 @@ A membership event including an attestation may look something like this:
 ```
 
 Note that there is no MXID in the `"sender"` and `"state_key"` fields, nor in the
-`"signatures"` field of the event itself - these are now referencing the UDKs.
-
-A membership event must include an attestation - the `"identity"` key may have been
-banned. Requiring an attestation helps us to prevent ban evasion.
+`"signatures"` field of the event itself - these are now referencing the UPKs.
 
 ### Timeline event format
 
@@ -222,9 +221,9 @@ itself as today:
         "msgtype": "m.text"
     },
     "origin_server_ts": 1589549295384,
-    "sender": "^udk_that_is_being_attested",
+    "sender": "^upk_that_is_attesting",
     "signatures": {
-        "^udk_that_is_being_attested": "signature_as_signed_by_udk"
+        "^udk_that_is_being_attested": ...
     },
     "hashes": {
         "sha256": ...,
