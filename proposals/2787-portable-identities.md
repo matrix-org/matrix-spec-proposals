@@ -8,8 +8,8 @@ accounts.
 
 It is still a work-in-progress—some things that need attention include:
 
-- How to handle multiple homeservers joining the same room, all with attestations
-  from the same UPK, and how they synchronise state amongst themselves;
+- How to handle multiple homeservers joining the same room, since they will have
+  their own membership events, and clients may wish to disambiguate these;
 - How to handle invites, given that you won't know a UDK until after the user has
   joined the room;
 - How to adequately disconnect UDKs from UPKs as a part of a data removal request
@@ -95,24 +95,22 @@ using the UDK.
 The completed attestation will take a format similar to this:
 
 ```
-"attestations": [
-    {
-        "content": {
-            "identity": ~upk_that_is_attesting",
-            "delegate": "^udk_that_is_being_attested",
-            "server_name": "example.com",
-            "expires": 15895491111111
+"attestation": {
+    "content": {
+        "identity": ~upk_that_is_attesting",
+        "delegate": "^udk_that_is_being_attested",
+        "server_name": "example.com",
+        "expires": 15895491111111
+    },
+    "signatures": {
+        "~upk_that_is_attesting": {
+            "ed25519": "upk_signature"
         },
-        "signatures": {
-            "~upk_that_is_attesting": {
-                "ed25519": "upk_signature"
-            },
-            "~udk_that_is_being_attested": {
-                "ed25519": "udk_signature"
-            }
+        "~udk_that_is_being_attested": {
+            "ed25519": "udk_signature"
         }
     }
-]
+}
 ```
 
 The attestation contains a `"server_name"` field which contains the name of the server
@@ -121,15 +119,6 @@ will not be able to work out where to route messages for this UDK.
 
 The attestation `"content"` key will then be canonicalised and signed, once by the UPK
 and then once by the homeserver that issued the UDK.
-
-Multiple attestations can be placed into a single membership event, each for a separate
-UDK and `"server_name"`, allowing multiple servers to participate in the same room on
-behalf of a single user. It is required that each of the `"server_names"` in each
-attestation is considered when sending federated events, rather than relying on the
-domain names from the `"state_key"` field as today.
-
-There should be only one attestation in `"attestations"` per UDK and `"server_name"`
-pair.
 
 #### Validity
 
@@ -182,34 +171,32 @@ A membership event including an attestation may look something like this:
         "avatar_url": "mxc://here/is/neilalexander.png",
         "displayname": "neilalexander",
         "membership": "join",
-        "attestations": [
-            {
-                "content": {
-                    "identity": ~upk_that_is_attesting",
-                    "delegate": "^udk_that_is_being_attested",
-                    "server_name": "example.com",
-                    "expires": 15895491111111
+        "attestation": {
+            "content": {
+                "identity": ~upk_that_is_attesting",
+                "delegate": "^udk_that_is_being_attested",
+                "server_name": "example.com",
+                "expires": 15895491111111
+            },
+            "signatures": {
+                "~upk_that_is_attesting": {
+                    "ed25519": "upk_signature"
                 },
-                "signatures": {
-                    "~upk_that_is_attesting": {
-                        "ed25519": "upk_signature"
-                    },
-                    "~udk_that_is_being_attested": {
-                        "ed25519": "udk_signature"
-                    }
+                "~udk_that_is_being_attested": {
+                    "ed25519": "udk_signature"
                 }
             }
-        ]
+        }
     },
     "origin_server_ts": 1589549295296,
-    "sender": "^upk_that_is_attesting",
+    "sender": "^udk_that_is_being_attested",
     "signatures": {
         "^udk_that_is_being_attested": ...
     },
     "hashes": {
         "sha256": ...,
     }
-    "state_key": "^upk_that_is_attesting",
+    "state_key": "^udk_that_is_being_attested",
     "type": "m.room.member",
     "unsigned": {
         "age": 25,
@@ -221,6 +208,10 @@ A membership event including an attestation may look something like this:
 
 Note that there is no MXID in the `"sender"` and `"state_key"` fields, nor in the
 `"signatures"` field of the event itself - these are now referencing the UPKs.
+
+Multiple servers wanting to join on behalf of the same user should send their own
+membership events, each with an attestation as created and signed by the user.
+There may be a need for clients to disambiguate users.
 
 ### Timeline event format
 
@@ -237,7 +228,7 @@ itself as today:
         "msgtype": "m.text"
     },
     "origin_server_ts": 1589549295384,
-    "sender": "^upk_that_is_attesting",
+    "sender": "^udk_that_is_being_attested",
     "signatures": {
         "^udk_that_is_being_attested": ...
     },
@@ -275,7 +266,7 @@ to send events into the room on behalf of the user.
 
 To satisfy data deletion requests, or where it may be important to fully remove links
 between UDKs and UPKs for legal compliance, it should be possible to redact the
-membership events to remove the `"attestations"` section from them.
+membership events to remove the `"attestation"` section from them.
 
 This may need to be done recursively, following the `"auth_events"`, to remove all
 historical attestations too.
@@ -285,7 +276,7 @@ verify that the events were allowed to be sent?
 
 As the redaction algorithms already have rules for `m.room.member` events which will
 preserve the `"membership"` key, it should be possible to redact any other personally
-identifiable information such as the `"attestations"`, the `"display_name"` or the
+identifiable information such as the `"attestation"`, the `"display_name"` or the
 `"avatar_url"` without issue.
 
 The UDK signature will remain in the event, but without the attestation, it will not
