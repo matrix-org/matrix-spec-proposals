@@ -34,4 +34,5 @@ properties:
           the default behaviour, or if the widget is requesting to be on screen and no other widget
           has done the same already. Permission errors relating to capabilities will result in an
           error response instead of this response.
+        example: true
     required: ['success']
