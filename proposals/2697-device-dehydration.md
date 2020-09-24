@@ -145,7 +145,7 @@ or by performing a `/sync` for the dehydrated device and updating it.
 Rather than uploading a dehydrated device to the server, we could instead have
 the sender resend the megolm session in the case where a user had no active
 devices at the time that a message was sent.  However this does not solve the
-issue for users who happen to never be online at the same time.  But this could
+issue for users who happen to never be logged in at the same time.  But this could
 be done in addition to the solution proposed here.
 
 The sender could also send the megolm session to a the user using a public key
