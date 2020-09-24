@@ -34,15 +34,23 @@ is `im.ponies.user_emotes` (later: `m.emoticons`). The content is as following:
 
 ```json
 {
-  "short": {
-    ":emote:": "mxc://example.org/blah",
-    ":other-emote:": "mxc://example.org/other-blah"
+  "emoticons": {
+    ":emote": {
+      "url": "mxc://example.org/blah"
+    },
+    ":other-emote:": {
+      "url": "mxc://example.org/other-blah"
+    }
   }
 }
 ```
 
-The emotes are defined inside of a dict called `short`, which stands for shortcode. Other, additional
-keys may exist to define more metadata for the emotes. No such guide exists yet.
+The emotes are defined inside of a dict called `emoticons`. The key is the shortcode of the emoticon.
+The value is an object with `url` containing the mxc url of the emote. This is so that it is easier
+for clients or future MSCs to define custom metadata to emotes directly.
+
+Some existing implementations using `im.ponies.user_emotes` currently use a dict called `short` which
+is just a map of the shortcode to the mxc url.
 
 #### Room emoticons
 Room emotes are per-room emotes that every user of a specific room can use inside of that room. They
@@ -51,9 +59,9 @@ pack, whereas the default one would be a blank state key. E.g. a discord bridge 
 `de.sorunome.mx-puppet-bridge.discord` and have all the bridged emotes in said state event, keeping
 bridged emotes from matrix emotes separate.
 
-The content extends that of the user emotes: It uses the `short` key, which is a map of the shortcode
-of the emote to its mxc uri. Additionally, an optional `pack` key can be set, which defines meta-information
-on the pack. The following keys for `pack` are valid:
+The content extends that of the user emotes: It uses the `emoticons` key, which is a map of the shortcode
+of the emote to an object containing its mxc url. Additionally, an optional `pack` key can be set,
+which defines meta-information on the pack. The following keys for `pack` are valid:
 
  - `displayname`: An easy displayname for the pack. Defaults to the room name, if it doesn't exist
  - `avatar_url`: The mxc uri of an avatar/icon to display for the pack. Defaults to the room name,
@@ -68,9 +76,13 @@ As such, a `im.ponies.room_emotes` (later: `m.emoticons`) state event could look
 
 ```json
 {
-  "short": {
-    ":emote:": "mxc://example.org/blah",
-    ":other-emote:": "mxc://example.org/other-blah"
+  "emoticons": {
+    ":emote:": {
+      "url": "mxc://example.org/blah"
+    },
+    ":other-emote:": {
+      "url": "mxc://example.org/other-blah"
+    }
   },
   "pack": {
     "displayname": "Emotes from Discord!",
@@ -79,6 +91,9 @@ As such, a `im.ponies.room_emotes` (later: `m.emoticons`) state event could look
   }
 }
 ```
+
+Similarly as before, there are already existing implementations using `short` which is a map of shortcode
+to mxc url.
 
 #### Emoticon rooms
 While room emotes are specific to a room and are only accessible within that room, emote rooms should
