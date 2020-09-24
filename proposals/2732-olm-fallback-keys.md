@@ -18,6 +18,30 @@ per key algorithm.  If the user had previously uploaded a fallback key for a
 given algorithm, it is replaced -- the server will only keep one fallback key
 per algorithm for each user.
 
+When uploading fallback keys for algorithms whose key format is a signed JSON
+object, client should include a property named `fallback` with a value of
+`true`.
+
+Example:
+
+`POST /keys/upload`
+
+```json
+{
+  "fallback_keys": {
+    "signed_curve25519:AAAAAA": {
+      "key": "base64+public+key",
+      "fallback": true,
+      "signatures": {
+        "@alice:example.org": {
+          "ed25519:DEVICEID": "base64+signature"
+        }
+      }
+    }
+  }
+}
+```
+
 When Bob calls `/keys/claim` to claim one of Alice's one-time keys, but Alice
 has no one-time keys left, the homeserver will return the fallback key instead,
 if Alice had previously uploaded one.  Unlike with one-time keys, fallback keys
@@ -29,6 +53,24 @@ This is an array listing the key algorithms for which the server has an unused
 fallback key for the user.  If the client wants the server to have a fallback
 key for a given key algorithm, but that algorithm is not listed in
 `device_unused_fallback_keys`, the client will upload a new key as above.
+
+The `device_unused_fallback_keys` parameter must be present if the server
+supports fallback keys.  Clients can thus treat this field as an indication
+that the server supports fallback keys, and so only upload fallback keys to
+servers that support them.
+
+Example:
+
+`GET /sync`
+
+Response:
+
+```json
+{
+  // other fields...
+  "device_unused_fallback_keys": ["signed_curve25519"]
+}
+```
 
 ## Security considerations
 
@@ -51,4 +93,5 @@ to detect replays.
 
 ## Unstable prefix
 
-TODO: ...
+The `fallback_key` request parameter and the `device_unused_fallback_keys`
+response parameter will be prefixed by `org.matrix.msc2732.`.
