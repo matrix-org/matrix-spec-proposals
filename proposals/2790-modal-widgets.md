@@ -354,6 +354,12 @@ This API allows for arbitrary user-defined data to be passed between two places 
 others. Clients should apply relevant safety measures before rendering any text, buttons, or widgets
 such as limiting text length and refusing to handle corrupt/invalid/large widget definitions.
 
+Modal widgets can also be styled to create phishing scenarios for the user, appearing like settings
+dialogs for the client or asking for the user's password. Clients should caution the user of this
+sort of behaviour and design a dialog frame which obviously indicates that the widget is unofficial,
+such as intentionally placing borders or warnings around the widget itself to disconnect it visually
+from the frame. Users should remain vigilant of malicious widgets, as they already do.
+
 ## Unstable prefix
 
 While this MSC is not in a stable version of the specification, implementations should use `org.matrix.msc2790.`
