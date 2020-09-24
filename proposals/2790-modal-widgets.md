@@ -1,4 +1,4 @@
-# MSC0000: Widgets - Prompting for user input within the client
+# MSC2790: Widgets - Prompting for user input within the client
 
 Currently widgets are their own isolated bit of functionality which exists independently of the
 client, allowing for relatively simple widgets to add functionality to rooms or user accounts. A
@@ -75,7 +75,7 @@ support at least the ones listed in this MSC. Clients should ignore any buttons 
 
 An example rendering of the above example widget would be as follows:
 
-![0000-widget-modal-example.png](./images/0000-widget-modal-example.png)
+![2790-widget-modal-example.png](./images/2790-widget-modal-example.png)
 
 In this example, the title is the `name` of the widget (a subtitle could be shown from the `title`
 attribute under `data`, if present). The iframe in the middle is simply the modal widget itself,
@@ -356,6 +356,6 @@ such as limiting text length and refusing to handle corrupt/invalid/large widget
 
 ## Unstable prefix
 
-While this MSC is not in a stable version of the specification, implementations should use `org.matrix.msc0000.`
-in place of `m.` and use `org.matrix.msc0000` as a version flag in the widget API to indicate support
+While this MSC is not in a stable version of the specification, implementations should use `org.matrix.msc2790.`
+in place of `m.` and use `org.matrix.msc2790` as a version flag in the widget API to indicate support
 for the un-namespaced actions.
