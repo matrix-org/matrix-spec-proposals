@@ -369,6 +369,9 @@ from the frame. Users should remain vigilant of malicious widgets, as they alrea
 
 ## Unstable prefix
 
-While this MSC is not in a stable version of the specification, implementations should use `org.matrix.msc2790.`
-in place of `m.` and use `org.matrix.msc2790` as a version flag in the widget API to indicate support
-for the un-namespaced actions.
+While this MSC is not in a stable version of the specification, implementations should only call the
+actions described above if the other end supports the `org.matrix.msc2790` API version. When using
+the actions, `org.matrix.msc2790.` should be used instead of `m.` for applicable identifiers.
+
+Identifiers not prefixed with a namespace should be covered by the version check and thus do not need
+their own prefix.
