@@ -228,11 +228,14 @@ Between a successful `open_modal` and `close_modal` request, the source widget c
 user is being prompted as expected. This is typically useful for the source widget to prevent accidental
 interaction from the user while it is acquiring more information.
 
-Note: the `m.close` button ID does *not* automatically close the widget. The modal widget is responsible
-for handling the button click and requesting a close if required. If the user dismissed the modal
-widget without using the provided buttons (such as a back button or clicking on a backdrop), the client
-immediately terminates the modal widget's session without informing it and sends a `close_modal`
-request to the source widget with an `"m.exited": true` parameter, like so:
+Unless the widget specifies an `m.close` button, one with the label `Close` and type `m.link` is
+implied. The close button does not automatically close the modal widget - the modal widget is simply
+informed of the button click and left to send a close action if it requires.
+
+It is important that the user can escape a modal widget's grasp on their attention, however. A client
+can terminate the modal widget at any time and send a `close_modal` `toWidget` request to the source
+widget to indicate as such. When terminating the modal widget this way, the client sends an `m.exited`
+field to indicate that the user/client has cancelled the user input. An example request is:
 
 ```json
 {
@@ -245,6 +248,10 @@ request to the source widget with an `"m.exited": true` parameter, like so:
   }
 }
 ```
+
+An example for when the client would want to terminate the widget this way is when the user clicks on
+the background around the dialog, thus closing the dialog, or when the client believes the widget is
+acting in bad faith and refusing to close (eg: not closing within 5 seconds of clicking the close button).
 
 ## Real world example
 
