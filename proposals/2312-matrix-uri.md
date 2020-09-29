@@ -218,22 +218,39 @@ to a simple pattern that allows to easily reconstruct a Matrix identifier or
 a chain of identifiers and also to locate a certain sub-resource in the scope
 of a given Matrix entity:
 ```text
-path = type “/” id-without-sigil [“/” path]
-type = “user” / “roomid” / “room” / “event” / “group”
-id-without-sigil = string ; see below
+path = entity-descriptor [“/” entity-descriptor]
+entity-descriptor = nonid-segment / type-qualifier id-without-sigil
+non-id-segment = segment-nz ; as defined in RFC3986, see also below
+type-qualifier = segment-nz “/” ; as defined in RFC3986, see also below
+id-without-sigil = string ; as defined in Matrix identifier spec, see below
 ```
-The path component consists of 1 or more type-id pairs separated
-by slash character both inside the pair and between pairs. While most
-of the URIs considered in this MSC do not need any sort of hierarchy,
-one case is standing out: as of now, events require rooms to be
-resolved so an event URI for `$eventid` in the room
-`!roomid:example2.org` would be
-`matrix:roomid/roomid:example2.org/event/eventid`.
+The path component consists of 1 or more descriptors separated by a slash
+(`/`) character. This is a generic pattern intended for reuse in future
+extensions.
 
-This MSC defines the following type specifiers:
+This MSC only proposes mappings along `type-qualifier id-without-sigil` syntax;
+`nonid-segment` is unused and reserved for future use. 
+For the sake of integrity future `nonid-segment` extensions must follow
+[the ABNF for `segment-nz` as defined in RFC3986](https://tools.ietf.org/html/rfc3986#appendix-A).
+
+This MSC defines the following `type` specifiers:
 `user` (user id, sigil `@`), `roomid` (room id, sigil `!`),
 `room` (room alias, sigil `#`), and `event` (event id, sigil `$`).
 The type `group` (group/community id, sigil `+`) is reserved for future use.
+
+As of this MSC, `user`, `roomid`, `room`, and `group` can only be at the top
+level. The type `event` can only be used on the 2nd level and only under `room`
+or `roomid`; this is driven by the current shape of Client-Server API that
+does not provide a non-deprecated way to retrieve an event without knowing
+the room (see [MSC2695](https://github.com/matrix-org/matrix-doc/pull/2695) and
+[MSC 2779](https://github.com/matrix-org/matrix-doc/issues/2779) that may
+change this). 
+
+Further MSCs may introduce navigation to more top-level as well as
+non-top-level objects; see "Further evolution" for some ideas. These new
+proposals SHOULD follow the generic grammar laid out above, adding new `type`
+and `nonid-segment` specifiers and/or allowing them in other levels, rather
+than introduce a new grammar.
 
 `id-without-sigil` is defined as the `string` part of Matrix
 [Common identifier format](https://matrix.org/docs/spec/appendices#common-identifier-format)
@@ -242,11 +259,8 @@ with percent-encoded characters that are NEITHER unreserved, sub-delimiters, `:`
 This notably exempts `:` from percent-encoding but includes `/`.
 
 See the rationale behind dropping sigils and the respective up/downsides in
-"Discussion points and tradeoffs" below.
+"Discussion points and tradeoffs" as well as "Alternatives" below.
   
-Further MSCs may introduce navigation to more top-level as well as
-non-top-level objects; see "Further evolution" for some ideas.
-
 #### Query
 
 Matrix URI can optionally have
