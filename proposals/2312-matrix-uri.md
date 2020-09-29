@@ -276,14 +276,9 @@ above is only a part of the grammar as defined in the respective section;
 it is not proposed here to generate or read the authority part of the URI.
 
 
-### URI semantics and parsing algorithm
+### Recommended implementation
 
-The main purpose of a Matrix URI is accessing the resource specified by the
-identifier, and the primary action is loading the contents of a document
-corresponding to a given resource. This MSC defines the "default" action
-that a client application SHOULD perform when the user activates
-(e.g. clicks on) a URI; further MSCs may introduce additional actions enabled
-either by passing an `action` value in the query part, or by other means.
+#### URI parsing algorithm
 
 The reference algorithm of parsing a Matrix URI follows. Note that, although
 clients are encouraged to use lower-case strings in their URIs, all string
@@ -297,7 +292,7 @@ comparisons are case-INsensitive.
    their language and SDK, rather than implement it from scratch based on RFCs.
 
 1. Check that `scheme name` is exactly `matrix`, case-insensitive. If
-   the scheme name doesn't match, exit parsing: this is not Matrix URI.
+   the scheme name doesn't match, exit parsing: this is not a Matrix URI.
 
 1. Split the `path` into segments separated by `/` character; several
    subsequent `/` characters delimit empty segments, as advised by RFC 3986.
@@ -327,7 +322,8 @@ comparisons are case-INsensitive.
 
    a. Pick the next (3rd) path segment:
       - if the segment is exactly `event`, proceed;
-      - otherwise, including the case of an empty segment, fail parsing.
+      - otherwise, including the case of an empty segment (trailing `/`, e.g.),
+        fail parsing.
     
    b. Pick the next (4th) leftmost path segment:
       - if the segment is empty, fail parsing;
@@ -338,45 +334,35 @@ comparisons are case-INsensitive.
    `&` characters delimit empty items, ignored by this algorithm.
    
    a. If `query` contains one or more items starting with `via=`: for each item, treat
-      the rest of the string as a percent-encoded homeserver name to be used in
+      the rest of the item as a percent-encoded homeserver name to be used in
       [routing](https://matrix.org/docs/spec/appendices#routing).
       
    b. If `query` contains one or more items starting with `action=`: treat
       _the last_ such item as an instruction, as this proposal defines in [query](#query).
 
-The classes of URIs and corresponding default actions (along with relevant
-CS API calls) are collected as follows. This is non-normative and just provides
-a reference and examples of handling various kinds of URIs.
+#### Operations on Matrix URIs
 
-* User ID:
-  - URI example: `matrix:user/me:example.org` or
-    (decentralised user id, future) `matrix:user/me_in_matrix`
-  - Possible default actions:
-    - Show user profile
-    (`GET /profile/@me:example.org/...`, `GET /profile/@me_in_matrix/...`);
-    - Mention the user in the current room (client-local operation)
-* Room ID:
-  - URI example: `matrix:roomid/rid:example.org` or
-    (decentralised id, future) `matrix:roomid/lol823y4bcp3qo4`
-  - Default action: attempt to "open" the room (usually means the client
-    at least displays the room timeline at the latest or
-    the last remembered position - `GET /rooms/!rid:example.org/...`,
-    `GET /rooms/!lol823y4bcp3qo4/...`)
-* Joining by Room ID:
-  - URI example: `matrix:roomid/rid:example.org?action=join&via=example2.org`
-  - Default action: if needed (see the section about the query part) ask
-    the user to confirm the intention; then join the room
-    (`POST /join/!rid:example.org?server_name=example2.org`)
-* Room alias:
-  - URI example: `matrix:room/us:example.org`
-  - Default action: resolve the alias to room id
-    (`GET /directory/room/#us:example.org` if needed) and attempt to "open"
-    the room (same as above)
-* Joining by Room alias:
-  - URI example: `matrix:room/us:example.org?action=join`
-  - Default action: if needed (see the section about the query part) ask
-    the user to confirm the intention; then join the room
-    (`POST /join/#us:example.org`)
+The main purpose of a Matrix URI is accessing the resource specified by the
+identifier. This MSC defines the "default" operation
+([in the sense of RFC 7595](https://tools.ietf.org/html/rfc7595#section-3.4))
+that a client application SHOULD perform when the user activates
+(e.g. clicks on) a URI; further MSCs may introduce additional operations
+enabled either by passing an `action` value in the query part, or by other
+means.
+
+The classes of URIs and corresponding default operations (along with relevant
+CS API calls) are collected below. The table assumes that the operations are
+performed on behalf (using the access token) of the user `@me:example.org`:
+
+| URI class/example | Interactive operation | Non-interactive operation / Involved CS API |
+| ----------------- | --------------------- | --------------------------------------------- |
+| User Id (no `action` in URI):<br/>`matrix:user/her:example.org` | _Outside the room context_: show user profile<br/>_Inside the room context:_ mention the user in the current room (client-local operation) | No default non-interactive operation<br/>`GET /profile/@her:example.org/display_name`<br/>`GET /profile/@her:example.org/avatar_url` |
+| User Id (`action=chat`):<br/>`matrix:user/her:example.org?action=chat` | Open a direct chat with the user (see the next column on identifying the room) | If [canonical direct chats](https://github.com/matrix-org/matrix-doc/pull/2199) are supported: `GET /_matrix/client/r0/user/@me:example.org/dm?involves=@her:example.org`<br/>Without canonical direct chats:<br/>1. `GET /user/@me:example.org/account_data/m.direct`<br/>2. Find the room id for `@her:example.org` in the event content<br/>3. if found, return this room id; if not, `POST /createRoom` with `"is_direct": true` and return id of the created room |
+| Room (no `action` in URI):<br/>`matrix:roomid/rid:example.org`<br/>`matrix:room/us:example.org` | Attempt to "open" (usually: display the timeline at the latest or last remembered position) the room | No default non-interactive operation<br/>`GET /rooms/!rid:example.org/...`<br/>the respective room section of `GET /sync` |
+| Room (`action=join`):<br/>`matrix:roomid/rid:example.org?action=join&via=example2.org`<br/>`matrix:room/us:example.org?action=join` | Attempt to join the room | `POST /join/!rid:example.org?server_name=example2.org`<br/>`POST /join/#us:example.org` |
+| Event:<br/>`matrix:room/us:example.org/event/lol823y4bcp3qo4`<br/>`matrix:roomid/rid:example.org/event/lol823y4bcp3qo4?via=example2.org` | 1. For room aliases, resolve an alias to a room id (HOW?)<br/>2. Attempt to retrieve (see the next column) and display the event;<br/>3. If the event could not be retrieved due to access denial and the current user is not a member of the room, the client MAY offer the user to join the room and try to open the event again | `GET `<br/>`GET /rooms/!rid:example.org/event/lol823y4bcp3qo4?server_name=example2.org` |
+| Group:<br/>`matrix:group/them:matrix.org` | Reserved for future use |
+
 * Event ID (as used in
   [room version 3](https://matrix.org/docs/spec/rooms/v3) and later):
   - URI example (aka "event permalink"):
@@ -392,9 +378,34 @@ a reference and examples of handling various kinds of URIs.
     1. Otherwise try to retrieve the event in the same way but in case of
        access failure the client MAY offer the user to join the room; if
        the user agrees and joining succeeds, retry the step above.
-* Group ID:
-  - URI example: `matrix:group/them:matrix.org`
-  - Default action: reserved for future use
+
+#### URI construction algorithm
+
+The following algorithm assumes a Matrix identifier that follows
+the high-level grammar described in the specification. Clients MUST ensure
+compliance of identifiers passed to this algorithm.
+
+For room and user identifiers (including room aliases):
+1. Remove the sigil character from the identifier and match it against
+   the following list to produce `prefix-1`:
+   - `@` -> `user/`
+   - `!` -> `roomid/`
+   - `#` -> `room/`
+   - `+` -> `group/`
+2. Build the Matrix URI as a concatenation of:
+   - literal `matrix:`
+   - `prefix-1`
+   - the remainder of identifier (`id without sigil`).
+   
+For event identifiers (assuming they need the room context, see
+[MSC2695](https://github.com/matrix-org/matrix-doc/pull/2695) and
+[MSC 2779](https://github.com/matrix-org/matrix-doc/issues/2779) that
+may change this):
+1. Take the event's room id or canonical alias and build a Matrix URI for them
+   as described above.
+2. Append to the result of previous step:
+   - literal `event/`
+   - the event id with the sigil (`$`) removed.
 
 
 ## Discussion points and tradeoffs
