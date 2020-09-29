@@ -13,69 +13,80 @@ outside of Matrix and then resolved in a uniform way - matching URLs
 in World Wide Web.
 
 Specific use cases include:
-1. Representation in UI: as a Matrix user I want to refer to Matrix entities
-   in the same way as for web pages, so that others could “follow the link”
-   I sent them (not necessarily through Matrix, it can be, e.g., a web page or
-   email) in order to access the referred resource.
+1. Representation: as a Matrix user I want to refer to Matrix entities
+   in the same way as for web pages, so that others could unambiguously identify
+   the resource, regardless of the context or used medium to identify it to them
+   (within or outside Matrix, e.g., in a web page or an email message).
 1. Inbound integration: as an author of Matrix software, I want to have a way
    to invoke my software from the operating environment to resolve a Matrix URI
    passed from another program. This is a case of, e.g.,
-   opening a Matrix client by clicking on a link in an email program.
+   opening a Matrix client by clicking on a link from an email message.
 1. Outbound integration: as an author of Matrix software, I want to have a way
-   to export identifiers of Matrix resources as URIs to non-Matrix environment
+   to export identifiers of Matrix resources to non-Matrix environment
    so that they could be resolved in another time-place in a uniform way.
-   This is a case of "Share via…" action in a mobile Matrix client.
+   An example of this case is the "Share via…" action in a mobile Matrix client.
 
-https://matrix.to somehow compensates for the lack of dedicated URIs; however:
-* it addresses use case (1) in a somewhat clumsy way (resolving a link needs
-  two interactions with the user instead of one), and 
-* it can only deal with (2) within a web browser (basically limiting
-  first-class support to browser-based clients).
+Matrix identifiers as defined by the current specification have a form distinct
+enough from other identifiers to mostly fulfil the representation use case.
+Since they are not URIs they can not cover the two integration use cases.
+https://matrix.to somehow compensates for this; however:
+* it requires a web browser to run JavaScript code that resolves identifiers
+  (basically limiting first-class support to browser-based clients), and
+* it relies on matrix.to as an intermediary that provides that JavaScript code.
 
 To cover the use cases above, the following scheme is proposed for Matrix URIs
 (`[]` enclose optional parts, `{}` enclose variables):
 ```text
-matrix:[//{authority}/]{type}/{id without sigil}[/{more type/id pairs}][?{query}]
+matrix:[//{authority}/]{type}/{id without sigil}[/{type}/{id without sigil}...][?{query}][#{fragment}]
 ```
-with `type` defining the resource type (such as `user` or `roomid` - see
-the "Path" section in the proposal) and `query` containing additional hints
+with `{type}` defining the resource type (such as `user` or `roomid` - see
+the "Path" section in the proposal) and `{query}` containing additional hints
 or request details on the Matrix entity (see "Query" in the proposal).
-The Matrix identifier (or identifiers) can be reconstructed from the URI by
-taking the sigil that corresponds to `type` and appending `id without sigil`
-to it. To support a hierarchy of Matrix resources, `more type/id pairs` series
-is used to reconstruct inner identifiers (as of now, there can be only one
-inner identifier, pointing to an event in a room).
+`{authority}` and `{fragment}` parts are reserved for future use; this proposal
+does not define them and implementations SHOULD ignore them for now.
 
-This proposal defines initial mapping of URIs to Matrix identifiers and actions
-on corresponding resources; the scheme and mapping are subject
-to further extension.
+This MSC does not introduce new Matrix entities, nor API endpoints -
+it merely defines a mapping between URIs with the scheme name `matrix:`
+and Matrix identifiers, as well as operations on them. The MSC should be
+sufficient to produce an implementation that would convert Matrix URIs to
+a series of CS API calls, entirely on the client side. It is recognised,
+however, that most of URI processing logic can and should (eventually)
+be on the server side in order to facilitate adoption of Matrix URIs;
+further MSCs are needed to define details for that, as well as to extend
+the mapping to more resources (including those without equivalent
+Matrix identifiers, such as room state or user profile data).
+
+The Matrix identifier (or identifiers) can be reconstructed from
+`{id without sigil}` by prepending a sigil character corresponding to `{type}`.
+To support a hierarchy of Matrix resources, more `/{type}/{id without sigil}`
+pairs can be appended, identifying resources inside of other resources.
+As of now, there's only one such case, with exactly one additional pair -
+pointing to an event in a room.
 
 Examples:
 * Room `#someroom:example.org`:
   `matrix:room/someroom:example.org`
-* Unfederated room `#internalroom:internal.example.org`:
-  `matrix:room/internalroom:internal.example.org`. This can only be resolved by a client connected to the appropriate server, likely internal.example.org in this case, so it can be hinted at: `matrix:room/internalroom:internal.example.org&via=internal.example.org`. See the [Discussion points and tradeoffs](#discussion-points-and-tradeoffs) section.
+* User `@me:example.org`:
+  `matrix:user/me:example.org`
 * Event in a room:
   `matrix:room/someroom:example.org/event/Arbitrary_Event_Id`
 * [A commit like this](https://github.com/her001/steamlug.org/commit/2bd69441e1cf21f626e699f0957193f45a1d560f)
   could make use of a Matrix URI in the form of
   `<a href="{Matrix URI}">{Matrix identifier}</a>`.
-  
-This MSC does not introduce new Matrix entities, nor API endpoints -
-it merely defines a mapping from a URI with the scheme name `matrix:`
-to Matrix identifiers and actions on them. It is deemed sufficient to
-produce an implementation that would convert Matrix URIs to a series
-of CS API calls, entirely on the client side. It is recognised,
-however, that most of URI processing logic can and should (eventually)
-be on the server side in order to facilitate adoption of Matrix URIs;
-further MSCs are needed to define details for that.
+
 
 ## Proposal
 
-Further text uses “Matrix identifier” with a meaning of identifiers
-as described by [Matrix Specification](https://matrix.org/docs/spec/),
-and “Matrix URI” with a meaning of an identifier following
-the RFC-compliant URI format proposed hereby.
+### Definitions
+
+Further text uses the following terms:
+- Matrix identifier - one of identifiers defined by the current
+[Matrix Specification](https://matrix.org/docs/spec/appendices.html#identifier-grammar),
+- Matrix URI - a uniform resource identifier proposed hereby, following
+  the RFC-compliant URI format.
+- MUST/SHOULD/MAY etc. follow the conventions of
+  [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
+
 
 ### Requirements
 
@@ -88,9 +99,7 @@ The following considerations drive the requirements for Matrix URIs:
    you cannot rewrite them once they are released to the world.
 1. Ease of implementation, allowing reuse of existing codes.
 
-The following requirements resulted from these drivers
-(see [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt) for conventions
-around MUST/SHOULD/MAY):
+The following requirements resulted from these drivers:
 1. Matrix URI MUST comply with
    [RFC 3986](https://tools.ietf.org/html/rfc3986) and
    [RFC 7595](https://tools.ietf.org/html/rfc7595).
@@ -121,19 +130,18 @@ around MUST/SHOULD/MAY):
       room-specific user profiles).
 1. The mapping MUST support decentralised as well as centralised IDs.
    This basically means that the URI scheme MUST have provisions
-   for mapping of `:<serverpart>` but it MUST NOT require
+   for mapping of identifiers with `:<serverpart>` but it MUST NOT require
    `:<serverpart>` to be there.
-1. Matrix URI SHOULD allow encoding of action requests such as joining
-   a room.
+1. Matrix URI SHOULD allow encoding of action requests such as joining a room.
 1. Matrix URI SHOULD have a human-readable, if not necessarily
    human-friendly, representation - to allow visual sanity-checks.
    In particular, characters escaping/encoding should be reduced
    to bare minimum in that representation. As a food for thought, see
    [Wikipedia: Clean URL, aka SEF URL](https://en.wikipedia.org/wiki/Clean_URL) and
-   [a very relevant use case from RFC 3986](https://tools.ietf.org/html/rfc3986#section-1.2.1).
+   [a use case from RFC 3986](https://tools.ietf.org/html/rfc3986#section-1.2.1).
 1. It SHOULD be easy to parse Matrix URI in popular programming
    languages: e.g., one should be able to use `parseUri()`
-   to dissect a Matrix URI in JavaScript.
+   to dissect a Matrix URI into components in JavaScript.
 1. The mapping SHOULD be consistent across different classes of
    Matrix identifiers.
 1. The mapping SHOULD support linking to unfederated servers/networks
@@ -141,8 +149,10 @@ around MUST/SHOULD/MAY):
    [matrix-doc#2309](https://github.com/matrix-org/matrix-doc/issues/2309)
    that calls for such linking).
 
-The syntax and mapping discussed below meet all these requirements.
-Further extensions MUST comply to them as well.
+The syntax and mapping discussed below meet all these requirements except
+the last one that will be addressed separately.
+Further extensions MUST NOT reduce the supported set of requirements.
+
 
 ### Syntax and high-level processing
 
@@ -156,8 +166,8 @@ hier-part = [ “//” authority “/” ] path
 As mentioned above, this MSC assumes client-side URI processing
 (i.e. mapping to Matrix identifiers and CS API requests).
 However, even when URI processing is shifted to the server side
-the client will still have to parse the URI at least to find
-the authority part (or lack of it) and remove the fragment part
+the client will still have to parse the URI at least to remove
+the authority and fragment parts (if either exists)
 before sending the request to the server (more on that below).
 
 #### Scheme name
@@ -179,14 +189,16 @@ references](https://tools.ietf.org/html/rfc3986#section-4.2) and
 omitting the scheme name makes them indistinguishable from a local path
 that might have nothing to do with Matrix. Clients MUST NOT try to
 parse pieces like `room/MyRoom:example.org` as Matrix URIs; instead,
-users should be encouraged to use Matrix IDs for in-text references
-(`#MyRoom:example.org`) and client applications should do
-the heavy-lifting of turning them into hyperlinks to Matrix URIs.
+users should be encouraged to use Matrix identifiers for in-text references
+(`#MyRoom:example.org`) and client applications SHOULD turn them into
+hyperlinks to Matrix URIs.
 
 #### Authority
 
-The authority part is used for the specific case of getting access
-to a Matrix resource (such as a room or a user) through a given server.
+The authority part will eventually be used to indicate access to a Matrix
+resource (such as a room or a user) specifically through a given server,
+addressing a case described in
+[matrix-org/matrix-doc#2309](https://github.com/matrix-org/matrix-doc/issues/2309).
 ```text
 authority = host [ “:” port ]
 ```
@@ -200,10 +212,11 @@ Clients SHOULD NOT use data from the authority part other than for
 experimental or further research purposes.
 
 #### Path
-Unlike the very wide definition of path in RFC 3986, this MSC
-restricts the path component of a Matrix URI to a simple
-pattern that allows to easily reconstruct a Matrix identifier or
-a chain of identifiers:
+This MSC restricts
+[the very wide definition of path in RFC 3986](https://tools.ietf.org/html/rfc3986#section-3.3),
+to a simple pattern that allows to easily reconstruct a Matrix identifier or
+a chain of identifiers and also to locate a certain sub-resource in the scope
+of a given Matrix entity:
 ```text
 path = type “/” id-without-sigil [“/” path]
 type = “user” / “roomid” / “room” / “event” / “group”
@@ -252,18 +265,21 @@ the Matrix entity, a certain action is requested on it. This proposal
 describes two possible actions:
 * `action=join` is only valid in a URI resolving to a Matrix room;
   applications MUST ignore it if found in other contexts and MUST NOT generate
-  it for other Matrix resources. This action means that client applications
-  SHOULD attempt to join it using the standard CS API means.
+  it for other Matrix resources. This action means that a client application
+  SHOULD attempt to join the room specified by the URI path using the standard
+  CS API means.
 * `action=chat` is only valid in a URI resolving to a Matrix user;
   applications MUST ignore it if found in other contexts and MUST NOT generate
-  it for other Matrix resources. A URI with this action that a client application
-  SHOULD open a direct chat window with the user; clients supporting
+  it for other Matrix resources. This action means that a client application
+  SHOULD open a direct chat window with the user specified by the URI path;
+  clients supporting
   [canonical direct chats](https://github.com/matrix-org/matrix-doc/pull/2199)
   SHOULD open the canonical direct chat.
   
 For both actions, where applicable, client applications SHOULD ask for user
 confirmation or at least make the user aware if the action leads
-to joining or creating a new room rather than switching to a prior one.
+to joining or creating a new room rather than to opening a room that the user
+already has in the room list.
 
 The routing query (`via=`) indicates servers that are likely involved in
 the room (see also
@@ -459,7 +475,7 @@ further discussion should happen in GitHub comments.
    the authority part in generated URIs for a given user account.~~
    Use `via=` in order to point to a homeserver in the closed federation.
    The authority part may eventually be used for that but further discussion
-   is needed on how clients should support without compromising privacy
+   is needed on how clients should support it without compromising privacy
    (see https://github.com/matrix-org/matrix-doc/pull/2312#discussion_r348960282
    for the original concern).
 
