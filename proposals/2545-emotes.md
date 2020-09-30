@@ -2,6 +2,26 @@
 
 Emoticons, or short emotes...we need them!
 
+## Terminology
+Since there is a lot of confusion of how this relates to `m.emote`, why this isn't called custom emoji
+etc, there it is:
+
+`m.emtoe` is for emotion - and it has been incorrectly named this way. `m.action` would have been more
+appropriate, as you use it to describe *actions*, not *emotions*. E.g. "/me is walking to the gym", or
+"/me is happy" and *not* "/me happy".
+
+That, however, is *not* what this MSC is about. Instead it is about emoticons, also known in short as
+emotes.
+
+Emoticons are just little images or text describing emotions or other things. Emoji are a subset of
+emoticons, namely those found within unicode. Custom emoji here would actually refer to a custom emoji
+font, that is your own rendering of 🦊, 🐱, etc., *not* new images. New images is what custom emoticons
+are for.
+
+Now, a client may chose to name these however they like, we already have a naming disparity between
+spec and clients with groups vs communities. It is, however, imperative to name things in the spec
+accurately after what they are.
+
 ## Proposal
 Emoticons have at least a shortcode and an mxc uri. They are sent as `<img>` tags currently already in
 the spec, as such existing clients *should* be able to render them (support for this is sadly poor,
