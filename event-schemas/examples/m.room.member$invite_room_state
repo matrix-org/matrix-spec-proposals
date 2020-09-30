@@ -3,7 +3,8 @@
   "content": {
     "membership": "invite",
     "avatar_url": "mxc://example.org/SEsfnsuifSDFSSEF",
-    "displayname": "Alice Margatroid"
+    "displayname": "Alice Margatroid",
+    "reason": "Looking for support"
   },
   "unsigned": {
     "age": 1234,
