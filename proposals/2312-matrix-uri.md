@@ -243,7 +243,7 @@ level. The type `event` can only be used on the 2nd level and only under `room`
 or `roomid`; this is driven by the current shape of Client-Server API that
 does not provide a non-deprecated way to retrieve an event without knowing
 the room (see [MSC2695](https://github.com/matrix-org/matrix-doc/pull/2695) and
-[MSC 2779](https://github.com/matrix-org/matrix-doc/issues/2779) that may
+[MSC2779](https://github.com/matrix-org/matrix-doc/issues/2779) that may
 change this). 
 
 Further MSCs may introduce navigation to more top-level as well as
@@ -343,8 +343,8 @@ comparisons are case-INsensitive.
 
    b. Pick the next (2nd) leftmost path segment:
       - if the segment is empty, fail parsing;
-      - otherwise, percent-decode the segment and make `mxid-1` by
-        concatenating `sigil-1` and the result of percent-decoding.
+      - otherwise, percent-decode the segment (unless the initial URI parse 
+        has already done that) and make `mxid-1` by prepending `sigil-1`.
 
 1. If `sigil-1` is `!` or `#` and the URI path has exactly 4 segments,
    it may be possible to construct the 2nd-level Matrix identifier to
@@ -357,8 +357,8 @@ comparisons are case-INsensitive.
     
    b. Pick the next (4th) leftmost path segment:
       - if the segment is empty, fail parsing;
-      - otherwise, percent-decode the segment and make `mxid-2` by
-        prepending `$` to the result of percent-decoding.
+      - otherwise, percent-decode the segment (unless the initial URI parse 
+        has already done that) and make `mxid-2` by prepending `$`.
       
 1. Split the `query` into items separated by `&` character; several subsequent
    `&` characters delimit empty items, ignored by this algorithm.
@@ -369,6 +369,9 @@ comparisons are case-INsensitive.
       
    b. If `query` contains one or more items starting with `action=`: treat
       _the last_ such item as an instruction, as this proposal defines in [query](#query).
+
+Clients MUST implement proper percent-decoding of the identifiers; there's no
+liberty similar to that of matrix.to.
 
 #### Operations on Matrix URIs
 
@@ -423,19 +426,23 @@ For room and user identifiers (including room aliases):
    - `#` -> `room/`
    - `+` -> `group/`
 2. Build the Matrix URI as a concatenation of:
-   - literal `matrix:`
-   - `prefix-1`
-   - the remainder of identifier (`id without sigil`).
+   - literal `matrix:`;
+   - `prefix-1`;
+   - the remainder of identifier (`id without sigil`), percent-encoded as per
+     [RFC 3986](https://tools.ietf.org/html/rfc3986).
    
 For event identifiers (assuming they need the room context, see
 [MSC2695](https://github.com/matrix-org/matrix-doc/pull/2695) and
-[MSC 2779](https://github.com/matrix-org/matrix-doc/issues/2779) that
+[MSC2779](https://github.com/matrix-org/matrix-doc/issues/2779) that
 may change this):
 1. Take the event's room id or canonical alias and build a Matrix URI for them
    as described above.
 2. Append to the result of previous step:
-   - literal `event/`
-   - the event id with the sigil (`$`) removed.
+   - literal `event/`;
+   - the event id after removing the sigil (`$`) and percent-encoding.
+   
+Clients MUST implement proper percent-encoding of the identifiers; there's no
+liberty similar to that of matrix.to.
 
 
 ## Discussion points and tradeoffs
