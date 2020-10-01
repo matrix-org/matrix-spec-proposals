@@ -376,3 +376,6 @@ the actions, `org.matrix.msc2790.` should be used instead of `m.` for applicable
 
 Identifiers not prefixed with a namespace should be covered by the version check and thus do not need
 their own prefix.
+
+Implementations may also wish to use an alternative event type for widgets to signify that the actions
+are implicitly supported.
