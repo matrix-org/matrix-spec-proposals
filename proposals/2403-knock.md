@@ -300,14 +300,6 @@ Response:
 }
 ```
 
-Once a knock has been made, a user in the room can decide whether they want
-to accept or deny the knock. If they accept, they will invite the knocker,
-which the knocker will be notified about through existing flows.
-
-If they deny, then a leave membership event is sent in the room, and the
-knocking user will be notified through existing flows (matching the behaviour
-of when an invite is recinded).
-
 ## Server-Server API
 Similarly to join and leave over federation, a ping-pong game with two new
 endpoints is introduced: `make_knock` and `send_knock`. Both endpoints must
