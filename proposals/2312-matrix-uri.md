@@ -160,8 +160,8 @@ The proposed generic Matrix URI syntax is a subset of the generic
 URI syntax
 [defined by RFC 3986](https://tools.ietf.org/html/rfc3986#section-3):
 ```text
-MatrixURI = “matrix:” hier-part [ “?” query ] [ “#” fragment ]
-hier-part = [ “//” authority “/” ] path
+MatrixURI = "matrix:" hier-part [ "?" query ] [ "#" fragment ]
+hier-part = [ "//" authority "/" ] path
 ```
 As mentioned above, this MSC assumes client-side URI processing
 (i.e. mapping to Matrix identifiers and CS API requests).
@@ -200,7 +200,7 @@ resource (such as a room or a user) specifically through a given server,
 addressing a case described in
 [matrix-org/matrix-doc#2309](https://github.com/matrix-org/matrix-doc/issues/2309).
 ```text
-authority = host [ “:” port ]
+authority = host [ ":" port ]
 ```
 
 Here's an example of a Matrix URI with an authority part
@@ -218,10 +218,10 @@ to a simple pattern that allows to easily reconstruct a Matrix identifier or
 a chain of identifiers and also to locate a certain sub-resource in the scope
 of a given Matrix entity:
 ```text
-path = entity-descriptor [“/” entity-descriptor]
+path = entity-descriptor ["/" entity-descriptor]
 entity-descriptor = nonid-segment / type-qualifier id-without-sigil
-non-id-segment = segment-nz ; as defined in RFC3986, see also below
-type-qualifier = segment-nz “/” ; as defined in RFC3986, see also below
+non-id-segment = segment-nz ; as defined in RFC 3986, see also below
+type-qualifier = segment-nz "/" ; as defined in RFC 3986, see also below
 id-without-sigil = string ; as defined in Matrix identifier spec, see below
 ```
 The path component consists of 1 or more descriptors separated by a slash
@@ -231,7 +231,7 @@ extensions.
 This MSC only proposes mappings along `type-qualifier id-without-sigil` syntax;
 `nonid-segment` is unused and reserved for future use. 
 For the sake of integrity future `nonid-segment` extensions must follow
-[the ABNF for `segment-nz` as defined in RFC3986](https://tools.ietf.org/html/rfc3986#appendix-A).
+[the ABNF for `segment-nz` as defined in RFC 3986](https://tools.ietf.org/html/rfc3986#appendix-A).
 
 This MSC defines the following `type` specifiers:
 `user` (user id, sigil `@`), `roomid` (room id, sigil `!`),
@@ -265,13 +265,13 @@ See the rationale behind dropping sigils and the respective up/downsides in
 
 Matrix URI can optionally have
 [the query part](https://tools.ietf.org/html/rfc3986#section-3.4).
-This MSC defines only two specific forms for the query; further MSCs
-may add to this as long as RFC 3986 is followed.
+This MSC defines the general form for the query and two "standard" query items;
+further MSCs may add to this as long as RFC 3986 is followed.
 ```text
-query = query-element *( “&” query-element )
+query = query-element *( "&" query-element )
 query-element = action / routing
-action = “action=" ( "join" / "chat" )
-routing = “via=” authority
+action = "action=" ( "join" / "chat" )
+routing = "via=” authority
 ```
 
 The `action` query item is used in contexts where, on top of identifying
@@ -291,9 +291,9 @@ describes two possible actions:
   SHOULD open the canonical direct chat.
   
 For both actions, where applicable, client applications SHOULD ask for user
-confirmation or at least make the user aware if the action leads
-to joining or creating a new room rather than to opening a room that the user
-already has in the room list.
+confirmation or at least notify the user before joining or creating a new room.
+Conversely, no additional confirmation/notification is necessary when
+the action leads to opening a room the user is already a member of.
 
 The routing query (`via=`) indicates servers that are likely involved in
 the room (see also
@@ -562,7 +562,8 @@ With that said, a URN-styled (`matrix:room:example.org:roomalias`)
 option was considered. However, Matrix already uses colon (`:`) as
 a delimiter of id parts and, as can be seen above, reversing the parts
 to meet the URN's hierarchical order would look confusing for Matrix
-users.
+users (as in example above - is `room` a part of the identifier or
+the type signifier?).
 
 
 ### "Full REST" 
@@ -580,12 +581,13 @@ the URI).
 
 ### Minimal syntax
 
-One early but still viable proposal was to simply prepend `matrix:` to
-a Matrix identifier (without encoding it), assuming that it will only be
-processed on the client side. The massive downside of this option is that
-such strings are not actual URIs even though they look like ones: most
-URI parsers won't handle them correctly. Bare Matrix identifiers have
-the same applicable range without deceptive looks.
+One early proposal was to simply prepend `matrix:` to a Matrix identifier
+(without encoding it), assuming that it will only be processed on the client
+side. The massive downside of this option is that such strings are not actual
+URIs even though they look like ones: most URI parsers won't handle them
+correctly. As laid out in the beginning of this proposal, Matrix URIs are
+not striving to preempt Matrix identifiers; instead of trying to produce
+an equally readable string, one should just use identifiers where they work.
 
 
 ### Minimal syntax based on path and percent-encoding
@@ -594,7 +596,7 @@ A simple modification of the previous option is much more viable:
 proper percent-encoding of the Matrix identifier allows to use it as
 a URI path part. A single identifier packed in a URI could look like
 `matrix:/encoded_id_with_sigil`; an event-in-a-room URI would be something
-like `matrix:/roomid_or_alias/$event_id` (NB: RFC3986 doesn't require `$`
+like `matrix:/roomid_or_alias/$event_id` (NB: RFC 3986 doesn't require `$`
 to be encoded). This is considerably more concise and encoding is only
 needed for `#` - quite unfortunately, this is one of the most used sigils
 in Matrix. E.g., `matrix:/%23matrix:matrix.org` would be a URI for
@@ -619,7 +621,7 @@ to represent arbitrary sub-objects (with or without Matrix identifier) such as
 user profiles or a notifications feed for the room - and also, if ever needed,
 as an escape hatch to a bigger namespace if we hit shortage of sigils.
 
-The current proposal is also flexible enough to even incorporate the minimal
+The current proposal is also flexible enough to incorporate the minimal
 syntax of this option as an alternative to its own notation - e.g., a further
 MSC could enable `matrix:id/%23matrix:matrix.org` as a synonym for
 `matrix:room/matrix:matrix.org`.
