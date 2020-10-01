@@ -268,10 +268,13 @@ Matrix URI can optionally have
 This MSC defines the general form for the query and two "standard" query items;
 further MSCs may add to this as long as RFC 3986 is followed.
 ```text
-query = query-element *( "&" query-element )
-query-element = action / routing
+query = query-element *( "&" query-item )
+query-item = action / routing / custom-query-item
 action = "action=" ( "join" / "chat" )
 routing = "via=” authority
+custom-query-item = custom-item-name "=" custom-item-value
+custom-item-name = 1*unreserved ; reverse-DNS name; see below
+custom-item-value = ; see below
 ```
 
 The `action` query item is used in contexts where, on top of identifying
@@ -304,6 +307,25 @@ a non-public Matrix network (see the question about closed federations in
 "Discussion points and tradeoffs"). Note that `authority` in the definition
 above is only a part of the grammar as defined in the respective section;
 it is not proposed here to generate or read the authority part of the URI.
+
+Clients MAY introduce and recognise custom query items, according to
+the following rules:
+- the name of the item MUST follow the reverse-DNS (aka "Java package")
+  naming convention - e.g., a custom action item for Element clients would be
+  named `io.element.action`, for Quaternion - `com.github.quaternion.action`,
+  etc.
+- the value of the item can be any content but its representation in the URI
+  MUST follow the general RFC requirements for the query part; on top of that,
+  if the raw value contains `&` it MUST be percent-encoded.
+- clients SHOULD respect standard query items over their own ones; e.g.,
+  if a URI contains both `action` and the custom client action, the standard
+  action should be respected as much as possible. Client authors SHOULD strive
+  for consistent experience across their and 3rd party clients, anticipating
+  that the same user may happen to have both their client and a 3rd party one.
+  
+Client authors are strongly encouraged to standardise custom query elements
+that gain adoption by submitting an MSC defining them in a way compatible
+across the client ecosystem.
 
 
 ### Recommended implementation
