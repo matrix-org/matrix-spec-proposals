@@ -164,7 +164,7 @@ other cases this should **reduce** security issues.
 Of the 18 clients listed in the [matrix client matrix](https://matrix.org/client-matrix)
 10 are listed as not supporting replies:
 
-- weechat-matrix: Actually has an [implementation](https://github.com/poljar/weechat-matrix/issues/86) although it may be [broken](https://github.com/poljar/weechat-matrix/issues/233).
+- weechat-matrix: Actually has an [implementation](https://github.com/poljar/weechat-matrix/issues/86) to send replies although it may be [broken](https://github.com/poljar/weechat-matrix/issues/233). Doesn't render rich replies. Hard to implement because of the single socket implementation, but may be easier in the Rust version.
 - Quaternion: [Blocked because of fallbacks](https://github.com/quotient-im/libQuotient/issues/245).
 - matrixcli: [Doesn't support formatted messages](https://github.com/ahmedsaadxyzz/matrixcli/issues/10).
 - Ditto Chat: [Doesn't support replying?](https://gitlab.com/ditto-chat/ditto-mobile/-/issues/83), but [does some special stuff for rendering?](https://gitlab.com/ditto-chat/ditto-mobile/-/issues/8)
