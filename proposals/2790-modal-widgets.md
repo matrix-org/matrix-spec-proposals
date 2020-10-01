@@ -63,6 +63,7 @@ value is implied to be an empty array (no buttons). Buttons have 3 properties to
   button as a `m.primary` button. This MSC defines the following common types:
   * `m.primary` - A button which is styled as the primary action. Usually this will mean a background
     of the client's accent colour.
+  * `m.secondary` - A button which is styled similar to the primary button but denotes secondary action.
   * `m.warning` - A button which is styled to warn the user of potential harm in the action about to
     be taken. Usually yellow or orange backgrounds are used.
   * `m.danger` - A button which is styled to warn the user of imminent risk of severe consequences,
