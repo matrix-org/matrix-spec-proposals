@@ -503,14 +503,22 @@ experimental support for room knocking.
 The new endpoints should contain an unstable prefix during experimental
 implementation. The unstable counterpart for each endpoint is:
 
+C-S knock method 1:
+
 * `POST /_matrix/client/r0/rooms/{roomId}/knock`
 * `POST /_matrix/client/unstable/xyz.amorgan/rooms/{roomId}/knock`
+
+C-S knock method 2:
 
 * `POST /_matrix/client/knock/{roomIdOrAlias}`
 * `POST /_matrix/client/unstable/xyz.amorgan/knock/{roomIdOrAlias}`
 
+S-S make_knock:
+
 * `GET /_matrix/federation/v1/make_knock/{roomId}/{userId}`
 * `GET /_matrix/federation/unstable/xyz.amorgan/make_knock/{roomId}/{userId}`
+
+S-S send_knock:
 
 * `PUT /_matrix/federation/v1/send_knock/{roomId}/{eventId}`
 * `PUT /_matrix/federation/unstable/xyz.amorgan/send_knock/{roomId}/{eventId}`
