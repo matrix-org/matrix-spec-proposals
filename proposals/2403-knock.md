@@ -60,15 +60,45 @@ will then send an invite - over federation if necessary - to the knocking
 user. The knocking user may then join the room as if they had been invited
 normally.
 
+The accept a knock, the client should call [`POST
+/_matrix/client/r0/rooms/{roomId}/invite`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-invite)
+with the user ID of the knocking user in the JSON body.
+
+If the knocking user is on another homeserver, then the homeserver of the
+accepting user will call [`PUT
+/_matrix/federation/v2/invite/{roomId}/{eventId}`](https://matrix.org/docs/spec/server_server/r0.1.4#put-matrix-federation-v2-invite-roomid-eventid)
+on the knocking homeserver to inform it that its knock has been accepted.
+
+The knocking homeserver should assume an invite to a room it has knocked on means
+that its knock has been accepted, even if the invite was not explicitly
+related to the knock attempt.
+
 ### Membership change to `leave`
 
 The knock has been rejected by someone in the room.
 
-This is made a bit tricky in that it is very difficult to have knock
-rejections, aka leave events from the room directed towards you, propagate
-over federation if you're not in the room at the same time. This is a problem
-that currently affects other similar operations, such as disinviting or
-unbanning a federated user. In both cases, they won't be notified as their homeserver is not in the room.
+
+XXX: There is also an open question here about who should be able to reject a
+knock. When revoking an invite for a user, perhaps counter-intuitively, you
+need to have a high enough power level to kick users, rather than invite
+them. You also need to have a higher power level than them. Should the same
+be done for knocking, assuming the knocking user has the default power level?
+Or should it be the same power level that's required to accept the knock?
+
+To reject a knock, the client should call [`POST
+/_matrix/client/r0/rooms/{roomId}/kick`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-kick)
+with the user ID of the knocking user in the JSON body.
+
+At this point, if the knocking user is on another homeserver, then the
+homeserver of the rejecting user needs to send the `leave` event over
+federation to the knocking homeserver. However, this is a bit tricky as it is
+currently very difficult to have events from a room propagate over federation
+if the receiving homeserver is not in the room. This is due to the remote
+homeserver being unable to verify that the event being sent is actually from
+a homeserver in the room - and that the homeserver in the room had the
+required power level to send it. This is a problem that currently affects
+other similar operations, such as disinviting or unbanning a federated user.
+In both cases, they won't be notified as their homeserver is not in the room.
 
 While we could send easily send the leave event as part of a generic
 transaction to the remote homeserver, that homeserver would have no way to
@@ -83,16 +113,12 @@ truth. This is almost an edge case though, as while you'll knock through one
 homeserver in the room, there's no guarantee that the admin that denies your
 knock will be on the same homeserver you knocked through. Perhaps the homeserver you knocked through could listen for this and then send the event back to you - but what if it goes offline in the meantime?
 
-As such, this feature working over federation should be de-scoped for now,
-and left to a future MSC which can solve this problem across the board for
-all affected features in a proper way. Rejections should still work for the
-homeservers that are in the room however.
+As such, this feature working over federation is de-scoped for now, and left
+to a future MSC which can solve this problem across the board for all
+affected features in a suitable way. Rejections should still work for the
+homeservers that are in the room, as they can validate the leave event for
+they have access to the events it references.
 
-XXX: There is also an open question here about who should be able to reject a
-knock. To disinvite a user, perhaps counter-intuitively, you need to have a
-high enough power level to kick users, rather than invite them. You also need
-to have a higher power level than them. Should the same be done for knocking,
-assuming the knocking user has the default power level?
 
 ### Membership change to `ban`
 
@@ -104,6 +130,9 @@ knock, and in addition prevent any further knocks by this user from being
 allowed into the room.
 
 If the user is unbanned, then knocks will be accepted again.
+
+To ban the user, the client should call [`POST
+/_matrix/client/r0/rooms/{roomId}/ban`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-ban) with the user ID of the knocking user in the JSON body.
 
 
 ## Client-Server API
@@ -205,7 +234,7 @@ the room's name and avatar. A client will need this information to show a
 nice representation of pending knocked rooms. The recommended events to
 include are the join rules, canonical alias, avatar, and name of the room,
 rather than all room state. This behaviour matches the information sent to
-remote servers when invited their users to a room.
+remote homeservers when invited their users to a room.
 
 This prevents unneeded state from the room leaking out, and also speeds
 things up (think not sending over hundreds of membership events from big
@@ -337,8 +366,8 @@ This request was invalid, e.g. bad JSON. Example reply:
 ```
 
 ### `PUT /_matrix/federation/v1/send_knock/{roomId}/{eventId}`
-Submits a signed knock event to the resident server for it to accept into the
-room's graph. Note that event format may differ between room versions.
+Submits a signed knock event to the resident homeserver for it to accept into
+the room's graph. Note that event format may differ between room versions.
 
 Request format:
 
@@ -458,7 +487,7 @@ reason" button). The user should reveal the reason only if they choose to.
 It is recommended to not display the reason by default as else this would
 essentially allow outsiders to send messages into the room.
 
-It is still theoretically possible for a server admin to create many users
+It is still theoretically possible for a homeserver admin to create many users
 with different user IDs or display names, all spelling out an abusive
 message, and then having each of them knock in order. 
 
