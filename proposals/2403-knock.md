@@ -37,8 +37,48 @@ must be set to "knock" for a knock to succeed. This means that existing rooms
 will need to opt into allowing knocks in their rooms. Other than allowing
 knocks, "knock" is no different from the "invite" join rule.
 
-As we're updating the join rules, and thus the auth rules, this proposal will
-need to be introduced as part of a new room version.
+As the join rules are moedified, the auth rules are as well. The [current
+auth rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules) are
+defined by each room version. Thus, to change these rules, implementation of
+this proposal must be done in a new room version. The explicit changes to the
+auth rules from room version 5 are:
+
+* Under "5. If type is `m.room.member`", the following should be added:
+
+  ```
+  a. If `membership` is `knock`:
+    i. If the `join_rule` is anything other than `knock`, reject.
+    ii. If `sender` matches `state_key`, reject.
+    iii. If the `sender`'s current membership state is not `join`, reject.
+    iv. If the *target user*'s membership is not `ban` or `join`, allow.
+    v. Otherwise, reject.
+  ```
+
+  Notes:
+    - a.ii is justified as it doesn't make sense for a user that is already
+      in the room to knock.
+    - a.iii is justified as an event should be rejected if it was sent by
+      someone not in the room (note the sender of a knock event is the
+      homserver that's in the room, rather than the homeserver knocking).
+    - a.iv is justified as knocks should be allowed if the knocking user has
+      been banned from the room, or they're already in the room.
+
+    XXX: Is it a problem that any homeserver in the room can send a knock
+    event in? Even if they don't have the power level to send any other
+    events?
+
+* Under "11. If type is `m.room.redaction`", the following should be added:
+
+  ```
+  a. If the type of the `event_id` of the event being redacted is `m.room.member` and the `membership` field in its `content` dictionary is `knock`, reject.
+  ```
+
+  Notes:
+    - It seems bad if the server you sent a knock through later redacts that
+    knock, hence adding this. Ideally the knock should just be rejected
+    instead.
+
+  XXX: Is this the best place in the auth rules to enforce this?
 
 ## Membership changes
 Once someone has sent a `knock` membership into the room, the membership for
