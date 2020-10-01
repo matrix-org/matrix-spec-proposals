@@ -50,6 +50,62 @@ that user can be transitioned to the following possible states:
  - `ban`: In this case, the knock was rejected and the user has been prevented
    from sending further knocks.
 
+Let's talk about each one of these in more detail.
+
+### Membership change to `invite`
+
+The knock has been accepted by someone.
+This user must have the power level to perform invites. The user's homeserver
+will then send an invite - over federation if necessary - to the knocking
+user. The knocking user may then join the room as if they had been invited
+normally.
+
+### Membership change to `leave`
+
+The knock has been rejected by someone in the room.
+
+This is made a bit tricky in that it is very difficult to have knock
+rejections, aka leave events from the room directed towards you, propagate
+over federation if you're not in the room at the same time. This is a problem
+that currently affects other similar operations, such as disinviting or
+unbanning a federated user. In both cases, they won't be notified as their homeserver is not in the room.
+
+While we could send easily send the leave event as part of a generic
+transaction to the remote homeserver, that homeserver would have no way to
+validate the `prev_events` and `auth_events` that the event references. We
+could send those events over as well, but those will also reference other
+events that require validation and so on.
+
+A dumb thing we could easily do here is to trust the leave event implicitly
+if it is sent by the homeserver we originally knocked through. We know this
+homeserver is (or at least was) in the room, so they're probably telling the
+truth. This is almost an edge case though, as while you'll knock through one
+homeserver in the room, there's no guarantee that the admin that denies your
+knock will be on the same homeserver you knocked through. Perhaps the homeserver you knocked through could listen for this and then send the event back to you - but what if it goes offline in the meantime?
+
+As such, this feature working over federation should be de-scoped for now,
+and left to a future MSC which can solve this problem across the board for
+all affected features in a proper way. Rejections should still work for the
+homeservers that are in the room however.
+
+XXX: There is also an open question here about who should be able to reject a
+knock. To disinvite a user, perhaps counter-intuitively, you need to have a
+high enough power level to kick users, rather than invite them. You also need
+to have a higher power level than them. Should the same be done for knocking,
+assuming the knocking user has the default power level?
+
+### Membership change to `ban`
+
+The knock has been rejected by someone.
+
+This one is fairly straightforward. Someone with the appropriate power levels
+in the room bans the user. This will have the same effect as rejecting the
+knock, and in addition prevent any further knocks by this user from being
+allowed into the room.
+
+If the user is unbanned, then knocks will be accepted again.
+
+
 ## Client-Server API
 Two new endpoints are introduced in the Client-Server API (similarly to
 join): `POST /_matrix/client/r0/rooms/{roomId}/knock` and `POST
