@@ -378,11 +378,14 @@ Content-Type: application/json
 
 #### Response:
 ##### Status code 200:
-The event was successfully accepted into the graph by the receiving
-homeserver. The response contains `StrippedStateEvent`s with room metadata
-(room name, avatar ...) that the knocking homeserver can pass to the client.
-The event types that can be sent here should match those of the `/sync`
-extensions mentioned above.
+The event was successfully accepted into the graph by the homeserver that
+received the knock. It must then send this knock into the room, before
+responding to the knocking homeserver, indicating the knock succeeded.
+
+The response contains `StrippedStateEvent`s with room metadata (room name,
+avatar ...) that the knocking homeserver can pass to the client. The event
+types that can be sent here should match those of the `/sync` extensions
+mentioned above.
 
 This is loosely based on the
 [federated invite](https://matrix.org/docs/spec/server_server/r0.1.4#put-matrix-federation-v2-invite-roomid-eventid)
