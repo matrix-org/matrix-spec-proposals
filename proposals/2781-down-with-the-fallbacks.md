@@ -140,7 +140,7 @@ someone new to online messaging would assume, this is a correction to the
 previous message. That may even be more obvious to them than if the message was
 prefixed with a `*`, since that has been confusing to users in the past. Since
 edits would now look exactly like a normal message, they would also be
-considerably easier to implement, since you jus need to replace the former
+considerably easier to implement, since you just need to replace the former
 message now, similar to a redaction, and not merge `content` and `new_content`.
 
 ## Alternatives
@@ -158,6 +158,32 @@ Removing the fallback from the spec may lead to issues, when clients experience
 the fallback in old events. This should not add any security issues the
 client didn't already have from interpreting untrusted html, though. In all
 other cases this should **reduce** security issues.
+
+## Appendix A: Clients not supporting rich replies
+
+Of the 18 clients listed in the [matrix client matrix](https://matrix.org/client-matrix)
+10 are listed as not supporting replies:
+
+- weechat-matrix: Actually has an [implementation](https://github.com/poljar/weechat-matrix/issues/86) although it may be [broken](https://github.com/poljar/weechat-matrix/issues/233).
+- Quaternion: [Blocked because of fallbacks](https://github.com/quotient-im/libQuotient/issues/245).
+- matrixcli: [Doesn't support formatted messages](https://github.com/ahmedsaadxyzz/matrixcli/issues/10).
+- Ditto Chat: [Doesn't support replying?](https://gitlab.com/ditto-chat/ditto-mobile/-/issues/83), but [does some special stuff for rendering?](https://gitlab.com/ditto-chat/ditto-mobile/-/issues/8)
+- Mirage: Supports rich replies, but has [doesn't strip the fallback correctly](https://github.com/mirukana/mirage/issues/89) and uses the fallback to render them.
+- Fractal: [Unsupported](https://gitlab.gnome.org/GNOME/fractal/-/issues/194). Has some reports, that the fallback doesn't look nice though.
+- Nio: [Unsupported](https://github.com/niochat/nio/issues/85).
+- Pattle: Client is not being developed anymore.
+- Seaglass: Doesn't support rich replies, but is [unhappy with how the fallback looks](https://github.com/neilalexander/seaglass/issues/51)?
+- Miitrix: Somewhat unlikely to support it, I guess?
+- matrix-commander: No idea.
+
+So in summary, half of the listed clients don't support replies. At least one
+client doesn't support it because of the fallback (Quaternion). 3 of the command
+line clients probably won't support replies, since they don't support formatted
+messages and replies require html support for at least sending. Fractal and Nio
+don't seem to use html for rendering either. It would be interesting to hear the
+opionion of the developers of those clients, if dropping the fallback would
+negatively impact them or if they would be fine with implementing proper
+replies.
 
 ## Unstable prefix
 
