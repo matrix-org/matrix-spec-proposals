@@ -445,7 +445,61 @@ Clients MUST implement proper percent-encoding of the identifiers; there's no
 liberty similar to that of matrix.to.
 
 
-## Discussion points and tradeoffs
+## Discussion and non-normative statements
+
+### Further evolution
+
+This MSC is obviously just the first step, keeping the door open for
+extensions. Here are a few ideas:
+
+* Add new actions; e.g. leaving a room (`action=leave`).
+
+* Add specifying a segment of the room timeline (`from=$evtid1&to=$evtid2`).
+
+* Unlock bare event ids (`matrix:event/$event_id`) - subject to changes in
+  other areas of the specification.
+
+* Bring tangible semantics to the authority part. The main purpose of
+  the authority part,
+  [as per RFC 3986](https://tools.ietf.org/html/rfc3986#section-3.2),
+  is to identify the authority governing the namespace for the rest
+  of the URI. This MSC restates the RFC definitions for
+  [`host`](https://tools.ietf.org/html/rfc3986#section-3.2.2) and
+  [`port`](https://tools.ietf.org/html/rfc3986#section-3.2.3) but
+  doesn't go further, calling for a separate MSC that would define semantics of
+  the `host:port` pair. RFC 3986 also includes provisions for user
+  information but this MSC explicitly excludes them from the authority grammar,
+  on the grounds that user information has historically been a vector of
+  widespread abuse. If providing a user identity via the authority part is
+  found to be of value (with alleviated security concerns) in some case,
+  a separate MSC should both re-add it to the grammar of the authority part
+  and define how to construct, parse, and use it.
+
+  Importantly, future MSCs are advised against using the authority part for
+  _routing over federation_ (the case for `via=` query items), as it would be
+  against the spirit of RFC 3986. The authority part can be used in cases when
+  a given Matrix entity is only available from certain servers (the case of
+  closed federations or non-federating servers). A request to the server
+  resolved from the authority part means that the client should be, as the name
+  implies, _authorised_ by the authority server to access the requested
+  resource. That, in turn, implies that the resource is either available
+  to guests on the authority server, or the end user must be authenticated
+  (and their access rights checked) by (or on behalf of) _that server_ in order
+  to access the resource. While being a part of the original proposal,
+  the definition of the authority semantics has been dropped as a result of
+  [the discussion](https://github.com/matrix-org/matrix-doc/pull/2312#discussion_r348960282)
+  (also referred to in the previous section).
+
+* One could conceive a URI mapping of avatars in the form of
+  `matrix:user/uid:matrix.org/avatar/room:matrix.org`
+  (a user’s avatar for a given room).
+
+* As described in "Alternatives" and "Discussion points", respectively, one can introduce a synonymous
+  system that uses Matrix identifiers with sigils by adding another path
+  prefix (e.g., `matrix:id/%23matrix:matrix.org`).
+
+
+### Past discussion points and tradeoffs
 
 The below documents the discussion and outcomes in various prior forums;
 further discussion should happen in GitHub comments.
@@ -468,21 +522,19 @@ further discussion should happen in GitHub comments.
    public rooms known to the user's homeserver).
 1. _Should we advise using the query part for collections then?_
    Not in this MSC but that can be considered in the future.
-1. _Why not Reddit-style single-letter type specifiers? That's almost
-   as compact as a sigil, still pretty clearly conveys the type,
-   and nicely avoids the singular vs. plural confusion._
-   Reddit-style prefixes would eventually produce bigger ambiguity as
-   primary notation; but they can be handy as shortcuts. As discussed
-   further below, the current proposal provides enough space to define
-   synonyms; this may need some canonicalisation service from homeservers
-   so that we don't have to enable synonyms at each client individually.
-1. _Why can an event URI not use the fragment part for the event ID?_
+1. _Why can't event URIs use the fragment part for the event ID?_
    Because fragment is a part processed exclusively by the client
    in order to navigate within a larger document, and room cannot
    be considered a "document". Each event can be retrieved from the server
    individually, so each event can be viewed as a self-contained document.
    When/if URI processing is shifted to the server-side, servers are not even
-   going to receive fragments (as per RFC 3986).
+   going to receive fragments (as per RFC 3986), which is why usage of 
+   fragments to remove the need for percent-encoding in other identifiers
+   would lead to URIs that cannot be resolved on servers. Effectively, all
+   clients would have to implement full URI processing with no chance
+   to offload that to the server. For that reason fragments, if/when ever
+   employed in Matrix, only should be used to pinpoint a position within events
+   and for similar strictly client-side operations.
 1. _Interoperability with
    [Linked Data](https://en.wikipedia.org/wiki/Linked_data)_ is out of
    scope of this MSC but worth being considered separately.
@@ -497,56 +549,25 @@ further discussion should happen in GitHub comments.
    Use `via=` in order to point to a homeserver in the closed federation.
    The authority part may eventually be used for that but further discussion
    is needed on how clients should support it without compromising privacy
-   (see https://github.com/matrix-org/matrix-doc/pull/2312#discussion_r348960282
-   for the original concern).
+   (see [the discussion on the issue](https://github.com/matrix-org/matrix-doc/pull/2312#discussion_r348960282)).
 
 
-## Further evolution
+### Alternatives
 
-This section is non-normative.
+#### Reddit-style URLs
 
-This MSC is obviously just the first step, keeping the door open for
-extensions. Here are a few ideas:
+Reddit style (`matrix:r/matrix:matrix.org`, `matrix:u/me:example.org` etc.)
+is almost as compact as original Matrix identifiers, while still rather
+clearly conveys the type and nicely avoids the singular vs. plural confusion
+described in the previos section. However, in the context of high requirements
+to URL grammar stability, Reddit-style prefixes would eventually produce
+bigger ambiguity as a primary notation; but they can be handy as shortcuts.
+As discussed in "Future evolution", the current proposal provides enough space
+to define synonyms; this may need some canonicalisation service from
+homeservers so that we don't have to enable synonyms at each client
+individually.
 
-* Add new actions; e.g. leaving a room (`action=leave`).
-* Add specifying a segment of the room timeline (`from=$evtid1&to=$evtid2`).
-* Unlock bare event ids (`matrix:event/$event_id`) - subject to changes in
-  other areas of the specification.
-* One area of possible evolution is bringing tangible semantics to
-  the authority part. The main purpose of the authority part,
-  [as per RFC 3986](https://tools.ietf.org/html/rfc3986#section-3.2),
-  is to identify the authority governing the namespace for the rest
-  of the URI. This MSC reuses the RFC definitions for
-  [`host`](https://tools.ietf.org/html/rfc3986#section-3.2.2) and
-  [`port`](https://tools.ietf.org/html/rfc3986#section-3.2.3).
-  RFC 3986 also includes provisions for user information -
-  this MSC explicitly excludes them. If providing a user identity
-  in the authority part is found to be of value in some case,
-  this should be addressed in a separate MSC.
-
-  Importantly, the authority part is _not_ intended for usage in routing
-  over federation; rather, it is for cases when a given Matrix
-  entity is not expected to be reachable through federation (such as
-  unfederated rooms or non-public Matrix networks). Sending requests
-  to the server resolved from the authority part means that the client
-  should be, as the name implies, _authorised_ by the authority server
-  to access the requested resource. That, in turn, implies that the resource
-  is either available to guests on the authority server, or the end user
-  must be authenticated (and their access rights checked)
-  on that server in order to access the resource. While being a part
-  of the original proposal, the semantics for the authority part have
-  been dropped from the normative part as a result of MSC discussion.
-* One could conceive a URI mapping of avatars in the form of
-  `matrix:user/uid:matrix.org/avatar/room:matrix.org`
-  (a user’s avatar for a given room).
-* As described below in "Alternatives", one can introduce a synonymous
-  system that uses Matrix identifiers with sigils by adding another path
-  prefix (`matrix:id/%23matrix:matrix.org`).
-
-
-## Alternatives
-
-### URNs
+#### URNs
 
 The discussion in
 [MSC455](https://github.com/matrix-org/matrix-doc/issues/455)
@@ -565,8 +586,7 @@ to meet the URN's hierarchical order would look confusing for Matrix
 users (as in example above - is `room` a part of the identifier or
 the type signifier?).
 
-
-### "Full REST" 
+#### "Full REST" 
 
 Yet another alternative considered was to go "full REST" and build
 a more traditionally looking URL structure with serverparts coming first
@@ -574,12 +594,11 @@ followed by type grouping (sic - not specifiers) and then by localparts,
 i.e. `matrix://example.org/rooms/roomalias`. This is even more
 difficult to comprehend for a Matrix user than the previous alternative
 and besides it conflates the notion of an authority server with
-that of a namespace (`example.org` above is a server part of an alias,
-not the name of a hypothetical homeserver that should be used to resolve
-the URI).
+that of a namespace (quite confusingly, `example.org` above is
+the _domain name_ - aka server part - of an alias, not a _host name_
+of a hypothetical homeserver that should be used to resolve the URI).
 
-
-### Minimal syntax
+#### Minimal syntax
 
 One early proposal was to simply prepend `matrix:` to a Matrix identifier
 (without encoding it), assuming that it will only be processed on the client
@@ -589,8 +608,7 @@ correctly. As laid out in the beginning of this proposal, Matrix URIs are
 not striving to preempt Matrix identifiers; instead of trying to produce
 an equally readable string, one should just use identifiers where they work.
 
-
-### Minimal syntax based on path and percent-encoding
+#### Minimal syntax based on path and percent-encoding
 
 A simple modification of the previous option is much more viable:
 proper percent-encoding of the Matrix identifier allows to use it as
@@ -598,17 +616,27 @@ a URI path part. A single identifier packed in a URI could look like
 `matrix:/encoded_id_with_sigil`; an event-in-a-room URI would be something
 like `matrix:/roomid_or_alias/$event_id` (NB: RFC 3986 doesn't require `$`
 to be encoded). This is considerably more concise and encoding is only
-needed for `#` - quite unfortunately, this is one of the most used sigils
-in Matrix. E.g., `matrix:/%23matrix:matrix.org` would be a URI for
-Matrix HQ chat room.
+needed for `#`.
+
+Quite unfortunately, `#` is one of the two sigils in Matrix most relevant
+to integration cases. The other one is `@`; it doesn't need encoding outside
+of the authority part - which is why the form above uses a leading `/` that
+puts the identifier in the path part instead of what parsers treat as
+the authority part. `#` has to be encoded wherever it appears, making a URI
+for Matrix HQ, the first chat room many new users join, look like
+`matrix:/%23matrix:matrix.org`. Beyond first-time usage, this generally impacts
+[the "napkin" case](https://tools.ietf.org/html/rfc3986#section-1.2.1) from
+RFC 3986 that the Requirements section of this MSC mentions. Until we have
+applications generally recognising Matrix identifiers in the same way e-mail
+addresses are recognised without prefixing `mailto:`, we should live with
+the fact that people will have to produce Matrix URIs by hand in various
+instances, from pen-and-paper to other instant messengers.
 
 Putting the whole id to the URI fragment (`matrix:#id_with_sigil` or,
 following on the `matrix.to` tradition, `matrix:#/id_with_sigil` for
 readability) allows to use `#` without encoding on many URI parsers. It is
-still not fully RFC3986-compliant but the bigger problem is that putting
-the identifying part to the fragment rules out using URIs in client-server
-communication. Effectively all clients will have to implement full URI
-processing with no chance to offload that to the server.
+still not fully RFC-compliant and rules out using URIs by homeservers
+(see also "Past discussion points").
 
 Regardless of the placement (the fragment or the path), one more consideration
 is that the character space for sigils is extremely limited and
