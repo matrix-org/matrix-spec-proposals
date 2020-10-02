@@ -48,13 +48,13 @@ if Alice had previously uploaded one.  Unlike with one-time keys, fallback keys
 are not deleted when they are returned by `/keys/claim`.  However, the server
 marks that they have been used.
 
-A new response parameter, `device_unused_fallback_keys`, is added to `/sync`.
-This is an array listing the key algorithms for which the server has an unused
-fallback key for the user.  If the client wants the server to have a fallback
-key for a given key algorithm, but that algorithm is not listed in
-`device_unused_fallback_keys`, the client will upload a new key as above.
+A new response parameter, `device_unused_fallback_key_types`, is added to
+`/sync`.  This is an array listing the key algorithms for which the server has
+an unused fallback key for the user.  If the client wants the server to have a
+fallback key for a given key algorithm, but that algorithm is not listed in
+`device_unused_fallback_key_types`, the client will upload a new key as above.
 
-The `device_unused_fallback_keys` parameter must be present if the server
+The `device_unused_fallback_key_types` parameter must be present if the server
 supports fallback keys.  Clients can thus treat this field as an indication
 that the server supports fallback keys, and so only upload fallback keys to
 servers that support them.
@@ -68,7 +68,7 @@ Response:
 ```json
 {
   // other fields...
-  "device_unused_fallback_keys": ["signed_curve25519"]
+  "device_unused_fallback_key_types": ["signed_curve25519"]
 }
 ```
 
@@ -93,5 +93,5 @@ to detect replays.
 
 ## Unstable prefix
 
-The `fallback_key` request parameter and the `device_unused_fallback_keys`
+The `fallback_key` request parameter and the `device_unused_fallback_key_types`
 response parameter will be prefixed by `org.matrix.msc2732.`.
