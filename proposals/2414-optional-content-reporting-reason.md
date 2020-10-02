@@ -1,8 +1,10 @@
 # MSC2414: Make `reason` and `score` optional for reporting content
 
 ## Proposal
-This MSC proposes to remove the `required` flag for both the `reason` and `score`
-parameters, as well as the "may be blank" clause in the description of `reason`.
+
+On the [report content API](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-report-eventid)
+we remove the `required` flag for both the `reason` and `score` parameters, as
+well as the "may be blank" clause in the description of `reason`.
 
 ## Rationale
 
