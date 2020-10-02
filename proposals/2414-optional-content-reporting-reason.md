@@ -2,7 +2,7 @@
 
 ## Proposal
 
-On the [report content API](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-report-eventid)
+On the [report content endpoint](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-report-eventid)
 we remove the `required` flag for both the `reason` and `score` parameters, as
 well as the "may be blank" clause in the description of `reason`.
 
