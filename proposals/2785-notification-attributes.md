@@ -245,8 +245,8 @@ actions are defined initially:
    want to use different sounds).
 
    It is also expected that there will be no audible alert if there is no
-   visible UI (eg, if the client is backgrounded and there is no accompanying
-   `m.notify`).
+   visible UI (eg, in the case of a mobile client where that client is
+   backgrounded and there is no accompanying `m.notify`).
 
  * `m.highlight`: Clients should "highlight" the room containing the event in
    some way. Note that this is distinct from rooms containing other unread
@@ -352,7 +352,11 @@ anticipated to be a good starting point.
 Encrypted events necessitate some special handling.
 
 Firstly, clients must decrypt events before assigning notification
-attributes. They can then proceed as normal with the rest of the algorithm.
+attributes. They can then proceed as normal with the rest of the algorithm. (In
+practice, they may be able to optimise this process: for example, some
+attributes such as `m.dm` can be can be calculated without decryption; if the
+user's notification profile has no mappings which are dependent on the
+decrypted content of an event, there is no need to decrypt.)
 
 Homeservers cannot decrypt events, so must proceed as if every event could
 cause a notification. In particular:
