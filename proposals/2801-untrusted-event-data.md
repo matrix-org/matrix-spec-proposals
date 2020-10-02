@@ -25,7 +25,11 @@ these reasons may appear to have trivial solutions; these are discussed below.
     Any event sent in this way will be returned to the clients of all the other
     users in the room.
 
- 2. In order to allow the Matrix protocol to be extensible, server
+ 2. Events may be encrypted. Any client implementing E2EE must be prepared to
+    deal with any encrypted content, since by definitioon a server cannot
+    validate it.
+
+ 3. In order to allow the Matrix protocol to be extensible, server
     implementations must tolerate unknown event types, and allow them to be
     passed between clients. It is obvious that a pair of custom clients
     implementing a `com.example.special.event` event type cannot rely on a
@@ -39,7 +43,7 @@ these reasons may appear to have trivial solutions; these are discussed below.
     `m.room.encrypted` event, so if a client is connected to such a server, it
     could receive malformed events.
 
- 3. To extend from point 2, the problem is not even resolved by upgrading the
+ 4. To extend from point 3, the problem is not even resolved by upgrading the
     server. There may now be rooms which contain historical events which would
     no longer be accepted, but these will still be served by the server.
 
@@ -50,12 +54,12 @@ these reasons may appear to have trivial solutions; these are discussed below.
     It is possible, if unlikely, that a client could have uploaded an
     `m.identity_server` event before the administrator upgraded the server.
 
- 3. Event redaction removes certain keys from an event. This is a bit of a
+ 5. Event redaction removes certain keys from an event. This is a bit of a
     trivial case, though it is worth noting that the rules for event redaction
     vary between room versions, so it's possible to see a variety of "partial"
     events.
 
- 4. All the cases above can occur without federation. Federation adds
+ 6. All the cases above can occur without federation. Federation adds
     additional complexities due to the structure of Matrix rooms. In
     particular, a server implementation cannot simply ignore any malformed
     events since such events may either be critical to the structure of the
@@ -172,7 +176,8 @@ unvalidated data.
 
 Short of closely coupling server and client versions - which violates the
 fundamental ethos of the Matrix project - there is nothing that can completely
-prevent clients from having to handle untrusted data.
+prevent clients from having to handle untrusted data. In addition, encrypted
+events eliminate any possibility of server-side validation.
 
 With that in mind, the advantages of the ideas above are diminished. If clients
 must handle untrusted data in some circumstances, why not in all? "You can
