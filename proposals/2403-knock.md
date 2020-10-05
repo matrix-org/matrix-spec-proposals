@@ -50,20 +50,21 @@ rules from room version 5 are:
   ```
   a. If `membership` is `knock`:
     i. If the `join_rule` is anything other than `knock`, reject.
-    ii. If `sender` matches `state_key`, reject.
-    iii. If the `sender`'s current membership state is not `join`, reject.
-    iv. If the *target user*'s membership is not `ban` or `join`, allow.
-    v. Otherwise, reject.
+    ii. If `sender` does not match `state_key`, reject.
+    iii. If the `sender`'s membership is not `ban` or `join`, allow.
+    iv. Otherwise, reject.
   ```
 
   Note that:
-    - a.ii is justified as it doesn't make sense for a user that is already
-      in the room to knock.
-    - a.iii is justified as an event should be rejected if it was sent by
-      someone not in the room (note the sender of a knock event is the
-      homserver that's in the room, rather than the homeserver knocking).
-    - a.iv is justified as knocks should be allowed if the knocking user has
-      been banned from the room, or they're already in the room.
+    - The `sender` field in the event is set to the user ID of the knocking
+      user, not any other user in the room that belongs to a homeserver that
+      the knocking user is using to inject into the room DAG. This is separate
+      from an invite membership event, where the `sender` is the inviter and
+      the `state_key` is the invitee.
+    - a.ii is justified as one user should not be able to knock on behalf of
+      another user.
+    - a.iii is justified as knocks should not be allowed if the knocking user
+      has been banned from the room, or if they are already in the room.
     - Knocks are not restricted by power level like invites are. The `join_rules`
       are already used to enforce whether someone can or cannot knock.
 
@@ -71,13 +72,15 @@ rules from room version 5 are:
 * Under "11. If type is `m.room.redaction`", the following should be added:
 
   ```
-  a. If the type of the `event_id` of the event being redacted is `m.room.member` and the `membership` field in its `content` dictionary is `knock`, reject.
+  a. If the type of the `event_id` of the event being redacted is
+     `m.room.member` and the `membership` field in its `content` dictionary is
+     `knock`, reject.
   ```
 
   Notes:
     - The server you sent a knock through later should not be able to redact
-    that knock afterwards. The knock should instead be rejected by whoever
-    has the authority to.
+      that knock afterwards. The knock should instead be rejected by whoever
+      has the authority to.
 
   XXX: Is this the best place in the auth rules to enforce this?
 
