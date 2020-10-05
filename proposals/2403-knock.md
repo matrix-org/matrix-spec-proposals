@@ -20,10 +20,12 @@ room. An example for the membership would look like the following:
 }
 ```
 
-After a knock in a room, a member of the room can invite the knocker.
+After a knock in a room, a member of the room can invite the knocker, or they
+can decide to reject it instead.
 
 ## Restrictions
-There are restrictions to being able to set this membership.
+There are restrictions to being able to set this membership, as well as
+accepting or denying the knock.
 
 ### Current membership
 Only users without a current membership or with their current membership
@@ -37,11 +39,11 @@ must be set to "knock" for a knock to succeed. This means that existing rooms
 will need to opt into allowing knocks in their rooms. Other than allowing
 knocks, "knock" is no different from the "invite" join rule.
 
-As the join rules are moedified, the auth rules are as well. The [current
-auth rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules) are
-defined by each room version. Thus, to change these rules, implementation of
-this proposal must be done in a new room version. The explicit changes to the
-auth rules from room version 5 are:
+As the join rules are modified, the auth rules are as well. The [current auth
+rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules) are defined
+by each room version. To change these rules, the implementation of this
+proposal must be done in a new room version. The explicit changes to the auth
+rules from room version 5 are:
 
 * Under "5. If type is `m.room.member`", the following should be added:
 
@@ -54,7 +56,7 @@ auth rules from room version 5 are:
     v. Otherwise, reject.
   ```
 
-  Notes:
+  Note that:
     - a.ii is justified as it doesn't make sense for a user that is already
       in the room to knock.
     - a.iii is justified as an event should be rejected if it was sent by
@@ -62,10 +64,9 @@ auth rules from room version 5 are:
       homserver that's in the room, rather than the homeserver knocking).
     - a.iv is justified as knocks should be allowed if the knocking user has
       been banned from the room, or they're already in the room.
+    - Knocks are not restricted by power level like invites are. The `join_rules`
+      are already used to enforce whether someone can or cannot knock.
 
-    XXX: Is it a problem that any homeserver in the room can send a knock
-    event in? Even if they don't have the power level to send any other
-    events?
 
 * Under "11. If type is `m.room.redaction`", the following should be added:
 
@@ -74,9 +75,9 @@ auth rules from room version 5 are:
   ```
 
   Notes:
-    - It seems bad if the server you sent a knock through later redacts that
-    knock, hence adding this. Ideally the knock should just be rejected
-    instead.
+    - The server you sent a knock through later should not be able to redact
+    that knock afterwards. The knock should instead be rejected by whoever
+    has the authority to.
 
   XXX: Is this the best place in the auth rules to enforce this?
 
@@ -94,11 +95,12 @@ Let's talk about each one of these in more detail.
 
 ### Membership change to `invite`
 
-The knock has been accepted by someone.
-This user must have the power level to perform invites. The user's homeserver
-will then send an invite - over federation if necessary - to the knocking
-user. The knocking user may then join the room as if they had been invited
-normally.
+The knock has been accepted by someone in the room.
+
+The user who is accepting the knock must have the power level to perform
+invites. The user's homeserver will then send an invite - over federation if
+necessary - to the knocking user. The knocking user may then join the room as
+if they had been invited normally.
 
 The accept a knock, the client should call [`POST
 /_matrix/client/r0/rooms/{roomId}/invite`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-invite)
@@ -107,7 +109,7 @@ with the user ID of the knocking user in the JSON body.
 If the knocking user is on another homeserver, then the homeserver of the
 accepting user will call [`PUT
 /_matrix/federation/v2/invite/{roomId}/{eventId}`](https://matrix.org/docs/spec/server_server/r0.1.4#put-matrix-federation-v2-invite-roomid-eventid)
-on the knocking homeserver to inform it that its knock has been accepted.
+on the knocking homeserver to inform it that the knock has been accepted.
 
 The knocking homeserver should assume an invite to a room it has knocked on means
 that its knock has been accepted, even if the invite was not explicitly
@@ -116,7 +118,6 @@ related to the knock attempt.
 ### Membership change to `leave`
 
 The knock has been rejected by someone in the room.
-
 
 XXX: There is also an open question here about who should be able to reject a
 knock. When revoking an invite for a user, perhaps counter-intuitively, you
@@ -151,7 +152,9 @@ if it is sent by the homeserver we originally knocked through. We know this
 homeserver is (or at least was) in the room, so they're probably telling the
 truth. This is almost an edge case though, as while you'll knock through one
 homeserver in the room, there's no guarantee that the admin that denies your
-knock will be on the same homeserver you knocked through. Perhaps the homeserver you knocked through could listen for this and then send the event back to you - but what if it goes offline in the meantime?
+knock will be on the same homeserver you knocked through. Perhaps the
+homeserver you knocked through could listen for this and then send the event
+back to you - but what if it goes offline in the meantime?
 
 As such, this feature working over federation is de-scoped for now, and left
 to a future MSC which can solve this problem across the board for all
@@ -162,7 +165,8 @@ they have access to the events it references.
 
 ### Membership change to `ban`
 
-The knock has been rejected by someone.
+The knock has been rejected by someone in the room and the user has been
+banned, and is unable to send further knocks.
 
 This one is fairly straightforward. Someone with the appropriate power levels
 in the room bans the user. This will have the same effect as rejecting the
@@ -173,6 +177,9 @@ If the user is unbanned, then knocks will be accepted again.
 
 To ban the user, the client should call [`POST
 /_matrix/client/r0/rooms/{roomId}/ban`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-ban) with the user ID of the knocking user in the JSON body.
+
+Informing the knocking user about the update is the same as rejecting the
+knock.
 
 
 ## Client-Server API
