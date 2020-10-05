@@ -1,6 +1,4 @@
-# Full Abstraction MSC
-
-# MSCXXXX: Full Abstraction
+# MSC2802: Full Room Abstraction
 
 This proposal aims to provide a re-imagining of the Matrix Specification, making it less opinionated towards Instant-Messaging, abstracting it, while preserving all features currently encoded in the spec.
 
