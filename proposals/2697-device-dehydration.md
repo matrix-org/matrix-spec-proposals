@@ -14,63 +14,20 @@ receive any to-device messages that were sent to the dehydrated device.
 
 ## Proposal
 
-### Rehydrating a device
-
-A new parameter, `restore_device` is added to `POST /login`, indicating that the
-client can restore a previously stored device.  If the parameter is not
-present, it defaults to `false`.  If the server has a stored device that can be
-used, it will respond with the same response as a normal login, with the
-following exceptions:
-
-- no `access_token` is provided
-- a `device_data` property is provided, containing information about the
-  dehydrated device that the client uses to try to rehydrate the device
-- a `dehydration_token` is provided, giving a token that the client uses to
-  complete the login.  The token may be expired if it is not used within a
-  reasonable amount of time (for example, 10 minutes).
-
-If the server does not have a stored device, or does not understand device
-dehydration, then it will respond as if a normal login request were made.
-
-The client will try to decrypt the device data (see below for encryption).  The
-client will then make a `POST /restore_device` request, with the
-`dehydration_token` body parameter set to the token received from the server.
-If it was successful and it wishes to use the device, then it will set the
-`rehydrate` body parameter set to `true`.  Otherwise, it will set `rehydrate`
-to `false`.
-
-The server will return an object in the same format as the response for a
-normal login.  The client will use the device ID given to determine if it
-should use the dehydrated device, or if it should use a new device.  Even if
-the client was able to successfully decrypt the device data, it may not be
-allowed to use it.  For example, two clients may race in trying to dehydrate
-the device; only one client should use the dehydrated device.  In the case of a
-race, the server will give the dehydrated device's ID to one client, and
-generate a new device ID for any other clients.  Another potential reason that
-the client may not be allowed to use the dehydrated device is if the device was
-deleted.
-
-If the dehydrated device is not used (whether because the client set
-`rehydrate` to `false`, or because the server indicated that the client is not
-able to use the dehydrated device), the server will use the `device_id` and
-`initial_device_display_name` parameters from the client's original call to
-`/login`, if they were provided, to create a device for the user.  If the
-dehydrated device is used, the server will set the device's name to the
-`initial_device_display_name` from the client's original call to `/login`, if
-it was provided.
-
-After `POST /restore_device` returns, the client is logged in and may proceed
-as normal.
-
 ### Dehydrating a device
 
-To upload a new dehydrated device, a client will use `POST /device/dehydrate`.
+To upload a new dehydrated device, a client will use `PUT /dehydrated_device`.
 Each user has at most one dehydrated device; uploading a new dehydrated device
 will remove any previously-set dehydrated device.
 
+`PUT /dehydrated_device`
+
 ```json
 {
-  "device_data": {"device": "data"},
+  "device_data": {
+    "algorithm": "m.dehydration.v1.olm"
+    "other_fields": "other_values"
+  },
   "initial_device_display_name": "foo bar",
 }
 ```
@@ -79,29 +36,87 @@ Result:
 
 ```json
 {
-  "device_id": "deviceid"
+  "device_id": "dehydrated device's ID"
 }
 ```
 
 After the dehydrated device is uploaded, the client will upload the encryption
 keys using `POST /keys/upload/{device_id}`, where the `device_id` parameter is
-the device ID given in the response to `/device/dehydrate`.
+the device ID given in the response to `PUT /dehydrated_device`.  The request
+and response formats for `POST /keys/upload/{device_id}` are the same as those
+for `POST /keys/upload` with the exception of the addition of the `device_id`
+path parameter.
 
-FIXME: synapse already supports `POST /keys/upload/{device_id}`, but requires
-that the given device ID matches the device ID of the client that made the
-call.  We need to (re-)add the endpoint, and allow uploading keys for the
-dehydrated device.
+Note: Synapse already supports `POST /keys/upload/{device_id}` as this was used
+in some old clients.  However, synapse requires that the given device ID
+matches the device ID of the client that made the call.  So this will be
+changed to allow uploading keys for the dehydrated device.
+
+### Rehydrating a device
+
+To rehydrate a device, a client first logs in as normal and then calls `GET
+/dehydrated_device` to see if a dehydrated device is available.  If a device is
+available, the server will respond with the dehydrated device's device ID and
+the dehydrated device data.
+
+`GET /dehydrated_device`
+
+Response:
+
+```json
+{
+  "device_id": "dehydrated device's ID",
+  "device_data": {
+    "algorithm": "m.dehydration.v1.olm",
+    "other_fields": "other_values"
+  }
+}
+```
+
+If no dehydrated device is available, the server responds with a 404.
+
+If the client is able to decrypt the data and wants to use the dehydrated
+device, the client calls `POST /dehydrated_device/claim` to tell the server
+that it wishes to do so.  The request includes the device ID of the dehydrated
+device to ensure that it is still available.
+
+If the requested device is still the current dehydrated device and has not
+already been claimed by another client, the server responds with a successful
+response.  The server also changes the device ID associated with the client's
+access token to the device ID of the dehydrated device, and will change the
+device display name for the dehydrated device to the display name given when
+the client logged in.
+
+`POST /dehydrated_device/claim`
+
+```json
+{
+  "device_id": "dehydrated device's ID"
+}
+```
+
+Response:
+
+```json
+{
+  "success": true
+}
+```
+
+If the requested device ID does not belong to the user's current dehydrated
+device or the dehydrated device has already been claimed, the server responds
+with a 404.
 
 ### Device dehydration format
 
 The `device_data` property is an object that has an `algorithm` field
 indicating what other fields are present.
 
-#### `m.dehydration.v1.olm`
+#### `m.dehydration.v1.olm.libolm_pickle`
 
 - `passphrase`: Optional.  Indicates how to generate the decryption key from a
   passphrase.  It is in the same format with Secure Secret Storage.
-- `account`: Required. ... FIXME: should we just reuse libolm's pickle format?
+- `account`: Required. FIXME: libolm's pickle format
 
 ## Potential issues
 
@@ -162,8 +177,9 @@ could access it and read the user's encrypted messages.
 
 ## Unstable prefix
 
-While this MSC is in development, the `POST /restore_device` endpoint will be
-reached at `POST /unstable/org.matrix.msc2697/restore_device`, and the `POST
-/device/dehydrate` endpoint will be reached at `POST
-/unstable/org.matrix.msc2697/device/dehydrate`.  The `restore_device` parameter
-for `POST /login` will be called `org.matrix.msc2697.restore_device`.
+While this MSC is in development, the `/dehydrated_device` endpoints will be
+reached at `/unstable/org.matrix.msc2697.v2/dehydrated_device`, and the
+`/dehydrated_device/claim` endpoint will be reached at
+`/unstable/org.matrix.msc2697.v2/dehydrated_device`.  The dehydration algorithm
+`m.dehydration.v1.olm.libolm_pickle` will be called
+`org.matrix.msc2697.v1.olm.libolm_pickle`.
