@@ -107,6 +107,12 @@ If the requested device ID does not belong to the user's current dehydrated
 device or the dehydrated device has already been claimed, the server responds
 with a 404.
 
+Clients should not call any other endpoints before rehydrating a device.  In
+particular, if a client calls `/sync` while rehydrating, the client should not
+expect the `/sync` to return sensible information.  For example, it could
+contain a mix of to-device messages sent to the old device ID and the new
+device ID.
+
 ### Device dehydration format
 
 The `device_data` property is an object that has an `algorithm` field
