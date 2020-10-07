@@ -55,7 +55,6 @@ paths:
               "score": -100,
               "reason": "this makes me sad"
             }
-            required: ['score', 'reason']
             properties:
               score:
                 type: integer
