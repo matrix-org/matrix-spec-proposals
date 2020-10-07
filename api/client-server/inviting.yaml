@@ -67,12 +67,18 @@ paths:
           schema:
             type: object
             example: {
-                "user_id": "@cheeky_monkey:matrix.org"
-              }
+              "user_id": "@cheeky_monkey:matrix.org",
+              "reason": "Welcome to the team!"
+            }
             properties:
               user_id:
                 type: string
                 description: The fully qualified user ID of the invitee.
+              reason:
+                type: string
+                description: |-
+                  Optional reason to be included as the ``reason`` on the subsequent
+                  membership event.
             required: ["user_id"]
       responses:
         200:

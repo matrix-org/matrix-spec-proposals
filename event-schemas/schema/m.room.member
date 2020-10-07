@@ -67,6 +67,15 @@ properties:
       is_direct:
         description: Flag indicating if the room containing this event was created with the intention of being a direct chat. See `Direct Messaging`_.
         type: boolean
+      reason:
+        type: string
+        description: |-
+          Optional user-supplied text for why their membership has changed. For kicks and bans, this is typically the reason for the kick or ban.
+          For other membership changes, this is a way for the user to communicate their intent without having to send a message to the room, such
+          as in a case where Bob rejects an invite from Alice about an upcoming concert, but can't make it that day.
+
+          Clients are not recommended to show this reason to users when receiving an invite due to the potential for spam and abuse. Hiding the
+          reason behind a button or other component is recommended.
       third_party_invite:
         properties:
           display_name:
