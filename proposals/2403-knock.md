@@ -67,22 +67,10 @@ rules from room version 5 are:
       has been banned from the room, or if they are already in the room.
     - Knocks are not restricted by power level like invites are. The `join_rules`
       are already used to enforce whether someone can or cannot knock.
-
-
-* Under "11. If type is `m.room.redaction`", the following should be added:
-
-  ```
-  a. If the type of the `event_id` of the event being redacted is
-     `m.room.member` and the `membership` field in its `content` dictionary is
-     `knock`, reject.
-  ```
-
-  Notes:
-    - The server you sent a knock through later should not be able to redact
-      that knock afterwards. The knock should instead be rejected by whoever
-      has the authority to.
-
-  XXX: Is this the best place in the auth rules to enforce this?
+  
+Additionally, note that redactions of knock events are not a concern, as
+`membership` keys are excluded from being redacted as defined by all current
+room versions.
 
 ## Membership changes
 Once someone has sent a `knock` membership into the room, the membership for
