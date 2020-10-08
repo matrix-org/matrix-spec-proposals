@@ -42,7 +42,7 @@ paths:
           name: Content-Type
           type: string
           description: The content type of the file being uploaded
-          x-example: "Content-Type: application/pdf"
+          x-example: "application/pdf"
         - in: query
           type: string
           x-example: "War and Peace.pdf"
