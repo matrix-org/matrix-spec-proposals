@@ -42,14 +42,14 @@ A modal widget takes a very similar shape to the common widget properties defini
   "waitForIframeLoad": true,
   "buttons": [
     {"id": "com.example.save", "label": "Submit", "kind": "m.primary"},
-    {"id": "m.close", "label": "Close", "kind": "m.link"}
+    {"id": "m.close", "label": "Cancel", "kind": "m.link"}
   ]
 }
 ```
 
-Most notably, the `creatorUserId` is not supported on modal widgets and is implied to be the currently
-active user ID. All the other properties in common with the standard widget definition keep their
-meanings and requirements as specified.
+Most notably, the `creatorUserId` is not present on modal widgets and is implied to be the currently
+active user ID. When supplied, the client should ignore it. All the other properties in common with
+the standard widget definition keep their meanings and requirements as specified.
 
 The `buttons` array is only valid on modal widgets and is optional. When not supplied or invalid, its
 value is implied to be an empty array (no buttons). Buttons have 3 properties to them, all required:
@@ -80,12 +80,12 @@ An example rendering of the above example widget would be as follows:
 
 In this example, the title is the `name` of the widget (a subtitle could be shown from the `title`
 attribute under `data`, if present). The iframe in the middle is simply the modal widget itself,
-rendered just like any other widget would (fill in the `url` template, render). The buttons at
+rendered just like any other widget would be (fill in the `url` template, render). The buttons at
 the bottom are specified by the `buttons` array.
 
 The example image has a close button in the top right too - this is an example of the client
 rendering the `m.close` ID'd button in custom UI. When clicked, this would behave exactly like
-the "Close" button on the bottom.
+the "Cancel" button on the bottom.
 
 Room and account widgets, assuming they have the appropriate capability, can open modal widgets
 with a `fromWidget` API request as follows:
@@ -106,7 +106,7 @@ with a `fromWidget` API request as follows:
     "waitForIframeLoad": true,
     "buttons": [
       {"id": "com.example.save", "label": "Submit", "kind": "m.primary"},
-      {"id": "m.close", "label": "Close", "kind": "m.link"}
+      {"id": "m.close", "label": "Cancel", "kind": "m.link"}
     ]
   }
 }
@@ -155,7 +155,7 @@ looks like the following:
     "waitForIframeLoad": true,
     "buttons": [
       {"id": "com.example.save", "label": "Submit", "kind": "m.primary"},
-      {"id": "m.close", "label": "Close", "kind": "m.link"}
+      {"id": "m.close", "label": "Cancel", "kind": "m.link"}
     ]
   }
 }
