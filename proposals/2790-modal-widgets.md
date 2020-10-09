@@ -60,7 +60,7 @@ value is implied to be an empty array (no buttons). Buttons have 3 properties to
 * `label` - A human-readable string for the text of the button.
 * `kind` - Using MSC2758 again, the kind of button the client should present the button as. Clients
   which do not understand the `kind` or do not have styling rules for the `kind` should render the
-  button as a `m.primary` button. This MSC defines the following common types:
+  button as a `m.secondary` button. This MSC defines the following common types:
   * `m.primary` - A button which is styled as the primary action. Usually this will mean a background
     of the client's accent colour.
   * `m.secondary` - A button which is styled similar to the primary button but denotes secondary action.
