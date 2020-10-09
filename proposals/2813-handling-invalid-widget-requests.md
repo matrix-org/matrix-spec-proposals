@@ -1,4 +1,4 @@
-# MSC0000: Handling invalid Widget API requests
+# MSC2813: Handling invalid Widget API requests
 
 Currently the widget specification (as of writing, https://github.com/matrix-org/matrix-doc/pull/2764
 is the best resource for this) does not specify what clients or widgets should do when they see invalid
