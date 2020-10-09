@@ -71,8 +71,8 @@ value is implied to be an empty array (no buttons). Buttons have 3 properties to
   * `m.link` - A button which looks like a link but has sizing to have it match other buttons.
 
 The client is not required to have styling rules for all button `kind`s, though is encouraged to
-support at least the ones listed in this MSC. Clients should ignore any buttons missing any of the
-3 required fields.
+support at least the ones listed in this MSC. Clients should ignore any buttons that do not fit
+the schema (missing required fields, invalid types, etc).
 
 An example rendering of the above example widget would be as follows:
 
