@@ -3,7 +3,7 @@
 Under the [current specification](https://github.com/matrix-org/matrix-doc/pull/2764), widgets are
 able to communicate with their client host, however doing so is a bit difficult if they don't already
 know their widget ID. Some widgets will be able to get their ID from another source like an
-integration managaer, however this is not the case for all widgets.
+integration manager, however this is not the case for all widgets.
 
 [MSC2762](https://github.com/matrix-org/matrix-doc/pull/2762) has a fair amount of background
 information on widgets, as does the current specification linked above.
