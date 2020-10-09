@@ -113,7 +113,7 @@ The properties within the event content are defined as follows:
 
  * `mentions`: an object containing booleans which define which events should
    qualify for `m.mention` attributes. See `m.mention` below. Each of the four
-   settings above (`displayname`, `mxid`, `localhost`, `room_notif`) defaults
+   settings above (`displayname`, `mxid`, `localpart`, `room_notif`) defaults
    to `false` if not present.
 
    If the whole `mentions` property is absent, all the inner attributes take
