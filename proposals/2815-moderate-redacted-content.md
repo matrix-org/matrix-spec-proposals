@@ -29,6 +29,13 @@ Clients should still always remove content when receiving a redaction event,
 but if the user has sufficient power, the client may show a button to re-fetch
 and display the redacted event content.
 
+### Implementation notes
+Some server implementations have implementation-specific concepts of "server
+admins". Such servers should allow server admins to bypass the power level
+checks involved in viewing redacted events. However, like other similar
+implementation details, there won't be any standard way for clients to
+determine if they can view a redacted message through server admin privileges.
+
 ## Alternatives
 ### Separate key in power levels
 Instead of reusing the `redact` power level, a new key could be introduced.
