@@ -13,8 +13,9 @@ server.
 
 ## Proposal
 The proposed solution is extending the `GET /rooms/{roomId}/event/{eventId}`
-endpoint with a query parameter, `include_redacted_content`, which requests
-the server to include the event content even if the event has been redacted.
+endpoint with a query parameter called `include_unredacted_content`. Clients
+can request the server to include content even if the event has been redacted
+by setting the parameter value to `true`.
 
 ### Server behavior
 Servers MUST check that the requester has a power level higher than or equal to
