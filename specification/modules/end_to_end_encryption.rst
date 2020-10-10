@@ -270,15 +270,15 @@ either ``m.file`` as the msgtype, or the appropriate msgtype for the file
 type. The key is sent using the `JSON Web Key`_ format, with a `W3C
 extension`_.
 
-.. anchor for link from m.message api spec
+.. anchor for link from m.room.message api spec
 .. |encrypted_files| replace:: End-to-end encryption
 .. _encrypted_files:
 
-Extensions to ``m.message`` msgtypes
+Extensions to ``m.room.message`` msgtypes
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 This module adds ``file`` and ``thumbnail_file`` properties, of type
-``EncryptedFile``, to ``m.message`` msgtypes that reference files, such as
+``EncryptedFile``, to ``m.room.message`` msgtypes that reference files, such as
 `m.file`_ and `m.image`_, replacing the ``url`` and ``thumbnail_url``
 properties.
 
