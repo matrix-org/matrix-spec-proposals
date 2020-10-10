@@ -79,19 +79,12 @@ The algorithms defined here should only apply to version 1 rooms. Other algorith
 may be used by other room versions, and as such servers should be aware of which
 version room they are dealing with prior to executing a given algorithm.
 
-.. WARNING::
-   Although room version 1 is the most popular room version, it is known to have
-   undesirable effects. Servers implementing support for room version 1 should be
-   aware that restrictions should be generally relaxed and that inconsistencies
-   may occur until room version 2 (or later) is ready and adopted.
-
 State resolution
 ~~~~~~~~~~~~~~~~
 
 .. WARNING::
-  This section documents the state resolution algorithm as implemented by
-  Synapse as of December 2017 (and therefore the de-facto Matrix protocol).
-  However, this algorithm is known to have some problems.
+   Room version 1 is known to have bugs that can cause the state of rooms to reset.
+   This is fixed in room version 2 and later.
 
 The room state :math:`S'(E)` after an event :math:`E` is defined in terms of
 the room state :math:`S(E)` before :math:`E`, and depends on whether
