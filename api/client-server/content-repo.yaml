@@ -213,6 +213,7 @@ paths:
                 The ``fileName`` requested or the name of the file that was previously
                 uploaded, if set.
               type: "string"
+              required: true
           schema:
             type: file
             # This is a workaround for us not being able to say the response is required.
