@@ -79,6 +79,12 @@ The algorithms defined here should only apply to version 1 rooms. Other algorith
 may be used by other room versions, and as such servers should be aware of which
 version room they are dealing with prior to executing a given algorithm.
 
+ .. WARNING::
+   Although there are many rooms using room version 1, it is known to have
+   undesirable effects. Servers implementing support for room version 1 should be
+   aware that restrictions should be generally relaxed and that inconsistencies
+   may occur.
+
 State resolution
 ~~~~~~~~~~~~~~~~
 
