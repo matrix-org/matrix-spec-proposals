@@ -36,9 +36,9 @@ paths:
 
         This cannot be undone.
 
-        Users may redact their own events, and any user with a power level
-        greater than or equal to the ``redact`` power level of the room may
-        redact events there.
+        Any user with a power level greater than or equal to the ``redact`` power level
+        of the room may redact events there. Additionally, server administrators may
+        redact messages sent by their server.
       operationId: redactEvent
       security:
         - accessToken: []
