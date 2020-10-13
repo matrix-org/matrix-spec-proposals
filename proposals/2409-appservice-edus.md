@@ -17,7 +17,7 @@ specifies how these can be pushed to an appservice.
 ### Changes to the registration file
 
 In order that appservices don't get flooded with EDUs, appservices have to opt-in to receive them by
-setting `receive_edus` to true. A registration file could look like following:
+setting `push_ephemeral` to true. A registration file could look like following:
 
 ```yaml
 id: "IRC Bridge"
@@ -26,7 +26,7 @@ as_token: "30c05ae90a248a4188e620216fa72e349803310ec83e2a77b34fe90be6081f46"
 hs_token: "312df522183efd404ec1cd22d2ffa4bbc76a8c1ccf541dd692eef281356bb74e"
 sender_localpart: "_irc_bot"
 # We want to receive EDUs
-receive_edus: true
+push_ephemeral: true
 namespaces:
   users:
     - exclusive: true
@@ -114,6 +114,12 @@ forwarding these events.
 An EDU should be sent to an appservice if the `room_id` is shared by any of the registered appservices
 users, if possible. For EDUs where that isn't the case, that is `m.presence`, the EDU should be sent
 if the sender is present in a room that is shared by any of the registered appservices users.
+
+## Unstable prefix
+
+In the transaction body, instead of `ephemeral`, `de.sorunome.msc2409.ephemeral` is used.
+
+In the registration file, instead of `push_ephemeral`, `de.sorunome.msc2409.push_ephemeral` is used.
 
 ## Potential issues
 
