@@ -92,7 +92,7 @@ State resolution
    Room version 1 is known to have bugs that can cause the state of rooms to reset
    to older versions of the room's state. For example this could mean that users
    who had joined the room may be removed from the room, admins and moderators
-   could lose their power level, and users who has been banned from the room may
+   could lose their power level, and users who have been banned from the room may
    be able to rejoin. Other state events such as the the room's name or topic could
    also reset to a previous version.
 
