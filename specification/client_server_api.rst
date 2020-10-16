@@ -1551,8 +1551,6 @@ prefixed with ``m.``
 
 {{m_room_power_levels_event}}
 
-{{m_room_redaction_event}}
-
 Historical events
 +++++++++++++++++
 
