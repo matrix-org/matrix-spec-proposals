@@ -13,7 +13,7 @@ requires the `pushkey` and `app_id` parameters, which should match an previously
 added pusher.
 
 ```
-PUT /_matrix/client/r0/pushers/push HTTP/1.1
+POST /_matrix/client/r0/pushers/push HTTP/1.1
 Content-Type: application/json
 
 {
