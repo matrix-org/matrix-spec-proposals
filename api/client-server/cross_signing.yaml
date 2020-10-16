@@ -107,18 +107,27 @@ paths:
             example: {}
         400:
           description: |-
-            The input was invalid in some way.  This can include one of the
+            The input was invalid in some way. This can include one of the
             following error codes:
 
-            * ``M_INVALID_SIGNATURE``: The self-signing or user-signing key
-              had an incorrect signature
-            * ``M_FORBIDDEN``: The public key of one of the keys is the same as
-              one of the user\'s device IDs.
+            * ``M_INVALID_SIGNATURE``: For example, the self-signing or
+              user-signing key had an incorrect signature.
+            * ``M_MISSING_PARAM``: No master key is available.
           schema:
             type: object
             example: {
               "errcode": "M_INVALID_SIGNATURE",
               "error": "Invalid signature"
+            }
+        403:
+          description: |-
+            The public key of one of the keys is the same as one of the user\'s
+            device IDs or the request is unauthorized.
+          schema:
+            type: object
+            example: {
+              "errcode": "M_FORBIDDEN",
+              "error": "Key ID in use"
             }
   "/keys/signatures/upload":
     post:

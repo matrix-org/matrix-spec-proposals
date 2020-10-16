@@ -848,13 +848,13 @@ that she cannot see:
    | +------+       |                                         |       +----+ |
    +----------------+                                         +--------------+
 
-Verification methods can be used to verify a user's master key by using the
-master public key, encoded using unpadded base64, as the device ID, and
-treating it as a normal device. For example, if Alice and Bob verify each other
-using SAS, Alice's ``m.key.verification.mac`` message to Bob may include
-``"ed25519:alices+master+public+key": "alices+master+public+key"`` in the ``mac``
-property. Servers therefore must ensure that device IDs will not collide with
-cross-signing public keys.
+`Verification methods <#device-verification>`_ can be used to verify a user's
+master key by using the master public key, encoded using unpadded base64, as
+the device ID, and treating it as a normal device. For example, if Alice and
+Bob verify each other using SAS, Alice's ``m.key.verification.mac`` message to
+Bob may include ``"ed25519:alices+master+public+key":
+"alices+master+public+key"`` in the ``mac`` property. Servers therefore must
+ensure that device IDs will not collide with cross-signing public keys.
 
 Key and signature security
 <<<<<<<<<<<<<<<<<<<<<<<<<<

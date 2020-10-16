@@ -37,32 +37,28 @@ allOf:
             example: "@alice:example.com"
           master_key:
             type: object
-            allOf:
-              - $ref: ../../../client-server/definitions/cross_signing_key.yaml
-              # FIXME: why isn't the doc generator picking up this example?
-              - example: {
-                  "user_id": "@alice:example.com",
-                  "usage": ["self_signing"],
-                  "keys": {
-                    "ed25519:base64+self+signing+public+key": "base64+self+signing+master+public+key",
-                  },
-                  "signatures": {
-                    "@alice:example.com": {
-                      "ed25519:base64+master+public+key": "signature+of+self+signing+key"
-                    }
-                  }
-                }
+            $ref: ../../../client-server/definitions/cross_signing_key.yaml
+            example: {
+              "user_id": "@alice:example.com",
+              "usage": ["master"],
+              "keys": {
+                "ed25519:base64+master+public+key": "base64+master+public+key",
+              }
+            }
           self_signing_key:
             type: object
-            allOf:
-              - $ref: ../../../client-server/definitions/cross_signing_key.yaml
-              # FIXME: why isn't the doc generator picking up this example?
-              - example: {
-                  "user_id": "@alice:example.com",
-                  "usage": ["master"],
-                  "keys": {
-                    "ed25519:base64+master+public+key": "base64+master+public+key",
-                  }
+            $ref: ../../../client-server/definitions/cross_signing_key.yaml
+            example: {
+              "user_id": "@alice:example.com",
+              "usage": ["self_signing"],
+              "keys": {
+                "ed25519:base64+self+signing+public+key": "base64+self+signing+master+public+key",
+              },
+              "signatures": {
+                "@alice:example.com": {
+                  "ed25519:base64+master+public+key": "signature+of+self+signing+key"
                 }
+              }
+            }
         required:
           - user_id
