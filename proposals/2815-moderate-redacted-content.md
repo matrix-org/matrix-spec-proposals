@@ -19,10 +19,22 @@ by setting the parameter value to `true`.
 
 ### Server behavior
 Servers MUST check that the requester has a power level higher than or equal to
-the `redact` power level in the room. If the requester has a lower power level,
-the server returns a standard error response with the `M_FORBIDDEN` code. If
-the server no longer has the event content, the endpoint returns `M_NOT_FOUND`
-like it currently always does for redacted events.
+the `redact` power level in the room.
+
+* If the requester doesn't have permission to view the event in general (e.g.
+  not participating in the room), the server retuns a `M_NOT_FOUND` error the
+  same way it did before this proposal.
+* If the requester doesn't have sufficient power level to view redacted events,
+  the server returns a standard error response with the `M_FORBIDDEN` code.
+* If the requester has all the necessary privileges to view the content, but
+  the server does not have the unredacted content, the server should return one
+  of the following error codes:
+  * `M_UNREDACTED_CONTENT_DELETED`: The server has deleted the content from its
+    database. The server may optionally include a `m.content_keep_ms` key in
+    the error that specifies how long it keeps unredacted content.
+  * `M_UNREDACTED_CONTENT_NOT_RECEIVED`: The server never received the
+    un-redacted content (this can happen if federation is slow and the event
+    was redacted before it reached the server)
 
 ### Client behavior
 Clients should still always remove content when receiving a redaction event,
@@ -53,6 +65,9 @@ for the new key, even if it required a higher level than what the user has.
 
 ## Unstable prefix
 While this MSC is not in a released version of the spec, implementations should
-use `net.maunium.msc2815.include_redacted_content` as the query parameter name.
+use `net.maunium.msc2815.include_redacted_content` as the query parameter name,
+and `net.maunium.msc2815.content_keep_ms` in the error response. The error
+codes should use `NET.MAUNIUM.MSC2815` as a prefix instead of `M`.
+
 Additionally, servers should advertise support using the `net.maunium.msc2815`
 flag in `unstable_features` in the `/versions` endpoint.
