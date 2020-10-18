@@ -190,7 +190,7 @@ history includes events with a ``sender`` which does not conform. In order to
 handle these rooms successfully, clients and servers MUST accept user IDs with
 localparts from the expanded character set::
 
-  extended_user_id_char = %x21-39 / %x3B-7E  ; all ascii printing chars except :
+  extended_user_id_char = %x20-39 / %x3B-7E  ; all ascii printing chars except :
 
 Mapping from other character sets
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
