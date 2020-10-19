@@ -1,4 +1,4 @@
-# Support for LaTeX in messages
+# Markup for mathematical messages
 
 Some people write using an odd language that has strange symbols.  No, I'm not
 talking about computer programmers; I'm talking about mathematicians.  In order
