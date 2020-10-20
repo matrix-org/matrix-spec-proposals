@@ -209,6 +209,15 @@ them to be present on events they receive.
 `call_id`s and the newly introduced `party_id` are explicitly defined to be up to 32 characters
 from the set of `A-Z` `a-z` `0-9` `.-_`.
 
+### Specify behhaviour on room leave
+If the client sees the party it is in a call with leave the room, the client should treat this
+as a hangup event for any calls that are in progress. No specific requirement is given for the
+situation where a client has sent an invite and the invitee leaves the room, but the client may
+wish to treat it as a rejection if there are no more users in the room who could answer the call
+(eg. the user is now alone or the `invitee` field was set on the invite).
+
+The same behaviour applies when a client is looking at historic calls.
+
 ## Potential issues
  * The ability to call yourself makes the protocol a little more complex for clients to implement,
    and is somewhat of a special case. However, some of the necessary additions are also required for
