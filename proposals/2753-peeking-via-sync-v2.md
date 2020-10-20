@@ -54,12 +54,17 @@ room was not being peeked in the first place.  Having stopped peeking, the
 empty room block appears in the `leave` block of the next sync response to tell
 the client that the user is no longer peeking.
 
+The new `/peek` and `/unpeek` endpoints require authentication and can be
+ratelimited. Their responses are analogous to their `/join` and `/leave`
+counterparts (eg: `room_id` in the response and empty object when stopping).
+
 The act of joining a peeked room automatically cancels any ongoing `/peeks` by
 that user.
 
 Clients should check for any irrelevant peeked rooms on launch (left over from
 previous instances of the app) and explicitly `/unpeek` them to conserve
 resources.
+
 
 ## Potential issues
 
