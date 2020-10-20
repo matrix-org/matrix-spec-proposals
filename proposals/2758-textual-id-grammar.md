@@ -34,8 +34,8 @@ today.
 
 The grammar is defined as follows:
 
- * The length of an identifier may not be less than one character or more than
-   255 characters.
+ * An identifier may not be less than one character or more than 255 characters
+   in length.
  * Identifiers must start with one of the characters `[a-z]`, and be entirely
    composed of the characters `[a-z]`, `[0-9]`, `-`, `_` and `.`.
  * Identifiers starting with the characters `m.` are reserved for use by the
