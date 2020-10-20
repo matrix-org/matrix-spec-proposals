@@ -119,4 +119,11 @@ in the context of peeking into a remote room via
 
 ## Unstable prefix
 
-TBD
+
+The following mapping will be used for identifiers in this MSC during
+development:
+
+Proposed final identifier       | Purpose | Development identifier
+------------------------------- | ------- | ----
+`/_matrix/client/r0/peek` | API endpoint | `/_matrix/client/unstable/org.matrix.msc2753/peek`
+`/_matrix/client/r0/unpeek` | API endpoint | `/_matrix/client/unstable/org.matrix.msc2753/unpeek`
