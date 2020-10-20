@@ -1,0 +1,53 @@
+# Copyright 2019 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Federation Server Discovery API"
+  version: "1.0.0"
+host: localhost:443
+schemes:
+  - https
+basePath: /.well-known
+produces:
+  - application/json
+paths:
+  "/matrix/server":
+    get:
+      summary: Gets information about the delegated server for server-server communication.
+      description: |-
+        Gets information about the delegated server for server-server communication
+        between Matrix homeservers. Servers should follow 30x redirects, carefully
+        avoiding redirect loops, and use normal X.509 certificate validation.
+      operationId: getWellKnown
+      responses:
+        200:
+          description:
+            The delegated server information. The ``Content-Type`` for this response SHOULD
+            be ``application/json``, however servers parsing the response should assume that
+            the body is JSON regardless of type. Failures parsing the JSON or invalid data
+            provided in the resulting parsed JSON should not result in discovery failure -
+            consult the server discovery process for information on how to continue.
+          examples:
+            application/json: {
+              "m.server": "delegated.example.com:1234"
+            }
+          schema:
+            type: object
+            properties:
+              "m.server":
+                type: string
+                description: |-
+                  The server name to delegate server-server communciations to, with optional
+                  port. The delegated server name uses the same grammar as
+                  `server names in the appendices <../appendices.html#server-name>`_.

@@ -159,8 +159,13 @@ paths:
                             ],
                             "conditions": [
                                 {
-                                    "is": "2",
-                                    "kind": "room_member_count"
+                                    "kind": "room_member_count",
+                                    "is": "2"
+                                },
+                                {
+                                    "kind": "event_match",
+                                    "key": "type",
+                                    "pattern": "m.room.message"
                                 }
                             ],
                             "default": true,
@@ -407,9 +412,9 @@ paths:
                 description: |-
                   The action(s) to perform when the conditions for this rule are met.
                 items:
-                  type: string
-                  enum: ["notify", "dont_notify", "coalesce", "set_tweak"]
-                  # TODO: type: object e.g. {"set_sound":"beeroclock.wav"} :/
+                  type:
+                    - string
+                    - object
               conditions:
                 type: array
                 description: |-
@@ -493,6 +498,8 @@ paths:
                 type: boolean
                 description: Whether the push rule is enabled or not.
             required: ["enabled"]
+      tags:
+        - Push notifications
     put:
       summary: "Enable or disable a push rule."
       description: |-
@@ -585,7 +592,10 @@ paths:
           description: The actions for this push rule.
           examples:
             application/json: {
-                "actions": ["notify"]
+                "actions": [
+                  "notify",
+                  {"set_tweak": "sound", "value": "bing"}
+                ]
               }
           schema:
             type: object
@@ -594,8 +604,12 @@ paths:
                 type: array
                 description:  The action(s) to perform for this rule.
                 items:
-                  type: string
+                  type:
+                    - string
+                    - object
             required: ["actions"]
+      tags:
+        - Push notifications
     put:
       summary: "Set the actions for a push rule."
       description: |-
@@ -639,12 +653,15 @@ paths:
                 type: array
                 description: The action(s) to perform for this rule.
                 items:
-                  type: string
-                  enum: ["notify", "dont_notify", "coalesce", "set_tweak"]
-                  # TODO: type: object e.g. {"set_sound":"beeroclock.wav"} :/
+                  type:
+                    - string
+                    - object
             required: ["actions"]
             example: {
-                "actions": ["notify"]
+                "actions": [
+                  "notify",
+                  {"set_tweak": "highlight"}
+                ]
               }
       responses:
         200:

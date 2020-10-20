@@ -21,7 +21,7 @@ description: |-
 
 # FIXME: It's very unclear why we have this API surface for synchronising
 # device lists, rather than just using a room (which could also be used for
-# presence lists, profile info, etc).  But documenting what we have for now...
+# profile info, etc).  But documenting what we have for now...
 
 allOf:
   - $ref: ../edu.yaml

@@ -47,7 +47,7 @@ The read markers API can additionally update the user's read receipt (``m.read``
 location in the same operation as setting the fully read marker location. This is
 because read receipts and read markers are commonly updated at the same time,
 and therefore the client might wish to save an extra HTTP call. Providing an
-``m.read`` location performs the same task as a request to ``/receipts/m.read/$event:example.org``.
+``m.read`` location performs the same task as a request to ``/receipt/m.read/$event:example.org``.
 
 {{read_markers_cs_http_api}}
 
@@ -56,7 +56,7 @@ Server behaviour
 The server MUST prevent clients from setting ``m.fully_read`` directly in
 room account data. The server must additionally ensure that it treats the
 presence of ``m.read`` in the ``/read_markers`` request the same as how it
-would for a request to ``/receipts/m.read/$event:example.org``.
+would for a request to ``/receipt/m.read/$event:example.org``.
 
 Upon updating the ``m.fully_read`` event due to a request to ``/read_markers``,
 the server MUST send the updated account data event through to the client via

@@ -34,6 +34,9 @@ paths:
         This API returns a number of events that happened just before and
         after the specified event. This allows clients to get the context
         surrounding an event.
+
+        *Note*: This endpoint supports lazy-loading of room member events. See
+        `Lazy-loading room members <#lazy-loading-room-members>`_ for more information.
       operationId: getEventContext
       security:
         - accessToken: []
@@ -56,6 +59,18 @@ paths:
           description: |-
             The maximum number of events to return. Default: 10.
           x-example: 3
+        - in: query
+          name: filter
+          type: string
+          description: |-
+            A JSON ``RoomEventFilter`` to filter the returned events with. The
+            filter is only applied to ``events_before``, ``events_after``, and
+            ``state``. It is not applied to the ``event`` itself. The filter may 
+            be applied before or/and after the ``limit`` parameter - whichever the 
+            homeserver prefers.
+
+            See `Filtering <#filtering>`_ for more information.
+          x-example: "66696p746572"
       responses:
         200:
           description: The events and state surrounding the requested event.
@@ -101,65 +116,35 @@ paths:
                     - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
           examples:
             application/json: {
-                  "end": "t29-57_2_0_2",
-                  "events_after": [
-                    {
-                      "age": 91911336,
-                      "content": {
-                        "body": "7",
-                        "msgtype": "m.text"
-                      },
-                      "event_id": "$14460306086CiUaL:localhost:8480",
-                      "origin_server_ts": 1446030608551,
-                      "room_id": "!sCDvXTtzjpiPxaqkkt:localhost:8480",
-                      "type": "m.room.message",
-                      "sender": "@test:localhost:8480"
-                    }
-                  ],
-                  "events_before": [
-                    {
-                      "age": 91911903,
-                      "content": {
-                        "body": "5",
-                        "msgtype": "m.text"
-                      },
-                      "event_id": "$14460306074UYTlh:localhost:8480",
-                      "origin_server_ts": 1446030607984,
-                      "room_id": "!sCDvXTtzjpiPxaqkkt:localhost:8480",
-                      "type": "m.room.message",
-                      "sender": "@test:localhost:8480"
-                    }
-                  ],
-                  "start": "t27-54_2_0_2",
-                  "state": [
-                    {
-                      "age": 3123715284,
-                      "content": {
-                        "creator": "@test:localhost:8480"
-                      },
-                      "event_id": "$14429988040dgQAE:localhost:8480",
-                      "origin_server_ts": 1442998804603,
-                      "room_id": "!sCDvXTtzjpiPxaqkkt:localhost:8480",
-                      "state_key": "",
-                      "type": "m.room.create",
-                      "sender": "@test:localhost:8480"
-                    },
-                    {
-                      "age": 2067105053,
-                      "content": {
-                        "avatar_url": "mxc://localhost:8480/tVWZTAIIfqtXMZZtmGCkVjTD#auto",
-                        "displayname": "Bob2",
-                        "membership": "join"
-                      },
-                      "event_id": "$14440554144URDbf:localhost:8480",
-                      "origin_server_ts": 1444055414834,
-                      "replaces_state": "$14440552472PgiGk:localhost:8480",
-                      "room_id": "!sCDvXTtzjpiPxaqkkt:localhost:8480",
-                      "state_key": "@test:localhost:8480",
-                      "type": "m.room.member",
-                      "sender": "@test:localhost:8480"
-                    }
-                  ]
+              "end": "t29-57_2_0_2",
+              "events_after": [
+                {
+                  "room_id": "!636q39766251:example.com",
+                  "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
                 }
+              ],
+              "event": {
+                "event_id": "$f3h4d129462ha:example.com",
+                "room_id": "!636q39766251:example.com",
+                "$ref": "definitions/event-schemas/examples/m.room.message$m.image"
+              },
+              "events_before": [
+                {
+                  "room_id": "!636q39766251:example.com",
+                  "$ref": "definitions/event-schemas/examples/m.room.message$m.file"
+                }
+              ],
+              "start": "t27-54_2_0_2",
+              "state": [
+                {
+                  "room_id": "!636q39766251:example.com",
+                  "$ref": "definitions/event-schemas/examples/m.room.create"
+                },
+                {
+                  "room_id": "!636q39766251:example.com",
+                  "$ref": "definitions/event-schemas/examples/m.room.member"
+                }
+              ]
+            }
       tags:
         - Room participation

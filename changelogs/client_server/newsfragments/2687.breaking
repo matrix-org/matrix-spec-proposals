@@ -1,0 +1,1 @@
+Document `curve25519-hkdf-sha256` key agreement method for SAS verification, and deprecate old method (MSC2630).

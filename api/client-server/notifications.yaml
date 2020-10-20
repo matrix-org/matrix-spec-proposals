@@ -49,7 +49,7 @@ paths:
           name: limit
           description: Limit on the number of events to return in this request.
           required: false
-          x-example: "20"
+          x-example: 20
         - in: query
           name: only
           type: string
@@ -75,16 +75,7 @@ paths:
                     "room_id": "!abcdefg:example.com",
                     "ts": 1475508881945,
                     "event": {
-                      "sender": "@alice:example.com",
-                      "type": "m.room.message",
-                      "age": 124524,
-                      "txn_id": "1234",
-                      "content": {
-                        "body": "I am a fish",
-                        "msgtype": "m.text"
-                      },
-                      "origin_server_ts": 1417731086797,
-                      "event_id": "$74686972643033:example.com"
+                      "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
                     }
                   }
                 ]

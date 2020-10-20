@@ -38,7 +38,8 @@ When the invitee's homeserver receives the notification of the binding, it
 should insert an ``m.room.member`` event into the room's graph for that user,
 with ``content.membership`` = ``invite``, as well as a
 ``content.third_party_invite`` property which contains proof that the invitee
-does indeed own that third party identifier.
+does indeed own that third party identifier. See the `m.room.member <#m-room-member>`_
+schema for more information.
 
 
 Events
@@ -229,7 +230,7 @@ verification must still be performed, so the attack surface here is minimized.
 Security considerations
 -----------------------
 
-There are a number of privary and trust implications to this module.
+There are a number of privacy and trust implications to this module.
 
 It is important for user privacy that leaking the mapping between a matrix user
 ID and a third party identifier is hard. In particular, being able to look up
@@ -254,4 +255,4 @@ these is left to the implementer's discretion.
 
 
 
-.. _`identity server /isvalid`: ../identity_service/unstable.html#get-matrix-identity-api-v1-pubkey-isvalid
+.. _`identity server /isvalid`: ../identity_service/%IDENTITY_RELEASE_LABEL%.html#get-matrix-identity-v2-pubkey-isvalid

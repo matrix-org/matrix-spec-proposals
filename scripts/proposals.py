@@ -38,7 +38,10 @@ def getpage(url):
     pagecount = 1
     for link in resp.links.values():
         if link['rel'] == 'last':
-            pagecount = int(re.search('page=(.+?)', link['url']).group(1))
+            # we extract the pagecount from the `page` param of the last url
+            # in the response, eg
+            # 'https://api.github.com/repositories/24998719/issues?state=all&labels=proposal&page=10'
+            pagecount = int(re.search('page=(\d+)', link['url']).group(1))
 
     val = resp.json()
     if not isinstance(val, list):

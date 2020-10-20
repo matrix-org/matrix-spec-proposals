@@ -11,3 +11,5 @@
 *.pyc
 *.swp
 _rendered.rst
+/.vscode/
+/.idea/
