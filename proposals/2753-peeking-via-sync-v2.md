@@ -48,11 +48,11 @@ the room to the `join` block of the `/sync` response, allowing the client to
 build on the state and history it has already received without re-sending it
 down `/sync`.
 
-To stop peeking, the user calls `/unpeek` on the room, similar to `/leave` or
-`/forget`.  This returns 200 on success, 404 on unrecognised ID, or 400 if the
-room was not being peeked in the first place.  Having stopped peeking, the
-empty room block appears in the `leave` block of the next sync response to tell
-the client that the user is no longer peeking.
+To stop peeking, the user calls `/unpeek` on the room, similar to `/leave`.
+This returns 200 on success, 404 on unrecognised ID, or 400 if the room was not
+being peeked in the first place.  Having stopped peeking, the empty room block
+appears in the `leave` block of the next sync response to tell the client that
+the user is no longer peeking.
 
 The new `/peek` and `/unpeek` endpoints require authentication and can be
 ratelimited. Their responses are analogous to their `/join` and `/leave`
@@ -126,4 +126,4 @@ development:
 Proposed final identifier       | Purpose | Development identifier
 ------------------------------- | ------- | ----
 `/_matrix/client/r0/peek` | API endpoint | `/_matrix/client/unstable/org.matrix.msc2753/peek`
-`/_matrix/client/r0/unpeek` | API endpoint | `/_matrix/client/unstable/org.matrix.msc2753/unpeek`
+`/_matrix/client/r0/rooms/{roomId}/unpeek` | API endpoint | `/_matrix/client/unstable/org.matrix.msc2753/rooms/{roomId}/unpeek`
