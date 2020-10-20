@@ -108,7 +108,9 @@ would be needed to distinguish from a deleted state event. Something like:
 
 Name, Topic, Membership etc share the same events as a normal room.
 
-The flair image for a group is given by the room avatar.
+The flair image for a group is given by the room avatar. (In future it might
+preferable to use hand-crafted small resolution images: see
+[matrix-doc#1778](https://github.com/matrix-org/matrix-doc/issues/1778).
 
 Long description requires a new event: `m.room.description`.  This can also be
 used for rooms as well as groups.
@@ -165,13 +167,13 @@ A proposal for how to safely determine user flair is:
  * User publishes the groups they wish to announce on their profile
    ([MSC1769](https://github.com/matrix-org/matrix-doc/issues/1769)
    as a m.flair state event: it lists the groups which they are advertising.
-   
+
  * When a client wants to know the current flair for a set of users (i.e.
    those which it is currently displaying in the timeline), it peeks the
    profile rooms of those users.  However, we can't trust the flair which the
    users advertise on the profile - it has to be cross-referenced from the
    memberships of the groups in question.
-   
+
 To do this cross-referencing, options are:
 
  1. The client checks the group membership (very inefficient, given the server
@@ -191,12 +193,12 @@ Of these, option 3 feels best?
 
 ## Dependencies
 
-This needs peeking to work effectively on CS API.
-([MSC1776](https://github.com/matrix-org/matrix-doc/issues/1776))
+This needs peeking to work effectively over the CS API
+([MSC1776](https://github.com/matrix-org/matrix-doc/issues/1776)).
 
 This needs peeking to work effectively over federation (e.g. by having servers
-join remote rooms as @null:example.com in order to participate in them for
-peeking purposes) - ([MSC1777](https://github.com/matrix-org/matrix-doc/issues/1777))
+join remote rooms as `@null:example.com` in order to participate in them for
+peeking purposes - [MSC1777](https://github.com/matrix-org/matrix-doc/issues/1777)).
 
 These dependencies are shared with profiles-as-rooms
 ([MSC1769](https://github.com/matrix-org/matrix-doc/issues/1769)).
@@ -220,12 +222,20 @@ fix for bridged rooms in general too, however.
 This also consciously sacrifices the ability for a group server to provide
 different 'views' of groups to different querying users, as being
 overengineered.  Instead, all common use cases should be modellable by modelling
-group memnbership as room membership (nesting if required).
+group membership as room membership (nesting if required).
 
 ## Issues
 
 How does this work with
 [MSC1228](https://github.com/matrix-org/matrix-doc/issues/1228) (removing MXIDs)?
+
+## Unstable prefix
+
+While this proposal is not in a published version of the specification,
+implementations should use `org.matrix.msc1772` to represent the `m`
+namespace. For example, `m.room.subgroup` becomes
+`org.matrix.msc1772.room.subgroup`.
+
 
 ## History
 
