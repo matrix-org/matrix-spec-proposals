@@ -9,7 +9,7 @@ test push to the client device.
 ## Proposal
 
 A new endpoint is to be added which will allow testing push notifications. It
-requires the `pushkey` and `app_id` parameters, which should match an previously
+requires the `pushkey` and `app_id` parameters, which should match a previously
 added pusher.
 
 ```
