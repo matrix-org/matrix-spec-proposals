@@ -35,42 +35,9 @@ Represent groups by rooms rather than a custom first-class entity.
 We reserve aliases which begin with a `+` to represent groups - e.g. the room
 for group `+test:example.com` is `#+test:example.com`.
 
-We introduce a `m.room.groups` state event which defines how a room should
-behave as a group - i.e. the rooms which it groups together, and any subgroups
-nested within it.
-
-```json
-{
-    "type": "m.room.groups",
-    "contents": {
-        "rooms": [
-            {
-                "room": "#room1:example.com",
-            },
-            {
-                "room": "#room2:example.com",
-                "autojoin": true
-            },
-            {
-                "room": "#room3:example.com",
-            },
-        ],
-        "subgroups": [
-            {
-                "group": "+something:example.com",
-            },
-            {
-                "group": "+otherthing:example.com",
-            },
-        ]
-    },
-}
-```
-
-XXX: alternatively, perhaps all the rooms and subgroups should be their own
-state event with a unique state key, ensuring that this can scale to large
-groups and doesn't have to be edited atomically. A key like `present: true`
-would be needed to distinguish from a deleted state event. Something like:
+We introduce `m.room.group` and `m.room.subgroup` events which define the rooms
+and subgroups within the group. A `present: true` key is included to
+distinguish from a deleted state event. Something like:
 
 ```json
 {
