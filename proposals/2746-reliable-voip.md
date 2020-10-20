@@ -252,3 +252,11 @@ from the set of `A-Z` `a-z` `0-9` `.-_`.
    candidates) or redacting them afterwards (the volume of events sent during calls can already
    cause rate limiting issues and this would exacerbate this).
  * Clients must take care to not ring for any call, as per the 'alternatives' section.
+
+## Unstable prefix
+Since VoIP events already have a 'version' field, we would ideally use a string, namespaced version during
+development, but this field is defined to be a string in version 0. This MSC proposes changing the version
+field to a string so that this namespacing can be used for future changes. Since there is no other easy way
+to namespace events whilst in development and ensure interoperability, we have chosen not to use an unstable
+prefix for this change, on the understanding that in future we will be able to use the string `version` field
+for the unstable prefix.
