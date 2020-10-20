@@ -120,12 +120,9 @@ allow peeking; you have to be joined to see the members, and users who don't
 want to be seen by the public to be member of the group are added to the
 subgroup.
 
-XXX: is there a use case today for having a group where users are unaware of the
-other users' membership?  e.g. if I am a member of `+scandalous:matrix.org`
-should i have a way to stop other members knowing that I am?  One solution here
-could be "auditorium mode", where users cannot see other users' identities
-(unless they speak).   This could be added later, however, and would also be
-useful for normal rooms.
+In future, there may be a usecase for groups where members are unaware of the
+other users' membership. This would also be useful for other rooms, and is left
+for a future proposal.
 
 ## Flair
 
