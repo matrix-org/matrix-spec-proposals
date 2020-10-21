@@ -62,6 +62,16 @@ Clients should check for any irrelevant peeked rooms on launch (left over from
 previous instances of the app) and explicitly `/unpeek` them to conserve
 resources.
 
+## Encrypted rooms
+
+(this para taken from MSC #2444):
+
+It is considered a feature that you cannot peek into encrypted rooms, given
+the act of peeking would leak the identity of the peeker to the joined users
+in the room (as they'd need to encrypt for the peeker). This also feels
+acceptable given there is little point in encrypting something intended to be
+world-readable.
+
 ## Potential issues
 
 It could be seen as controversial to add another new block to the `/sync`
