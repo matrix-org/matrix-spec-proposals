@@ -128,7 +128,7 @@ call up/downgrading. Clients should implement & honour hold functionality as per
 recommendation: https://www.w3.org/TR/webrtc/#hold-functionality
 
 If both the invite event and the accepted answer event have `version` equal to `1`, either party may
-send `m.call.negotiate` with an `sdp` field to offer new SDP to the other party. This event has
+send `m.call.negotiate` with a `description` field to offer new SDP to the other party. This event has
 `call_id` with the ID of the call and `party_id` equal to the client's party ID for that call.
 The caller ignores any negotiate events with `party_id` + `user_id` tuple not equal to that of the
 answer it accepted. Clients should use the `party_id` field to ignore the remote echo of their
@@ -137,6 +137,10 @@ own negotiate events.
 This has a `lifetime` field as in `m.call.invite`, after which the sender of the negotiate event
 should consider the negotiation failed (timed out) and the recipient should ignore it.
 
+The `description` field is the same as the `offer` field in in `m.call.invite` and `answer`
+field in `m.call.answer` and is an `RTCSessionDescriptionInit` object as per
+https://www.w3.org/TR/webrtc/#dom-rtcsessiondescriptioninit.
+
 Example:
 ```
 {
@@ -144,11 +148,19 @@ Example:
     "content": {
         "call_id": "12345",
         "party_id": "67890",
-        "sdp": "[some sdp]",
         "lifetime": 10000,
+	"description": {
+            "sdp": "[some sdp]",
+            "type": "offer",
+	},
     }
 }
 ```
+
+This MSC also proposes clarifying the `m.call.invite` and `m.call.answer` events to state that
+the `offer` and `answer` fields respectively are objects of type `RTCSessionDescriptionInit`
+(and hence the `type` field, whilst redundant in these events, is included for ease of working
+with the WebRTC API).
 
 ### Designate one party as 'polite'
 In line with WebRTC perfect negotiation (https://w3c.github.io/webrtc-pc/#perfect-negotiation-example)
@@ -200,10 +212,6 @@ trickle ICE.
 Add that Matrix clients can send DTMF as specified by WebRTC. The WebRTC standard as of August
 2020 does not support receiving DTMF but a Matrix client can receive and interpret the DTMF sent
 in the RTP payload.
-
-### Deprecate `type` in `m.call.invite` and `m.call.answer`
-These are redundant: clients should continue to send them but must not require
-them to be present on events they receive.
 
 ### Specify exact grammar for VoIP IDs
 `call_id`s and the newly introduced `party_id` are explicitly defined to be up to 32 characters
