@@ -22,7 +22,7 @@ An example widget would be:
 {
     "creatorUserId": "@alice:example.org",
     "data": {
-        "custom-key": "This is a custom key",
+        "custom_key": "This is a custom key",
         "title": "This is a witty description for the widget"
     },
     "id": "20200827_WidgetExample",
