@@ -164,10 +164,10 @@ with the WebRTC API).
 
 ### Designate one party as 'polite'
 In line with WebRTC perfect negotiation (https://w3c.github.io/webrtc-pc/#perfect-negotiation-example)
-we introduce rules to establish which party is polite. By default, the callee is the polite party.
-In a glare situation, if the client receives an invite whilst preparing to send one, it becomes the callee
-and therefore becomes the polite party. If an invite is received after the client has sent one, the
-party whose invite had the lexicographically greater call ID becomes the polite party.
+we introduce rules to establish which party is polite. The callee is always the polite party. In a
+glare situation, the politenes of a party is therefore determined by whether the inbound or outbound
+call is used: if a client discards its outbound call in favour of an inbound call, it becomes the polite
+party.
 
 ### Add explicit recommendations for call event liveness.
 `m.call.invite` contains a `lifetime` field that indicates how long the offer is valid for. When
