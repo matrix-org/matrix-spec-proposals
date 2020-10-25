@@ -6,7 +6,7 @@ Emoticons, or short emotes...we need them!
 Since there is a lot of confusion of how this relates to `m.emote`, why this isn't called custom emoji
 etc, there it is:
 
-`m.emtoe` is for emotion - and it has been incorrectly named this way. `m.action` would have been more
+`m.emote` is for emotion - and it has been incorrectly named this way. `m.action` would have been more
 appropriate, as you use it to describe *actions*, not *emotions*. E.g. "/me is walking to the gym", or
 "/me is happy" and *not* "/me happy".
 
@@ -18,15 +18,15 @@ emoticons, namely those found within unicode. Custom emoji here would actually r
 font, that is your own rendering of 🦊, 🐱, etc., *not* new images. New images is what custom emoticons
 are for.
 
-Now, a client may chose to name these however they like, we already have a naming disparity between
+Now, a client may choose to name these however they like, we already have a naming disparity between
 spec and clients with groups vs communities. It is, however, imperative to name things in the spec
 accurately after what they are.
 
 ## Proposal
 Emoticons have at least a shortcode and an mxc uri. They are sent as `<img>` tags currently already in
-the spec, as such existing clients *should* be able to render them (support for this is sadly poor,
-even within riot flavours). To allow clients to distinguish emoticons from other inline images, a new
-property `data-mx-emoticon` is introduced. A client may chose to ignore the size attributes of emoticons
+the spec, as such existing clients should already be able to render them, though not all clients currently
+handle `img` tags. To allow clients to distinguish emoticons from other inline images, a new
+property, `data-mx-emoticon`, is introduced. A client can chose to ignore the size attributes of emoticons
 when rendering, and instead pick the size based on other circumstances. This could e.g. be used to
 display emoticons in messages with only emoticons and emoji larger than usual, which is commonly found in
 messengers. Such an `<img>` tag of a shortcode `:emote:` and an mxc uri `mxc://example.org/emote`
@@ -38,19 +38,33 @@ could look as follows:
 
 Both the `alt` and the `title` attributes are specified as they serve different purposes: `alt` is
 displayed if e.g. the emote does not load. `title` is displayed e.g. on mouse hover over the emote.
-The height is just a height that looks good on most devices with the normal, default font size.
-No width is displayed as to not weirdly squish non-square emotes.
+Thus, specifying both the `alt` and `title` attributes is required.
+
+The `height` is just a height that looks good on most devices with the normal, default font size.
+No width is displayed as to not weirdly squish non-square emotes. In order to maintain backwards-compatibility
+with clients not supporting emotes, specifying the `height` is required.
+
+If the new `data-mx-emoticon` attribute has a value it is ignored. Due to limitations of some libraries
+the attribute may even look like `data-mx-emoticon=""`.
+
+The `src` attribute *must* be an mxc url. Other URIs, such as `https`, `mailto` etc. are not allowed.
+
+### Emoticon image types
+Emoticons are recommended to have a size of about 128x128 pixels. Even though the fallback specifies
+a height of 32, this is to ensure that the emotes still look good on higher DPI screens.
+
+Furthermore, emotes should either have a mimetype of `image/png`, `image/gif` or `image/webp`.
+
+Due to the low resolution of emotes, `image/jpg`/`image/jpeg` has been purposefully excluded from this
+list.
 
 ### Emoticon sources
-In order to be able to send emotes the client needs to have a list of shortcodes and their corresponding
-mxc uris. All the emote sources described here are merely suggestions on where to get emotes from.
-A client is free to implement / design their own way of fetching emotes, e.g. via dropping image files
-into a folder and uploading them on-the-fly. For cross-compatibility between clients it'd still be a
-good idea to implement the emote sources described here. For this there are two different emote sources:
+So that emoticons are compatible between different clients, they should follow the emoticon sources
+described here.
 
 #### User emoticons
-User emotes are per-user emotes that are defined in the users respective account data. The type for that
-is `im.ponies.user_emotes` (later: `m.emoticons`). The content is as following:
+User emotes are per-user emotes that are defined in the user's respective account data. The type for that
+is `m.emoticons`, the content of which is as following:
 
 ```json
 {
@@ -66,33 +80,34 @@ is `im.ponies.user_emotes` (later: `m.emoticons`). The content is as following:
 ```
 
 The emotes are defined inside of a dict called `emoticons`. The key is the shortcode of the emoticon.
-The value is an object with `url` containing the mxc url of the emote. This is so that it is easier
-for clients or future MSCs to define custom metadata to emotes directly.
-
-Some existing implementations using `im.ponies.user_emotes` currently use a dict called `short` which
-is just a map of the shortcode to the mxc url.
+The value is an object with `url` as a required field, containing the mxc uri as a string. This is so
+that it is easier for clients or future MSCs to define custom metadata to emotes directly.
 
 #### Room emoticons
-Room emotes are per-room emotes that every user of a specific room can use inside of that room. They
-are set with a state event of type `im.ponies.room_emotes` (later: `m.emoticons`). The state key denotes a possible
-pack, whereas the default one would be a blank state key. E.g. a discord bridge could set as state key
+Room emotes are per-room emotes that every user of a specific room can only use inside of that room. They
+are set with a state event of type `m.emoticons`. Multiple packs can be specified by different state
+keys, the identifier being an opague string. An empty state key is the default pack for a room.
+E.g. a discord bridge could set as state key
 `de.sorunome.mx-puppet-bridge.discord` and have all the bridged emotes in said state event, keeping
 bridged emotes from matrix emotes separate.
 
 The content extends that of the user emotes: It uses the `emoticons` key, which is a map of the shortcode
-of the emote to an object containing its mxc url. Additionally, an optional `pack` key can be set,
+of the emote to an object containing its mxc url, just as with user emoticons. Additionally, an optional `pack` key can be set,
 which defines meta-information on the pack. The following keys for `pack` are valid:
 
- - `displayname`: An easy displayname for the pack. Defaults to the room name, if it doesn't exist
- - `avatar_url`: The mxc uri of an avatar/icon to display for the pack. Defaults to the room name,
-   if it doesn't exist.
- - `name`: A short identifier of the pack. Defaults to the normalized state key, and if the state
-   key is blank it defaults to "room".
+ - `display_name`: (String, optional) An easy display name for the pack. Defaults to the room name,
+   if it doesn't exist. This does not have to be unique within all packs of a room.
+ - `avatar_url`: (String, optional) The mxc uri of an avatar/icon to display for the pack. Defaults
+   to the room avatar, if it doesn't exist. If the room also does not have one, then this pack does
+   not have an avatar.
+ - `short`: (String, `^[a-z0-9-_]+$`, optional) A short human-readable identifier of the pack. Defaults
+   to the normalized state key, and if the state key is blank it defaults to "room". This is used to
+   easily specify which pack to pick an emoticon from, should there be clashes.
 
    Normalized means here, converting spaces to `-`, taking only alphanumerical characters, `-` and `_`,
-   and casting it all to lowercase. In regex, this would be `[a-z0-9-_]+`.
+   and casting it all to lowercase. In regex, this would be `^[a-z0-9-_]+$`.
 
-As such, a `im.ponies.room_emotes` (later: `m.emoticons`) state event could look like the following:
+As such, a `m.emoticons` state event could look like the following:
 
 ```json
 {
@@ -105,23 +120,20 @@ As such, a `im.ponies.room_emotes` (later: `m.emoticons`) state event could look
     }
   },
   "pack": {
-    "displayname": "Emotes from Discord!",
+    "display_name": "Emotes from Discord!",
     "avatar_url": "mxc://example.org/discord_guild",
-    "name": "some_discord_guild"
+    "short": "some_discord_guild"
   }
 }
 ```
 
-Similarly as before, there are already existing implementations using `short` which is a map of shortcode
-to mxc url.
-
 #### Emoticon rooms
 While room emotes are specific to a room and are only accessible within that room, emote rooms should
 be accessible from everywhere. They do not differentiate themselves from room emotes at all, instead you
-set an event in your account data of type `im.ponies.emote_rooms` (later: `m.emoticons.rooms`) which outlines
-which room emote states should be globally accessible for that user. For that, a `room` key contains
+set an event in your account data of type `m.emoticons.rooms` which outlines
+which room emote states are globally accessible for that user. For that, a `room` key contains
 a map of room ids that map to state keys that map to an optional pack definition override.
-The the contents of `im.ponies.emote_rooms` (later: `m.emoticons.rooms`) could look like the following:
+The the contents of `m.emoticons.rooms` could look like the following:
 
 ```json
 {
@@ -129,7 +141,7 @@ The the contents of `im.ponies.emote_rooms` (later: `m.emoticons.rooms`) could l
     "!someroom:example.org": {
       "": {},
       "de.sorunome.mx-puppet-bridge.discord": {
-        "displayname": "Overriden name",
+        "display_name": "Overriden name",
         "short": "new_short_name"
       }
     },
@@ -142,7 +154,9 @@ The the contents of `im.ponies.emote_rooms` (later: `m.emoticons.rooms`) could l
 
 Here three emote packs are globally accessible to the user: Two defined in `!someroom:example.org`
 (one with blank state key and one with state key `de.sorunome.mx-puppet-bridge.discord`) and one in
-`!someotherroom:example.org`.
+`!someotherroom:example.org`. The one in `!someroom:example.org` with state key `de.sorunome.mx-puppet-bridge.discord`
+has an override for `display_name` and `short` of that pack, so that for this user the pack displays
+differently for themselves.
 
 ### Emoticon source priority and deduplicating
 When giving emoticon suggestions, clients are expected to deduplicate emotes by their mxc url. This
@@ -157,31 +171,27 @@ suggested in the following order:
 3. Room emoticons (emotes defined in the currently open room)
 
 ### Sending
-In places where fancy tab-complete with the emote itself is not possible it is suggested that sending
-the shortcode will convert to the img tag, e.g. sending `Hey there :wave:` will convert to `Hey there <img-for-wave>`.
+Clients should consider converting shortcodes like `:wave:` to a relevant `<img>` tag for the emoticon.
 
-If there are collisions due to the same emote shortcode being present as both room emote and user emote
-a user could specify the emote source by writing e.g. `:room~wave:` or `:user~wave:`. Here the short
-pack name is used for room emotes, and "user" for user emotes. If a room pack does not have a short
-pack name and has a blank state key, then "room" is used.
-
-## Current implementations
-### Emote rendering (rendering of the `<img>` tag)
- - riot-web
- - revolution
- - nheko
- - fluffychat
-### Emote sending, using the mentioned events here
- - revolution
- - fluffychat
+Clients should also consider supporting ways for the user to find the emoticon they are attempting to send,
+such as having a syntax like `:room~wave:` to find `wave` emoticon in the current room. Alternatives might also
+be `user` or pack `short` attributes to search within.
 
 ## Security Considerations
-When sending an `<img>` tag in an end-to-end encrypted room, the client will make a request to fetch
+When sending an `<img>` tag in an encrypted room, the client will make a request to fetch
 said image, in this case an emote. As there is no way to encrypt content behind `<img>` tags yet,
 this could potentially leak part of the conversation. This is **not** a new security consideration,
 it already exists. This, however, isn't much different from posting someone a link in an e2ee chat and
 the recipient opens the link. Additionally, images, and thus emotes, are often cached by the client,
 not even necessarily leading to an http query.
+
+## Unstable prefix
+The `m.emoticons` in the account data is replaced with `im.ponies.user_emotes`. The `m.emoticons` in
+the room state is replaced with `im.ponies.room_emotes`. The `m.emoticons.rooms` is replaced with
+`im.ponies.room_emotes`.
+
+Some existing implementations using `im.ponies.user_emotes` and `im.ponies.room_emotes` currently use
+a dict called `short` which is just a map of the shortcode to the mxc url.
 
 ## Alternatives
 One can easily think of near infinite ways to implement emotes. The aspect of sending an `<img>` tag
@@ -204,8 +214,5 @@ set one state event *per emote*. While this might seem like a nice idea on the s
 scale well. There are people who easily use and want hundreds or even thousands of emotes accessible.
 A simple dict of shortcode to mxc URI seems more appropriate for this.
 
-Additionally, this MSC has already been used in the wild for roughly two years by some clients, while MSC1951
-only exists in MSC form.
 
-In general, MSC1951 feels like a heavier approach to emote sourcs, while this MSC is more lightweight
-and thus should allow for significantly larger packs.
+In general, MSC1951 feels like a heavier approach to emote sources, while this MSC is more lightweight.
