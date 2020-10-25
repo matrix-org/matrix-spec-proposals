@@ -53,7 +53,8 @@ The `src` attribute *must* be an mxc url. Other URIs, such as `https`, `mailto` 
 Emoticons are recommended to have a size of about 128x128 pixels. Even though the fallback specifies
 a height of 32, this is to ensure that the emotes still look good on higher DPI screens.
 
-Furthermore, emotes should either have a mimetype of `image/png`, `image/gif` or `image/webp`.
+Furthermore, emotes should either have a mimetype of `image/png`, `image/gif` or `image/webp`. Emotes
+can be animated.
 
 Due to the low resolution of emotes, `image/jpg`/`image/jpeg` has been purposefully excluded from this
 list.
