@@ -21,6 +21,19 @@ If clients see events with `version` other than `0` or `1`, they should treat th
 `version` == `1`. In addition, clients must accept either a number or a string for the value of the `version`
 field, in order to allow for namespaced versions in the future.
 
+### Define the configurations of WebRTC streams and tracks in each call type
+We define that:
+ * A voice call has at least one track of kind 'audio' in the first stream
+ * A video call has at least one track of kind 'video' and at least one track of kind 'audio' in the first stream
+Clients implementing this specification use the first stream and will ignore any streamless tracks. Note that
+in the Javascript WebRTC API, this means `addTrack()` must be passed two parameters: a track and a stream,
+not just a track, and in a video call the stream must be the same for both audio and video track.
+
+A client may send other streams and tracks but the behaviour of the other party with respect to presenting
+such streams and tracks is undefined.
+
+This follows the existing known implementations of v0 VoIP.
+
 ### Add `invitee` field to `m.call.invite`
 This allows for the following use cases:
  * Placing a call to a specifc user in a room where other users are also present.
