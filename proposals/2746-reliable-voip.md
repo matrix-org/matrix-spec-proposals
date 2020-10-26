@@ -236,6 +236,11 @@ The same behaviour applies when a client is looking at historic calls.
    had categorised it as a junk call and not the other would be confusing for the user.
 
 ## Alternatives
+ * This MSC does not allow for ICE negotiation before the user chooses to answer the call. This can
+   make call setup faster by allowing connectivity to be established whilst the call is ringing. This
+   is problematic with Matrix since any device or user could answer the call, so it is not known which
+   device is going to answer before the user chooses to answer. It would also leak information on which
+   of a user's devices were online.
  * We could define that the ID of a call is implcitly the event IDs of the invite event rather than
    having a specific `call_id` field. This would mean that a client would be unable to know the ID of
    a call before the remote echo of the invite came back, which could complicate implementations.
