@@ -63,9 +63,10 @@ Spaces are referred to primarily by their alias, for example
 Space-rooms are distinguished from regular messaging rooms by the `m.room.type`
 of `m.space` (see [MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840)).
 
-We introduce an `m.space.child` state event type which defines the rooms within
-the group: A `present: true` key is included to distinguish from a deleted
-state event. Something like:
+We introduce an `m.space.child` state event type, which defines the rooms
+within the space. The `state_key` is an alias for a child room, and `present:
+true` key is included to distinguish from a deleted state event. Something
+like:
 
 ```json
 {
@@ -81,10 +82,11 @@ state event. Something like:
     "state_key": "#room2:example.com",
     "contents": {
         "present": true,
-        "autojoin": true   # TODO: what does this mean?
+        "autojoin": true  // TODO: what does this mean?
     }
 }
 
+// no longer a child room
 {
     "type": "m.space.child",
     "state_key": "#oldroom:example.com",
@@ -215,18 +217,14 @@ These dependencies are shared with profiles-as-rooms
   several thousand people), this membership has to copied entirely into the
   room, rather than querying/searching incrementally.
 
-  This is particularly problematic if that membership list is based on an
-  external service such as LDAP, since there is no way to keep the space
-  membership in sync with the LDAP directory.
+* If the membership list is based on an external service such as LDAP, it is
+  hard to keep the space membership in sync with the LDAP directory. In
+  practice, it might be possible to do so via a nightly "synchronisation" job
+  which searches the LDAP directory, or via "AD auditing".
 
 * No allowance is made for exposing different 'views' of the membership list to
   different querying users. (It may be possible to simulate this behaviour
   using smaller spaces).
-
-## Issues
-
-How does this work with
-[MSC1228](https://github.com/matrix-org/matrix-doc/issues/1228) (removing MXIDs)?
 
 ## Unstable prefix
 
@@ -240,8 +238,3 @@ namespace. For example, `m.space.child` becomes
 
  * This replaces MSC1215: https://docs.google.com/document/d/1ZnAuA_zti-K2-RnheXII1F1-oyVziT4tJffdw1-SHrE
  * Other thoughts that led into this are at: https://docs.google.com/document/d/1hljmD-ytdCRL37t-D_LvGDA3a0_2MwowSPIiZRxcabs
-
-
-## Footnotes
-
-[1] It's a
