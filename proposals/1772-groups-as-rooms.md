@@ -1,10 +1,25 @@
-# Proposal for groups as rooms (take 2)
+# Proposal for Matrix "spaces" (formerly known as "groups as rooms (take 2)")
 
 This obsoletes [MSC1215](https://github.com/matrix-org/matrix-doc/issues/1215).
 
-## Problem
+## Background and objectives
 
-The current groups API has some serious issues:
+Collecting rooms together into groups is useful for a number of
+purposes. Examples include:
+ * Allowing users to discover different rooms related to a particular topic:
+   for example "official matrix.org rooms".
+ * Allowing administrators to manage permissions across a number of rooms: for
+   example "a new employee has joined my company and needs access to all of our
+   rooms".
+ * Letting users classify their rooms: for example, separating "work" from
+   "personal" rooms.
+
+We refer to such collections of rooms as "spaces".
+
+Synapse and Element-Web currently implement an unspecced "groups" API which
+attempts to provide this functionality (see
+[matrix-doc#1513](https://github.com/matrix-org/matrix-doc/issues/1513)). This
+API has some serious issues:
  * It is a large API surface to implement, maintain and spec - particularly for
    all the different clients out there.
  * Much of the API overlaps significantly with mechanisms we already have for
@@ -22,26 +37,39 @@ The current groups API has some serious issues:
    * ability to specify multiple admins
  * It doesn't support pushing updates to clients (particularly for flair
    membership): https://github.com/vector-im/riot-web/issues/5235
- * It doesn't support third party invites.
+ * It doesn't support third-party invites.
  * Groups could benefit from other features which already exist today for rooms
    * e.g. Room Directories
  * Groups are centralised, rather than being replicated across all
    participating servers.
 
-## Solution
+In this document, the existing implementation will be referred to as
+"`/r0/groups`".
 
-Represent groups by rooms rather than a custom first-class entity.
+This proposal suggests a new approach where spaces are themselves represented
+by rooms, rather than a custom first-class entity.  This requires few server
+changes, other than better support for peeking (see Dependencies below). The
+existing `/r0/groups` API would be deprecated in Synapse and remain
+unspecified.
 
-We reserve aliases which begin with a `+` to represent groups - e.g. the room
-for group `+test:example.com` is `#+test:example.com`.
+## Proposal
 
-We introduce `m.room.group` and `m.room.subgroup` events which define the rooms
-and subgroups within the group. A `present: true` key is included to
-distinguish from a deleted state event. Something like:
+Each space is represented by its own room, known as a "space-room". The rooms
+within the space are determined by state events within the space-room.
+
+Spaces are referred to primarily by their alias, for example
+`#foo:matrix.org`.
+
+Space-rooms are distinguished from regular messaging rooms by the `m.room.type`
+of `m.space` (see [MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840)).
+
+We introduce an `m.space.child` state event type which defines the rooms within
+the group: A `present: true` key is included to distinguish from a deleted
+state event. Something like:
 
 ```json
 {
-    "type": "m.room.group",
+    "type": "m.space.child",
     "state_key": "#room1:example.com",
     "contents": {
         "present": true
@@ -49,144 +77,151 @@ distinguish from a deleted state event. Something like:
 }
 
 {
-    "type": "m.room.group",
+    "type": "m.space.child",
     "state_key": "#room2:example.com",
     "contents": {
         "present": true,
-        "autojoin": true
+        "autojoin": true   # TODO: what does this mean?
     }
 }
 
 {
-    "type": "m.room.subgroup",
-    "state_key": "+something:example.com",
-    "contents": {
-        "present": true
-    }
-}
-{
-    "type": "m.room.subgroup",
-    "state_key": "+otherthing:example.com",
-    "contents": {
-        "present": true
-    }
+    "type": "m.space.child",
+    "state_key": "#oldroom:example.com",
+    "contents": {}
 }
 ```
 
-Name, Topic, Membership etc share the same events as a normal room.
+Space-rooms may have `m.room.name` and `m.room.topic` state events in the same
+way as a normal room.
+
+Normal messages within a space-room are discouraged (but not blocked by the
+server): user interfaces are not expected to have a way to enter or display
+such messages.
+
+### Membership of spaces
+
+Users can be members of spaces (represented by `m.room.member` state events as
+normal). Depending on the configuration of the space (in particular whether
+`m.room.history_visibility` is set to `world_readable` or otherwise),
+membership of the space may be required to view the room list, membership list,
+etc.
+
+"Public" or "community" spaces would be set to `world_readable` to allow clients
+to see the directory of rooms within the space by peeking into the space-room
+(thus avoiding the need to add `m.room.member` events to the event graph within
+the room).
+
+Join rules, invites and 3PID invites work as for a normal room.
+
+### Long description
+
+We would like to allow groups to have a long description using rich
+formatting. This will use a new state event type `m.room.description` (with
+empty `state_key`) whose content is the same format as `m.room.message` (ie,
+contains a `msgtype` and possibly `formatted_body`).
+
+TODO: this could also be done via pinned messages. Failing that
+`m.room.description` should probably be a separate MSC.
+
+### Inheritance of power-levels
+
+TODO
+
+### Automated joins/leaves
+
+TODO
+
+## Future extensions
+
+The following sections are not blocking parts of this proposal, but are
+included as a useful reference for how we imagine it will be extended in future.
+
+### Sub-spaces
+
+Questions to be answered here include:
+
+ * Should membership of a sub-space grant any particular access to the parent
+   space, or vice-versa? We might need to extend `m.room.history_visibility` to
+   support more flexibility; fortunately this is not involved in event auth so
+   does not require new room versions.
+
+ * What happens if somebody defines a cycle? (It's probably fine, but anything
+   interpreting the relationships needs to be careful to limit recursion.)
+
+### Restricting access to the spaces membership list
+
+In the existing `/r0/groups` API, the group server has total control over the
+visibility of group membership, as seen by a given querying user. In other
+words, arbitrary users can see entirely different views of a group at the
+server's discretion.
+
+Whilst this is very powerful for mapping arbitrary organisational structures
+into Matrix, it may be overengineered. Instead, the common case is (we believe)
+a space where some users are publicly visible as members, and others are not.
+
+One way to of achieving this would be to create a separate space for the
+private members - e.g. have `#foo:matrix.org` and `#foo-private:matrix.org`.
+`#foo-private:matrix.org` is set up with `m.room.history_visibility` to not to
+allow peeking; you have to be joined to see the members.
+
+### Flair
+
+("Flair" is a term we use to describe a small badge which appears next to a
+user's displayname to advertise their membership of a space.)
 
 The flair image for a group is given by the room avatar. (In future it might
 preferable to use hand-crafted small resolution images: see
 [matrix-doc#1778](https://github.com/matrix-org/matrix-doc/issues/1778).
 
-Long description requires a new event: `m.room.description`.  This can also be
-used for rooms as well as groups.
+One way this might be implemented is:
 
-Groups may be nested, and membership of groups is defined as the union of the
-members of the group room and its subgroups.  If `+top:example.com` has two
-subgroups, the user membership of `+top:example.com` is the union of the
-subgroups and the group itself.  This allows hierarchies of groups & users to be
-defined.
-
-Clients peek in rooms (recursing into subgroups as needed) in order to determine
-group membership.
-
-Invites, 3PID invites, Power Levels etc all work as for a normal room.
-
-Normal messages within the room could be showed and used as a 'lobby' area for
-the given group.
-
-This requires no server changes at all, other than better support for peeking
-(see Dependencies below), and could allow the existing /groups API to be
-deprecated and removed outright.
-
-## ACLs
-
-Currently the group server has total control over specifying the list of users
-who may be present in a group, as seen by a given querying user. In other words,
-arbitrary users can see entirely different views of a group at the server's
-discretion.
-
-Whilst this is very powerful for mapping arbitrary group structures into Matrix,
-it may be overengineered.
-
-Instead, the common case is wanting to define a group where some users are
-publicly visible as members, and others are not.  This is what the current use
-cases require today.  A simple way of achieving would be to create a subgroup
-for the private members - e.g. have `+sensitive:matrix.org` and
-`+sensitive-private:matrix.org`.  The membership of
-`+sensitive-private:matrix.org` is set up with `m.room.join_rules` to not to
-allow peeking; you have to be joined to see the members, and users who don't
-want to be seen by the public to be member of the group are added to the
-subgroup.
-
-In future, there may be a usecase for groups where members are unaware of the
-other users' membership. This would also be useful for other rooms, and is left
-for a future proposal.
-
-## Flair
-
-A proposal for how to safely determine user flair is:
-
- * User publishes the groups they wish to announce on their profile
+ * User publishes the spaces they wish to announce on their profile
    ([MSC1769](https://github.com/matrix-org/matrix-doc/issues/1769)
-   as a m.flair state event: it lists the groups which they are advertising.
+   as an `m.flair` state event: it lists the spaces which they are advertising.
 
  * When a client wants to know the current flair for a set of users (i.e.
    those which it is currently displaying in the timeline), it peeks the
-   profile rooms of those users.  However, we can't trust the flair which the
-   users advertise on the profile - it has to be cross-referenced from the
-   memberships of the groups in question.
+   profile rooms of those users. (Ideally there would be an API to support
+   peeking multiple rooms at once to facilitate this.)
 
-To do this cross-referencing, options are:
-
- 1. The client checks the group membership (very inefficient, given the server
-    could/should do it for them), or...
- 2. The server checks the group membership by peeking the group and somehow
-    decorates the `m.flair` event as validated before sending it to the client.
-    This is also inefficient, as it forces the server to peek a potentially large
-    group (unless we extend federation to allow peeking specific state events)
- 3. The origin `m.flair` event includes the event_id of the user's
-    `m.room.membership` event in the group.  The server performing the check can
-    then query this specific event from one of the servers hosting the group-room,
-    and we perhaps extend the S2S API to say whether a given state event is current
-    considered current_state or not.  If the `m.room.membership` event is confirmed
-    as current, then the `m.flair` is decorated as being confirmed.
-
-Of these, option 3 feels best?
+ * The client must check that the user is *actually* a member of the advertised
+   spaces. Nominally it can do this by peeking the membership list of the
+   space; however for efficiency we could expose a dedicated Client-Server API
+   to do this check (and both servers and clients can cache the results fairly
+   aggressively.)
 
 ## Dependencies
 
-This needs peeking to work effectively over the CS API
-([MSC1776](https://github.com/matrix-org/matrix-doc/issues/1776)).
+ * [MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840) for room
+   types.
 
-This needs peeking to work effectively over federation (e.g. by having servers
-join remote rooms as `@null:example.com` in order to participate in them for
-peeking purposes - [MSC1777](https://github.com/matrix-org/matrix-doc/issues/1777)).
+ * [MSC1776](https://github.com/matrix-org/matrix-doc/issues/1776) for
+   effective peeking over the C/S API.
+
+ * [MSC1777](https://github.com/matrix-org/matrix-doc/issues/1777) (or similar)
+   for effective peeking over Federation.
 
 These dependencies are shared with profiles-as-rooms
 ([MSC1769](https://github.com/matrix-org/matrix-doc/issues/1769)).
 
 ## Security considerations
 
-XXX: how do we stop cycles & recursion abuse of the subgroups?
+* The peek server has significant power. TODO: expand.
 
 ## Tradeoffs
 
-This consciously sacrifices the ability to delegate group lookups through
-to a centralised group server.  However, group data can already be stale as we
-rely on cached attestations from federated servers to apply ACLs even if the
-remote server is not available.  So this isn’t much worse than eventually
-consistent group membership as you’d find in a room.
+* If the membership of a space would be large (for example: an organisation of
+  several thousand people), this membership has to copied entirely into the
+  room, rather than querying/searching incrementally.
 
-It also means that large groups have to be bridged in their entirety into the
-room, rather than querying/searching incrementally.  This is something we should
-fix for bridged rooms in general too, however.
+  This is particularly problematic if that membership list is based on an
+  external service such as LDAP, since there is no way to keep the space
+  membership in sync with the LDAP directory.
 
-This also consciously sacrifices the ability for a group server to provide
-different 'views' of groups to different querying users, as being
-overengineered.  Instead, all common use cases should be modellable by modelling
-group membership as room membership (nesting if required).
+* No allowance is made for exposing different 'views' of the membership list to
+  different querying users. (It may be possible to simulate this behaviour
+  using smaller spaces).
 
 ## Issues
 
@@ -197,11 +232,16 @@ How does this work with
 
 While this proposal is not in a published version of the specification,
 implementations should use `org.matrix.msc1772` to represent the `m`
-namespace. For example, `m.room.subgroup` becomes
-`org.matrix.msc1772.room.subgroup`.
+namespace. For example, `m.space.child` becomes
+`org.matrix.msc1772.space.child`.
 
 
 ## History
 
  * This replaces MSC1215: https://docs.google.com/document/d/1ZnAuA_zti-K2-RnheXII1F1-oyVziT4tJffdw1-SHrE
  * Other thoughts that led into this are at: https://docs.google.com/document/d/1hljmD-ytdCRL37t-D_LvGDA3a0_2MwowSPIiZRxcabs
+
+
+## Footnotes
+
+[1] It's a
