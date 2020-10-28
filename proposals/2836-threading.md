@@ -1,4 +1,4 @@
-### MSC: Threading
+### MSC2836: Threading
 
 *This MSC supersedes https://github.com/matrix-org/matrix-doc/issues/1198 *
 
