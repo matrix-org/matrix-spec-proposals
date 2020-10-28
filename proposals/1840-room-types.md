@@ -40,10 +40,12 @@ rules for textual identifiers.
 
 This proposal defines `m.messaging` as the (thus far) traditional
 instant-messaging style room found in Element and most other Matrix
-clients today. A room without an `m.room.type` state event may be
-considered to be of type `m.messaging` for backwards-compatibility
-reasons, but IM clients aware of room types should add an
-`m.messaging` room type state event when creating a new room.
+clients today. Client developers may handle rooms without a type in a
+way that makes sense for each client; for example, it is expected that
+an IM client would list both untyped rooms (for backwards
+compatibility) and rooms of type `m.messaging` in the room
+list. However, clients that are aware of room types should add the
+relevant room type state event when creating new rooms.
 
 This by itself could be used by a client to properly display rooms
 based on their intended usage. However, to optimize the use of
