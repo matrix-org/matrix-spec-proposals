@@ -1,6 +1,6 @@
 ### MSC2836: Threading
 
-*This MSC supersedes https://github.com/matrix-org/matrix-doc/issues/1198 *
+*This MSC probably supersedes https://github.com/matrix-org/matrix-doc/issues/1198*
 
 Matrix does not have arbitrarily nested threading for events. This is a desirable feature for implementing clones of social
 media websites like Twitter and Reddit. The aim of this MSC is to define the simplest possible API shape to implement threading
