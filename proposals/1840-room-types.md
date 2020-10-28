@@ -36,6 +36,13 @@ The value of `type` must conform to
 [MSC2758](https://github.com/matrix-org/matrix-doc/blob/master/proposals/2758-textual-id-grammar.md)
 rules for textual identifiers.
 
+This proposal defines `m.messaging` as the (thus far) traditional
+instant-messaging style room found in Element and most other Matrix
+clients today. A room without an `m.room.type` state event may be
+considered to be of type `m.messaging` for backwards-compatibility
+reasons, but IM clients aware of room types should add an
+`m.messaging` room type state event when creating a new room.
+
 This by itself could be used by a client to properly display rooms
 based on their intended usage. However, to optimize the use of
 bandwidth for an account used for varying purposes, the filter API
