@@ -41,10 +41,10 @@ this proposal at this point.
     "content": {
         "type": "m.messaging"
     },
-    "event_id": "$143273582443PhrSn:domain.com",
+    "event_id": "$143273582443PhrSn:example.com",
     "origin_server_ts": 1432735824653,
-    "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
-    "sender": "@example:domain.com",
+    "room_id": "!jEsUZKDJdhlrceRyVU:example.com",
+    "sender": "@user:example.com",
     "state_key": "",
     "type": "m.room.type",
     "unsigned": {
