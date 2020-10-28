@@ -32,6 +32,10 @@ intended usage of the room. Some example use cases for this:
   for this to clutter up the user's Element room list
   (`com.example.manufacturer.iot.light`)
 
+The value of `type` must conform to
+[MSC2758](https://github.com/matrix-org/matrix-doc/blob/master/proposals/2758-textual-id-grammar.md)
+rules for textual identifiers.
+
 This by itself could be used by a client to properly display rooms
 based on their intended usage. However, to optimize the use of
 bandwidth for an account used for varying purposes, the filter API
