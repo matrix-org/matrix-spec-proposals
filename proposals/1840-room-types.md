@@ -18,7 +18,19 @@ work around this limitation on a case-by-case basis.
 ## Solution
 
 The proposal is to add a new state event, `m.room.type`, to define the
-intended usage of the room.
+intended usage of the room. Some example use cases for this:
+
+- A long-form email-style client wants to provide a UI for sending
+  longer (possibly threaded) messages, but doesn't want those threads
+  to be overwhelmed by users sending short IM-style messages
+  (`m.messaging.mail` perhaps?)
+- A blogging app built on Matrix wants to define and use custom "blog
+  post" and "comment" message types, but doesn't want Element users to
+  join with a client that doesn't understand any of the messages
+- A project wants to use Matrix to allow a user to interact with an
+  IoT lightbulb, but doesn't want the rooms and control messages used
+  for this to clutter up the user's Element room list
+  (`com.example.manufacturer.iot.light`)
 
 This by itself could be used by a client to properly display rooms
 based on their intended usage. However, to optimize the use of
