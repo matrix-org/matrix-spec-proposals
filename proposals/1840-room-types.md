@@ -32,7 +32,9 @@ intended usage of the room. Some example use cases for this:
   for this to clutter up the user's Element room list
   (`com.example.manufacturer.iot.light`)
 
-The value of `type` must conform to
+The list of possible values of `type` is user-extensible; this
+proposal defines `m.messaging`, but other types may be used by
+client developers as desired. Grammar of values must conform to
 [MSC2758](https://github.com/matrix-org/matrix-doc/blob/master/proposals/2758-textual-id-grammar.md)
 rules for textual identifiers.
 
