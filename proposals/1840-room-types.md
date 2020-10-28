@@ -39,7 +39,7 @@ this proposal at this point.
 ```json
 {
     "content": {
-        "type": "m.room_type.messaging"
+        "type": "m.messaging"
     },
     "event_id": "$143273582443PhrSn:domain.com",
     "origin_server_ts": 1432735824653,
