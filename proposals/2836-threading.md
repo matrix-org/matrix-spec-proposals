@@ -83,8 +83,10 @@ which returns:
     "events": [                    // the returned events, ordered by the 'closest' (by number of hops) to the anchor point.
         { ... }, { ... }, { ... },
     ],
-    "next_batch": "opaque_string"  // A token which can be used to retrieve the next batch of events, if the response is limited.
+    "next_batch": "opaque_string", // A token which can be used to retrieve the next batch of events, if the response is limited.
                                    // Optional: can be omitted if the server doesn't implement threaded pagination.
+    "limited": true|false          // True if there are more events to return because the `limit` was reached. Servers are not obligated
+                                   // to return more events, see if the next_batch token is provided or not.
 }
 ```
 
@@ -122,6 +124,8 @@ Justifications for the response API shape are as follows:
  - The next batch token: Its presence indicates if there are more events and it is opaque to allow server implementations the
    flexibility for their own token format. There is no 'prev batch' token as it is intended for clients to request and persist
    the data on their side rather than page through results like traditional pagination.
+ - The limited flag: Required in order to distinguish between "no more events" and "more events but I don't allow pagination".
+   This additional state cannot be accurately represented by an empty `next_batch` token.
 
 Server implementation:
  - Sanity check request and set defaults.
@@ -133,9 +137,17 @@ Server implementation:
    servers to store this lookup in a dedicated table when events are created. Apply history visibility checks to all these
    events and add the ones which pass into the response array, honouring the `recent_first` flag and the `limit`.
  - Begin to walk the thread DAG in the `direction` specified, either depth or breadth first according to the `depth_first` flag,
-   honouring the `limit`, `max_depth` and `max_breadth` values. For events at the same level, honour the `recent_first` flag.
+   honouring the `limit`, `max_depth` and `max_breadth` values according to the following rules:
+     * If the response array is `>= limit`, stop.
+     * If already processed event, skip.
+     * Check how deep the event is compared to `event_id`, does it *exceed* (greater than) `max_depth`? If yes, skip.
+     * Check what number child this event is (ordered by `recent_first`) compared to its parent, does it *exceed* (greater than) `max_breadth`? If yes, skip.
+     * Process the event.
    If the event has been added to the response array already, do not include it a second time. If an event fails history visibiilty
-   checks, do not add it to the response array and do not follow any references it may have.
+   checks, do not add it to the response array and do not follow any references it may have. This algorithm bounds an infinite DAG
+   into a "window" (governed by `max_depth` and `max_breadth`) and serves up to `limit` events at a time, until the entire window
+   has been served. Critically, the `limit` _has not been reached_ when the algorithm hits a `max_depth` or `max_breadth`, it is only
+   reached when the response array is `>= limit`.
  - When the thread DAG has been fully visited or the limit is reached, return the response array (and a `next_batch` if the request
    was limited). If a request comes in with the `next_batch` set to a valid value, continue walking the thread DAG from where it
    was previously left, ensuring that no duplicate events are sent, and that any `max_depth` or `max_breadth` are honoured
