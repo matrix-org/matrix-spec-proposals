@@ -195,12 +195,12 @@ mechanics of propagating changes into real `m.room.power_levels` events.
        "content": {
            "mappings": [
                {
-                   "users": ["@superuser:matrix.org"],
-                   "power_level": 100,
+                   "spaces": ["#mods:example.org"],
+                   "power_level": 50
                },
                {
-                   "spaces": ["#mods:example.org"],
-                   "power_level": 50,
+                   "spaces": ["#users:example.org"],
+                   "power_level": 1
                }
            ]
        }
@@ -208,7 +208,10 @@ mechanics of propagating changes into real `m.room.power_levels` events.
    ```
 
    The intention would be that an automated process would peek into
-   `#mods:example.org` and
+   `#mods:example.org` and `#users:example.org` and generate a new
+   `m.room.power_levels` event whenever the membership of either space
+   changes. If a user is in both spaces, `#mods` takes priority because that is
+   listed first.
 
    Problem 1: possibly hard to map onto a comprehensible UI?
 
@@ -217,7 +220,13 @@ mechanics of propagating changes into real `m.room.power_levels` events.
    Question: is it safe to use an alias to refer to a space here? What happens
    if the alias gets repointed and we don't notice?
 
+   XXX Question: currently there are restrictions which stop users assigning PLs
+   above their own current power level. Do we need to replicate these
+   restrictions? If so, that probably necessitates changes to event auth?
+
 #### Propagating changes into rooms
+
+Several options:
 
  * Push-based:
 
@@ -265,6 +274,73 @@ mechanics of propagating changes into real `m.room.power_levels` events.
 All of the above solutions share the common problem that if the admin user
 (human or virtual) loses membership or admin rights in the child room, then
 the room will get out of sync.
+
+#### Supporting traditional PL assignments in addition to those derived from spaces
+
+When a user departs from a space, we expect the automated mapper process to
+remove any power-levels that were granted to that user by virtue of being a
+member of the space. The question arises of how the mapper can distinguish
+between power-levels that were granted manually using the traditional
+mechanism (so should not be changed) and those that were inherited from the
+space and should be removed.
+
+Options:
+
+ * Add a new field to `power_levels` for automatically-maintained power
+   levels. For example:
+
+   ```js
+   {
+       "type": "m.room.power_levels",
+       "content": {
+           "users": {
+               "@roomadmin:example.com": 100
+           },
+           "auto_users": {
+               "@spaceuser1:example.org": 50
+           }
+       }
+   }
+   ```
+
+   This would require changes to the event authorization rules, and hence
+   require a new room version.
+
+ * Add hints to the automated mapper so that it can maintain manually-assigned
+   PLs. This could either be another field in `power_levels` which plays no
+   part in event auth:
+
+   ```js
+   {
+       "type": "m.room.power_levels",
+       "content": {
+           "users": {
+               "@roomadmin:example.com": 100,
+               "@spaceuser1:example.org": 50
+           },
+           "manual_users": {
+               "@roomadmin:example.com": 100
+           }
+       }
+   }
+   ```
+
+   ... or stored in a separate event. Clients would be responsible for updating
+   both copies of the manually-assigned PLs on change.
+
+   Problem: Requiring clients to make two changes feels fragile. What if they
+   get it wrong? what if they don't know about the second copy because they
+   haven't been designed to work in rooms in spaces?
+
+ * Require that even regular PLs go through the automated mapper, by making
+   them an explicit input to that mapper, for example with entries in the
+   `m.room.power_level_mappings` event suggested above.
+
+   Problem: Requires clients to distinguish between rooms where there is an
+   automated mapper, and those where the client should manipulate the PLs
+   directly. (Maybe that's not so bad? The presence of the `mappings` event
+   should be enough? But still sucks that there are two ways to do the same
+   thing, and clients which don't support spaces will get it wrong.)
 
 ### Membership restrictions
 
