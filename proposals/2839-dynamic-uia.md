@@ -1,4 +1,4 @@
-# MSC2837: Dynamic User-Interactive Authentication
+# MSC2839: Dynamic User-Interactive Authentication
 
 [An issue on User-Interactive Authentication (UIA)](https://github.com/matrix-org/matrix-doc/issues/24089)
 outlined some issues with the current UIA system and ideas how to fix them.
