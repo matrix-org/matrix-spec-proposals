@@ -26,7 +26,7 @@ these reasons may appear to have trivial solutions; these are discussed below.
     users in the room.
 
  2. Events may be encrypted. Any client implementing E2EE must be prepared to
-    deal with any encrypted content, since by definitioon a server cannot
+    deal with any encrypted content, since by definition a server cannot
     validate it.
 
  3. In order to allow the Matrix protocol to be extensible, server
