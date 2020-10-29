@@ -6,6 +6,7 @@ This obsoletes [MSC1215](https://github.com/matrix-org/matrix-doc/issues/1215).
 
 Collecting rooms together into groups is useful for a number of
 purposes. Examples include:
+
  * Allowing users to discover different rooms related to a particular topic:
    for example "official matrix.org rooms".
  * Allowing administrators to manage permissions across a number of rooms: for
@@ -61,14 +62,16 @@ Spaces are referred to primarily by their alias, for example
 `#foo:matrix.org`.
 
 Space-rooms are distinguished from regular messaging rooms by the `m.room.type`
-of `m.space` (see [MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840)).
+of `m.space` (see
+[MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840)). XXX nobody has
+convinced me this is actually required.
 
 We introduce an `m.space.child` state event type, which defines the rooms
 within the space. The `state_key` is an alias for a child room, and `present:
 true` key is included to distinguish from a deleted state event. Something
 like:
 
-```json
+```js
 {
     "type": "m.space.child",
     "state_key": "#room1:example.com",
@@ -94,6 +97,17 @@ like:
 }
 ```
 
+XXX if we use aliases here, and we are using it to maintain a tree of rooms in
+the room list, what happens when the alias gets repointed and we don't know
+about it? Maybe room IDs would be better, though the interaction with room
+upgrades would need considering.
+
+XXX Rooms also need to be able to advertise related spaces, so that users can
+discover other, related, rooms.
+
+XXX We also want to be have "secret" rooms within a heirarchy: do this with
+either a "parent" state in the child, or possibly by hashing the room id?
+
 Space-rooms may have `m.room.name` and `m.room.topic` state events in the same
 way as a normal room.
 
@@ -118,7 +132,7 @@ Join rules, invites and 3PID invites work as for a normal room.
 
 ### Long description
 
-We would like to allow groups to have a long description using rich
+We would like to allow spaces to have a long description using rich
 formatting. This will use a new state event type `m.room.description` (with
 empty `state_key`) whose content is the same format as `m.room.message` (ie,
 contains a `msgtype` and possibly `formatted_body`).
@@ -128,11 +142,147 @@ TODO: this could also be done via pinned messages. Failing that
 
 ### Inheritance of power-levels
 
-TODO
+XXX: this section still in progress
 
-### Automated joins/leaves
+One use-case for spaces is to help manage power levels across a group of
+rooms. For example: "Jim has just joined the management team at my company. He
+should have moderator rights across all of the company rooms."
 
-TODO
+Since the event-authorisation rules cannot easily be changed, we must map any
+changes in space membership onto real `m.room.power_levels` events in the child
+rooms.
+
+There are two parts to this: one, indicating the relationship, and second, the
+mechanics of propagating changes into real `m.room.power_levels` events.
+
+#### Representing the mapping from spaces to power levels
+
+ * Option 1: list the PLs which should apply in all child rooms in an event in
+   the parent. For example:
+
+   ```js
+   {
+       "type": "m.space.child_power_levels",
+       "state_key": "",
+       "content": {
+           // content as per regular power_levels event
+       }
+   }
+   ```
+
+   Problem 1: No automated mapping from space membership to user list, so the
+   user list would have to be maintained manually. On the other hand, this
+   could be fine in some situations, where we're just using the space to group
+   together rooms, rather than as a user list.
+
+   Problem 2: No scope for nuance, where different rooms have slightly
+   different PLs.
+
+   Problem 3: what happens to rooms where several spaces claim it as a child?
+   They end up fighting?
+
+   Problem 4: Doesn't allow for random room admins to delegate their PLs to a
+   space without being admins in that space.
+
+ * Option 2: Express the desired PLs as state in the child rooms
+
+   This will need to be an ordered list, so that overlaps have defined behaviour:
+
+   ```js
+   {
+       "type": "m.room.power_level_mappings",
+       "state_key": "",
+       "content": {
+           "mappings": [
+               {
+                   "users": ["@superuser:matrix.org"],
+                   "power_level": 100,
+               },
+               {
+                   "spaces": ["#mods:example.org"],
+                   "power_level": 50,
+               }
+           ]
+       }
+   }
+   ```
+
+   The intention would be that an automated process would peek into
+   `#mods:example.org` and
+
+   Problem 1: possibly hard to map onto a comprehensible UI?
+
+   Problem 2: scope for getting wildly out of sync?
+
+   Question: is it safe to use an alias to refer to a space here? What happens
+   if the alias gets repointed and we don't notice?
+
+#### Propagating changes into rooms
+
+ * Push-based:
+
+   * We require any user who is an admin in the space (ie, anyone who has
+     permission to change the access rights in the space) to also be admins
+     and members of any child rooms.
+
+     Say Bob is an admin in #doglovers and makes a change that should be
+     propagated to all children of that space. His server is then responsible
+     for generating a power-levels event on his behalf for each room.
+
+     Problem: Bob may not want to be a member of all such rooms.
+
+   * We nominate a non-human "group admin" which is responsible for propagating
+     the changes into child rooms. It observes changes made in the parent space
+     and performs the necessary copying actions.
+
+     Problem: Control is now centralised on the homeserver of the admin bot. If
+     that server goes down, changes are no longer propagated correctly.
+
+   * We make it possible to specify several "group admin bot" users as above,
+     on different servers. All of them must have membership and admin in all
+     child rooms. Between them, they keep the child rooms in sync.
+
+     Problem: How do the bots decide which will actually make the changes?
+       * Maybe a random delay is good enough to avoid too much glare?
+       * Or the humans nominate an "active" bot, with the others acting as
+         standbys until they are promoted?
+
+ * Pull-based: the user that created the relationship (or rather, their
+   homeserver) is responsible for copying access controls into the room.
+
+   This has the advantage that users can set up their own spaces to mirror a
+   space, without having any particular control in that group. (XXX: Is that
+   actually a useful feature, at least as far as PLs are concerned?)
+
+   Problem: What do you do if the admin who sets ip the PL relationship
+   disappears?  Again, either the humans have to step in and create a new
+   admin, or maybe we can have multiple admins with random backoff?
+
+   Problem 2: What if the group server you are peeking to to maintain state is
+   unreachable? You could specify multiple vias for different servers via which
+   you can peek?
+
+All of the above solutions share the common problem that if the admin user
+(human or virtual) loses membership or admin rights in the child room, then
+the room will get out of sync.
+
+### Membership restrictions
+
+XXX: this section still in progress
+
+Another desirable feature is to give room admins the power to restrict
+membership of their room based on the membership of spaces<sup
+id="a1">[1](#f1)</sup> (and by implication, when a user leaves the required
+space, they should be ejected from the room). For example, "Any members of the
+#doglovers space can join this room".
+
+### Automated joins
+
+XXX: this section still in progress
+
+A related feature is: "all members of the company should automatically join the
+#general room", and by extension "all users should automatically join the
+#brainwashing room and may not leave".
 
 ## Future extensions
 
@@ -150,6 +300,8 @@ Questions to be answered here include:
 
  * What happens if somebody defines a cycle? (It's probably fine, but anything
    interpreting the relationships needs to be careful to limit recursion.)
+
+XXX seems we need to un-de-scope this.
 
 ### Restricting access to the spaces membership list
 
@@ -238,3 +390,12 @@ namespace. For example, `m.space.child` becomes
 
  * This replaces MSC1215: https://docs.google.com/document/d/1ZnAuA_zti-K2-RnheXII1F1-oyVziT4tJffdw1-SHrE
  * Other thoughts that led into this are at: https://docs.google.com/document/d/1hljmD-ytdCRL37t-D_LvGDA3a0_2MwowSPIiZRxcabs
+
+
+## Footnotes
+
+<a id="f1"/>[1]: The converse, "anybody can join, provided they are not members
+of the '#catlovers' space" is less useful since (a) users in the banned space
+could simply leave it at any time; (b) this functionality is already somewhat
+provided by [Moderation policy
+lists](https://matrix.org/docs/spec/client_server/r0.6.1#moderation-policy-lists).  [↩](#a1)
