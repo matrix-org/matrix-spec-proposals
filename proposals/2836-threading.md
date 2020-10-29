@@ -138,7 +138,7 @@ Server implementation:
    checks, do not add it to the response array and do not follow any references it may have.
  - When the thread DAG has been fully visited or the limit is reached, return the response array (and a `next_batch` if the request
    was limited). If a request comes in with the `next_batch` set to a valid value, continue walking the thread DAG from where it
-   was previously left, ensuring that no duplicate events are sent, and that any `max_depth` or `max_breath` are honoured
+   was previously left, ensuring that no duplicate events are sent, and that any `max_depth` or `max_breadth` are honoured
    _based on the original request_ - the max values always relate to the original `event_id`, NOT the event ID previously stopped at.
 
 #### Cross-room threading extension
