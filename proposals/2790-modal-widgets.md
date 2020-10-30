@@ -135,7 +135,7 @@ is expected to remember which widget opened which modal, however - more on this 
 proposal.
 
 After the modal widget's session is established (capabilities exchanged), the client MUST send
-a `toWidget` API request informing the widget of its configuration. The source widget is able to
+a `toWidget` API request informing the modal widget of its configuration. The source widget is able to
 pass data through to the modal widget by making use of custom keys in the widget `data`. This request
 looks like the following:
 
@@ -320,16 +320,16 @@ adds the event to the calendar.
 
 Note that the user interaction flow doesn't have to be this way: the modal widget could just as
 easily use the same backend as the calendar widget and add the event directly. It would simply send
-and empty `data` objects through, and the calendar widget would likely ignore the request anyways.
+an empty `data` object through, and the calendar widget would likely ignore the request anyways.
 A potential reason for using this data channel is because the calendar widget may have already gone
 through all the hoops to validate the user's identity and authentication, and while the modal can
 do all those same steps again it could be disruptive to the user's experience.
 
 ## Potential issues
 
-Modal widgets don't have a way to disable buttons inthe dialog with this proposal. This is currently
+Modal widgets don't have a way to disable buttons in the dialog with this proposal. This is currently
 a limitation and not planned to be included by this MSC. Likewise are other common button kinds
-like "secondary", "info", "light", and "dark".
+like "info", "light", and "dark".
 
 ## Alternatives
 
