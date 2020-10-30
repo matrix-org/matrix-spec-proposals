@@ -105,7 +105,7 @@ upgrades would need considering.
 XXX Rooms also need to be able to advertise related spaces, so that users can
 discover other, related, rooms.
 
-XXX We also want to be have "secret" rooms within a heirarchy: do this with
+XXX We also want to be have "secret" rooms within a hierarchy: do this with
 either a "parent" state in the child, or possibly by hashing the room id?
 
 Space-rooms may have `m.room.name` and `m.room.topic` state events in the same
@@ -228,7 +228,7 @@ mechanics of propagating changes into real `m.room.power_levels` events.
 
 Several options:
 
- * Push-based:
+ * Push-based options:
 
    * We require any user who is an admin in the space (ie, anyone who has
      permission to change the access rights in the space) to also be admins
@@ -263,7 +263,7 @@ Several options:
    space, without having any particular control in that group. (XXX: Is that
    actually a useful feature, at least as far as PLs are concerned?)
 
-   Problem: What do you do if the admin who sets ip the PL relationship
+   Problem: What do you do if the admin who sets up the PL relationship
    disappears?  Again, either the humans have to step in and create a new
    admin, or maybe we can have multiple admins with random backoff?
 
