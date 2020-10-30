@@ -218,6 +218,8 @@ TODO: this could also be done via pinned messages. Failing that
 
 XXX: this section still in progress
 
+XXX: make it clear that "child rooms" here are not necessarily actually children...
+
 One use-case for spaces is to help manage power levels across a group of
 rooms. For example: "Jim has just joined the management team at my company. He
 should have moderator rights across all of the company rooms."
