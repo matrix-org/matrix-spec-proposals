@@ -66,48 +66,6 @@ of `m.space` (see
 [MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840)). XXX nobody has
 convinced me this is actually required.
 
-We introduce an `m.space.child` state event type, which defines the rooms
-within the space. The `state_key` is an alias for a child room, and `present:
-true` key is included to distinguish from a deleted state event. Something
-like:
-
-```js
-{
-    "type": "m.space.child",
-    "state_key": "#room1:example.com",
-    "contents": {
-        "present": true
-    }
-}
-
-{
-    "type": "m.space.child",
-    "state_key": "#room2:example.com",
-    "contents": {
-        "present": true,
-        "autojoin": true  // TODO: what does this mean?
-    }
-}
-
-// no longer a child room
-{
-    "type": "m.space.child",
-    "state_key": "#oldroom:example.com",
-    "contents": {}
-}
-```
-
-XXX if we use aliases here, and we are using it to maintain a tree of rooms in
-the room list, what happens when the alias gets repointed and we don't know
-about it? Maybe room IDs would be better, though the interaction with room
-upgrades would need considering.
-
-XXX Rooms also need to be able to advertise related spaces, so that users can
-discover other, related, rooms.
-
-XXX We also want to be have "secret" rooms within a hierarchy: do this with
-either a "parent" state in the child, or possibly by hashing the room id?
-
 Space-rooms may have `m.room.name` and `m.room.topic` state events in the same
 way as a normal room.
 
@@ -118,10 +76,10 @@ such messages.
 ### Membership of spaces
 
 Users can be members of spaces (represented by `m.room.member` state events as
-normal). Depending on the configuration of the space (in particular whether
-`m.room.history_visibility` is set to `world_readable` or otherwise),
-membership of the space may be required to view the room list, membership list,
-etc.
+normal). The existing [`m.room.history_visibility`
+mechanism](https://matrix.org/docs/spec/client_server/r0.6.1#room-history-visibility)
+controls whether membership of the space is required to view the room list,
+membership list, etc.
 
 "Public" or "community" spaces would be set to `world_readable` to allow clients
 to see the directory of rooms within the space by peeking into the space-room
@@ -129,6 +87,122 @@ to see the directory of rooms within the space by peeking into the space-room
 the room).
 
 Join rules, invites and 3PID invites work as for a normal room.
+
+### Relationship between rooms and spaces
+
+The intention is that rooms and spaces form a hierarchy, which clients can use
+to structure the user's room list into a tree view. The parent/child
+relationship can be expressed in one of two ways:
+
+ 1. The admins of a space can advertise rooms and subspaces for their space by
+    setting `m.space.child` state events. The `state_key` is an alias for a
+    child room or space, and `present: true` key is included to distinguish
+    from a deleted state event. Something like:
+
+    ```js
+    {
+        "type": "m.space.child",
+        "state_key": "#room1:example.com",
+        "content": {
+            "present": true
+        }
+    }
+
+    {
+        "type": "m.space.child",
+        "state_key": "#room2:example.com",
+        "content": {
+            "present": true,
+            "order": "abcd",
+            "default": true
+        }
+    }
+
+    // no longer a child room
+    {
+        "type": "m.space.child",
+        "state_key": "#oldroom:example.com",
+        "content": {}
+    }
+    ```
+
+    Children where `present` is not present or is not set to `true` are ignored.
+
+    The `order` key is a string which is used to provide a default ordering of
+    siblings in the room list. (Rooms are sorted based on a lexicographic
+    ordering of of `order` vales; rooms with no `order` come last. `order`s
+    which are not strings, or do not consist solely of ascii characters in the
+    range `\x20` (space) to `\x7F` (`~`) are forbidden and should be ignored if
+    received.)
+
+    If `default` is set to `true`, that indicates a "default child": see [below](#default-children).
+
+    XXX if we use aliases here, what happens when the alias gets repointed and
+    we don't know about it? Or we are already in a room which *claims* to be
+    `#room1:example.com`, but actually isn't? Probably room IDs (+ vias) would
+    be better, though the interaction with room upgrades would need
+    considering.
+
+ 2. Separately, rooms can claim parents via `m.room.parent` state
+    events, where the `state_key` is the alias (?) of the parent space:
+
+    ```js
+    {
+        "type": "m.room.parent",
+        "state_key": "#space1:example.com",
+        "content": {
+            "present": true
+        }
+    }
+    ```
+
+    In this case, after a user joins such a room, the client could optionally
+    start peeking into the parent space, enabling it to find other rooms in
+    that space and group them together.
+
+    XXX how do we avoid abuse where randoms claim that their room is part of a
+    space it's not?
+
+    XXX do we need an "order" in this direction too?
+
+This structure means that rooms can end up with multiple parents. This implies
+that the room will appear multiple times in the room list hierarchy.
+
+In a typical hierarchy, we expect *both* parent->child and child->parent
+relationships to exist, so that the space can be discovered from the room, and
+vice versa. Occasions when the relationship only exists in one direction
+include:
+
+ * User-curated lists of rooms: in this case the space will not be listed as a
+   parent of the room.
+
+ * "Secret" rooms: rooms where the admin does not want the room to be
+   advertised as part of a given space, but *does* want the room to form part
+   of the heirarchy of that space for those in the know.
+
+### Sub-spaces
+
+XXX: Questions to be answered here include:
+
+ * Should membership of a sub-space grant any particular access to the parent
+   space, or vice-versa? We might need to extend `m.room.history_visibility` to
+   support more flexibility; fortunately this is not involved in event auth so
+   does not require new room versions.
+
+ * What happens if somebody defines a cycle? (It's probably fine, but anything
+   interpreting the relationships needs to be careful to limit recursion.)
+
+### Default children
+
+The `default` flag on a child listing allows a space admin to list the
+"default" sub-spaces and rooms in that space. This means that when a user joins
+the parent space, they will automatically be joined to those default
+children. XXX implement this on the client or server?
+
+Clients could display the default children in the room list whenever the space
+appears in the list.
+
+XXX: do we need force-joins, where users may not leave a room they autojoined?
 
 ### Long description
 
@@ -222,7 +296,8 @@ mechanics of propagating changes into real `m.room.power_levels` events.
 
    XXX Question: currently there are restrictions which stop users assigning PLs
    above their own current power level. Do we need to replicate these
-   restrictions? If so, that probably necessitates changes to event auth?
+   restrictions? If so, that probably necessitates changes to event auth? (Does
+   anyone actually make use of allowing non-admins to send PL events today?)
 
 #### Propagating changes into rooms
 
@@ -344,40 +419,25 @@ Options:
 
 ### Membership restrictions
 
-XXX: this section still in progress
+A desirable feature is to give room admins the power to restrict membership of
+their room based on the membership of spaces (for example, "only members of the
+#doglovers space can join this room"<sup id="a1">[1](#f1)</sup>).
 
-Another desirable feature is to give room admins the power to restrict
-membership of their room based on the membership of spaces<sup
-id="a1">[1](#f1)</sup> (and by implication, when a user leaves the required
-space, they should be ejected from the room). For example, "Any members of the
-#doglovers space can join this room".
+XXX can we maybe do this with invites generated on demand? If not, we probably
+need some sort of "silent invite" state for each user,
 
-### Automated joins
+By implication, when a user leaves the required space, they should be ejected
+from the room.
 
-XXX: this section still in progress
+XXX: how do we implement the ejection? We could leave it up to the ejectee's
+server, but what happens if it doesn't play the game? So we probably need to
+enact a ban... but then, which server has responisiblity, and which user is used?
 
-A related feature is: "all members of the company should automatically join the
-#general room", and by extension "all users should automatically join the
-#brainwashing room and may not leave".
 
 ## Future extensions
 
 The following sections are not blocking parts of this proposal, but are
 included as a useful reference for how we imagine it will be extended in future.
-
-### Sub-spaces
-
-Questions to be answered here include:
-
- * Should membership of a sub-space grant any particular access to the parent
-   space, or vice-versa? We might need to extend `m.room.history_visibility` to
-   support more flexibility; fortunately this is not involved in event auth so
-   does not require new room versions.
-
- * What happens if somebody defines a cycle? (It's probably fine, but anything
-   interpreting the relationships needs to be careful to limit recursion.)
-
-XXX seems we need to un-de-scope this.
 
 ### Restricting access to the spaces membership list
 
