@@ -10,7 +10,7 @@ conference call starts.
 This proposal adds the following predefined rules to the default underride rules:
 ```
 {
-    "rule_id": ".im.vector.jitsi",
+    "rule_id": ".m.jitsi",
     "default": true,
     "enabled": true,
     "conditions": [
@@ -39,7 +39,7 @@ This proposal adds the following predefined rules to the default underride rules
     ],
 },
 {
-    "rule_id": ".im.vector.jitsi_legacy1",
+    "rule_id": ".m.jitsi_legacy1",
     "default": true,
     "enabled": true,
     "conditions": [
@@ -68,7 +68,7 @@ This proposal adds the following predefined rules to the default underride rules
     ],
 },
 {
-    "rule_id": ".im.vector.jitsi_legacy2",
+    "rule_id": ".m.jitsi_legacy2",
     "default": true,
     "enabled": true,
     "conditions": [
@@ -120,3 +120,12 @@ participants in the room.
 
 Implementors must ensure to implement the condition checking for a state event, else there would be
 potential for this to be triggered by user without permission to send state events.
+
+## Unstable prefix
+In the unstable stage, the IDs for these rules are:
+ * `.im.vector.jitsi`
+ * `.im.vector.jitsi_legacy1`
+ * `.im.vector.jitsi_legacy2`
+
+Any client implementing support for these rules in the unstable phase should treat the stable and unstable
+identifiers of each rule as the same rule.
