@@ -1341,10 +1341,11 @@ Example response:
 Reporting that decryption keys are withheld
 -------------------------------------------
 
-When sending an encrypted event to a room, a client can signal to other devices
-in that room that it is not sending them the keys needed to decrypt the event.
-In this way, the receiving client can indicate to the user why it cannot
-decrypt the event, rather than just showing a generic error message.
+When sending an encrypted event to a room, a client can optionally signal to
+other devices in that room that it is not sending them the keys needed to
+decrypt the event.  In this way, the receiving client can indicate to the user
+why it cannot decrypt the event, rather than just showing a generic error
+message.
 
 In the same way, when one device requests keys from another using `Key
 requests`_, the device from which the key is being requested may want to tell

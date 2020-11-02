@@ -57,8 +57,17 @@ properties:
           sender.
       code:
         type: string
+        enum:
+          - m.blacklisted
+          - m.unverified
+          - m.unauthorised
+          - m.unavailable
+          - m.no_olm
         description: |-
-          A machine-readable code for why the key was not sent.
+          A machine-readable code for why the key was not sent. Codes beginning
+          with `m.` are reserved for codes defined in the Matrix
+          specification. Custom codes must use the Java package naming
+          convention.
       reason:
         type: string
         description: |-
