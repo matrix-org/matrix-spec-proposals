@@ -16,7 +16,7 @@ entered by the user (as defined for phone number identifiers elsewhere in the
 Matrix spec).
 
 Clients can assume that this protocol identifier can be used to reach phone
-numbers on the PSTN and therefore a phone number enetered by the user may be
+numbers on the PSTN and therefore a phone number entered by the user may be
 reached using this protocol.
 
 For the `m.protocol.pstn`, the API is generally expected to return only one result,
