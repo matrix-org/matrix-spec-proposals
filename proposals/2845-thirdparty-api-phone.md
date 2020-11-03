@@ -12,7 +12,7 @@ used to look up a Matrix ID for a bridged user for a given phone number.
 We define the protocol `m.protocol.pstn` to be a standard protocol identifier
 for the PSTN, where users are identified by their telephone number. This
 protocol has exactly one field, `m.id.phone` which is the phone number as
-enertered by the user (as defined for phone number identifiers elsewhere in the
+entered by the user (as defined for phone number identifiers elsewhere in the
 Matrix spec).
 
 Clients can assume that this protocol identifier can be used to reach phone
