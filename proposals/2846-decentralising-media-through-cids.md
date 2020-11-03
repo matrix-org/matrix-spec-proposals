@@ -61,7 +61,7 @@ where the content might be located. This should be done by query parameters on
 the download request. There's two options here:
  - A pair of room and event ID, given via the `room` and `event` query
    parameters.
- - A list of explicit fallback servers, via the `servers` query parameter.
+ - A list of explicit fallback servers, via the `via` query parameter.
 
 Giving a room and event ID is preferrable, but for some contexts it might be
 better to explicitly give fallback servers. (Bikeshedding opportunity: What
