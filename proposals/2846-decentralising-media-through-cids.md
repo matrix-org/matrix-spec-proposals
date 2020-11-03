@@ -89,29 +89,31 @@ invalid content for rooms that they participate in.
    somewhat limiting factor. Less difficult than E2EE, but still not trivial.
 
 ## Alternatives/Related MSCs
-1. **MSC2706** proposes to use IPFS directly, but in a similarily backwards
-   compatible way to how we're changing MXC URLs here. MSC2706 does make
-   authenticating media worse, because it publishes the file to IPFS and that is
-   easy to scrape, but that also means that fallback nodes are automatically
-   found. Public files in this MSC *could* be put into IPFS in the future, maybe
-   as an updated version of MSC2706, without changing the MXC URL format again,
-   as we'd already have CIDs here.
-1. **MSC2703** specifies a grammar for media IDs, which could be problematic for
-   us here. It specifies that media IDs must be opaque, as well as a maximum of
-   255 characters in length. This is in conflict to this MSC (and also MSC2706),
-   because we do encode information in the media ID, which servers and clients
-   do want to decode. It contains a hash, which should be used to verify the
-   integrity of the file that was fetched. The other possible conflict with that
-   MSC is the character limit of 255 characters, which should not affect this
-   MSC, because a CID is normally 60 characters, but that depends on what the
-   CID actually looks like. In the future, a CID based on a much longer
-   multihash could mean we run into issues here, but this is fairly unlikely, as
-   that would mean hash lengths of over a thousand bits.
-1. **MSC2834** proposes to replace MXC URLs with custom hash identifier + hash
-   strings. This is very similar to what we're doing here, with the difference
-   of not reusing pre-existing methods like multihash and CIDs. Also, by
-   removing the server name from the MXC URL, it breaks backwards compatibility
-   on the server side, and for clients which attempt to parse the MXC URL.
+1. [**MSC2706**](https://github.com/matrix-org/matrix-doc/pull/2706) proposes to
+   use IPFS directly, but in a similarily backwards compatible way to how we're
+   changing MXC URLs here. MSC2706 does make authenticating media worse, because
+   it publishes the file to IPFS and that is easy to scrape, but that also means
+   that fallback nodes are automatically found. Public files in this MSC *could*
+   be put into IPFS in the future, maybe as an updated version of MSC2706,
+   without changing the MXC URL format again, as we'd already have CIDs here.
+1. [**MSC2703**](https://github.com/matrix-org/matrix-doc/pull/2703) specifies a
+   grammar for media IDs, which could be problematic for us here. It specifies
+   that media IDs must be opaque, as well as a maximum of 255 characters in
+   length. This is in conflict to this MSC (and also MSC2706), because we do
+   encode information in the media ID, which servers and clients do want to
+   decode. It contains a hash, which should be used to verify the integrity of
+   the file that was fetched. The other possible conflict with that MSC is the
+   character limit of 255 characters, which should not affect this MSC, because
+   a CID is normally 60 characters, but that depends on what the CID actually
+   looks like. In the future, a CID based on a much longer multihash could mean
+   we run into issues here, but this is fairly unlikely, as that would mean hash
+   lengths of over a thousand bits.
+1. [**MSC2834**](https://github.com/matrix-org/matrix-doc/pull/2834) proposes to
+   replace MXC URLs with custom hash identifier + hash strings. This is very
+   similar to what we're doing here, with the difference of not reusing
+   pre-existing methods like multihash and CIDs. Also, by removing the server
+   name from the MXC URL, it breaks backwards compatibility on the server side,
+   and for clients which attempt to parse the MXC URL.
 1. **MSCNaN** proposes authentication of media endpoints using events attached
    to the media files. As this MSC also does, it proposes sending the room and
    event ID as query parameters when downloading. Its authentication would also
