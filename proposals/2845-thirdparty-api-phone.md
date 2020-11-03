@@ -72,6 +72,8 @@ first known usage of it.
 This API also assumes that the bridge is hosted on the same Homeserver as the
 user, and as such does not allow usage of a bridge on a different Homeserver.
 This is a general problem with the `thirdparty` API that could be rectified.
+Alternatively, the Matrix IDs returned by the bridge could reside on a
+different Homeserver.
 
 ## Alternatives
 Information could be given in `.well-known` on how to map a telephone number into
