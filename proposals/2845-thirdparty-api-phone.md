@@ -35,6 +35,12 @@ avoid collisions within the configuration. Any further protocols defined by the
 specification should be namespaced, but collision avoidance remains the
 responsibility of the Homeserver admin.
 
+The spec for `GET /_matrix/client/r0/thirdparty/user/{protocol}` shall also be
+ammended to clarify that each field (ie. query parameter) may appear only once,
+therefore only one phone number can be queried per request (other protocols may
+return multiple results, however, if multiple User IDs match the specified
+fields).
+
 ### Example
 A user enters the number, "01818118181" into the dial pad. The client makes the
 following query:
