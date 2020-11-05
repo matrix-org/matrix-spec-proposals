@@ -792,14 +792,19 @@ Key requests
 
 When a device is missing keys to decrypt messages, it can request the keys by
 sending `m.room_key_request`_ to-device messages to other devices with
-``action`` set to ``request``. If a device wishes to share the keys with that
-device, it can forward the keys to the first device by sending an encrypted
-`m.forwarded_room_key`_ to-device message. The first device should then send an
-`m.room_key_request`_ to-device message with ``action`` set to
-``request_cancellation`` to the other devices that it had originally sent the key
-request to; a device that receives a ``request_cancellation`` should disregard any
-previously-received ``request`` message with the same ``request_id`` and
-``requesting_device_id``.
+``action`` set to ``request``.
+
+If a device wishes to share the keys with that device, it can forward the keys
+to the first device by sending an encrypted `m.forwarded_room_key`_ to-device
+message. The first device should then send an `m.room_key_request`_ to-device
+message with ``action`` set to ``request_cancellation`` to the other devices
+that it had originally sent the key request to; a device that receives a
+``request_cancellation`` should disregard any previously-received ``request``
+message with the same ``request_id`` and ``requesting_device_id``.
+
+If a device does not wish to share keys with that device, it can indicate this
+by sending an `m.room_key.withheld`_ to-device message, as described in
+`Reporting that decryption keys are withheld`_.
 
 .. NOTE::
 
@@ -1332,6 +1337,32 @@ Example response:
       "signed_curve25519": 20
     }
   }
+
+Reporting that decryption keys are withheld
+-------------------------------------------
+
+When sending an encrypted event to a room, a client can optionally signal to
+other devices in that room that it is not sending them the keys needed to
+decrypt the event.  In this way, the receiving client can indicate to the user
+why it cannot decrypt the event, rather than just showing a generic error
+message.
+
+In the same way, when one device requests keys from another using `Key
+requests`_, the device from which the key is being requested may want to tell
+the requester that it is purposely not sharing the key.
+
+If Alice withholds a megolm session from Bob for some messages in a room, and
+then later on decides to allow Bob to decrypt later messages, she can send Bob
+the megolm session, ratcheted up to the point at which she allows Bob to
+decrypt the messages. If Bob logs into a new device and uses key sharing to
+obtain the decryption keys, the new device will be sent the megolm sessions
+that have been ratcheted up. Bob's old device can include the reason that the
+session was initially not shared by including a ``withheld`` property in the
+``m.forwarded_room_key`` message that is an object with the ``code`` and
+``reason`` properties from the ``m.room_key.withheld`` message.
+
+{{m_room_key_withheld_event}}
+
 
 .. References
 
