@@ -131,8 +131,6 @@ this proposal are also discussed in the Alternatives section below.
 
 ## Alternatives
 
-TRNOTES: Might forget about uniquness (alt of dropping glbl unique). Fixing API to be unique ref.
-
 There are a few alternatives to this MSC. The most obvious of which is MSC2695 as the complete opposite
 to what this MSC proposes - it's described in detail in the Proposal section above.
 
