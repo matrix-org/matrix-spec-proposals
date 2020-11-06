@@ -64,7 +64,7 @@ to be shorter and more understandable, particularly if Matrix moves to a model w
 becomes unbearably large for users to pass around. [MSC2695](https://github.com/matrix-org/matrix-doc/pull/2695)
 is a proposal which supports MSC2644 in its endeavour for using event IDs in place of room IDs,
 and is the opposite to what this MSC suggests - instead of replacing the federation endpoint,
-MSC2695 de-deprecates the client-server endpoint and ehances it to allow for better chances at
+MSC2695 de-deprecates the client-server endpoint and enhances it to allow for better chances at
 finding the event over federation.
 
 Another argument for keeping the `GET /event/:eventId` endpoint as it stands is one of resource
@@ -85,7 +85,7 @@ This MSC's answers to the above 3 arguments aren't particularly strong, but it d
 For the permalink shortness concern, MSC2644 could define an encoding format that shortens the overall
 length of the permalink or use an alternative structure entirely. Encoding would still have its
 drawbacks due to the complexity of identifiers, and an alternative structure feels a bit hypocritical
-for this MSC to suggest given it is currently suggesting to eliminate the easiest and simplist answer.
+for this MSC to suggest given it is currently suggesting to eliminate the easiest and simplest answer.
 In any case, the alternative solution could be to embed a URL shortener into Matrix as suggested around
 [this comment](https://github.com/matrix-org/matrix-doc/pull/2848/files#r518192302) on an earlier
 version of this MSC.
