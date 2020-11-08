@@ -13,7 +13,7 @@
 # limitations under the License.
 swagger: '2.0'
 info:
-  title: "Matrix Client-Server Capabiltiies API"
+  title: "Matrix Client-Server Capabilities API"
   version: "1.0.0"
 host: localhost:8008
 schemes:
