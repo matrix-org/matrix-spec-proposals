@@ -458,6 +458,11 @@ One way this might be implemented is:
    to do this check (and both servers and clients can cache the results fairly
    aggressively.)
 
+### Inheriting join rules
+
+If you make a parent space invite-only, should that (optionally?) cascade into
+child rooms? Seems to have some of the same problems as inheriting PLs.
+
 ## Dependencies
 
  * [MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840) for room
