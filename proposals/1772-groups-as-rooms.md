@@ -17,40 +17,18 @@ purposes. Examples include:
 
 We refer to such collections of rooms as "spaces".
 
-Synapse and Element-Web currently implement an unspecced "groups" API which
-attempts to provide this functionality (see
-[matrix-doc#1513](https://github.com/matrix-org/matrix-doc/issues/1513)). This
-API has some serious issues:
- * It is a large API surface to implement, maintain and spec - particularly for
-   all the different clients out there.
- * Much of the API overlaps significantly with mechanisms we already have for
-   managing rooms:
-   * Tracking membership identity
-   * Tracking membership hierarchy
-   * Inviting/kicking/banning user
-   * Tracking key/value metadata
- * There are membership management features which could benefit rooms which
-   would also benefit groups and vice versa (e.g. "auditorium mode")
- * The current implementations on Riot Web/iOS/Android all suffer bugs and
-   issues which have been solved previously for rooms.
-   * no local-echo of invites
-   * failures to set group avatars
-   * ability to specify multiple admins
- * It doesn't support pushing updates to clients (particularly for flair
-   membership): https://github.com/vector-im/riot-web/issues/5235
- * It doesn't support third-party invites.
- * Groups could benefit from other features which already exist today for rooms
-   * e.g. Room Directories
- * Groups are centralised, rather than being replicated across all
-   participating servers.
-
-In this document, the existing implementation will be referred to as
-"`/r0/groups`".
+Synapse and Element-Web currently implement an unspecced "groups" API (referred
+to as "`/r0/groups`" in this document) which attempts to provide this
+functionality (see
+[matrix-doc#971](https://github.com/matrix-org/matrix-doc/issues/971)). However,
+this is a complex API which has various problems (see
+[appendix](#appendix-problems-with-the-r0groups-api)).
 
 This proposal suggests a new approach where spaces are themselves represented
 by rooms, rather than a custom first-class entity.  This requires few server
-changes, other than better support for peeking (see Dependencies below). The
-existing `/r0/groups` API would be deprecated in Synapse and remain
+changes, other than better support for peeking (see Dependencies below).
+
+The existing `/r0/groups` API would be deprecated in Synapse and remain
 unspecified.
 
 ## Proposal
@@ -523,11 +501,40 @@ implementations should use `org.matrix.msc1772` to represent the `m`
 namespace. For example, `m.space.child` becomes
 `org.matrix.msc1772.space.child`.
 
-
 ## History
 
  * This replaces MSC1215: https://docs.google.com/document/d/1ZnAuA_zti-K2-RnheXII1F1-oyVziT4tJffdw1-SHrE
  * Other thoughts that led into this are at: https://docs.google.com/document/d/1hljmD-ytdCRL37t-D_LvGDA3a0_2MwowSPIiZRxcabs
+
+## Appendix: problems with the `/r0/groups` API
+
+The existing `/r0/groups` API, as proposed in
+[MSC971](https://github.com/matrix-org/matrix-doc/issues/971), has various
+problems, including:
+
+ * It is a large API surface to implement, maintain and spec - particularly for
+   all the different clients out there.
+ * Much of the API overlaps significantly with mechanisms we already have for
+   managing rooms:
+   * Tracking membership identity
+   * Tracking membership hierarchy
+   * Inviting/kicking/banning user
+   * Tracking key/value metadata
+ * There are membership management features which could benefit rooms which
+   would also benefit groups and vice versa (e.g. "auditorium mode")
+ * The current implementations on Riot Web/iOS/Android all suffer bugs and
+   issues which have been solved previously for rooms.
+   * no local-echo of invites
+   * failures to set group avatars
+   * ability to specify multiple admins
+ * It doesn't support pushing updates to clients (particularly for flair
+   membership): https://github.com/vector-im/riot-web/issues/5235
+ * It doesn't support third-party invites.
+ * Groups could benefit from other features which already exist today for rooms
+   * e.g. Room Directories
+ * Groups are centralised, rather than being replicated across all
+   participating servers.
+
 
 
 ## Footnotes
