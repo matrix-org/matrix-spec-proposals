@@ -1,4 +1,4 @@
-# MSC2857: Multiple SSO Identity Providers
+# MSC2858: Multiple SSO Identity Providers
 
 Matrix already has generic SSO support, but it does not yield the best user experience especially for
 instances which wish to offer multiple identity providers. This MSC provides a simple and fully
@@ -87,6 +87,6 @@ the text.
 
 ## Unstable prefix
 
-Whilst in development use `msc2857.identity_providers` for the flow discovery and `/unstable`
+Whilst in development use `msc2858.identity_providers` for the flow discovery and `/unstable`
 for the new endpoints.
 
