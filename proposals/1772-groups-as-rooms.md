@@ -311,8 +311,8 @@ Several options:
  * Pull-based: the user that created the relationship (or rather, their
    homeserver) is responsible for copying access controls into the room.
 
-   This has the advantage that users can set up their own spaces to mirror a
-   space, without having any particular control in that group. (XXX: Is that
+   This has the advantage that users can set up their own rooms to mirror a
+   space, without having any particular control in that space. (XXX: Is that
    actually a useful feature, at least as far as PLs are concerned?)
 
    Problem: What do you do if the admin who sets up the PL relationship
