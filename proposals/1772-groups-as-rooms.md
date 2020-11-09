@@ -73,23 +73,26 @@ to structure the user's room list into a tree view. The parent/child
 relationship can be expressed in one of two ways:
 
  1. The admins of a space can advertise rooms and subspaces for their space by
-    setting `m.space.child` state events. The `state_key` is an alias for a
-    child room or space, and `present: true` key is included to distinguish
-    from a deleted state event. Something like:
+    setting `m.space.child` state events. The `state_key` is the ID of a child
+    room or space, and the content should ontain a `via` key which gives a list
+    of candidate servers that can be used to join the room. `present: true` key
+    is included to distinguish from a deleted state event. Something like:
 
     ```js
     {
         "type": "m.space.child",
-        "state_key": "#room1:example.com",
+        "state_key": "!abcd:example.com",
         "content": {
+            "via": ["example.com", "test.org"],
             "present": true
         }
     }
 
     {
         "type": "m.space.child",
-        "state_key": "#room2:example.com",
+        "state_key": "!efgh:example.com",
         "content": {
+            "via": ["example.com"],
             "present": true,
             "order": "abcd",
             "default": true
@@ -99,7 +102,7 @@ relationship can be expressed in one of two ways:
     // no longer a child room
     {
         "type": "m.space.child",
-        "state_key": "#oldroom:example.com",
+        "state_key": "!jklm:example.com",
         "content": {}
     }
     ```
@@ -115,20 +118,15 @@ relationship can be expressed in one of two ways:
 
     If `default` is set to `true`, that indicates a "default child": see [below](#default-children).
 
-    XXX if we use aliases here, what happens when the alias gets repointed and
-    we don't know about it? Or we are already in a room which *claims* to be
-    `#room1:example.com`, but actually isn't? Probably room IDs (+ vias) would
-    be better, though the interaction with room upgrades would need
-    considering.
-
  2. Separately, rooms can claim parents via `m.room.parent` state
-    events, where the `state_key` is the alias (?) of the parent space:
+    events, where the `state_key` is the room ID of the parent space:
 
     ```js
     {
         "type": "m.room.parent",
-        "state_key": "#space1:example.com",
+        "state_key": "!space:example.com",
         "content": {
+            "via": ["example.com"]
             "present": true
         }
     }
@@ -249,11 +247,13 @@ mechanics of propagating changes into real `m.room.power_levels` events.
        "content": {
            "mappings": [
                {
-                   "spaces": ["#mods:example.org"],
+                   "space": "!mods:example.org",
+                   "via": ["example.org"],
                    "power_level": 50
                },
                {
-                   "spaces": ["#users:example.org"],
+                   "space": "!users:example.org",
+                   "via": ["example.org"],
                    "power_level": 1
                }
            ]
@@ -262,17 +262,14 @@ mechanics of propagating changes into real `m.room.power_levels` events.
    ```
 
    The intention would be that an automated process would peek into
-   `#mods:example.org` and `#users:example.org` and generate a new
+   `!mods:example.org` and `!users:example.org` and generate a new
    `m.room.power_levels` event whenever the membership of either space
-   changes. If a user is in both spaces, `#mods` takes priority because that is
+   changes. If a user is in both spaces, `!mods` takes priority because that is
    listed first.
 
    Problem 1: possibly hard to map onto a comprehensible UI?
 
    Problem 2: scope for getting wildly out of sync?
-
-   Question: is it safe to use an alias to refer to a space here? What happens
-   if the alias gets repointed and we don't notice?
 
    XXX Question: currently there are restrictions which stop users assigning PLs
    above their own current power level. Do we need to replicate these
