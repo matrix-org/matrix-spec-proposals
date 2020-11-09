@@ -130,7 +130,7 @@ relationship can be expressed in one of two ways:
 
     The `order` key is a string which is used to provide a default ordering of
     siblings in the room list. (Rooms are sorted based on a lexicographic
-    ordering of of `order` vales; rooms with no `order` come last. `order`s
+    ordering of `order` values; rooms with no `order` come last. `order`s
     which are not strings, or do not consist solely of ascii characters in the
     range `\x20` (space) to `\x7F` (`~`) are forbidden and should be ignored if
     received.)
@@ -178,7 +178,7 @@ include:
 
  * "Secret" rooms: rooms where the admin does not want the room to be
    advertised as part of a given space, but *does* want the room to form part
-   of the heirarchy of that space for those in the know.
+   of the hierarchy of that space for those in the know.
 
 ### Sub-spaces
 
