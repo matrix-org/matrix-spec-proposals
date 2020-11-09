@@ -25,7 +25,9 @@ to differentiate between roles. An example `m.role` event's `content` would be:
 ```json
 {
   "m.name": {
-    "en": "Administrator"
+    "neutral": "P-max",
+    "en": "Administrator",
+    "fr": "Directeur"
   },
   "m.permissions": {
     "m.ban": {"m.allowed": true},
@@ -41,10 +43,11 @@ to differentiate between roles. An example `m.role` event's `content` would be:
 
 The content is highly extensible/namespaced to permit additional fields being added by implementations
 which may be interested, such as (in the example) a colour to represent the role. Role names have
-translation support, and must at least have an English definition for consistency reasons. Language codes
-are per [BCP47](https://tools.ietf.org/html/bcp47), with `en` being representative of English.
+translation support, and must at least have an neutral definition for consistency reasons. Language codes
+are per [BCP47](https://tools.ietf.org/html/bcp47), with `neutral` being a default not represented by
+other codes.
 
-Roles are only required to have an English name. By default, a role has no permissions associated with
+Roles are only required to have a neutral name. By default, a role has no permissions associated with
 it. This can be used to simply categorize members of a role for easy identification rather than granting
 them any specific power - such examples may be wanting to identify supporters of a project within a room.
 
@@ -322,7 +325,6 @@ For determining whether a given user in a given room has a given permission:
 * If the user's membership is not `join`, the user does not have any permissions.
 * For each role ID defined by the `m.roles` array (default empty, ordered) on the user's membership event:
   * If there is no associated `m.role` state event in the room, skip.
-  * If the `m.role` state event does not have an English name, skip.
   * Interpret the permission on the `m.role` state event to a single boolean flag to denote whether
     the user is allowed (true) or disallowed (false) to continue.
     * For unknown permission types (eg: custom namespaces), the default is to imply disallowed.
