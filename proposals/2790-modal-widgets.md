@@ -254,6 +254,42 @@ An example for when the client would want to terminate the widget this way is wh
 the background around the dialog, thus closing the dialog, or when the client believes the widget is
 acting in bad faith and refusing to close (eg: not closing within 5 seconds of clicking the close button).
 
+### Disabling buttons
+
+Modal widgets might want to disable some of the buttons until the user has entered enough information
+to cause them to become enabled. They can do so with the following `fromWidget` API actions. Buttons
+are always enabled by default.
+
+```json
+{
+  "api": "fromWidget",
+  "action": "set_button_enabled",
+  "requestId": "AAABBB",
+  "widgetId": "CCCDDD",
+  "data": {
+    "enabled": false
+  }
+}
+```
+
+The response to which is an empty `response` object:
+
+```json
+{
+  "api": "fromWidget",
+  "action": "set_button_enabled",
+  "requestId": "AAABBB",
+  "widgetId": "CCCDDD",
+  "data": {
+    "enabled": false
+  },
+  "response": {}
+}
+```
+
+If the button ID being disabled is `m.close`, the widget will receive an error instead. Similarly, if the
+widget doesn't have the requested button, or is not a modal widget, it will receive an error response.
+
 ## Real world example
 
 For a real world scenario, let's assume the user has a calendar widget on their account. The calendar
