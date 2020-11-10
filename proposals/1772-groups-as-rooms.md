@@ -185,209 +185,103 @@ contains a `msgtype` and possibly `formatted_body`).
 TODO: this could also be done via pinned messages. Failing that
 `m.room.description` should probably be a separate MSC.
 
-### Inheritance of power-levels
+### Managing power levels via spaces
 
 XXX: this section still in progress
-
-XXX: make it clear that "child rooms" here are not necessarily actually children...
 
 One use-case for spaces is to help manage power levels across a group of
 rooms. For example: "Jim has just joined the management team at my company. He
 should have moderator rights across all of the company rooms."
 
-Since the event-authorisation rules cannot easily be changed, we must map any
-changes in space membership onto real `m.room.power_levels` events in the child
-rooms.
+Since the event-authorisation rules cannot easily be extended to consider
+membership in other rooms, we must map any changes in space membership onto
+real `m.room.power_levels` events.
 
-There are two parts to this: one, indicating the relationship, and second, the
-mechanics of propagating changes into real `m.room.power_levels` events.
+#### Extending the power_levels event
+
+We now have a mix of manually- and automatically- maintained power-level
+data. To support this, we extend the existing `m.room.power_levels` event to
+add an `auto_users` key:
+
+```js
+{
+    "type": "m.room.power_levels",
+    "content": {
+        "users": {
+            "@roomadmin:example.com": 100
+        },
+        "auto_users": {
+            "@spaceuser1:example.org": 50
+        }
+    }
+}
+```
+
+A user's power level is then specified by an entry in *either* `users` or
+`auto_users`. Where a user appears in both sections, `users` takes precedence.
+
+`auto_users` is subject to all of the same authorization checks as the existing
+`users` key (see https://matrix.org/docs/spec/rooms/v1#authorization-rules,
+paragraphs 10a, 10d, 10e).
+
+This change necessitates a new room version.
 
 #### Representing the mapping from spaces to power levels
 
- * Option 1: list the PLs which should apply in all child rooms in an event in
-   the parent. For example:
+The desired mapping from spaces to power levels is defined in a new state event
+type, `m.room.power_level_mappings`. The content should contain a `mappings`
+key which is an ordered list, for example:
 
-   ```js
-   {
-       "type": "m.space.child_power_levels",
-       "state_key": "",
-       "content": {
-           // content as per regular power_levels event
-       }
-   }
-   ```
-
-   Problem 1: No automated mapping from space membership to user list, so the
-   user list would have to be maintained manually. On the other hand, this
-   could be fine in some situations, where we're just using the space to group
-   together rooms, rather than as a user list.
-
-   Problem 2: No scope for nuance, where different rooms have slightly
-   different PLs.
-
-   Problem 3: what happens to rooms where several spaces claim it as a child?
-   They end up fighting?
-
-   Problem 4: Doesn't allow for random room admins to delegate their PLs to a
-   space without being admins in that space.
-
- * Option 2: Express the desired PLs as state in the child rooms
-
-   This will need to be an ordered list, so that overlaps have defined behaviour:
-
-   ```js
-   {
-       "type": "m.room.power_level_mappings",
-       "state_key": "",
-       "content": {
-           "mappings": [
-               {
-                   "space": "!mods:example.org",
-                   "via": ["example.org"],
-                   "power_level": 50
-               },
-               {
-                   "space": "!users:example.org",
-                   "via": ["example.org"],
-                   "power_level": 1
-               }
-           ]
-       }
-   }
-   ```
-
-   The intention would be that an automated process would peek into
-   `!mods:example.org` and `!users:example.org` and generate a new
-   `m.room.power_levels` event whenever the membership of either space
-   changes. If a user is in both spaces, `!mods` takes priority because that is
-   listed first.
-
-   Problem 1: possibly hard to map onto a comprehensible UI?
-
-   Problem 2: scope for getting wildly out of sync?
-
-   XXX Question: currently there are restrictions which stop users assigning PLs
-   above their own current power level. Do we need to replicate these
-   restrictions? If so, that probably necessitates changes to event auth? (Does
-   anyone actually make use of allowing non-admins to send PL events today?)
-
-#### Propagating changes into rooms
-
-Several options:
-
- * Push-based options:
-
-   * We require any user who is an admin in the space (ie, anyone who has
-     permission to change the access rights in the space) to also be admins
-     and members of any child rooms.
-
-     Say Bob is an admin in #doglovers and makes a change that should be
-     propagated to all children of that space. His server is then responsible
-     for generating a power-levels event on his behalf for each room.
-
-     Problem: Bob may not want to be a member of all such rooms.
-
-   * We nominate a non-human "group admin" which is responsible for propagating
-     the changes into child rooms. It observes changes made in the parent space
-     and performs the necessary copying actions.
-
-     Problem: Control is now centralised on the homeserver of the admin bot. If
-     that server goes down, changes are no longer propagated correctly.
-
-   * We make it possible to specify several "group admin bot" users as above,
-     on different servers. All of them must have membership and admin in all
-     child rooms. Between them, they keep the child rooms in sync.
-
-     Problem: How do the bots decide which will actually make the changes?
-       * Maybe a random delay is good enough to avoid too much glare?
-       * Or the humans nominate an "active" bot, with the others acting as
-         standbys until they are promoted?
-
- * Pull-based: the user that created the relationship (or rather, their
-   homeserver) is responsible for copying access controls into the room.
-
-   This has the advantage that users can set up their own rooms to mirror a
-   space, without having any particular control in that space. (XXX: Is that
-   actually a useful feature, at least as far as PLs are concerned?)
-
-   Problem: What do you do if the admin who sets up the PL relationship
-   disappears?  Again, either the humans have to step in and create a new
-   admin, or maybe we can have multiple admins with random backoff?
-
-   Problem 2: What if the group server you are peeking to to maintain state is
-   unreachable? You could specify multiple vias for different servers via which
-   you can peek?
-
-All of the above solutions share the common problem that if the admin user
-(human or virtual) loses membership or admin rights in the child room, then
-the room will get out of sync.
-
-#### Supporting traditional PL assignments in addition to those derived from spaces
-
-When a user departs from a space, we expect the automated mapper process to
-remove any power-levels that were granted to that user by virtue of being a
-member of the space. The question arises of how the mapper can distinguish
-between power-levels that were granted manually using the traditional
-mechanism (so should not be changed) and those that were inherited from the
-space and should be removed.
-
-Options:
-
- * Add a new field to `power_levels` for automatically-maintained power
-   levels. For example:
-
-   ```js
-   {
-       "type": "m.room.power_levels",
-       "content": {
-           "users": {
-               "@roomadmin:example.com": 100
+```js
+{
+   "type": "m.room.power_level_mappings",
+   "state_key": "",
+   "content": {
+       "mappings": [
+           {
+               "space": "!mods:example.org",
+               "via": ["example.org"],
+               "power_level": 50
            },
-           "auto_users": {
-               "@spaceuser1:example.org": 50
+           {
+               "space": "!users:example.org",
+               "via": ["example.org"],
+               "power_level": 1
            }
-       }
-   }
-   ```
+       ]
+    }
+}
+```
 
-   This would require changes to the event authorization rules, and hence
-   require a new room version.
+This means that a new `m.room.power_levels` event would be generated whenever
+the membership of either `!mods` or `!users` changes. If a user is in both
+spaces, `!mods` takes priority because that is listed first.
 
- * Add hints to the automated mapper so that it can maintain manually-assigned
-   PLs. This could either be another field in `power_levels` which plays no
-   part in event auth:
+#### Implementing the mapping
 
-   ```js
-   {
-       "type": "m.room.power_levels",
-       "content": {
-           "users": {
-               "@roomadmin:example.com": 100,
-               "@spaceuser1:example.org": 50
-           },
-           "manual_users": {
-               "@roomadmin:example.com": 100
-           }
-       }
-   }
-   ```
+When a new room is created, the server implicitly adds a "room admin bot" to
+the room, with the maximum power-level of any of the initial users.
+(Homeservers should implement this "bot" internally, rather than requiring
+separate software to be installed.)
 
-   ... or stored in a separate event. Clients would be responsible for updating
-   both copies of the manually-assigned PLs on change.
+It is proposed that this "admin bot" use the special user ID with empty
+localpart `@:example.com`.
 
-   Problem: Requiring clients to make two changes feels fragile. What if they
-   get it wrong? what if they don't know about the second copy because they
-   haven't been designed to work in rooms in spaces?
+This bot is then responsible for monitoring the `power_level_mappings` state,
+and peeking into any spaces mentioned in the content. It can then issue new
+`m.room.power_levels` events whenever the membership of the spaces in question
+changes.
 
- * Require that even regular PLs go through the automated mapper, by making
-   them an explicit input to that mapper, for example with entries in the
-   `m.room.power_level_mappings` event suggested above.
+It is possible that the admin bot is unable to perform the mapping (for
+example, the space cannot be peeked; or the membership of the space is so large
+that it cannot be expanded into a single `m.room.power_levels` event). It is
+proposed that the bot could notify the room of any problems via
+`m.room.message` messages of type `m.msgtype`.
 
-   Problem: Requires clients to distinguish between rooms where there is an
-   automated mapper, and those where the client should manipulate the PLs
-   directly. (Maybe that's not so bad? The presence of the `mappings` event
-   should be enough? But still sucks that there are two ways to do the same
-   thing, and clients which don't support spaces will get it wrong.)
+Clearly, updating this event type is extremely powerful. It is expected that
+access to it is itself restricted via `power_levels`. This could be enforced by
+the admin bot so that no `m.room.power_levels` events are generated unless
+`power_level_mappings` is appropriately restricted.
 
 ### Membership restrictions
 
@@ -493,10 +387,17 @@ These dependencies are shared with profiles-as-rooms
 
 ## Unstable prefix
 
-While this proposal is not in a published version of the specification,
-implementations should use `org.matrix.msc1772` to represent the `m`
-namespace. For example, `m.space.child` becomes
-`org.matrix.msc1772.space.child`.
+
+The following mapping will be used for identifiers in this MSC during
+development:
+
+Proposed final identifier       | Purpose | Development identifier
+------------------------------- | ------- | ----
+`m.space.child` | event type | `org.matrix.msc1772.space.child`
+`m.space.parent` | event type | `org.matrix.msc1772.space.parent`
+`m.room.power_level_mappings` | event type | `org.matrix.msc1772.room.power_level_mappings`
+`auto_users` | key in `m.room.power_levels` event | `org.matrix.msc1772.auto_users`
+
 
 ## History
 
