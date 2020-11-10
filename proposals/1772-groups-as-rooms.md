@@ -136,10 +136,10 @@ relationship can be expressed in one of two ways:
     start peeking into the parent space, enabling it to find other rooms in
     that space and group them together.
 
-    XXX how do we avoid abuse where randoms claim that their room is part of a
-    space it's not?
-
-    XXX do we need an "order" in this direction too?
+    To avoid abuse where a room admin falsely claims that a room is part of a
+    space that it should not be, clients could ignore such `m.room.parent`
+    events unless their sender has a sufficient power-level to send an
+    `m.room.child` event in the parent.
 
 This structure means that rooms can end up with multiple parents. This implies
 that the room will appear multiple times in the room list hierarchy.
