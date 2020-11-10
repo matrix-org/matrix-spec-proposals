@@ -141,6 +141,9 @@ relationship can be expressed in one of two ways:
     events unless their sender has a sufficient power-level to send an
     `m.room.child` event in the parent.
 
+    Where the parent space also claims a parent, clients can recursively peek
+    into the grandparent space, and so on.
+
 This structure means that rooms can end up with multiple parents. This implies
 that the room will appear multiple times in the room list hierarchy.
 
@@ -156,29 +159,21 @@ include:
    advertised as part of a given space, but *does* want the room to form part
    of the hierarchy of that space for those in the know.
 
-### Sub-spaces
-
-XXX: Questions to be answered here include:
-
- * Should membership of a sub-space grant any particular access to the parent
-   space, or vice-versa? We might need to extend `m.room.history_visibility` to
-   support more flexibility; fortunately this is not involved in event auth so
-   does not require new room versions.
-
- * What happens if somebody defines a cycle? (It's probably fine, but anything
-   interpreting the relationships needs to be careful to limit recursion.)
+Cycles in the parent->child and child->parent relationships are *not*
+permitted, but clients (and servers) should be aware that they may be
+encountered, and ignore the relationship rather than recursing infinitely.
 
 ### Default children
 
 The `default` flag on a child listing allows a space admin to list the
 "default" sub-spaces and rooms in that space. This means that when a user joins
 the parent space, they will automatically be joined to those default
-children. XXX implement this on the client or server?
+children.
+
+XXX implement this on the client or server?
 
 Clients could display the default children in the room list whenever the space
 appears in the list.
-
-XXX: do we need force-joins, where users may not leave a room they autojoined?
 
 ### Long description
 
