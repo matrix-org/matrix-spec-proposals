@@ -27,7 +27,9 @@ be prompted to approve the widget's use of this new capability.
 Modal widgets SHOULD be rendered in a dialog-like component within the client to get the user's
 attention. The dialog should have a title, possibly subtitle, the modal widget, and any buttons
 requested by the source widget. The dialog-like component is also called the widget's frame in
-this proposal.
+this proposal. Clients are encouraged to represent which widget opened the modal dialog as a
+light security measure and to avoid the user being too confused. For example, this could be done
+by showing the widget name which opened the modal, or showing the widget's URL.
 
 A modal widget takes a very similar shape to the common widget properties definition:
 
@@ -57,13 +59,15 @@ value is implied to be an empty array (no buttons). Buttons have 3 properties to
 * `id` - Using [MSC2758](https://github.com/matrix-org/matrix-doc/pull/2758), an identifier to indicate
   which button was clicked by the user to the modal widget. Only `m.close` is specified by this MSC,
   allowing clients to render any applicable close buttons on their UI.
-* `label` - A human-readable string for the text of the button.
+* `label` - A human-readable string for the text of the button. The language for this field is undefined
+  like most of the widget properties - it is roughly expected to be the sender's language where applicable.
 * `kind` - Using MSC2758 again, the kind of button the client should present the button as. Clients
   which do not understand the `kind` or do not have styling rules for the `kind` should render the
   button as a `m.secondary` button. This MSC defines the following common types:
   * `m.primary` - A button which is styled as the primary action. Usually this will mean a background
     of the client's accent colour.
-  * `m.secondary` - A button which is styled similar to the primary button but denotes secondary action.
+  * `m.secondary` - A button which is styled similar to the primary button though with a different
+    colouring to imply a different action.
   * `m.warning` - A button which is styled to warn the user of potential harm in the action about to
     be taken. Usually yellow or orange backgrounds are used.
   * `m.danger` - A button which is styled to warn the user of imminent risk of severe consequences,
