@@ -271,6 +271,7 @@ are always enabled by default.
   "requestId": "AAABBB",
   "widgetId": "CCCDDD",
   "data": {
+    "button": "com.example.save",
     "enabled": false
   }
 }
@@ -285,6 +286,7 @@ The response to which is an empty `response` object:
   "requestId": "AAABBB",
   "widgetId": "CCCDDD",
   "data": {
+    "button": "com.example.save",
     "enabled": false
   },
   "response": {}
