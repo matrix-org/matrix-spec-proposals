@@ -21,14 +21,12 @@ another implementation of Matrix such as a client or push gateway. Instead, Syna
 supports "Matrix 1.1", making compatibility much easier to determine - this is what this proposal aims
 to define.
 
-**Note**: This proposal does nothing to room versions and are thus not included beyond this line.
-
 ## Proposal
 
 Instead of having per-API versions (`r0.6.1`, etc), we have a version that spans the entire specification.
 This version represents versioning for the index (which has quite a bit of unversioned specification on
-it currently), the APIs, and the appendices (which are also currently unversioned). This effectively
-makes the marketing version previously mentioned an actual version.
+it currently), the APIs, room versions, and the appendices (which are also currently unversioned). This
+effectively makes the marketing version previously mentioned an actual version.
 
 Doing this has the benefits previously alluded to:
 
@@ -45,7 +43,8 @@ Doing this has the benefits previously alluded to:
 
 Structurally, the API documents remain mostly unchanged. We'll still have a client-server API, server-server
 API, etc, but won't have versions associated with those particular documents. This also means they would
-lose their individual changelogs in favour of a more general changelog.
+lose their individual changelogs in favour of a more general changelog. An exception to this rule is
+room versions, which are covered later in this proposal.
 
 The more general changelog would likely have sections for each API that had changes (client-server,
 server-server, etc), likely indicating if a particular API had no changes between the release for
@@ -64,6 +63,14 @@ patch version as there should not be any significant changes in patch versions. 
 
 The endpoints themselves in the client-server API also get converted to per-endpoint versions, where
 all the `/r0/` endpoints now become `/v1/`.
+
+Room versions are a bit special in that they have their own version number and are required to have that
+version number so they can be baked into a room/the protocol. This MSC doesn't propose dropping the
+room version's specification on versioning, though does propose that the (un)stability of a given room
+version is covered by this new Matrix version. This MSC also proposes changing the brewing mechanics
+of how room versions are formed to better suit the proposed versioning plan.
+
+**TODO: Brewing mechanics of room versions**
 
 For grammar, the Matrix version follows semantic versioning. Semantic versioning is typically used for
 software and not specification though, so here's how it translates:
