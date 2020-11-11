@@ -435,7 +435,7 @@ We could represent the allowed spaces with additional content in the
     "state_key": "",
     "content": {
         "join_rule": "public",
-        "allowed_join": [
+        "allow": [
             {
                 "space": "!mods:example.org",
                 "via": ["example.org"],
@@ -449,14 +449,10 @@ We could represent the allowed spaces with additional content in the
 }
 ```
 
-XXX: would it be better to put it in a separate event? Doing so would probably
-require us to come up with a new `join_rule` state to tell servers to go and
-look for the allowed spaces.
-
-The `allowed_join` key applies a restriction to the `public` join rule, so that
+The `allow` key applies a restriction to the `public` join rule, so that
 only users satisfying one or more of the requirements should be allowed to
 join. Additionally, users who have received an explicit `invite` event are
-allowed to join<sup id="a2">[2](#f2)</sup>. If the `allowed_join` key is an
+allowed to join<sup id="a2">[2](#f2)</sup>. If the `allow` key is an
 empty list (or not a list at all), no users are allowed to join without an
 invite.
 
@@ -472,13 +468,13 @@ permitted if the user has a valid invite or is in one of the listed spaces
 XXX: redacting the join_rules above will reset the room to public, which feels dangerous?
 
 A new room version is not absolutely required here, but may be advisable to
-ensure that servers that do not support `allowed_join` do not join the room
+ensure that servers that do not support `allow` do not join the room
 (and would also allow us to tweak the redaction rules to avoid the foot-gun).
 
 #### Kicking users out when they leave the allowed space
 
 XXX: this will probably be a future extension, rather than part of the initial
-implementation of `allowed_join`.
+implementation of `allow`.
 
 In the above example, suppose `@bob:server.example` leaves `!users:example.org`:
 they should be removed from the room. One option is to leave the departure up
@@ -488,18 +484,18 @@ the room would still see Bob in the room (and their servers would attempt to
 send message traffic to it).
 
 Instead, we make the removal the responsibility of the room's admin bot (see
-above): the bot is expected to peek into any spaces in `allowed_join` and kick
+above): the bot is expected to peek into any spaces in `allow` and kick
 any users who are members of the room and leave the union of the allowed
 spaces.
 
 (XXX: should users in a space be kicked when that space is removed from the
-`allowed_join` list? We think not, by analogy with what happens when you switch
+`allow` list? We think not, by analogy with what happens when you switch
 the join rules from `public` to `invite`.)
 
 One problem here is that it will lead to users who joined via an invite being
 kicked. For example:
  * `@bob:server.example` creates an invite-only room.
- * Later, the `join_rules` are switched to `public`, with an `allowed_join` of
+ * Later, the `join_rules` are switched to `public`, with an `allow` of
    `!users:example.org`, of which Bob happens to be a member.
  * Later still, Bob leaves `!users:example.org`.
  * Bob is kicked from his own room.
@@ -508,12 +504,12 @@ Fixing this is thorny. Some sort of annotation on the membership events might
 help. but it's unclear what the desired semantics are:
 
  * Assuming that users in a given space are *not* kicked when that space is
-   removed from `allowed_join`, are those users then given a pass to remain
+   removed from `allow`, are those users then given a pass to remain
    in the room indefinitely? What happens if the space is added back to
-   `allowed_join` and *then* the user leaves it?
+   `allow` and *then* the user leaves it?
 
  * Suppose a user joins a room via a space (SpaceA). Later, SpaceB is added to
-   the `allowed_join` list and SpaceA is removed. What should happen when the
+   the `allow` list and SpaceA is removed. What should happen when the
    user leaves SpaceB? Are they exempt from the kick?
 
 #### Alternatives
@@ -530,9 +526,15 @@ help. but it's unclear what the desired semantics are:
   participating in the room), which feels a bit grim. We could have multiple
   admin bots to mitigate this, but it gets a bit messy.
 
-* Change the way that `allowed_join` and invites interact, so that an invite
-  does not exempt you from the `allowed_join` requirements. This would be
+* Change the way that `allow` and invites interact, so that an invite
+  does not exempt you from the `allow` requirements. This would be
   simpler to implement, but probably doesn't match the expected UX.
+
+* Put the `allow` rules in a separate event? This is attractive because
+  `join_rules` are involved in event auth and hence state resolution, and the
+  fewer events that state res has to grapple with the better. However, doing
+  this would probably require us to come up with a new `join_rule` state to
+  tell servers to go and look for the allowed spaces.
 
 ## Future extensions
 
@@ -606,10 +608,10 @@ These dependencies are shared with profiles-as-rooms
   server could lie about the space membership and add an
   `@evil_user:example.org`.
 
-* The `allowed_join` feature places increased trust in the servers in the
+* The `allow` feature for `join_rules` places increased trust in the servers in the
   room. We consider this acceptable: if you don't want evil servers randomly
   joining spurious users into your rooms, then a) don't let evil servers in
-  your room in the first place, b) don't use `allowed_join` lists, given the
+  your room in the first place, b) don't use `allow` lists, given the
   expansion increases the attack surface anyway by letting members in other
   rooms dictate who's allowed into your room.
 
@@ -640,7 +642,7 @@ Proposed final identifier       | Purpose | Development identifier
 `m.space.parent` | event type | `org.matrix.msc1772.space.parent`
 `m.room.power_level_mappings` | event type | `org.matrix.msc1772.room.power_level_mappings`
 `auto_users` | key in `m.room.power_levels` event | `org.matrix.msc1772.auto_users`
-`allowed_join` | key in `m.room.join_rules` event | `org.matrix.msc1772.allowed_join`
+`allow` | key in `m.room.join_rules` event | `org.matrix.msc1772.allow`
 
 ## History
 
