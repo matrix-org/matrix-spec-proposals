@@ -111,10 +111,10 @@ relationship can be expressed in one of two ways:
 
     The `order` key is a string which is used to provide a default ordering of
     siblings in the room list. (Rooms are sorted based on a lexicographic
-    ordering of `order` values; rooms with no `order` come last. `order`s
-    which are not strings, or do not consist solely of ascii characters in the
-    range `\x20` (space) to `\x7F` (`~`) are forbidden and should be ignored if
-    received.)
+    ordering of `order` values; rooms with no `order` come last. `order`s which
+    are not strings, or do not consist solely of ascii characters in the range
+    `\x20` (space) to `\x7F` (`~`), or consist of more than 50 characters, are
+    forbidden and should be ignored if received.)
 
     If `default` is set to `true`, that indicates a "default child": see [below](#default-children).
 
