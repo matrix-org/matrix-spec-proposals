@@ -590,13 +590,13 @@ child rooms? Seems to have some of the same problems as inheriting PLs.
 
 ## Dependencies
 
- * [MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840) for room
-   types.
+ * (possibly?) [MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840)
+   for room types.
 
- * [MSC1776](https://github.com/matrix-org/matrix-doc/issues/1776) for
+ * [MSC2753](https://github.com/matrix-org/matrix-doc/issues/2753) for
    effective peeking over the C/S API.
 
- * [MSC1777](https://github.com/matrix-org/matrix-doc/issues/1777) (or similar)
+ * [MSC2444](https://github.com/matrix-org/matrix-doc/issues/2444) (or similar)
    for effective peeking over Federation.
 
 These dependencies are shared with profiles-as-rooms
