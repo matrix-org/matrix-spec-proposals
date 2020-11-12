@@ -87,6 +87,5 @@ the text.
 
 ## Unstable prefix
 
-Whilst in development use `msc2858.identity_providers` for the flow discovery and `/unstable`
+Whilst in development use `org.matrix.msc2858.identity_providers` for the flow discovery and `/_matrix/client/unstable/org.matrix.msc2858/login/sso/redirect/{idp_id}`
 for the new endpoints.
-
