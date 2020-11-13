@@ -27,12 +27,12 @@ experience. This would look like this:
                 {
                     "id": "google",
                     "name": "Google",
-                    "icon": "mxc://..."
+                    "icon": "https://..."
                 },
                 {
                     "id": "github",
                     "name": "Github",
-                    "icon": "mxc://..."
+                    "icon": "https://..."
                 }
             ]
         },
@@ -43,19 +43,58 @@ experience. This would look like this:
 }
 ```
 
+The `id` field would be opaque with the accepted characters matching unreserved URI characters
+as defined in [RFC3986](http://www.ietf.org/rfc/rfc3986.txt) - this was chosen to avoid
+having to encode special characters in the URL. Max length 128. Defined as:
+```
+ALPHA  DIGIT  "-" / "." / "_" / "~"
+```
+
+The `name` field should be the human readable string intended for printing by the client.
+
+The `icon` field is the only optional field and should point to an icon representing the IdP.
+
+
 A new endpoint would be needed to support redirecting directly to one of the IDPs:
 
 `GET /_matrix/client/r0/login/sso/redirect/{idp_id}`
 
 This would behave identically to the existing endpoint without the last argument
-except would allow the server to forward the user directly to the correct IDP.
-
-For the case of User Interactive Auth the server would just give the appropriate
-identity provider as an option, that being the same as the user used to login with.
+except would allow the server to forward the user directly to the correct IdP.
 
 For the case of backwards compatibility the existing endpoint should remain,
 and if the server supports multiple SSO IDPs it should offer the user a page
-which lets them choose between the available IDP options as a fallback.
+which lets them choose between the available IdP options as a fallback.
+
+For the case of User Interactive Auth the server would just give the appropriate
+identity provider as an option, that being the same as the user used to login with.
+An example UIA 401 response is shown below:
+```json
+{
+    "session": "session_id",
+    "flows":[
+        {
+            "stages": ["m.login.sso"]
+        }
+    ],
+    "params": {
+        "m.login.sso": {
+            "identity_providers": [
+                {
+                    "id": "google",
+                    "name": "Google",
+                    "icon": "https://..."
+                }
+            ]
+        }
+    }
+}
+```
+
+The exact format of `identity_providers` is kept between Login flows and UIA,
+this allows better code reuse and in future for multiple IdPs to map to the
+same Matrix account and the user having the ability to use either to complete
+UIA. 
 
 
 ## Potential issues
@@ -69,7 +108,7 @@ An alternative to the whole approach would be to allow `m.login.sso.$idp` but th
 treating an opaque identifier as hierarchical and offers worse backwards compatibility.
 
 An alternative to the proposed backwards compatibility plan where the server offers a
-fallback page which fills the gap and lets the user choose which SSO IDP they need is
+fallback page which fills the gap and lets the user choose which SSO IdP they need is
 for the server to deterministically always pick one, maybe the first option and let
 old clients only auth via that one but that means potentially locking users out of their
 accounts.
