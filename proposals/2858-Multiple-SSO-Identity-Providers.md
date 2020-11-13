@@ -53,6 +53,7 @@ ALPHA  DIGIT  "-" / "." / "_" / "~"
 The `name` field should be the human readable string intended for printing by the client.
 
 The `icon` field is the only optional field and should point to an icon representing the IdP.
+If present then it must be an HTTPS URL to an image resource of type `image/png` or `image/svg+xml`.
 
 
 A new endpoint would be needed to support redirecting directly to one of the IDPs:
