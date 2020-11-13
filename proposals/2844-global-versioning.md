@@ -226,6 +226,13 @@ in favour of its proposed `/v4/sync`. Because endpoints are versioned on a per-e
 will still work with a server that supports `/v3/profile` (for example) - the version number doesn't mean
 an implementation can only use v4 endpoints.
 
+This sort of approach could be potentially confusing and non-standard as it would mean for an amount of
+time in the specification there would be two versions of an endpoint: one deprecated and one not. Most
+specifications and protocols do not use this sort of approach and instead opt to replace the whole API
+or outright remove the endpoint, however the Matrix specification tends to have a longer-lived cycle
+associated with it and thus means we should support a larger than average backwards compatibility
+period.
+
 ### Supported versions schedule
 
 Currently implementations are left to fend for themselves on deciding which versions of their APIs to
