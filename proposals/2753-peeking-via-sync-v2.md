@@ -73,6 +73,12 @@ The `room` parameter is required and must be a valid room id or alias. The
 `servers` parameter is optional and, if present, gives a list of servers to try
 to peek through.
 
+XXX: should we limit this API to room IDs, and require clients to do a `GET
+/_matrix/client/r0/directory/room/{roomAlias}` request if they have a room
+alias? (In which case, `/_matrix/client/r0/room/{room_id}/peek` might be a
+better name for it.)  On the one hand: cleaner, simpler API. On the other: more
+requests needed for each operation.
+
 Both `room_id` and `peek_expiry_ts` are required in the
 response. `peek_expiry_ts` gives a timestamp (milliseconds since the unix
 epoch) when the server will *expire* the peek if the client does not renew it.
@@ -152,6 +158,18 @@ the act of peeking would leak the identity of the peeker to the joined users
 in the room (as they'd need to encrypt for the peeker). This also feels
 acceptable given there is little point in encrypting something intended to be
 world-readable.
+
+## Future extensions
+
+ * "snapshot" API, for a one-time peek operation which returns the current
+   state of the room without adding the room to future `/sync` responses. Might
+   be useful for certain usecases (eg, looking at a user's public profile)?
+
+ * "bulk peek" API, for peeking into many rooms at once. Might be useful for
+   flair (which requires peeking into lots of users' profile rooms), though
+   realistically that usecase will need server-side support.
+
+ * "cross-device" peeks could be useful for microblogging etc?
 
 ## Potential issues
 
