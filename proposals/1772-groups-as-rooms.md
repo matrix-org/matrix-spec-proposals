@@ -41,8 +41,9 @@ Spaces are referred to primarily by their alias, for example
 
 Space-rooms are distinguished from regular messaging rooms by the `m.room.type`
 of `m.space` (see
-[MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840)). XXX nobody has
-convinced me this is actually required.
+[MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840)). This allows
+clients to offer slightly customised user experience depending on the purpose
+of the room.
 
 Space-rooms may have `m.room.name` and `m.room.topic` state events in the same
 way as a normal room.
@@ -590,8 +591,8 @@ child rooms? Seems to have some of the same problems as inheriting PLs.
 
 ## Dependencies
 
- * (possibly?) [MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840)
-   for room types.
+ * [MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840) for room
+   types.
 
  * [MSC2753](https://github.com/matrix-org/matrix-doc/issues/2753) for
    effective peeking over the C/S API.
@@ -638,6 +639,7 @@ development:
 
 Proposed final identifier       | Purpose | Development identifier
 ------------------------------- | ------- | ----
+`m.space` | room type | `org.matrix.msc1772.space`
 `m.space.child` | event type | `org.matrix.msc1772.space.child`
 `m.space.parent` | event type | `org.matrix.msc1772.space.parent`
 `m.room.power_level_mappings` | event type | `org.matrix.msc1772.room.power_level_mappings`
