@@ -3,7 +3,7 @@
 ## Problem
 
 [Room previews](https://matrix.org/docs/spec/client_server/r0.6.1#id116), more
-commonly known as peeking, has a number of usecases, such as:
+commonly known as "peeking", has a number of usecases, such as:
 
  * Look at a room before joining it, to preview it.
  * Look at a user's profile room (see
@@ -19,57 +19,129 @@ This poses the following issues:
 
  * Servers and clients must implement two separate sets of event-syncing logic,
    doubling complexity.
- * Peeking a room involves setting a stream of long-lived /events requests
+ * Peeking a room involves setting a stream of long-lived `/events` requests
    going. Having multiple streams is racey, competes for resources with the
-   /sync stream, and doesn't scale given each room requires a new /events
+   `/sync` stream, and doesn't scale given each room requires a new `/events`
    stream.
- * v1 APIs are deprecated and not implemented on new servers.
+ * `/initialSync` and `/events` are deprecated and not implemented on new
+   servers.
 
 This proposal suggests a new API in which events in peeked rooms would be
 returned over `/sync`.
 
 ## Proposal
 
-We add an CS API called `/peek/{roomIdOrAlias}`, very similar to `/join/{roomIdOrAlias}`.
+Peeking into a room remains per-device: if the user has multiple devices, each
+of which wants to peek into a given room, then each device must make a separate
+request.
 
-Calling `/peek`:
- * Resolves the given room alias to a room ID, if needed.
- * Adds the room (if permissions allow) to a new section of the `/sync` response
-   called `peek` - but only for the device which called `/peek`.
- * The `peek` section is identical to `join`, but shows the live activity of
-   rooms for which that device is peeking.
+To help avoid situations where clients create peek requests and forget about
+them, each peek request is given a lifetime by the server. The client must
+*renew* the peek request before this lifetime expires. The server is free to
+pick any lifetime.
 
-The API returns 404 on an unrecognised room ID or alias, or 403 if the room
-does not allow peeking.  Rooms allow peeking if they have `history_visibility`
-of `world_readable`.  N.B. `join_rules` do not affect peekability - it's
-possible to have an invite-only room which joe public can still peek into, if
-`history_visibility` has been set to `world_readable`.
+### Starting a peek
 
-If the `history_visibility` of a room changes to not be `world_readable`, any
-peeks on the room are cancelled.
+We add an CS API called `/peek_room`, which starts peeking into a given
+room. This is similar to
+[`/join/{roomIdOrAlias}`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-join-roomidoralias)
+but has a slightly different API shape.
 
-Similar to `/join`, `/peek` lets you specify `server_name` querystring
-parameters to specify which server(s) to try to peek into the room via (when
-coupled with [MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444)).
+For example:
 
-If a user subsequently `/join`s the room they're peeking, we atomically move
-the room to the `join` block of the `/sync` response, allowing the client to
-build on the state and history it has already received without re-sending it
-down `/sync`.
+```
+POST /_matrix/client/r0/peek_room HTTP/1.1
 
-To stop peeking, the user calls `/unpeek` on the room, similar to `/leave`.
-This returns 200 on success, 404 on unrecognised ID, or 400 if the room was not
-being peeked in the first place.  Having stopped peeking, the unpeeked room
-will appear in the `leave` block of the next sync response to tell the client
-that the user is no longer peeking.
+{
+    "room": "<room id or alias>",
+    "servers": [
+        "server1", "server2"
+    ]
+}
+```
 
-The new `/peek` and `/unpeek` endpoints require authentication and can be
-ratelimited. Their responses are analogous to their `/join` and `/leave`
-counterparts (eg: `room_id` in the response and empty object when stopping).
+A successful response has the following format:
 
-Clients should check for any irrelevant peeked rooms on launch (left over from
-previous instances of the app) and explicitly `/unpeek` them to conserve
-resources.
+```
+{
+    "room_id": "<resolved room id>",
+    "peek_expiry_ts": 1605534210000
+}
+```
+
+The `room` parameter is required and must be a valid room id or alias. The
+`servers` parameter is optional and, if present, gives a list of servers to try
+to peek through.
+
+Both `room_id` and `peek_expiry_ts` are required in the
+response. `peek_expiry_ts` gives a timestamp (milliseconds since the unix
+epoch) when the server will *expire* the peek if the client does not renew it.
+
+The server ratelimit requests to `/peek_room` and returns a 429 error with
+`M_LIMIT_EXCEEDED` if the limit is exceeded.
+
+Otherwise, the server first resolves the given room alias to a room ID, if
+needed.
+
+If there is already an active peek for the room in question, it is renewed and
+a successful response is returned with the updated `peek_expiry_ts`.
+
+If the user is already *joined* to the room in question, the server returns a
+400 error with `M_BAD_STATE`.
+
+If the room in question does not exist, the server returns a 404 error with
+`M_NOT_FOUND`.
+
+If the room does not allow peeking (ie, it does not have `history_visibility`
+of `world_readable` <sup id="a1">[1](#f1)</sup>), the server returns a 403
+error with `M_FORBIDDEN`.
+
+Otherwise, the server starts a peek for the calling device into the given room,
+and returns a 200 response as above.
+
+When a peek first starts, the current state of the room is returned in the
+`peek` section of the next `/sync` response.
+
+### `/sync` response
+
+We add a new `peek` section to the `rooms` field of the `/sync`
+response. `peek` has the same shape as `join`.
+
+While a peek into a given room is active, any new events in the room cause that
+room to be included in the `peek` section (but only for the device with the
+active peek). When a peek first starts, the entire state of the room is
+included in the same way as when a room is first joined.
+
+If the client requests lazy-loading via `lazy_load_members`, then redundant
+membership events are excluded in the same way as they are for joined rooms.
+
+If a user subsequently `/join`s a room they are peeking, the room will
+thenceforth appear in the `join` section instead of `peek`. For devices which
+were already peeking into the room, the server should *not* include the entire
+room state for the room in the `/sync` response, allowing the client to build
+on the state and history it has already received without re-sending it down
+`/sync`.
+
+### Stopping a peek
+
+To stop peeking, the client calls `rooms/<id>/unpeek`:
+
+```
+POST /_matrix/client/r0/rooms/{room_id}/unpeek HTTP/1.1
+
+{}
+```
+
+The body must be a JSON dictionary, but no parameters are specified.
+
+A successful response has an empty body.
+
+If the room is unknown or was not previously being peeked the server returns a
+400 error with `M_BAD_STATE`.
+
+Having stopped peeking, the unpeeked room will appear in the `leave` block of
+the next sync response to tell the client that the user is no longer
+peeking. XXX: why do we do this? Will it be empty?
 
 ## Encrypted rooms
 
@@ -83,6 +155,33 @@ world-readable.
 
 ## Potential issues
 
+ * Expiring peeks might be hard for clients to manage?
+
+## Alternatives
+
+### Keep /peek_room closer to /join
+
+Given that peeking has parallels to joining, it might be preferable to keep the
+API closer to `/join`. On the other hand, they probabably aren't actually
+similar enough to make it worth propagating the oddities of `/join` (in
+particular, the use of query-parameters
+([matrix-doc#2864](https://github.com/matrix-org/matrix-doc/issues/2864)).
+
+### Filter-based API
+
+[MSC1776](https://github.com/matrix-org/matrix-doc/pull/1776) defined an
+alternative approach, where you could use filters to add peeked rooms into a
+given `/sync` response as needed.  This however had some issues:
+
+ * You can't specify what servers to peek remote rooms via.
+ * You can't identify rooms via alias, only ID
+ * It feels hacky to bodge peeked rooms into the `join` block of a given
+   `/sync` response
+ * Fiddling around with custom filters feels clunky relative to just calling a
+   `/peek` endpoint similar to `/join`.
+
+### Use the `join` block
+
 It could be seen as controversial to add another new block to the `/sync`
 response.  We could use the existing `join` block, but:
 
@@ -92,6 +191,8 @@ response.  We could use the existing `join` block, but:
  * we risk breaking clients who aren't aware of the new style of peeking.
  * there's already a precedent for per-device blocks in the sync response (for
    to-device messages)
+
+### Per-account peeks
 
 It could be seen as controversial to make peeking a per-device rather than
 per-user feature.  When thinking through use cases for peeking, however:
@@ -110,40 +211,53 @@ per-user feature.  When thinking through use cases for peeking, however:
     matter of effectively opting in rather than trying to filter out peeks you
     don't care about).
 
-## Alternatives
+### Alternatives to expiring peeks
 
-[MSC1776](https://github.com/matrix-org/matrix-doc/pull/1776) defined an
-alternative approach, where you could use filters to add peeked rooms into a
-given `/sync` response as needed.  This however had some issues:
+Having servers expire peek requests could be fiddly, so we considered a number
+of alternatives:
 
- * You can't specify what servers to peek remote rooms via.
- * You can't identify rooms via alias, only ID
- * It feels hacky to bodge peeked rooms into the `join` block of a given
-   `/sync` response
- * Fiddling around with custom filters feels clunky relative to just calling a
-   `/peek` endpoint similar to `/join`.
+ * Allow peeks to stack up without limit and trust that clients will not forget
+   about them: after all, it is in clients' best interest not to leak
+   resources, to reduce the amount of data to be handled, and it is not obvious
+   that leaking peeks is easier than leaking joins.
 
-While experimenting with implementing MSC1776, I came up with this as an
-alternative that empirically feels much simpler and tidier.
+   Ultimately this does not align with our experience of administering
+   `matrix.org`: it seems that where a resource *can* be leaked, it ultimately
+   will be, and it is better to design the API to prevent it.
+
+ * Limit the number of peeks that can be active at once, to force clients to be
+   fastidious in their peek cleanups. However, it is hard to see what a good
+   limit would be. Furthermore: peeks could be lost through no fault of the
+   client (for example: when a `/peek_room` request succeeds but the client
+   does not receive the response), and these leaked peaks could stack up until
+   peeking becomes inoperative.
+
+ * Automatically clear active peeks when a `/sync` request is made without a
+   `since` parameter. However, this feels like magic at a distance, and also
+   means that if you initial-sync separately (e.g. you stole an access token
+   from the DB to manually debug something) then existing clients will be
+   broken.
+
+ * Have the client resubmit the list of active peeks every time it wants to add
+   or remove one. This could amount to a sigificant quantity of data.
 
 ## Security considerations
 
-Servers should ratelimit calls to the new endpoints to stop someone DoSing the
+Servers should ratelimit calls to `/peek_room` to stop someone DoSing the
 server.
 
-Servers may stop maintaining a `/peek` if its device has not `/sync`ed
-recently, and thus reclaim resources.  At the next `/sync` the server would
-need to restore the `peek` and provide a gappy update.  This is most relevant
-in the context of peeking into a remote room via
-[MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444) however.
-
 ## Unstable prefix
-
 
 The following mapping will be used for identifiers in this MSC during
 development:
 
 Proposed final identifier       | Purpose | Development identifier
 ------------------------------- | ------- | ----
-`/_matrix/client/r0/peek` | API endpoint | `/_matrix/client/unstable/org.matrix.msc2753/peek`
+`/_matrix/client/r0/peek_room` | API endpoint | `/_matrix/client/unstable/org.matrix.msc2753/peek_room`
 `/_matrix/client/r0/rooms/{roomId}/unpeek` | API endpoint | `/_matrix/client/unstable/org.matrix.msc2753/rooms/{roomId}/unpeek`
+
+## Footnotes
+
+<a id="f1"/>[1]: `join_rules` do not affect peekability - it's
+possible to have an invite-only room which joe public can still peek into, if
+`history_visibility` has been set to `world_readable`.[↩](#a1)
