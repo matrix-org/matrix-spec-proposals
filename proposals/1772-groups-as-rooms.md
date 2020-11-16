@@ -119,16 +119,16 @@ relationship can be expressed in one of two ways:
 
     If `default` is set to `true`, that indicates a "default child": see [below](#default-children).
 
- 2. Separately, rooms can claim parents via `m.room.parent` state
-    events, where the `state_key` is the room ID of the parent space:
+ 2. Separately, rooms can claim parents via the `m.room.parent` state
+    event:
 
     ```js
     {
         "type": "m.room.parent",
-        "state_key": "!space:example.com",
+        "state_key": "",
         "content": {
+            "room_id": "!space:example.com",
             "via": ["example.com"]
-            "present": true
         }
     }
     ```
@@ -144,6 +144,10 @@ relationship can be expressed in one of two ways:
 
     Where the parent space also claims a parent, clients can recursively peek
     into the grandparent space, and so on.
+
+    Note that each room can only declare a single parent. This could be
+    extended in future to declare additional parents, but more investigation
+    into appropriate semantics is needed.
 
 This structure means that rooms can end up with multiple parents. This implies
 that the room will appear multiple times in the room list hierarchy.
@@ -641,7 +645,7 @@ Proposed final identifier       | Purpose | Development identifier
 ------------------------------- | ------- | ----
 `m.space` | room type | `org.matrix.msc1772.space`
 `m.space.child` | event type | `org.matrix.msc1772.space.child`
-`m.space.parent` | event type | `org.matrix.msc1772.space.parent`
+`m.room.parent` | event type | `org.matrix.msc1772.room.parent`
 `m.room.power_level_mappings` | event type | `org.matrix.msc1772.room.power_level_mappings`
 `auto_users` | key in `m.room.power_levels` event | `org.matrix.msc1772.auto_users`
 `allow` | key in `m.room.join_rules` event | `org.matrix.msc1772.allow`
