@@ -48,10 +48,6 @@ possible to have an invite-only room which joe public can still peek into, if
 If the `history_visibility` of a room changes to not be `world_readable`, any
 peeks on the room are cancelled.
 
-In order to clear up stale peeks if a client restarts without cleaning up
-nicely, the act of calling `/sync` without a `since` token must cancel any peeks
-created by that device.
-
 Similar to `/join`, `/peek` lets you specify `server_name` querystring
 parameters to specify which server(s) to try to peek into the room via (when
 coupled with [MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444)).
@@ -132,7 +128,8 @@ alternative that empirically feels much simpler and tidier.
 
 ## Security considerations
 
-Servers should ratelimit calls to `/peek` to stop someone DoSing the server.
+Servers should ratelimit calls to the new endpoints to stop someone DoSing the
+server.
 
 Servers may stop maintaining a `/peek` if its device has not `/sync`ed
 recently, and thus reclaim resources.  At the next `/sync` the server would
