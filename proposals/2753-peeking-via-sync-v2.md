@@ -2,18 +2,31 @@
 
 ## Problem
 
-Peeking into rooms without joining them currently relies on the deprecated v1 /initialSync and /events APIs.
+[Room previews](https://matrix.org/docs/spec/client_server/r0.6.1#id116), more
+commonly known as peeking, has a number of usecases, such as:
+
+ * Look at a room before joining it, to preview it.
+ * Look at a user's profile room (see
+   [MSC1769](https://github.com/matrix-org/matrix-doc/issues/1769)).
+ * Browse the metadata or membership of a space (see
+   [MSC1772](https://github.com/matrix-org/matrix-doc/issues/1772)).
+ * Monitor [moderation policy lists](https://matrix.org/docs/spec/client_server/r0.6.1#moderation-policy-lists).
+
+Currently, peeking relies on the deprecated v1 `/initialSync` and `/events`
+APIs.
 
 This poses the following issues:
 
- * Servers and clients must implement two separate sets of event-syncing logic, doubling complexity.
+ * Servers and clients must implement two separate sets of event-syncing logic,
+   doubling complexity.
  * Peeking a room involves setting a stream of long-lived /events requests
    going. Having multiple streams is racey, competes for resources with the
    /sync stream, and doesn't scale given each room requires a new /events
    stream.
  * v1 APIs are deprecated and not implemented on new servers.
 
-This MSC likely obsoletes [MSC1776](https://github.com/matrix-org/matrix-doc/pull/1776).
+This proposal suggests a new API in which events in peeked rooms would be
+returned over `/sync`.
 
 ## Proposal
 
@@ -21,7 +34,7 @@ We add an CS API called `/peek/{roomIdOrAlias}`, very similar to `/join/{roomIdO
 
 Calling `/peek`:
  * Resolves the given room alias to a room ID, if needed.
- * Adds the room (if permissions allow) to a new section of the /sync response
+ * Adds the room (if permissions allow) to a new section of the `/sync` response
    called `peek` - but only for the device which called `/peek`.
  * The `peek` section is identical to `join`, but shows the live activity of
    rooms for which that device is peeking.
@@ -50,9 +63,9 @@ down `/sync`.
 
 To stop peeking, the user calls `/unpeek` on the room, similar to `/leave`.
 This returns 200 on success, 404 on unrecognised ID, or 400 if the room was not
-being peeked in the first place.  Having stopped peeking, the empty room block
-appears in the `leave` block of the next sync response to tell the client that
-the user is no longer peeking.
+being peeked in the first place.  Having stopped peeking, the unpeeked room
+will appear in the `leave` block of the next sync response to tell the client
+that the user is no longer peeking.
 
 The new `/peek` and `/unpeek` endpoints require authentication and can be
 ratelimited. Their responses are analogous to their `/join` and `/leave`
