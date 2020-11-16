@@ -108,6 +108,23 @@ and returns a 200 response as above.
 When a peek first starts, the current state of the room is returned in the
 `peek` section of the next `/sync` response.
 
+### Stopping a peek
+
+To stop peeking, the client calls `rooms/<id>/unpeek`:
+
+```
+POST /_matrix/client/r0/rooms/{room_id}/unpeek HTTP/1.1
+
+{}
+```
+
+The body must be a JSON dictionary, but no parameters are specified.
+
+A successful response has an empty body.
+
+If the room is unknown or was not previously being peeked the server returns a
+400 error with `M_BAD_STATE`.
+
 ### `/sync` response
 
 We add a new `peek` section to the `rooms` field of the `/sync`
@@ -128,26 +145,31 @@ room state for the room in the `/sync` response, allowing the client to build
 on the state and history it has already received without re-sending it down
 `/sync`.
 
-### Stopping a peek
+When a room stops being peeked (either because the client called `/unpeek` or
+because the server timed out the peek), the room will be included in the
+`leave` section of the `/sync` response, including any events that occured
+between the previous `/sync` and the the peek ending. If there are no such
+events, the room's entry in the `leave` section will be empty.
 
-To stop peeking, the client calls `rooms/<id>/unpeek`:
+For example:
 
+```js
+{
+  "rooms": {
+    "join": { /* ... */ },
+    "leave": {
+      "!unpeeked:example.org": {
+        "timeline": {
+          "events": [
+            { "type": "m.room.message", "content": {"body": "just one more thing"}}
+          ]
+        }
+      },
+      "!alsounpeeked:example.com": {}
+    }
+  }
+}
 ```
-POST /_matrix/client/r0/rooms/{room_id}/unpeek HTTP/1.1
-
-{}
-```
-
-The body must be a JSON dictionary, but no parameters are specified.
-
-A successful response has an empty body.
-
-If the room is unknown or was not previously being peeked the server returns a
-400 error with `M_BAD_STATE`.
-
-Having stopped peeking, the unpeeked room will appear in the `leave` block of
-the next sync response to tell the client that the user is no longer
-peeking. XXX: why do we do this? Will it be empty?
 
 ## Encrypted rooms
 
