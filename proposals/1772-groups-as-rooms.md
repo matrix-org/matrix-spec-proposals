@@ -75,7 +75,7 @@ relationship can be expressed in one of two ways:
 
  1. The admins of a space can advertise rooms and subspaces for their space by
     setting `m.space.child` state events. The `state_key` is the ID of a child
-    room or space, and the content should ontain a `via` key which gives a list
+    room or space, and the content should contain a `via` key which gives a list
     of candidate servers that can be used to join the room. `present: true` key
     is included to distinguish from a deleted state event. Something like:
 
