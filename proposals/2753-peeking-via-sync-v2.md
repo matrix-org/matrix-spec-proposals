@@ -42,7 +42,7 @@ pick any lifetime.
 
 ### Starting a peek
 
-We add an CS API called `/peek_room`, which starts peeking into a given
+We add an CS API called `/peek`, which starts peeking into a given
 room. This is similar to
 [`/join/{roomIdOrAlias}`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-join-roomidoralias)
 but has a slightly different API shape.
@@ -50,7 +50,7 @@ but has a slightly different API shape.
 For example:
 
 ```
-POST /_matrix/client/r0/peek_room HTTP/1.1
+POST /_matrix/client/r0/peek HTTP/1.1
 
 {
     "room": "<room id or alias>",
@@ -83,7 +83,7 @@ Both `room_id` and `peek_expiry_ts` are required in the
 response. `peek_expiry_ts` gives a timestamp (milliseconds since the unix
 epoch) when the server will *expire* the peek if the client does not renew it.
 
-The server ratelimit requests to `/peek_room` and returns a 429 error with
+The server ratelimit requests to `/peek` and returns a 429 error with
 `M_LIMIT_EXCEEDED` if the limit is exceeded.
 
 Otherwise, the server first resolves the given room alias to a room ID, if
@@ -199,7 +199,7 @@ world-readable.
 
 ## Alternatives
 
-### Keep /peek_room closer to /join
+### Keep /peek closer to /join
 
 Given that peeking has parallels to joining, it might be preferable to keep the
 API closer to `/join`. On the other hand, they probabably aren't actually
@@ -268,7 +268,7 @@ of alternatives:
  * Limit the number of peeks that can be active at once, to force clients to be
    fastidious in their peek cleanups. However, it is hard to see what a good
    limit would be. Furthermore: peeks could be lost through no fault of the
-   client (for example: when a `/peek_room` request succeeds but the client
+   client (for example: when a `/peek` request succeeds but the client
    does not receive the response), and these leaked peaks could stack up until
    peeking becomes inoperative.
 
@@ -283,7 +283,7 @@ of alternatives:
 
 ## Security considerations
 
-Servers should ratelimit calls to `/peek_room` to stop someone DoSing the
+Servers should ratelimit calls to `/peek` to stop someone DoSing the
 server.
 
 ## Unstable prefix
@@ -293,7 +293,7 @@ development:
 
 Proposed final identifier       | Purpose | Development identifier
 ------------------------------- | ------- | ----
-`/_matrix/client/r0/peek_room` | API endpoint | `/_matrix/client/unstable/org.matrix.msc2753/peek_room`
+`/_matrix/client/r0/peek` | API endpoint | `/_matrix/client/unstable/org.matrix.msc2753/peek`
 `/_matrix/client/r0/rooms/{roomId}/unpeek` | API endpoint | `/_matrix/client/unstable/org.matrix.msc2753/rooms/{roomId}/unpeek`
 
 ## Footnotes
