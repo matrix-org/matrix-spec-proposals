@@ -156,7 +156,7 @@ Server implementation:
 #### Cross-room threading extension
 
 This MSC expands on the basic form to allow cross-room threading by allowing 2 extra fields to be specified
-in the `m.relationship` object: `servers` and `room_id`:
+in the `unsigned` section of the event: `relationship_servers` and `relationship_room_id`:
 ```
 {
     "type": "m.room.message",
@@ -165,20 +165,22 @@ in the `m.relationship` object: `servers` and `room_id`:
         "m.relationship": {
             "rel_type": "m.reference",
             "event_id": "$another_event_id",
-            "servers": [ "localhost", "anotherhost" ],
-            "room_id": "!someroomid:anotherhost",
         }
+    },
+    "unsigned": {
+      "relationship_room_id":"!someroomid:anotherhost",
+      "relationship_servers": [ "localhost", "anotherhost" ]
     }
 }
 ```
 
-Only servers can set these fields. If clients attempt to set them they will be replaced. The server should set these fields
+Only servers can set these fields. The server should set these fields
 when an event is sent according to the following rules:
  - Check the client can view the event ID in question. If they cannot, reject the request.
  - Check that the room's `m.room.create` event allows cross-room threading by the presence of `"m.cross_room_threading": true`
    in the `content` field. If absent, it is `false`.
- - Fetch the servers *currently in the room* for the event. Add them all to `servers`.
- - Fetch the room ID that the event belongs to. Add it to `room_id`.
+ - Fetch the servers *currently in the room* for the event. Add them all to `relationship_servers`.
+ - Fetch the room ID that the event belongs to. Add it to `relationship_room_id`.
 
 This proposal does not require any changes to `/createRoom` as `"m.cross_room_threading": true` can be specified via the
 `creation_content` field in that API.
@@ -188,12 +190,12 @@ The `POST /relationships` endpoint includes a new field:
    in order to explore the thread. Default: `false`.
 
 Server implementation:
- - When walking the thread DAG, if there is an event that is not known, check the relationship for `room_id` and `servers`. If
+ - When walking the thread DAG, if there is an event that is not known, check the relationship for `relationship_room_id` and `relationship_servers`. If
    they exist, peek into the room ([MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444)), or if that is not supported,
    join the room as the user querying `/relationships` if and only if `"auto_join": true` in the `/relationships` request. This
    is required in order to allow the event to be retrieved. Server implementations can treat the auto join as the same as if the
    client made a request to [/join/{roomIdOrAlias}](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-join-roomidoralias)
-   with the `server_name` query parameters set to those in `servers`.
+   with the `server_name` query parameters set to those in `relationship_servers`.
 
 Security considerations:
  - Allowing cross-room threading leaks the event IDs in a given room, as well as which servers are in the room at the point
@@ -206,3 +208,5 @@ Justifications:
    information *somewhere* so servers can retrieve the event and continue navigating the thread. As the client and server
    already have the event which contains a relationship to another event inside an unknown room, the simplest option is to
    also contain the routing information with that relationship.
+ - The fields are in the `unsigned` section so clients cannot artificially set them, and because `unsigned` is where a lot
+   of other server-calculated metadata resides.
