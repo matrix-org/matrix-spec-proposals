@@ -31,127 +31,196 @@ outlines a fix to this, not covered by this MSC).
 We let servers participate in peekable rooms (i.e. those with `world_readable`
 `m.room.history_visibility`) without having actually joined them.
 
-We do this by subscribing to a room on one or more servers via a new `/peek`
-S2S API, which lets users on a given server declare their interest in viewing
-events in that room.  Having started peeking into the room, the server(s)
-being peeked will relay *all* events it sees in that room to the peeking
-server (including ones from other servers) via `/send` as if it were joined.
-Backfill and event-retrieval APIs should be changed to be queryable from
-servers not in the room if the room is peekable.
+Firstly, this means that a number of federation endpoints should be updated to
+allow inspection of `world_readable` rooms. This includes:
 
-This continues until the peeking server calls DELETE on the peek it initiated.
+ * [`GET /_matrix/federation/v1/event_auth/{roomId}/{eventId}`](https://matrix.org/docs/spec/server_server/r0.1.4#get-matrix-federation-v1-event-auth-roomid-eventid)
+ * [`GET /_matrix/federation/v1/backfill/{roomId}`](https://matrix.org/docs/spec/server_server/r0.1.4#get-matrix-federation-v1-backfill-roomid)
+ * [`POST /_matrix/federation/v1/get_missing_events/{roomId}`](https://matrix.org/docs/spec/server_server/r0.1.4#post-matrix-federation-v1-get-missing-events-roomid)
+ * [`GET /_matrix/federation/v1/state/{roomId}`](https://matrix.org/docs/spec/server_server/r0.1.4#get-matrix-federation-v1-state-roomid)
+ * [`GET /_matrix/federation/v1/state_ids/{roomId}`](https://matrix.org/docs/spec/server_server/r0.1.4#get-matrix-federation-v1-state-ids-roomid)
+ * [`GET /_matrix/federation/v1/event/{eventId}`](https://matrix.org/docs/spec/server_server/r0.1.4#get-matrix-federation-v1-event-eventid)
 
-To start peeking, firstly the peeking server must pick server(s) to peek via.
-This is typically the same server you would use to try to join the room via
-(i.e. one taken from the alias, or the via param on a matrix.to URL). The
-server could also call S2S /state on m.room.members to find other servers
-participating in the room and try to peek them from too.
+(Of course, these apis should only allow access to `world_readable` parts of
+the history.)
 
-The peeking server starts to peek by PUTting to `/peek` on the peeked server.
-The peeked server is determined from the `server_names` parameter of the CS API
-`/peek` command (from [MSC2753](https://github.com/matrix-org/matrix-doc/pull/2753)),
-or failing that the domain of the room_alias or room_id being peeked.
-The request takes an empty object as a body as a placeholder for future (where
-we might put filters). The peeking server selects an ID for the peeking
-subscription for the purposes of idempotency. The ID must be 8 or less bytes
-of ASCII and should be unique for a given `{ origin_server, room_id, target_server }`
-tuple. The request takes `?ver=` querystring parameters with the same behaviour
-as `/make_join` to advertise the room versions the peeking server supports.
+Secondly, we introduce a new API allowing servers to subscribe to new events.
 
-We don't just use the `room_id` for idempotency because we may want to add
-filtering in future to the /peek invocation, and this lets us distinguish
-between different peeks which are filtering on different things for the
-same room between the same pair of servers.  Until filtering is added to the API,
-implementors can just go use `room_id` as a `peek_id` for convenience.
+### Initiating a peek
 
-PUT returns 200 OK with the current state of the room being peeked on success,
-using roughly the same response shape as the /state SS API.
+To start peeking, firstly the peeking server must pick server(s) to peek
+via. It can do this based on the `servers` parameter of the CS API `/peek`
+command (from [MSC2753](https://github.com/matrix-org/matrix-doc/pull/2753)),
+or failing that the domain of the room alias being peeked.
 
-The response also includes a field called `renewal_interval` which specifies
-how often the peeked server requires the peeking server to re-PUT the /peek in
-order for it to stay active.  If the peeked server is unavailable, it should
-retry via other servers from the room's members until it can reestablish.
-We require `/peek`s to be regularly renewed even if the server has been accepting
-peeked events, as the fact a server happens to accept peeked events doesn't
-mean that it was necessarily deliberately peeking.
-
-Finally, the response also includes a `latest_event` field which provides
-the most recent event (as ordered by stream id) at the point of the `/peek`.
-This is the event whose id you would pass to `/state` to get the same
-response as this `/peek`, and identifies the precise point in time that the
-given state refers to.  We return a full event rather than an eventid to
-avoid an unnecessary roundtrip.
-
-If the peek is renewed without having lapsed, `PUT /peek` simply returns `{}`
-on success.
-
-PUT returns 403 if the user does not have permission to peek into the room,
-and 404 if the room ID or peek ID is not known to the peeked server.
-If the server implementation doesn't wish to honour the peek request due to
-server load, it may respond with 429.  If the room version of the room being
-peeked isn't supported by the peeking server, it responds with 400 and
-`M_INCOMPATIBLE_ROOM_VERSION`.
-
-DELETE return 200 OK with an empty `{}` on success, and 404 if the room ID or peek ID is
-not known to the peeked server.
+The peeking server then makes a `/peek` request to the target server. An
+example request and response might look like:
 
 ```
-PUT /_matrix/federation/v1/peek/{roomId}/{peekId}?ver=5&ver=6
+PUT /_matrix/federation/v1/peek/{roomId}/{peekId}?ver=5&ver=6 HTTP/1.1
 {}
 
 200 OK
 {
-    "auth_chain": [
-      {
-        "type": "m.room.minimal_pdu",
-        "room_id": "!somewhere:example.org",
-        "content": {
-          "see_room_version_spec": "The event format changes depending on the room version."
-        }
-      }
+  "latest_event_state_ids": {
+    "$fwd_extremity_1": [
+        "$state_event_3",
+        "$state_event_4"
     ],
-    "state": [
-      {
-        "type": "m.room.minimal_pdu",
-        "room_id": "!somewhere:example.org",
-        "content": {
-          "see_room_version_spec": "The event format changes depending on the room version."
-        }
-      }
-    ],
-    "renewal_interval": 3600000,
-    "latest_event": {
-        "type": "m.room.minimal_pdu",
-        "room_id": "!somewhere:example.org",
-        "content": {
-          "see_room_version_spec": "The event format changes depending on the room version."
-        }
-      }
+    "$fwd_extremity_2": [
+        "$state_event_5",
+        "$state_event_6"
+    ]
+  },
+  "common_state_ids": [
+     "$state_event_1",
+     "$state_event_2",
+  ],
+  "events": [
+    {
+      "type": "m.room.member",
+      "room_id": "!somewhere:example.org",
+      "content": { /* ... */ }
     }
+  ],
+  "renewal_interval": 3600000
 }
 ```
 
+The request takes an empty object as a body as a placeholder for future
+extension.
+
+The peeking server selects an ID for the peeking subscription for the purposes
+of idempotency. The ID must be unique for a given `{ origin_server, room_id,
+target_server }` tuple, and should be a string consisting of the characters
+`[0-9a-zA-Z.=_-]`. Its length must not exceed 8 characters and it should not be
+empty.
+
+The request takes `?ver=` querystring parameters with the same behaviour as
+`/make_join` to advertise the room versions the peeking server supports.
+
+If the request is successful, the target server retuns a 200 response with the
+following fields:
+ * `latest_event_state_ids`: a map whose keys are the IDs of the events forming
+   the target server's current forward extremities in the room. The values are
+   lists of the IDs of the events forming the room state after the event in
+   question, excluding any events in `common_state_ids`.
+
+   TBD: would the state *before* the extremity event be more useful?
+
+ * `common_state_ids`: A list of the IDs of any events which are common to the room
+   states after *all* of the forward extremities in the room.
+
+ * `events`: The bodies of any events whose IDs are:
+   * listed in the keys of `latest_event_state_ids`, or:
+   * listed in the values of `latest_event_state_ids`, or:
+   * listed in the values of `common_state_ids`, or:
+   * listed in the `auth_events` field of any of the above events, or:
+   * listed in the `auth_events` of the `auth_events`, recursively.
+
+ * `renewal_interval`: a duration in milliseconds after which the target server
+   will expire the peek. The peeking server must renew the peek before that
+   time to be sure of continuing to receive events.
+
+If the room is not peekable, the target server should return a 403 error with
+ `M_FORBIDDEN`.
+
+If the room is not known to the target server, it should return a 404 error
+with `M_NOT_FOUND`.
+
+If the peek ID is not valid, the target server responds with 400 and `M_UNRECOGNIZED`.
+
+If the room version of the room being peeked isn't supported by the peeking
+server, the target server responds with 400 and `M_INCOMPATIBLE_ROOM_VERSION`.
+
+If the target server doesn't wish to honour the peek request due to server load
+or rate-limiting, it may respond with 429 and `M_LIMIT_EXCEEDED`, including a
+`retry_after_ms` value indicating when the request could be retried.
+
+The room states returned by `/peek` should be validated just as the one
+returned by the `/send_join` API. If the peeking server finds the response
+unacceptable, it should cancel the peek with a `DELETE` request (see below).
+
+XXX: it might be better to split this into two operations: first fetch the
+state data, then begin the peek operation by sending your idea of the forward
+extremities, to bring you up to date with anything you missed. This would
+reduce the chance of having to immediately cancel a peek, and would be more
+efficient in the case of rapid `peek-unpeek-peek` switches.
+
+While a peek subscription is active, the target server must relay any events
+received in that room over the [`PUT
+/_matrix/federation/v1/send/{txnId}`](https://matrix.org/docs/spec/server_server/r0.1.4#put-matrix-federation-v1-send-txnid)
+API.
+
+### Renewing a peek
+
+The target server will eventually expire a peek if it is not renewed. The
+peeking server can renew a peek by calling `POST
+/_matrix/federation/v1/peek/{roomId}/{peekId}/renew`:
+
 ```
-DELETE /_matrix/federation/v1/peek/{roomId}/{peekId}
+POST /_matrix/federation/v1/peek/{roomId}/{peekId}/renew HTTP/1.1
 {}
+
+200 OK
+{
+  "renewal_interval": 3600000
+}
+```
+
+The target server simply returns the new `renewal_interval`.
+
+If the peek ID is not known for the `{ origin_server, room_id, target_server }`
+tuple, the target server returns a 404 error with `M_NOT_FOUND`.
+
+### Deleting a peek
+
+The peeking server may terminate a peek by calling `DELETE
+/_matrix/federation/v1/peek/{roomId}/{peekId}`:
+
+```
+DELETE /_matrix/federation/v1/peek/{roomId}/{peekId} HTTP/1.1
+Content-Length: 0
 
 200 OK
 {}
 ```
 
-The state block returned by /peek should be validated just as the one returned
-by the /send_join API.
+The request has no body <sup id="a1">[1](#f1)</sup>. On success, the target
+server returns a 200 with an empty json object.
 
-When the user joins the peeked room, the server should just emit the right
-membership event rather than calling /make_join or /send_join, to avoid the
-unnecessary burden of a full room join, given the server is already participating
-in the room.
+If the peek ID is not known for the `{ origin_server, room_id, target_server }`
+tuple, the target server returns a 404 error with `M_NOT_FOUND`.
+
+### Expiring a peek
+
+The target server should expire any peek which is not renewed before the
+`renewal_interval` elapses.
+
+XXX how to tell the peeking server?
+
+### Joining a room
+
+When the user joins the peeked room, the peeking server should just emit the
+right membership event rather than calling `/make_join` or `/send_join`, to
+avoid the unnecessary burden of a full room join, given the server is already
+participating in the room.  It should also send a `DELETE` request to cancel
+any active peeks.
+
+### Encrypted rooms
 
 It is considered a feature that you cannot peek into encrypted rooms, given
 the act of peeking would leak the identity of the peeker to the joined users
 in the room (as they'd need to encrypt for the peeker).  This also feels
 acceptable given there is little point in encrypting something intended to be
 world-readable.
+
+## Alternatives
+
+ * simply use `room_id` for idempotency rather than requiring a separate
+   `peek_id`. One reason not to do this is to allow a future extension where
+   there are multiple subscriptions active, each filtering out different event
+   types. In the meantime, implementers can use a hard-coded constant.
 
 ## Security considerations
 
@@ -193,3 +262,10 @@ An earlier rejected solution is MSC1777, which proposed joining a pseudouser
 (`@:server`) to a room in order to peek into it.  However, being forced to write
 to a room DAG (by joining such a user) in order to perform a read-only operation
 (peeking) was deemed inefficient and rejected.
+
+
+## Footnotes
+
+<a id="f1"/>[1]: per
+https://www.ietf.org/archive/id/draft-ietf-httpbis-semantics-12.html#name-delete:
+"A client SHOULD NOT generate a body in a DELETE request."  [↩](#a1)
