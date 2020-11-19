@@ -158,8 +158,8 @@ Justification:
  - In an ideal world, every server would have the complete room DAG and would therefore be able to explore the full scope of a thread in a room. However,
    over federation, servers have an incomplete view of the room and will be missing many events. In absence of a specific API to explore threads over
    federation, joining a room with threads will result in an incomplete view.
- - The requirements here are similar to the [Event Context API](https://matrix.org/docs/spec/client_server/r0.6.0#id131) but due to the lack of a federated
-   form of this API any requests for events the server is unaware of will incorrectly return `404 Not Found`.
+ - The requirements here have a lot in common with the [Event Context API](https://matrix.org/docs/spec/client_server/r0.6.0#id131). However, the context
+   API has no federated equivalent. This means any requests for events the server is unaware of will incorrectly return `404 Not Found`.
  - The same API shape is proposed to allow code reuse and because the same concerns and requirements are present for both federation and client-server.
 
 Server behaviour:
