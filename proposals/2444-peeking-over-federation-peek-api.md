@@ -224,6 +224,17 @@ world-readable.
    there are multiple subscriptions active, each filtering out different event
    types. In the meantime, implementers can use a hard-coded constant.
 
+## Future extensions
+
+These features are explicitly descoped for the purposes of this MSC.
+
+ * It may be useful to allow peeking servers to "filter" the events to be
+   returned - for example, if you only care about particular events, or
+   particular servers - e.g. if load-balancing peeking via multiple servers.
+
+   It's worth noting that this would make it very hard for peeking servers to
+   reliably track state changes and detect missing events.
+
 ## Security considerations
 
  * A malicious server could set up multiple peeks to multiple target servers by
@@ -246,12 +257,7 @@ world-readable.
 
 This doesn't solve the problem that rooms wink out of existence when all
 participants leave (https://github.com/matrix-org/matrix-doc/issues/534),
-unlike other approaches to peeking (e.g. MSC1777)
-
-Do we allow filtering the peek? (e.g. if you only care about particular
-events, or particular servers - e.g. if load-balancing peeking via multiple
-servers). Similarly, is it concerning that this significantly overlaps with
-the /sync CS API?
+unlike other approaches to peeking (e.g. MSC1777).
 
 How do we handle backpressure or rate limiting on the event stream (if at
 all?)
