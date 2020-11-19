@@ -163,7 +163,7 @@ all the necessary auth events for the events in `events`, e.g:
                                    // Optional: can be omitted if the server doesn't implement threaded pagination.
     "limited": true|false,         // True if there are more events to return because the `limit` was reached. Servers are not obligated
                                    // to return more events, see if the next_batch token is provided or not.
-    "auth_chain": [                // The auth events required to authenticate events in `events`
+    "auth_chain": [                // The auth events required to authenticate events in `events`, in any order without duplicates.
         { ... }, { ... }, { ... },
     ]
 }
