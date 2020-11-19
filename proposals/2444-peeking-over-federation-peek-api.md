@@ -250,7 +250,15 @@ world-readable.
      much for today's federated architecture.
 
    * MSC1777 offers a solution for EDU transmission which this MSC does not,
-     given we don't currently have any data flows for mirroring other servers' EDUs.
+     given we don't currently have any data flows for mirroring other servers'
+     EDUs.
+
+ * Rather than attempting to maintain a local replica of peeked traffic, have
+   the peeking server proxy any peek requests from the client-server API onto
+   the target server, somehow.  This couples room availability to the peeked
+   server and means we don't have a local replica we can index or serve
+   independently etc - and also means you could have problems deduplicating
+   peeks between local clients.
 
 ## Future extensions
 
