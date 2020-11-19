@@ -199,7 +199,21 @@ tuple, the target server returns a 404 error with `M_NOT_FOUND`.
 The target server should expire any peek which is not renewed before the
 `renewal_interval` elapses.
 
-XXX how to tell the peeking server?
+It should indicate the expiry to the peeking server via `PUT
+/_matrix/federation/v1/send/`, via a new `expired_peeks` key:
+
+```
+PUT /_matrix/federation/v1/send/S0meTransacti0nId HTTP/1.1
+
+{
+  "expired_peeks": [
+    {
+      "room_id": "{roomId}",
+      "peek_id": "{peekId}"
+    }
+  ]
+}
+```
 
 ### Joining a room
 
