@@ -39,10 +39,6 @@ Drawbacks include:
  - Additional work required for threading to work with E2EE. See MSC1849 for proposals, but they all boil down to having the `m.relationship`
    field unencrypted in the event `content`.
 
-Additional concerns:
- - The name of the `rel_type` is prone to bike-shedding: "m.reference", "m.reply", "m.in_reply_to", etc. This proposal opts for the decisions made
-   in MSC1849 which is "m.reference".
-
 Edge cases:
  - Any event `type` can have an `m.relationship` field in its `content`.
  - Redacting an event with an `m.relationship` field DOES NOT remove the relationship. Instead, it is preserved similar to how `membership`
@@ -56,8 +52,8 @@ Edge cases:
    be part of the connected DAG; it can be an outlier. This prevents erroneous relationships being made by abusing the CS API.
  - It is NOT an error to reference an event ID in another room. Cross-room threading is allowed and this proposal goes into more detail on how
    servers should handle this as a possible extension.
- - It is an error to reference yourself.
-
+ - It is an error to reference yourself. Cyclical loops are still possible by using multiple events and servers should guard against this by
+   only visiting events once.
 
 #### Querying relationships
 
@@ -153,6 +149,26 @@ Server implementation:
    was previously left, ensuring that no duplicate events are sent, and that any `max_depth` or `max_breadth` are honoured
    _based on the original request_ - the max values always relate to the original `event_id`, NOT the event ID previously stopped at.
 
+##### Querying relationships over federation
+
+Relationships can be queried over federation using a new endpoint which is the same as the CS API format. See the CS API section for more info. The path
+used for this new federation endpoint is `/_matrix/federation/v1/event_relationships`.
+
+Justification:
+ - In an ideal world, every server would have the complete room DAG and would therefore be able to explore the full scope of a thread in a room. However,
+   over federation, servers have an incomplete view of the room and will be missing many events. In absence of a specific API to explore threads over
+   federation, joining a room with threads will result in an incomplete view.
+ - The requirements here are similar to the [Event Context API](https://matrix.org/docs/spec/client_server/r0.6.0#id131) but due to the lack of a federated
+   form of this API any requests for events the server is unaware of will incorrectly return `404 Not Found`.
+ - The same API shape is proposed to allow code reuse and because the same concerns and requirements are present for both federation and client-server.
+
+Server behaviour:
+ - When receiving a request to `/event_relationships`: ensure the server is in the room then walk the thread in the same manner as the CS API form. Do not
+   make outbound `/event_relationships` requests on behalf of this request to avoid routing loops where 2 servers infinitely call `/event_relationships` to
+   each other.
+ - Servers should make outbound `/event_relationships` requests *for client requests* when they encounter an event ID they do not have. The event may have
+   happened much earlier in the room which another server in the room can satisfy.
+
 #### Cross-room threading extension
 
 This MSC expands on the basic form to allow cross-room threading by allowing 2 extra fields to be specified
@@ -185,17 +201,19 @@ when an event is sent according to the following rules:
 This proposal does not require any changes to `/createRoom` as `"m.cross_room_threading": true` can be specified via the
 `creation_content` field in that API.
 
-The `POST /relationships` endpoint includes a new field:
- - `auto_join: true|false`: if `true`, will automatically join the user calling `/relationships` to rooms they are not joined to
+The `POST /event_relationships` endpoint includes a new field:
+ - `auto_join: true|false`: if `true`, will automatically join the user calling `/event_relationships` to rooms they are not joined to
    in order to explore the thread. Default: `false`.
 
 Server implementation:
  - When walking the thread DAG, if there is an event that is not known, check the relationship for `relationship_room_id` and `relationship_servers`. If
    they exist, peek into the room ([MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444)), or if that is not supported,
-   join the room as the user querying `/relationships` if and only if `"auto_join": true` in the `/relationships` request. This
+   join the room as the user querying `/event_relationships` if and only if `"auto_join": true` in the `/event_relationships` request. This
    is required in order to allow the event to be retrieved. Server implementations can treat the auto join as the same as if the
    client made a request to [/join/{roomIdOrAlias}](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-join-roomidoralias)
    with the `server_name` query parameters set to those in `relationship_servers`.
+ - After joining the room, the server should use the federated API `/event_relationships` to explore the thread in the newly joined room as the server
+   will not have those events. These events can be stored as outliers or dropped depending on storage requirements.
 
 Security considerations:
  - Allowing cross-room threading leaks the event IDs in a given room, as well as which servers are in the room at the point
@@ -210,3 +228,79 @@ Justifications:
    also contain the routing information with that relationship.
  - The fields are in the `unsigned` section so clients cannot artificially set them, and because `unsigned` is where a lot
    of other server-calculated metadata resides.
+
+##### Backreferences
+
+Using the threading model proposed above, events contain information about their parents but parents do not contain information about their
+children. This means that events can follow their path up to the root event but cannot explore siblings not on that root path. "Backreferences"
+means adding additional metadata to allow the discovery of child events from a given parent event. These backreferences are necessary over
+federation where each server has an incomplete view of the thread. Consider:
+
+```
+Letters = Servers
+Numbers = Events
+
+!room1 (A,B)    !room2 (B,C)
+                     1 <- parent
+                     |
+   +-----------------+
+   |                 |
+   2                 3 <- children
+```
+- When event 2 is created, only servers A,B will know this.
+- A backreference event needs to be created in !room2 in order for C to ever be aware of event 2.
+- When C is aware of event 2, it can then peek/join into !room1 to receive updates to that fork.
+- This means that **in order to create a relationship, the user must be in parent event's room**.
+
+The backreference event MUST be sent by the server on behalf of the client and look like:
+```
+{
+    "type": "m.room.backref",
+    "content": {
+        "event_id": "$parent_event_id",
+        "m.relationship": {
+            "rel_type": "m.child",
+            "event_id": "$child_event_id",
+        }
+    },
+    "sender": "@user_making_relation:localhost",
+    "room_id": "!parent_event:room",
+    "unsigned": {
+      "relationship_room_id":"!someroomid:anotherhost",
+      "relationship_servers": [ "localhost", "anotherhost" ]
+    }
+}
+```
+
+Justification:
+ - Backreference events have to exist so servers can be aware of new child threads in different rooms. Without it,
+   servers will only be able to walk from their event up to the root and not explore the entire thread. Furthermore,
+   servers will not converge on a consistent view of the thread as some servers have information that others are missing.
+ - We re-use the `m.relationship` shape because the event is a literal relationship.
+ - The type `m.room.backref` is used so clients can filter these out if they don't know or want to render them on the UI.
+ - We re-use the `unsigned.relationship_*` fields as routing information is critical in order to follow backreferences.
+
+Edge cases:
+ - It is not an error if the user does not have permission to send this event into the parent room.
+ - The child event should be sent first, and only after success should the backreference event be sent. This is already
+   implied because the backreference event needs to reference the event ID of the child.
+
+Security considerations:
+ - We omit the `content` of the child event and only share event metadata with the parent room for privacy. This
+   can be displayed on the UI as "Alice referenced this event in another room" which can be hyperlinked to the
+   room in question.
+
+Server behaviour:
+ - When sending an event: if an event contains a valid `m.relationship` - where valid means that the user is joined to both child/parent rooms -
+   send the event then create the backreference event and send it into the parent room on a best-effort basis. Failures
+   for any reason are non-fatal. 
+ - When receiving a backreference event: persist the relationship between parent/child for use in `/event_relationships`.
+
+The net result of this is:
+ - 1: A client makes an `/event_relationships` request with `auto_join: true`. The server begins walking the thread.
+ - 2: The server encounters an event ID it does not have and the `unsigned` metadata indicates it is in a different room.
+ - 3: The server joins the room on behalf of the client.
+ - 4: The server calls the federated form of `/event_relationships` to the server joined via.
+ - 5: The server continues until it find an unknown event ID again then loops back to Step 2 until the request is satisfied.
+ - 6: Subsequent children made in this thread will be actively pushed to the server as normal events with the type `m.room.backref`.
+      This provides additional search paths for the next `/event_relationships` request and can be actively shown in the client's UI.
