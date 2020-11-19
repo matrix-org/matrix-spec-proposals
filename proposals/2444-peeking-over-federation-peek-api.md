@@ -91,7 +91,7 @@ The request takes an empty object as a body as a placeholder for future
 extension.
 
 The peeking server selects an ID for the peeking subscription for the purposes
-of idempotency. The ID must be unique for a given `{ origin_server, room_id,
+of idempotency. The ID must be unique for a given `{ peeking_server, room_id,
 target_server }` tuple, and should be a string consisting of the characters
 `[0-9a-zA-Z.=_-]`. Its length must not exceed 8 characters and it should not be
 empty.
@@ -150,7 +150,9 @@ efficient in the case of rapid `peek-unpeek-peek` switches.
 While a peek subscription is active, the target server must relay any events
 received in that room over the [`PUT
 /_matrix/federation/v1/send/{txnId}`](https://matrix.org/docs/spec/server_server/r0.1.4#put-matrix-federation-v1-send-txnid)
-API.
+API. If a peeking server has multiple peeks active for a given room and target
+server, the target server should still only send one copy of each event, rather
+than duplicating the event for each peek.
 
 ### Renewing a peek
 
@@ -170,7 +172,7 @@ POST /_matrix/federation/v1/peek/{roomId}/{peekId}/renew HTTP/1.1
 
 The target server simply returns the new `renewal_interval`.
 
-If the peek ID is not known for the `{ origin_server, room_id, target_server }`
+If the peek ID is not known for the `{ peeking_server, room_id, target_server }`
 tuple, the target server returns a 404 error with `M_NOT_FOUND`.
 
 ### Deleting a peek
@@ -189,7 +191,7 @@ Content-Length: 0
 The request has no body <sup id="a1">[1](#f1)</sup>. On success, the target
 server returns a 200 with an empty json object.
 
-If the peek ID is not known for the `{ origin_server, room_id, target_server }`
+If the peek ID is not known for the `{ peeking_server, room_id, target_server }`
 tuple, the target server returns a 404 error with `M_NOT_FOUND`.
 
 ### Expiring a peek
@@ -224,16 +226,21 @@ world-readable.
 
 ## Security considerations
 
-The peeked server becomes a centralisation point which could conspire against
-the peeking server to withhold events.  This is not that dissimilar to trying
-to join a room via a malicious server, however, and can be mitigated somewhat
-if the peeking server tries to query missing events from other servers.
-The peeking server could also peek to multiple servers for resilience against
-this sort of attack.
+ * A malicious server could set up multiple peeks to multiple target servers by
+   way of attempting a denial-of-service attack. Server implementations should
+   rate-limit requests to establish peeks, as well as limiting the absolute
+   number of active peeks each server may have, to mitigate this.
 
-The peeked server will be able to track the metadata surrounding which servers
-are peeking into which of its rooms, and when.  This could be particularly
-sensitive for single-person servers peeking at profile rooms.
+ * The peeked server becomes a centralisation point which could conspire
+   against the peeking server to withhold events.  This is not that dissimilar
+   to trying to join a room via a malicious server, however, and can be
+   mitigated somewhat if the peeking server tries to query missing events from
+   other servers.  The peeking server could also peek to multiple servers for
+   resilience against this sort of attack.
+
+ * The peeked server will be able to track the metadata surrounding which
+   servers are peeking into which of its rooms, and when.  This could be
+   particularly sensitive for single-person servers peeking at profile rooms.
 
 ## Design considerations
 
