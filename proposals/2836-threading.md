@@ -181,6 +181,7 @@ Server behaviour:
  - When receiving a request to `/event_relationships`: ensure the server is in the room then walk the thread in the same manner as the CS API form. Do not
    make outbound `/event_relationships` requests on behalf of this request to avoid routing loops where 2 servers infinitely call `/event_relationships` to
    each other.
+ - For each event returned: include all `auth_events` for that event recursively to create an auth chain and add them to `auth_chain`.
  - Servers should make outbound `/event_relationships` requests *for client requests* when they encounter an event ID they do not have. The event may have
    happened much earlier in the room which another server in the room can satisfy.
 
