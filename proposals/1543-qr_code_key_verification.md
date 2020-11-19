@@ -210,7 +210,7 @@ For example, if Alice displays a QR code encoding the following binary string:
 ```
 
 this indicates that Alice is verifying another user (say Bob), in response to
-the request from event "!ABCD...", her cross-signing key is
+the request from event "$ABCD...", her cross-signing key is
 `0001020304050607...` (which is "AAECAwQFBg..." in base64), she thinks that
 Bob's cross-signing key is `1011121314151617...` (which is "EBESExQVFh..." in
 base64), and the shared secret is `2021222324252627` (which is "ICEiIyQlJic" in
@@ -235,7 +235,7 @@ Example:
   "method": "m.reciprocate.v1",
   "m.relates_to": {
     "rel_type": "m.reference",
-    "event_id": "!event_id_of_verification_request"
+    "event_id": "$event_id_of_verification_request"
   },
   "secret": "shared+secret"
 }
