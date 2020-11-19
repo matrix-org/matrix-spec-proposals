@@ -241,17 +241,16 @@ world-readable.
      (theoretically at least) have some control over which servers you trust to
      peek via.
 
-    * That said, a P2P world is going to need a totally different approach,
-      which might be back towards MSC1777 but using
-      [MSC1228](https://github.com/matrix-org/matrix-doc/pull/1228)-style IDs
-      to protect privacy. We need to solve scalability of "which nodes are
-      participating in the room" irrespectively of whether those nodes are
-      active or passive. So it's worth noting this solution (MSC2444) is very
-      much for today's federated architecture.
+   * That said, a P2P world is going to need a totally different approach,
+     which might be back towards MSC1777 but using
+     [MSC1228](https://github.com/matrix-org/matrix-doc/pull/1228)-style IDs to
+     protect privacy. We need to solve scalability of "which nodes are
+     participating in the room" irrespectively of whether those nodes are
+     active or passive. So it's worth noting this solution (MSC2444) is very
+     much for today's federated architecture.
 
-    * MSC1777 offers a solution for EDU transmission which this MSC does not,
-      given we don't currently have any data flows for mirroring other servers'
-      EDUs.
+   * MSC1777 offers a solution for EDU transmission which this MSC does not,
+     given we don't currently have any data flows for mirroring other servers' EDUs.
 
 ## Future extensions
 
