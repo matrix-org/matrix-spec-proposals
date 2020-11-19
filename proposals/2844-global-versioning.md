@@ -13,7 +13,7 @@ which apply:
    back when we finalized the initial versions of the spec documents, but have not cut another one
    since.
 
-This current system is slightly confusing, but has some drawbacks for being able to compile builds of
+This current system is slightly confusing, and has some drawbacks for being able to compile builds of
 the spec documents (published on matrix.org) and generally try and communicate what supported versions
 an implementation might have. For example, Synapse currently supports 4 different APIs, all of which
 have their own versions, and all of which would need to be considered and compared when validating
@@ -86,7 +86,7 @@ which is a valid argument to have. This MSC believes that although the patch ver
 to implementations, it is valuable as evidence of progress and finality of a given version. Going back to
 edit already-released versions of the specification can be damaging to the integrity of the protocol,
 and thus it is proposed by this MSC that the Spec Core Team remain accountable by forcing them to release
-a with a patch version increase for minor, functionally indifferent, changes.
+with a patch version increase for minor, functionally indifferent, changes.
 
 ### Structure changes and changelogs
 
@@ -113,12 +113,12 @@ versions which had `v1` and called the `rN` system "v2". Though many of the endp
 are not present in those older API editions, it is still proposed that they start at `v3` to avoid
 confusion with long-standing implementations.
 
-Servers which are lucky enough exist during this versioning scheme change are expected to continue
+Servers which are lucky enough to exist during this versioning scheme change are expected to continue
 supporting the `rN` system. This is done by advertising the existing client-server API versions as
 they always would have on `/versions`, though appending `"v1.1.0"` to indicate that this MSC is
 supported.
 
-As a further clarification to an solved problem, the `/versions` endpoint for the client-server API
+As a further clarification to a solved problem, the `/versions` endpoint for the client-server API
 does not need to advertise all patch version changes - just the major/minor versions it supports.
 If a server does advertise a patch version, clients are expected to resolve that to the relevant
 major/minor version equivalent (`v1.1.8` gets treated as `v1.1.0`, for example).
@@ -245,7 +245,7 @@ and the two most recent `MINOR` versions past that. Given a cadence of about 1 r
 this should mean that the standard implementation supports roughly 1.5 years worth of Matrix history.
 
 Room versions are special in that they will essentially always be included in a Matrix release, even if
-unstable. The current specification says that implementatiosn don't have to implement unstable room
+unstable. The current specification says that implementations don't have to implement unstable room
 versions, and this is true under this MSC too.
 
 For extreme clarity, the suggested schedule for supported versions would be (all examples):
