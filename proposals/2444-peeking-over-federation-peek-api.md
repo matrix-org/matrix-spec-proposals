@@ -224,6 +224,35 @@ world-readable.
    there are multiple subscriptions active, each filtering out different event
    types. In the meantime, implementers can use a hard-coded constant.
 
+ * An earlier rejected solution is
+   [MSC1777](https://github.com/matrix-org/matrix-doc/pull/1777), which
+   proposed joining a pseudouser (`@:server`) to a room in order to peek into
+   it. However:
+
+   * being forced to write to a room DAG (by joining such a user) in order to
+     perform a read-only operation (peeking) is somewhat inefficient.
+
+   * it also constitutes a privacy violation - tantamount to a tracking
+     pixel. If I'm on a smallish server and I happen to briefly peek into
+     `#nsfw:matrix.org`, I don't want every random server in that room to know
+     that I did so. It's even worse than sending read-receipts.
+
+   * In the interests of empowering the user, it's actually quite nice to
+     (theoretically at least) have some control over which servers you trust to
+     peek via.
+
+    * That said, a P2P world is going to need a totally different approach,
+      which might be back towards MSC1777 but using
+      [MSC1228](https://github.com/matrix-org/matrix-doc/pull/1228)-style IDs
+      to protect privacy. We need to solve scalability of "which nodes are
+      participating in the room" irrespectively of whether those nodes are
+      active or passive. So it's worth noting this solution (MSC2444) is very
+      much for today's federated architecture.
+
+    * MSC1777 offers a solution for EDU transmission which this MSC does not,
+      given we don't currently have any data flows for mirroring other servers'
+      EDUs.
+
 ## Future extensions
 
 These features are explicitly descoped for the purposes of this MSC.
@@ -264,18 +293,14 @@ all?)
 
 ## Dependencies
 
-This unblocks MSC1769 (profiles as rooms) and MSC1772 (groups as rooms)
-and is required for MSC2753 (peeking via /sync) to be of any use.
+This unblocks [MSC1769](https://github.com/matrix-org/matrix-doc/pull/1769)
+(profiles as rooms) and
+[MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772) (Matrix Spaces),
+and is required for
+[MSC2753](https://github.com/matrix-org/matrix-doc/pull/2753) (peeking via
+/sync) to be of any use.
 
-## History
-
-This would close https://github.com/matrix-org/matrix-doc/issues/913
-
-An earlier rejected solution is MSC1777, which proposed joining a pseudouser
-(`@:server`) to a room in order to peek into it.  However, being forced to write
-to a room DAG (by joining such a user) in order to perform a read-only operation
-(peeking) was deemed inefficient and rejected.
-
+This would close https://github.com/matrix-org/matrix-doc/issues/913.
 
 ## Footnotes
 
