@@ -299,6 +299,16 @@ space has a high rate of membership churn.
 
 Things that were considered and dismissed:
 
+* Extend the auth rules to include state from other rooms. Although this feels
+  cleaner, a robust implementation would be a hugely complicated
+  undertaking. In particular, room state resolution is closely linked to event
+  authorisation, and is already highly complex and hard to reason about, and
+  yet is fundamental to the security of Matrix.
+
+  In short, we believe such a change would require significant research and
+  modelling. A solution based on such a foundation could not practically be
+  implemented in the near future.
+
 * Rather than defining the mapping in the room, define a template power-levels
   event in a parent space, which will be inherited by all child rooms. For example:
 
