@@ -152,7 +152,22 @@ Server implementation:
 ##### Querying relationships over federation
 
 Relationships can be queried over federation using a new endpoint which is the same as the CS API format. See the CS API section for more info. The path
-used for this new federation endpoint is `/_matrix/federation/v1/event_relationships`.
+used for this new federation endpoint is `/_matrix/federation/v1/event_relationships`. There is one additional response field: `auth_chain` which contains
+all the necessary auth events for the events in `events`, e.g:
+```
+{
+    "events": [                    // the returned events, ordered by the 'closest' (by number of hops) to the anchor point.
+        { ... }, { ... }, { ... },
+    ],
+    "next_batch": "opaque_string", // A token which can be used to retrieve the next batch of events, if the response is limited.
+                                   // Optional: can be omitted if the server doesn't implement threaded pagination.
+    "limited": true|false,         // True if there are more events to return because the `limit` was reached. Servers are not obligated
+                                   // to return more events, see if the next_batch token is provided or not.
+    "auth_chain": [                // The auth events required to authenticate events in `events`
+        { ... }, { ... }, { ... },
+    ]
+}
+```
 
 Justification:
  - In an ideal world, every server would have the complete room DAG and would therefore be able to explore the full scope of a thread in a room. However,
