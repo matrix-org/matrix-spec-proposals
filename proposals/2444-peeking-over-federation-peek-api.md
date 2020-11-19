@@ -222,7 +222,9 @@ world-readable.
  * simply use `room_id` for idempotency rather than requiring a separate
    `peek_id`. One reason not to do this is to allow a future extension where
    there are multiple subscriptions active, each filtering out different event
-   types. In the meantime, implementers can use a hard-coded constant.
+   types. Another reason that `peek_id` is useful is to improve idempotency
+   with rapid peek/unpeek/peek cycles, to ensure we aren't `DELETE`ing the
+   wrong peek.
 
  * An earlier rejected solution is
    [MSC1777](https://github.com/matrix-org/matrix-doc/pull/1777), which
