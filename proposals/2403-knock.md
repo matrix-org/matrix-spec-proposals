@@ -6,11 +6,12 @@ user to indicate that they want to join a room.
 # Proposal
 This proposal implements the reserved "knock" membership type for the
 `m.room.member` state event. This state event indicates that when a user
-knocks on a room, they are asking for permission to join. It contains an
-optional "reason" parameter to specify the reason you want to join. Like
-other membership types, the parameters "displayname" and "avatar_url" are
-optional. This membership can be set from users who aren't currently in said
-room. An example for the membership would look like the following:
+knocks on a room, they are asking for permission to join. Like all membership
+events, it contains an optional "reason" parameter to specify the reason you
+want to join. Like other membership types, the parameters "displayname" and
+"avatar_url" are optional. This membership can be set from users who aren't
+currently in said room. An example for the membership would look like the
+following:
 ```json
 {
   "membership": "knock",
@@ -33,25 +34,27 @@ being "leave" can knock on a room. This means that a user that is banned, has
 already knocked or is currently in the room cannot knock on it.
 
 ### Join Rules
-This proposal introduces a new possible value for `join_rule` in
-`m.room.join_rules`: "knock". The value of `join_rule` in `m.room.join_rules`
+This proposal makes use of the existing "knock" join rule. The value of
+`join_rule` in the content of the `m.room.join_rules` state event for a room
 must be set to "knock" for a knock to succeed. This means that existing rooms
 will need to opt into allowing knocks in their rooms. Other than allowing
-knocks, "knock" is no different from the "invite" join rule.
+knocks, a join rule of "knock" is functionally equivalent to that of
+"invite", except that it additionally allows external users to change their
+membership to "knock" under certain conditions.
 
 As the join rules are modified, the auth rules are as well. The [current auth
-rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules) are defined
+rules](https://matrix.org/docs/spec/rooms/v6#authorization-rules-for-events) are defined
 by each room version. To change these rules, the implementation of this
 proposal must be done in a new room version. The explicit changes to the auth
 rules from room version 5 are:
 
-* Under "5. If type is `m.room.member`", the following should be added:
+* Under "5. If type is `m.room.member`", the following will be added:
 
   ```
   a. If `membership` is `knock`:
     i. If the `join_rule` is anything other than `knock`, reject.
     ii. If `sender` does not match `state_key`, reject.
-    iii. If the `sender`'s membership is not `ban` or `join`, allow.
+    iii. If the `sender`'s membership is not `ban`, `knock` or `join`, allow.
     iv. Otherwise, reject.
   ```
 
@@ -108,29 +111,27 @@ related to the knock attempt.
 
 ### Membership change to `leave`
 
-The knock has been rejected by someone in the room.
+The knock has been rejected by someone in the room, or the knocking user has
+rescinded their knock.
 
-XXX: There is also an open question here about who should be able to reject a
-knock. When revoking an invite for a user, perhaps counter-intuitively, you
-need to have a high enough power level to kick users, rather than invite
-them. You also need to have a higher power level than them. Should the same
-be done for knocking, assuming the knocking user has the default power level?
-Or should it be the same power level that's required to accept the knock?
+To rescind a knock, the knocking user's client must call [`POST
+/_matrix/client/r0/rooms/{roomId}/leave`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-leave).
 
-To reject a knock, the client should call [`POST
+To reject a knock, the rejecting user's client must call [`POST
 /_matrix/client/r0/rooms/{roomId}/kick`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-kick)
-with the user ID of the knocking user in the JSON body.
+with the user ID of the knocking user in the JSON body. Rejecting a knock
+over federation has a slight catch, however.
 
-At this point, if the knocking user is on another homeserver, then the
-homeserver of the rejecting user needs to send the `leave` event over
-federation to the knocking homeserver. However, this is a bit tricky as it is
-currently very difficult to have events from a room propagate over federation
-if the receiving homeserver is not in the room. This is due to the remote
-homeserver being unable to verify that the event being sent is actually from
-a homeserver in the room - and that the homeserver in the room had the
-required power level to send it. This is a problem that currently affects
-other similar operations, such as disinviting or unbanning a federated user.
-In both cases, they won't be notified as their homeserver is not in the room.
+When the knocking user is on another homeserver, the homeserver of the
+rejecting user needs to send the `leave` event over federation to the
+knocking homeserver. However, this is a bit tricky as it is currently very
+difficult to have events from a room propagate over federation when the
+receiving homeserver is not in the room. This is due to the remote homeserver
+being unable to verify that the event being sent is actually from a
+homeserver in the room - and that the homeserver in the room had the required
+power level to send it. This is a problem that currently affects other,
+similar operations, such as disinviting or unbanning a federated user. In
+both cases, they won't be notified as their homeserver is not in the room.
 
 While we could send easily send the leave event as part of a generic
 transaction to the remote homeserver, that homeserver would have no way to
@@ -147,9 +148,9 @@ knock will be on the same homeserver you knocked through. Perhaps the
 homeserver you knocked through could listen for this and then send the event
 back to you - but what if it goes offline in the meantime?
 
-As such, this feature working over federation is de-scoped for now, and left
-to a future MSC which can solve this problem across the board for all
-affected features in a suitable way. Rejections should still work for the
+As such, informing remote homeservers about the rejection of knocks over
+federation is de-scoped for now, and left to a future MSC which can solve
+this class of problem in a suitable way. Rejections should still work for the
 homeservers that are in the room, as they can validate the leave event for
 they have access to the events it references.
 
@@ -164,7 +165,8 @@ in the room bans the user. This will have the same effect as rejecting the
 knock, and in addition prevent any further knocks by this user from being
 allowed into the room.
 
-If the user is unbanned, then knocks will be accepted again.
+If the user is unbanned, they will be able to send a new knock which could be
+accepted.
 
 To ban the user, the client should call [`POST
 /_matrix/client/r0/rooms/{roomId}/ban`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-ban) with the user ID of the knocking user in the JSON body.
@@ -174,63 +176,16 @@ knock.
 
 
 ## Client-Server API
-Two new endpoints are introduced in the Client-Server API (similarly to
-join): `POST /_matrix/client/r0/rooms/{roomId}/knock` and `POST
-/_matrix/client/r0/knock/{roomIdOrAlias}`. These allow the client to state
+A new endpoint is introduced in the Client-Server API: `POST
+/_matrix/client/r0/knock/{roomIdOrAlias}`. This allows the client to state
 their intent to knock on a room.
 
 Additionally, extensions to the `GET /_matrix/client/r0/sync` endpoint are
 introduced. These allow a client to receive information about the status of
 their knock attempt.
 
-### `POST /_matrix/client/r0/rooms/{roomId}/knock`
-The path parameter (`roomId`) is the room on which you want to knock. It is
-required. The post body accepts an optional string parameter, `reason`, which
-is the reason you want to join the room. A request could look as follows:
+The newly proposed endpoint requires authentication and can be rate limited.
 
-```json
-POST /_matrix/client/r0/rooms/%21d41d8cd%3Amatrix.org/knock  HTTP/1.1
-Content-Type: application/json
-
-{
-  "reason": "I want to join this room as I really love foxes!"
-}
-```
-
-#### Responses:
-##### Status code 200:
-The user knocked successfully. Example reply:
-```json
-{}
-```
-
-##### Status code 400:
-This request was invalid, e.g. bad JSON. Example reply:
-```json
-{
-  "errcode": "M_UNKNOWN",
-  "error": "An unknown error occurred"
-}
-```
-
-##### Status code 403:
-The user wasn't allowed to knock (e.g. they are banned). Error reply:
-```json
-{
-  "errcode": "M_FORBIDDEN",
-  "error": "The user isn't allowed to knock in this room."
-}
-```
-
-##### Status code 429:
-This request was rate-limited. Example reply:
-```json
-{
-  "errcode": "M_LIMIT_EXCEEDED",
-  "error": "Too many requests",
-  "retry_after_ms": 2000
-}
-```
 
 ### `POST /_matrix/client/r0/knock/{roomIdOrAlias}`
 The path parameter (`roomIdOrAlias`) is either the room ID or the alias of
@@ -249,8 +204,20 @@ Content-Type: application/json
 ```
 
 #### Responses:
-The possible responses are the same as for the `POST
-/_matrix/client/r0/rooms/{roomId}/knock` endpoint.
+##### Status code 200:
+The user knocked successfully. Example reply:
+```json
+{}
+```
+
+##### Status code 403:
+The user wasn't allowed to knock (e.g. they are banned). Error reply:
+```json
+{
+  "errcode": "M_FORBIDDEN",
+  "error": "The user isn't allowed to knock in this room."
+}
+```
 
 ### Extensions to `GET /_matrix/client/r0/sync`
 
@@ -267,16 +234,25 @@ a list of `StrippedStateEvent`. `StrippedStateEvent`s are defined as state
 events that only contain the `sender`, `type`, `state_key` and `content`
 keys.
 
+Note that while `join` and `leave` keys in `/sync` use `state`, we use
+`knock_state` here. This mirrors `invite`s use of `invite_state`.
+
 These stripped state events contain information about the room, most notably
 the room's name and avatar. A client will need this information to show a
 nice representation of pending knocked rooms. The recommended events to
-include are the join rules, canonical alias, avatar, and name of the room,
-rather than all room state. This behaviour matches the information sent to
-remote homeservers when invited their users to a room.
+include are the join rules, canonical alias, avatar, name and encryption
+state of the room, rather than all room state. This behaviour matches the
+information sent to remote homeservers when invited their users to a room.
 
 This prevents unneeded state from the room leaking out, and also speeds
 things up (think not sending over hundreds of membership events from big
 rooms).
+
+Also note that like `invite_state`, state events from `knock_state` are
+purely for giving the user some information about the current state of the
+room that they have knocked on. If the user was previously in the room, the
+state events in `knock_state` are not intended to overwrite any historical
+state. This applies storage of state on both the homeserver and the client.
 
 The following is an example of knock state coming down `/sync`.
 
@@ -395,9 +371,16 @@ This request was invalid, e.g. bad JSON. Example reply:
 }
 ```
 
-### `PUT /_matrix/federation/v1/send_knock/{roomId}/{eventId}`
+### `PUT /_matrix/federation/v2/send_knock/{roomId}/{eventId}`
 Submits a signed knock event to the resident homeserver for it to accept into
 the room's graph. Note that event format may differ between room versions.
+
+While this is a new endpoint, we start off at `v2` to align with the rest of
+the `/v2/send_*` endpoints. The switch from `v1` to `v2` occurred as part of
+[MSC1802](https://github.com/matrix-org/matrix-doc/pull/1802) and required
+that `send_*` endpoints no longer return a redundant HTTP error code in
+response bodies. As we do the same here, and for consistency's sake, for
+`send_knock` will begin at endpoint `v2` as well.
 
 Request format:
 
@@ -417,7 +400,7 @@ Response Format:
 
 A request could look as follows:
 ```json
-PUT /_matrix/federation/v1/send_knock/%21abc123%3Amatrix.org/%24abc123%3Aexample.org HTTP/1.1
+PUT /_matrix/federation/v2/send_knock/%21abc123%3Amatrix.org/%24abc123%3Aexample.org HTTP/1.1
 Content-Type: application/json
 
 {
@@ -492,8 +475,8 @@ request content.
 
 # Potential issues
 This new feature would allow users to send events into rooms that they don't
-partake in. That is why this proposal adds a new join rule, in order to allow
-room admins to opt in to this behaviour.
+partake in. That is why this proposal enables the a `knock` join rule, in
+order to allow room admins to opt in to this behaviour.
 
 # Alternatives
 The two endpoints for the Client-Server API seem redundant, this MSC followed
@@ -525,7 +508,10 @@ Another abuse vector is allowed by the ability for users to rescind knocks.
 This is to help users in case they knocked on a room accidentally, or simply
 no longer want to join a room they've knocked on. While this is a useful
 feature, it also allows users to spam a room by knocking and rescinding their
-knocks over and over.
+knocks over and over. Particularly note-worthy is that this will generate
+state events that homeserver in the room will need to process. And while
+join/leave state changes will do the same in a public room, the act of
+knocking is much lighter than the act of joining a room.
 
 In both cases, room admins should employ typical abuse mitigation tools, such
 as user bans and server ACLs. Clients are encouraged to ease employing these
@@ -533,10 +519,10 @@ tools easy even if the offensive user or server is present not in the room.
 
 # Unstable prefix
 
-An unstable feature flag is added to the `unstable_features` dict of
-`/_matrix/client/versions` with the key `xyz.amorgan.knock` and value `true`.
-If this key is present, this is a signal to clients that the homeserver has
-experimental support for room knocking.
+An unstable feature flag is not required due to this proposal's requirement
+of a new room version. Clients can check for a room version that includes
+knocking via the Client-Server API's [capabilities
+endpoint](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-capabilities).
 
 The new endpoints should contain an unstable prefix during experimental
 implementation. The unstable counterpart for each endpoint is:
@@ -558,10 +544,10 @@ S-S make_knock:
 
 S-S send_knock:
 
-* `PUT /_matrix/federation/v1/send_knock/{roomId}/{eventId}`
+* `PUT /_matrix/federation/v2/send_knock/{roomId}/{eventId}`
 * `PUT /_matrix/federation/unstable/xyz.amorgan/send_knock/{roomId}/{eventId}`
 
 And finally, an unstable prefix is added to the key that comes down `/sync`,
-the new join rule for rooms and the `content.membership` key of the member
+the join rule for rooms and the `content.membership` key of the member
 event sent into rooms when a user has knocked successfully. Instead of
 `knock`, experimental implementations should use `xyz.amorgan.knock`.
