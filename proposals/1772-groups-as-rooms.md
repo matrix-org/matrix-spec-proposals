@@ -226,6 +226,8 @@ add an `auto_users` key:
 A user's power level is then specified by an entry in *either* `users` or
 `auto_users`. Where a user appears in both sections, `users` takes precedence.
 
+The new `auto_users` key is maintained by a bot user, as described below.
+
 `auto_users` is subject to all of the same authorization checks as the existing
 `users` key (see https://matrix.org/docs/spec/rooms/v1#authorization-rules,
 paragraphs 10a, 10d, 10e).
@@ -278,8 +280,8 @@ localpart `@:example.com`.
 
 This bot is then responsible for monitoring the `power_level_mappings` state,
 and peeking into any spaces mentioned in the content. It can then issue new
-`m.room.power_levels` events whenever the membership of the spaces in question
-changes.
+`m.room.power_levels` events, updating the value of `auto_users`, whenever the
+membership of the spaces in question changes.
 
 It is possible that the admin bot is unable to perform the mapping (for
 example, the space cannot be peeked; or the membership of the space is so large
