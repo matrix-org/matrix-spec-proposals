@@ -245,11 +245,11 @@ Justifications:
  - The fields are in the `unsigned` section so clients cannot artificially set them, and because `unsigned` is where a lot
    of other server-calculated metadata resides.
 
-##### Backreferences
+##### Child references
 
 Using the threading model proposed above, events contain information about their parents but parents do not contain information about their
-children. This means that events can follow their path up to the root event but cannot explore siblings not on that root path. "Backreferences"
-means adding additional metadata to allow the discovery of child events from a given parent event. These backreferences are necessary over
+children. This means that events can follow their path up to the root event but cannot explore siblings not on that root path. "Child references"
+means adding additional metadata to allow the discovery of child events from a given parent event. These references are necessary over
 federation where each server has an incomplete view of the thread. Consider:
 
 ```
@@ -264,14 +264,14 @@ Numbers = Events
    2                 3 <- children
 ```
 - When event 2 is created, only servers A,B will know this.
-- A backreference event needs to be created in !room2 in order for C to ever be aware of event 2.
+- A child reference event needs to be created in !room2 in order for C to ever be aware of event 2.
 - When C is aware of event 2, it can then peek/join into !room1 to receive updates to that fork.
 - This means that **in order to create a relationship, the user must be in parent event's room**.
 
-The backreference event MUST be sent by the server on behalf of the client and look like:
+The reference event MUST be sent by the server on behalf of the client and look like:
 ```
 {
-    "type": "m.room.backref",
+    "type": "m.room.reference",
     "content": {
         "event_id": "$parent_event_id",
         "m.relationship": {
@@ -289,17 +289,17 @@ The backreference event MUST be sent by the server on behalf of the client and l
 ```
 
 Justification:
- - Backreference events have to exist so servers can be aware of new child threads in different rooms. Without it,
+ - Child reference events have to exist so servers can be aware of new child threads in different rooms. Without it,
    servers will only be able to walk from their event up to the root and not explore the entire thread. Furthermore,
    servers will not converge on a consistent view of the thread as some servers have information that others are missing.
  - We re-use the `m.relationship` shape because the event is a literal relationship.
- - The type `m.room.backref` is used so clients can filter these out if they don't know or want to render them on the UI.
- - We re-use the `unsigned.relationship_*` fields as routing information is critical in order to follow backreferences.
+ - The type `m.room.reference` is used so clients can filter these out if they don't know or want to render them on the UI.
+ - We re-use the `unsigned.relationship_*` fields as routing information is critical in order to follow references.
 
 Edge cases:
  - It is not an error if the user does not have permission to send this event into the parent room.
- - The child event should be sent first, and only after success should the backreference event be sent. This is already
-   implied because the backreference event needs to reference the event ID of the child.
+ - The child event should be sent first, and only after success should the reference event be sent. This is already
+   implied because the reference event needs to reference the event ID of the child.
 
 Security considerations:
  - We omit the `content` of the child event and only share event metadata with the parent room for privacy. This
@@ -308,9 +308,9 @@ Security considerations:
 
 Server behaviour:
  - When sending an event: if an event contains a valid `m.relationship` - where valid means that the user is joined to both child/parent rooms -
-   send the event then create the backreference event and send it into the parent room on a best-effort basis. Failures
+   send the event then create the reference event and send it into the parent room on a best-effort basis. Failures
    for any reason are non-fatal. 
- - When receiving a backreference event: persist the relationship between parent/child for use in `/event_relationships`.
+ - When receiving a reference event: persist the relationship between parent/child for use in `/event_relationships`.
 
 The net result of this is:
  - 1: A client makes an `/event_relationships` request with `auto_join: true`. The server begins walking the thread.
@@ -318,5 +318,5 @@ The net result of this is:
  - 3: The server joins the room on behalf of the client.
  - 4: The server calls the federated form of `/event_relationships` to the server joined via.
  - 5: The server continues until it find an unknown event ID again then loops back to Step 2 until the request is satisfied.
- - 6: Subsequent children made in this thread will be actively pushed to the server as normal events with the type `m.room.backref`.
+ - 6: Subsequent children made in this thread will be actively pushed to the server as normal events with the type `m.room.reference`.
       This provides additional search paths for the next `/event_relationships` request and can be actively shown in the client's UI.
