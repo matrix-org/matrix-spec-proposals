@@ -185,6 +185,45 @@ Server behaviour:
  - Servers should make outbound `/event_relationships` requests *for client requests* when they encounter an event ID they do not have. The event may have
    happened much earlier in the room which another server in the room can satisfy.
 
+#### Exploring dense threads
+
+The proposed API so far has no mechanism to:
+ - List the absolute number of children for a given event.
+ - Check that the server has all the children for a given parent event.
+
+To aid this, all events returned from `/event_relationships` SHOULD have 2 additional fields in the `unsigned` section of the event:
+ - `children`: A map of `rel_type` to the number of children with that relation.
+ - `children_hash`: The SHA256 of all the event IDs of the known children, deduplicated and sorted lexicographically.
+
+For example, an event `$AAA` with three children: `$BBB`, `$CCC`, `$DDD` where the first two are of `rel_type` "m.reference" and the last is "custom", should
+produce an `unsigned` section of:
+```
+unsigned: {
+  children: {
+    "m.reference": 2,
+    "custom": 1
+  },
+  children_hash: "184e901fca089a2abc228330426203c45f647aab58d90eca2ad27871a5dd61bd" // SHA256("$BBB$CCC$DDD")
+}
+```
+
+Justification:
+ - This allows clients to display more detailed "see more" links e.g. "... and 56 more replies".
+ - This allows servers to identify when a federated `/event_relationships` request has been window culled by `max_depth` or `max_breadth`.
+ - Separating out the counts by `rel_type` allows clients to accurately determine whether children are threaded replies or some other relation.
+
+Server behaviour:
+ - When processing an `/event_relationships` response from another server, check that the total number of children matches the number of children that have
+   been retrieved. If they differ, mark that event as "unexplored". If they match, check that the SHA256 matches `children_hash`. If they differ, mark that
+   event as "unexplored", else mark it as "explored".
+ - When processing an `/event_relationships` request from a client, if you encounter an "unexplored" event, perform a federated `/event_relationships` request
+   with the desired parameters to satisfy the client request.
+ - Persist any new events from this request, doing the same children count/hash checks and then mark this event as "explored" **regardless of whether the children hash matches**.
+   This guards against permanently having unexplored events if your server has events the target server does not have.
+ - Explored events will always remain up-to-date assuming federation between the two servers remains intact. If there is a long outage, any new child will be
+   marked as "unexplored" and trigger an `/event_relationships` request, akin to how the `/send` federation API will trigger `/get_missing_events` in the event
+   of an unknown `prev_event`.
+
 #### Cross-room threading extension
 
 This MSC expands on the basic form to allow cross-room threading by allowing 2 extra fields to be specified
