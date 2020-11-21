@@ -41,7 +41,7 @@ who can then tell his device that the keys match.
    - a random shared secret.
 5. Alice scans Bob's QR code.
 6. Alice's device ensures that:
-   - Bob's key encoded in the QR code match the key that she already has for
+   - Bob's key encoded in the QR code matches the key that she already has for
      Bob, and
    - Alice's cross-signing key matches the cross-signing key encoded in the QR
      code.
