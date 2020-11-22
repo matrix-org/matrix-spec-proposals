@@ -248,13 +248,20 @@ Room versions are special in that they will essentially always be included in a 
 unstable. The current specification says that implementations don't have to implement unstable room
 versions, and this is true under this MSC too.
 
+As with the current day, implementations should consider what makes sense for them to support. It's
+entirely possible that a Matrix version happens with no client-server API changes, for instance, which
+may mean that clients won't bother even checking for the no-op version - a server implementation might
+not want to count that version towards it's "last 2 major releases" schedule to avoid breaking clients.
+It may instead be desirable for implementations to support Matrix releases based on time rather than
+by the number of releases.
+
 For extreme clarity, the suggested schedule for supported versions would be (all examples):
 
-* v1.1.0 - Released in January 2019 - No support needed due to age.
-* v1.2.0 - Released in July 2019 - Should be supported as part of the 1.2.x series.
-* v1.2.5 - Released in August 2019 - Should be supported because it's part of the 1.2.x series.
-* v1.3.0 - Released in December 2019 - Should be supported.
-* v1.4.0 - Released in January 2020 - The current release so should definitely be supported.
+* v1.1.0 - Released in January - No support needed due to age.
+* v1.2.0 - Released in July - Should be supported as part of the 1.2.x series.
+* v1.2.5 - Released in August - Should be supported because it's part of the 1.2.x series.
+* v1.3.0 - Released in November - Should be supported.
+* v1.4.0 - Released in December (current day) - The current release so should definitely be supported.
 
 ## Potential issues
 
