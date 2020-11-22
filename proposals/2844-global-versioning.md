@@ -214,11 +214,15 @@ been deprecated for suitably long enough, it is eligible for removal from the sp
 MSC. Today's process is the same, though not defined explicitly.
 
 Also not mentioned in today's system is that implementations are not required to implement deprecated
-endpoints. This MSC also changes that and says that they do for versions in which they were deprecated
-in. For example, if an endpoint was introduced in v1.1, deprecated in v1.2, and removed in v1.3 then
-a server would have to implement the endpoint for v1.1 and v1.2 if it wanted to claim support for those
-versions - v1.3 doesn't have the endpoint, so the endpoint's existence is not conditional for being
-able to claim support for that version.
+endpoints. This MSC doesn't change that, but does put some rules around how deprecation works for a
+given endpoint. Specifically, if a server wants to support a Matrix version where an endpoint is *not*
+deprecated, then it must serve it.
+
+As an example, if `/test` were introduced in v1.1, deprecated in v1.2, and removed in v1.3 then an
+implementation can support v1.1, v1.2, and v1.3 by implementing `/test` as it was defined in v1.2 (minus
+the deprecation flag). If the implementation wanted to support just v1.2 and v1.3, then it could
+optionally implement `/test`, though is encouraged to. Further, if the implementation only wanted to
+support v1.3, then it *should not* implement `/test` at all because it was removed.
 
 Generally deprecation is paired with replacement or breaking changes. For example, if `/v3/sync` were
 to be modified such that it needed to be bumped to `v4`, the MSC which does so would deprecate `/v3/sync`
@@ -301,6 +305,13 @@ instead of the inspired system proposed here. So, why shouldn't we use semantic 
 4. The benefit of saying we use a well-popularized versioning system is not a strong enough argument
    to be considered here.
 
+This MSC is also inherently incompatible with semantic versioning due to its approach to deprecation.
+Instead of encouraging breaking changes (removal of endpoints) be major version changes, this MSC
+says that happens at the minor version change level. As mentioned in the relevant section, this is
+not foreseen to be an issue for Matrix given its a system already used by the protocol and is common
+enough to at least be moderately familiar - the arguments for using semantic versioning in this respect
+do not hold up, per above.
+
 ## Security considerations
 
 None relevant - if we need to make a security release for Matrix then we simply make a release and
@@ -308,7 +319,11 @@ advertise accordingly.
 
 ## Unstable prefix
 
-It's not recommended by this MSC to implement this proposal before it lands in the specification, however
-if an implementation wishes to do so then it can advertise `org.matrix.msc2844` in the `unstable_features`
-section of `/versions`, and use `/_matrix/client/unstable/org.matrix.msc2844` in place of
-`/_matrix/client/r0`.
+The author does not recommend that this MSC be implemented prior to it landing due to the complexity
+involved as well as the behavioural changes not being possible to implement. However, if an implementation
+wishes to try anyways, it should use `org.matrix.msc2844` in the `unstable_features` of `/versions`
+and use `/_matrix/client/unstable/org.matrix.msc2844` in place of `/_matrix/client/r0`.
+
+This MSC is largely proven as possible through an in-development build of the specification which uses
+an alternative toolchain for rendering the specification: https://adoring-einstein-5ea514.netlify.app/
+(see the 'releases' dropdown in the top right; link may not be available in the distant future - sorry).
