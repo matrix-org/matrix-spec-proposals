@@ -185,6 +185,7 @@ A few default variables, which MUST take priority over the same names in ``data`
 * ``matrix_avatar_url`` - The current user's avatar URL as reported in their profile, or and empty
   string if not present. This shouldn't be the ``mxc://`` form of the user's avatar, but instead the
   full HTTP URL to the ``/media/download`` endpoint for their avatar from the Client-Server API.
+* ``matrix_widget_id`` - The widget's ID to allow the widget to communicate effectively with the client.
 
 .. WARNING::
    The ``matrix_user_id`` variable MUST NOT be assumed to be the current authenticated user due to
