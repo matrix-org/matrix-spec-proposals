@@ -121,7 +121,10 @@ supported.
 As a further clarification to a solved problem, the `/versions` endpoint for the client-server API
 does not need to advertise all patch version changes - just the major/minor versions it supports.
 If a server does advertise a patch version, clients are expected to resolve that to the relevant
-major/minor version equivalent (`v1.1.8` gets treated as `v1.1.0`, for example).
+major/minor version equivalent (`v1.1.8` gets treated as `v1.1.0`, for example). This same rule
+applies to widgets and the `supported_api_versions` action, which is currently in a
+[draft specification](https://github.com/matrix-org/matrix-doc/pull/2764) state. Once widgets land
+in the spec, the rule comes into effect.
 
 ### Brewing changes for the specification
 
