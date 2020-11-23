@@ -50,7 +50,7 @@ properties:
     default: true
     description: |-
       When true, the widget should be hidden from view until the iframe's ``onLoad`` (or
-      platform equivilant) event has been fired. When false, the widget should be hidden
+      platform equivalent) event has been fired. When false, the widget should be hidden
       from view until the ``content_loaded`` API action is sent by the widget. Defaults to
       true.
     example: true
