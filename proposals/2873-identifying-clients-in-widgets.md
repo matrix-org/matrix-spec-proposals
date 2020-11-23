@@ -1,17 +1,19 @@
-# MSC2873: Identifying the client and client theme to the widget
+# MSC2873: Identifying clients and user settings in widgets
 
 Some widgets may wish to enable functionality depending on the client they are being presented
-within, or match the client's theme as best as possible. This is not currently possible for a
-widget to achieve in a stable way.
+within, or match the client's theme as best as possible, or even localize the widget itself to
+match the user's preference. None of this is currently possible for a widget to achieve in a
+stable way.
 
 ## Proposal
 
-Two new template variables are added to the available options for a widget URL:
+Some new template variables are added to the available options for a widget URL:
 
 * `matrix_client_id` - A [MSC2758](https://github.com/matrix-org/matrix-doc/pull/2758) identifier
   for the client which is rendering the widget.
 * `matrix_client_theme` - The stringified name for the user's current theme as decided upon by
   the client.
+* `matrix_client_language` - The ISO 639-1 alpha-2 code for the user's current language.
 
 For example, in Element Web the `matrix_client_id` might be `io.element.web` and the
 `matrix_client_theme` could be `light`. In the case of another example client, the client ID might
@@ -80,6 +82,25 @@ in Element Web, if a custom dark theme is used it might still say "dark" instead
 theme"). The URL variable exists purely for the purposes of letting the widget load the right theme
 while waiting for a `theme_change` request (which might happen immediately after the capabilities
 exchange to help the widget change into the right colour scheme).
+
+To further assist with the changes of language, the following action is defined. Like with the theme
+information, the URL variable is useful for while the widget is loading and followed by an update
+later on if the language were to change.
+
+```json
+{
+  "api": "toWidget",
+  "requestId": "AAABBB",
+  "widgetId": "CCCDDD",
+  "action": "language_change",
+  "data": {
+    "lang": "fr"
+  }
+}
+```
+
+The `lang` variable is an ISO 639-1 alpha-2 code. The request is acknowledged with an empty response
+by the widget.
 
 ## Potential issues
 
