@@ -67,9 +67,22 @@ be denied, as should `m.send.state_event:m.room.message`.
 As with capabilities negotiation already, the user SHOULD be prompted to approve these capabilities
 if the widget requests them.
 
-For `m.room.message` specifically, the `msgtype` must be appended to the capability following a `#`.
-This ensures that widgets cannot interfere with encryption verification. It is expected that most
-widgets looking to use this functionality will request the following:
+State events can have their capabilities requested against specific state keys as well, helping the
+client limit its exposure to the room's history. This is done by appending a `#` and the state key
+the capability should be against. For example, `m.send.state_event:m.room.name#` will represent an
+`m.room.name` state event with an empty state key whereas `m.send.state_event:m.room.name#test` will
+be an `m.room.name` state event still, though with `test` as the state key. Clients should only split
+on the first `#`, so `m.room.name##test` becomes an event type of `m.room.name` and state key of `#test`.
+
+To get around an issue where widgets would not be able to request an event type with `#` in it (because
+it'll be seen as a state key), widgets can use a `\` character to escape the `#`. For example,
+`org.example.\#test#hello` would be parsed as an event type of `org.example.#test` with state key `hello`.
+Clients should be careful to parse `\\#` as `\#` (single escape).
+
+`m.room.message` is the only non-state event which also makes use of this `#` system, though targeting
+the `msgtype` of a `m.room.message` event instead. All the same rules apply as they do to state events,
+except instead to `msgtype`. This ensures that widgets cannot interfere with encryption verification.
+It is expected that most widgets looking to use this functionality will request the following:
 
 * `m.send.event:m.room.message#m.notice`
 * `m.send.event:m.room.message#m.text`
