@@ -52,7 +52,7 @@ paths:
           required: true
           x-example: "!d41d8cd:matrix.org"
         - in: body
-          name: third_party_signed
+          name: body
           required: true
           schema:
             type: object
@@ -64,6 +64,12 @@ paths:
                   If supplied, the homeserver must verify that it matches a pending
                   ``m.room.third_party_invite`` event in the room, and perform
                   key validity checking if required by the event.
+              reason:
+                type: string
+                description: |-
+                  Optional reason to be included as the ``reason`` on the subsequent
+                  membership event.
+                example: "Looking for support"
       responses:
         200:
           description: |-
@@ -131,7 +137,7 @@ paths:
             must be participating in the room.
           x-example: ["matrix.org", "elsewhere.ca"]
         - in: body
-          name: third_party_signed
+          name: body
           required: true
           schema:
             type: object
@@ -143,6 +149,12 @@ paths:
                   If a ``third_party_signed`` was supplied, the homeserver must verify
                   that it matches a pending ``m.room.third_party_invite`` event in the
                   room, and perform key validity checking if required by the event.
+              reason:
+                type: string
+                description: |-
+                  Optional reason to be included as the ``reason`` on the subsequent
+                  membership event.
+                example: "Looking for support"
       responses:
         200:
           description: |-
