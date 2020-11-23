@@ -158,7 +158,7 @@ is sent to the widget with the `data` being the event itself. For example:
 
 ```json
 {
-  "api": "fromWidget",
+  "api": "toWidget",
   "widgetId": "20200827_WidgetExample",
   "requestid": "generated-id-1234",
   "action": "send_event",
