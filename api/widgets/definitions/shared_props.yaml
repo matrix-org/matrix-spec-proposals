@@ -54,6 +54,15 @@ properties:
       from view until the ``content_loaded`` API action is sent by the widget. Defaults to
       true.
     example: true
+  avatar_url:
+    type: string
+    description: |-
+      An optional MXC URI to an image which can be used to identify the widget. Recommended
+      for use alongside the ``name`` and ``data.title``.
+
+      Images SHOULD be legible at small sizes, such as 20x20 pixels. The MXC URI here should
+      be the source material to allow clients to use the ``/thumbnail`` endpoint on the media.
+    example: "mxc://example.org/aaabbbccc"
   data:
     type: object
     title: WidgetData

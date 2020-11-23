@@ -8,5 +8,6 @@
     "name": "My Cool Widget",
     "type": "m.custom",
     "url": "https://example.org/my/widget.html?roomId=$matrix_room_id",
-    "waitForIframeLoad": true
+    "waitForIframeLoad": true,
+    "avatar_url": "mxc://example.org/aaabbbccc"
 }
