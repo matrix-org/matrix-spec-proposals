@@ -88,6 +88,8 @@ It is expected that most widgets looking to use this functionality will request 
 * `m.send.event:m.room.message#m.text`
 * `m.send.event:m.room.message#m.emote`
 
+Other non-state event types with `#` in them do not get parsed in any special way, and do not need escaping.
+
 To actually send the event, widgets would use a new `fromWidget` request with action `send_event`
 which takes the following shape:
 
