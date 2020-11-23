@@ -1,4 +1,4 @@
-# MSCxxxx: Single SSSS
+# MSC2874: Single SSSS
 
 [Secure Secret Storage and
 Sharing](https://github.com/matrix-org/matrix-doc/pull/1946) (SSSS) was
