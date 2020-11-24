@@ -41,11 +41,11 @@ For instance, an `m.room.message` which replaces an existing event looks like:
         "msgtype": "m.text",
         "m.new_content": {
             "body": "Hello! My name is bar",
-            "msgtype": "m.text",
+            "msgtype": "m.text"
         },
         "m.relates_to": {
             "rel_type": "m.replace",
-            "event_id": "$some_event_id",
+            "event_id": "$some_event_id"
         }
     }
 }
