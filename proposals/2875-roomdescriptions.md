@@ -1,16 +1,17 @@
+# MSC2875: Room descriptions
 Rooms currently have `m.room.name` for the room name, `m.room.topic` for a short description, and `m.room.avatar` for an avatar.
 However, there is no currently-specced way to set a long description for a room, such as an FAQ or extensive rules.
 
-# Proposal
+## Proposal
 A new state event (set with empty state key), `m.room.description`, is added. It has the field `description`.
 It also has the field `format` describing the formatting of the description. The only currently specified format is `org.matrix.custom.html`. If the format is unknown to the client, it should be displayed as plaintext.
 The description can contain images (as long as they are references to `mxc` URIs, headings, colored text, and links.
 HTML elements can also inlude the `id` property and links to fragments (such as `<h2 id="example">Example</h2>` and `<a href="#example">jump to example</a>` for easy navigation or table of contents.
 
-# Client implementation
+## Client implementation
 Clients should either expose editing the description as raw HTML, or as Markdown, though translation to markdown may be lossy. This is left up to client developers.
 
-# Server implementation
+## Server implementation
 None necessary, though servers should consider setting the default power level to edit `m.room.description` to the same as `m.room.topic`.
 
 # Example content
@@ -24,5 +25,5 @@ None necessary, though servers should consider setting the default power level t
 # Unstable prefix
 While this msc is in development, the event should be sent as `cat.blob.msc2875.description` instead of `m.room.description`.
 
-# Alternatives
+## Alternatives
 `m.room.pinned_events` can be used, though not all clients may have access to pinned events, causing issues in many rooms, as well as less consistent display, usage, and support.
