@@ -385,7 +385,7 @@ Things that were considered and dismissed:
   something happens).
 
   * Could we could put a hash of the space membership in the PL instead of
-    expanding the wole list, so that servers have a way to check if they are
+    expanding the whole list, so that servers have a way to check if they are
     applying the same list as everyone else?
 
     Feels like it will have bad failure modes: what is a server supposed to do
