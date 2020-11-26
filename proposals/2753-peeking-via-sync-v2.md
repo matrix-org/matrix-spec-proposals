@@ -50,10 +50,9 @@ but has a slightly different API shape.
 For example:
 
 ```
-POST /_matrix/client/r0/peek HTTP/1.1
+POST /_matrix/client/r0/peek/{roomIdOrAlias} HTTP/1.1
 
 {
-    "room": "<room id or alias>",
     "servers": [
         "server1", "server2"
     ]
@@ -69,9 +68,8 @@ A successful response has the following format:
 }
 ```
 
-The `room` parameter is required and must be a valid room id or alias. The
-`servers` parameter is optional and, if present, gives a list of servers to try
-to peek through.
+The `servers` parameter is optional and, if present, gives a list of servers to
+try to peek through.
 
 XXX: should we limit this API to room IDs, and require clients to do a `GET
 /_matrix/client/r0/directory/room/{roomAlias}` request if they have a room
