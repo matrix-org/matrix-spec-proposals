@@ -12,7 +12,10 @@ Currently, Matrix supports `m.login.sso`, `m.login.token` and `/login/sso/redire
 pass their user to the configured Identity provider and for them to come back with something which
 is exchangeable for a Matrix access token. This flow offers no insight to the user as to what
 Identity providers are available. It allows clients to offer a super generic `Sign in with SSO`
-button only.
+button only. With the currently possible solutions and workarounds the experience is far from great 
+and user's have to blindly click `Sign in with SSO` without any clue as to what's hiding on the other
+side of the door. Some users will definitely not be familiar with `SSO` but will be with the concept of
+"Continue with Google" or similar.
 
 By augmenting the `m.login.sso` flow discovery definition to include metadata on the supported IDPs
 the client can show a button for each of the supported providers, yielding a much more usable
