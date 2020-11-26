@@ -193,7 +193,7 @@ The proposed API so far has no mechanism to:
 
 To aid this, all events returned from `/event_relationships` SHOULD have 2 additional fields in the `unsigned` section of the event:
  - `children`: A map of `rel_type` to the number of children with that relation.
- - `children_hash`: The SHA256 of all the event IDs of the known children, deduplicated and sorted lexicographically.
+ - `children_hash`: The base64 string of the SHA256 of all the event IDs of the known children, deduplicated and sorted lexicographically. 
 
 For example, an event `$AAA` with three children: `$BBB`, `$CCC`, `$DDD` where the first two are of `rel_type` "m.reference" and the last is "custom", should
 produce an `unsigned` section of:
@@ -203,7 +203,7 @@ unsigned: {
     "m.reference": 2,
     "custom": 1
   },
-  children_hash: "184e901fca089a2abc228330426203c45f647aab58d90eca2ad27871a5dd61bd" // SHA256("$BBB$CCC$DDD")
+  children_hash: "GE6QH8oImiq8IoMwQmIDxF9keqtY2Q7KKtJ4caXdYb0=" // base64(SHA256("$BBB$CCC$DDD"))
 }
 ```
 
