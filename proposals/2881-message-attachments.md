@@ -103,7 +103,21 @@ This way give better fallback, but will generate more unecessary events instead 
 
 For exclude showing those events in modern clients before grouping event added, we can also extend separate media events via adding into them some "marker" field like `is_attachment: true`.
 
-Here is example of this implementation:
+Here is example of this implementation - media events, to sent before aggregating event:
+```json
+{
+  "msgtype": "m.image",
+  "body": "Image 1.jpg",
+  "info": {
+    "mimetype": "image/jpg",
+    "size": 1153501,
+    "w": 963,
+    "h": 734,
+  },
+  "url": "mxc://example.com/KUAQOesGECkQTgdtedkftISg"
+},
+```
+And aggregating event:
 ```json
 {
   "type": "m.room.message",
