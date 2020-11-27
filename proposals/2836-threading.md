@@ -233,7 +233,8 @@ Server behaviour:
       In addition, if the counts match but the hashes do not match, then the event is unexplored.
     * Regardless of whether the federated `/event_relationships` request returns the missing children, mark the event as explored afterwards. This prevents
       constantly hitting federation when walking over this event. The easiest way to mark the event as explored is to remember what the highest children count was
-      when the most recent federated request was made. If that number differs from the current `unsigned` count then it is unexplored.
+      when the most recent federated request was made, along with the hash of those children. If that number differs from the current `unsigned` count
+      or the numbers match but the hashes differ then it is unexplored.
  - Explored events will always remain up-to-date assuming federation between the two servers remains intact. If there is a long outage, any new child will be
    marked as "unexplored" (because the parent event will be missing) and trigger an `/event_relationships` request, akin to how the `/send` federation API will
    trigger `/get_missing_events` in the event of an unknown `prev_event`. This will then pull in events heading up to the root event, along with `unsigned` children
