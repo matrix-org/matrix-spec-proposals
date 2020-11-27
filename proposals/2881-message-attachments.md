@@ -10,7 +10,11 @@ On the display side, when the user sends multiple images, the problem is that ea
 
 ## Proposal
 
-To solve the described problem, I propose to extend `m.room.message` event with `m.attachments` field, that contains the array of message attachments. This can be done together with [MSC1767: Extensible events in Matrix](https://github.com/matrix-org/matrix-doc/pull/1767) with adding new type `m.attachments`, which will contain the group of attached elements.
+To solve the described problem, I propose to extend `m.room.message` event with `m.attachments` field, that contains the array of message attachments. I see two ways of implementation, can't decide which is better:
+
+### Implementation 1: One event with direct links to all attached media
+
+This can be done together with [MSC1767: Extensible events in Matrix](https://github.com/matrix-org/matrix-doc/pull/1767) with adding new type `m.attachments`, which will contain the group of attached elements.
 
 Each element of `m.attachments` array has a structure like a message with media item (`m.image`, `m.video`, etc), here is example of the message with this field:
 
@@ -57,6 +61,34 @@ Each element of `m.attachments` array has a structure like a message with media 
           },
         }
       }
+    ]
+  }
+}
+```
+### Implementation 2: Aggregating event to group several previously sent media events
+
+In this implementation - client will send all attached media as separate events to room (how it is done now) before sending message, and after - send message an aggregating event with `m.relates_to` field (from the [MSC2674: Event relationships](https://github.com/matrix-org/matrix-doc/pull/2674)), pointing to all those events, to group them into one gallery.
+
+This way give better fallback, but will generate more unecessary events instead of one event with group of medias (eg when user send one text message with 20 attachments - in room will generate 21 events instead of 1). 
+
+For exclude showing those events in modern clients before grouping event added, we can also extend separate media events via adding into them some "marker" field like `is_attachment: true`.
+
+Here is example of this implementation:
+```json
+{
+  "type": "m.room.message",
+  "content": {
+    "msgtype": "m.text",
+    "body": "Here is my photos and videos from yesterday event",
+    "m.relates_to": [
+      {
+            "rel_type": "m.attachment",
+            "event_id": "$id_of_previosly_send_media_event_1"
+      {,
+      {
+            "rel_type": "m.attachment",
+            "event_id": "$id_of_previosly_send_media_event_2"
+      {
     ]
   }
 }
@@ -116,13 +148,11 @@ The main issue is fallback display for old clients. Providing the list of links 
 
 ## Alternatives
 
-1. Main alternative is posting media messages as separate events, as it was done earlier, and aggregating them later into one visual place via event with  `m.relates_to` field. So modern clients must do a hide of those events, when aggregating event will be added to the room (like edits do now). This way give better fallback, but will generate more unecessary events instead of one event with group of medias (eg when user send one text message with 20 attachments - in room will generate 21 events instead of 1). For exclude showing those events in modern clients before grouping event added, we can also extend separate media events via adding into them some "marker" field like `show: false` or `attached_to_message: true`.
+1. Alternative can be embedding images (and other media types) into message body via html tags, but this will make extracting and stylizing of the attachments harder.
 
-2. Other alternative is embedding images (and other media types) into message body via html tags, but this will make extracting and stylizing of the attachments harder.
+2. Next alternative is reuse [MSC1767: Extensible events in Matrix](https://github.com/matrix-org/matrix-doc/pull/1767) for attaching and grouping media attachments, but in current state it requires only one unique type of content per message, so we can't attach, for example, two `m.image` items into one message. Maybe, instead of separate current issue, we can extend [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767) via converting `content` to array, to allow adding several items of same type to one message.
 
-3. Next alternative is reuse [MSC1767: Extensible events in Matrix](https://github.com/matrix-org/matrix-doc/pull/1767) for attaching and grouping media attachments, but in current state it requires only one unique type of content per message, so we can't attach, for example, two `m.image` items into one message. Maybe, instead of separate current issue, we can extend [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767) via converting `content` to array, to allow adding several items of same type to one message.
-
-4. There are also [MSC2530: Body field as media caption](https://github.com/matrix-org/matrix-doc/pull/2530) but it describes only text description for one media, not several media items, and very similar [MSC2529: Proposal to use existing events as captions for images](https://github.com/matrix-org/matrix-doc/pull/2529) that implement same thing, but via separate event. But if we send several medias grouped as gallery, usually one text description is enough.
+3. There are also [MSC2530: Body field as media caption](https://github.com/matrix-org/matrix-doc/pull/2530) but it describes only text description for one media, not several media items, and very similar [MSC2529: Proposal to use existing events as captions for images](https://github.com/matrix-org/matrix-doc/pull/2529) that implement same thing, but via separate event. But if we send several medias grouped as gallery, usually one text description is enough.
 
 ## Future considerations
 
