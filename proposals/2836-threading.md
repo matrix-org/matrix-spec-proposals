@@ -230,6 +230,7 @@ Server behaviour:
     * If the event ID is unknown, perform a federated `/event_relationships` request. Alternatively, if the event is known **and there are unexplored children**,
       perform a federated `/event_relationships` request.
     * An event has unexplored children if the `unsigned` child count on the parent does not match how many children the server believes the parent to have.
+      In addition, if the counts match but the hashes do not match, then the event is unexplored.
     * Regardless of whether the federated `/event_relationships` request returns the missing children, mark the event as explored afterwards. This prevents
       constantly hitting federation when walking over this event. The easiest way to mark the event as explored is to remember what the highest children count was
       when the most recent federated request was made. If that number differs from the current `unsigned` count then it is unexplored.
