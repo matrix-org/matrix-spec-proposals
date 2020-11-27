@@ -46,10 +46,13 @@ Edge cases:
      * Remove all fields except `rel_type` and `event_id`.
      * If `rel_type` is not any of the three types `m.reference`, `m.annotation` or `m.replace` then remove it.
      * If `event_id` is not a valid event ID (`$` sigil, correct max length), then remove it.
+
    The decision to preserve this field is made so that users can delete offensive material without breaking the structure of a thread. This is
    different to MSC1849 which proposes to delete the relationship entirely.
  - It is an error to reference an event ID that the server is unaware of. Servers MUST check that they have the event in question: it need not
-   be part of the connected DAG; it can be an outlier. This prevents erroneous relationships being made by abusing the CS API.
+   be part of the connected DAG; it can be an outlier. This prevents erroneous relationships being made by abusing the CS API. Note that it is
+   expected that events over federation will reference event IDs that the receiving server is unaware of: this is allowed. This check is only
+   performed when *clients* attempt to make new references.
  - It is an error to reference an event ID in another room.
  - It is an error to reference yourself. Cyclical loops are still possible by using multiple events and servers should guard against this by
    only visiting events once.
@@ -118,7 +121,7 @@ Justifications for the response API shape are as follows:
    implementation. This API shape is unopinionated and simple.
  - The next batch token: Its presence indicates if there are more events and it is opaque to allow server implementations the
    flexibility for their own token format. There is no 'prev batch' token as it is intended for clients to request and persist
-   the data on their side rather than page through results like traditional pagination.
+   the data on their side rather than page back and forth through results like traditional pagination.
  - The limited flag: Required in order to distinguish between "no more events" and "more events but I don't allow pagination".
    This additional state cannot be accurately represented by an empty `next_batch` token.
 
@@ -137,9 +140,10 @@ Server implementation:
      * If already processed event, skip.
      * Check how deep the event is compared to `event_id`, does it *exceed* (greater than) `max_depth`? If yes, skip.
      * Check what number child this event is (ordered by `recent_first`) compared to its parent, does it *exceed* (greater than) `max_breadth`? If yes, skip.
-     * Process the event.
-   If the event has been added to the response array already, do not include it a second time. If an event fails history visibiilty
-   checks, do not add it to the response array and do not follow any references it may have. This algorithm bounds an infinite DAG
+     * Process the event. If the event has been added to the response array already, do not include it a second time. If an event fails history visibiilty
+       checks, do not add it to the response array and do not follow any references it may have.
+
+   This algorithm bounds an infinite DAG
    into a "window" (governed by `max_depth` and `max_breadth`) and serves up to `limit` events at a time, until the entire window
    has been served. Critically, the `limit` _has not been reached_ when the algorithm hits a `max_depth` or `max_breadth`, it is only
    reached when the response array is `>= limit`.
@@ -183,7 +187,7 @@ Server behaviour:
  - For each event returned: include all `auth_events` for that event recursively to create an auth chain and add them to `auth_chain`.
  - Servers should make outbound `/event_relationships` requests *for client requests* when they encounter an event ID they do not have, or they suspect
    that the event has children the server does not have (see the next section). The event may have happened much earlier in the room which another server
-   in the room can satisfy.
+   in the room has.
 
 #### Exploring dense threads
 
