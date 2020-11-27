@@ -140,7 +140,7 @@ Server implementation:
      * If already processed event, skip.
      * Check how deep the event is compared to `event_id`, does it *exceed* (greater than) `max_depth`? If yes, skip.
      * Check what number child this event is (ordered by `recent_first`) compared to its parent, does it *exceed* (greater than) `max_breadth`? If yes, skip.
-     * Process the event. If the event has been added to the response array already, do not include it a second time. If an event fails history visibiilty
+     * Process the event. If the event has been added to the response array already, do not include it a second time. If an event fails history visibility
        checks, do not add it to the response array and do not follow any references it may have.
 
    This algorithm bounds an infinite DAG
