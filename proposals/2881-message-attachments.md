@@ -104,6 +104,8 @@ and JSON of `content` field:
   }
 ```
 
+If [MSC2398: proposal to allow mxc:// in the "a" tag within messages](https://github.com/matrix-org/matrix-doc/pull/2398) will be merged before this, we can replace `http` urls to direct `mxc://` urls, for support servers, that don't allow downloads without authentication and have other restrictions.
+
 ## Server support
 
 This MSC does not need any changes on server side.
@@ -114,10 +116,13 @@ The main issue is fallback display for old clients. Providing the list of links 
 
 ## Alternatives
 
-1. An alternative can be posting media messages as separate events, as it was done earlier, and aggregating them into event via  `m.relates_to` field, but clients must do a hide of those events, when aggregating event will be added to the room (like editions), but this will be harder to implement.
+1. Main alternative can be posting media messages as separate events, as it was done earlier, and aggregating them into event via  `m.relates_to` field, but clients must do a hide of those events, when aggregating event will be added to the room (like edits). This way give better fallback, but will generate more unecessary events instead of one event with group of medias (eg when user send one message with 20 attachments - in room will be 21 events instead of 1).
+
 2. Other alternative is embedding images (and other media types) into message body via html tags, but this will make extracting and stylizing of the attachments harder.
+
 3. Next alternative is reuse [MSC1767: Extensible events in Matrix](https://github.com/matrix-org/matrix-doc/pull/1767) for attaching and grouping media attachments, but in current state it requires only one unique type of content per message, so we can't attach, for example, two `m.image` items into one message. Maybe, instead of separate current issue, we can extend [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767) via converting `content` to array, to allow adding several items of same type to one message.
-4. There are also [MSC2530: Body field as media caption](https://github.com/matrix-org/matrix-doc/pull/2530) but it describes only text description for one media, not several media items, and very similar [MSC2529: Proposal to use existing events as captions for images #2529](https://github.com/matrix-org/matrix-doc/pull/2529) that implement same thing, but via separate event. But if we send several medias grouped as gallery, usually one text description is enough.
+
+4. There are also [MSC2530: Body field as media caption](https://github.com/matrix-org/matrix-doc/pull/2530) but it describes only text description for one media, not several media items, and very similar [MSC2529: Proposal to use existing events as captions for images](https://github.com/matrix-org/matrix-doc/pull/2529) that implement same thing, but via separate event. But if we send several medias grouped as gallery, usually one text description is enough.
 
 ## Future considerations
 
