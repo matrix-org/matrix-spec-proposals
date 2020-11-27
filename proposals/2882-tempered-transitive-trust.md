@@ -1,4 +1,4 @@
-# MSCxxxx: Tempered Transitive Trust
+# MSC2882: Tempered Transitive Trust
 
 There are many situations in which two people are unable to verify each other
 directly, but they both trust a third party to mediate the verification.  For
@@ -191,9 +191,9 @@ checking which users have signatures made by the company's agent.
 
 ## Unstable prefix
 
-The new endpoints will be prefixed with `/unstable/mscxxxx` until they land in
+The new endpoints will be prefixed with `/unstable/msc2882` until they land in
 a released version of the spec, and event types should be prefixed with
-`org.matrix.mscxxxx.` instead of `m.`.
+`org.matrix.msc2882.` instead of `m.`.
 
 Clients can discover if a server supports this feature by checking for the
-`org.matrix.mscxxxx` unstable feature flag in `GET /versions`.
+`org.matrix.msc2882` unstable feature flag in `GET /versions`.
