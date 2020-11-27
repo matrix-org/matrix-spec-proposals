@@ -116,7 +116,7 @@ The main issue is fallback display for old clients. Providing the list of links 
 
 ## Alternatives
 
-1. Main alternative can be posting media messages as separate events, as it was done earlier, and aggregating them into event via  `m.relates_to` field, but clients must do a hide of those events, when aggregating event will be added to the room (like edits). This way give better fallback, but will generate more unecessary events instead of one event with group of medias (eg when user send one message with 20 attachments - in room will be 21 events instead of 1).
+1. Main alternative is posting media messages as separate events, as it was done earlier, and aggregating them later into one visual place via event with  `m.relates_to` field. So modern clients must do a hide of those events, when aggregating event will be added to the room (like edits do now). This way give better fallback, but will generate more unecessary events instead of one event with group of medias (eg when user send one text message with 20 attachments - in room will generate 21 events instead of 1). For exclude showing those events in modern clients before grouping event added, we can also extend separate media events via adding into them some "marker" field like `show: false` or `attached_to_message: true`.
 
 2. Other alternative is embedding images (and other media types) into message body via html tags, but this will make extracting and stylizing of the attachments harder.
 
