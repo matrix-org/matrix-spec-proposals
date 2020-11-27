@@ -50,8 +50,7 @@ Edge cases:
    different to MSC1849 which proposes to delete the relationship entirely.
  - It is an error to reference an event ID that the server is unaware of. Servers MUST check that they have the event in question: it need not
    be part of the connected DAG; it can be an outlier. This prevents erroneous relationships being made by abusing the CS API.
- - It is NOT an error to reference an event ID in another room. Cross-room threading is allowed and this proposal goes into more detail on how
-   servers should handle this as a possible extension.
+ - It is an error to reference an event ID in another room.
  - It is an error to reference yourself. Cyclical loops are still possible by using multiple events and servers should guard against this by
    only visiting events once.
 
@@ -87,9 +86,9 @@ which returns:
 ```
 
 Justifications for the request API shape are as follows:
- - The HTTP path: cross-room threading is allowed hence the path not being underneath `/rooms`. An alternative could be
-   `/events/$event_id/relationships` but there's already an `/events/$event_id` deprecated endpoint and nesting this new MSC
-   underneath a deprecated endpoint conveys the wrong meaning.
+ - The HTTP path: cross-room threading is not currently allowed but is possible hence the path not being underneath `/rooms`.
+   An alternative could be `/events/$event_id/relationships` but there's already an `/events/$event_id` deprecated endpoint and
+   nesting this new MSC underneath a deprecated endpoint conveys the wrong meaning.
  - The HTTP method: there's a lot of data to provide to the server, and GET requests shouldn't have an HTTP body, hence opting
    for POST. The same request can produce different results over time so PUT isn't acceptable as an alternative.
  - The anchor point: pinning queries on an event is desirable as often websites have permalinks to events with replies underneath.
@@ -144,7 +143,7 @@ Server implementation:
    into a "window" (governed by `max_depth` and `max_breadth`) and serves up to `limit` events at a time, until the entire window
    has been served. Critically, the `limit` _has not been reached_ when the algorithm hits a `max_depth` or `max_breadth`, it is only
    reached when the response array is `>= limit`.
- - When the thread DAG has been fully visited or the limit is reached, return the response array (and a `next_batch` if the request
+ - When the thread DAG has been fully visited or the limit is reached, return the response array as `events` (and a `next_batch` if the request
    was limited). If a request comes in with the `next_batch` set to a valid value, continue walking the thread DAG from where it
    was previously left, ensuring that no duplicate events are sent, and that any `max_depth` or `max_breadth` are honoured
    _based on the original request_ - the max values always relate to the original `event_id`, NOT the event ID previously stopped at.
@@ -174,7 +173,7 @@ Justification:
    over federation, servers have an incomplete view of the room and will be missing many events. In absence of a specific API to explore threads over
    federation, joining a room with threads will result in an incomplete view.
  - The requirements here have a lot in common with the [Event Context API](https://matrix.org/docs/spec/client_server/r0.6.0#id131). However, the context
-   API has no federated equivalent. This means any requests for events the server is unaware of will incorrectly return `404 Not Found`.
+   API has no federated equivalent. This means any event context requests for events the server is unaware of will incorrectly return `404 Not Found`.
  - The same API shape is proposed to allow code reuse and because the same concerns and requirements are present for both federation and client-server.
 
 Server behaviour:
@@ -182,8 +181,9 @@ Server behaviour:
    make outbound `/event_relationships` requests on behalf of this request to avoid routing loops where 2 servers infinitely call `/event_relationships` to
    each other.
  - For each event returned: include all `auth_events` for that event recursively to create an auth chain and add them to `auth_chain`.
- - Servers should make outbound `/event_relationships` requests *for client requests* when they encounter an event ID they do not have. The event may have
-   happened much earlier in the room which another server in the room can satisfy.
+ - Servers should make outbound `/event_relationships` requests *for client requests* when they encounter an event ID they do not have, or they suspect
+   that the event has children the server does not have (see the next section). The event may have happened much earlier in the room which another server
+   in the room can satisfy.
 
 #### Exploring dense threads
 
@@ -208,154 +208,28 @@ unsigned: {
 ```
 
 Justification:
+ - Without this information, it's impossible to know if an event has children _at all_. Servers need to know if children exist so they can fetch them
+   over federation.
  - This allows clients to display more detailed "see more" links e.g. "... and 56 more replies".
- - This allows servers to identify when a federated `/event_relationships` request has been window culled by `max_depth` or `max_breadth`.
+ - This allows servers to identify when a federated `/event_relationships` request has been window culled by `max_depth` or `max_breadth`, or has just not
+   been explored yet.
  - Separating out the counts by `rel_type` allows clients to accurately determine whether children are threaded replies or some other relation.
 
 Server behaviour:
- - When processing an `/event_relationships` response from another server, check that the total number of children matches the number of children that have
-   been retrieved. If they differ, mark that event as "unexplored". If they match, check that the SHA256 matches `children_hash`. If they differ, mark that
-   event as "unexplored", else mark it as "explored".
- - When processing an `/event_relationships` request from a client, if you encounter an "unexplored" event, perform a federated `/event_relationships` request
-   with the desired parameters to satisfy the client request.
- - Persist any new events from this request, doing the same children count/hash checks and then mark this event as "explored" **regardless of whether the children hash matches**.
-   This guards against permanently having unexplored events if your server has events the target server does not have.
+ - When processing an `/event_relationships` response from another server:
+    * For each event, check the children count and hash. If there is no `unsigned` section assume the count to be 0.
+    * If this event is new, persist it. If this event is not new, compare the children counts. The event with a higher children count should be persisted:
+      specifically the `unsigned` section should be persisted as the event itself is immutable.
+    * When returning events to another server or to a client, always return the `unsigned` section which produces the *most* children, and NOT the number
+      of children the server currently has fetched.
+ - When processing an `/event_relationships` request from a client:
+    * If the event ID is unknown, perform a federated `/event_relationships` request. Alternatively, if the event is known **and there are unexplored children**,
+      perform a federated `/event_relationships` request.
+    * An event has unexplored children if the `unsigned` child count on the parent does not match how many children the server believes the parent to have.
+    * Regardless of whether the federated `/event_relationships` request returns the missing children, mark the event as explored afterwards. This prevents
+      constantly hitting federation when walking over this event. The easiest way to mark the event as explored is to remember what the highest children count was
+      when the most recent federated request was made. If that number differs from the current `unsigned` count then it is unexplored.
  - Explored events will always remain up-to-date assuming federation between the two servers remains intact. If there is a long outage, any new child will be
-   marked as "unexplored" and trigger an `/event_relationships` request, akin to how the `/send` federation API will trigger `/get_missing_events` in the event
-   of an unknown `prev_event`.
-
-#### Cross-room threading extension
-
-This MSC expands on the basic form to allow cross-room threading by allowing 2 extra fields to be specified
-in the `unsigned` section of the event: `relationship_servers` and `relationship_room_id`:
-```
-{
-    "type": "m.room.message",
-    "content": {
-        "body": "i <3 shelties",
-        "m.relationship": {
-            "rel_type": "m.reference",
-            "event_id": "$another_event_id",
-        }
-    },
-    "unsigned": {
-      "relationship_room_id":"!someroomid:anotherhost",
-      "relationship_servers": [ "localhost", "anotherhost" ]
-    }
-}
-```
-
-Only servers can set these fields. The server should set these fields
-when an event is sent according to the following rules:
- - Check the client can view the event ID in question. If they cannot, reject the request.
- - Check that the room's `m.room.create` event allows cross-room threading by the presence of `"m.cross_room_threading": true`
-   in the `content` field. If absent, it is `false`.
- - Fetch the servers *currently in the room* for the event. Add them all to `relationship_servers`.
- - Fetch the room ID that the event belongs to. Add it to `relationship_room_id`.
-
-This proposal does not require any changes to `/createRoom` as `"m.cross_room_threading": true` can be specified via the
-`creation_content` field in that API.
-
-The `POST /event_relationships` endpoint includes a new field:
- - `auto_join: true|false`: if `true`, will automatically join the user calling `/event_relationships` to rooms they are not joined to
-   in order to explore the thread. Default: `false`.
-
-Server implementation:
- - When walking the thread DAG, if there is an event that is not known, check the relationship for `relationship_room_id` and `relationship_servers`. If
-   they exist, peek into the room ([MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444)), or if that is not supported,
-   join the room as the user querying `/event_relationships` if and only if `"auto_join": true` in the `/event_relationships` request. This
-   is required in order to allow the event to be retrieved. Server implementations can treat the auto join as the same as if the
-   client made a request to [/join/{roomIdOrAlias}](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-join-roomidoralias)
-   with the `server_name` query parameters set to those in `relationship_servers`.
- - After joining the room, the server should use the federated API `/event_relationships` to explore the thread in the newly joined room as the server
-   will not have those events. These events can be stored as outliers or dropped depending on storage requirements.
-
-Security considerations:
- - Allowing cross-room threading leaks the event IDs in a given room, as well as which servers are in the room at the point
-   the reply is sent. It is for this reason that there is an opt-in flag at room creation time.
-
-Justifications:
- - Because the client needs to be able to view the event being replied to, it is impossible for the replying client to
-   respond to an event which the server is unaware of. However, it is entirely possible for queries to contain events
-   which the server is unaware of if the sender was on another homeserver. For this reason, we need to contain routing
-   information *somewhere* so servers can retrieve the event and continue navigating the thread. As the client and server
-   already have the event which contains a relationship to another event inside an unknown room, the simplest option is to
-   also contain the routing information with that relationship.
- - The fields are in the `unsigned` section so clients cannot artificially set them, and because `unsigned` is where a lot
-   of other server-calculated metadata resides.
-
-##### Child references
-
-Using the threading model proposed above, events contain information about their parents but parents do not contain information about their
-children. This means that events can follow their path up to the root event but cannot explore siblings not on that root path. "Child references"
-means adding additional metadata to allow the discovery of child events from a given parent event. These references are necessary over
-federation where each server has an incomplete view of the thread. Consider:
-
-```
-Letters = Servers
-Numbers = Events
-
-!room1 (A,B)    !room2 (B,C)
-                     1 <- parent
-                     |
-   +-----------------+
-   |                 |
-   2                 3 <- children
-```
-- When event 2 is created, only servers A,B will know this.
-- A child reference event needs to be created in !room2 in order for C to ever be aware of event 2.
-- When C is aware of event 2, it can then peek/join into !room1 to receive updates to that fork.
-- This means that **in order to create a relationship, the user must be in parent event's room**.
-
-The reference event MUST be sent by the server on behalf of the client and look like:
-```
-{
-    "type": "m.room.reference",
-    "content": {
-        "event_id": "$parent_event_id",
-        "m.relationship": {
-            "rel_type": "m.child",
-            "event_id": "$child_event_id",
-        }
-    },
-    "sender": "@user_making_relation:localhost",
-    "room_id": "!parent_event:room",
-    "unsigned": {
-      "relationship_room_id":"!someroomid:anotherhost",
-      "relationship_servers": [ "localhost", "anotherhost" ]
-    }
-}
-```
-
-Justification:
- - Child reference events have to exist so servers can be aware of new child threads in different rooms. Without it,
-   servers will only be able to walk from their event up to the root and not explore the entire thread. Furthermore,
-   servers will not converge on a consistent view of the thread as some servers have information that others are missing.
- - We re-use the `m.relationship` shape because the event is a literal relationship.
- - The type `m.room.reference` is used so clients can filter these out if they don't know or want to render them on the UI.
- - We re-use the `unsigned.relationship_*` fields as routing information is critical in order to follow references.
-
-Edge cases:
- - It is not an error if the user does not have permission to send this event into the parent room.
- - The child event should be sent first, and only after success should the reference event be sent. This is already
-   implied because the reference event needs to reference the event ID of the child.
-
-Security considerations:
- - We omit the `content` of the child event and only share event metadata with the parent room for privacy. This
-   can be displayed on the UI as "Alice referenced this event in another room" which can be hyperlinked to the
-   room in question.
-
-Server behaviour:
- - When sending an event: if an event contains a valid `m.relationship` - where valid means that the user is joined to both child/parent rooms -
-   send the event then create the reference event and send it into the parent room on a best-effort basis. Failures
-   for any reason are non-fatal. 
- - When receiving a reference event: persist the relationship between parent/child for use in `/event_relationships`.
-
-The net result of this is:
- - 1: A client makes an `/event_relationships` request with `auto_join: true`. The server begins walking the thread.
- - 2: The server encounters an event ID it does not have and the `unsigned` metadata indicates it is in a different room.
- - 3: The server joins the room on behalf of the client.
- - 4: The server calls the federated form of `/event_relationships` to the server joined via.
- - 5: The server continues until it find an unknown event ID again then loops back to Step 2 until the request is satisfied.
- - 6: Subsequent children made in this thread will be actively pushed to the server as normal events with the type `m.room.reference`.
-      This provides additional search paths for the next `/event_relationships` request and can be actively shown in the client's UI.
+   marked as "unexplored" (because the parent event will be missing) and trigger an `/event_relationships` request, akin to how the `/send` federation API will
+   trigger `/get_missing_events` in the event of an unknown `prev_event`. This will then pull in events heading up to the root event, along with `unsigned` children
+   counts of any potential branches in the thread.
