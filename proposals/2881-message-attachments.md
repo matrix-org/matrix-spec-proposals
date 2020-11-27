@@ -1,6 +1,6 @@
 # MSC2881: Message Attachments
 
-*This MSC is especially for media image attachments to message, but I try to make it extendable for multiple attachment types (files, videos, external URLs, links to other Matrix events, etc). So, in most of examples, I am using "image", but it means, that, instead of image, there may be another attachment type.*
+*This MSC is especially for media image attachments to message, but I try to make it extendable for multiple attachment types (files, videos, and in future - external URLs, links to other Matrix events, etc). So, in most of examples, I am using "image", but it means, that, instead of image, there may be another attachment type.*
 
 In the current implementation each media (file, image, video) can be sent only via a separate event to the room. But in most cases media is not sent alone, it must be commented via some text by the sender. So the user often wants to attach some images (one or several) directly to his text message when he is composing it.
 
