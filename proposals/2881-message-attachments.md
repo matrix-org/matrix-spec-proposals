@@ -65,6 +65,36 @@ Each element of `m.attachments` array has a structure like a message with media 
   }
 }
 ```
+
+#### Fallback display
+
+For fallback display of attachments in old Matrix clients, we can attach them directly to `formatted_body` of message, here is HTML representation:
+
+```html
+<p>Here is my photos and videos from yesterday event</p>
+<div class="mx-attachments">
+  <p>Attachments:</p>
+  <ul>
+    <li><a href="https://example.com/_matrix/media/r0/download/example.com/KUAQOesGECkQTgdtedkftISg">Image 1.jpg</a></li>
+    <li><a href="https://example.com/_matrix/media/r0/download/example.com/0f4f88120bfc9183d122ca8f9f11faacfc93cd18">Video 2.mp4</a></li>
+  </ul>
+</div>
+```
+
+and JSON of `content` field:
+
+```json
+"content": {
+    "msgtype": "m.text",
+    "body": "Here is my photos and videos from yesterday event\nAttachments:\nhttps://example.com/_matrix/media/r0/download/example.com//KUAQOesGECkQTgdtedkftISg\nhttps://example.com/_matrix/media/r0/download/example.com/0f4f88120bfc9183d122ca8f9f11faacfc93cd18",
+    "format": "org.matrix.custom.html",
+    "formatted_body": "<p>Here is my photos and videos from yesterday event</p>\n<div class=\"mx-attachments\"><p>Attachments:</p>\n<ul>\n<li><a href="https://example.com/_matrix/media/r0/download/example.com//KUAQOesGECkQTgdtedkftISg">Image 1.jpg</a></li>\n<li><a href="https://example.com/_matrix/media/r0/download/example.com/0f4f88120bfc9183d122ca8f9f11faacfc93cd18">Video 2.mp4</a></li>\n</ul></div>"
+  }
+```
+
+If [MSC2398: proposal to allow mxc:// in the "a" tag within messages](https://github.com/matrix-org/matrix-doc/pull/2398) will be merged before this, we can replace `http` urls to direct `mxc://` urls, for support servers, that don't allow downloads without authentication and have other restrictions.
+
+
 ### Implementation 2: Aggregating event to group several previously sent media events
 
 In this implementation - client will send all attached media as separate events to room (how it is done now) before sending message, and after - send message an aggregating event with `m.relates_to` field (from the [MSC2674: Event relationships](https://github.com/matrix-org/matrix-doc/pull/2674)), pointing to all those events, to group them into one gallery.
@@ -109,34 +139,6 @@ If the user uploads only one media and leaves the message text empty, media can 
 On the client site, attachments must be displayed as grid of clickable thumbnails, like the current `m.image` events, but with a smaller size, having fixed height, like a regular image gallery. On click, Matrix client must display media in full size, and, if possible, as a gallery with "next-previous" buttons.
 
 If the message contains only one attachment, it can be displayed as full-width thumbnail, like current `m.image` and `m.video` messages.
-
-### Fallback display
-
-For fallback display of attachments in old Matrix clients, we can attach them directly to `formatted_body` of message, here is HTML representation:
-
-```html
-<p>Here is my photos and videos from yesterday event</p>
-<div class="mx-attachments">
-  <p>Attachments:</p>
-  <ul>
-    <li><a href="https://example.com/_matrix/media/r0/download/example.com/KUAQOesGECkQTgdtedkftISg">Image 1.jpg</a></li>
-    <li><a href="https://example.com/_matrix/media/r0/download/example.com/0f4f88120bfc9183d122ca8f9f11faacfc93cd18">Video 2.mp4</a></li>
-  </ul>
-</div>
-```
-
-and JSON of `content` field:
-
-```json
-"content": {
-    "msgtype": "m.text",
-    "body": "Here is my photos and videos from yesterday event\nAttachments:\nhttps://example.com/_matrix/media/r0/download/example.com//KUAQOesGECkQTgdtedkftISg\nhttps://example.com/_matrix/media/r0/download/example.com/0f4f88120bfc9183d122ca8f9f11faacfc93cd18",
-    "format": "org.matrix.custom.html",
-    "formatted_body": "<p>Here is my photos and videos from yesterday event</p>\n<div class=\"mx-attachments\"><p>Attachments:</p>\n<ul>\n<li><a href="https://example.com/_matrix/media/r0/download/example.com//KUAQOesGECkQTgdtedkftISg">Image 1.jpg</a></li>\n<li><a href="https://example.com/_matrix/media/r0/download/example.com/0f4f88120bfc9183d122ca8f9f11faacfc93cd18">Video 2.mp4</a></li>\n</ul></div>"
-  }
-```
-
-If [MSC2398: proposal to allow mxc:// in the "a" tag within messages](https://github.com/matrix-org/matrix-doc/pull/2398) will be merged before this, we can replace `http` urls to direct `mxc://` urls, for support servers, that don't allow downloads without authentication and have other restrictions.
 
 ## Server support
 
