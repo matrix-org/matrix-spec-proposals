@@ -84,11 +84,11 @@ Here is example of this implementation:
       {
             "rel_type": "m.attachment",
             "event_id": "$id_of_previosly_send_media_event_1"
-      {,
+      },
       {
             "rel_type": "m.attachment",
             "event_id": "$id_of_previosly_send_media_event_2"
-      {
+      }
     ]
   }
 }
@@ -157,3 +157,6 @@ The main issue is fallback display for old clients. Providing the list of links 
 ## Future considerations
 
 In future, we may extend the `m.attachments` field with new types to allow attaching external URL as cards with URL preview, oEmbed entities, and other events (for example, to forward the list of several events to other room with the user comment).
+
+ ## Unstable prefix
+Clients should use `org.matrix.msc2881.m.attachments` and `org.matrix.msc2881.m.attachment` field names, while this MSC has not been included in a spec release.
