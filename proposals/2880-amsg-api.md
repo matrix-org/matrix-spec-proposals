@@ -1,4 +1,4 @@
-# MSC2879: extend event and state API to allow sending to all rooms
+# MSC2880: extend event and state API to allow sending to all rooms
 `amsg` is a command, available in some IRC clients, to send a message to all available IRC rooms that the user has access to.
 `astate` is a similar idea for state events.
 ## Potential uses
