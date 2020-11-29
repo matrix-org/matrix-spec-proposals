@@ -77,7 +77,7 @@ is as follows:
 Subscribing to policy lists
 ---------------------------
 
-This is deliberatly left as an implementation detail. For implementations using the
+This is deliberately left as an implementation detail. For implementations using the
 Client-Server API, this could be as easy as joining or peeking the room. Joining or peeking
 is not required, however: an implementation could poll for updates or use a different
 technique for receiving updates to the policy's rules.
@@ -108,7 +108,7 @@ or room alias - the subscriber is responsible for resolving the alias to a room 
 
 Client behaviour
 ----------------
-As described above, the client behaviour is deliberatly left undefined.
+As described above, the client behaviour is deliberately left undefined.
 
 Server behaviour
 ----------------
