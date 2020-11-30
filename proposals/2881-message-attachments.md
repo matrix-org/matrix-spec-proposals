@@ -52,6 +52,7 @@ And aggregating event, to send after all message attachments:
   }
 }
 ```
+
 For edits of "message with attachments" we can reuse same "m.relates_to" array via simply adding `"rel_type": "m.replace"` item to it, here is example:
 ```json
     "m.relates_to": [
@@ -69,6 +70,7 @@ For edits of "message with attachments" we can reuse same "m.relates_to" array v
       }
     ]
 ```
+
 For delete (redact action) message with attachments, we must also apply `redact` action to each message attachment too.
 
 ### Fallback:
@@ -97,6 +99,7 @@ If the message contains only one attachment, it can be displayed as full-width t
 
 For prevent showing of attachments as regular media in timeline before main aggregating event will be added to room, clients should visually hide media events, that have `"is_attachment": true` value, to display them later in gallery, but can already start downloading of attachments, for speed-up display of them in gallery.
 
+Together with [MSC2675: Serverside aggregations of message relationships](https://github.com/matrix-org/matrix-doc/pull/2675) all attachments will can be even aggregated on server side.
 
 ## Server support
 
@@ -215,7 +218,7 @@ This way will give less "spam" for room, because when user sends message with 20
   "url": "mxc://example.com/KUAQOesGECkQTgdtedkftISg"
 },
 ```      
-But this way will give harder way to render of main message event, because Matrix clients must be search all attached events manually in timeline.
+But this way will give harder way to render of main message event, because Matrix clients must do the search of all attached events manually in timeline, and server will can't aggregate them to main message.
 
 
 ## Future considerations
