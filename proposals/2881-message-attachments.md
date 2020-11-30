@@ -68,6 +68,8 @@ For edits of "message with attachments" we can reuse same "m.relates_to" array v
       }
     ]
 ```
+For delete (redact action) message with attachments, we must also apply `redact` action to each message attachment too.
+
 ### Fallback:
 
 I see no serious problems with fallback display of attachments. For Matrix clients, that don't yet support this feature, the attachments will be represented as separate media events, like the user upload each attachment before sending main message.
