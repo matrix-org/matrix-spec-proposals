@@ -64,6 +64,7 @@ Relationships are queryed via a new CS API endpoint:
 POST /_matrix/client/r0/event_relationships
 {
     "event_id": "$abc123",         // the anchor point for the search, must be in a room you are allowed to see (normal history visibility checks apply)
+    "room_id": "!foo:localhost"    // Optional. A hint to the server which is used if the event ID is not found. The room ID can be used to work out which servers may have the event.
     "max_depth": 4,                // if negative unbounded, default: 3.
     "max_breadth": 10,             // if negative unbounded, default: 10.
     "limit": 100,                  // the maximum number of events to return, server can override this, default: 100.
@@ -95,6 +96,12 @@ Justifications for the request API shape are as follows:
  - The HTTP method: there's a lot of data to provide to the server, and GET requests shouldn't have an HTTP body, hence opting
    for POST. The same request can produce different results over time so PUT isn't acceptable as an alternative.
  - The anchor point: pinning queries on an event is desirable as often websites have permalinks to events with replies underneath.
+ - The `room_id`: The intention is to support the idea of permalinks to events. Even if event IDs were
+   [global](https://github.com/matrix-org/matrix-doc/blob/travis/msc/global-event-ids/proposals/2848-global-event-ids.md),
+   not all servers will have all events in a room. This means that a server may be allowed to see an event, they just need to request
+   it from the right server. The room ID is a convenient way to map to a list of servers who may have this event. This is optional,
+   and the lack of a room ID just means if the event ID in the request is not known to the server, the request fails. If the room ID
+   is specified, then a federated `/event_relationships` request can be made (see next section).
  - The max depth: Very few UIs show depths deeper than a few levels, so allowing this to be constrained in the API is desirable.
  - The max breadth: Very few UIs show breadths wider than a few levels, so allowing this to be constrained in the API is desirable.
  - The limit: For very large threads, a max depth/breadth can quickly result in huge numbers of events, so bounding the overall
