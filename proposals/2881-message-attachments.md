@@ -97,7 +97,7 @@ On the client site, attachments can be displayed as grid of clickable thumbnails
 
 If the message contains only one attachment, it can be displayed as full-width thumbnail in timeline, like current `m.image` and `m.video` messages.
 
-For prevent showing of attachments as regular media in timeline before main aggregating event will be added to room, clients should visually hide media events, that have `"is_attachment": true` value, to display them later in gallery, but can already start downloading of attachments, for speed-up display of them in gallery.
+For prevent showing of attachments as regular media in timeline before main aggregating event will be added to room, clients should visually hide media events, that have `"is_attachment": true` value, to display them later in gallery, but can already start downloading of attachments thumbnails, for speed-up display of them in gallery.
 
 Together with [MSC2675: Serverside aggregations of message relationships](https://github.com/matrix-org/matrix-doc/pull/2675) all attachments will can be even aggregated on server side.
 
