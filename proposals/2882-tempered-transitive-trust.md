@@ -26,13 +26,27 @@ that provides more flexibility, and create a new endpoint to delete signatures.
 ## Proposal
 
 Each user has a new Ed25519 key, a public user signing key, which is used for
-making public signatures on other users' master keys.  The public part of this
-key can be uploaded to `POST /keys/device_signing/upload` by using the name
-`public_user_signing_key`.  When uploaded, it must be signed with the user's
-master key, and must have `public-user` in the `usage` property.  The private
-part of this key can be stored in the `m.cross_signig.public_user_signing`
-account-data using [SSSS](https://github.com/matrix-org/matrix-doc/pull/1946),
-using the same format as the other cross-signing keys.
+making public signatures on other users' master or public user keys.  The
+public part of this key can be uploaded to `POST /keys/device_signing/upload`
+by using the name `public_user_signing_key`.  When uploaded, it must be signed
+with the user's master key, and must have `public-user` in the `usage`
+property.  The private part of this key can be stored in the
+`m.cross_signig.public_user_signing` account-data using
+[SSSS](https://github.com/matrix-org/matrix-doc/pull/1946), using the same
+format as the other cross-signing keys.
+
+### Publishing signatures
+
+When Alice wants to publish the fact that she has verified Bob, she will upload
+a signature of Bob's master key signed with her public user signing key.
+Similarly, she can also publish the fact that she trusts Bob to verify other
+people by upload a signature of Bob's public user signing key signed with her
+own public user signing key. \[FIXME: Should we have some way for Alice to
+indicate who she trusts Bob to verify?\] Signing public user signing keys
+allows for multi-hop transitive trust: by publishing the fact that Alice trusts
+Bob to verify users and to sign them with a given public user signing key,
+Carol can verify with Alice and (if she believes that Alice is a good judge of
+character) can then trust the users that Bob has publicly signed.
 
 We introduce a new endpoint, `POST /...FIXME: what name should we use?` for
 uploading signatures for devices and cross-signing keys.  The request body has
@@ -142,6 +156,8 @@ just be divided into public and private.  But maybe we can have master, public
 and private under the assumption that anything that isn't master must be signed
 by the master key?\]
 
+### Trusting trust
+
 If Bob wants to trust Alice's signatures for some users, he will store
 information in the `m.trust.transitive` event type in account-data.  This
 information will be encrypted using SSSS; encryption performs two functions: it
@@ -155,16 +171,14 @@ they are trusted for (e.g. I trust Alice to verify `@carol:matrix.org` and
 `*:example.org`), plus a list of exceptions (e.g. even though I said I trust
 Alice to verify `*:example.org`, I don't want to trust her for
 `@dave:example.org` (e.g. because I have coffee with him regularly and can
-easily verify him myself).)  Perhaps we could do something like "I trust Alice
-to verify all the users who are in a given room", which could be helpful if,
-e.g. all of a company's employees are in a common company chat room, but could
-allow a server admin to lie about someone being in the room so that you will
-trust a signature on that user.\]
+easily verify him myself).)  Perhaps we could also do something like "I trust
+Alice to verify all the users who are in a given room", which could be helpful
+if, e.g. all of a company's employees are in a common company chat room, but
+could allow a server admin to lie about someone being in the room so that you
+will trust a signature on that user.  Specifying multi-hop trust may be
+complicated.\]
 
 ## Potential issues
-
-This proposal does not allow for multi-hop transitive trust (e.g.  Alice trusts
-example.com's admin, who trusts example.org's admin, who trusts Bob.)
 
 When a user makes their signatures public, this is visible to all Matrix users.
 This could be used, for example, to find all the employees of a company by
