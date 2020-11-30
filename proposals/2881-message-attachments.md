@@ -8,6 +8,7 @@ And now the user can send images only before the message (or after it) as a sepa
 
 On the display side, when the user sends multiple images, the problem is that each image is displayed alone, as separate event with full width in timeline, not linked to the message, and not grouped to the gallery.
 
+
 ## Proposal
 
 Matrix client allow users to attach media (images, video, files) to message without instant sending of them to room, and send together with text message.
@@ -74,6 +75,7 @@ For delete (redact action) message with attachments, we must also apply `redact`
 
 I see no serious problems with fallback display of attachments. For Matrix clients, that don't yet support this feature, the attachments will be represented as separate media events, like the user upload each attachment before sending main message.
 
+
 ## Client support
 
 ### Compose recommendations:
@@ -86,21 +88,29 @@ If the user uploads only one media and leaves the message text empty, media can 
 
 Editing interface can be represented exactly like the composer interface, where user have the textarea for input message text, and area with all current attachments as tiny thumbnails, in which he can remove one of current attachments (that will remove its line from array of `m.relates_to` and do the `redact` action on corresponding event with media), add new attachment (that will upload it as new event, and refer to it in edited message `m.relates_to` array).
 
+
 ### Display recommendations:
 
 On the client site, attachments can be displayed as grid of clickable thumbnails, like the current `m.image` events, but with a smaller size, having fixed height, like a regular image gallery. On click, Matrix client must display media in full size, and, if possible, as a gallery with "next-previous" buttons.
 
 If the message contains only one attachment, it can be displayed as full-width thumbnail in timeline, like current `m.image` and `m.video` messages.
 
+For prevent showing of attachments as regular media in timeline before main aggregating event will be added to room, clients should visually hide media events, that have `"is_attachment": true` value, to display them later in gallery, but can already start downloading of attachments, for speed-up display of them in gallery.
+
+
 ## Server support
 
 This MSC does not need any changes on server side.
+
 
 ## Potential issues
 
 1. On bad connection to server Matrix client can send attachments as events with `"is_attachment": true` but not send final `m.message` event, this will lead to posting invisible media to room. This can be solved on client side via caching unsent group of events, and repeat sending when connection will be recovered.
 
-2. Individual media event, to which `m.message` refers, can be deleted after. As result, `m.message` will contain relation to redacted event. In this situation Matrix clients can exclude this item from display.
+2. Individual media event, to which `m.message` refers, can be deleted (redacted) after. As result, `m.message` will contain relation to redacted event. In this situation Matrix clients can exclude this item from display.
+
+3. There are no restrictions, that message with attachments can refer only to other events, that have `"is_attachment": true`, because this is not too easy to control, and in theory user can post message, that can refer to other media, owned by other users, and `redact` event will try to delete them. But the API should restrict regular user to redact events of other users (if he isn't moderator), so those `redact` actions should already be successfully ignored by server.
+
 
 ## Alternatives
 
@@ -212,5 +222,6 @@ But this way will give harder way to render of main message event, because Matri
 
 In future, we may extend the `m.attachments` field with new types to allow attaching external URL as cards with URL preview, oEmbed entities, and other events (for example, to forward the list of several events to other room with the user comment).
 
- ## Unstable prefix
+
+## Unstable prefix
 Clients should use `org.matrix.msc2881.m.attachments`, `org.matrix.msc2881.m.attachment` and `org-matrix-msc2881-mx-attachments` strings instead of proposed, while this MSC has not been included in a spec release.
