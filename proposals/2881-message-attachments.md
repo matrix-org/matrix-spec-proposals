@@ -198,7 +198,8 @@ This way will give less "spam" for room, because when user sends message with 20
     {
       "rel_type": "m.attachment_to",
       "event_id": "$id_of_main_message"
-    },
+    }
+  ]
   "url": "mxc://example.com/KUAQOesGECkQTgdtedkftISg"
 },
 ```      
