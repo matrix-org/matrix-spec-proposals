@@ -25,7 +25,7 @@ Example request
   "type": "m.login.application_service",
   "identifier": {
     "type": "m.id.user",
-    "user": "alice"
+    "user": "_bridge_alice"
   }
 }
 ```
