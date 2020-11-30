@@ -40,12 +40,12 @@ And aggregating event, to send after all message attachments:
     "body": "Here is my photos and videos from yesterday event",
     "m.relates_to": [
       {
-            "rel_type": "m.attachment",
-            "event_id": "$id_of_previosly_send_media_event_1"
+        "rel_type": "m.attachment",
+        "event_id": "$id_of_previosly_send_media_event_1"
       },
       {
-            "rel_type": "m.attachment",
-            "event_id": "$id_of_previosly_send_media_event_2"
+        "rel_type": "m.attachment",
+        "event_id": "$id_of_previosly_send_media_event_2"
       }
     ]
   }
@@ -55,16 +55,16 @@ For edits of "message with attachments" we can reuse same "m.relates_to" array v
 ```json
     "m.relates_to": [
       {
-            "rel_type": "m.attachment",
-            "event_id": "$id_of_previosly_send_media_event_1"
+        "rel_type": "m.attachment",
+        "event_id": "$id_of_previosly_send_media_event_1"
       },
       {
-            "rel_type": "m.replace",
-            "event_id": "$id_of_original event"
+        "rel_type": "m.replace",
+        "event_id": "$id_of_original event"
       },
       {
-            "rel_type": "m.attachment",
-            "event_id": "$id_of_previosly_send_media_event_2"
+        "rel_type": "m.attachment",
+        "event_id": "$id_of_previosly_send_media_event_2"
       }
     ]
 ```
@@ -182,6 +182,28 @@ This way will give less "spam" for room, because when user sends message with 20
 3. Next alternative is reuse [MSC1767: Extensible events in Matrix](https://github.com/matrix-org/matrix-doc/pull/1767) for attaching and grouping media attachments, but in current state it requires only one unique type of content per message, so we can't attach, for example, two `m.image` items into one message. So, instead of separate current issue, we can extend [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767) via converting `content` to array, to allow adding several items of same type to one message, [here](https://github.com/matrix-org/matrix-doc/pull/1767/files#r532373829) is my comment with this suggestion.
 
 4. There are also [MSC2530: Body field as media caption](https://github.com/matrix-org/matrix-doc/pull/2530) but it describes only text description for one media, not several media items, and very similar [MSC2529: Proposal to use existing events as captions for images](https://github.com/matrix-org/matrix-doc/pull/2529) that implement same thing, but via separate event. But if we send several medias grouped as gallery, usually one text description is enough.
+
+5. Other alternative can be posting `m.message` event at first, and link all attachments to it later via `m.relates_to` field, something like this:
+```json
+{
+  "msgtype": "m.image",
+  "body": "Image 1.jpg",
+  "info": {
+    "mimetype": "image/jpg",
+    "size": 1153501,
+    "w": 963,
+    "h": 734,
+  },
+  "m.relates_to": [
+    {
+      "rel_type": "m.attachment_to",
+      "event_id": "$id_of_main_message"
+    },
+  "url": "mxc://example.com/KUAQOesGECkQTgdtedkftISg"
+},
+```      
+But this way will give harder way to render of main message event, because Matrix clients must be search all attached events manually in timeline.
+
 
 ## Future considerations
 
