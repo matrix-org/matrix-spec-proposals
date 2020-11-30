@@ -82,6 +82,8 @@ On "message send" action, Matrix client must upload each attached media to serve
 
 If the user uploads only one media and leaves the message text empty, media can be sent as regular `m.image` or similar message, like in current implementation.
 
+Editing interface can be represented exactly like the composer interface, where user have the textarea for input message text, and area with all current attachments as tiny thumbnails, in which he can remove one of current attachments (that will remove its line from array of `m.relates_to`), add new attachment (that will upload it as new event, and refer to it in edited message `m.relates_to` array).
+
 ### Display recommendations:
 
 On the client site, attachments can be displayed as grid of clickable thumbnails, like the current `m.image` events, but with a smaller size, having fixed height, like a regular image gallery. On click, Matrix client must display media in full size, and, if possible, as a gallery with "next-previous" buttons.
