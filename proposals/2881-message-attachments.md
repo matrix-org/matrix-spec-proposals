@@ -27,6 +27,7 @@ Example of media event, that send before grouping event:
     "w": 963,
     "h": 734,
   },
+  "is_attachment": true,
   "url": "mxc://example.com/KUAQOesGECkQTgdtedkftISg"
 },
 ```
@@ -50,22 +51,39 @@ And aggregating event, to send after all message attachments:
   }
 }
 ```
+For edits of "message with attachments" we can reuse same "m.relates_to" array via simply adding `"rel_type": "m.replace"` item to it, here is example:
+```json
+    "m.relates_to": [
+      {
+            "rel_type": "m.attachment",
+            "event_id": "$id_of_previosly_send_media_event_1"
+      },
+      {
+            "rel_type": "m.replace",
+            "event_id": "$id_of_original event"
+      },
+      {
+            "rel_type": "m.attachment",
+            "event_id": "$id_of_previosly_send_media_event_2"
+      }
+    ]
+```
 
 ## Client support
 
 ### Compose recommendations:
 
-In the message composer, on "paste file" event, the Matrix client must not instantly upload the file to the server, but the client must show its thumbnail in the special area, with the ability to remove it and to add more files. *Alternatively, it can start uploading instantly to improve the speed of the following message sending process, but there is no way to delete media in Matrix API, so server will store each file, even if it is not attached to the message.*
+In the message composer, on "paste file" event, the Matrix client must not instantly upload the file to the server, but the client must show its thumbnail in the special area, with the ability to remove it and to add more media. *Alternatively, it can start uploading instantly to improve the speed of the following message sending process, but there is no way to delete media in Matrix API, so server will store each file, even if it is not attached to the message.*
 
-On "message send" action, Matrix client must upload each attached file to server, get `mxc` of it, and attach `mxc` to message contents.
+On "message send" action, Matrix client must upload each attached media to server, get `mxc` of it, post an event to room, and attach its `event_id` to current message contents in `m.relates_to` array.
 
-If the user uploads only one media and leaves the message text empty, media can be sent as regular `m.image` or similar message.
+If the user uploads only one media and leaves the message text empty, media can be sent as regular `m.image` or similar message, like in current implementation.
 
 ### Display recommendations:
 
-On the client site, attachments must be displayed as grid of clickable thumbnails, like the current `m.image` events, but with a smaller size, having fixed height, like a regular image gallery. On click, Matrix client must display media in full size, and, if possible, as a gallery with "next-previous" buttons.
+On the client site, attachments can be displayed as grid of clickable thumbnails, like the current `m.image` events, but with a smaller size, having fixed height, like a regular image gallery. On click, Matrix client must display media in full size, and, if possible, as a gallery with "next-previous" buttons.
 
-If the message contains only one attachment, it can be displayed as full-width thumbnail, like current `m.image` and `m.video` messages.
+If the message contains only one attachment, it can be displayed as full-width thumbnail in timeline, like current `m.image` and `m.video` messages.
 
 ## Server support
 
@@ -73,11 +91,13 @@ This MSC does not need any changes on server side.
 
 ## Potential issues
 
-The main issue is fallback display for old clients. Providing the list of links to each attachment into the formatted body is suitable workaround, and clients, which render attachments on their own, can easily remove this block via cutting `<div class="mx-attachments">` tag.
+1. On bad connection to server Matrix client can send attachments as events with `"is_attachment": true` but not send final `m.message` event, this will lead to posting invisible media to room. This can be solved on client side via caching unsent group of events, and repeat sending when connection will be recovered.
+
+2. Individual media event, to which `m.message` refers, can be deleted after. As result, `m.message` will contain relation to redacted event. In this situation Matrix clients can exclude this item from display.
 
 ## Alternatives
 
-1. Alternative implementation can be sending one event with direct links to all attached media, instead of sending separate event for each attachment. This can be done together with [MSC1767: Extensible events in Matrix](https://github.com/matrix-org/matrix-doc/pull/1767) with adding new type `m.attachments`, which will contain the group of attached elements.
+1. Main alternative implementation (my fist proposal in this MSC) is sending only one event with direct links to all attached media, instead of sending separate event for each attachment. This can be done together with [MSC1767: Extensible events in Matrix](https://github.com/matrix-org/matrix-doc/pull/1767) with adding new type `m.attachments`, which will contain the group of attached elements.
 
 Each element of `m.attachments` array has a structure like a message with media item (`m.image`, `m.video`, etc), here is example of the message with this field:
 
@@ -150,7 +170,9 @@ and JSON of `content` field:
 ```
 If [MSC2398: proposal to allow mxc:// in the "a" tag within messages](https://github.com/matrix-org/matrix-doc/pull/2398) will be merged before this, we can replace `http` urls to direct `mxc://` urls, for support servers, that don't allow downloads without authentication and have other restrictions.
 
-2. Alternative can be embedding images (and other media types) into message body via html tags, but this will make extracting and stylizing of the attachments harder.
+This way will give less "spam" for room, because when user sends message with 20 attachments, it will send only one event to room, instead of 21 like in main implementation. But it have worse fallback, than main implementation.
+
+2. Second alternative can be embedding images (and other media types) into message body via html tags to "body" field, but this will make extracting and stylizing of the attachments harder.
 
 3. Next alternative is reuse [MSC1767: Extensible events in Matrix](https://github.com/matrix-org/matrix-doc/pull/1767) for attaching and grouping media attachments, but in current state it requires only one unique type of content per message, so we can't attach, for example, two `m.image` items into one message. Maybe, instead of separate current issue, we can extend [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767) via converting `content` to array, to allow adding several items of same type to one message.
 
