@@ -30,6 +30,11 @@ Example request
 }
 ```
 
+Note: Implementations MUST use the `identifier.type`=`m.id.user` method of specifying the
+localpart. The deprecated top-level `user` field **cannot** use this login flow type. This
+is deliberate so as to coax developers into using the new identifier format when implementing
+new flows.
+
 The response body should be unchanged from the existing `/login` specification.
 
 If:
