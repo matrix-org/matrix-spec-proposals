@@ -10,15 +10,18 @@ On the display side, when the user sends multiple images, the problem is that ea
 
 Messages with multiple attachments now already implemented in many messengers, for example - in Skype, Slack, VK Messenger. And Matrix, because lack of support, now have problems with bridging those messages to Matrix rooms.
 
+
 ## Proposal
 
-Matrix client allow users to attach media (images, video, files) to message without instant sending of them to room, and send together with text message.
+For solve described problem, I propose to add `m.attachment` relation type to current events, that will point to other media events in room, which must be shown as attachment to current event, and `is_attachment: true` marker field to all media, that was send to be an attachment for some message.
+
+With having this feature, Matrix client should allow users to attach one or multiple media (images, video, files) to message on client side, without instant sending of them to room, and send them together with text message.
 
 When user press "Send" button, Matrix client do the upload of all media, that user attached to message, as separate events to room (how it is done now), before sending message with typed text. And after sending of all attachments is finished, client send message with aggregating event, using `m.relates_to` field (from the [MSC2674: Event relationships](https://github.com/matrix-org/matrix-doc/pull/2674)), that points to all previously sent events with media, to group them into one gallery.
 
 For exclude showing those events in modern clients before grouping event added, I propose extend separate media events via adding "marker" field `is_attachment: true`, if clients got this value - they must exclude showing this media in timeline, and shows them only in gallery with grouping event.
 
-Example of media event, that send before grouping event:
+Example of media event, that send before aggregating event:
 ```json
 {
   "msgtype": "m.image",
@@ -72,11 +75,11 @@ For edits of "message with attachments" we can reuse same "m.relates_to" array v
     ]
 ```
 
-For delete (redact action) message with attachments, we must also apply `redact` action to each message attachment too.
+For delete (redact action) message with attachments, we must also apply `redact` action to each message attachment event too.
 
 ### Fallback:
 
-I see no serious problems with fallback display of attachments. For Matrix clients, that don't yet support this feature, the attachments will be represented as separate media events, like the user upload each attachment before sending main message.
+I see no serious problems with fallback display of attachments. For Matrix clients, that don't yet support this feature, the attachments will be represented as separate media events, like the user upload each attachment separately, before sending main message.
 
 
 ## Client support
@@ -117,6 +120,7 @@ This MSC does not need any changes on server side.
 
 3. There are no restrictions, that message with attachments can refer only to other events, that have `"is_attachment": true`, because this is not too easy to control, and in theory user can post message, that can refer to other media, owned by other users, and `redact` event will try to delete them. But the API should restrict regular user to redact events of other users (if he isn't moderator), so those `redact` actions should already be successfully ignored by server.
 
+4. If client attach too much media to one message, he can got rate limiting problem on server side. This can be solved via splitting and delaying send of attachments, to match server rate limits.
 
 ## Alternatives
 
