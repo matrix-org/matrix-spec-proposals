@@ -68,6 +68,9 @@ For edits of "message with attachments" we can reuse same "m.relates_to" array v
       }
     ]
 ```
+### Fallback:
+
+I see no serious problems with fallback display of attachments. For Matrix clients, that don't yet support this feature, the attachments will be represented as separate media events, like the user upload each attachment before sending main message.
 
 ## Client support
 
