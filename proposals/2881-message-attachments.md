@@ -2,12 +2,13 @@
 
 *This MSC is especially for media image attachments to message, but I try to make it extendable for multiple attachment types (files, videos, and in future - external URLs, links to other Matrix events, etc). So, in most of examples, I am using "image", but it means, that, instead of image, there may be another attachment type.*
 
-In the current implementation each media (file, image, video) can be sent only via a separate event to the room. But in most cases media is not sent alone, it must be commented via some text by the sender. So the user often wants to attach some images (one or several) directly to his text message when he is composing it.
+In the current implementation each media (file, image, video) can be sent only via a separate event to the room. But in most cases even one media is not sent alone, it must be commented via some text by the sender. So the user often wants to attach some images (one or several) directly to his text message when he is composing it,  not after or before it.
 
 And now the user can send images only before the message (or after it) as a separate message, but he can't attach images during the composing process to send them when the text is finished, together with the text message in one event.
 
 On the display side, when the user sends multiple images, the problem is that each image is displayed alone, as separate event with full width in timeline, not linked to the message, and not grouped to the gallery.
 
+Messages with multiple attachments now already implemented in many messengers, for example - in Skype, Slack, VK Messenger. And Matrix, because lack of support, now have problems with bridging those messages to Matrix rooms.
 
 ## Proposal
 
@@ -93,9 +94,11 @@ Editing interface can be represented exactly like the composer interface, where 
 
 ### Display recommendations:
 
-On the client site, attachments can be displayed as grid of clickable thumbnails, like the current `m.image` events, but with a smaller size, having fixed height, like a regular image gallery. On click, Matrix client must display media in full size, and, if possible, as a gallery with "next-previous" buttons.
+On the client site, attachments can be displayed as grid of clickable thumbnails, like the current `m.image` events, but with a smaller size, having fixed height, like a regular image gallery. On click, Matrix client must display media in full size, and, if possible, as a gallery with "next-previous" buttons. Also clients can implement collapse/expand action on gallery grid.
 
 If the message contains only one attachment, it can be displayed as full-width thumbnail in timeline, like current `m.image` and `m.video` messages.
+
+Example of composer interface implementation we can lookup in [Slack](https://slack.com/), [VK Messenger](https://vk.com/messenger), [Skype](https://skype.com).
 
 For prevent showing of attachments as regular media in timeline before main aggregating event will be added to room, clients should visually hide media events, that have `"is_attachment": true` value, to display them later in gallery, but can already start downloading of attachments thumbnails, for speed-up display of them in gallery.
 
