@@ -80,7 +80,7 @@ I see no serious problems with fallback display of attachments. For Matrix clien
 
 ### Compose recommendations:
 
-In the message composer, on "paste file" event, the Matrix client must not instantly upload the file to the server, but the client must show its thumbnail in the special area, with the ability to remove it and to add more media. *Alternatively, it can start uploading instantly to improve the speed of the following message sending process, but there is no way to delete media in Matrix API, so server will store each file, even if it is not attached to the message.*
+In the message composer, on "paste file" event, the Matrix client must not instantly upload the file to the server, but the client must show its thumbnail in the special area, with the ability to remove it and to add more media. *Alternatively, it can start uploading instantly to improve the speed of the following message sending process, but there is no way to delete media in Matrix API yet ([MSC2278: Deleting attachments for expired and redacted messages](https://github.com/matrix-org/matrix-doc/blob/matthew/msc2278/proposals/2278-deleting-content.md), so server will store each file, even if it is not attached to the message.*
 
 On "message send" action, Matrix client must upload each attached media to server, get `mxc` of it, post an event to room, and attach its `event_id` to current message contents in `m.relates_to` array.
 
