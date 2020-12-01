@@ -50,9 +50,10 @@ Edge cases:
    The decision to preserve this field is made so that users can delete offensive material without breaking the structure of a thread. This is
    different to MSC1849 which proposes to delete the relationship entirely.
  - It is an error to reference an event ID that the server is unaware of. Servers MUST check that they have the event in question: it need not
-   be part of the connected DAG; it can be an outlier. This prevents erroneous relationships being made by abusing the CS API. Note that it is
-   expected that events over federation will reference event IDs that the receiving server is unaware of: this is allowed. This check is only
-   performed when *clients* attempt to make new references.
+   be part of the connected DAG; it can be an outlier. If the server does not have this event but can fetch this event from another server
+   in the room using the `room_id` key as a hint then this is acceptable. This prevents erroneous relationships being made by abusing the CS API.
+   Note that it is expected that events over federation will reference event IDs that the receiving server is unaware of: this is allowed.
+   This check is only performed when *clients* attempt to make new references.
  - It is an error to reference an event ID in another room.
  - It is an error to reference yourself. Cyclical loops are still possible by using multiple events and servers should guard against this by
    only visiting events once.
@@ -134,6 +135,8 @@ Justifications for the response API shape are as follows:
 
 Server implementation:
  - Sanity check request and set defaults.
+ - Does the server have the event given by `event_id`? If yes, continue. If no, check for a `room_id` key. If one exists then ask
+   servers in the room for `event_id` (e.g via `/event_relationships`). If no server has the event, reject the request.
  - Can the user see (according to history visibility) `event_id`? If no, reject the request, else continue.
  - Retrieve the event. Add it to response array.
  - If `include_parent: true` and there is a valid `m.relationship` field in the event, retrieve the referenced event.
