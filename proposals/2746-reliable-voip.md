@@ -80,6 +80,7 @@ Example:
 {
     "type": "m.call.select_answer",
     "content": {
+        "version": 1,
         "call_id": "12345",
         "party_id": "67890",
         "selected_party_id": "111213",
