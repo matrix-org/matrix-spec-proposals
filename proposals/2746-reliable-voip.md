@@ -291,7 +291,7 @@ The same behaviour applies when a client is looking at historic calls.
 
 ## Unstable prefix
 Since VoIP events already have a 'version' field, we would ideally use a string, namespaced version during
-development, but this field is defined to be a string in version 0. This MSC proposes changing the version
+development, but this field is defined to be an int in version 0. This MSC proposes changing the version
 field to a string so that this namespacing can be used for future changes. Since there is no other easy way
 to namespace events whilst in development and ensure interoperability, we have chosen not to use an unstable
 prefix for this change, on the understanding that in future we will be able to use the string `version` field
