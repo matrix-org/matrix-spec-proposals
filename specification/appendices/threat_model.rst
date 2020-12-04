@@ -28,7 +28,7 @@ victim in order to:
 Threat: Resource Exhaustion
 +++++++++++++++++++++++++++
 
-An attacker could cause the victims server to exhaust a particular resource
+An attacker could cause the victim's server to exhaust a particular resource
 (e.g. open TCP connections, CPU, memory, disk storage)
 
 Threat: Unrecoverable Consistency Violations

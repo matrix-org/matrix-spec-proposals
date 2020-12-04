@@ -83,7 +83,7 @@ Base64`_. Example:
   "JGLn/yafz74HB2AbPLYJWIVGnKAtqECOBf11yyXac2Y"
 
 The name ``signed_curve25519`` also corresponds to the Curve25519 algorithm,
-but a key using this algorithm is represented by an object with a the following
+but a key using this algorithm is represented by an object with the following
 properties:
 
 ``KeyObject``
@@ -431,7 +431,7 @@ Device verification may reach one of several conclusions. For example:
 Key verification framework
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Verifying keys manually by reading out the Ed25519 key is not very user friendly,
+Verifying keys manually by reading out the Ed25519 key is not very user-friendly,
 and can lead to errors. In order to help mitigate errors, and to make the process
 easier for users, some verification methods are supported by the specification.
 The methods all use a common framework for negotiating the key verification.
@@ -443,7 +443,7 @@ allows Bob to reject the request on one device, and have it apply to all of his
 devices. Similarly, it allows Bob to process the verification on one device without
 having to involve all of his devices.
 
-When Bob's device receives a ``m.key.verification.request``, it should prompt Bob
+When Bob's device receives an ``m.key.verification.request``, it should prompt Bob
 to verify keys with Alice using one of the supported methods in the request. If
 Bob's device does not understand any of the methods, it should not cancel the request
 as one of his other devices may support the request. Instead, Bob's device should
@@ -454,17 +454,17 @@ minutes after Bob's client receives the message, whichever comes first, if Bob
 does not interact with the prompt. The prompt should additionally be hidden if
 an appropriate ``m.key.verification.cancel`` message is received.
 
-If Bob rejects the request, Bob's client must send a ``m.key.verification.cancel``
+If Bob rejects the request, Bob's client must send an ``m.key.verification.cancel``
 message to Alice's device. Upon receipt, Alice's device should tell her that Bob
 does not want to verify her device and send ``m.key.verification.cancel`` messages
 to all of Bob's devices to notify them that the request was rejected.
 
 If Bob accepts the request, Bob's device starts the key verification process by
-sending a ``m.key.verification.start`` message to Alice's device. Upon receipt
-of this message, Alice's device should send a ``m.key.verification.cancel`` message
+sending an ``m.key.verification.start`` message to Alice's device. Upon receipt
+of this message, Alice's device should send an ``m.key.verification.cancel`` message
 to all of Bob's other devices to indicate the process has been started. The start
 message must use the same ``transaction_id`` from the original key verification
-request if it is in response to the request. The start message can be sent indepdently
+request if it is in response to the request. The start message can be sent independently
 of any request.
 
 Individual verification methods may add additional steps, events, and properties to
@@ -473,7 +473,7 @@ be under the ``m.key.verification`` namespace and any other event types must be 
 according to the Java package naming convention.
 
 Any of Alice's or Bob's devices can cancel the key verification request or process
-at any time with a ``m.key.verification.cancel`` message to all applicable devices.
+at any time with an ``m.key.verification.cancel`` message to all applicable devices.
 
 This framework yields the following handshake, assuming both Alice and Bob each have
 2 devices, Bob's first device accepts the key verification request, and Alice's second
@@ -516,7 +516,7 @@ Short Authentication String (SAS) verification
 
 SAS verification is a user-friendly key verification process built off the common
 framework outlined above. SAS verification is intended to be a highly interactive
-process for users, and as such exposes verfiication methods which are easier for
+process for users, and as such exposes verification methods which are easier for
 users to use.
 
 The verification process is heavily inspired by Phil Zimmermann's ZRTP key agreement
@@ -553,17 +553,17 @@ The process between Alice and Bob verifying each other would be:
 #. Alice and Bob communicate which devices they'd like to verify with each other.
 #. Alice selects Bob's device from the device list and begins verification.
 #. Alice's client ensures it has a copy of Bob's device key.
-#. Alice's device sends Bob's device a ``m.key.verification.start`` message.
+#. Alice's device sends Bob's device an ``m.key.verification.start`` message.
 #. Bob's device receives the message and selects a key agreement protocol, hash
    algorithm, message authentication code, and SAS method supported by Alice's
    device.
 #. Bob's device ensures it has a copy of Alice's device key.
 #. Bob's device creates an ephemeral Curve25519 key pair (|BobCurve25519|), and
    calculates the hash (using the chosen algorithm) of the public key |BobPublicKey|.
-#. Bob's device replies to Alice's device with a ``m.key.verification.accept`` message.
+#. Bob's device replies to Alice's device with an ``m.key.verification.accept`` message.
 #. Alice's device receives Bob's message and stores the commitment hash for later use.
 #. Alice's device creates an ephemeral Curve25519 key pair (|AliceCurve25519|) and
-   replies to Bob's device with a ``m.key.verification.key``, sending only the public
+   replies to Bob's device with an ``m.key.verification.key``, sending only the public
    key |AlicePublicKey|.
 #. Bob's device receives Alice's message and replies with its own ``m.key.verification.key``
    message containing its public key |BobPublicKey|.
@@ -578,11 +578,11 @@ The process between Alice and Bob verifying each other would be:
 #. Alice and Bob compare the strings shown by their devices, and tell their devices if
    they match or not.
 #. Assuming they match, Alice and Bob's devices calculate the HMAC of their own device keys
-   and a comma-separated sorted list of of the key IDs that they wish the other user
+   and a comma-separated sorted list of the key IDs that they wish the other user
    to verify, using SHA-256 as the hash function. HMAC is defined in `RFC 2104 <https://tools.ietf.org/html/rfc2104>`_.
    The key for the HMAC is different for each item and is calculated by generating
    32 bytes (256 bits) using `the key verification HKDF <#sas-hkdf>`_.
-#. Alice's device sends Bob's device a ``m.key.verification.mac`` message containing the
+#. Alice's device sends Bob's device an ``m.key.verification.mac`` message containing the
    MAC of Alice's device keys and the MAC of her key IDs to be verified. Bob's device does
    the same for Bob's device keys and key IDs concurrently with Alice.
 #. When the other device receives the ``m.key.verification.mac`` message, the device
@@ -619,20 +619,20 @@ The wire protocol looks like the following between Alice and Bob's devices::
 Error and exception handling
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-At any point the interactive verfication can go wrong. The following describes what
+At any point the interactive verification can go wrong. The following describes what
 to do when an error happens:
 
-* Alice or Bob can cancel the verification at any time. A ``m.key.verification.cancel``
+* Alice or Bob can cancel the verification at any time. An ``m.key.verification.cancel``
   message must be sent to signify the cancellation.
 * The verification can time out. Clients should time out a verification that does not
   complete within 10 minutes. Additionally, clients should expire a ``transaction_id``
   which goes unused for 10 minutes after having last sent/received it. The client should
   inform the user that the verification timed out, and send an appropriate
   ``m.key.verification.cancel`` message to the other device.
-* When the same device attempts to intiate multiple verification attempts, the receipient
+* When the same device attempts to initiate multiple verification attempts, the recipient
   should cancel all attempts with that device.
 * When a device receives an unknown ``transaction_id``, it should send an appropriate
-  ``m.key.verfication.cancel`` message to the other device indicating as such. This
+  ``m.key.verification.cancel`` message to the other device indicating as such. This
   does not apply for inbound ``m.key.verification.start`` or ``m.key.verification.cancel``
   messages.
 * If the two devices do not share a common key share, hash, HMAC, or SAS method then
@@ -1169,7 +1169,7 @@ session has become corrupted and create a new one to replace it.
    to decrypt it successfully. Olm does not have a way to recover from the failure,
    making this session replacement process required.
 
-To establish a new session, the client sends a `m.dummy <#m-dummy>`_ to-device event
+To establish a new session, the client sends an `m.dummy <#m-dummy>`_ to-device event
 to the other party to notify them of the new session details.
 
 Clients should rate-limit the number of sessions it creates per device that it receives
@@ -1232,13 +1232,13 @@ who sent the message. The same reasoning applies, but the sender ed25519 key has
 inferred from the ``keys.ed25519`` property of the event which established the Megolm
 session.
 
-In order to enable end-to-end encryption in a room, clients can send a
+In order to enable end-to-end encryption in a room, clients can send an
 ``m.room.encryption`` state event specifying ``m.megolm.v1.aes-sha2`` as its
 ``algorithm`` property.
 
 When creating a Megolm session in a room, clients must share the corresponding session
 key using Olm with the intended recipients, so that they can decrypt future messages
-encrypted using this session. A ``m.room_key`` event is used to do this. Clients
+encrypted using this session. An ``m.room_key`` event is used to do this. Clients
 must also handle ``m.room_key`` events sent by other devices in order to decrypt their
 messages.
 
@@ -1275,7 +1275,7 @@ Extensions to /sync
 
 This module adds an optional ``device_lists`` property to the |/sync|_
 response, as specified below. The server need only populate this property for
-an incremental ``/sync`` (ie, one where the ``since`` parameter was
+an incremental ``/sync`` (i.e., one where the ``since`` parameter was
 specified). The client is expected to use |/keys/query|_ or |/keys/changes|_
 for the equivalent functionality after an initial sync, as documented in
 `Tracking the device list for a user`_.

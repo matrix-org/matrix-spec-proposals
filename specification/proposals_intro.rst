@@ -132,7 +132,7 @@ As a worked example:
 1. Video conferencing is clearly a feature which would benefit
    the whole ecosystem, and so the spec should find a way to make it happen.
 2. Video conferencing can be achieved by widgets without requiring any
-   compulsory changes to changes to clients nor servers to work, and so could be
+   compulsory changes to clients nor servers to work, and so could be
    omitted from the spec.
 3. A better experience could be achieved by embedding Jitsi natively into clients
    rather than using a widget...
@@ -145,10 +145,10 @@ for doing so), or to keep it as a widget-based approach (optionally with widget
 extensions specific for more deeply integrating video conferencing use cases).
 
 As an alternative example: it's very unlikely that "how to visualise Magnetic
-Resonsance Imaging data over Matrix" would ever be added to the Matrix spec
+Resonance Imaging data over Matrix" would ever be added to the Matrix spec
 (other than perhaps a custom event type in a wider standardised Matrix event
 registry) given that the spec's existing primitives of file transfer and
-extensible events (MSC1767) give excellent tools for transfering and
+extensible events (MSC1767) give excellent tools for transferring and
 visualising arbitrary rich data.
 
 Supporting public search engines are likely to not require custom spec features
@@ -168,7 +168,7 @@ Process
 The process for submitting a Matrix Spec Change (MSC) Proposal in detail is as
 follows:
 
-- Create a first draft of your proposal using `GitHub-flavored markdown
+- Create a first draft of your proposal using `GitHub-flavored Markdown
   <https://help.github.com/articles/basic-writing-and-formatting-syntax/>`_
 
   - In the document, clearly state the problem being solved, and the possible
@@ -190,7 +190,7 @@ follows:
   - The proposal must live in the ``proposals/`` directory with a filename that
     follows the format ``1234-my-new-proposal.md`` where ``1234`` is the MSC
     ID.
-  - Your PR description must include a link to the rendered markdown document
+  - Your PR description must include a link to the rendered Markdown document
     and a summary of the proposal.
   - It is often very helpful to link any related MSCs or `matrix-doc issues
     <https://github.com/matrix-org/matrix-doc/issues>`_ to give context
@@ -209,10 +209,10 @@ follows:
     If preferred, an alternative room can be created and advertised in
     #matrix-spec:matrix.org. Please also link to the room in your PR
     description.
-  - For additional discussion areas, know that that #matrix-dev:matrix.org is
+  - For additional discussion areas, know that #matrix-dev:matrix.org is
     for developers using existing Matrix APIs, #matrix:matrix.org is for users
     trying to run Matrix apps (clients & servers) and
-    #matrix-architecture:matrix.org is for cross-cutting discussion of matrix's
+    #matrix-architecture:matrix.org is for cross-cutting discussion of Matrix's
     architectural design.
   - The point of the spec proposal process is to be collaborative rather than
     competitive, and to try to solve the problem in question with the optimal
@@ -239,7 +239,7 @@ follows:
   the current state of the discussion, along with reasoning for its occurrence.
 - A concern can be raised by a Spec Core Team member at any time, which will block
   an FCP from beginning. An FCP will only begin when 75% of the members of the
-  Spec Core Team team agree on its outcome, and all existing concerns have been
+  Spec Core Team agree on its outcome, and all existing concerns have been
   resolved.
 - The FCP will then begin and last for 5 days, giving anyone else some time to
   speak up before it concludes. On its conclusion, the disposition of the FCP
@@ -332,7 +332,7 @@ Proposal Drafting and Feedback   N/A                            A proposal docum
 Proposal In Review               proposal-in-review             A proposal document which is now ready and waiting for review by the Spec Core Team and community
 Proposed Final Comment Period    proposed-final-comment-period  Currently awaiting signoff of a 75% majority of team members in order to enter the final comment period
 Final Comment Period             final-comment-period           A proposal document which has reached final comment period either for merge, closure or postponement
-Final Commment Period Complete   finished-final-comment-period  The final comment period has been completed. Waiting for a demonstration implementation
+Final Comment Period Complete    finished-final-comment-period  The final comment period has been completed. Waiting for a demonstration implementation
 Spec PR Missing                  spec-pr-missing                The proposal has been agreed, and proven with a demonstration implementation. Waiting for a PR against the Spec
 Spec PR In Review                spec-pr-in-review              The spec PR has been written, and is currently under review
 Spec PR Merged                   merged                         A proposal with a sufficient working implementation and whose Spec PR has been merged!
@@ -352,7 +352,7 @@ an effort to pull MSCs out of that category when possible.
 The current categories are:
 
 ============ ================= ======================================
-Name         Github Label      Description
+Name         GitHub Label      Description
 ============ ================= ======================================
 Core         kind:core         Important for the protocol's success.
 Feature      kind:feature      Nice to have additions to the spec.
@@ -379,10 +379,10 @@ As part of the proposal process the spec core team will require evidence of the 
 working in order for it to move into FCP. This can usually be a branch/pull request
 to whichever implementation of choice that proves the MSC works in practice, though
 in some cases the MSC itself will be small enough to be considered proven. Where it's
-unclear if a MSC will require an implementation proof, ask in `#matrix-spec:matrix.org
+unclear if an MSC will require an implementation proof, ask in `#matrix-spec:matrix.org
 <https://matrix.to/#/#matrix-spec:matrix.org>`_.
 
-Early release of a MSC/idea
+Early release of an MSC/idea
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To help facilitate early releases of software dependent on a spec release, implementations
@@ -447,7 +447,7 @@ is not cluttered with development or testing data.
 .. Note::
    MSCs MUST still describe what the stable endpoints/feature looks like with a note
    towards the bottom for what the unstable feature flag/prefixes are. For example,
-   a MSC would propose `/_matrix/client/r0/new/endpoint`, not `/_matrix/client/unstable/
+   an MSC would propose `/_matrix/client/r0/new/endpoint`, not `/_matrix/client/unstable/
    com.example/new/endpoint`.
 
 In summary:
@@ -488,7 +488,7 @@ resolve to the desired MSC, whether it started as an issue or a PR.
 Other metadata:
 
 - The MSC number is taken from the GitHub Pull Request ID. This is carried for
-  the lifetime of the proposal. These IDs do not necessary represent a
+  the lifetime of the proposal. These IDs do not necessarily represent a
   chronological order.
 - The GitHub PR title will act as the MSC's title.
 - Please link to the spec PR (if any) by adding a "PRs: #1234" line in the
@@ -496,7 +496,7 @@ Other metadata:
 - The creation date is taken from the GitHub PR, but can be overridden by
   adding a "Date: yyyy-mm-dd" line in the PR description.
 - Updated Date is taken from GitHub.
-- Author is the creator of the MSC PR, but can be overridden by adding a
+- Author is the creator of the MSC PR, but can be overridden by adding an
   "Author: @username" line in the body of the issue description. Please make
   sure @username is a GitHub user (include the @!)
 - A shepherd can be assigned by adding a "Shepherd: @username" line in the

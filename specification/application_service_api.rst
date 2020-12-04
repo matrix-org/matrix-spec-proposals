@@ -194,7 +194,7 @@ Authorization
 Homeservers MUST include a query parameter named ``access_token`` containing the
 ``hs_token`` from the application service's registration when making requests to
 the application service. Application services MUST verify the provided ``access_token``
-matches their known ``hs_token``, failing the request with a ``M_FORBIDDEN`` error
+matches their known ``hs_token``, failing the request with an ``M_FORBIDDEN`` error
 if it does not match.
 
 Legacy routes
@@ -206,8 +206,8 @@ service specification now defines a version on all endpoints to be more compatib
 with the rest of the Matrix specification and the future.
 
 Homeservers should attempt to use the specified endpoints first when communicating
-with application services. However, if the application service receives an http status
-code that does not indicate success (ie: 404, 500, 501, etc) then the homeserver
+with application services. However, if the application service receives an HTTP status
+code that does not indicate success (i.e.: 404, 500, 501, etc) then the homeserver
 should fall back to the older endpoints for the application service.
 
 The older endpoints have the exact same request body and response format, they
