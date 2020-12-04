@@ -379,7 +379,7 @@ are picked is left as an implementation detail, however the current recommendati
 to pick 3 unique servers based on the following criteria:
 
 * The first server should be the server of the highest power level user in the room,
-  provided they are at least power level 50. If no user meets these criteria, pick the
+  provided they are at least power level 50. If no user meets this criterion, pick the
   most popular server in the room (most joined users). The rationale for not picking
   users with power levels under 50 is that they are unlikely to be around into the
   distant future while higher ranking users (and therefore servers) are less likely

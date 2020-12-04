@@ -383,7 +383,7 @@ unclear if an MSC will require an implementation proof, ask in `#matrix-spec:mat
 <https://matrix.to/#/#matrix-spec:matrix.org>`_.
 
 Early release of an MSC/idea
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To help facilitate early releases of software dependent on a spec release, implementations
 are required to use the following process to ensure that the official Matrix namespace
