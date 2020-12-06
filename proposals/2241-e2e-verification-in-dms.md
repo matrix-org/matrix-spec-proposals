@@ -152,7 +152,7 @@ properties in its contents:
 
 - `m.relates_to`: an object with the properties:
   - `rel_type`: `m.reference`
-  - `event_id`: the event ID of the key verification that is being cancelled
+  - `event_id`: the event ID of the key verification that is being concluded
 
 This provides a record within the room of the result of the verification.
 
