@@ -731,7 +731,7 @@ In summary, the remote join handshake consists of the joining server querying
 the directory server for information about the room alias; receiving a room ID
 and a list of join candidates. The joining server then requests information
 about the room from one of the residents. It uses this information to construct
-a ``m.room.member`` event which it finally sends to a resident server.
+an ``m.room.member`` event which it finally sends to a resident server.
 
 Conceptually these are three different roles of homeserver. In practice the
 directory server is likely to be resident in the room, and so may be selected
@@ -822,7 +822,7 @@ Similar to the `Joining Rooms`_ handshake, the server which wishes to leave the
 room starts with sending a ``/make_leave`` request to a resident server. In the
 case of rejecting invites, the resident server may be the server which sent the
 invite. After receiving a template event from ``/make_leave``, the leaving server
-signs the event and replaces the ``event_id`` with it's own. This is then sent to
+signs the event and replaces the ``event_id`` with its own. This is then sent to
 the resident server via ``/send_leave``. The resident server will then send the
 event to other servers in the room.
 
@@ -837,7 +837,7 @@ Third-party invites
    More information about third party invites is available in the `Client-Server API`_
    under the Third Party Invites module.
 
-When an user wants to invite another user in a room but doesn't know the Matrix
+When a user wants to invite another user in a room but doesn't know the Matrix
 ID to invite, they can do so using a third-party identifier (e.g. an e-mail or a
 phone number).
 
@@ -856,7 +856,7 @@ Cases where an association doesn't exist for a third-party identifier
 
 If the third-party identifier isn't bound to any Matrix ID, the inviting
 homeserver will request the identity server to store an invite for this identifier
-and to deliver it to whoever binds it to its Matrix ID. It will also send a
+and to deliver it to whoever binds it to its Matrix ID. It will also send an
 ``m.room.third_party_invite`` event in the room to specify a display name, a token
 and public keys the identity server provided as a response to the invite storage
 request.
@@ -867,7 +867,7 @@ in the `Invitation Storage`_ section of the Identity Service API.
 
 The following process applies for each invite sent by the identity server:
 
-The invited homeserver will create a ``m.room.member`` invite event containing
+The invited homeserver will create an ``m.room.member`` invite event containing
 a special ``third_party_invite`` section containing the token and a signed object,
 both provided by the identity server.
 
@@ -882,7 +882,7 @@ will need to request the room's homeserver to auth the event.
 Verifying the invite
 ++++++++++++++++++++
 
-When a homeserver receives a ``m.room.member`` invite event for a room it's in
+When a homeserver receives an ``m.room.member`` invite event for a room it's in
 with a ``third_party_invite`` object, it must verify that the association between
 the third-party identifier initially invited to the room and the Matrix ID that
 claims to be bound to it has been verified without having to rely on a third-party
@@ -949,7 +949,7 @@ Receipts are EDUs used to communicate a marker for a given event. Currently the
 only kind of receipt supported is a "read receipt", or where in the event graph
 the user has read up to.
 
-Read receipts for events events that a user sent do not need to be sent. It is
+Read receipts for events that a user sent do not need to be sent. It is
 implied that by sending the event the user has read up to the event.
 
 {{definition_ss_event_schemas_m_receipt}}

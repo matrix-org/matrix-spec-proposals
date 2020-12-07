@@ -225,7 +225,7 @@ Terms of service
 
 Identity Servers are encouraged to have terms of service (or similar policies) to
 ensure that users have agreed to their data being processed by the server. To facilitate
-this, an identity server can respond to almost any authenticated API endpoint with a
+this, an identity server can respond to almost any authenticated API endpoint with an
 HTTP 403 and the error code ``M_TERMS_NOT_SIGNED``. The error code is used to indicate
 that the user must accept new terms of service before being able to continue.
 
@@ -421,7 +421,7 @@ i.e. I can claim that any email address I own is associated with
 Sessions are time-limited; a session is considered to have been modified when
 it was created, and then when a validation is performed within it. A session can
 only be checked for validation, and validation can only be performed within a
-session, within a 24 hour period since its most recent modification. Any
+session, within a 24-hour period since its most recent modification. Any
 attempts to perform these actions after the expiry will be rejected, and a new
 session should be created and used instead.
 

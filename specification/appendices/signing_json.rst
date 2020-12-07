@@ -29,7 +29,7 @@ Canonical JSON
 ~~~~~~~~~~~~~~
 
 We define the canonical JSON encoding for a value to be the shortest UTF-8 JSON
-encoding with dictionary keys lexicographically sorted by unicode codepoint.
+encoding with dictionary keys lexicographically sorted by Unicode codepoint.
 Numbers in the JSON must be integers in the range ``[-(2**53)+1, (2**53)-1]``.
 
 We pick UTF-8 as the encoding as it should be available to all platforms and
@@ -63,7 +63,7 @@ using this representation.
          separators=(',',':'),
          # Sort the keys of dictionaries.
          sort_keys=True,
-         # Encode the resulting unicode as UTF-8 bytes.
+         # Encode the resulting Unicode as UTF-8 bytes.
      ).encode("UTF-8")
 
 Grammar
