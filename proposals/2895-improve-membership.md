@@ -3,6 +3,8 @@
 Note: this MSC has been converted from a legacy MSC format to Markdown verbatim. The prior
 MSC is documented [here](https://docs.google.com/document/d/1WgfAK_O6Ih22badCX4-rComT9sz4cHiPa3pGuTejszU/edit#).
 
+Previous history of this MSC is at https://github.com/matrix-org/matrix-doc/pull/1337
+
 ## Problem scope
 
 A common operation for bots, bridges, scripts, and clients is to determine what rooms the user is a
