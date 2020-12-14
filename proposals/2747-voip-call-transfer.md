@@ -133,6 +133,36 @@ On receiving this, the transferor aborts the transfer process and informs the tr
 that the call transfer was rejected, and by which party. There is no explicit event to accept
 the transfer.
 
+### Capability Advertisment
+This proposal also introduces a field on `m.call.invite` and `m.call.answer` events at the top
+level with the key `capabilities`, whose value is an object. This object has one recognised key,
+`m.call.transferee` which, if set to true, states that the sender of the event supports the
+`m.call.replaces` event and therefore supports being transferred to another destination.
+For example:
+
+```
+{
+    "type": "m.call.invite",
+    "room_id": "!rO0m_1d:example.org",
+    "content": {
+        "call_id": "123456",
+        "lifetime": 60000,
+        "capabilities": {
+            "m.call.transferee": true,
+        },
+        "offer": {
+           "type": "offer",
+           "sdp": [...],
+        },
+    },
+}
+```
+
+If this key is absent or set to anything othet than the boolean, `true`, or if
+the `capabilities` object is missing altogether, it should be assumed that the
+sender of the invite or answer does not support call transfers and clients should
+reflect this in the UI accordingly.
+
 ## Potential issues
 A call transfer is fairly complex and involves a lot of round-trips and state on clients, and
 is fairly complex for clients to implement, in comparison to the rest of the VoIP spec which
