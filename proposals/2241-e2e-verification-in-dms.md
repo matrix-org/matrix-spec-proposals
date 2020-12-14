@@ -132,7 +132,7 @@ contents:
 - `m.relates_to`: an object with the properties:
   - `rel_type`: `m.reference`
   - `event_id`: the event ID of the key verification that is being cancelled
-- `body`: A human readable description of the `code`. The client should only
+- `reason`: A human readable description of the `code`. The client should only
   rely on this string if it does not understand the `code`.
 - `code`: The error code for why the process/request was cancelled by the
   user. The contents are the same as the `code` property of the currently
