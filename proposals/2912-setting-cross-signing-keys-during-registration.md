@@ -1,4 +1,4 @@
-# MSCxxxx: Setting cross-signing keys during registration
+# MSC2912: Setting cross-signing keys during registration
 
 Setting cross-signing keys (the `/keys/device_signing/upload` endpoint)
 requires UI Authentication as an extra layer of security to ensure that an
@@ -62,7 +62,7 @@ account.
 ## Unstable prefix
 
 Until the changes land in a released version of the Matrix spec,
-implementations should use `org.matrix.mscxxxx.device_signing` as the field
+implementations should use `org.matrix.msc2912.device_signing` as the field
 name rather than `device_signing`.  Servers should advertise the fact that they
-support this unstable field name by using adding `org.matrix.mscxxxx` to the
+support this unstable field name by using adding `org.matrix.msc2912` to the
 `unstable_features` field of `/_matrix/client/versions`.
