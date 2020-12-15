@@ -122,7 +122,7 @@ paths:
         403:
           description: |-
             The public key of one of the keys is the same as one of the user\'s
-            device IDs or the request is unauthorized.
+            device IDs, or the request is not authorized for any other reason.
           schema:
             type: object
             example: {
