@@ -7,7 +7,7 @@ which apply:
 2. Individual endpoint versioning underneath an API spec document version (`/v1/`, `/v2/`, etc). Note
    that the client-server API currently ties the major version of its spec document version to the
    endpoint, thus making most endpoints under it as `/r0/` (currently).
-3. Room versions to freezing a set of behaviour and algorithms on a per-room basis. These are well
+3. Room versions which define a set of behaviour and algorithms on a per-room basis. These are well
    defined in the spec and are not covered here: https://matrix.org/docs/spec/#room-versions
 4. An overarching "Matrix" version, largely for marketing purposes. So far we've only cut Matrix 1.0
    back when we finalized the initial versions of the spec documents, but have not cut another one
@@ -29,9 +29,9 @@ it currently), the APIs, room versions, and the appendices (which are also curre
 contain specification). Room versions are a bit more nuanced though, and are covered later in this MSC.
 
 The version which covers the entire specification and all its parts is called the "Matrix version", and
-is a promotion of the previously marketing-only version number assigned to the spec. Upon acceptance of
-this MSC, the Matrix version would be 1.1.0. v1.0 from the marketing era would be recorded somewhere for
-posterity, though largely has no significant meaning (unchanged by this MSC).
+is a promotion of the previously marketing-only version number assigned to the spec. The spec core team
+is expected to release Matrix 1.1.0 as the first version, leaving v1.0 as the marketing era and recorded
+somewhere for posterity (though has no significant meaning, unchanged by this MSC).
 
 Doing this has the benefits previously alluded to:
 
@@ -66,10 +66,10 @@ Given a version number `MAJOR.MINOR.PATCH`, incremement the:
 When present in the protocol itself, the Matrix version will always be prefixed with `v`. For example,
 `v1.1.0`.
 
-When a dash (`-`) is present after the `PATCH` version, the version is denoting some off-cycle release
-information. This is how we'd, for example, make release candidates, alpha, beta, or unstable builds as
-needed. This MSC does not propose a scheme for RCs or pre-releases, though the Spec Core Team may wish
-to do so.
+Additional information can be supplied in the version number by appending a dash (`-`) to the end of the
+version and including any relevant information. This is typically used to denote alpha, beta, unstable,
+or other similar off-cycle release builds. This MSC does not propose a scheme for RCs or pre-releases,
+though the Spec Core Team may wish to do so.
 
 See the section on brewing Matrix versions for information on how the unstable version is decided.
 
@@ -158,7 +158,7 @@ the Spec Core Team be able to blindside the community with a release for no just
 
 To recap, the process is as follows:
 
-1. Sometime after a given release happens, the Spec Core Team announces a cutoff date for MSCs to land
+1. Sometime before a given release happens, the Spec Core Team announces a cutoff date for MSCs to land
    that is at least 2 months in the future.
 2. Upon cutoff, the Spec Core Team takes responsibility for ensuring all relevant changes are written
    up in a timely fashion.
