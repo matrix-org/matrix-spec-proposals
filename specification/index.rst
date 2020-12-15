@@ -431,7 +431,7 @@ Profiles
 ~~~~~~~~
 
 Users may publish arbitrary key/value data associated with their account - such
-as a human readable display name, a profile photo URL, contact information
+as a human-readable display name, a profile photo URL, contact information
 (email address, phone numbers, website URLs etc).
 
 .. TODO

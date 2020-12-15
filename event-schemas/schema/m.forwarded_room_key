@@ -43,6 +43,15 @@ properties:
           to the end of the list. For example, if the key is forwarded from A to B to
           C, this field is empty between A and B, and contains A's Curve25519 key between
           B and C.
+      withheld:
+        type: object
+        description: |-
+          Indicates that the key cannot be used to decrypt all the messages
+          from the session because a portion of the session was withheld as
+          described in `Reporting that decryption keys are withheld`_. This
+          object must include the ``code`` and ``reason`` properties from the
+          ``m.room_key.withheld`` message that was received by the sender of
+          this message.
     required:
       - algorithm
       - room_id

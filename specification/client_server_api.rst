@@ -186,7 +186,7 @@ Other error codes the client might encounter are:
   permits, for example, email addresses from a particular domain.
 
 :``M_SERVER_NOT_TRUSTED``:
-  The client's request used a third party server, eg. identity server, that this server does not trust.
+  The client's request used a third party server, e.g. identity server, that this server does not trust.
 
 :``M_UNSUPPORTED_ROOM_VERSION``:
   The client's request to create a room used a room version that the server does not support.
@@ -228,8 +228,8 @@ Other error codes the client might encounter are:
   may reach a resource limit if it starts using too much memory or disk space. The
   error MUST have an ``admin_contact`` field to provide the user receiving the error
   a place to reach out to. Typically, this error will appear on routes which attempt
-  to modify state (eg: sending messages, account data, etc) and not routes which only
-  read state (eg: ``/sync``, get account data, etc).
+  to modify state (e.g.: sending messages, account data, etc) and not routes which only
+  read state (e.g.: ``/sync``, get account data, etc).
 
 :``M_CANNOT_LEAVE_SERVER_NOTICE_ROOM``:
   The user is unable to reject an invite to join the server notices room. See the
@@ -266,8 +266,8 @@ to pre-flight requests and supply Cross-Origin Resource Sharing (CORS) headers o
 all requests.
 
 Servers MUST expect that clients will approach them with ``OPTIONS`` requests,
-allowing clients to discover the CORS headers. All endpoints in this specification s
-upport the ``OPTIONS`` method, however the server MUST NOT perform any logic defined
+allowing clients to discover the CORS headers. All endpoints in this specification
+support the ``OPTIONS`` method, however the server MUST NOT perform any logic defined
 for the endpoints when approached with an ``OPTIONS`` request.
 
 When a client approaches the server with a request, the server should respond with
@@ -438,7 +438,7 @@ homeserver may provide many different ways of authenticating, such as
 user/password auth, login via a single-sign-on server (SSO), etc. This
 specification does not define how homeservers should authorise their users but
 instead defines the standard interface which implementations should follow so
-that ANY client can login to ANY homeserver.
+that ANY client can log in to ANY homeserver.
 
 The process takes the form of one or more 'stages'. At each stage the client
 submits a set of data for a given authentication type and awaits a response
@@ -707,7 +707,7 @@ For example, to authenticate using the user's Matrix ID, clients would submit:
   }
 
 Alternatively reply using a 3PID bound to the user's account on the homeserver
-using the |/account/3pid|_ API rather then giving the ``user`` explicitly as
+using the |/account/3pid|_ API rather than giving the ``user`` explicitly as
 follows:
 
 .. code:: json
@@ -827,7 +827,7 @@ Dummy Auth
   Dummy authentication always succeeds and requires no extra parameters. Its
   purpose is to allow servers to not require any form of User-Interactive
   Authentication to perform a request. It can also be used to differentiate
-  flows where otherwise one flow would be a subset of another flow. eg. if
+  flows where otherwise one flow would be a subset of another flow. e.g. if
   a server offers flows ``m.login.recaptcha`` and ``m.login.recaptcha,
   m.login.email.identity`` and the client completes the recaptcha stage first,
   the auth would succeed with the former flow, even if the client was intending
@@ -878,7 +878,7 @@ to be defined in an embedded browser, or to use the HTML5 `cross-document
 messaging <https://www.w3.org/TR/webmessaging/#web-messaging>`_ API, to receive
 a notification that the authentication stage has been completed.
 
-Once a client receives the notificaton that the authentication stage has been
+Once a client receives the notification that the authentication stage has been
 completed, it should resubmit the request with an auth dict with just the
 session ID:
 
@@ -891,19 +891,19 @@ session ID:
 
 Example
 <<<<<<<
-A client webapp might use the following javascript to open a popup window which will
+A client webapp might use the following JavaScript to open a popup window which will
 handle unknown login types:
 
 .. code:: javascript
 
   /**
    * Arguments:
-   *     homeserverUrl: the base url of the homeserver (eg "https://matrix.org")
+   *     homeserverUrl: the base url of the homeserver (e.g. "https://matrix.org")
    *
-   *     apiEndpoint: the API endpoint being used (eg
+   *     apiEndpoint: the API endpoint being used (e.g.
    *        "/_matrix/client/%CLIENT_MAJOR_VERSION%/account/password")
    *
-   *     loginType: the loginType being attempted (eg "m.login.recaptcha")
+   *     loginType: the loginType being attempted (e.g. "m.login.recaptcha")
    *
    *     sessionID: the session ID given by the homeserver in earlier requests
    *
@@ -930,7 +930,7 @@ handle unknown login types:
           };
 
           request({
-              method:'POST', url:apiEndpint, json:requestBody,
+              method:'POST', url:apiEndpoint, json:requestBody,
           }, onComplete);
       };
 
@@ -1044,7 +1044,7 @@ request as follows:
   }
 
 Alternatively, a client can use a 3PID bound to the user's account on the
-homeserver using the |/account/3pid|_ API rather then giving the ``user``
+homeserver using the |/account/3pid|_ API rather than giving the ``user``
 explicitly, as follows:
 
 .. code:: json
@@ -1130,7 +1130,7 @@ can be proxied (bound) to the identity server in many cases.
   This section deals with two terms: "add" and "bind". Where "add" (or "remove")
   is used, it is speaking about an identifier that was not bound to an identity
   server. As a result, "bind" (or "unbind") references an identifier that is found
-  in an identity server. Note that an identifer can be added and bound at the same
+  in an identity server. Note that an identifier can be added and bound at the same
   time, depending on context.
 
 {{administrative_contact_cs_http_api}}
@@ -1745,7 +1745,7 @@ same way a server does.
     except those protected by the redaction algorithm. For example,
     a redacted ``join`` event will still result in the user being considered joined.
     Similarly, a redacted topic does not necessarily cause the topic to revert to
-    what is was prior to the event - it causes the topic to be removed from the room.
+    what it was prior to the event - it causes the topic to be removed from the room.
 
 
 Events
@@ -1977,9 +1977,9 @@ many places of a client's display, changes to these fields cause an automatic
 propagation event to occur, informing likely-interested parties of the new
 values. This change is conveyed using two separate mechanisms:
 
-- a ``m.room.member`` event (with a ``join`` membership) is sent to every room
+- an ``m.room.member`` event (with a ``join`` membership) is sent to every room
   the user is a member of, to update the ``displayname`` and ``avatar_url``.
-- a ``m.presence`` presence status update is sent, again containing the new
+- an ``m.presence`` presence status update is sent, again containing the new
   values of the ``displayname`` and ``avatar_url`` keys, in addition to the
   required ``presence`` key containing the current presence state of the user.
 
