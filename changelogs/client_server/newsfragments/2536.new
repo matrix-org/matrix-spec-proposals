@@ -1,0 +1,1 @@
+Add ``POST /keys/device_signing/upload`` and ``POST /keys/signatures/upload`` per [MSC1756](https://github.com/matrix-org/matrix-doc/pull/1756).

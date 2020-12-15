@@ -1037,6 +1037,8 @@ through to federation, and have the response also be proxied through to the clie
 
 {{user_keys_ss_http_api}}
 
+{{definition_ss_event_schemas_m_signing_key_update}}
+
 
 Send-to-device messaging
 ------------------------

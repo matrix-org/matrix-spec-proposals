@@ -1,5 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
-.. Copyright 2019 The Matrix.org Foundation C.I.C.
+.. Copyright 2019-2020 The Matrix.org Foundation C.I.C.
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -776,6 +776,149 @@ common set of translations for all languages.
    translated online: https://translate.riot.im/projects/matrix-doc/sas-emoji-v1
 
 
+Cross-signing
+~~~~~~~~~~~~~
+
+Rather than requiring Alice to verify each of Bob's devices with each of her
+own devices and vice versa, the cross-signing feature allows users to sign their
+device keys such that Alice and Bob only need to verify once. With
+cross-signing, each user has a set of cross-signing keys that are used to sign
+their own device keys and other users' keys, and can be used to trust device
+keys that were not verified directly.
+
+Each user has three ed25519 key pairs for cross-signing:
+
+* a master key (MSK) that serves as the user's identity in cross-signing and signs
+  their other cross-signing keys;
+* a user-signing key (USK) -- only visible to the user that it belongs to --
+  that signs other users' master keys; and
+* a self-signing key (SSK) that signs the user's own device keys.
+
+The master key may also be used to sign other items such as the backup key. The
+master key may also be signed by the user's own device keys to aid in migrating
+from device verifications: if Alice's device had previously verified Bob's
+device and Bob's device has signed his master key, then Alice's device can
+trust Bob's master key, and she can sign it with her user-signing key.
+
+Users upload their cross-signing keys to the server using `POST
+/_matrix/client/r0/keys/device_signing/upload`_. When Alice uploads new
+cross-signing keys, her user ID will appear in the ``changed`` property of the
+``device_lists`` field of the ``/sync`` of response of all users who share an
+encrypted room with her. When Bob sees Alice's user ID in his ``/sync``, he
+will call `POST /_matrix/client/r0/keys/query`_ to retrieve Alice's device and
+cross-signing keys.
+
+If Alice has a device and wishes to send an encrypted message to Bob, she can
+trust Bob's device if:
+
+- Alice's device is using a master key that has signed her user-signing key,
+- Alice's user-signing key has signed Bob's master key,
+- Bob's master key has signed Bob's self-signing key, and
+- Bob's self-signing key has signed Bob's device key.
+
+The following diagram illustrates how keys are signed:
+
+.. code::
+
+   +------------------+                ..................   +----------------+
+   | +--------------+ |   ..................            :   | +------------+ |
+   | |              v v   v            :   :            v   v v            | |
+   | |           +-----------+         :   :         +-----------+         | |
+   | |           | Alice MSK |         :   :         |  Bob MSK  |         | |
+   | |           +-----------+         :   :         +-----------+         | |
+   | |             |       :           :   :           :       |           | |
+   | |          +--+       :...        :   :        ...:       +--+        | |
+   | |          v             v        :   :        v             v        | |
+   | |    +-----------+ .............  :   :  ............. +-----------+  | |
+   | |    | Alice SSK | : Alice USK :  :   :  :  Bob USK  : |  Bob SSK  |  | |
+   | |    +-----------+ :...........:  :   :  :...........: +-----------+  | |
+   | |      |  ...  |         :        :   :        :         |  ...  |    | |
+   | |      V       V         :........:   :........:         V       V    | |
+   | | +---------+   -+                                  +---------+   -+  | |
+   | | | Devices | ...|                                  | Devices | ...|  | |
+   | | +---------+   -+                                  +---------+   -+  | |
+   | |      |  ...  |                                         |  ...  |    | |
+   | +------+       |                                         |       +----+ |
+   +----------------+                                         +--------------+
+
+.. based on https://jcg.re/blog/quick-overview-matrix-cross-signing/
+
+In the diagram, boxes represent keys and lines represent signatures with the
+arrows pointing from the signing key to the key being signed.  Dotted boxes and
+lines represent keys and signatures that are only visible to the user who
+created them.
+
+The following diagram illustrates Alice's view, hiding the keys and signatures
+that she cannot see:
+
+.. code::
+
+   +------------------+                +----------------+   +----------------+
+   | +--------------+ |                |                |   | +------------+ |
+   | |              v v                |                v   v v            | |
+   | |           +-----------+         |             +-----------+         | |
+   | |           | Alice MSK |         |             |  Bob MSK  |         | |
+   | |           +-----------+         |             +-----------+         | |
+   | |             |       |           |                       |           | |
+   | |          +--+       +--+        |                       +--+        | |
+   | |          v             v        |                          v        | |
+   | |    +-----------+ +-----------+  |                    +-----------+  | |
+   | |    | Alice SSK | | Alice USK |  |                    |  Bob SSK  |  | |
+   | |    +-----------+ +-----------+  |                    +-----------+  | |
+   | |      |  ...  |         |        |                      |  ...  |    | |
+   | |      V       V         +--------+                      V       V    | |
+   | | +---------+   -+                                  +---------+   -+  | |
+   | | | Devices | ...|                                  | Devices | ...|  | |
+   | | +---------+   -+                                  +---------+   -+  | |
+   | |      |  ...  |                                         |  ...  |    | |
+   | +------+       |                                         |       +----+ |
+   +----------------+                                         +--------------+
+
+`Verification methods <#device-verification>`_ can be used to verify a user's
+master key by using the master public key, encoded using unpadded base64, as
+the device ID, and treating it as a normal device. For example, if Alice and
+Bob verify each other using SAS, Alice's ``m.key.verification.mac`` message to
+Bob may include ``"ed25519:alices+master+public+key":
+"alices+master+public+key"`` in the ``mac`` property. Servers therefore must
+ensure that device IDs will not collide with cross-signing public keys.
+
+Key and signature security
+<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+A user's master key could allow an attacker to impersonate that user to other
+users, or other users to that user.  Thus clients must ensure that the private
+part of the master key is treated securely.  If clients do not have a secure
+means of storing the master key (such as a secret storage system provided by
+the operating system), then clients must not store the private part.
+
+If a user's client sees that any other user has changed their master key, that
+client must notify the user about the change before allowing communication
+between the users to continue.
+
+A user's user-signing and self-signing keys are intended to be easily
+replaceable if they are compromised by re-issuing a new key signed by the
+user's master key and possibly by re-verifying devices or users.  However,
+doing so relies on the user being able to notice when their keys have been
+compromised, and it involves extra work for the user, and so although clients
+do not have to treat the private parts as sensitively as the master key,
+clients should still make efforts to store the private part securely, or not
+store it at all.  Clients will need to balance the security of the keys with
+the usability of signing users and devices when performing key verification.
+
+To avoid leaking of social graphs, servers will only allow users to see:
+
+* signatures made by the user's own master, self-signing or user-signing keys,
+* signatures made by the user's own devices about their own master key,
+* signatures made by other users' self-signing keys about their respective
+  devices,
+* signatures made by other users' master keys about their respective
+  self-signing key, or
+* signatures made by other users' devices about their respective master keys.
+
+Users will not be able to see signatures made by other users' user-signing keys.
+
+{{cross_signing_cs_http_api}}
+
 .. section name changed, so make sure that old links keep working
 .. _key-sharing:
 
@@ -1302,7 +1445,8 @@ device_lists DeviceLists Optional. Information on e2e device updates. Note:
 ========= ========= =============================================
 Parameter Type      Description
 ========= ========= =============================================
-changed   [string]  List of users who have updated their device identity keys,
+changed   [string]  List of users who have updated their device identity or
+                    cross-signing keys,
                     or who now share an encrypted room with the client since
                     the previous sync response.
 left      [string]  List of users with whom we do not share any encrypted rooms
@@ -1312,7 +1456,8 @@ left      [string]  List of users with whom we do not share any encrypted rooms
 .. NOTE::
 
   For optimal performance, Alice should be added to ``changed`` in Bob's sync only
-  when she adds a new device, or when Alice and Bob now share a room but didn't
+  when she updates her devices or cross-signing keys, or when Alice and Bob now
+  share a room but didn't
   share any room previously. However, for the sake of simpler logic, a server
   may add Alice to ``changed`` when Alice and Bob share a new room, even if they
   previously already shared a room.
