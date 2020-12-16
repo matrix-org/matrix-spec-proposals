@@ -147,6 +147,8 @@ and JSON of `content` field:
     "formatted_body": "<p>Here is my photos and videos from yesterday event</p>\n<div class=\"mx-attachments\"><p>Attachments:</p>\n<ul>\n<li><a href=\"https://example.com/_matrix/media/r0/download/example.com//KUAQOesGECkQTgdtedkftISg\">Image 1.jpg</a></li>\n<li><a href=\"https://example.com/_matrix/media/r0/download/example.com/0f4f88120bfc9183d122ca8f9f11faacfc93cd18\">Video 2.mp4</a></li>\n</ul></div>"
   }
 ```
+And modern clients, that have support of the attachments feature, will cut the `div.mx-attachment` tag and replace it to rich gallery block with thumbnails of attachments.
+
 If [MSC2398: proposal to allow mxc:// in the "a" tag within messages](https://github.com/matrix-org/matrix-doc/pull/2398) will be merged before this, we can replace `http` urls to direct `mxc://` urls, for support servers, that don't allow downloads without authentication and have other restrictions.
 
 **If we will come up with better fallback display, maybe bring this option as main suggestion?**
