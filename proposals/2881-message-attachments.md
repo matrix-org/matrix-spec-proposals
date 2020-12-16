@@ -227,7 +227,7 @@ Implementing both things together (MSC2881 as one text for all attachments + sep
   "url": "mxc://example.com/KUAQOesGECkQTgdtedkftISg"
 },
 ```      
-But this way will give harder way to render of main message event, because Matrix clients must do the search of all attached events manually in timeline, and server will can't aggregate them to main message.
+But this way will give harder way to render of main message event, because Matrix clients must do the search of all attached events manually in timeline, and server will be unable to aggregate them to main message.
 
 
 ## Future considerations
