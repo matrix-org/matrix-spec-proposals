@@ -59,7 +59,7 @@ This also requires more burden on people having to host their own bridge.
 
 People might not realize their message is being shared more broadly to another audience. Also relating to a private room being connected to a public room.
 
-
+Make sure there is a two-way negotiation system where admins of both rooms can approve of connecting the rooms. This is to prevent bad actors at `#badroom:evilcorp.com` connecting themselves to `#matrix:matrix.org` and causing hell.
 
 
 
