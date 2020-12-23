@@ -20,7 +20,18 @@ For the Cerulean threading proposal, there was a mention of adding a mechanism t
 
 ## Potential issues
 
+
+#### Connecting private and public rooms
+
 Can someone connect a private and public room together?
+
+
+#### E2EE rooms
+
+How do e2e rooms work? Since the message is encrypted and only the devices can decrypt, the homeserver can't just ferry an encrypted message over and expect the others to be able to decrypt.
+
+Potentially, we could  have the client send the message to all of the connected rooms individually.
+
 
 
 ## Alternatives
@@ -47,6 +58,7 @@ This also requires more burden on people having to host their own bridge.
 ## Security considerations
 
 People might not realize their message is being shared more broadly to another audience. Also relating to a private room being connected to a public room.
+
 
 
 
