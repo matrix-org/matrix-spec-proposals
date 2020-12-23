@@ -18,6 +18,27 @@ Add a mechanism to homeservers to be able connect and ferry messages back and fo
 For the Cerulean threading proposal, there was a mention of adding a mechanism to send a message to both your timeline and thread room at the same time. This seems kind of similar, sending one event and ending up in multiple.
 
 
+### Potential solutions
+
+
+#### Message pointer reference events
+
+When someone sends a message to a room, we also send a pointer reference event to the connected room which marks that messages place in the DAG.
+
+The pointer reference events get filled in before we pass it on to the client.
+
+Since [federated peeking](https://github.com/matrix-org/matrix-doc/issues/913) isn't available yet, for people not joined to the connected room, we can show a placeholder for the pointer reference event telling the user that they need to join the other room in order to see the message.
+
+
+#### Connection layer on top of the DAG
+
+To avoid mixing messages between rooms at the DAG level, this could be a connection layer on top supported by the homeserver. Rooms would continue to be separate at that level, but the client would still see a room with messages mixed in from both rooms.
+
+This however presents a problem in that it's difficult to splice together two different rooms as the DAG is used for ordering. You'd need some way to interject messages in a way that works. And then you can have things like replies/relationships which would be cross room, and would cause all sorts of headaches.
+
+
+
+
 ## Potential issues
 
 
