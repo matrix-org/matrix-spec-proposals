@@ -265,9 +265,6 @@ rooms, as that would leak the message content to the servers.
   has the same problem, but this proposal has even more extra data. The amount
   of extra data in both proposals is rather low (<1kb), so this should not be
   a problem in practice.
-* Encrypted events forwarded to other rooms won't be decryptable. Clients
-  should probably either prevent forwarding completely or only allow forwarding
-  to the same room for encrypted events.
 
 ## Alternatives
 ### Endpoint behavior
