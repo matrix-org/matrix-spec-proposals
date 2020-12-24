@@ -14,7 +14,10 @@ server adds the validation result to the top-level `unsigned` object.
 ### `PUT /_matrix/client/r0/rooms/{roomId}/event/{eventId}/forward/{targetRoomId}/{txnId}`
 This endpoint requests the server to find `eventId` from `roomId` and forward
 it to `targetRoomId`. The `txnId` behaves the same way as in the `/send`
-endpoint. The request body is an empty JSON object.
+endpoint. The request body has an optional `decryption_keys` field that will be
+copied to `content`->`m.forwarded`->`unsigned` in the resulting event when
+present. The content of the `decryption_keys` object varies based on whether or
+not the target room is encrypted, see the "Encrypted events" section below.
 
 Only unredacted message events can be forwarded. If the given event ID is a
 state event, a redaction or a redacted message event, the request will be
@@ -215,6 +218,30 @@ calculated in the previous section. Copying the event ID in v1/v2 rooms is for
 convenience of clients: they only need to look in one place regardless of the
 room version.
 
+### Encrypted events
+In some cases, users may want to forward encrypted messages to rooms with users
+who are not in the origin room. In order to allow everyone in the recipient
+room to decrypt the forwarded message, the keys must be sent with the message.
+However, only keys for the message being forwarded should be sent, any other
+messages in the origin room must not be decryptable with those keys.
+
+To achieve this, the user forwarding the message includes the message-specific
+symmetric AES and HMAC keys (see [Message encryption] in the Megolm spec). Each
+of the keys are encoded as unpadded base64 and placed in the `aes_key`,
+`hmac_key` and `aes_iv` fields in the `decryption_keys` object in the forward
+request.
+
+[Message encryption]: https://gitlab.matrix.org/matrix-org/olm/-/blob/master/docs/megolm.md#message-encryption
+
+When forwarding encrypted messages to encrypted rooms, the `decryption_keys`
+object is encrypted the same way `content` would be in normal messages.
+Recipient clients should check which fields are present in the `decryption_keys`
+object to determine whether or not it is encrypted.
+
+The decryption keys should be included even if forwarding a message to the same
+room, as there may be new users in the room who didn't receive keys to old
+messages.
+
 ## Client behavior
 Clients SHOULD NOT trust forward metadata in the event content without an
 explicit `"valid": true` in the unsigned `m.forwarded` object. Additionally,
@@ -224,6 +251,12 @@ forwards even if the `valid` flag is present.
 Not trusting forward metadata does not necessarily mean it must be completely
 ignored. For example, clients could render the event as a forward, but include
 a notice saying it's unverified.
+
+When receiving forwarded encrypted events, clients should treat the message
+like they treat forwarded keys, i.e. not confirmed to originate from the user.
+
+Clients may discourage users from forwarding encrypted messages to unencrypted
+rooms, as that would leak the message content to the servers.
 
 ## Potential issues
 * This is not as simple as MSC2723 and requires server support.
