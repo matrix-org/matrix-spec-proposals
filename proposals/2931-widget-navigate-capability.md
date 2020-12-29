@@ -1,4 +1,4 @@
-# MSC0000: Widget navigate permission
+# MSC2931: Widget navigate permission
 
 [Widgets](https://github.com/matrix-org/matrix-doc/pull/2764) currently have some capability to
 affect how a client operates, though given the embedded nature of widgets it is desirable to have
@@ -83,5 +83,5 @@ of a similar nature are made irrelevant by the same argument.
 
 ## Unstable prefix
 
-Implementations should use `org.matrix.msc0000.navigate` as the capability and action while this MSC
+Implementations should use `org.matrix.msc2931.navigate` as the capability and action while this MSC
 is not in a released version of the spec.
