@@ -84,4 +84,5 @@ of a similar nature are made irrelevant by the same argument.
 ## Unstable prefix
 
 Implementations should use `org.matrix.msc2931.navigate` as the capability and action while this MSC
-is not in a released version of the spec.
+is not in a released version of the spec. Implementations should also look for/expose `org.matrix.msc2931`
+as a supported version over the Widget API.
