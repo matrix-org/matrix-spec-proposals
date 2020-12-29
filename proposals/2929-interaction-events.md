@@ -32,13 +32,13 @@ are also allowed.
 Redacting an interaction event shall not undo the effect caused by event that has been redacted.
 This is intentional as interactions are allowed to create irreversible side effects outside Matrix.
 Interactions should be responded by `target` users if and only if they understand the interaction
-body. 
+body.
 
 Presentation of interactions to users are left implementation defined.
 
 ## Potential issues
 
-No known issues at the time of writing.
+Interaction with E2EE is not considered yet.
 
 ## Alternatives
 
