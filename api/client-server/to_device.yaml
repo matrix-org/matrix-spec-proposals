@@ -79,6 +79,7 @@ paths:
                       }
                     }
                   }
+            required: ["messages"]
       responses:
         200:
           description:
