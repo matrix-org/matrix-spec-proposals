@@ -65,8 +65,10 @@ Interaction notifications with E2EE is deliberately disallowed.
 
 ## Alternatives
 
-Having each bot create own event type for interactions: Which is entirely possible given the extensible
-nature of Matrix, however, this will constrain the support of such events to event.
+* Just using `m.room.message` type of text messages: Some clients choke when additional fields
+* Having each bot create own event type for interactions: Which is entirely possible given
+the extensible nature of Matrix, however, this will constrain the support of such events to
+those particular clients.
 
 ## Security considerations
 
