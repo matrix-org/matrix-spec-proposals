@@ -635,7 +635,7 @@ These dependencies are shared with profiles-as-rooms
 ## Tradeoffs
 
 * If the membership of a space would be large (for example: an organisation of
-  several thousand people), this membership has to copied entirely into the
+  several thousand people), this membership has to be copied entirely into the
   room, rather than querying/searching incrementally.
 
 * If the membership list is based on an external service such as LDAP, it is
