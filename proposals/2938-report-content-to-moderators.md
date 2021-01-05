@@ -1,4 +1,4 @@
-# MSC2938: Report Content do Moderators
+# MSC2938: Report Content to Moderators
 
 Matrix currently offers [a mechanism](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-report-eventid)
 to report bad content content (e.g. trolling, spam, abuse, etc.) to homeserver admins.
@@ -63,7 +63,7 @@ Whenever `server_notice_type` is `m.server_notice.content_report`,
 | roomId    | string | **Required** The id of the room being reported. |
 | eventId   | string | **Required** The id of the event being reported. |
 | userId    | string | **Required** The id of the user reporting the event. |
-| score     | integer | **Required** The score to rate this content as where -100 is most offensive and 0 is inoffensive, as given by the reporting user. |
+| score     | integer | The score to rate this content as where -100 is most offensive and 0 is inoffensive, as given by the reporting user. |
 | reason    | string | **Required** The reason given by the reporting user. |
 
 
