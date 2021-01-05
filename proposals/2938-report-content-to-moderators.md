@@ -37,6 +37,9 @@ instead of homeserver admins.
 
 ### Proposal
 
+In the following, we call **moderators** for a room `roomId` any user with a powerlevel sufficient
+to both kick and ban bad room members from that room.
+
 We extend `POST /_matrix/client/r0/rooms/{roomId}/report/{eventId}` with a JSON Body Parameter
 
 | Parameter | Type   | Description |
@@ -46,7 +49,7 @@ We extend `POST /_matrix/client/r0/rooms/{roomId}/report/{eventId}` with a JSON 
 If `target` is `"homeserver-admins"` or unspecified, the behavior is unchanged.
 
 If `target` is `"room-moderators"`, the message is intended to be propagated as a server notice to
-moderators and administrators of this room.
+moderators for this room.
 
 We further extend server notices so that the field `server_notice_type` may also admit a new
 value:
@@ -69,7 +72,7 @@ Whenever `server_notice_type` is `m.server_notice.content_report`,
 
 #### Client behavior (sending reports)
 
-Clients may offer UX to let users report content to the room administrators and moderators instead of homeserver administrators.
+Clients may offer UX to let users report content to the room moderators instead of homeserver administrators.
 When this UX is used, a call to `POST /_matrix/client/r0/rooms/{roomId}/report/{eventId}` is sent, e.g.
 
 ```json
@@ -86,7 +89,7 @@ Whenever a server receives a `POST /_matrix/client/r0/rooms/{roomId}/report/{eve
 as `"room-moderators"` they should:
 
 1. ignore the message if `eventId` is not an event in `roomId` or if the user is not a member of `roomId`; otherwise
-2. for all users in room `roomId` with the ability to kick and ban and connected from the local homeserver:
+2. for all moderators in room `roomId` *on the local homeserver*:
   1. send a server notice
   ```json
   {
@@ -105,50 +108,51 @@ as `"room-moderators"` they should:
 General client behavior is unchanged from https://matrix.org/docs/spec/client_server/r0.6.1#id166.
 
 In this specific case, clients may additionally offer a link to event `eventId` in `roomId` to
-simplify the work of administators/moderators.
+simplify the work of moderators.
 
 
 ## Potential issues
 
-This proposal does not yet cover the case in which no administrator/moderator comes from the same
+This proposal does not yet cover the case in which no moderator comes from the same
 homeserver as the user. This is a limitation that needs to be fixed before merging this proposal.
 However, it may be possible to run an experiment before this limitation is fixed.
 
-This proposal may end up being used for spamming the administrators/moderators of rooms. We believe
+This proposal may end up being used for spamming the moderators of rooms. We believe
 that this is no worse than the current implementation which may be used for spamming the administrator
 of the homeserver.
 
 ## Alternatives
 
-An alternative would be to encourage users to send DM to administrators/moderators. This has the
+An alternative would be to encourage users to send DM to moderators. This has the
 following drawbacks:
 
-1. This requires administrators/moderators to accept all DMs to deal with bad content. We assume
-  that many administrators/moderators will not want to do that.
+1. This requires moderators to accept every single DM of they wish to deal with bad content. We assume
+  that many moderators will not want to do that.
 2. Sending DMs to people one is not familiar with is considered impolite by many users. Many users
   will therefore not do it and rather use the current Report Content button, with the issues
   listed at the start of this document.
-3. If several users report the same content, administrators/moderators may find themselves bombarded
+3. If several users report the same content, moderators may find themselves bombarded
   with large number of DMs, which makes tracking bad content more complicated.
 
 A variant would be to implement a "Report Content to Room Moderators" button as a mechanism that
-sends a DM to all administrators/moderators in the room. This has the following drawbacks:
+sends a DM to all moderators in the room. This solves one of the pain points above but still
+has the following drawbacks:
 
-1. This requires administrators/moderators to accept all DMs to deal with bad content. We assume
-  that many administrators/moderators will not want to do that.
-2. If several users report the same content, administrators/moderators may find themselves bombarded
+1. This requires moderators to accept every single DM of they wish to deal with bad content. We assume
+  that many moderators will not want to do that.
+2. If several users report the same content, moderators may find themselves bombarded
   with large number of DMs, which makes tracking bad content more complicated.
 
 
 ## Security considerations
 
-If a user reports bad content (e.g. political propaganda) to an administrator/moderator who actually
+If a user reports bad content (e.g. political propaganda) to an moderator who actually
 sees this content as good, there is a risk of reprisal against the reporting user. We consider this
 risk fairly low.
 
 A graver risk may appear if a user notices bad content (e.g. terrorism, child sexual
 abuse, illicit substance trade) on a room actually dedicated to this bad content and accidentally reports
-it to the room administrator/moderator instead of the homeserver administrator and/or the authorities.
+it to the room moderator instead of the homeserver administrator and/or the authorities.
 
 We believe that the risk can be mitigated/eliminated by having the client UX explain carefully the
 difference between sending to a homeserver administrator, to a room moderator or to the authorities.
