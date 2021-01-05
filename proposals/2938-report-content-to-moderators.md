@@ -42,7 +42,6 @@ We extend `POST /_matrix/client/r0/rooms/{roomId}/report/{eventId}` with a JSON 
 | Parameter | Type   | Description |
 ----------------------------------
 | target    | string | One of "server-notice", "homeserver-admins". |
-| anonymize | bool   | If specified and `false`, the reporting user wishes to remain anonymous. |
 
 If `target` is `"homeserver-admins"` or unspecified, the behavior is unchanged.
 
@@ -63,7 +62,7 @@ Whenever `server_notice_type` is `m.server_notice.content_report`,
 | msgtype 	| enum 	 | **Required** In this case, `m.server_notice.content_report`. |
 | roomId    | string | **Required** The id of the room being reported. |
 | eventId   | string | **Required** The id of the event being reported. |
-| userId    | string | The id of the user reporting the event. |
+| userId    | string | **Required** The id of the user reporting the event. |
 | score     | integer | **Required** The score to rate this content as where -100 is most offensive and 0 is inoffensive, as given by the reporting user. |
 | reason    | string | **Required** The reason given by the reporting user. |
 
@@ -81,14 +80,12 @@ When this UX is used, a call to `POST /_matrix/client/r0/rooms/{roomId}/report/{
 }
 ```
 
-The UX may offer the ability to pick between reporting anonymously or being contacted for any investigation.
-
 #### Server behavior
 
 Whenever a server receives a `POST /_matrix/client/r0/rooms/{roomId}/report/{eventId}` with `target` specified
 as `"room-moderators"` they should:
 
-1. ignore the message if `eventId` is not an event in `roomId`; otherwise
+1. ignore the message if `eventId` is not an event in `roomId` or if the user is not a member of `roomId`; otherwise
 2. for all users in room `roomId` with the ability to kick and ban and connected from the local homeserver:
   1. send a server notice
   ```json
@@ -97,7 +94,7 @@ as `"room-moderators"` they should:
     "msgtype": "m.server_notice.content_report",
     "roomId": "{roomId}",   // From path parameter
     "eventId": "{eventId}", // From path parameter
-    "userId": "{userId}",   // If `anonymize` was `false`, from authentication token, otherwise skipped.
+    "userId": "{userId}",   // From authentication token
     "score": "{score}",     // From JSON body parameter
     "reason": "{reason}"    // From JSON body parameter
   }
@@ -115,6 +112,7 @@ simplify the work of administators/moderators.
 
 This proposal does not yet cover the case in which no administrator/moderator comes from the same
 homeserver as the user. This is a limitation that needs to be fixed before merging this proposal.
+However, it may be possible to run an experiment before this limitation is fixed.
 
 This proposal may end up being used for spamming the administrators/moderators of rooms. We believe
 that this is no worse than the current implementation which may be used for spamming the administrator
@@ -130,13 +128,16 @@ following drawbacks:
 2. Sending DMs to people one is not familiar with is considered impolite by many users. Many users
   will therefore not do it and rather use the current Report Content button, with the issues
   listed at the start of this document.
+3. If several users report the same content, administrators/moderators may find themselves bombarded
+  with large number of DMs, which makes tracking bad content more complicated.
 
 A variant would be to implement a "Report Content to Room Moderators" button as a mechanism that
 sends a DM to all administrators/moderators in the room. This has the following drawbacks:
 
 1. This requires administrators/moderators to accept all DMs to deal with bad content. We assume
   that many administrators/moderators will not want to do that.
-2. This prevents any anonymity.
+2. If several users report the same content, administrators/moderators may find themselves bombarded
+  with large number of DMs, which makes tracking bad content more complicated.
 
 
 ## Security considerations
