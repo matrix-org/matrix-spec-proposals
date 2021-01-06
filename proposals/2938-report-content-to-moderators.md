@@ -67,7 +67,7 @@ Whenever `server_notice_type` is `m.server_notice.content_report`,
 | eventId   | string | **Required** The id of the event being reported. |
 | userId    | string | **Required** The id of the user reporting the event. |
 | score     | integer | The score to rate this content as where -100 is most offensive and 0 is inoffensive, as given by the reporting user. |
-| reason    | string | **Required** The reason given by the reporting user. |
+| reason    | string | The reason given by the reporting user. |
 
 
 #### Client behavior (sending reports)
@@ -107,8 +107,8 @@ as `"room-moderators"` they should:
 
 General client behavior is unchanged from https://matrix.org/docs/spec/client_server/r0.6.1#id166.
 
-In this specific case, clients may additionally offer a link to event `eventId` in `roomId` to
-simplify the work of moderators.
+In this specific case, clients may additionally offer a link to event `eventId` in `roomId` or a
+preview to simplify the work of moderators.
 
 
 ## Potential issues
