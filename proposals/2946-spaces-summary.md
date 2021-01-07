@@ -181,6 +181,9 @@ Client behaviour:
        space and additional results should be loaded when required. The API guarantees that *all* events for
        the root room ID will be returned, regardless of how many events there are (even if they exceed `limit`).
      * Lookup all children for this room ID. For each child:
+        - If there is no corresponding room data for this room ID then this room is either a subspace or a room.
+          The room is not world readable or the server does not have any information about this room. Clients
+          MAY be able to join this room by issuing a `/join` request.
         - If the child is a room (not a space, check the `room_type` field), look up the room data from
           `rooms` and render it.
         - Else the child is a space, render the space as a heading (using the room name/topic) and
