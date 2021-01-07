@@ -258,6 +258,12 @@ like they treat forwarded keys, i.e. not confirmed to originate from the user.
 Clients may discourage users from forwarding encrypted messages to unencrypted
 rooms, as that would leak the message content to the servers.
 
+If a forwarded event contains relation metadata such as a reply, clients should
+not display it to users. This behavior is consistent with other platforms (e.g.
+Telegram and WhatsApp) and removes any problems if some users can't get the
+relation target event. The existence of reply metadata may still be used to
+remove reply fallbacks.
+
 ## Potential issues
 * This is not as simple as MSC2723 and requires server support.
 * Events with bogus data in `m.forwarded` can't be forwarded.
