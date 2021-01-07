@@ -44,7 +44,7 @@ Clients are able to do this currently by peeking into all of these rooms
 ```
 POST /_matrix/client/r0/rooms/{roomID}/spaces
 {
-    "max_rooms_per_space": 5,      // The maximum number of rooms to return for a given space
+    "max_rooms_per_space": 5,      // The maximum number of rooms/subspaces to return for a given space, if negative unbounded. default: -1.
     "limit": 100,                  // The maximum number of rooms/subspaces to return, server can override this, default: 100.
     "batch": "opaque_string"       // A token to use if this is a subsequent HTTP hit, default: "".
 }
@@ -68,7 +68,8 @@ which returns:
             "topic": "Tasty tasty cheese",
             "world_readable": true,
 
-            "num_refs": 42
+            "num_refs": 42,
+            "room_type": "m.space"
         },
         { ... }
     ],
@@ -117,10 +118,13 @@ Justifications for the request API shape are as follows:
 Justifications for the response API shape are as follows:
  - `rooms`: These are the nodes of the graph. The objects in the array are exactly the same as `PublicRoomsChunk` in the
    [specification](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-publicrooms)
-   as the information displayed to users is the same. There is one _additional_ key
-   which is `num_refs` which is the total number state events which point to or from this room. This
-   includes all `m.space.child` events in the room, _in addition to_ `m.room.parent` events which point to
-   this room as a parent.
+   as the information displayed to users is the same. There are two _additional_ keys
+   which are:
+     * `num_refs` which is the total number of state events which point to or from this room (inbound/outbound edges).
+        This includes all `m.space.child` events in the room, _in addition to_ `m.room.parent` events which point to
+        this room as a parent.
+     * `room_type` which is the room type, which is `m.space` for subspaces. It can be omitted if there is no room type
+       in which case it should be interpreted as a normal room.
  - `events`: These are the edges of the graph. The objects in the array are complete (or stripped?) `m.room.parent`
    or `m.space.child` events.
  - `next_batch`: Its presence indicates that there are more results to return.
