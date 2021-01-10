@@ -113,10 +113,10 @@ For example: `["v1.1", "r0.6.1"]`.
 "room versions" are called "room editions" and the Matrix version refers to what this proposal is
 introducing. This MSC does not propose renaming "room versions" - that is another MSC's problem.
 
-Room editions are a bit special in that they have their own versioning scheme as other servers need to
-be aware of how to process the room. As such, a room edition's versioning scheme is not altered by this
-proposal, however the publishing of the (in)stability of a given edition is now covered by the newly
-proposed Matrix version.
+Room editions are a bit special in that they have their own versioning scheme as servers and, potentially,
+clients need to be aware of how to process the room. As such, a room edition's versioning scheme is not
+altered by this proposal, however the publishing of the (in)stability of a given edition is now covered by the
+newly proposed Matrix version.
 
 Whenever a room edition transitions from stable to unstable, or unstable to stable, or is introduced
 then it would get counted as a feature for a `MINOR` release of Matrix. We don't currently have a plan
