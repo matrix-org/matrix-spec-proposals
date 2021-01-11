@@ -1,4 +1,4 @@
-# MSCxxxx: Cryptographically Concealed Credentials
+# MSC2957: Cryptographically Concealed Credentials
 
 When logging in to Matrix using the `POST /login` endpoint, the client
 transmits the password to the server, so the server is able to see the user's
