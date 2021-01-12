@@ -85,6 +85,10 @@ displays the emoji (or the text equivalent) from the SAS verification emoji
 list corresponding to that number.  The user remembers/records the emoji for
 later verification.
 
+Resetting a user's password would happen similarly, with the addition that the
+data in Secret Storage would need to be re-encrypted if the user is using the
+same password for that.
+
 #### Logging in
 
 The client generates an ephemeral Curve25519 key pair
@@ -229,6 +233,13 @@ situation where shoulder-surfing is likely.
 
 ### Man-in-the-middle attacks
 
+An attacker who is able to eavesdrop on the protocol messages could gain
+information (for example, A<sub>pub</sub>, if they eavesdrop during the user's
+registration) that would allow them to brute-force the user's password.  Since
+the sensitive data is encrypted using a key produced by an ECDH, it is not
+enough for the attacker to be a passive eavesdropper; they would need to be an
+active man-in-the-middle.
+
 TODO: ...
 
 ### Phishing
@@ -246,9 +257,26 @@ are managed by an external system.
 
 ## Alternatives
 
-TODO: compare with various PAKEs
+TODO: compare with various PAKEs (e.g. SRP, OPAQUE)
 
-TODO: compare with SCRAM
+### SCRAM
+
+[SCRAM](https://tools.ietf.org/html/rfc5802) is another protocol that allows a
+user to authenticate without the server receiving the user's password.  It also
+has the feature that the user is also able to authenticate the server since the
+client proves that it has access to the `StoredKey`.  One of its goals is that
+the information stored on the server is not sufficient to impersonate a user.
+However, if an attacker has access to the server's storage AND is able to
+eavesdrop on an authentication (or impersonate the server), they can compute
+the `ClientKey`, which is sufficient for the attacker to authenticate with the
+server.  This is noted in the "Security Considerations" section of RFC-5802:
+
+> If an attacker obtains the authentication information from the authentication
+> repository and either eavesdrops on one authentication exchange or
+> impersonates a server, the attacker gains the ability to impersonate that
+> user to all servers providing SCRAM access using the same hash function,
+> password, iteration count, and salt.  For this reason, it is important to use
+> randomly generated salt values.
 
 ### Argon2
 
@@ -277,6 +305,10 @@ two ways.
    check before submitting the password.  Old clients will not display the
    emoji, providing a hint to users that the client does not support this
    authentication method.
+
+## Possible future work
+
+TODO: combine 2FA?
 
 ## Unstable prefix
 
